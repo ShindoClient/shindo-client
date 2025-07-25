@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/ShindoClient/Shindo-Client/master/assets/logo.png" alt="Shindo Client Logo" width="200"/>
 
-# 🌌 Shindo Client
+# Shindo Client
 **More features, fixes, and quality of life improvements for Minecraft.**
 
 🎮 *A modern and evolving Minecraft client built with love and care.*  
