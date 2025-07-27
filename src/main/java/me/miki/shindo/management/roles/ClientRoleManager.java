@@ -38,23 +38,17 @@ public class ClientRoleManager {
         ShindoAPI api = Shindo.getInstance().getShindoAPI();
         String uuidStr = uuid.toString();
 
-        ClientRole detectedRole = ClientRole.MEMBER;
-
-        ShindoLogger.info("Checking role " + uuidStr + " for " + detectedRole);
+        ShindoLogger.info("Checking role from " + uuidStr);
         for (ClientRole role : ROLE_HIERARCHY) {
             if (api.hasRole(uuidStr, role.name().toLowerCase(Locale.ROOT))) {
-                detectedRole = role;
-                ShindoLogger.info("Detected role: " + detectedRole.name());
-                break;
-            } else {
-                detectedRole = ClientRole.MEMBER;
-                ShindoLogger.info("Detected role: " + detectedRole.name());
-                break;
+                ShindoLogger.info("Detected role: " + role.name());
+                roleCache.put(uuid, role);
+                return role;
             }
         }
 
-        roleCache.put(uuid, detectedRole);
-        return detectedRole;
+        roleCache.put(uuid, ClientRole.MEMBER);
+        return ClientRole.MEMBER;
     }
 
     public static boolean hasRole(UUID uuid, ClientRole required) {
