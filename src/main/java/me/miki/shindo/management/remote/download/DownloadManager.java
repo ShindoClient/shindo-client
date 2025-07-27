@@ -22,9 +22,9 @@ public class DownloadManager {
 
         FileManager fileManager = Shindo.getInstance().getFileManager();
         downloaded = false;
-        downloadFiles.add(new DownloadFile("https://github.com/ShindoClient/RESOURCES/releases/download/release/ytdlp.exe",
+        downloadFiles.add(new DownloadFile("https://github.com/ShindoClient/RESOURCES/releases/download/latest/ytdlp.exe",
                 "ytdlp.exe", new File(fileManager.getExternalDir(), "ytdlp"), 18182514));
-        downloadFiles.add(new DownloadZipFile("https://github.com/ShindoClient/RESOURCES/releases/download/release/ffmpeg.zip",
+        downloadFiles.add(new DownloadZipFile("https://github.com/ShindoClient/RESOURCES/releases/download/latest/ffmpeg.zip",
                 "ffmpeg.zip", new File(fileManager.getExternalDir(), "ffmpeg"), 148280843, 413897555));
 
         Multithreading.runAsync(() -> startDownloads());

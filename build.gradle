@@ -18,13 +18,11 @@ buildscript {
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
 version = "Release"
@@ -70,14 +68,12 @@ dependencies {
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
-
-    // libs locais que devem ser incluídas no jar final via shadow
-    implementation files('libs/lwjgl-shindo.jar')
-    implementation files('libs/lwjgl-shindo-natives.jar')
-    implementation files('libs/jfxrt.jar')
-    implementation files('libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar')
-    implementation files('libs/ViaRewind-2.0.4-SNAPSHOT.jar')
-    implementation files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar')
+    embed(files('libs/lwjgl-shindo.jar'))
+    embed(files('libs/lwjgl-shindo-natives.jar'))
+    embed(files('libs/jfxrt.jar'))
+    embed(files('libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar'))
+    embed(files('libs/ViaRewind-2.0.4-SNAPSHOT.jar'))
+    embed(files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar'))
 
     embed("com.google.code.gson:gson:2.10.1")
 }
@@ -98,6 +94,8 @@ processResources {
 
 
 jar {
+    dependsOn configurations.compile
+
     manifest.attributes(
             "MixinConfigs": "mixins.shindo.json",
             "TweakClass": "me.miki.shindo.injection.mixin.ShindoTweaker",
@@ -105,15 +103,12 @@ jar {
             "Manifest-Version": 1.0,
             "FMLAT": "shindo_at.cfg"
     )
-}
-
-// Configuração do shadowJar para incluir libs e evitar conflitos com Minecraft
-shadowJar {
-    classifier = ''
-    configurations = [project.configurations.runtimeClasspath]
-
-    exclude 'net/minecraft/**'
-    exclude 'log4j2.xml'
-    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
-    exclude 'META-INF/**'
+    from {
+        configurations.embed.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+        exclude '/META-INF/**', 'META-INF'
+    }
 }
