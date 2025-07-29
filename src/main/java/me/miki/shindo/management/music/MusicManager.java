@@ -14,7 +14,7 @@ import me.miki.mp3agic.interfaces.ID3v2;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
-import me.miki.shindo.management.music.ytdlp.Ytdlp;
+import me.miki.shindo.management.music.ytdlp.YTDLP;
 import me.miki.shindo.utils.ImageUtils;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.Multithreading;
@@ -23,6 +23,7 @@ import me.miki.shindo.utils.file.FileUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -34,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MusicManager {
 
 	private CopyOnWriteArrayList<Music> musics = new CopyOnWriteArrayList<Music>();
-	private Ytdlp ytdlp = new Ytdlp();
+	private YTDLP ytdlp = new YTDLP();
 
 	private Music currentMusic;
 	private Media media;
@@ -288,7 +289,9 @@ public class MusicManager {
 								fos.write(imageData);
 								fos.close();
 
-								ImageIO.write(ImageUtils.resize(ImageIO.read(imageFile), 256, 256), "png", imageFile);
+								BufferedImage original = ImageIO.read(imageFile);
+								BufferedImage cropped = ImageUtils.cropCenterHorizontal(original, 256);
+								ImageIO.write(cropped, "png", imageFile);
 							}
 						}
 
@@ -319,6 +322,8 @@ public class MusicManager {
 			}
 		}
 	}
+
+
 
 	public void loadAsync() {
 		Multithreading.runAsync(()-> {
@@ -366,7 +371,7 @@ public class MusicManager {
 		this.currentMusic = currentMusic;
 	}
 
-	public Ytdlp getYtdlp() {
+	public YTDLP getYtdlp() {
 		return ytdlp;
 	}
 }

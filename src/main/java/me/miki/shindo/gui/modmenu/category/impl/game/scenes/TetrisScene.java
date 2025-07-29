@@ -54,9 +54,11 @@ public class TetrisScene extends GameScene {
         int yOffset = (getHeight() - fieldHeight) / 2;
 
         nvg.save();
-        nvg.translate(getX() + xOffset, getY() + yOffset);
+        nvg.scissor(getX(), getY(), getWidth(), getHeight());
+        //nvg.translate(getX() + xOffset, getY() + yOffset);
 
         drawBackground(nvg, palette);
+        // Movimento contínuo ao segurar teclas
         if (!gameOver) {
             // Substituir no TetrisScene.java
 
@@ -71,39 +73,39 @@ public class TetrisScene extends GameScene {
             }
         }
 
-        drawBoard(nvg, palette);
-        drawCurrentPiece(nvg, palette);
+        drawBoard(nvg, palette, getX() + xOffset, getY() + yOffset);
+        drawCurrentPiece(nvg, palette, getX() + xOffset, getY() + yOffset);
 
         if (gameOver) {
-            nvg.drawCenteredText("Game Over", fieldWidth / 2F, fieldHeight / 2F - 10, Color.RED, 12, Fonts.SEMIBOLD);
-            nvg.drawCenteredText("Score: " + score, fieldWidth / 2F, fieldHeight / 2F + 5, palette.getFontColor(ColorType.NORMAL), 10, Fonts.MEDIUM);
+            nvg.drawCenteredText("Game Over", getX() + xOffset + fieldWidth / 2F, getY() + yOffset + fieldHeight / 2F - 10, Color.RED, 12, Fonts.SEMIBOLD);
+            nvg.drawCenteredText("Score: " + score, getX() + xOffset + fieldWidth / 2F, getY() + yOffset + fieldHeight / 2F + 5, palette.getFontColor(ColorType.NORMAL), 10, Fonts.MEDIUM);
         }
 
         // desenha contorno da área de jogo
-        nvg.drawOutlineRoundedRect(0, 0, fieldWidth, fieldHeight, 2, 1.5f, palette.getFontColor(ColorType.DARK));
+        nvg.drawOutlineRoundedRect(getX() + xOffset, getY() + yOffset,  fieldWidth, fieldHeight, 2, 1.5f, palette.getFontColor(ColorType.DARK));
 
         nvg.restore();
         nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), 10, 8, palette.getBackgroundColor(ColorType.NORMAL));
     }
 
-    private void drawBoard(NanoVGManager nvg, ColorPalette palette) {
+    private void drawBoard(NanoVGManager nvg, ColorPalette palette, int xOffset, int yOffset) {
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < COLS; x++) {
                 if (board[y][x] != 0) {
-                    nvg.drawRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, palette.getFontColor(ColorType.DARK));
+                    nvg.drawRect(xOffset + x * TILE_SIZE, yOffset + y * TILE_SIZE, TILE_SIZE, TILE_SIZE, palette.getFontColor(ColorType.DARK));
                 }
             }
         }
     }
 
-    private void drawCurrentPiece(NanoVGManager nvg, ColorPalette palette) {
+    private void drawCurrentPiece(NanoVGManager nvg, ColorPalette palette, int xOffset, int yOffset) {
         if (current == null) return;
 
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
                 if (current.shape[y][x] != 0) {
-                    int drawX = (current.x + x) * TILE_SIZE;
-                    int drawY = (current.y + y) * TILE_SIZE;
+                    int drawX = xOffset + (current.x + x) * TILE_SIZE;
+                    int drawY = yOffset + (current.y + y) * TILE_SIZE;
                     nvg.drawRect(drawX, drawY, TILE_SIZE, TILE_SIZE, palette.getFontColor(ColorType.NORMAL));
                 }
             }

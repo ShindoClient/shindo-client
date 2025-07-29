@@ -48,8 +48,8 @@ public class GuiGameMenu extends GuiScreen {
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
         screenAnimation.wrap(() -> drawNanoVG(nvg), x, y, width, height, 2 - introAnimation.getValueFloat(), Math.min(introAnimation.getValueFloat(), 1), false);
         if(introAnimation.isDone(Direction.BACKWARDS)) {
-               this.mc.displayGuiScreen((GuiScreen) null);
-               this.mc.setIngameFocus();
+            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.setIngameFocus();
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

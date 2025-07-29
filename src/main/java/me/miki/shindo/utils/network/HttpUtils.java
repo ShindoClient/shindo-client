@@ -160,6 +160,7 @@ public class HttpUtils {
             while ((read = in.read(buffer)) != -1) {
                 raf.write(buffer, 0, read);
 
+                // Atualiza progresso se estiver usando .part
                 if (outputFile.getName().endsWith(".part")) {
                     String fileName = outputFile.getName().replace(".part", "");
                     DownloadFile df = Shindo.getInstance().getDownloadManager().getDownloadByFile(fileName);
@@ -170,6 +171,8 @@ public class HttpUtils {
             }
 
             long totalLength = outputFile.length();
+
+            // ✅ Se expectedSize <= 0, não valida tamanho, só considera sucesso
             return expectedSize <= 0 || totalLength >= expectedSize;
 
         } catch (IOException e) {
@@ -189,7 +192,7 @@ public class HttpUtils {
     }
 
     public static boolean downloadFile(String url, File outputFile, long expectedSize) {
-        return downloadFile(url, outputFile, UserAgents.MOZILLA, 5000, false, expectedSize);
+        return downloadFile(url, outputFile, UserAgents.MOZILLA, 60000, false, expectedSize);
     }
 
 

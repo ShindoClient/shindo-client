@@ -1,11 +1,6 @@
 package me.miki.shindo.utils.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -13,11 +8,16 @@ import java.util.zip.ZipInputStream;
 import javax.swing.JFileChooser;
 
 import net.minecraft.util.Util;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.tukaani.xz.XZInputStream;
 
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.utils.file.filter.PngFileFilter;
@@ -67,6 +67,32 @@ public class FileUtils {
 
         return size;
     }
+
+    private static void un7zip(File sevenZFile, File destDir) {
+        if (!destDir.exists()) destDir.mkdirs();
+
+        try (SevenZFile sevenZ = new SevenZFile(sevenZFile)) {
+            SevenZArchiveEntry entry;
+            byte[] buffer = new byte[8192];
+
+            while ((entry = sevenZ.getNextEntry()) != null) {
+                File newFile = new File(destDir, entry.getName());
+                if (entry.isDirectory()) {
+                    newFile.mkdirs();
+                } else {
+                    new File(newFile.getParent()).mkdirs();
+                    try (FileOutputStream out = new FileOutputStream(newFile)) {
+                        int count;
+                        while ((count = sevenZ.read(buffer)) > 0) {
+                            out.write(buffer, 0, count);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     public static void unzip(final File file, final File dest) {
         try {
@@ -91,6 +117,56 @@ public class FileUtils {
         }
         catch (Exception e) {
         	e.printStackTrace();
+        }
+    }
+
+    public static void extract(File file, File dest) {
+        String name = file.getName().toLowerCase();
+
+        try {
+            if (name.endsWith(".zip")) {
+                unzip(file, dest);
+            } else if (name.endsWith(".tar.xz")) {
+                untarXz(file, dest);
+            } else if (name.endsWith(".7z")) {
+                un7zip(file, dest);   // ✅ NOVO SUPORTE
+            } else {
+                System.out.println("[WARN] Tipo de arquivo não suportado: " + name);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void untarXz(File tarXzFile, File destDir) {
+        if (!destDir.exists()) destDir.mkdirs();
+
+        try (
+                FileInputStream fis = new FileInputStream(tarXzFile);
+                BufferedInputStream bis = new BufferedInputStream(fis);
+                XZInputStream xzIn = new XZInputStream(bis);
+                TarArchiveInputStream tarIn = new TarArchiveInputStream(xzIn)
+        ) {
+            TarArchiveEntry entry;
+            byte[] buffer = new byte[8192];
+            while ((entry = tarIn.getNextTarEntry()) != null) {
+                File newFile = new File(destDir, entry.getName());
+
+                if (entry.isDirectory()) {
+                    newFile.mkdirs();
+                } else {
+                    // cria pastas se necessário
+                    new File(newFile.getParent()).mkdirs();
+                    try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                        int len;
+                        while ((len = tarIn.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     

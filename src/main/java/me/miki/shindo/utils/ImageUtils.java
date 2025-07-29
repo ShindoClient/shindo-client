@@ -76,4 +76,19 @@ public class ImageUtils {
         
         return flippedImage;
 	}
+
+    public static BufferedImage cropCenterHorizontal(BufferedImage src, int size) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        // Se a imagem for mais larga que alta, recorta as laterais
+        int cropWidth = Math.min(width, height);
+        int x = (width - cropWidth) / 2;
+
+        // 📌 Recorta usando toda a altura, mas só a largura central
+        BufferedImage cropped = src.getSubimage(x, 0, cropWidth, height);
+
+        // 📌 Redimensiona para o tamanho final (ex: 256x256)
+        return ImageUtils.resize(cropped, size, size);
+    }
 }
