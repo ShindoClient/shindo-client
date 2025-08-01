@@ -128,8 +128,9 @@ public class GamesCategory extends Category {
 		float offsetY = 15;
 		
 		for(GameScene scene : scenes) {
-			
+			if (scene instanceof ScoreScene) continue;
 			if(MouseUtils.isInside(mouseX, mouseY, this.getX() + 15, this.getY() + offsetY + scroll.getValue(), this.getWidth() - 30, 40) && mouseButton == 0 && currentScene == null) {
+
 				currentScene = scene;
 				this.setCanClose(false);
 				sceneAnimation.setDirection(Direction.BACKWARDS);
@@ -137,7 +138,22 @@ public class GamesCategory extends Category {
 			
 			offsetY+=50;
 		}
-		
+
+		offsetY += 15;
+
+		for (GameScene scene : scenes) {
+			if (scene instanceof ScoreScene) {
+				if(MouseUtils.isInside(mouseX, mouseY, this.getX() + 15, this.getY() + offsetY + scroll.getValue(), this.getWidth() - 30, 40) && mouseButton == 0 && currentScene == null) {
+
+					currentScene = scene;
+					this.setCanClose(false);
+					sceneAnimation.setDirection(Direction.BACKWARDS);
+				}
+
+				offsetY+= 15;
+			}
+		}
+
 		if(currentScene != null && sceneAnimation.isDone(Direction.BACKWARDS)) {
 			currentScene.mouseClicked(mouseX, mouseY, mouseButton);
 		}

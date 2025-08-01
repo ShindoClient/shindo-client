@@ -11,9 +11,10 @@ import java.awt.*;
 
 public class GameScene {
 
-	private GamesCategory parent;
-	private String icon;
-	private String name, description;
+	private final GamesCategory parent;
+	private final String icon;
+	private final String name;
+    private final String description;
 
 	public GameScene(GamesCategory parent, String name, String description, String icon) {
 		this.parent = parent;
