@@ -5,23 +5,23 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
 
 public class EventLocationCape extends Event {
-	
-	private NetworkPlayerInfo playerInfo;
-	private ResourceLocation cape;
 
-	public EventLocationCape(NetworkPlayerInfo playerInfo) {
-		this.playerInfo = playerInfo;
-	}
-	
-	public NetworkPlayerInfo getPlayerInfo() {
-		return playerInfo;
-	}
+    private final NetworkPlayerInfo playerInfo;
+    private ResourceLocation cape;
 
-	public ResourceLocation getCape() {
-		return cape;
-	}
+    public EventLocationCape(NetworkPlayerInfo playerInfo) {
+        this.playerInfo = playerInfo;
+    }
 
-	public void setCape(ResourceLocation cape) {
-		this.cape = cape;
-	}
+    public NetworkPlayerInfo getPlayerInfo() {
+        return playerInfo;
+    }
+
+    public ResourceLocation getCape() {
+        return cape;
+    }
+
+    public void setCape(ResourceLocation cape) {
+        this.cape = cape;
+    }
 }

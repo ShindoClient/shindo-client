@@ -1,7 +1,7 @@
 package me.miki.shindo.utils.vector;
 
 public class Vector2 {
-	
+
     public float x, y;
 
     public Vector2(float x, float y) {

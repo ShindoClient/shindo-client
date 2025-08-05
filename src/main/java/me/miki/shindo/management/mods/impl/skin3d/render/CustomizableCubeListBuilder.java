@@ -1,10 +1,9 @@
 package me.miki.shindo.management.mods.impl.skin3d.render;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import me.miki.shindo.management.mods.impl.skin3d.SkinDirection;
+
+import java.util.List;
 
 public class CustomizableCubeListBuilder {
 
@@ -33,10 +32,10 @@ public class CustomizableCubeListBuilder {
     }
 
     public CustomizableCubeListBuilder addBox(float x, float y, float z, float pixelSize, SkinDirection[] hide) {
-    	
+
         int textureSize = 64;
         this.cubes.add(new CustomizableCube(xTexOffs, yTexOffs, x, y, z, pixelSize, pixelSize, pixelSize, 0, 0, 0, this.mirror, textureSize, textureSize, hide));
-        
+
         return this;
     }
 

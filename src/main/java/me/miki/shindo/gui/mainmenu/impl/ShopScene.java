@@ -20,12 +20,11 @@ import java.util.ArrayList;
 
 public class ShopScene extends MainMenuScene {
 
-    private Animation introAnimation;
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
-
-    private ArrayList<TranslateText> goldFeatures = new ArrayList<>();
+    private Animation introAnimation;
+    private final ArrayList<TranslateText> goldFeatures = new ArrayList<>();
     //private ArrayList<TranslateText> diamondFeatures = new ArrayList<>();
-    private TranslateText info;
+    private final TranslateText info;
 
     public ShopScene(GuiShindoMainMenu parent) {
         super(parent);
@@ -54,7 +53,7 @@ public class ShopScene extends MainMenuScene {
         NanoVGManager nvg = instance.getNanoVGManager();
 
         screenAnimation.wrap(() -> drawNanoVG(mouseX, mouseY, sr, instance, nvg), 0, 0, sr.getScaledWidth(), sr.getScaledHeight(), 2 - introAnimation.getValueFloat(), Math.min(introAnimation.getValueFloat(), 1), false);
-        if(introAnimation.isDone(Direction.BACKWARDS)) {
+        if (introAnimation.isDone(Direction.BACKWARDS)) {
             this.setCurrentScene(this.getSceneByClass(MainScene.class));
         }
     }
@@ -82,12 +81,12 @@ public class ShopScene extends MainMenuScene {
         nvg.drawRoundedRect(acX + 25, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
         nvg.drawCenteredText(info.getText(), acX + 25 + (72 / 2F), acY + 159, Color.WHITE, 10, Fonts.MEDIUM);
 
-        for(TranslateText t : goldFeatures) {
+        for (TranslateText t : goldFeatures) {
 
             nvg.drawText(LegacyIcon.CHECK_CIRCLE, acX + 25, acY + 87 + offsetY, Color.WHITE, 9, Fonts.LEGACYICON);
             nvg.drawText(t.getText(), acX + 36, acY + 88 + offsetY, Color.WHITE, 8, Fonts.REGULAR);
 
-            offsetY+=12;
+            offsetY += 12;
         }
 
         nvg.drawCenteredText(TranslateText.SOON.getText(), acX + acWidth - (82) - 20 + (82 / 2F), acY + 58, Color.WHITE, 12, Fonts.MEDIUM);
@@ -118,14 +117,14 @@ public class ShopScene extends MainMenuScene {
         int acY = sr.getScaledHeight() / 2 - (acHeight / 2);
 
 
-        if(!MouseUtils.isInside(mouseX, mouseY, acX, acY, acWidth, acHeight) && !MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 3), 6, 22, 22)){
+        if (!MouseUtils.isInside(mouseX, mouseY, acX, acY, acWidth, acHeight) && !MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 3), 6, 22, 22)) {
             introAnimation.setDirection(Direction.BACKWARDS);
         }
     }
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-        if(keyCode == Keyboard.KEY_ESCAPE) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS);
         }
     }

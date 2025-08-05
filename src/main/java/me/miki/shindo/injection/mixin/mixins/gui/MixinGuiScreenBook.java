@@ -1,12 +1,11 @@
 package me.miki.shindo.injection.mixin.mixins.gui;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenBook;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiScreenBook;
 
 @Mixin(GuiScreenBook.class)
 public abstract class MixinGuiScreenBook extends GuiScreen {

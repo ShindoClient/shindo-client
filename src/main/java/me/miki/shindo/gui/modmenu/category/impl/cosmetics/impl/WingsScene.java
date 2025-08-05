@@ -26,7 +26,7 @@ public class WingsScene extends CosmeticScene {
         AccentColor accentColor = colorManager.getCurrentColor();
         ColorPalette palette = colorManager.getPalette();
 
-        nvg.drawCenteredText("UNDER CONSTRUCTION", getX()+(getWidth()/2F), getY() + (getHeight()/2F) - 14, palette.getFontColor(ColorType.DARK), 12, Fonts.SEMIBOLD);
-        nvg.drawCenteredText("This page is not available yet.", getX()+(getWidth()/2F), getY() + (getHeight()/2F), palette.getFontColor(ColorType.DARK), 9, Fonts.MEDIUM);
+        nvg.drawCenteredText("UNDER CONSTRUCTION", getX() + (getWidth() / 2F), getY() + (getHeight() / 2F) - 14, palette.getFontColor(ColorType.DARK), 12, Fonts.SEMIBOLD);
+        nvg.drawCenteredText("This page is not available yet.", getX() + (getWidth() / 2F), getY() + (getHeight() / 2F), palette.getFontColor(ColorType.DARK), 9, Fonts.MEDIUM);
     }
 }

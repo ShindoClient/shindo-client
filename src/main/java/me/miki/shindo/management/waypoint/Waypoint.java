@@ -2,49 +2,52 @@ package me.miki.shindo.management.waypoint;
 
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class Waypoint {
 
-	private SimpleAnimation trashAnimation = new SimpleAnimation();
-	private String world, name;
-	private double x, y, z;
-	private Color color;
-	
-	public Waypoint(String world, String name, double x, double y, double z, Color color) {
-		this.world = world;
-		this.name = name;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.color = color;
-	}
+    private final SimpleAnimation trashAnimation = new SimpleAnimation();
+    private final String world;
+    private final String name;
+    private final double x;
+    private final double y;
+    private final double z;
+    private final Color color;
 
-	public String getWorld() {
-		return world;
-	}
+    public Waypoint(String world, String name, double x, double y, double z, Color color) {
+        this.world = world;
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.color = color;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getWorld() {
+        return world;
+    }
 
-	public double getX() {
-		return x;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public double getX() {
+        return x;
+    }
 
-	public double getZ() {
-		return z;
-	}
+    public double getY() {
+        return y;
+    }
 
-	public Color getColor() {
-		return color;
-	}
+    public double getZ() {
+        return z;
+    }
 
-	public SimpleAnimation getTrashAnimation() {
-		return trashAnimation;
-	}
+    public Color getColor() {
+        return color;
+    }
+
+    public SimpleAnimation getTrashAnimation() {
+        return trashAnimation;
+    }
 }

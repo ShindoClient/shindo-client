@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 import java.time.OffsetDateTime;
 
 public class RichPresence {
-	
+
     private final String state;
     private final String details;
     private final OffsetDateTime startTimestamp;
@@ -23,11 +23,11 @@ public class RichPresence {
     private final String joinSecret;
     private final String spectateSecret;
     private final boolean instance;
-    
-    public RichPresence(String state, String details, OffsetDateTime startTimestamp, OffsetDateTime endTimestamp, 
-            String largeImageKey, String largeImageText, String smallImageKey, String smallImageText, 
-            String partyId, int partySize, int partyMax, String matchSecret, String joinSecret, 
-            String spectateSecret, boolean instance) {
+
+    public RichPresence(String state, String details, OffsetDateTime startTimestamp, OffsetDateTime endTimestamp,
+                        String largeImageKey, String largeImageText, String smallImageKey, String smallImageText,
+                        String partyId, int partySize, int partyMax, String matchSecret, String joinSecret,
+                        String spectateSecret, boolean instance) {
         this.state = state;
         this.details = details;
         this.startTimestamp = startTimestamp;
@@ -46,7 +46,7 @@ public class RichPresence {
     }
 
     public JsonObject toJson() {
-    	
+
         JsonObject timestampsObject = new JsonObject();
 
         if (startTimestamp != null) {
@@ -76,7 +76,7 @@ public class RichPresence {
         }
 
         JsonObject partyObject = null;
-        
+
         if (partyId != null) {
             partyObject = new JsonObject();
             partyObject.addProperty("id", partyId);
@@ -123,7 +123,7 @@ public class RichPresence {
     }
 
     public static class Builder {
-    	
+
         private String state;
         private String details;
         private OffsetDateTime startTimestamp;
@@ -141,9 +141,9 @@ public class RichPresence {
         private boolean instance;
 
         public RichPresence build() {
-            return new RichPresence(state, details, startTimestamp, endTimestamp, 
-                    largeImageKey, largeImageText, smallImageKey, smallImageText, 
-                    partyId, partySize, partyMax, matchSecret, joinSecret, 
+            return new RichPresence(state, details, startTimestamp, endTimestamp,
+                    largeImageKey, largeImageText, smallImageKey, smallImageText,
+                    partyId, partySize, partyMax, matchSecret, joinSecret,
                     spectateSecret, instance);
         }
 

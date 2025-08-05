@@ -1,20 +1,19 @@
 package me.miki.shindo.injection.mixin.mixins.block;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3i;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(BlockPos.class)
 public class MixinBlockPos extends Vec3i {
 
-	public MixinBlockPos(double xIn, double yIn, double zIn) {
-		super(xIn, yIn, zIn);
-	}
-	
-	/**
+    public MixinBlockPos(double xIn, double yIn, double zIn) {
+        super(xIn, yIn, zIn);
+    }
+
+    /**
      * @author
      * @reason
      */

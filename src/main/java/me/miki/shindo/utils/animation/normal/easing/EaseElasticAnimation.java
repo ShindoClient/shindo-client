@@ -27,10 +27,10 @@ public class EaseElasticAnimation extends Animation {
 
     @Override
     protected double getEquation(double x) {
-    	
+
         double x1 = Math.pow(x / duration, smooth);
         double elasticity = easeAmount * .1f;
-        
+
         return Math.pow(2, -10 * (reallyElastic ? Math.sqrt(x1) : x1)) * Math.sin((x1 - (elasticity / 4)) * ((2 * Math.PI) / elasticity)) + 1;
     }
 }

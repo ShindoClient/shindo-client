@@ -1,28 +1,26 @@
 package me.miki.shindo.utils.file;
 
-import java.io.*;
-import java.net.URI;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.swing.JFileChooser;
-
+import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.utils.file.filter.PngFileFilter;
+import me.miki.shindo.utils.file.filter.SoundFileFilter;
 import net.minecraft.util.Util;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.lwjgl.Sys;
 import org.tukaani.xz.XZInputStream;
 
-import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.utils.file.filter.PngFileFilter;
-import me.miki.shindo.utils.file.filter.SoundFileFilter;
-import org.lwjgl.Sys;
+import javax.swing.*;
+import java.io.*;
+import java.net.URI;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class FileUtils {
 
@@ -44,9 +42,9 @@ public class FileUtils {
         }
         return false;
     }
-    
+
     public static long getDirectorySize(File directory) {
-    	
+
         long size = 0;
 
         if (directory.isDirectory()) {
@@ -93,7 +91,7 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
-    
+
     public static void unzip(final File file, final File dest) {
         try {
             ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
@@ -102,8 +100,7 @@ public class FileUtils {
                 final File f = new File(dest, ze.getName());
                 if (ze.isDirectory()) {
                     f.mkdirs();
-                }
-                else {
+                } else {
                     final FileOutputStream fos = new FileOutputStream(f);
                     final byte[] buffer = new byte[1024];
                     int len;
@@ -114,9 +111,8 @@ public class FileUtils {
                 }
             }
             zis.close();
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -169,56 +165,56 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
-    
-	public static File selectImageFile() {
-        
+
+    public static File selectImageFile() {
+
         JFileChooser fileChooser = new JFileChooser();
-        
+
         fileChooser.setFileFilter(new PngFileFilter());
         fileChooser.setAcceptAllFileFilterUsed(false);
 
         int result = fileChooser.showOpenDialog(null);
-        
-        if(result == JFileChooser.APPROVE_OPTION) {
-        	return fileChooser.getSelectedFile();
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
         }
-        
+
         return null;
-	}
-	
-	public static File selectSoundFile() {
-        
+    }
+
+    public static File selectSoundFile() {
+
         JFileChooser fileChooser = new JFileChooser();
-        
+
         fileChooser.setFileFilter(new SoundFileFilter());
         fileChooser.setAcceptAllFileFilterUsed(false);
 
         int result = fileChooser.showOpenDialog(null);
-        
-        if(result == JFileChooser.APPROVE_OPTION) {
-        	return fileChooser.getSelectedFile();
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
         }
-        
+
         return null;
-	}
-	
-	public static void copyFile(File sourceFile, File destFile) throws IOException {
-		
-		FileInputStream input = null;
-		FileOutputStream output = null;
-		
+    }
+
+    public static void copyFile(File sourceFile, File destFile) throws IOException {
+
+        FileInputStream input = null;
+        FileOutputStream output = null;
+
         try {
-        	
+
             input = new FileInputStream(sourceFile);
             output = new FileOutputStream(destFile);
 
             byte[] buffer = new byte[1024];
             int length;
-            
+
             while ((length = input.read(buffer)) > 0) {
                 output.write(buffer, 0, length);
             }
-        } finally{ 
+        } finally {
             if (input != null) {
                 input.close();
             }
@@ -226,10 +222,10 @@ public class FileUtils {
                 output.close();
             }
         }
-	}
-	
+    }
+
     public static void downloadFile(String url, File output) {
-    	try {
+        try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(url);
 
@@ -249,78 +245,78 @@ public class FileUtils {
                 }
             }
             httpClient.close();
-    	}catch(Exception e) {
-    		ShindoLogger.error("Failed to download file: " + url, e);
-    	}
+        } catch (Exception e) {
+            ShindoLogger.error("Failed to download file: " + url, e);
+        }
     }
-    
-	public static String getBaseName(String fileName) {
-		
+
+    public static String getBaseName(String fileName) {
+
         if (fileName == null) {
             return "null";
         }
-        
+
         int point = fileName.lastIndexOf(".");
-        
+
         if (point != -1) {
             return fileName.substring(0, point);
         }
-        
+
         return fileName;
-	}
-	
-	public static String getBaseName(File file) {
-		return getBaseName(file.getName());
-	}
-	
-	public static String getExtension(String fileName) {
-		
-		if(fileName == null) {
-			return null;
-		}
-		
-	    int lastIndexOf = fileName.lastIndexOf(".");
-	    
-	    if (lastIndexOf == -1) {
-	        return "null";
-	    }
-	    
-	    return fileName.substring(lastIndexOf + 1);
-	}
-	
-	public static String getExtension(File file) {
-		return getExtension(file.getName());
-	}
-	
-	public static boolean isAudioFile(String fileName) {
-		
-		if(fileName == null) {
-			return false;
-		}
-		
-		String ext = getExtension(fileName);
-		
-		return ext.equals("mp3") || ext.equals("wav") || ext.equals("ogg");
-	}
-	
-	public static boolean isAudioFile(File file) {
-		return isAudioFile(file.getName());
-	}
-	
-	public static boolean isImageFile(String fileName) {
-		
-		if(fileName == null) {
-			return false;
-		}
-		
-		String ext = getExtension(fileName);
-		
-		return ext.equals("jpeg") || ext.equals("png") || ext.equals("jpg");
-	}
-	
-	public static boolean isImageFile(File file) {
-		return isImageFile(file.getName());
-	}
+    }
+
+    public static String getBaseName(File file) {
+        return getBaseName(file.getName());
+    }
+
+    public static String getExtension(String fileName) {
+
+        if (fileName == null) {
+            return null;
+        }
+
+        int lastIndexOf = fileName.lastIndexOf(".");
+
+        if (lastIndexOf == -1) {
+            return "null";
+        }
+
+        return fileName.substring(lastIndexOf + 1);
+    }
+
+    public static String getExtension(File file) {
+        return getExtension(file.getName());
+    }
+
+    public static boolean isAudioFile(String fileName) {
+
+        if (fileName == null) {
+            return false;
+        }
+
+        String ext = getExtension(fileName);
+
+        return ext.equals("mp3") || ext.equals("wav") || ext.equals("ogg");
+    }
+
+    public static boolean isAudioFile(File file) {
+        return isAudioFile(file.getName());
+    }
+
+    public static boolean isImageFile(String fileName) {
+
+        if (fileName == null) {
+            return false;
+        }
+
+        String ext = getExtension(fileName);
+
+        return ext.equals("jpeg") || ext.equals("png") || ext.equals("jpg");
+    }
+
+    public static boolean isImageFile(File file) {
+        return isImageFile(file.getName());
+    }
 
     /*
      * This is from the GuiScreenResourcePacks class
@@ -329,27 +325,37 @@ public class FileUtils {
      * This code accepts a path and tries to open it in the file browser
      */
     public static void openFolderAtPath(File folder) {
-            String absolutePath = folder.getAbsolutePath();
+        String absolutePath = folder.getAbsolutePath();
 
-            if (Util.getOSType() == Util.EnumOS.OSX) {
-                try {
-                    Runtime.getRuntime().exec(new String[] {"/usr/bin/open", absolutePath}); return;
-                } catch (IOException ignored) {}
-            }
-            else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
-                try {
-                    Runtime.getRuntime().exec(String.format("cmd.exe /C start \"Open file\" \"%s\"", absolutePath)); return;
-                } catch (IOException ignored) {}
-            }
-
+        if (Util.getOSType() == Util.EnumOS.OSX) {
             try {
-                Class<?> oclass = Class.forName("java.awt.Desktop");
-                Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
-                oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, folder.toURI());
-            } catch (Throwable throwable) {
-                 Sys.openURL("file://" + absolutePath);
+                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", absolutePath});
+                return;
+            } catch (IOException ignored) {
             }
-
+        } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
+            try {
+                Runtime.getRuntime().exec(String.format("cmd.exe /C start \"Open file\" \"%s\"", absolutePath));
+                return;
+            } catch (IOException ignored) {
+            }
         }
 
+        try {
+            Class<?> oclass = Class.forName("java.awt.Desktop");
+            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(null);
+            oclass.getMethod("browse", new Class[]{URI.class}).invoke(object, folder.toURI());
+        } catch (Throwable throwable) {
+            Sys.openURL("file://" + absolutePath);
+        }
+
+    }
+
+    public static boolean isValidFile(File file) {
+        if (file == null || !file.exists() || !file.isFile()) {
+            return false;
+        }
+        String ext = getExtension(file);
+        return ext.equals("png") || ext.equals("jpg") || ext.equals("jpeg") || ext.equals("mp3") || ext.equals("wav") || ext.equals("ogg");
+    }
 }

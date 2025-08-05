@@ -7,75 +7,78 @@ import me.miki.shindo.management.mods.settings.Setting;
 
 public class NumberSetting extends Setting {
 
-	private double defaultValue, value, minValue, maxValue;
-	private boolean integer;
-	
-	public NumberSetting(TranslateText text, Mod parent, double defaultValue, double minValue, double maxValue, boolean integer) {
-		super(text, parent);
-		
-		this.value = defaultValue;
-		this.defaultValue = defaultValue;
-		this.minValue = minValue;
-		this.maxValue = maxValue;
-		this.integer = integer;
-		
-		Shindo.getInstance().getModManager().addSettings(this);
-	}
-	
-	@Override
-	public void reset() {
-		this.value = defaultValue;
-	}
-	
-	public double getValue() {
-		
-		if(integer) {
-			this.value = (int) value;
-		}
-		
-		return value;
-	}
-	
-	public int getValueInt() {
-		
-		if(integer) {
-			this.value = (int) value;
-		}
-		
-		return (int) value;
-	}
-	
-	public float getValueFloat() {
-		
-		if(integer) {
-			this.value = (int) value;
-		}
-		
-		return (float) value;
-	}
-	
-	public long getValueLong() {
-		
-		if(integer) {
-			this.value = (int) value;
-		}
-		
-		return (long) value;
-	}
-	
-	public void setValue(double value) {
-		this.value = value;
-	}
+    private final double defaultValue;
+    private double value;
+    private final double minValue;
+    private final double maxValue;
+    private final boolean integer;
 
-	public double getMinValue() {
-		return minValue;
-	}
+    public NumberSetting(TranslateText text, Mod parent, double defaultValue, double minValue, double maxValue, boolean integer) {
+        super(text, parent);
 
-	public double getMaxValue() {
-		return maxValue;
-	}
+        this.value = defaultValue;
+        this.defaultValue = defaultValue;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.integer = integer;
 
-	public double getDefaultValue() {
-		return defaultValue;
-	}
+        Shindo.getInstance().getModManager().addSettings(this);
+    }
+
+    @Override
+    public void reset() {
+        this.value = defaultValue;
+    }
+
+    public double getValue() {
+
+        if (integer) {
+            this.value = (int) value;
+        }
+
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public int getValueInt() {
+
+        if (integer) {
+            this.value = (int) value;
+        }
+
+        return (int) value;
+    }
+
+    public float getValueFloat() {
+
+        if (integer) {
+            this.value = (int) value;
+        }
+
+        return (float) value;
+    }
+
+    public long getValueLong() {
+
+        if (integer) {
+            this.value = (int) value;
+        }
+
+        return (long) value;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    public double getDefaultValue() {
+        return defaultValue;
+    }
 }

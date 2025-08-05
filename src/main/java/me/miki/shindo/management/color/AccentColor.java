@@ -1,44 +1,45 @@
 package me.miki.shindo.management.color;
 
-import java.awt.Color;
-
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
+import java.awt.*;
+
 public class AccentColor {
 
-	private SimpleAnimation animation = new SimpleAnimation();
-	
-	private String name;
-	private Color color1, color2;
-	
-	public AccentColor(String name, Color color1, Color color2) {
-		this.name = name;
-		this.color1 = color1;
-		this.color2 = color2;
-	}
+    private final SimpleAnimation animation = new SimpleAnimation();
 
-	public String getName() {
-		return name;
-	}
+    private final String name;
+    private final Color color1;
+    private final Color color2;
 
-	public Color getColor1() {
-		return color1;
-	}
+    public AccentColor(String name, Color color1, Color color2) {
+        this.name = name;
+        this.color1 = color1;
+        this.color2 = color2;
+    }
 
-	public Color getColor2() {
-		return color2;
-	}
-	
-	public Color getInterpolateColor() {
-		return ColorUtils.interpolateColors(15, 0, color1, color2);
-	}
-	
-	public Color getInterpolateColor(int index) {
-		return ColorUtils.interpolateColors(15, index, color1, color2);
-	}
+    public String getName() {
+        return name;
+    }
 
-	public SimpleAnimation getAnimation() {
-		return animation;
-	}
+    public Color getColor1() {
+        return color1;
+    }
+
+    public Color getColor2() {
+        return color2;
+    }
+
+    public Color getInterpolateColor() {
+        return ColorUtils.interpolateColors(15, 0, color1, color2);
+    }
+
+    public Color getInterpolateColor(int index) {
+        return ColorUtils.interpolateColors(15, index, color1, color2);
+    }
+
+    public SimpleAnimation getAnimation() {
+        return animation;
+    }
 }

@@ -1,7 +1,6 @@
 package me.miki.shindo.gui.modmenu.category.impl.game.scenes.score;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.miki.shindo.Shindo;
@@ -54,7 +53,7 @@ public class ScoreScene extends GameScene {
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
         ColorManager colorManager = Shindo.getInstance().getColorManager();
         ColorPalette palette = colorManager.getPalette();
-        AccentColor accentColor =  colorManager.getCurrentColor();
+        AccentColor accentColor = colorManager.getCurrentColor();
 
         nvg.save();
         nvg.scissor(getX(), getY(), getWidth(), getHeight());

@@ -20,13 +20,13 @@ import java.util.UUID;
 
 public class SkinDownloader {
 
-	private Minecraft mc = Minecraft.getMinecraft();
-	private Gson gson = new Gson();
+    private final Minecraft mc = Minecraft.getMinecraft();
+    private final Gson gson = new Gson();
 
     private void loadSkin(File file, String username, UUID uuid) {
 
-    	File faceFile = new File(file, username + ".png");
-    	File modelFile = new File(file, username + ".png");
+        File faceFile = new File(file, username + ".png");
+        File modelFile = new File(file, username + ".png");
 
         boolean slimSkin = false;
         BufferedImage img;
@@ -34,25 +34,23 @@ public class SkinDownloader {
         try {
             if (uuid == null) {
                 try (final InputStreamReader isr = new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + username).openStream(), StandardCharsets.UTF_8)) {
-                    uuid = UUIDTypeAdapter.fromString(((JsonObject) gson.fromJson((Reader)isr, (Class<?>)JsonObject.class)).get("id").getAsString());
+                    uuid = UUIDTypeAdapter.fromString(((JsonObject) gson.fromJson(isr, (Class<?>) JsonObject.class)).get("id").getAsString());
                 }
             }
             String base64Data;
             try (final InputStreamReader isr2 = new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDTypeAdapter.fromUUID(uuid)).openStream(), StandardCharsets.UTF_8)) {
-                base64Data = ((JsonObject) gson.fromJson((Reader)isr2, (Class<?>)JsonObject.class)).getAsJsonArray("properties").get(0).getAsJsonObject().get("value").getAsString();
+                base64Data = ((JsonObject) gson.fromJson(isr2, (Class<?>) JsonObject.class)).getAsJsonArray("properties").get(0).getAsJsonObject().get("value").getAsString();
             }
-            final JsonObject jo = ((JsonObject) gson.fromJson(new String(Base64.getDecoder().decode(base64Data), StandardCharsets.UTF_8), (Class<?>)JsonObject.class)).getAsJsonObject("textures").getAsJsonObject("SKIN");
+            final JsonObject jo = ((JsonObject) gson.fromJson(new String(Base64.getDecoder().decode(base64Data), StandardCharsets.UTF_8), (Class<?>) JsonObject.class)).getAsJsonObject("textures").getAsJsonObject("SKIN");
             if (jo.has("metadata") && jo.getAsJsonObject("metadata").has("model") && jo.getAsJsonObject("metadata").get("model").getAsString().equalsIgnoreCase("slim")) {
                 slimSkin = true;
             }
             final String skinUrl = jo.get("url").getAsString();
             img = ImageIO.read(new URL(skinUrl));
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             try (final InputStream is = mc.getResourceManager().getResource(new ResourceLocation("textures/entity/steve.png")).getInputStream()) {
                 img = ImageIO.read(is);
-            }
-            catch (Throwable th) {
+            } catch (Throwable th) {
                 return;
             }
         }
@@ -86,23 +84,21 @@ public class SkinDownloader {
             }
 
             ImageIO.write(model, "png", modelFile);
-        }
-        catch (Throwable t) {
-        	t.printStackTrace();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
 
         try {
             ImageIO.write(ImageUtils.resize(ImageIO.read(modelFile).getSubimage(4, 0, 8, 8), 128, 128), "png", faceFile);
+        } catch (Throwable t2) {
+            t2.printStackTrace();
         }
-        catch (Throwable t2) {
-        	t2.printStackTrace();
-        }
-	}
+    }
 
     public void downloadFace(File file, String username, UUID uuid) {
 
-    	if(!new File(file, username + ".png").exists()) {
-        	loadSkin(file, username, uuid);
-    	}
-    } 
+        if (!new File(file, username + ".png").exists()) {
+            loadSkin(file, username, uuid);
+        }
+    }
 }

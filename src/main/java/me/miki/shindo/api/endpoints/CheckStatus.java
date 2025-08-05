@@ -35,7 +35,7 @@ public class CheckStatus {
                 JsonObject json = JsonParser.parseString(response.toString()).getAsJsonObject();
 
                 ensureDefault(json, "success", false);
-                ensureDefault(json, "ping",  false);
+                ensureDefault(json, "ping", false);
                 ShindoLogger.info(response.toString());
                 return json;
             }

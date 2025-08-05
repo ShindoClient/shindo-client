@@ -9,6 +9,10 @@ public enum ClientRole {
     DIAMOND,
     STAFF;
 
+    public static boolean hasPermission(ClientRole actual, ClientRole required) {
+        return actual.inheritedRoles().contains(required);
+    }
+
     public Set<ClientRole> inheritedRoles() {
         Set<ClientRole> inherited = EnumSet.noneOf(ClientRole.class);
         for (ClientRole role : values()) {
@@ -21,9 +25,5 @@ public enum ClientRole {
 
     public boolean hasPermission(ClientRole required) {
         return inheritedRoles().contains(required);
-    }
-
-    public static boolean hasPermission(ClientRole actual, ClientRole required) {
-        return actual.inheritedRoles().contains(required);
     }
 }

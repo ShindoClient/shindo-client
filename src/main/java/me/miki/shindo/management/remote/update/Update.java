@@ -12,34 +12,40 @@ public class Update {
     String updateVersionString = "something is broken lmao";
     int updateBuildID = 0;
 
-    public void setUpdateLink(String in){
-        this.updateLink = in;
-    }
-    public String getUpdateLink(){
+    public String getUpdateLink() {
         return updateLink;
     }
 
-    public void setVersionString(String in){
-        this.updateVersionString = in;
+    public void setUpdateLink(String in) {
+        this.updateLink = in;
     }
-    public String getVersionString(){
+
+    public String getVersionString() {
         return updateVersionString;
     }
 
-    public void setBuildID(int in){this.updateBuildID = in;}
-    public int getBuildID(){
+    public void setVersionString(String in) {
+        this.updateVersionString = in;
+    }
+
+    public int getBuildID() {
         return updateBuildID;
     }
 
-    public void check(){
-        try{
-            Multithreading.runAsync(this::checkUpdates);
-        } catch (Exception ignored){}
+    public void setBuildID(int in) {
+        this.updateBuildID = in;
     }
 
-    public void checkForUpdates(){
+    public void check() {
+        try {
+            Multithreading.runAsync(this::checkUpdates);
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void checkForUpdates() {
         Shindo g = Shindo.getInstance();
-        if (g.getVersionIdentifier() < this.updateBuildID){
+        if (g.getVersionIdentifier() < this.updateBuildID) {
             g.setUpdateNeeded(true);
         }
     }

@@ -1,11 +1,10 @@
 package me.miki.shindo.viaversion.model;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-
 import me.miki.shindo.viaversion.ViaLoadingBase;
 
 public class ComparableProtocolVersion extends ProtocolVersion {
-	
+
     private final int index;
 
     public ComparableProtocolVersion(final int version, final String name, final int index) {

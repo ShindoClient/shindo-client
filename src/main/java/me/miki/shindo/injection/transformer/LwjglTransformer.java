@@ -1,20 +1,13 @@
 package me.miki.shindo.injection.transformer;
 
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-import org.objectweb.asm.tree.VarInsnNode;
-
-import net.minecraft.launchwrapper.IClassTransformer;
+import org.objectweb.asm.tree.*;
 
 public class LwjglTransformer implements IClassTransformer {
-	
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (name.equals("org.lwjgl.nanovg.NanoVGGLConfig")) {
@@ -30,18 +23,18 @@ public class LwjglTransformer implements IClassTransformer {
                     list.add(new TypeInsnNode(Opcodes.NEW, "me/miki/shindo/injection/transformer/Lwjgl2FunctionProvider"));
                     list.add(new InsnNode(Opcodes.DUP));
                     list.add(new MethodInsnNode(
-                        Opcodes.INVOKESPECIAL,
+                            Opcodes.INVOKESPECIAL,
                             "me/miki/shindo/injection/transformer/Lwjgl2FunctionProvider",
-                        "<init>",
-                        "()V",
-                        false
+                            "<init>",
+                            "()V",
+                            false
                     ));
                     list.add(new MethodInsnNode(
-                        Opcodes.INVOKESTATIC,
-                        "org/lwjgl/nanovg/NanoVGGLConfig",
-                        "config",
-                        "(JLorg/lwjgl/system/FunctionProvider;)V",
-                        false
+                            Opcodes.INVOKESTATIC,
+                            "org/lwjgl/nanovg/NanoVGGLConfig",
+                            "config",
+                            "(JLorg/lwjgl/system/FunctionProvider;)V",
+                            false
                     ));
                     list.add(new InsnNode(Opcodes.RETURN));
 

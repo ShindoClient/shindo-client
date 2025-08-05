@@ -4,7 +4,7 @@ import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 
 public class EaseBackIn extends Animation {
-	
+
     private final float easeAmount;
 
     public EaseBackIn(int ms, double endPoint, float easeAmount) {

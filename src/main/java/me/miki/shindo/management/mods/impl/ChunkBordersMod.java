@@ -1,9 +1,5 @@
 package me.miki.shindo.management.mods.impl;
 
-import java.awt.Color;
-
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender3D;
 import me.miki.shindo.management.language.TranslateText;
@@ -14,16 +10,19 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 public class ChunkBordersMod extends Mod {
 
-	public ChunkBordersMod() {
-		super(TranslateText.CHUNK_BORDERS, TranslateText.CHUNK_BORDERS_DESCRIPTION, ModCategory.RENDER);
-	}
+    public ChunkBordersMod() {
+        super(TranslateText.CHUNK_BORDERS, TranslateText.CHUNK_BORDERS_DESCRIPTION, ModCategory.RENDER);
+    }
 
-	@EventTarget
-	public void onRender3D(EventRender3D event) {
-		
+    @EventTarget
+    public void onRender3D(EventRender3D event) {
+
         EntityPlayerSP entity = Minecraft.getMinecraft().thePlayer;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
@@ -32,15 +31,15 @@ public class ChunkBordersMod extends Mod {
         double inChunkPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) frame;
         double inChunkPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) frame;
         double inChunkPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) frame;
-        
+
         double x = 0.0D;
         double z = 0.0D;
-        
+
         Color color = Color.BLUE;
         Color color2 = Color.YELLOW;
-        
+
         int eyeHeightBlock;
-        
+
         GL11.glPushMatrix();
 
         GL11.glTranslated(-inChunkPosX, -inChunkPosY, -inChunkPosZ);
@@ -54,9 +53,9 @@ public class ChunkBordersMod extends Mod {
         for (int eyeHeight = -2; eyeHeight <= 2; ++eyeHeight) {
             for (eyeHeightBlock = -2; eyeHeightBlock <= 2; ++eyeHeightBlock) {
                 if (Math.abs(eyeHeightBlock) != 2 || Math.abs(eyeHeight) != 2) {
-                    x = (double) (eyeHeightBlock * 16);
-                    z = (double) (eyeHeight * 16);
-                    
+                    x = eyeHeightBlock * 16;
+                    z = eyeHeight * 16;
+
                     worldRenderer.pos(x, 0.0D, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
                     worldRenderer.pos(x, 256.0D, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
                     worldRenderer.pos(x + 16.0D, 0.0D, z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
@@ -74,35 +73,35 @@ public class ChunkBordersMod extends Mod {
 
         float f = (float) ((double) entity.getEyeHeight() + entity.posY);
 
-        eyeHeightBlock = (int) Math.floor((double) f);
+        eyeHeightBlock = (int) Math.floor(f);
 
         for (int y = 0; y < 257; ++y) {
             if (y < 256) {
                 for (int n = 1; n < 16; ++n) {
-                	worldRenderer.pos((double) n, (double) y, z).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos((double) n, (double) (y + 1), z).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos(x, (double) y, (double) n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos(x, (double) (y + 1), (double) n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos((double) n, (double) y, z + 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos((double) n, (double) (y + 1), z + 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos(x + 16.0D, (double) y, (double) n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-                    worldRenderer.pos(x + 16.0D, (double) (y + 1), (double) n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(n, y, z).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(n, y + 1, z).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(x, y, n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(x, y + 1, n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(n, y, z + 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(n, y + 1, z + 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(x + 16.0D, y, n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+                    worldRenderer.pos(x + 16.0D, y + 1, n).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
                 }
             }
 
-            worldRenderer.pos(0.0D, (double) y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(16.0D, (double) y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(0.0D, (double) y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(0.0D, (double) y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(16.0D, (double) y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(16.0D, (double) y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(0.0D, (double) y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
-            worldRenderer.pos(16.0D, (double) y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(0.0D, y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(16.0D, y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(0.0D, y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(0.0D, y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(16.0D, y, 0.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(16.0D, y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(0.0D, y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            worldRenderer.pos(16.0D, y, 16.0D).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
         }
 
         tessellator.draw();
         GL11.glPopMatrix();
         GL11.glEnable(3553);
         GL11.glDisable(3042);
-	}
+    }
 }

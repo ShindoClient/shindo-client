@@ -13,13 +13,11 @@ import java.util.UUID;
 
 public class ShindoAPI {
 
+    private final File firstLoginFile;
     private ApiManager apiManager;
-
     private long launchTime;
     private GuiModMenu modMenu;
     private GuiShindoMainMenu mainMenu;
-    private final File firstLoginFile;
-
 
 
     public ShindoAPI() {
@@ -37,8 +35,8 @@ public class ShindoAPI {
     public void connect() {
         SSLBypass.disableCertificateValidation();
 
-        String username    = Minecraft.getMinecraft().getSession().getUsername();
-        String uuid        = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
+        String username = Minecraft.getMinecraft().getSession().getUsername();
+        String uuid = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
         String accountType = Shindo.getInstance()
                 .getAccountManager()
                 .getCurrentAccount()
@@ -80,7 +78,7 @@ public class ShindoAPI {
     }
 
     public boolean isOnline(UUID uuid) {
-        return  apiManager.isOnline(uuid.toString());
+        return apiManager.isOnline(uuid.toString());
     }
 
     public boolean hasRole(String uuid, String role) {

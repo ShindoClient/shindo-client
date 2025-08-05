@@ -1,7 +1,7 @@
 package me.miki.shindo.discord.ipc.entities;
 
 public class User {
-	
+
     private final String name;
     private final String discriminator;
     private final long id;
@@ -36,7 +36,7 @@ public class User {
 
     public String getAvatarUrl() {
         return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
-            + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
+                + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
     public String getDefaultAvatarId() {
@@ -58,18 +58,18 @@ public class User {
     public String getAsMention() {
         return "<@" + id + '>';
     }
-    
+
     @Override
     public boolean equals(Object o) {
-    	
+
         if (!(o instanceof User)) {
             return false;
         }
-        
+
         User oUser = (User) o;
         return this == oUser || this.id == oUser.id;
     }
-    
+
     @Override
     public int hashCode() {
         return Long.hashCode(id);
@@ -81,7 +81,7 @@ public class User {
     }
 
     public enum DefaultAvatar {
-    	
+
         BLURPLE("6debd47ed13483642cf09e832ed0bc1b"),
         GREY("322c936a8c8be1b803cd94861bdfa868"),
         GREEN("dd4dbc0016779df1378e7812eabaa04d"),

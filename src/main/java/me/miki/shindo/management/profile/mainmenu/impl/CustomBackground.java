@@ -1,24 +1,24 @@
 package me.miki.shindo.management.profile.mainmenu.impl;
 
-import java.io.File;
-
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
+
+import java.io.File;
 
 public class CustomBackground extends Background {
 
-	private SimpleAnimation trashAnimation = new SimpleAnimation();
-	private File image;
-	
-	public CustomBackground(int id, String name, File image) {
-		super(id, name);
-		this.image = image;
-	}
+    private final SimpleAnimation trashAnimation = new SimpleAnimation();
+    private final File image;
 
-	public File getImage() {
-		return image;
-	}
+    public CustomBackground(int id, String name, File image) {
+        super(id, name);
+        this.image = image;
+    }
 
-	public SimpleAnimation getTrashAnimation() {
-		return trashAnimation;
-	}
+    public File getImage() {
+        return image;
+    }
+
+    public SimpleAnimation getTrashAnimation() {
+        return trashAnimation;
+    }
 }

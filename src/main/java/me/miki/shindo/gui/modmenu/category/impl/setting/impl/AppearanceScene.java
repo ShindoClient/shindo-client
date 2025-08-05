@@ -1,7 +1,5 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting.impl;
 
-import java.awt.Color;
-
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.SettingCategory;
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene;
@@ -21,10 +19,12 @@ import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
 
+import java.awt.*;
+
 public class AppearanceScene extends SettingScene {
 
-    private Scroll themeScroll = new Scroll();
-    private Scroll accentScroll = new Scroll();
+    private final Scroll themeScroll = new Scroll();
+    private final Scroll accentScroll = new Scroll();
     private CompComboBox modTheme;
     private CompToggleButton uiBlur;
 

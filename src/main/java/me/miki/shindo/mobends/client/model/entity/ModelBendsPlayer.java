@@ -1,8 +1,5 @@
 package me.miki.shindo.mobends.client.model.entity;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
-
 import me.miki.shindo.mobends.AnimatedEntity;
 import me.miki.shindo.mobends.client.model.ModelBoxBends;
 import me.miki.shindo.mobends.client.model.ModelRendererBends;
@@ -21,9 +18,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemPickaxe;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
-public class ModelBendsPlayer extends ModelPlayer{
-	
+public class ModelBendsPlayer extends ModelPlayer {
+
     public ModelRendererBends bipedRightForeArm;
     public ModelRendererBends bipedLeftForeArm;
     public ModelRendererBends bipedRightForeLeg;
@@ -44,8 +43,8 @@ public class ModelBendsPlayer extends ModelPlayer{
 
     public SwordTrail swordTrail = new SwordTrail();
 
-    public float headRotationX,headRotationY;
-    public float armSwing,armSwingAmount;
+    public float headRotationX, headRotationY;
+    public float armSwing, armSwingAmount;
 
     public ModelBendsPlayer(float p_i46304_1_, boolean p_i46304_2) {
         this(p_i46304_1_, p_i46304_2, true);
@@ -74,93 +73,90 @@ public class ModelBendsPlayer extends ModelPlayer{
         this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, p_i46304_1_);
         this.bipedHead.setRotationPoint(0.0F, -12.0F, 0.0F);
 
-        if (p_i46304_2_)
-        {
+        if (p_i46304_2_) {
             this.bipedLeftArm = new ModelRendererBends_SeperatedChild(this, 32, 48).setMother((ModelRendererBends) this.bipedBody).setShowChildIfHidden(true);
             this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 3, 6, 4, p_i46304_1_);
-            this.bipedLeftArm.setRotationPoint(5.0F, 2.5F-12.0f, 0.0F);
+            this.bipedLeftArm.setRotationPoint(5.0F, 2.5F - 12.0f, 0.0F);
             this.bipedRightArm = new ModelRendererBends_SeperatedChild(this, 40, 16).setMother((ModelRendererBends) this.bipedBody).setShowChildIfHidden(true);
             this.bipedRightArm.addBox(-2.0F, -2.0F, -2.0F, 3, 6, 4, p_i46304_1_);
-            this.bipedRightArm.setRotationPoint(-5.0F, 2.5F-12.0f, 0.0F);
+            this.bipedRightArm.setRotationPoint(-5.0F, 2.5F - 12.0f, 0.0F);
             this.bipedLeftArmwear = new ModelRendererBends(this, 48, 48);
             this.bipedLeftArmwear.addBox(-1.0F, -2.0F, -2.0F, 3, 6, 4, p_i46304_1_ + 0.25F);
-            ((ModelRendererBends)this.bipedLeftArmwear).getBox().resY-=0.25f;
-            ((ModelRendererBends)this.bipedLeftArmwear).getBox().updateVertexPositions(this.bipedLeftArmwear);
-            this.bipedLeftArmwear.setRotationPoint(0.0f,0.0f,0.0f);
+            ((ModelRendererBends) this.bipedLeftArmwear).getBox().resY -= 0.25f;
+            ((ModelRendererBends) this.bipedLeftArmwear).getBox().updateVertexPositions(this.bipedLeftArmwear);
+            this.bipedLeftArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
             this.bipedRightArmwear = new ModelRendererBends(this, 40, 32);
             this.bipedRightArmwear.addBox(-2.0F, -2.0F, -2.0F, 3, 6, 4, p_i46304_1_ + 0.25F);
-            ((ModelRendererBends)this.bipedRightArmwear).getBox().resY-=0.25f;
-            ((ModelRendererBends)this.bipedRightArmwear).getBox().updateVertexPositions(this.bipedRightArmwear);
-            this.bipedRightArmwear.setRotationPoint(0.0f,0.0f,0.0f);
-            ((ModelRendererBends)this.bipedRightArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(3.02f, 6.0f, 4.02f).updateVertices();
-            ((ModelRendererBends)this.bipedLeftArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(3.02f, 6.0f, 4.02f).updateVertices();
+            ((ModelRendererBends) this.bipedRightArmwear).getBox().resY -= 0.25f;
+            ((ModelRendererBends) this.bipedRightArmwear).getBox().updateVertexPositions(this.bipedRightArmwear);
+            this.bipedRightArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
+            ((ModelRendererBends) this.bipedRightArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(3.02f, 6.0f, 4.02f).updateVertices();
+            ((ModelRendererBends) this.bipedLeftArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(3.02f, 6.0f, 4.02f).updateVertices();
 
-            this.bipedLeftForeArm = new ModelRendererBends(this, 32, 48+6);
+            this.bipedLeftForeArm = new ModelRendererBends(this, 32, 48 + 6);
             this.bipedLeftForeArm.addBox(-1.0F, 0.0F, -4.0F, 3, 6, 4, p_i46304_1_);
             this.bipedLeftForeArm.setRotationPoint(0.0F, 4.0F, 2.0F);
-            ((ModelRendererBends)this.bipedLeftForeArm).getBox().offsetTextureQuad(this.bipedLeftForeArm,ModelBoxBends.BOTTOM, 0, -6.0f);
-            this.bipedRightForeArm = new ModelRendererBends(this, 40, 16+6);
+            this.bipedLeftForeArm.getBox().offsetTextureQuad(this.bipedLeftForeArm, ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArm = new ModelRendererBends(this, 40, 16 + 6);
             this.bipedRightForeArm.addBox(-2.0F, 0.0F, -4.0F, 3, 6, 4, p_i46304_1_);
             this.bipedRightForeArm.setRotationPoint(0.0F, 4.0F, 2.0F);
-            ((ModelRendererBends)this.bipedRightForeArm).getBox().offsetTextureQuad(this.bipedRightForeArm,ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArm.getBox().offsetTextureQuad(this.bipedRightForeArm, ModelBoxBends.BOTTOM, 0, -6.0f);
 
-            this.bipedLeftForeArmwear = new ModelRendererBends(this, 48, 48+6);
+            this.bipedLeftForeArmwear = new ModelRendererBends(this, 48, 48 + 6);
             this.bipedLeftForeArmwear.addBox(-1.0F, 0.0F, -4.0F, 3, 6, 4, p_i46304_1_ + 0.25F);
-            this.bipedLeftForeArmwear.getBox().resY-=0.25f;
-            this.bipedLeftForeArmwear.getBox().offsetY+=0.25f;
+            this.bipedLeftForeArmwear.getBox().resY -= 0.25f;
+            this.bipedLeftForeArmwear.getBox().offsetY += 0.25f;
             this.bipedLeftForeArmwear.getBox().updateVertexPositions(this.bipedLeftForeArmwear);
-            this.bipedLeftForeArmwear.setRotationPoint(0.0f,0.0f,0.0f);
-            ((ModelRendererBends)this.bipedLeftForeArmwear).getBox().offsetTextureQuad(this.bipedLeftForeArmwear,ModelBoxBends.BOTTOM, 0, -6.0f);
-            this.bipedRightForeArmwear = new ModelRendererBends(this, 40, 32+6);
+            this.bipedLeftForeArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.bipedLeftForeArmwear.getBox().offsetTextureQuad(this.bipedLeftForeArmwear, ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArmwear = new ModelRendererBends(this, 40, 32 + 6);
             this.bipedRightForeArmwear.addBox(-2.0F, 0.0F, -4.0F, 3, 6, 4, p_i46304_1_ + 0.25F);
-            this.bipedRightForeArmwear.getBox().resY-=0.25f;
-            this.bipedRightForeArmwear.getBox().offsetY+=0.25f;
+            this.bipedRightForeArmwear.getBox().resY -= 0.25f;
+            this.bipedRightForeArmwear.getBox().offsetY += 0.25f;
             this.bipedRightForeArmwear.getBox().updateVertexPositions(this.bipedRightForeArmwear);
-            this.bipedRightForeArmwear.setRotationPoint(0.0f,0.0f,0.0f);
-            ((ModelRendererBends)this.bipedRightForeArmwear).getBox().offsetTextureQuad(this.bipedRightForeArmwear,ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.bipedRightForeArmwear.getBox().offsetTextureQuad(this.bipedRightForeArmwear, ModelBoxBends.BOTTOM, 0, -6.0f);
             //((ModelRendererBends)this.bipedLeftForeArmwear).offsetBox_Add(-0.005f, 0, -0.005f).resizeBox(3.01f+0.5f, 6.0f+0.25f, 4.01f+0.5f).updateVertices();
             //((ModelRendererBends)this.bipedRightForeArmwear).offsetBox_Add(-0.005f, 0, -0.005f).resizeBox(3.01f+0.5f, 6.0f+0.25f, 4.01f+0.5f).updateVertices();
-        }
-        else
-        {
+        } else {
             this.bipedLeftArm = new ModelRendererBends_SeperatedChild(this, 32, 48).setMother((ModelRendererBends) this.bipedBody).setShowChildIfHidden(true);
             this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 6, 4, p_i46304_1_);
-            this.bipedLeftArm.setRotationPoint(5.0F, 2.0F-12.0f, 0.0F);
+            this.bipedLeftArm.setRotationPoint(5.0F, 2.0F - 12.0f, 0.0F);
             this.bipedRightArm = new ModelRendererBends_SeperatedChild(this, 40, 16).setMother((ModelRendererBends) this.bipedBody).setShowChildIfHidden(true);
             this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 6, 4, p_i46304_1_);
-            this.bipedRightArm.setRotationPoint(-5.0F, 2.0F-12.0f, 0.0F);
+            this.bipedRightArm.setRotationPoint(-5.0F, 2.0F - 12.0f, 0.0F);
             this.bipedLeftArmwear = new ModelRendererBends(this, 48, 48);
             this.bipedLeftArmwear.addBox(-1.0F, -2.0F, -2.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-            ((ModelRendererBends)this.bipedLeftArmwear).getBox().resY-=0.25f;
-            ((ModelRendererBends)this.bipedLeftArmwear).getBox().updateVertexPositions(this.bipedLeftArmwear);
+            ((ModelRendererBends) this.bipedLeftArmwear).getBox().resY -= 0.25f;
+            ((ModelRendererBends) this.bipedLeftArmwear).getBox().updateVertexPositions(this.bipedLeftArmwear);
             this.bipedLeftArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
             this.bipedRightArmwear = new ModelRendererBends(this, 40, 32);
             this.bipedRightArmwear.addBox(-3.0F, -2.0F, -2.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
             this.bipedRightArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
 
-            ((ModelRendererBends)this.bipedRightArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
-            ((ModelRendererBends)this.bipedLeftArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
+            ((ModelRendererBends) this.bipedRightArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
+            ((ModelRendererBends) this.bipedLeftArm).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
 
-            this.bipedLeftForeArm = new ModelRendererBends(this, 32, 48+6);
+            this.bipedLeftForeArm = new ModelRendererBends(this, 32, 48 + 6);
             this.bipedLeftForeArm.addBox(-1.0F, 0.0F, -4.0F, 4, 6, 4, p_i46304_1_);
             this.bipedLeftForeArm.setRotationPoint(0.0F, 4.0F, 2.0F);
-            ((ModelRendererBends)this.bipedLeftForeArm).getBox().offsetTextureQuad(this.bipedLeftForeArm,ModelBoxBends.BOTTOM, 0, -6.0f);
-            this.bipedRightForeArm = new ModelRendererBends(this, 40, 16+6);
+            this.bipedLeftForeArm.getBox().offsetTextureQuad(this.bipedLeftForeArm, ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArm = new ModelRendererBends(this, 40, 16 + 6);
             this.bipedRightForeArm.addBox(-3.0F, 0.0F, -4.0F, 4, 6, 4, p_i46304_1_);
             this.bipedRightForeArm.setRotationPoint(0.0F, 4.0F, 2.0F);
-            ((ModelRendererBends)this.bipedRightForeArm).getBox().offsetTextureQuad(this.bipedRightForeArm,ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArm.getBox().offsetTextureQuad(this.bipedRightForeArm, ModelBoxBends.BOTTOM, 0, -6.0f);
 
-            this.bipedLeftForeArmwear = new ModelRendererBends(this, 48, 48+6);
+            this.bipedLeftForeArmwear = new ModelRendererBends(this, 48, 48 + 6);
             this.bipedLeftForeArmwear.addBox(-1.0F, 0.0F, -4.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-            this.bipedLeftForeArmwear.getBox().resY-=0.25f;
-            this.bipedLeftForeArmwear.getBox().offsetY+=0.25f;
+            this.bipedLeftForeArmwear.getBox().resY -= 0.25f;
+            this.bipedLeftForeArmwear.getBox().offsetY += 0.25f;
             this.bipedLeftForeArmwear.getBox().updateVertexPositions(this.bipedLeftForeArmwear);
-            this.bipedLeftForeArmwear.setRotationPoint(0.0f,0.0f,0.0f);
-            ((ModelRendererBends)this.bipedLeftForeArmwear).getBox().offsetTextureQuad(this.bipedLeftForeArmwear,ModelBoxBends.BOTTOM, 0, -6.0f);
-            this.bipedRightForeArmwear = new ModelRendererBends(this, 40, 32+6);
+            this.bipedLeftForeArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.bipedLeftForeArmwear.getBox().offsetTextureQuad(this.bipedLeftForeArmwear, ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArmwear = new ModelRendererBends(this, 40, 32 + 6);
             this.bipedRightForeArmwear.addBox(-3.0F, 0.0F, -4.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-            this.bipedRightForeArmwear.setRotationPoint(0.0f,0.0f,0.0f);
-            ((ModelRendererBends)this.bipedRightForeArmwear).getBox().offsetTextureQuad(this.bipedRightForeArmwear,ModelBoxBends.BOTTOM, 0, -6.0f);
+            this.bipedRightForeArmwear.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.bipedRightForeArmwear.getBox().offsetTextureQuad(this.bipedRightForeArmwear, ModelBoxBends.BOTTOM, 0, -6.0f);
         }
 
         this.bipedRightLeg = new ModelRendererBends(this, 0, 16);
@@ -171,40 +167,40 @@ public class ModelBendsPlayer extends ModelPlayer{
         this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
         this.bipedLeftLegwear = new ModelRendererBends(this, 0, 48);
         this.bipedLeftLegwear.addBox(-2.0F, 0.0F, -2.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-        ((ModelRendererBends)this.bipedLeftLegwear).getBox().resY-=0.25f;
-        ((ModelRendererBends)this.bipedLeftLegwear).getBox().updateVertexPositions(this.bipedLeftLegwear);
+        ((ModelRendererBends) this.bipedLeftLegwear).getBox().resY -= 0.25f;
+        ((ModelRendererBends) this.bipedLeftLegwear).getBox().updateVertexPositions(this.bipedLeftLegwear);
         this.bipedLeftLegwear.setRotationPoint(0.0f, 0.0f, 0.0f);
         this.bipedRightLegwear = new ModelRendererBends(this, 0, 32);
         this.bipedRightLegwear.addBox(-2.0F, 0.0F, -2.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-        ((ModelRendererBends)this.bipedRightLegwear).getBox().resY-=0.25f;
-        ((ModelRendererBends)this.bipedRightLegwear).getBox().updateVertexPositions(this.bipedRightLegwear);
+        ((ModelRendererBends) this.bipedRightLegwear).getBox().resY -= 0.25f;
+        ((ModelRendererBends) this.bipedRightLegwear).getBox().updateVertexPositions(this.bipedRightLegwear);
         this.bipedRightLegwear.setRotationPoint(0.0f, 0.0f, 0.0f);
         this.bipedBodyWear = new ModelRendererBends(this, 16, 32);
         this.bipedBodyWear.addBox(-4.0F, -12.0F, -2.0F, 8, 12, 4, p_i46304_1_ + 0.25F);
         this.bipedBodyWear.setRotationPoint(0.0F, 0.0F, 0.0F);
 
-        this.bipedRightForeLeg = new ModelRendererBends(this, 0, 16+6);
+        this.bipedRightForeLeg = new ModelRendererBends(this, 0, 16 + 6);
         this.bipedRightForeLeg.addBox(-2.0F, 0.0F, 0.0F, 4, 6, 4, p_i46304_1_);
         this.bipedRightForeLeg.setRotationPoint(0, 6.0F, -2.0F);
-        ((ModelRendererBends)this.bipedRightForeLeg).getBox().offsetTextureQuad(this.bipedRightForeLeg,ModelBoxBends.BOTTOM, 0, -6.0f);
-        this.bipedLeftForeLeg = new ModelRendererBends(this, 16, 48+6);
+        this.bipedRightForeLeg.getBox().offsetTextureQuad(this.bipedRightForeLeg, ModelBoxBends.BOTTOM, 0, -6.0f);
+        this.bipedLeftForeLeg = new ModelRendererBends(this, 16, 48 + 6);
         this.bipedLeftForeLeg.addBox(-2.0F, 0.0F, 0.0F, 4, 6, 4, p_i46304_1_);
         this.bipedLeftForeLeg.setRotationPoint(0, 6.0F, -2.0F);
-        ((ModelRendererBends)this.bipedLeftForeLeg).getBox().offsetTextureQuad(this.bipedLeftForeLeg,ModelBoxBends.BOTTOM, 0, -6.0f);
-        this.bipedRightForeLegwear = new ModelRendererBends(this, 0, 32+6);
+        this.bipedLeftForeLeg.getBox().offsetTextureQuad(this.bipedLeftForeLeg, ModelBoxBends.BOTTOM, 0, -6.0f);
+        this.bipedRightForeLegwear = new ModelRendererBends(this, 0, 32 + 6);
         this.bipedRightForeLegwear.addBox(-2.0F, 0.0F, 0.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-        this.bipedRightForeLegwear.getBox().resY-=0.25f;
-        this.bipedRightForeLegwear.getBox().offsetY+=0.25f;
+        this.bipedRightForeLegwear.getBox().resY -= 0.25f;
+        this.bipedRightForeLegwear.getBox().offsetY += 0.25f;
         this.bipedRightForeLegwear.getBox().updateVertexPositions(this.bipedRightForeLegwear);
         this.bipedRightForeLegwear.setRotationPoint(0.0f, 0.0f, 0.0f);
-        ((ModelRendererBends)this.bipedRightForeLegwear).getBox().offsetTextureQuad(this.bipedRightForeLegwear,ModelBoxBends.BOTTOM, 0, -6.0f);
-        this.bipedLeftForeLegwear = new ModelRendererBends(this, 0, 48+6);
+        this.bipedRightForeLegwear.getBox().offsetTextureQuad(this.bipedRightForeLegwear, ModelBoxBends.BOTTOM, 0, -6.0f);
+        this.bipedLeftForeLegwear = new ModelRendererBends(this, 0, 48 + 6);
         this.bipedLeftForeLegwear.addBox(-2.0F, 0.0F, 0.0F, 4, 6, 4, p_i46304_1_ + 0.25F);
-        this.bipedLeftForeLegwear.getBox().resY-=0.25f;
-        this.bipedLeftForeLegwear.getBox().offsetY+=0.25f;
+        this.bipedLeftForeLegwear.getBox().resY -= 0.25f;
+        this.bipedLeftForeLegwear.getBox().offsetY += 0.25f;
         this.bipedLeftForeLegwear.getBox().updateVertexPositions(this.bipedLeftForeLegwear);
         this.bipedLeftForeLegwear.setRotationPoint(0.0f, 0.0f, 0.0f);
-        ((ModelRendererBends)this.bipedLeftForeLegwear).getBox().offsetTextureQuad(this.bipedLeftForeLegwear,ModelBoxBends.BOTTOM, 0, -6.0f);
+        this.bipedLeftForeLegwear.getBox().offsetTextureQuad(this.bipedLeftForeLegwear, ModelBoxBends.BOTTOM, 0, -6.0f);
 
         /*this.bipedBody = new ModelRendererBends(this, 16, 16).setShowChildIfHidden(true);
         this.bipedBody.addBox(-4.0F, -12.0F, -2.0F, 8, 12, 4, p_i1149_1_);
@@ -266,15 +262,14 @@ public class ModelBendsPlayer extends ModelPlayer{
         this.bipedRightForeLeg.addChild(this.bipedRightForeLegwear);
         this.bipedLeftForeLeg.addChild(this.bipedLeftForeLegwear);
 
-        ((ModelRendererBends_SeperatedChild)this.bipedRightArm).setSeperatedPart((ModelRendererBends) this.bipedRightForeArm);
-        ((ModelRendererBends_SeperatedChild)this.bipedLeftArm).setSeperatedPart((ModelRendererBends) this.bipedLeftForeArm);
+        ((ModelRendererBends_SeperatedChild) this.bipedRightArm).setSeperatedPart(this.bipedRightForeArm);
+        ((ModelRendererBends_SeperatedChild) this.bipedLeftArm).setSeperatedPart(this.bipedLeftForeArm);
 
-        ((ModelRendererBends)this.bipedRightLeg).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
-        ((ModelRendererBends)this.bipedLeftLeg).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
+        ((ModelRendererBends) this.bipedRightLeg).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
+        ((ModelRendererBends) this.bipedLeftLeg).offsetBox_Add(-0.01f, 0, -0.01f).resizeBox(4.02f, 6.0f, 4.02f).updateVertices();
     }
 
-    public void render(Entity argEntity, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_)
-    {
+    public void render(Entity argEntity, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_) {
         this.setRotationAngles(p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_, argEntity);
 
         GL11.glPushMatrix();
@@ -282,8 +277,7 @@ public class ModelBendsPlayer extends ModelPlayer{
         	GL11.glRotatef(-this.renderRotation.getY(),0.0f,1.0f,0.0f);
         	GL11.glRotatef(this.renderRotation.getZ(),0.0f,0.0f,1.0f);
 	        */
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f6 = 2.0F;
             GL11.glPushMatrix();
             GL11.glScalef(1.5F / f6, 1.5F / f6, 1.5F / f6);
@@ -309,26 +303,25 @@ public class ModelBendsPlayer extends ModelPlayer{
         GL11.glPopMatrix();
     }
 
-    public void setRotationAngles(float argSwingTime, float argSwingAmount, float argArmSway, float argHeadY, float argHeadX, float argNr6, Entity argEntity)
-    {
-        if(Minecraft.getMinecraft().theWorld == null){
+    public void setRotationAngles(float argSwingTime, float argSwingAmount, float argArmSway, float argHeadY, float argHeadX, float argNr6, Entity argEntity) {
+        if (Minecraft.getMinecraft().theWorld == null) {
             return;
         }
 
-        if(Minecraft.getMinecraft().theWorld.isRemote){
-            if(Minecraft.getMinecraft().isGamePaused()){
+        if (Minecraft.getMinecraft().theWorld.isRemote) {
+            if (Minecraft.getMinecraft().isGamePaused()) {
                 return;
             }
         }
 
-        Data_Player data = (Data_Player) Data_Player.get(argEntity.getEntityId());
+        Data_Player data = Data_Player.get(argEntity.getEntityId());
 
         this.armSwing = argSwingTime;
         this.armSwingAmount = argSwingAmount;
         this.headRotationX = argHeadX;
         this.headRotationY = argHeadY;
 
-        if(Minecraft.getMinecraft().currentScreen != null){
+        if (Minecraft.getMinecraft().currentScreen != null) {
             this.headRotationY = 0;
         }
 
@@ -339,20 +332,20 @@ public class ModelBendsPlayer extends ModelPlayer{
         ((ModelRendererBends) this.bipedLeftArm).sync(data.leftArm);
         ((ModelRendererBends) this.bipedRightLeg).sync(data.rightLeg);
         ((ModelRendererBends) this.bipedLeftLeg).sync(data.leftLeg);
-        ((ModelRendererBends) this.bipedRightForeArm).sync(data.rightForeArm);
-        ((ModelRendererBends) this.bipedLeftForeArm).sync(data.leftForeArm);
-        ((ModelRendererBends) this.bipedRightForeLeg).sync(data.rightForeLeg);
-        ((ModelRendererBends) this.bipedLeftForeLeg).sync(data.leftForeLeg);
+        this.bipedRightForeArm.sync(data.rightForeArm);
+        this.bipedLeftForeArm.sync(data.leftForeArm);
+        this.bipedRightForeLeg.sync(data.rightForeLeg);
+        this.bipedLeftForeLeg.sync(data.leftForeLeg);
 
         this.renderOffset.set(data.renderOffset);
         this.renderRotation.set(data.renderRotation);
         this.renderItemRotation.set(data.renderItemRotation);
         this.swordTrail = data.swordTrail;
 
-        if(Data_Player.get(argEntity.getEntityId()).canBeUpdated()){
-            this.renderOffset.setSmooth(new Vector3f(0,-1f,0),0.5f);
-            this.renderRotation.setSmooth(new Vector3f(0,0,0),0.5f);
-            this.renderItemRotation.setSmooth(new Vector3f(0,0,0),0.5f);
+        if (Data_Player.get(argEntity.getEntityId()).canBeUpdated()) {
+            this.renderOffset.setSmooth(new Vector3f(0, -1f, 0), 0.5f);
+            this.renderRotation.setSmooth(new Vector3f(0, 0, 0), 0.5f);
+            this.renderItemRotation.setSmooth(new Vector3f(0, 0, 0), 0.5f);
 
             ((ModelRendererBends) this.bipedHead).resetScale();
             ((ModelRendererBends) this.bipedHeadwear).resetScale();
@@ -361,49 +354,49 @@ public class ModelBendsPlayer extends ModelPlayer{
             ((ModelRendererBends) this.bipedLeftArm).resetScale();
             ((ModelRendererBends) this.bipedRightLeg).resetScale();
             ((ModelRendererBends) this.bipedLeftLeg).resetScale();
-            ((ModelRendererBends) this.bipedRightForeArm).resetScale();
-            ((ModelRendererBends) this.bipedLeftForeArm).resetScale();
-            ((ModelRendererBends) this.bipedRightForeLeg).resetScale();
-            ((ModelRendererBends) this.bipedLeftForeLeg).resetScale();
+            this.bipedRightForeArm.resetScale();
+            this.bipedLeftForeArm.resetScale();
+            this.bipedRightForeLeg.resetScale();
+            this.bipedLeftForeLeg.resetScale();
 
             BendsVar.tempData = Data_Player.get(argEntity.getEntityId());
 
-            if(argEntity.isRiding()){
-                AnimatedEntity.getByEntity(argEntity).get("riding").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-            }else{
-                if(argEntity.isInWater()){
-                    AnimatedEntity.getByEntity(argEntity).get("swimming").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                }else{
-                    if(!Data_Player.get(argEntity.getEntityId()).isOnGround() | Data_Player.get(argEntity.getEntityId()).ticksAfterTouchdown < 2){
-                        AnimatedEntity.getByEntity(argEntity).get("jump").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                    }else{
-                        if(Data_Player.get(argEntity.getEntityId()).motion.x == 0.0f & Data_Player.get(argEntity.getEntityId()).motion.z == 0.0f){
-                            AnimatedEntity.getByEntity(argEntity).get("stand").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                        }else{
-                            if(argEntity.isSprinting()){
-                                AnimatedEntity.getByEntity(argEntity).get("sprint").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                            }else{
-                                AnimatedEntity.getByEntity(argEntity).get("walk").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
+            if (argEntity.isRiding()) {
+                AnimatedEntity.getByEntity(argEntity).get("riding").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+            } else {
+                if (argEntity.isInWater()) {
+                    AnimatedEntity.getByEntity(argEntity).get("swimming").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                } else {
+                    if (!Data_Player.get(argEntity.getEntityId()).isOnGround() | Data_Player.get(argEntity.getEntityId()).ticksAfterTouchdown < 2) {
+                        AnimatedEntity.getByEntity(argEntity).get("jump").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                    } else {
+                        if (Data_Player.get(argEntity.getEntityId()).motion.x == 0.0f & Data_Player.get(argEntity.getEntityId()).motion.z == 0.0f) {
+                            AnimatedEntity.getByEntity(argEntity).get("stand").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                        } else {
+                            if (argEntity.isSprinting()) {
+                                AnimatedEntity.getByEntity(argEntity).get("sprint").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                            } else {
+                                AnimatedEntity.getByEntity(argEntity).get("walk").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
                             }
                         }
 
-                        if(argEntity.isSneaking()){
-                            AnimatedEntity.getByEntity(argEntity).get("sneak").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                        if (argEntity.isSneaking()) {
+                            AnimatedEntity.getByEntity(argEntity).get("sneak").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
                         }
                     }
                 }
             }
 
-            if(this.aimedBow){
-                AnimatedEntity.getByEntity(argEntity).get("bow").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-            }else{
-                if((((EntityPlayer)argEntity).getCurrentEquippedItem() != null && ((EntityPlayer)argEntity).getCurrentEquippedItem().getItem() instanceof ItemPickaxe) ||
-                        (((EntityPlayer)argEntity).getCurrentEquippedItem() != null && Block.getBlockFromItem(((EntityPlayer)argEntity).getCurrentEquippedItem().getItem()) != null)){
-                    AnimatedEntity.getByEntity(argEntity).get("mining").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                }else if(((EntityPlayer)argEntity).getCurrentEquippedItem() != null && ((EntityPlayer)argEntity).getCurrentEquippedItem().getItem() instanceof ItemAxe){
-                    AnimatedEntity.getByEntity(argEntity).get("axe").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
-                }else{
-                    AnimatedEntity.getByEntity(argEntity).get("attack").animate((EntityLivingBase)argEntity, this, Data_Player.get(argEntity.getEntityId()));
+            if (this.aimedBow) {
+                AnimatedEntity.getByEntity(argEntity).get("bow").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+            } else {
+                if ((((EntityPlayer) argEntity).getCurrentEquippedItem() != null && ((EntityPlayer) argEntity).getCurrentEquippedItem().getItem() instanceof ItemPickaxe) ||
+                        (((EntityPlayer) argEntity).getCurrentEquippedItem() != null && Block.getBlockFromItem(((EntityPlayer) argEntity).getCurrentEquippedItem().getItem()) != null)) {
+                    AnimatedEntity.getByEntity(argEntity).get("mining").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                } else if (((EntityPlayer) argEntity).getCurrentEquippedItem() != null && ((EntityPlayer) argEntity).getCurrentEquippedItem().getItem() instanceof ItemAxe) {
+                    AnimatedEntity.getByEntity(argEntity).get("axe").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
+                } else {
+                    AnimatedEntity.getByEntity(argEntity).get("attack").animate((EntityLivingBase) argEntity, this, Data_Player.get(argEntity.getEntityId()));
                 }
             }
 
@@ -414,10 +407,10 @@ public class ModelBendsPlayer extends ModelPlayer{
             ((ModelRendererBends) this.bipedRightArm).update(data.ticksPerFrame);
             ((ModelRendererBends) this.bipedLeftLeg).update(data.ticksPerFrame);
             ((ModelRendererBends) this.bipedRightLeg).update(data.ticksPerFrame);
-            ((ModelRendererBends) this.bipedLeftForeArm).update(data.ticksPerFrame);
-            ((ModelRendererBends) this.bipedRightForeArm).update(data.ticksPerFrame);
-            ((ModelRendererBends) this.bipedLeftForeLeg).update(data.ticksPerFrame);
-            ((ModelRendererBends) this.bipedRightForeLeg).update(data.ticksPerFrame);
+            this.bipedLeftForeArm.update(data.ticksPerFrame);
+            this.bipedRightForeArm.update(data.ticksPerFrame);
+            this.bipedLeftForeLeg.update(data.ticksPerFrame);
+            this.bipedRightForeLeg.update(data.ticksPerFrame);
 
             this.renderOffset.update(data.ticksPerFrame);
             this.renderRotation.update(data.ticksPerFrame);
@@ -430,41 +423,40 @@ public class ModelBendsPlayer extends ModelPlayer{
         Data_Player.get(argEntity.getEntityId()).syncModelInfo(this);
     }
 
-    public void postRender(float argScale){
-        GlStateManager.translate(this.renderOffset.vSmooth.x*argScale,-this.renderOffset.vSmooth.y*argScale,this.renderOffset.vSmooth.z*argScale);
-        GlStateManager.rotate(this.renderRotation.getX(),1.0f,0.0f,0.0f);
-        GlStateManager.rotate(this.renderRotation.getY(),0.0f,1.0f,0.0f);
-        GlStateManager.rotate(this.renderRotation.getZ(),0.0f,0.0f,1.0f);
+    public void postRender(float argScale) {
+        GlStateManager.translate(this.renderOffset.vSmooth.x * argScale, -this.renderOffset.vSmooth.y * argScale, this.renderOffset.vSmooth.z * argScale);
+        GlStateManager.rotate(this.renderRotation.getX(), 1.0f, 0.0f, 0.0f);
+        GlStateManager.rotate(this.renderRotation.getY(), 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(this.renderRotation.getZ(), 0.0f, 0.0f, 1.0f);
     }
 
-    public void postRenderTranslate(float argScale){
-        GlStateManager.translate(this.renderOffset.vSmooth.x*argScale,-this.renderOffset.vSmooth.y*argScale,this.renderOffset.vSmooth.z*argScale);
+    public void postRenderTranslate(float argScale) {
+        GlStateManager.translate(this.renderOffset.vSmooth.x * argScale, -this.renderOffset.vSmooth.y * argScale, this.renderOffset.vSmooth.z * argScale);
     }
 
-    public void postRenderRotate(float argScale){
-        GlStateManager.rotate(this.renderRotation.getX(),1.0f,0.0f,0.0f);
-        GlStateManager.rotate(this.renderRotation.getY(),0.0f,1.0f,0.0f);
-        GlStateManager.rotate(this.renderRotation.getZ(),0.0f,0.0f,1.0f);
+    public void postRenderRotate(float argScale) {
+        GlStateManager.rotate(this.renderRotation.getX(), 1.0f, 0.0f, 0.0f);
+        GlStateManager.rotate(this.renderRotation.getY(), 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(this.renderRotation.getZ(), 0.0f, 0.0f, 1.0f);
     }
 
     @Override
-    public void postRenderArm(float argScale)
-    {
+    public void postRenderArm(float argScale) {
         this.bipedRightArm.postRender(argScale);
         this.bipedRightForeArm.postRender(argScale);
-        GL11.glTranslatef(0.0f*argScale, (-4.0f+8)*argScale, -2.0f*argScale);
-        GL11.glRotatef(this.renderItemRotation.vSmooth.x,1,0,0);
-        GL11.glRotatef(this.renderItemRotation.vSmooth.y,0,-1,0);
-        GL11.glRotatef(this.renderItemRotation.vSmooth.z,0,0,1);
+        GL11.glTranslatef(0.0f * argScale, (-4.0f + 8) * argScale, -2.0f * argScale);
+        GL11.glRotatef(this.renderItemRotation.vSmooth.x, 1, 0, 0);
+        GL11.glRotatef(this.renderItemRotation.vSmooth.y, 0, -1, 0);
+        GL11.glRotatef(this.renderItemRotation.vSmooth.z, 0, 0, 1);
 		/*GL11.glRotatef(Minecraft.getMinecraft().thePlayer.ticksExisted*20.0f,1,0,0);
 		GL11.glRotatef(this.renderItemRotation.vSmooth.y,0,-1,0);
 		GL11.glRotatef(this.renderItemRotation.vSmooth.z,0,0,1);*/
-        GL11.glTranslatef(0.0f*argScale, -8.0f*argScale, 0.0f*argScale);
+        GL11.glTranslatef(0.0f * argScale, -8.0f * argScale, 0.0f * argScale);
     }
 
-    public void updateWithEntityData(AbstractClientPlayer argPlayer){
+    public void updateWithEntityData(AbstractClientPlayer argPlayer) {
         Data_Player data = Data_Player.get(argPlayer.getEntityId());
-        if(data != null){
+        if (data != null) {
             this.renderOffset.set(data.renderOffset);
             this.renderRotation.set(data.renderRotation);
             this.renderItemRotation.set(data.renderItemRotation);

@@ -1,24 +1,13 @@
 package me.miki.shindo.gui;
 
 import com.google.common.collect.Lists;
-import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.utils.file.FileUtils;
 import me.miki.shindo.management.addons.rpo.RPOConfig;
 import me.miki.shindo.management.addons.rpo.packs.ResourcePackListEntryFolder;
 import me.miki.shindo.management.addons.rpo.packs.ResourcePackListProcessor;
 import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiOptionButton;
-import net.minecraft.client.gui.GuiResourcePackAvailable;
-import net.minecraft.client.gui.GuiResourcePackSelected;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiScreenResourcePacks;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.resources.ResourcePackListEntry;
-import net.minecraft.client.resources.ResourcePackListEntryDefault;
-import net.minecraft.client.resources.ResourcePackListEntryFound;
-import net.minecraft.client.resources.ResourcePackRepository;
+import me.miki.shindo.utils.file.FileUtils;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.resources.*;
 import net.minecraft.client.resources.ResourcePackRepository.Entry;
 import org.lwjgl.input.Keyboard;
 
@@ -45,27 +34,27 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
 
     private Comparator<ResourcePackListEntry> currentSorter;
 
-    public GuiBetterResourcePacks(GuiScreen parentScreen){
+    public GuiBetterResourcePacks(GuiScreen parentScreen) {
         super(parentScreen);
         this.parentScreen = parentScreen;
     }
 
     @Override
-    public void initGui(){
+    public void initGui() {
         Keyboard.enableRepeatEvents(true);
 
-        buttonList.add(new GuiOptionButton(1,width/2+100-75,height-26, I18n.format("gui.done")));
-        buttonList.add(new GuiOptionButton(2,width/2+100-75,height-48, I18n.format("resourcePack.openFolder")));
+        buttonList.add(new GuiOptionButton(1, width / 2 + 100 - 75, height - 26, I18n.format("gui.done")));
+        buttonList.add(new GuiOptionButton(2, width / 2 + 100 - 75, height - 48, I18n.format("resourcePack.openFolder")));
 
-        buttonList.add(new GuiOptionButton(10,width/2-204,height-26,40,20,"A-Z"));
-        buttonList.add(new GuiOptionButton(11,width/2-204+44,height-26,40,20,"Z-A"));
-        buttonList.add(new GuiOptionButton(20,width/2-74,height-26,70,20,"Refresh"));
+        buttonList.add(new GuiOptionButton(10, width / 2 - 204, height - 26, 40, 20, "A-Z"));
+        buttonList.add(new GuiOptionButton(11, width / 2 - 204 + 44, height - 26, 40, 20, "Z-A"));
+        buttonList.add(new GuiOptionButton(20, width / 2 - 74, height - 26, 70, 20, "Refresh"));
 
         String prevText = searchField == null ? "" : searchField.getText();
-        searchField = new GuiTextField(30,fontRendererObj,width/2-203,height-46,198,16);
+        searchField = new GuiTextField(30, fontRendererObj, width / 2 - 203, height - 46, 198, 16);
         searchField.setText(prevText);
 
-        if (!requiresReload){
+        if (!requiresReload) {
             listPacksAvailable = Lists.newArrayListWithCapacity(8);
             listPacksAvailableProcessed = Lists.newArrayListWithCapacity(8);
             listPacksDummy = Lists.newArrayListWithCapacity(1);
@@ -77,48 +66,44 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
             currentFolder = repository.getDirResourcepacks();
             listPacksAvailable.addAll(createAvailablePackList(repository));
 
-            for(Entry entry:Lists.reverse(repository.getRepositoryEntries())){
-                listPacksSelected.add(new ResourcePackListEntryFound(this,entry));
+            for (Entry entry : Lists.reverse(repository.getRepositoryEntries())) {
+                listPacksSelected.add(new ResourcePackListEntryFound(this, entry));
             }
 
             listPacksSelected.add(new ResourcePackListEntryDefault(this));
         }
 
-        guiPacksAvailable = new GuiResourcePackAvailable(mc,200,height,listPacksAvailableProcessed);
-        guiPacksAvailable.setSlotXBoundsFromLeft(width/2-204);
-        guiPacksAvailable.registerScrollButtons(7,8);
+        guiPacksAvailable = new GuiResourcePackAvailable(mc, 200, height, listPacksAvailableProcessed);
+        guiPacksAvailable.setSlotXBoundsFromLeft(width / 2 - 204);
+        guiPacksAvailable.registerScrollButtons(7, 8);
         //guiPacksAvailable.top = 4;
 
-        guiPacksSelected = new GuiResourcePackSelected(mc,200,height,listPacksSelected);
-        guiPacksSelected.setSlotXBoundsFromLeft(width/2+4);
-        guiPacksSelected.registerScrollButtons(7,8);
+        guiPacksSelected = new GuiResourcePackSelected(mc, 200, height, listPacksSelected);
+        guiPacksSelected.setSlotXBoundsFromLeft(width / 2 + 4);
+        guiPacksSelected.registerScrollButtons(7, 8);
         //guiPacksSelected.top = 4;
 
-        listProcessor = new ResourcePackListProcessor(listPacksAvailable,listPacksAvailableProcessed);
+        listProcessor = new ResourcePackListProcessor(listPacksAvailable, listPacksAvailableProcessed);
         listProcessor.setSorter(currentSorter == null ? (currentSorter = ResourcePackListProcessor.sortAZ) : currentSorter);
         listProcessor.setFilter(searchField.getText().trim());
     }
 
     @Override
-    protected void actionPerformed(GuiButton button){
-        if (button.id == 20){
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 20) {
             refreshAvailablePacks();
-        }
-        else if (button.id == 11){
+        } else if (button.id == 11) {
             listProcessor.setSorter(currentSorter = ResourcePackListProcessor.sortZA);
-        }
-        else if (button.id == 10){
+        } else if (button.id == 10) {
             listProcessor.setSorter(currentSorter = ResourcePackListProcessor.sortAZ);
-        }
-        else if (button.id == 2){
+        } else if (button.id == 2) {
             FileUtils.openFolderAtPath(mc.getResourcePackRepository().getDirResourcepacks());
-        }
-        else if (button.id == 1){
-            if (requiresReload){
+        } else if (button.id == 1) {
+            if (requiresReload) {
                 List<Entry> selected = refreshSelectedPacks();
                 mc.gameSettings.resourcePacks.clear();
 
-                for(Entry entry:selected){
+                for (Entry entry : selected) {
                     mc.gameSettings.resourcePacks.add(entry.getResourcePackName());
                 }
 
@@ -133,10 +118,10 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int buttonId){
-        if (buttonId == 0){
-            for(GuiButton button:buttonList){
-                if (button.mousePressed(mc,mouseX,mouseY)){
+    protected void mouseClicked(int mouseX, int mouseY, int buttonId) {
+        if (buttonId == 0) {
+            for (GuiButton button : buttonList) {
+                if (button.mousePressed(mc, mouseX, mouseY)) {
                     selectedButton = button;
                     button.playPressSound(mc.getSoundHandler());
                     actionPerformed(button);
@@ -144,18 +129,18 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
             }
         }
 
-        guiPacksAvailable.mouseClicked(mouseX,mouseY,buttonId);
-        guiPacksSelected.mouseClicked(mouseX,mouseY,buttonId);
-        searchField.mouseClicked(mouseX,mouseY,buttonId);
+        guiPacksAvailable.mouseClicked(mouseX, mouseY, buttonId);
+        guiPacksSelected.mouseClicked(mouseX, mouseY, buttonId);
+        searchField.mouseClicked(mouseX, mouseY, buttonId);
 
         listProcessor.refresh();
     }
 
     @Override
-    public void handleMouseInput() throws IOException{
+    public void handleMouseInput() throws IOException {
         try {
             super.handleMouseInput();
-        } catch(NullPointerException e){
+        } catch (NullPointerException e) {
 
         }
 
@@ -164,60 +149,60 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int eventType){
-        if (eventType == 0 && selectedButton != null){
-            selectedButton.mouseReleased(mouseX,mouseY);
+    protected void mouseReleased(int mouseX, int mouseY, int eventType) {
+        if (eventType == 0 && selectedButton != null) {
+            selectedButton.mouseReleased(mouseX, mouseY);
             selectedButton = null;
         }
     }
 
     @Override
-    protected void keyTyped(char keyChar, int keyCode) throws IOException{
-        super.keyTyped(keyChar,keyCode);
+    protected void keyTyped(char keyChar, int keyCode) throws IOException {
+        super.keyTyped(keyChar, keyCode);
 
-        if (searchField.isFocused()){
-            searchField.textboxKeyTyped(keyChar,keyCode);
+        if (searchField.isFocused()) {
+            searchField.textboxKeyTyped(keyChar, keyCode);
             listProcessor.setFilter(searchField.getText().trim());
         }
     }
 
     @Override
-    public void onGuiClosed(){
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public void updateScreen(){
+    public void updateScreen() {
         searchField.updateCursorCounter();
 
-        if (hasUpdated){
+        if (hasUpdated) {
             hasUpdated = false;
             refreshSelectedPacks();
             refreshAvailablePacks();
         }
     }
 
-    public void moveToFolder(File folder){
+    public void moveToFolder(File folder) {
         currentFolder = folder;
         refreshSelectedPacks();
         refreshAvailablePacks();
     }
 
-    public void refreshAvailablePacks(){
+    public void refreshAvailablePacks() {
         listPacksAvailable.clear();
         listPacksAvailable.addAll(createAvailablePackList(mc.getResourcePackRepository()));
         listProcessor.refresh();
     }
 
-    public List<Entry> refreshSelectedPacks(){
+    public List<Entry> refreshSelectedPacks() {
         List<Entry> selected = Lists.newArrayListWithCapacity(listPacksSelected.size());
 
-        for(ResourcePackListEntry entry:listPacksSelected){
-            if (!(entry instanceof ResourcePackListEntryFound))continue;
+        for (ResourcePackListEntry entry : listPacksSelected) {
+            if (!(entry instanceof ResourcePackListEntryFound)) continue;
 
-            ResourcePackListEntryFound packEntry = (ResourcePackListEntryFound)entry;
+            ResourcePackListEntryFound packEntry = (ResourcePackListEntryFound) entry;
 
-            if (packEntry.func_148318_i() != null){
+            if (packEntry.func_148318_i() != null) {
                 selected.add(packEntry.func_148318_i());
             }
         }
@@ -229,14 +214,14 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTickTime){
+    public void drawScreen(int mouseX, int mouseY, float partialTickTime) {
         drawBackground(0);
-        guiPacksAvailable.drawScreen(mouseX,mouseY,partialTickTime);
-        guiPacksSelected.drawScreen(mouseX,mouseY,partialTickTime);
+        guiPacksAvailable.drawScreen(mouseX, mouseY, partialTickTime);
+        guiPacksSelected.drawScreen(mouseX, mouseY, partialTickTime);
         searchField.drawTextBox();
 
-        for(GuiButton button:buttonList){
-            button.drawButton(mc,mouseX,mouseY);
+        for (GuiButton button : buttonList) {
+            button.drawButton(mc, mouseX, mouseY);
         }
     }
 
@@ -261,7 +246,8 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
                         try {
                             entry.updateResourcePack();
                             list.add(new ResourcePackListEntryFound(this, entry));
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 } else {
                     // Pasta comum = mostrar como pasta navegável
@@ -274,7 +260,8 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
                     try {
                         entry.updateResourcePack();
                         list.add(new ResourcePackListEntryFound(this, entry));
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
             }
         }
@@ -292,30 +279,30 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     // OVERRIDES FROM GuiScreenResourcePacks
 
     @Override
-    public boolean hasResourcePackEntry(ResourcePackListEntry entry){
+    public boolean hasResourcePackEntry(ResourcePackListEntry entry) {
         return listPacksSelected.contains(entry);
     }
 
     @Override
-    public List getListContaining(ResourcePackListEntry entry){
+    public List getListContaining(ResourcePackListEntry entry) {
         return hasResourcePackEntry(entry) ? listPacksSelected : listPacksAvailable;
     }
 
     @Override
-    public List<ResourcePackListEntry> getAvailableResourcePacks(){
+    public List<ResourcePackListEntry> getAvailableResourcePacks() {
         hasUpdated = true;
         listPacksDummy.clear();
         return listPacksDummy;
     }
 
     @Override
-    public List<ResourcePackListEntry> getSelectedResourcePacks(){
+    public List<ResourcePackListEntry> getSelectedResourcePacks() {
         hasUpdated = true;
         return listPacksSelected;
     }
 
     @Override
-    public void markChanged(){
+    public void markChanged() {
         requiresReload = true;
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 public class LocationUtils {
-	
+
     private double x;
     private double y;
     private double z;
@@ -52,6 +52,10 @@ public class LocationUtils {
         this.z = z;
         this.yaw = 0.0f;
         this.pitch = 0.0f;
+    }
+
+    public static LocationUtils fromBlockPos(final BlockPos blockPos) {
+        return new LocationUtils(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     public LocationUtils add(final int x, final int y, final int z) {
@@ -131,10 +135,6 @@ public class LocationUtils {
         return this;
     }
 
-    public static LocationUtils fromBlockPos(final BlockPos blockPos) {
-        return new LocationUtils(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-    }
-
     public BlockPos toBlockPos() {
         return new BlockPos(this.getX(), this.getY(), this.getZ());
     }
@@ -157,7 +157,7 @@ public class LocationUtils {
         return Math.sqrt(dy * dy);
     }
 
-    public Vec3 toVector(){
+    public Vec3 toVector() {
         return new Vec3(this.x, this.y, this.z);
     }
 }

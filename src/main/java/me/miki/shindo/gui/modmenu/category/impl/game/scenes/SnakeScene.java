@@ -4,14 +4,13 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.GamesCategory;
 import me.miki.shindo.gui.modmenu.category.impl.game.GameScene;
 import me.miki.shindo.gui.modmenu.category.impl.game.scenes.score.ScoreSaver;
-import me.miki.shindo.management.color.AccentColor;
+import me.miki.shindo.gui.modmenu.category.impl.game.util.DeltaTime;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.gui.modmenu.category.impl.game.util.DeltaTime;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -20,15 +19,14 @@ import java.util.Random;
 
 public class SnakeScene extends GameScene {
     private static final int TILE_SIZE = 10;
+    private static final float MOVE_INTERVAL = 0.15f;
     private final LinkedList<Point> snake = new LinkedList<>();
     private final Random random = new Random();
     private Point food;
     private int direction = Keyboard.KEY_RIGHT;
     private boolean gameOver = false;
     private int score = 0;
-
     private float moveTimer = 0f;
-    private static final float MOVE_INTERVAL = 0.15f;
 
     public SnakeScene(GamesCategory parent) {
         super(parent, "Snake", "Eat apples and don't die!", LegacyIcon.PLAY);
@@ -85,10 +83,18 @@ public class SnakeScene extends GameScene {
     private void move() {
         Point head = new Point(snake.getFirst());
         switch (direction) {
-            case Keyboard.KEY_UP: head.translate(0, -TILE_SIZE); break;
-            case Keyboard.KEY_DOWN: head.translate(0, TILE_SIZE); break;
-            case Keyboard.KEY_LEFT: head.translate(-TILE_SIZE, 0); break;
-            case Keyboard.KEY_RIGHT: head.translate(TILE_SIZE, 0); break;
+            case Keyboard.KEY_UP:
+                head.translate(0, -TILE_SIZE);
+                break;
+            case Keyboard.KEY_DOWN:
+                head.translate(0, TILE_SIZE);
+                break;
+            case Keyboard.KEY_LEFT:
+                head.translate(-TILE_SIZE, 0);
+                break;
+            case Keyboard.KEY_RIGHT:
+                head.translate(TILE_SIZE, 0);
+                break;
         }
 
         // check collision
@@ -128,10 +134,18 @@ public class SnakeScene extends GameScene {
 
         // prevent reverse movement
         switch (keyCode) {
-            case Keyboard.KEY_UP: if (direction != Keyboard.KEY_DOWN) direction = keyCode; break;
-            case Keyboard.KEY_DOWN: if (direction != Keyboard.KEY_UP) direction = keyCode; break;
-            case Keyboard.KEY_LEFT: if (direction != Keyboard.KEY_RIGHT) direction = keyCode; break;
-            case Keyboard.KEY_RIGHT: if (direction != Keyboard.KEY_LEFT) direction = keyCode; break;
+            case Keyboard.KEY_UP:
+                if (direction != Keyboard.KEY_DOWN) direction = keyCode;
+                break;
+            case Keyboard.KEY_DOWN:
+                if (direction != Keyboard.KEY_UP) direction = keyCode;
+                break;
+            case Keyboard.KEY_LEFT:
+                if (direction != Keyboard.KEY_RIGHT) direction = keyCode;
+                break;
+            case Keyboard.KEY_RIGHT:
+                if (direction != Keyboard.KEY_LEFT) direction = keyCode;
+                break;
         }
     }
 }

@@ -13,15 +13,15 @@ import net.minecraft.client.renderer.entity.RenderManager;
 
 public class PlayerDisplayMod extends HUDMod {
 
-	private NumberSetting yawOffsetSetting = new NumberSetting(TranslateText.YAW_OFFSET, this, 0, -90, 120, true);
-	
-	public PlayerDisplayMod() {
-		super(TranslateText.PLAYER_DISPLAY, TranslateText.PLAYER_DISPLAY_DESCRIPTION, "paperdoll");
-	}
+    private final NumberSetting yawOffsetSetting = new NumberSetting(TranslateText.YAW_OFFSET, this, 0, -90, 120, true);
 
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-		
+    public PlayerDisplayMod() {
+        super(TranslateText.PLAYER_DISPLAY, TranslateText.PLAYER_DISPLAY_DESCRIPTION, "paperdoll");
+    }
+
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
+
         GlStateManager.enableColorMaterial();
         GlStateManager.enableDepth();
         GlStateManager.pushMatrix();
@@ -47,8 +47,8 @@ public class PlayerDisplayMod extends HUDMod {
         GlStateManager.enableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.enableDepth();
-        
+
         this.setWidth(30);
         this.setHeight(60);
-	}
+    }
 }

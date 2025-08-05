@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 
 public final class RenderGlobalHelper {
-	
+
     public Minecraft mc;
     public RenderGlobal rg, orig;
     public boolean fancy_graphics;
@@ -30,8 +30,8 @@ public final class RenderGlobalHelper {
     public void switchTo() {
         if (orig == null)
             orig = mc.renderGlobal;
-        if (((IMixinRenderGlobal)orig).getWorldClient() != ((IMixinRenderGlobal)rg).getWorldClient()) {
-            rg.setWorldAndLoadRenderers(((IMixinRenderGlobal)orig).getWorldClient());
+        if (((IMixinRenderGlobal) orig).getWorldClient() != ((IMixinRenderGlobal) rg).getWorldClient()) {
+            rg.setWorldAndLoadRenderers(((IMixinRenderGlobal) orig).getWorldClient());
             getSettings();
         } else if (settingsChanged()) {
             rg.loadRenderers();
@@ -42,7 +42,7 @@ public final class RenderGlobalHelper {
 
     public void switchFrom() {
         if (orig != null) {
-        	mc.renderGlobal = orig;
+            mc.renderGlobal = orig;
         }
         orig = null;
     }

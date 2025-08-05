@@ -4,38 +4,67 @@ import java.io.File;
 
 public class Account {
 
-	private String name, uuid, refreshToken;
-	private File skinFile;
-	private AccountType type;
-	
-	public Account(String name, String uuid, String refreshToken, AccountType type) {
-		this.name = name;
-		this.uuid = uuid;
-		this.refreshToken = refreshToken;
-		this.type = type;
-	}
+    private String name;
+    private String uuid;
+    private String email;
+    private String password;
+    private AccountType type;
 
-	public String getName() {
-		return name;
-	}
+    private File skinFile;
 
-	public String getUuid() {
-		return uuid;
-	}
+    public Account(String name, String uuid, String email, String password, AccountType type) {
+        this.name = name;
+        this.uuid = uuid;
+        this.email = email;
+        this.password = password;
+        this.type = type;
+    }
 
-	public String getRefreshToken() {
-		return refreshToken;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public AccountType getType() {
-		return type;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public File getSkinFile() {
-		return skinFile;
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setSkinFile(File skinFile) {
-		this.skinFile = skinFile;
-	}
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+    public File getSkinFile() {
+        return skinFile;
+    }
+
+    public void setSkinFile(File skinFile) {
+        this.skinFile = skinFile;
+    }
 }

@@ -5,16 +5,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 
 public class Subtitle {
-	
+
     private final String subtitle;
+    public SimpleAnimation animation = new SimpleAnimation(0.0F);
     private long startTime;
     private Vec3 location;
-    
     private boolean remove;
     private boolean done;
-    
-    public SimpleAnimation animation = new SimpleAnimation(0.0F);
-    
+
     public Subtitle(String subtitleIn, Vec3 locationIn) {
         this.subtitle = subtitleIn;
         this.location = locationIn;
@@ -40,19 +38,19 @@ public class Subtitle {
         this.startTime = Minecraft.getSystemTime();
     }
 
-	public boolean isRemove() {
-		return remove;
-	}
+    public boolean isRemove() {
+        return remove;
+    }
 
-	public void setRemove(boolean remove) {
-		this.remove = remove;
-	}
+    public void setRemove(boolean remove) {
+        this.remove = remove;
+    }
 
-	public boolean isDone() {
-		return done;
-	}
+    public boolean isDone() {
+        return done;
+    }
 
-	public void setDone(boolean done) {
-		this.done = done;
-	}
+    public void setDone(boolean done) {
+        this.done = done;
+    }
 }

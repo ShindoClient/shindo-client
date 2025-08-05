@@ -1,7 +1,6 @@
 package me.miki.shindo.viaversion;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-
 import me.miki.shindo.viaversion.netty.VLBPipeline;
 
 public class MCPVLBPipeline extends VLBPipeline {

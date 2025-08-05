@@ -1,13 +1,7 @@
 package me.miki.shindo.management.addons.rpo.repository;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
@@ -15,14 +9,40 @@ import net.minecraft.client.resources.ResourcePackRepository;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.client.settings.GameSettings;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.Collections;
+import java.util.List;
+
 public class ResourcePackRepositoryCustom extends ResourcePackRepository {
+    private static Constructor<Entry> entryConstructor;
+    private final List<Entry> repositoryEntries = Lists.newArrayList();
+    private final boolean isReady;
+    private List<Entry> repositoryEntriesAll = Lists.newArrayList();
+    public ResourcePackRepositoryCustom(File dirResourcepacks, File dirServerResourcepacks, IResourcePack rprDefaultResourcePack, IMetadataSerializer rprMetadataSerializer, GameSettings settings, List<String> enabledPacks) {
+        super(dirResourcepacks, dirServerResourcepacks, rprDefaultResourcePack, rprMetadataSerializer, settings);
+        isReady = true;
+        updateRepositoryEntriesAll();
+
+        repositoryEntries.clear(); // ⬅️ limpa antes de adicionar
+        for (String pack : enabledPacks) {
+            for (Entry entry : repositoryEntriesAll) {
+                if (entry.getResourcePackName().equals(pack)) {
+                    if (!repositoryEntries.contains(entry)) {
+                        repositoryEntries.add(entry);
+                    }
+                }
+            }
+        }
+    }
+
     public static void overrideRepository(List<String> enabledPacks) {
         Minecraft mc = Minecraft.getMinecraft();
 
         try {
             File fileResourcepacks = ((IMixinMinecraft) mc).getFileResourcepacks();
 
-            ResourcePackRepository originalRepo = (ResourcePackRepository) ((IMixinMinecraft) mc).getMcResourcePackRepository();
+            ResourcePackRepository originalRepo = ((IMixinMinecraft) mc).getMcResourcePackRepository();
 
             ResourcePackRepositoryCustom customRepo = new ResourcePackRepositoryCustom(
                     fileResourcepacks,
@@ -50,29 +70,6 @@ public class ResourcePackRepositoryCustom extends ResourcePackRepository {
         } catch (Throwable t) {
             t.printStackTrace();
             return null;
-        }
-    }
-
-    private static Constructor<Entry> entryConstructor;
-
-    private List<Entry> repositoryEntriesAll = Lists.newArrayList();
-    private final List<Entry> repositoryEntries = Lists.newArrayList();
-    private final boolean isReady;
-
-    public ResourcePackRepositoryCustom(File dirResourcepacks, File dirServerResourcepacks, IResourcePack rprDefaultResourcePack, IMetadataSerializer rprMetadataSerializer, GameSettings settings, List<String> enabledPacks) {
-        super(dirResourcepacks, dirServerResourcepacks, rprDefaultResourcePack, rprMetadataSerializer, settings);
-        isReady = true;
-        updateRepositoryEntriesAll();
-
-        repositoryEntries.clear(); // ⬅️ limpa antes de adicionar
-        for (String pack : enabledPacks) {
-            for (Entry entry : repositoryEntriesAll) {
-                if (entry.getResourcePackName().equals(pack)) {
-                    if (!repositoryEntries.contains(entry)) {
-                        repositoryEntries.add(entry);
-                    }
-                }
-            }
         }
     }
 

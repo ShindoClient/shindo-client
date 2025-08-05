@@ -1,3 +1,4 @@
 package me.miki.shindo.viaversion.netty.event;
 
-public class CompressionReorderEvent {}
+public class CompressionReorderEvent {
+}

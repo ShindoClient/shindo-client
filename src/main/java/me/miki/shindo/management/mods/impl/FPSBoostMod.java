@@ -12,39 +12,39 @@ import net.minecraft.entity.Entity;
 
 public class FPSBoostMod extends Mod {
 
-	private static FPSBoostMod instance;
+    private static FPSBoostMod instance;
 
-	private BooleanSetting chunkDelaySetting = new BooleanSetting(TranslateText.CHUNK_DELAY, this, false);
-	private NumberSetting delaySetting = new NumberSetting(TranslateText.DELAY, this, 5, 1, 12, true);
-	private BooleanSetting removeBotSetting = new BooleanSetting(TranslateText.REMOVE_BOT, this, false);
-	
-	public FPSBoostMod() {
-		super(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER);
-		
-		instance = this;
-	}
-	
-	@EventTarget
-	public void onUpdate(EventUpdate event) {
-		
-		if(removeBotSetting.isToggled()) {
-			for(Entity entity : mc.theWorld.loadedEntityList) {
-				if(entity.isInvisible() && !ServerUtils.isInTablist(entity)) {
-					mc.theWorld.removeEntity(entity);
-				}
-			}
-		}
-	}
-    
-	public static FPSBoostMod getInstance() {
-		return instance;
-	}
+    private final BooleanSetting chunkDelaySetting = new BooleanSetting(TranslateText.CHUNK_DELAY, this, false);
+    private final NumberSetting delaySetting = new NumberSetting(TranslateText.DELAY, this, 5, 1, 12, true);
+    private final BooleanSetting removeBotSetting = new BooleanSetting(TranslateText.REMOVE_BOT, this, false);
 
-	public BooleanSetting getChunkDelaySetting() {
-		return chunkDelaySetting;
-	}
+    public FPSBoostMod() {
+        super(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER);
 
-	public NumberSetting getDelaySetting() {
-		return delaySetting;
-	}
+        instance = this;
+    }
+
+    public static FPSBoostMod getInstance() {
+        return instance;
+    }
+
+    @EventTarget
+    public void onUpdate(EventUpdate event) {
+
+        if (removeBotSetting.isToggled()) {
+            for (Entity entity : mc.theWorld.loadedEntityList) {
+                if (entity.isInvisible() && !ServerUtils.isInTablist(entity)) {
+                    mc.theWorld.removeEntity(entity);
+                }
+            }
+        }
+    }
+
+    public BooleanSetting getChunkDelaySetting() {
+        return chunkDelaySetting;
+    }
+
+    public NumberSetting getDelaySetting() {
+        return delaySetting;
+    }
 }

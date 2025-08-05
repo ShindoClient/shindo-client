@@ -5,25 +5,26 @@ import me.miki.shindo.management.mods.Mod;
 
 public class Setting {
 
-	private Mod parent;
-	private TranslateText nameTranslate;
-	
-	public Setting(TranslateText nameTranslate, Mod parent) {
-		this.nameTranslate = nameTranslate;
-		this.parent = parent;
-	}
+    private final Mod parent;
+    private final TranslateText nameTranslate;
 
-	public void reset() {}
-	
-	public Mod getParent() {
-		return parent;
-	}
+    public Setting(TranslateText nameTranslate, Mod parent) {
+        this.nameTranslate = nameTranslate;
+        this.parent = parent;
+    }
 
-	public String getName() {
-		return nameTranslate.getText();
-	}
-	
-	public String getNameKey() {
-		return nameTranslate.getKey();
-	}
+    public void reset() {
+    }
+
+    public Mod getParent() {
+        return parent;
+    }
+
+    public String getName() {
+        return nameTranslate.getText();
+    }
+
+    public String getNameKey() {
+        return nameTranslate.getKey();
+    }
 }

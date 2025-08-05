@@ -1,26 +1,26 @@
 package me.miki.shindo.management.quickplay.impl;
 
-import java.util.ArrayList;
-
 import me.miki.shindo.management.quickplay.QuickPlay;
 import me.miki.shindo.management.quickplay.QuickPlayCommand;
 import net.minecraft.util.ResourceLocation;
 
-public class UHCQuickPlay extends QuickPlay{
+import java.util.ArrayList;
 
-	public UHCQuickPlay() {
-		super("UHC", new ResourceLocation("shindo/icons/hypixel/UHC.png"));
-	}
+public class UHCQuickPlay extends QuickPlay {
 
-	@Override
-	public void addCommands() {
-		ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
-		
-		commands.add(new QuickPlayCommand("Lobby", "/l hc"));
-		commands.add(new QuickPlayCommand("Solo", "/play uhc_solo"));
-		commands.add(new QuickPlayCommand("Teams", "/play uhc_teams"));
-		commands.add(new QuickPlayCommand("Events Mode", "/play /play uhc_events"));
-		
-		this.setCommands(commands);
-	}
+    public UHCQuickPlay() {
+        super("UHC", new ResourceLocation("shindo/icons/hypixel/UHC.png"));
+    }
+
+    @Override
+    public void addCommands() {
+        ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
+
+        commands.add(new QuickPlayCommand("Lobby", "/l hc"));
+        commands.add(new QuickPlayCommand("Solo", "/play uhc_solo"));
+        commands.add(new QuickPlayCommand("Teams", "/play uhc_teams"));
+        commands.add(new QuickPlayCommand("Events Mode", "/play /play uhc_events"));
+
+        this.setCommands(commands);
+    }
 }

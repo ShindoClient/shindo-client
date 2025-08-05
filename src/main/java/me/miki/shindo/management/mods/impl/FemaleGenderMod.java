@@ -6,15 +6,15 @@ import me.miki.shindo.management.mods.ModCategory;
 
 public class FemaleGenderMod extends Mod {
 
-	private static FemaleGenderMod instance;
+    private static FemaleGenderMod instance;
 
-	public FemaleGenderMod() {
-		super(TranslateText.FEMALE_GENDER, TranslateText.FEMALE_GENDER_DESCRIPTION, ModCategory.PLAYER, "boobs");
+    public FemaleGenderMod() {
+        super(TranslateText.FEMALE_GENDER, TranslateText.FEMALE_GENDER_DESCRIPTION, ModCategory.PLAYER, "boobs");
 
-		instance = this;
-	}
+        instance = this;
+    }
 
-	public static FemaleGenderMod getInstance() {
-		return instance;
-	}
+    public static FemaleGenderMod getInstance() {
+        return instance;
+    }
 }

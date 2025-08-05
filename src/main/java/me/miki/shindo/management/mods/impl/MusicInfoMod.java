@@ -24,12 +24,23 @@ public class MusicInfoMod extends SimpleHUDMod {
     private float addX;
     private boolean back;
 
-    private BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
 
     public MusicInfoMod() {
         super(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION);
 
         instance = this;
+    }
+
+    public static int calculateProgressWidth(float currentTime, float endTime, int maxWidth) {
+        if (endTime <= 0f || currentTime < 0f) return 0;
+
+        float progress = Math.min(currentTime / endTime, 1.0f);
+        return Math.round(progress * maxWidth);
+    }
+
+    public static MusicInfoMod getInstance() {
+        return instance;
     }
 
     @EventTarget
@@ -52,17 +63,17 @@ public class MusicInfoMod extends SimpleHUDMod {
 
         if (getText() != null) {
 
-            float bgWidth = (this.getTextWidth(this.getText(), 9, getHudFont(1)) + 10) + addX;
+            float bgWidth = (this.getTextWidth(getLimitText(getText(), 9, getHudFont(1), 120), 9, getHudFont(1)) + 10) + addX;
 
             this.drawBackground(bgWidth, 28);
-            this.drawText(this.getText(), 5.5F + addX, 5.5F, 9, getHudFont(1));
+            this.drawText(getLimitText(getText(), 9, getHudFont(1), 120), 5.5F + addX, 5.5F, 9, getHudFont(1));
 
-            if(hasIcon) {
+            if (hasIcon) {
                 this.drawText(getIcon(), 5.5F, 4F, 10.4F, Fonts.LEGACYICON);
             }
 
             this.drawRoundedRect(2F, 18F, bgWidth - 48F, 6F, 2F);
-            this.drawRoundedRect(3F, 19F,  calculateProgressWidth(current, end, (int) (bgWidth - 50F)), 4F, 2F, Color.BLACK);
+            this.drawRoundedRect(3F, 19F, calculateProgressWidth(current, end, (int) (bgWidth - 50F)), 4F, 2F, Color.BLACK);
 
             String formattedCurrent = formatTime((int) musicManager.getCurrentTime());
             String formattedEnd = formatTime((int) musicManager.getEndTime());
@@ -71,13 +82,6 @@ public class MusicInfoMod extends SimpleHUDMod {
             this.setWidth((int) bgWidth);
             this.setHeight(28);
         }
-    }
-
-    public static int calculateProgressWidth(float currentTime, float endTime, int maxWidth) {
-        if (endTime <= 0f || currentTime < 0f) return 0;
-
-        float progress = Math.min(currentTime / endTime, 1.0f);
-        return Math.round(progress * maxWidth);
     }
 
     private String formatTime(int totalSeconds) {
@@ -96,9 +100,9 @@ public class MusicInfoMod extends SimpleHUDMod {
 
         MusicManager musicManager = Shindo.getInstance().getMusicManager();
 
-        if(musicManager.isPlaying()) {
+        if (musicManager.isPlaying()) {
             return "Playing: " + musicManager.getCurrentMusic().getName();
-        }else {
+        } else {
             return "Nothing is Playing";
         }
     }
@@ -106,9 +110,5 @@ public class MusicInfoMod extends SimpleHUDMod {
     @Override
     public String getIcon() {
         return iconSetting.isToggled() ? LegacyIcon.MUSIC : null;
-    }
-
-    public static MusicInfoMod getInstance() {
-        return instance;
     }
 }

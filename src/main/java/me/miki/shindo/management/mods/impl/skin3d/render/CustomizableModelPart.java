@@ -1,18 +1,18 @@
 package me.miki.shindo.management.mods.impl.skin3d.render;
 
-import java.util.List;
-
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 
+import java.util.List;
+
 public class CustomizableModelPart {
 
+    private final List<CustomizableCube> cubes;
     public float x;
     public float y;
     public float z;
     public boolean visible = true;
-    private final List<CustomizableCube> cubes;
 
     public CustomizableModelPart(List<CustomizableCube> list) {
         this.cubes = list;

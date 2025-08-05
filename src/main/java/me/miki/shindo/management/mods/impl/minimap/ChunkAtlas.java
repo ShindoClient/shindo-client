@@ -29,9 +29,9 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     private final double chunkWidth, chunkHeight;
     private final IntBuffer pixels;
     private final int texture;
-    
+
     public ChunkAtlas(int maxChunkRadius) {
-    	
+
         int maxChunks = maxChunkRadius * maxChunkRadius << 2;
 
         int texWidth = Integer.highestOneBit(maxChunks - 1) << 5;
@@ -72,10 +72,10 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
                 GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
                 (IntBuffer) null
         );
-        
+
         this.pixels = GLAllocation.createDirectIntBuffer(256);
     }
-    
+
     public int getChunkRadius() {
         return this.radius;
     }
@@ -176,9 +176,9 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private void reserveOffset(Chunk c) {
-    	
+
         int offs = this.searchChunkAtlas(null);
-        
+
         if (offs == -1) {
             throw new IllegalStateException("Chunk coordinate array full.");
         }
@@ -189,9 +189,9 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private void recolorChunk(int x, int z) {
-    	
+
         Chunk c = this.getLoadedChunk(x, z);
-        
+
         if (c == null) {
             return;
         }
@@ -205,7 +205,7 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private void updateColorData(Chunk src, int offs) {
-    	
+
         this.computeColors(src);
 
         int x = offs & ((1 << this.chunkSpanL2) - 1);
@@ -224,9 +224,9 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private void computeColors(Chunk src) {
-    	
+
         int[] northHeights = new int[16];
-        
+
         Arrays.fill(northHeights, -1);
 
         Chunk north = this.getLoadedChunk(src.xPosition, src.zPosition - 1);
@@ -288,7 +288,7 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private BlockPos getTopColoredBlockState(Chunk src, int x, int z) {
-    	
+
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
         for (int y = src.getTopFilledSegment() + 15; y >= 0; y--) {
@@ -303,7 +303,7 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private int searchChunkAtlas(ChunkCoordIntPair c) {
-    	
+
         for (int offs = 0; offs < this.chunkCoords.length; offs++) {
             if (Objects.equals(c, this.chunkCoords[offs])) {
                 return offs;
@@ -314,14 +314,14 @@ public class ChunkAtlas implements Iterable<ChunkTile> {
     }
 
     private Chunk getLoadedChunk(int x, int z) {
-    	
+
         World world = Minecraft.getMinecraft().theWorld;
-        
+
         if (world == null) {
             return null;
         }
 
-        if (!((IMixinWorld)world).client$isLoaded(x, z, true)) {
+        if (!((IMixinWorld) world).client$isLoaded(x, z, true)) {
             return null;
         }
 

@@ -3,19 +3,18 @@ package me.miki.shindo.gui.modmenu.category.impl.cosmetics.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory;
 import me.miki.shindo.gui.modmenu.category.impl.cosmetics.CosmeticScene;
-import me.miki.shindo.management.cape.CapeCategory;
-import me.miki.shindo.management.cape.CapeManager;
-import me.miki.shindo.management.cape.impl.Cape;
-import me.miki.shindo.management.cape.impl.CustomCape;
-import me.miki.shindo.management.cape.impl.NormalCape;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
+import me.miki.shindo.management.cosmetic.cape.CapeCategory;
+import me.miki.shindo.management.cosmetic.cape.CapeManager;
+import me.miki.shindo.management.cosmetic.cape.impl.Cape;
+import me.miki.shindo.management.cosmetic.cape.impl.CustomCape;
+import me.miki.shindo.management.cosmetic.cape.impl.NormalCape;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.notification.NotificationType;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.SearchUtils;
@@ -27,8 +26,8 @@ import java.awt.*;
 
 public class CapesScene extends CosmeticScene {
 
-    private CapeCategory currentCategory;
     Color noColour = new Color(0, 0, 0, 0);
+    private CapeCategory currentCategory;
 
     public CapesScene(CosmeticsCategory parent) {
         super(parent, "Capes", "Manage your capes", "");
@@ -124,22 +123,22 @@ public class CapesScene extends CosmeticScene {
         getParent().scroll.setMaxScroll(prevIndex == 1 ? 0 : offsetY - (147 / 1.70F));
 
         nvg.restore();
-        if(currentCategory.equals(CapeCategory.CUSTOM)){
-            if (capeCount == 0){
-                nvg.drawCenteredText("You have no custom capes.", getX()+(getWidth()/2F), getY() + (getHeight()/2F) - 14, palette.getFontColor(ColorType.DARK), 12, Fonts.SEMIBOLD);
-                nvg.drawCenteredText("You can click the folder button at the top to open the folder!", getX()+(getWidth()/2F), getY() + (getHeight()/2F), palette.getFontColor(ColorType.DARK), 9, Fonts.MEDIUM);
-                nvg.drawCenteredText("(Shindo only supports capes that are PNG using Minecraft layout. You may need to restart Shindo!)", getX()+(getWidth()/2F), getY() + (getHeight()/2F) + 12, palette.getFontColor(ColorType.NORMAL), 7, Fonts.REGULAR);
+        if (currentCategory.equals(CapeCategory.CUSTOM)) {
+            if (capeCount == 0) {
+                nvg.drawCenteredText("You have no custom capes.", getX() + (getWidth() / 2F), getY() + (getHeight() / 2F) - 14, palette.getFontColor(ColorType.DARK), 12, Fonts.SEMIBOLD);
+                nvg.drawCenteredText("You can click the folder button at the top to open the folder!", getX() + (getWidth() / 2F), getY() + (getHeight() / 2F), palette.getFontColor(ColorType.DARK), 9, Fonts.MEDIUM);
+                nvg.drawCenteredText("(Shindo only supports capes that are PNG using Minecraft layout. You may need to restart Shindo!)", getX() + (getWidth() / 2F), getY() + (getHeight() / 2F) + 12, palette.getFontColor(ColorType.NORMAL), 7, Fonts.REGULAR);
             }
             // you may need to reload the game
         }
 
-        nvg.drawVerticalGradientRect(getX() + 15,  this.getY(), getWidth() - 30, 12,  palette.getBackgroundColor(ColorType.NORMAL), noColour); //top
-        nvg.drawVerticalGradientRect(getX() + 15,  this.getY()+ this.getHeight() - 12, getWidth() - 30, 12, noColour, palette.getBackgroundColor(ColorType.NORMAL)); // bottom
+        nvg.drawVerticalGradientRect(getX() + 15, this.getY(), getWidth() - 30, 12, palette.getBackgroundColor(ColorType.NORMAL), noColour); //top
+        nvg.drawVerticalGradientRect(getX() + 15, this.getY() + this.getHeight() - 12, getWidth() - 30, 12, noColour, palette.getBackgroundColor(ColorType.NORMAL)); // bottom
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if(!MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) return;
+        if (!MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) return;
 
         Shindo instance = Shindo.getInstance();
         NanoVGManager nvg = instance.getNanoVGManager();
@@ -193,12 +192,13 @@ public class CapesScene extends CosmeticScene {
     @Override
     public void keyTyped(char typedChar, int keyCode) {
         getParent().scroll.onKey(keyCode);
-        if(keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE)  getParent().getSearchBox().setFocused(true);
+        if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE)
+            getParent().getSearchBox().setFocused(true);
     }
 
     private boolean filterCape(Cape cape) {
 
-        if(!currentCategory.equals(CapeCategory.ALL) && !currentCategory.equals(cape.getCategory())) {
+        if (!currentCategory.equals(CapeCategory.ALL) && !currentCategory.equals(cape.getCategory())) {
             return true;
         }
 

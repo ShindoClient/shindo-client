@@ -10,9 +10,8 @@ import java.util.List;
 
 public class RestrictedMod {
 
-    String currentServerIP = "";
     public Boolean shouldCheck = true;
-
+    String currentServerIP = "";
     BlacklistManager blm = Shindo.getInstance().getBlacklistManager();
 
     public boolean checkAllowed(Mod m) {
@@ -36,12 +35,12 @@ public class RestrictedMod {
         blm.check();
     }
 
-    public void joinWorld(){
+    public void joinWorld() {
         this.currentServerIP = ServerUtils.getServerIP();
-        for(Mod m : Shindo.getInstance().getModManager().getMods()){
-            if(!checkAllowed(m) && m.isToggled()){
+        for (Mod m : Shindo.getInstance().getModManager().getMods()) {
+            if (!checkAllowed(m) && m.isToggled()) {
                 m.setToggled(false);
-                Shindo.getInstance().getNotificationManager().post(m.getName(),  "Disabled due to serverside blacklist" , NotificationType.INFO);
+                Shindo.getInstance().getNotificationManager().post(m.getName(), "Disabled due to serverside blacklist", NotificationType.INFO);
             }
         }
     }

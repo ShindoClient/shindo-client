@@ -18,54 +18,26 @@ import java.util.Map;
 
 @Mixin(ChatLine.class)
 public class MixinChatLine implements IMixinChatLine {
-	
-    @Unique private NetworkPlayerInfo client$playerInfo;
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void onInit(int i, IChatComponent iChatComponent, int j, CallbackInfo ci) {
-    	
-        chatLines.add(new WeakReference<>((ChatLine) (Object) this));
-        NetHandlerPlayClient netHandler = Minecraft.getMinecraft().getNetHandler();
-        if (netHandler == null) return;
-        Map<String, NetworkPlayerInfo> nicknameCache = new HashMap<>();
-        
-        try {
-            for (String word : iChatComponent.getFormattedText().split("(§.)|\\W")) {
-            	
-                if (word.isEmpty()) {
-                	continue;
-                }
-                
-                client$playerInfo = netHandler.getPlayerInfo(word);
-                
-                if (client$playerInfo == null) {
-                    client$playerInfo = client$getPlayerFromNickname(word, netHandler, nicknameCache);
-                }
-                
-                if (client$playerInfo != null) {
-                	break;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-    }
+    @Unique
+    private NetworkPlayerInfo client$playerInfo;
 
     @Unique
     private static NetworkPlayerInfo client$getPlayerFromNickname(String word, NetHandlerPlayClient connection, Map<String, NetworkPlayerInfo> nicknameCache) {
-    	
+
         if (nicknameCache.isEmpty()) {
             for (NetworkPlayerInfo p : connection.getPlayerInfoMap()) {
-            	
+
                 IChatComponent displayName = p.getDisplayName();
-                
+
                 if (displayName != null) {
                     String nickname = displayName.getUnformattedTextForChat();
-                    
+
                     if (word.equals(nickname)) {
                         nicknameCache.clear();
                         return p;
                     }
-                    
+
                     nicknameCache.put(nickname, p);
                 }
             }
@@ -74,6 +46,35 @@ public class MixinChatLine implements IMixinChatLine {
         }
 
         return null;
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void onInit(int i, IChatComponent iChatComponent, int j, CallbackInfo ci) {
+
+        chatLines.add(new WeakReference<>((ChatLine) (Object) this));
+        NetHandlerPlayClient netHandler = Minecraft.getMinecraft().getNetHandler();
+        if (netHandler == null) return;
+        Map<String, NetworkPlayerInfo> nicknameCache = new HashMap<>();
+
+        try {
+            for (String word : iChatComponent.getFormattedText().split("(§.)|\\W")) {
+
+                if (word.isEmpty()) {
+                    continue;
+                }
+
+                client$playerInfo = netHandler.getPlayerInfo(word);
+
+                if (client$playerInfo == null) {
+                    client$playerInfo = client$getPlayerFromNickname(word, netHandler, nicknameCache);
+                }
+
+                if (client$playerInfo != null) {
+                    break;
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

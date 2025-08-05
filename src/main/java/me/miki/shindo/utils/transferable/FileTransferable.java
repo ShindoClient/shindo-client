@@ -5,17 +5,17 @@ import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FileTransferable  implements Transferable {
-	
+public class FileTransferable implements Transferable {
+
     private final File file;
 
     public FileTransferable(File file) {
-    	this.file = file;
+        this.file = file;
     }
-    
+
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[] { DataFlavor.javaFileListFlavor };
+        return new DataFlavor[]{DataFlavor.javaFileListFlavor};
     }
 
     @Override

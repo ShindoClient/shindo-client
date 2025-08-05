@@ -1,29 +1,28 @@
 package me.miki.shindo.management.mods.impl.rearview;
 
-import java.nio.IntBuffer;
-
-import org.lwjgl.opengl.ARBFramebufferObject;
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import org.lwjgl.opengl.ARBFramebufferObject;
+import org.lwjgl.opengl.GL11;
+
+import java.nio.IntBuffer;
 
 public class RearviewCamera {
 
-	private Minecraft mc = Minecraft.getMinecraft();
-	
-	private int mirrorFBO;
-	private int mirrorTex;
-	private int mirrorDepth;
-	private long renderEndNanoTime;
-	private RenderGlobalHelper mirrorRenderGlobal;
-	private float fov;
-	private boolean firstUpdate, recording, lockCamera;
-	
-	public RearviewCamera() {
+    private final Minecraft mc = Minecraft.getMinecraft();
+
+    private final int mirrorFBO;
+    private final int mirrorTex;
+    private final int mirrorDepth;
+    private long renderEndNanoTime;
+    private final RenderGlobalHelper mirrorRenderGlobal;
+    private float fov;
+    private boolean firstUpdate, recording, lockCamera;
+
+    public RearviewCamera() {
         mirrorFBO = ARBFramebufferObject.glGenFramebuffers();
         mirrorTex = GL11.glGenTextures();
         mirrorDepth = GL11.glGenTextures();
@@ -38,43 +37,43 @@ public class RearviewCamera {
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, 800, 600, 0, GL11.GL_DEPTH_COMPONENT,
                 GL11.GL_INT, (IntBuffer) null);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-        
+
         mirrorRenderGlobal = new RenderGlobalHelper();
         fov = 70;
         lockCamera = true;
-	}
-	
+    }
+
     public void updateMirror() {
-    	
+
         int w, h;
         float y, py, p, pp;
         boolean hide;
         int view, limit;
         long endTime = 0;
-        
+
         GuiScreen currentScreen;
-        
+
         if (!this.firstUpdate) {
             mc.renderGlobal.loadRenderers();
             this.firstUpdate = true;
         }
-        
+
         w = mc.displayWidth;
         h = mc.displayHeight;
-        y = ((IMixinMinecraft)mc).getRenderViewEntity().rotationYaw;
-        py = ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationYaw;
-        p = ((IMixinMinecraft)mc).getRenderViewEntity().rotationPitch;
-        pp = ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationPitch;
+        y = ((IMixinMinecraft) mc).getRenderViewEntity().rotationYaw;
+        py = ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationYaw;
+        p = ((IMixinMinecraft) mc).getRenderViewEntity().rotationPitch;
+        pp = ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationPitch;
         hide = mc.gameSettings.hideGUI;
         view = mc.gameSettings.thirdPersonView;
         limit = mc.gameSettings.limitFramerate;
         fov = mc.gameSettings.fovSetting;
         currentScreen = mc.currentScreen;
-    	
+
         switchToFB();
 
         if (limit != 0) {
-        	endTime = renderEndNanoTime;
+            endTime = renderEndNanoTime;
         }
 
         mc.currentScreen = null;
@@ -85,39 +84,39 @@ public class RearviewCamera {
         mc.gameSettings.limitFramerate = 0;
         mc.gameSettings.fovSetting = fov;
 
-        ((IMixinMinecraft)mc).getRenderViewEntity().rotationYaw += 180;
-        ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationYaw += 180;
-        
-        if(lockCamera) {
-            ((IMixinMinecraft)mc).getRenderViewEntity().rotationPitch = 0;
-            ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationPitch = 0;
-        }else {
-            ((IMixinMinecraft)mc).getRenderViewEntity().rotationPitch = -p + 18;
-            ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationPitch = -pp + 18;
+        ((IMixinMinecraft) mc).getRenderViewEntity().rotationYaw += 180;
+        ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationYaw += 180;
+
+        if (lockCamera) {
+            ((IMixinMinecraft) mc).getRenderViewEntity().rotationPitch = 0;
+            ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationPitch = 0;
+        } else {
+            ((IMixinMinecraft) mc).getRenderViewEntity().rotationPitch = -p + 18;
+            ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationPitch = -pp + 18;
         }
 
         recording = true;
         mirrorRenderGlobal.switchTo();
 
         GL11.glPushAttrib(272393);
-        
-        mc.entityRenderer.renderWorld(((IMixinMinecraft)mc).getTimer().renderPartialTicks, System.nanoTime());
+
+        mc.entityRenderer.renderWorld(((IMixinMinecraft) mc).getTimer().renderPartialTicks, System.nanoTime());
         mc.entityRenderer.setupOverlayRendering();
-        
+
         if (limit != 0) {
-        	renderEndNanoTime = endTime;
+            renderEndNanoTime = endTime;
         }
-        
+
         GL11.glPopAttrib();
-        
+
         mirrorRenderGlobal.switchFrom();
         recording = false;
-        
+
         mc.currentScreen = currentScreen;
-        ((IMixinMinecraft)mc).getRenderViewEntity().rotationYaw = y;
-        ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationYaw = py;
-        ((IMixinMinecraft)mc).getRenderViewEntity().rotationPitch = p;
-        ((IMixinMinecraft)mc).getRenderViewEntity().prevRotationPitch = pp;
+        ((IMixinMinecraft) mc).getRenderViewEntity().rotationYaw = y;
+        ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationYaw = py;
+        ((IMixinMinecraft) mc).getRenderViewEntity().rotationPitch = p;
+        ((IMixinMinecraft) mc).getRenderViewEntity().prevRotationPitch = pp;
         mc.gameSettings.limitFramerate = limit;
         mc.gameSettings.thirdPersonView = view;
         mc.gameSettings.hideGUI = hide;
@@ -127,40 +126,40 @@ public class RearviewCamera {
 
         switchFromFB();
     }
-	
+
     private void switchToFB() {
-    	
+
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-		GlStateManager.disableDepth();
-		GlStateManager.disableLighting();
-		
-    	OpenGlHelper.glBindFramebuffer(ARBFramebufferObject.GL_DRAW_FRAMEBUFFER, mirrorFBO);
+        GlStateManager.disableDepth();
+        GlStateManager.disableLighting();
+
+        OpenGlHelper.glBindFramebuffer(ARBFramebufferObject.GL_DRAW_FRAMEBUFFER, mirrorFBO);
         OpenGlHelper.glFramebufferTexture2D(OpenGlHelper.GL_FRAMEBUFFER,
-        		OpenGlHelper.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,
+                OpenGlHelper.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,
                 mirrorTex, 0);
         OpenGlHelper.glFramebufferTexture2D(OpenGlHelper.GL_FRAMEBUFFER,
-        		OpenGlHelper.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D,
+                OpenGlHelper.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D,
                 mirrorDepth, 0);
     }
 
     private void switchFromFB() {
-    	OpenGlHelper.glBindFramebuffer(ARBFramebufferObject.GL_DRAW_FRAMEBUFFER, 0);
+        OpenGlHelper.glBindFramebuffer(ARBFramebufferObject.GL_DRAW_FRAMEBUFFER, 0);
     }
-    
+
     public int getTexture() {
-    	return mirrorTex;
+        return mirrorTex;
     }
 
-	public boolean isRecording() {
-		return recording;
-	}
+    public boolean isRecording() {
+        return recording;
+    }
 
-	public void setFov(float fov) {
-		this.fov = fov;
-	}
+    public void setFov(float fov) {
+        this.fov = fov;
+    }
 
-	public void setLockCamera(boolean lockCamera) {
-		this.lockCamera = lockCamera;
-	}
+    public void setLockCamera(boolean lockCamera) {
+        this.lockCamera = lockCamera;
+    }
 }

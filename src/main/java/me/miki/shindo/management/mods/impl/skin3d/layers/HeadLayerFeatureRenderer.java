@@ -1,9 +1,6 @@
 package me.miki.shindo.management.mods.impl.skin3d.layers;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
 import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.mods.impl.Skin3DMod;
@@ -17,81 +14,83 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import java.util.Set;
+
 public class HeadLayerFeatureRenderer implements LayerRenderer<AbstractClientPlayer> {
 
-	private Set<Item> hideHeadLayers = Sets.newHashSet(Items.skull);
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private final boolean thinArms;
-	private static final Minecraft mc = Minecraft.getMinecraft();
-	private RenderPlayer playerRenderer;
-	
+    private final Set<Item> hideHeadLayers = Sets.newHashSet(Items.skull);
+    private final RenderPlayer playerRenderer;
+
     public HeadLayerFeatureRenderer(RenderPlayer playerRenderer) {
-        thinArms = ((IMixinRenderPlayer)playerRenderer).hasThinArms();
+        thinArms = ((IMixinRenderPlayer) playerRenderer).hasThinArms();
         this.playerRenderer = playerRenderer;
     }
 
     @Override
     public void doRenderLayer(AbstractClientPlayer player, float paramFloat1, float paramFloat2, float paramFloat3, float deltaTick, float paramFloat5, float paramFloat6, float paramFloat7) {
-    	
-		if (!player.hasSkin() || player.isInvisible()) {
-			return;
-		}
-		
-		if(mc.thePlayer.getPositionVector().squareDistanceTo(player.getPositionVector()) > Skin3DMod.getInstance().getRenderDistanceLOD() * Skin3DMod.getInstance().getRenderDistanceLOD()) {
-			return;
-		}
-		
-		ItemStack itemStack = player.getEquipmentInSlot(1);
-		
-		if (itemStack != null && hideHeadLayers.contains(itemStack.getItem())) {
-			return;
-		}
-		
-		IMixinEntityPlayer settings = (IMixinEntityPlayer) player;
-		
-		if(settings.getHeadLayers() == null && !setupModel(player, settings)) {
-			return;
-		}
 
-		renderCustomHelmet(settings, player, deltaTick);
-	}
+        if (!player.hasSkin() || player.isInvisible()) {
+            return;
+        }
 
-	private boolean setupModel(AbstractClientPlayer abstractClientPlayerEntity, IMixinEntityPlayer settings) {
-		
-		if(!SkinUtils.hasCustomSkin(abstractClientPlayerEntity)) {
-			return false;
-		}
-		
-		SkinUtils.setup3dLayers(abstractClientPlayerEntity, settings, thinArms, null);
-		
-		return true;
-	}
+        if (mc.thePlayer.getPositionVector().squareDistanceTo(player.getPositionVector()) > Skin3DMod.getInstance().getRenderDistanceLOD() * Skin3DMod.getInstance().getRenderDistanceLOD()) {
+            return;
+        }
 
-	public void renderCustomHelmet(IMixinEntityPlayer settings, AbstractClientPlayer abstractClientPlayer, float deltaTick) {
-		
-		if(settings.getHeadLayers() == null) {
-			return;
-		}
-		
-		if(playerRenderer.getMainModel().bipedHead.isHidden) {
-			return;
-		}
-		
-		float voxelSize = Skin3DMod.getInstance().getHeadVoxelSize();
+        ItemStack itemStack = player.getEquipmentInSlot(1);
 
-		GlStateManager.pushMatrix();
-		
-		if(abstractClientPlayer.isSneaking()) {
+        if (itemStack != null && hideHeadLayers.contains(itemStack.getItem())) {
+            return;
+        }
+
+        IMixinEntityPlayer settings = (IMixinEntityPlayer) player;
+
+        if (settings.getHeadLayers() == null && !setupModel(player, settings)) {
+            return;
+        }
+
+        renderCustomHelmet(settings, player, deltaTick);
+    }
+
+    private boolean setupModel(AbstractClientPlayer abstractClientPlayerEntity, IMixinEntityPlayer settings) {
+
+        if (!SkinUtils.hasCustomSkin(abstractClientPlayerEntity)) {
+            return false;
+        }
+
+        SkinUtils.setup3dLayers(abstractClientPlayerEntity, settings, thinArms, null);
+
+        return true;
+    }
+
+    public void renderCustomHelmet(IMixinEntityPlayer settings, AbstractClientPlayer abstractClientPlayer, float deltaTick) {
+
+        if (settings.getHeadLayers() == null) {
+            return;
+        }
+
+        if (playerRenderer.getMainModel().bipedHead.isHidden) {
+            return;
+        }
+
+        float voxelSize = Skin3DMod.getInstance().getHeadVoxelSize();
+
+        GlStateManager.pushMatrix();
+
+        if (abstractClientPlayer.isSneaking()) {
             GlStateManager.translate(0.0F, 0.2F, 0.0F);
         }
-		
-		playerRenderer.getMainModel().bipedHead.postRender(0.0625F);
-	    GlStateManager.scale(0.0625, 0.0625, 0.0625);
-		GlStateManager.scale(voxelSize, voxelSize, voxelSize);
-		
-		boolean tintRed = abstractClientPlayer.hurtTime > 0 || abstractClientPlayer.deathTime > 0;
-		settings.getHeadLayers().render(tintRed);
-		GlStateManager.popMatrix();
-	}
+
+        playerRenderer.getMainModel().bipedHead.postRender(0.0625F);
+        GlStateManager.scale(0.0625, 0.0625, 0.0625);
+        GlStateManager.scale(voxelSize, voxelSize, voxelSize);
+
+        boolean tintRed = abstractClientPlayer.hurtTime > 0 || abstractClientPlayer.deathTime > 0;
+        settings.getHeadLayers().render(tintRed);
+        GlStateManager.popMatrix();
+    }
 
     @Override
     public boolean shouldCombineTextures() {

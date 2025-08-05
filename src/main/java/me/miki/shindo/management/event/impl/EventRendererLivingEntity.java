@@ -6,36 +6,38 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
 public class EventRendererLivingEntity extends Event {
-	
-	private RendererLivingEntity<EntityLivingBase> renderer;
-	private Entity entity;
-	private double x, y, z;
-	
-	public EventRendererLivingEntity(RendererLivingEntity<EntityLivingBase> renderer, Entity entity, double x, double y, double z) {
-		this.renderer = renderer;
-		this.entity = entity;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
 
-	public RendererLivingEntity<EntityLivingBase> getRenderer() {
-		return renderer;
-	}
+    private final RendererLivingEntity<EntityLivingBase> renderer;
+    private final Entity entity;
+    private final double x;
+    private final double y;
+    private final double z;
 
-	public Entity getEntity() {
-		return entity;
-	}
+    public EventRendererLivingEntity(RendererLivingEntity<EntityLivingBase> renderer, Entity entity, double x, double y, double z) {
+        this.renderer = renderer;
+        this.entity = entity;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
-	public double getX() {
-		return x;
-	}
+    public RendererLivingEntity<EntityLivingBase> getRenderer() {
+        return renderer;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public Entity getEntity() {
+        return entity;
+    }
 
-	public double getZ() {
-		return z;
-	}
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
 }

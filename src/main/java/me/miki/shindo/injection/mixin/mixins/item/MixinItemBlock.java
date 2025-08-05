@@ -19,6 +19,6 @@ public class MixinItemBlock {
      */
     @Overwrite
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
-        return FixedSoundEngine.onItemUse((ItemBlock)(Object)this, stack, playerIn, worldIn, pos, side, hitX, hitY, hitZ);
+        return FixedSoundEngine.onItemUse((ItemBlock) (Object) this, stack, playerIn, worldIn, pos, side, hitX, hitY, hitZ);
     }
 }

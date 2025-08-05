@@ -1,28 +1,27 @@
 package me.miki.shindo.injection.mixin.mixins.render;
 
-import java.nio.IntBuffer;
-
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import java.nio.IntBuffer;
 
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer {
 
-	@Shadow
+    @Shadow
     private boolean isDrawing;
-	
-    @Shadow 
+
+    @Shadow
     private IntBuffer rawIntBuffer;
-    
-    @Shadow 
+
+    @Shadow
     private VertexFormat vertexFormat;
-    
+
     @Inject(method = "finishDrawing", at = @At(value = "INVOKE", target = "Ljava/nio/ByteBuffer;limit(I)Ljava/nio/Buffer;", remap = false))
     private void resetBuffer(CallbackInfo ci) {
         this.rawIntBuffer.position(0);

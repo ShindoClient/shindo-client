@@ -4,37 +4,37 @@ import java.nio.FloatBuffer;
 
 public final class Matrix4f {
 
-    protected float m00;
+    float m00;
 
-    protected float m01;
+    float m01;
 
-    protected float m02;
+    float m02;
 
-    protected float m03;
+    float m03;
 
-    protected float m10;
+    float m10;
 
-    protected float m11;
+    float m11;
 
-    protected float m12;
+    float m12;
 
-    protected float m13;
+    float m13;
 
-    protected float m20;
+    float m20;
 
-    protected float m21;
+    float m21;
 
-    protected float m22;
+    float m22;
 
-    protected float m23;
+    float m23;
 
-    protected float m30;
+    float m30;
 
-    protected float m31;
+    float m31;
 
-    protected float m32;
+    float m32;
 
-    protected float m33;
+    float m33;
 
     public Matrix4f() {
     }
@@ -84,6 +84,74 @@ public final class Matrix4f {
         this.m12 = 2.0F * (n - p);
     }
 
+    private static boolean isInteger(float f) {
+        return (Math.abs(f - Math.round(f)) <= 1.0E-5D);
+    }
+
+    private static int bufferIndex(int i, int j) {
+        return j * 4 + i;
+    }
+
+    public static Matrix4f perspective(double d, float f, float g, float h) {
+        float i = (float) (1.0D / Math.tan(d * 0.01745329238474369D / 2.0D));
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.m00 = i / f;
+        matrix4f.m11 = i;
+        matrix4f.m22 = (h + g) / (g - h);
+        matrix4f.m32 = -1.0F;
+        matrix4f.m23 = 2.0F * h * g / (g - h);
+        return matrix4f;
+    }
+
+    public static Matrix4f orthographic(float f, float g, float h, float i) {
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.m00 = 2.0F / f;
+        matrix4f.m11 = 2.0F / g;
+        float j = i - h;
+        matrix4f.m22 = -2.0F / j;
+        matrix4f.m33 = 1.0F;
+        matrix4f.m03 = -1.0F;
+        matrix4f.m13 = 1.0F;
+        matrix4f.m23 = -(i + h) / j;
+        return matrix4f;
+    }
+
+    public static Matrix4f orthographic(float f, float g, float h, float i, float j, float k) {
+        Matrix4f matrix4f = new Matrix4f();
+        float l = g - f;
+        float m = h - i;
+        float n = k - j;
+        matrix4f.m00 = 2.0F / l;
+        matrix4f.m11 = 2.0F / m;
+        matrix4f.m22 = -2.0F / n;
+        matrix4f.m03 = -(g + f) / l;
+        matrix4f.m13 = -(h + i) / m;
+        matrix4f.m23 = -(k + j) / n;
+        matrix4f.m33 = 1.0F;
+        return matrix4f;
+    }
+
+    public static Matrix4f createScaleMatrix(float f, float g, float h) {
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.m00 = f;
+        matrix4f.m11 = g;
+        matrix4f.m22 = h;
+        matrix4f.m33 = 1.0F;
+        return matrix4f;
+    }
+
+    public static Matrix4f createTranslateMatrix(float f, float g, float h) {
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.m00 = 1.0F;
+        matrix4f.m11 = 1.0F;
+        matrix4f.m22 = 1.0F;
+        matrix4f.m33 = 1.0F;
+        matrix4f.m03 = f;
+        matrix4f.m13 = g;
+        matrix4f.m23 = h;
+        return matrix4f;
+    }
+
     public boolean isInteger() {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.m30 = 1.0F;
@@ -97,10 +165,6 @@ public final class Matrix4f {
                 && isInteger(matrix4f2.m11 / matrix4f2.m13) && isInteger(matrix4f2.m21 / matrix4f2.m23)
                 && isInteger(matrix4f2.m02 / matrix4f2.m03) && isInteger(matrix4f2.m12 / matrix4f2.m13)
                 && isInteger(matrix4f2.m22 / matrix4f2.m23));
-    }
-
-    private static boolean isInteger(float f) {
-        return (Math.abs(f - Math.round(f)) <= 1.0E-5D);
     }
 
     public boolean equals(Object object) {
@@ -137,10 +201,6 @@ public final class Matrix4f {
         i = 31 * i + ((this.m32 != 0.0F) ? Float.floatToIntBits(this.m32) : 0);
         i = 31 * i + ((this.m33 != 0.0F) ? Float.floatToIntBits(this.m33) : 0);
         return i;
-    }
-
-    private static int bufferIndex(int i, int j) {
-        return j * 4 + i;
     }
 
     public void load(FloatBuffer floatBuffer) {
@@ -209,41 +269,40 @@ public final class Matrix4f {
     }
 
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Matrix4f:\n");
-        stringBuilder.append(this.m00);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m01);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m02);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m03);
-        stringBuilder.append("\n");
-        stringBuilder.append(this.m10);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m11);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m12);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m13);
-        stringBuilder.append("\n");
-        stringBuilder.append(this.m20);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m21);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m22);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m23);
-        stringBuilder.append("\n");
-        stringBuilder.append(this.m30);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m31);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m32);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m33);
-        stringBuilder.append("\n");
-        return stringBuilder.toString();
+        String stringBuilder = "Matrix4f:\n" +
+                this.m00 +
+                " " +
+                this.m01 +
+                " " +
+                this.m02 +
+                " " +
+                this.m03 +
+                "\n" +
+                this.m10 +
+                " " +
+                this.m11 +
+                " " +
+                this.m12 +
+                " " +
+                this.m13 +
+                "\n" +
+                this.m20 +
+                " " +
+                this.m21 +
+                " " +
+                this.m22 +
+                " " +
+                this.m23 +
+                "\n" +
+                this.m30 +
+                " " +
+                this.m31 +
+                " " +
+                this.m32 +
+                " " +
+                this.m33 +
+                "\n";
+        return stringBuilder;
     }
 
     public void store(FloatBuffer floatBuffer) {
@@ -505,45 +564,6 @@ public final class Matrix4f {
         return this.m00 + this.m11 + this.m22 + this.m33;
     }
 
-    public static Matrix4f perspective(double d, float f, float g, float h) {
-        float i = (float) (1.0D / Math.tan(d * 0.01745329238474369D / 2.0D));
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.m00 = i / f;
-        matrix4f.m11 = i;
-        matrix4f.m22 = (h + g) / (g - h);
-        matrix4f.m32 = -1.0F;
-        matrix4f.m23 = 2.0F * h * g / (g - h);
-        return matrix4f;
-    }
-
-    public static Matrix4f orthographic(float f, float g, float h, float i) {
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.m00 = 2.0F / f;
-        matrix4f.m11 = 2.0F / g;
-        float j = i - h;
-        matrix4f.m22 = -2.0F / j;
-        matrix4f.m33 = 1.0F;
-        matrix4f.m03 = -1.0F;
-        matrix4f.m13 = 1.0F;
-        matrix4f.m23 = -(i + h) / j;
-        return matrix4f;
-    }
-
-    public static Matrix4f orthographic(float f, float g, float h, float i, float j, float k) {
-        Matrix4f matrix4f = new Matrix4f();
-        float l = g - f;
-        float m = h - i;
-        float n = k - j;
-        matrix4f.m00 = 2.0F / l;
-        matrix4f.m11 = 2.0F / m;
-        matrix4f.m22 = -2.0F / n;
-        matrix4f.m03 = -(g + f) / l;
-        matrix4f.m13 = -(h + i) / m;
-        matrix4f.m23 = -(k + j) / n;
-        matrix4f.m33 = 1.0F;
-        return matrix4f;
-    }
-
     public void translate(Vector3f vector3f) {
         this.m03 += vector3f.x();
         this.m13 += vector3f.y();
@@ -559,26 +579,5 @@ public final class Matrix4f {
         this.m13 = this.m10 * f + this.m11 * g + this.m12 * h + this.m13;
         this.m23 = this.m20 * f + this.m21 * g + this.m22 * h + this.m23;
         this.m33 = this.m30 * f + this.m31 * g + this.m32 * h + this.m33;
-    }
-
-    public static Matrix4f createScaleMatrix(float f, float g, float h) {
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.m00 = f;
-        matrix4f.m11 = g;
-        matrix4f.m22 = h;
-        matrix4f.m33 = 1.0F;
-        return matrix4f;
-    }
-
-    public static Matrix4f createTranslateMatrix(float f, float g, float h) {
-        Matrix4f matrix4f = new Matrix4f();
-        matrix4f.m00 = 1.0F;
-        matrix4f.m11 = 1.0F;
-        matrix4f.m22 = 1.0F;
-        matrix4f.m33 = 1.0F;
-        matrix4f.m03 = f;
-        matrix4f.m13 = g;
-        matrix4f.m23 = h;
-        return matrix4f;
     }
 }

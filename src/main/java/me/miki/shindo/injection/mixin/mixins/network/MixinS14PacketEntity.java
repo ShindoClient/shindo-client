@@ -1,39 +1,42 @@
 package me.miki.shindo.injection.mixin.mixins.network;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-
 import me.miki.shindo.injection.interfaces.IMixinS14PacketEntity;
 import net.minecraft.network.play.server.S14PacketEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(S14PacketEntity.class)
 public class MixinS14PacketEntity implements IMixinS14PacketEntity {
 
-	@Shadow protected int entityId;
-	
-	@Shadow protected byte posX;
-	
-	@Shadow protected byte posY;
-	
-	@Shadow protected byte posZ;
+    @Shadow
+    protected int entityId;
 
-	@Override
-	public int getEntityId() {
-		return entityId;
-	}
+    @Shadow
+    protected byte posX;
 
-	@Override
-	public byte getPosX() {
-		return posX;
-	}
+    @Shadow
+    protected byte posY;
 
-	@Override
-	public byte getPosY() {
-		return posY;
-	}
+    @Shadow
+    protected byte posZ;
 
-	@Override
-	public byte getPosZ() {
-		return posZ;
-	}
+    @Override
+    public int getEntityId() {
+        return entityId;
+    }
+
+    @Override
+    public byte getPosX() {
+        return posX;
+    }
+
+    @Override
+    public byte getPosY() {
+        return posY;
+    }
+
+    @Override
+    public byte getPosZ() {
+        return posZ;
+    }
 }

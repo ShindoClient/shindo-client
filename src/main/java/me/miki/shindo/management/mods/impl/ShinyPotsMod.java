@@ -6,15 +6,15 @@ import me.miki.shindo.management.mods.ModCategory;
 
 public class ShinyPotsMod extends Mod {
 
-	private static ShinyPotsMod instance;
-	
-	public ShinyPotsMod() {
-		super(TranslateText.SHINY_POTS, TranslateText.SHINY_POTS_DESCRIPTION, ModCategory.RENDER);
-		
-		instance = this;
-	}
+    private static ShinyPotsMod instance;
 
-	public static ShinyPotsMod getInstance() {
-		return instance;
-	}
+    public ShinyPotsMod() {
+        super(TranslateText.SHINY_POTS, TranslateText.SHINY_POTS_DESCRIPTION, ModCategory.RENDER);
+
+        instance = this;
+    }
+
+    public static ShinyPotsMod getInstance() {
+        return instance;
+    }
 }

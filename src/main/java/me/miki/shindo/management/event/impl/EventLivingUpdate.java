@@ -4,14 +4,14 @@ import me.miki.shindo.management.event.Event;
 import net.minecraft.entity.EntityLivingBase;
 
 public class EventLivingUpdate extends Event {
-	
-	private EntityLivingBase entity;
-	
-	public EventLivingUpdate(EntityLivingBase entity) {
-		this.entity = entity;
-	}
 
-	public EntityLivingBase getEntity() {
-		return entity;
-	}
+    private final EntityLivingBase entity;
+
+    public EventLivingUpdate(EntityLivingBase entity) {
+        this.entity = entity;
+    }
+
+    public EntityLivingBase getEntity() {
+        return entity;
+    }
 }

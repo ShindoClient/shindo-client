@@ -18,17 +18,17 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     @Inject(method = "initGui", at = @At("TAIL"))
     public void preInitGui(CallbackInfo ci) {
-        if(ViaVersionMod.getInstance().isToggled()) {
+        if (ViaVersionMod.getInstance().isToggled()) {
             this.buttonList.add(ViaShindo.getInstance().getAsyncVersionSlider());
         }
     }
 
-	/**
+    /**
      * @author EldoDebug
      * @reason Add GuiFixConnecting
      */
     @Overwrite
-    private void connectToServer(ServerData server){
+    private void connectToServer(ServerData server) {
         mc.displayGuiScreen(new GuiFixConnecting(this, mc, server));
     }
 }

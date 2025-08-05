@@ -4,14 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import me.miki.mp3agic.Mp3File;
 import me.miki.mp3agic.interfaces.ID3v2;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.music.ytdlp.YTDLP;
@@ -24,50 +25,51 @@ import me.miki.shindo.utils.file.FileUtils;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
+
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+
 
 
 public class MusicManager {
 
-	private CopyOnWriteArrayList<Music> musics = new CopyOnWriteArrayList<Music>();
-	private YTDLP ytdlp = new YTDLP();
+    private final CopyOnWriteArrayList<MusicData> musics = new CopyOnWriteArrayList<MusicData>();
+    private final YTDLP ytdlp = new YTDLP();
 
-	private Music currentMusic;
-	private Media media;
-	private MediaPlayer mediaPlayer;
+    private MusicData currentMusic;
+    private Media media;
+    private MediaPlayer mediaPlayer;
 
-	public MusicManager() {
-		load();
-		loadData();
-	}
+    public MusicManager() {
+        load();
+        loadData();
+    }
 
-	public void loadData() {
+    public void loadData() {
 
-		FileManager fileManager = Shindo.getInstance().getFileManager();
-		File cacheDir = new File(fileManager.getCacheDir(), "music");
-		File dataJson = new File(cacheDir, "Data.json");
+        FileManager fileManager = Shindo.getInstance().getFileManager();
+        File cacheDir = new File(fileManager.getCacheDir(), "music");
+        File dataJson = new File(cacheDir, "Data.json");
 
-		ArrayList<String> favorites = new ArrayList<String>();
+        ArrayList<String> favorites = new ArrayList<String>();
 
-		if(!dataJson.exists()) {
-			fileManager.createFile(dataJson);
-		}
+        if (!dataJson.exists()) {
+            fileManager.createFile(dataJson);
+        }
 
-		try (FileReader reader = new FileReader(dataJson)) {
+        try (FileReader reader = new FileReader(dataJson)) {
 
-			Gson gson = new Gson();
-			JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+            Gson gson = new Gson();
+            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
 
-			if(jsonObject != null) {
+            if (jsonObject != null) {
 
-				JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "Favorite Musics");
+                JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "Favorite Musics");
 
-				if(jsonArray != null) {
+                if (jsonArray != null) {
 
                     for (JsonElement jsonElement : jsonArray) {
 
@@ -75,303 +77,295 @@ public class MusicManager {
 
                         favorites.add(JsonUtils.getStringProperty(rJsonObject, "Favorite", "null"));
                     }
-				}
-			}
-		} catch (Exception e) {}
+                }
+            }
+        } catch (Exception e) {
+            ShindoLogger.error("Failed to load music data", e);
+        }
+
+        for (MusicData m : musics) {
+            if (favorites.contains(m.getName())) {
+                m.setType(MusicType.FAVORITE);
+            }
+        }
+    }
 
-		for(Music m : musics) {
-			if(favorites.contains(m.getName())) {
-				m.setType(MusicType.FAVORITE);
-			}
-		}
-	}
+    public void saveData() {
 
-	public void saveData() {
+        FileManager fileManager = Shindo.getInstance().getFileManager();
+        File cacheDir = new File(fileManager.getCacheDir(), "music");
+        File dataJson = new File(cacheDir, "Data.json");
 
-		FileManager fileManager = Shindo.getInstance().getFileManager();
-		File cacheDir = new File(fileManager.getCacheDir(), "music");
-		File dataJson = new File(cacheDir, "Data.json");
+        if (!dataJson.exists()) {
+            fileManager.createFile(dataJson);
+        }
 
-		if(!dataJson.exists()) {
-			fileManager.createFile(dataJson);
-		}
+        try (FileWriter writer = new FileWriter(dataJson)) {
 
-		try(FileWriter writer = new FileWriter(dataJson)) {
+            JsonObject jsonObject = new JsonObject();
+            JsonArray jsonArray = new JsonArray();
+            Gson gson = new Gson();
 
-			JsonObject jsonObject = new JsonObject();
-			JsonArray jsonArray = new JsonArray();
-			Gson gson = new Gson();
+            for (MusicData m : musics) {
 
-			for(Music m : musics) {
+                if (m.getType().equals(MusicType.FAVORITE)) {
 
-				if(m.getType().equals(MusicType.FAVORITE)) {
+                    JsonObject innerJsonObject = new JsonObject();
+
+                    innerJsonObject.addProperty("Favorite", m.getName());
+
+                    jsonArray.add(innerJsonObject);
+                }
+            }
+
+            jsonObject.add("Favorite Musics", jsonArray);
+
+            gson.toJson(jsonObject, writer);
+
+        } catch (Exception e) {
+            ShindoLogger.error("Failed to save music", e);
+        }
+    }
+
+    public void play() {
+
+        if(currentMusic == null) {
+            return;
+        }
+
+        if(mediaPlayer != null) {
+            mediaPlayer.dispose();
+        }
+
+        if(media == null || mediaPlayer == null) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new JFXPanel();
+                }
+            });
+        }
 
-					JsonObject innerJsonObject = new JsonObject();
+        media = new Media(currentMusic.getAudio().toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
 
-					innerJsonObject.addProperty("Favorite", m.getName());
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                stop();
+                currentMusic = musics.get(RandomUtils.getRandomInt(0, musics.size() - 1));
+                play();
+            }
+        });
 
-					jsonArray.add(innerJsonObject);
-				}
-			}
+        mediaPlayer.play();
+        setVolume();
+    }
 
-			jsonObject.add("Favorite Musics", jsonArray);
+    public void setVolume() {
+        if(mediaPlayer != null) {
+            mediaPlayer.setVolume(InternalSettingsMod.getInstance().getVolumeSetting().getValue());
+        }
+    }
 
-			gson.toJson(jsonObject, writer);
-
-		} catch(Exception e) {}
-	}
-
-	public void play() {
-
-		if(currentMusic == null) {
-			return;
-		}
-
-		if(mediaPlayer != null) {
-			mediaPlayer.dispose();
-		}
-
-		if(media == null || mediaPlayer == null) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					new JFXPanel();
-				}
-			});
-		}
+    public void next() {
 
-		media = new Media(currentMusic.getAudio().toURI().toString());
-		mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.setAudioSpectrumInterval(0.06);
-		mediaPlayer.setAudioSpectrumListener(new AudioSpectrumListener() {
-
-			@Override
-			public void spectrumDataUpdate(double timestamp, double duration, float[] magnitudes, float[] phases) {
+        if(currentMusic == null) {
+            return;
+        }
 
-				for(int i = 0; i < 100; i++) {
-					MusicWaveform.visualizer[i] = (float) ((magnitudes[i] + 60) * (-3.0));
-				}
-			}
-		});
+        int max = musics.size();
+        int index = musics.indexOf(currentMusic);
 
-		mediaPlayer.setOnEndOfMedia(new Runnable() {
-			@Override
-			public void run() {
-				stop();
-				currentMusic = musics.get(RandomUtils.getRandomInt(0, musics.size() - 1));
-				play();
-			}
-		});
+        if(index < max - 1) {
+            index++;
+        }else {
+            index = 0;
+        }
 
-		mediaPlayer.play();
-		setVolume();
-	}
+        currentMusic = musics.get(index);
+        play();
+    }
 
-	public void setVolume() {
-		if(mediaPlayer != null) {
-			mediaPlayer.setVolume(InternalSettingsMod.getInstance().getVolumeSetting().getValue());
-		}
-	}
+    public void back() {
 
-	public void next() {
+        if(currentMusic == null) {
+            return;
+        }
 
-		if(currentMusic == null) {
-			return;
-		}
+        int max = musics.size();
+        int index = musics.indexOf(currentMusic);
 
-		int max = musics.size();
-		int index = musics.indexOf(currentMusic);
+        if(index > 0) {
+            index--;
+        }else {
+            index = max - 1;
+        }
 
-		if(index < max - 1) {
-			index++;
-		}else {
-			index = 0;
-		}
+        currentMusic = musics.get(index);
+        play();
+    }
 
-		currentMusic = musics.get(index);
-		play();
-	}
+    public void switchPlayBack() {
+        if(mediaPlayer != null) {
+            if(mediaPlayer.getStatus().equals(Status.PAUSED)) {
+                mediaPlayer.play();
+            }else if(mediaPlayer.getStatus().equals(Status.PLAYING)) {
+                mediaPlayer.pause();
+            }
+        }
+    }
 
-	public void back() {
+    public void stop() {
+        if(mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
 
-		if(currentMusic == null) {
-			return;
-		}
+    public boolean isPlaying() {
 
-		int max = musics.size();
-		int index = musics.indexOf(currentMusic);
+        if(mediaPlayer == null) {
+            return false;
+        }
 
-		if(index > 0) {
-			index--;
-		}else {
-			index = max - 1;
-		}
+        return mediaPlayer.getStatus().equals(Status.PLAYING);
+    }
 
-		currentMusic = musics.get(index);
-		play();
-	}
+    public float getCurrentTime() {
 
-	public void switchPlayBack() {
-		if(mediaPlayer != null) {
-			if(mediaPlayer.getStatus().equals(Status.PAUSED)) {
-				mediaPlayer.play();
-			}else if(mediaPlayer.getStatus().equals(Status.PLAYING)) {
-				mediaPlayer.pause();
-			}
-		}
-	}
+        if(mediaPlayer == null) {
+            return 0;
+        }
 
-	public void stop() {
-		if(mediaPlayer != null) {
-			mediaPlayer.stop();
-		}
-	}
+        return (float) mediaPlayer.getCurrentTime().toSeconds();
+    }
 
-	public boolean isPlaying() {
+    public float getEndTime() {
 
-		if(mediaPlayer == null) {
-			return false;
-		}
+        if(mediaPlayer == null) {
+            return 0;
+        }
 
-		return mediaPlayer.getStatus().equals(Status.PLAYING);
-	}
+        return (float) mediaPlayer.getMedia().getDuration().toSeconds();
+    }
 
-	public float getCurrentTime() {
+    public void load() {
 
-		if(mediaPlayer == null) {
-			return 0;
-		}
+        FileManager fileManager = Shindo.getInstance().getFileManager();
+        File musicDir = fileManager.getMusicDir();
+        File cacheDir = new File(fileManager.getCacheDir(), "music");
 
-		return (float) mediaPlayer.getCurrentTime().toSeconds();
-	}
+        if (!cacheDir.exists()) {
+            fileManager.createDir(cacheDir);
+        }
 
-	public float getEndTime() {
+        for (File f : Objects.requireNonNull(musicDir.listFiles())) {
 
-		if(mediaPlayer == null) {
-			return 0;
-		}
+            if (FileUtils.getExtension(f).equals("mp3")) {
 
-		return (float) mediaPlayer.getMedia().getDuration().toSeconds();
-	}
+                File imageFile = new File(cacheDir, f.getName().replace(".mp3", ""));
 
-	public void load() {
+                if (!imageFile.exists()) {
 
-		FileManager fileManager = Shindo.getInstance().getFileManager();
-		File musicDir = fileManager.getMusicDir();
-		File cacheDir = new File(fileManager.getCacheDir(), "music");
+                    try {
 
-		if(!cacheDir.exists()) {
-			fileManager.createDir(cacheDir);
-		}
+                        Mp3File mp3File = new Mp3File(f);
 
-		for(File f : musicDir.listFiles()) {
+                        if (mp3File.hasId3v2Tag()) {
 
-			if(FileUtils.getExtension(f).equals("mp3")) {
+                            ID3v2 id3v2tag = mp3File.getId3v2Tag();
 
-				File imageFile = new File(cacheDir, f.getName().replace(".mp3", ""));
+                            if (id3v2tag.getAlbumImage() != null) {
 
-				if(!imageFile.exists()) {
+                                byte[] imageData = id3v2tag.getAlbumImage();
 
-					try {
+                                FileOutputStream fos = new FileOutputStream(imageFile);
 
-						Mp3File mp3File = new Mp3File(f);
+                                fos.write(imageData);
+                                fos.close();
 
-						if(mp3File.hasId3v2Tag()) {
+                                BufferedImage original = ImageIO.read(imageFile);
+                                BufferedImage cropped = ImageUtils.cropCenterHorizontal(original, 256);
+                                ImageIO.write(cropped, "png", imageFile);
+                            }
+                        }
 
-							ID3v2 id3v2tag = mp3File.getId3v2Tag();
+                    } catch (Exception e) {
+                        ShindoLogger.error("An error occurred while processing the music file: " + f.getName(), e);
+                    }
+                }
+            }
+        }
 
-							if(id3v2tag.getAlbumImage() != null) {
+        for (File f : Objects.requireNonNull(musicDir.listFiles())) {
+            if (FileUtils.isAudioFile(f)) {
 
-								byte[] imageData = id3v2tag.getAlbumImage();
+                if (getMusicByAudioFile(f) != null) {
+                    continue;
+                }
 
-								FileOutputStream fos = new FileOutputStream(imageFile);
+                if (FileUtils.getExtension(f).equals("mp3")) {
 
-								fos.write(imageData);
-								fos.close();
+                    File imageFile = new File(cacheDir, f.getName().replace(".mp3", ""));
 
-								BufferedImage original = ImageIO.read(imageFile);
-								BufferedImage cropped = ImageUtils.cropCenterHorizontal(original, 256);
-								ImageIO.write(cropped, "png", imageFile);
-							}
-						}
+                    if (imageFile.exists()) {
+                        musics.add(new MusicData(f, imageFile, MusicType.ALL));
+                    } else {
+                        musics.add(new MusicData(f, null, MusicType.ALL));
+                    }
+                } else {
+                    musics.add(new MusicData(f, null, MusicType.ALL));
+                }
+            }
+        }
+    }
 
-					} catch(Exception e) {}
-				}
-			}
-		}
 
-		for(File f : musicDir.listFiles()) {
-			if(FileUtils.isAudioFile(f)) {
+    public void loadAsync() {
+        Multithreading.runAsync(this::load);
+    }
 
-				if(getMusicByAudioFile(f) != null) {
-					continue;
-				}
+    public MusicData getMusicByName(String name) {
 
-				if(FileUtils.getExtension(f).equals("mp3")) {
+        for (MusicData m : musics) {
+            if (m.getName().equals(name)) {
+                return m;
+            }
+        }
 
-					File imageFile = new File(cacheDir, f.getName().replace(".mp3", ""));
+        return null;
+    }
 
-					if(imageFile.exists()) {
-						musics.add(new Music(f, imageFile, MusicType.ALL));
-					}else {
-						musics.add(new Music(f, null, MusicType.ALL));
-					}
-				}else {
-					musics.add(new Music(f, null, MusicType.ALL));
-				}
-			}
-		}
-	}
+    public MusicData getMusicByAudioFile(File file) {
 
+        for (MusicData m : musics) {
+            if (m.getAudio().equals(file)) {
+                return m;
+            }
+        }
 
+        return null;
+    }
 
-	public void loadAsync() {
-		Multithreading.runAsync(()-> {
-			load();
-		});
-	}
+    public void delete(MusicData m) {
+        musics.remove(m);
+        m.getAudio().delete();
+        load();
+    }
 
-	public Music getMusicByName(String name) {
+    public CopyOnWriteArrayList<MusicData> getMusics() {
+        return musics;
+    }
 
-		for(Music m : musics) {
-			if(m.getName().equals(name)) {
-				return m;
-			}
-		}
+    public MusicData getCurrentMusic() {
+        return currentMusic;
+    }
 
-		return null;
-	}
+    public void setCurrentMusic(MusicData currentMusic) {
+        this.currentMusic = currentMusic;
+    }
 
-	public Music getMusicByAudioFile(File file) {
-
-		for(Music m : musics) {
-			if(m.getAudio().equals(file)) {
-				return m;
-			}
-		}
-
-		return null;
-	}
-
-	public void delete(Music m) {
-		musics.remove(m);
-		m.getAudio().delete();
-		load();
-	}
-
-	public CopyOnWriteArrayList<Music> getMusics() {
-		return musics;
-	}
-
-	public Music getCurrentMusic() {
-		return currentMusic;
-	}
-
-	public void setCurrentMusic(Music currentMusic) {
-		this.currentMusic = currentMusic;
-	}
-
-	public YTDLP getYtdlp() {
-		return ytdlp;
-	}
+    public YTDLP getYtdlp() {
+        return ytdlp;
+    }
 }

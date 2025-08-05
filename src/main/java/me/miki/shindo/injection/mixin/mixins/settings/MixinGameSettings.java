@@ -16,9 +16,9 @@ public class MixinGameSettings {
      */
     @Overwrite
     public static boolean isKeyDown(KeyBinding key) {
-    	
+
         int keyCode = key.getKeyCode();
-        
+
         if (keyCode != 0 && keyCode < 256) {
             return keyCode < 0 ? Mouse.isButtonDown(keyCode + 100) : Keyboard.isKeyDown(keyCode);
         } else {

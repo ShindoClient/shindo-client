@@ -1,7 +1,6 @@
 package me.miki.shindo.viaversion.platform;
 
 import com.viaversion.viabackwards.api.ViaBackwardsPlatform;
-
 import me.miki.shindo.viaversion.ViaLoadingBase;
 
 import java.io.File;
@@ -25,7 +24,8 @@ public class ViaBackwardsPlatformImpl implements ViaBackwardsPlatform {
     }
 
     @Override
-    public void disable() {}
+    public void disable() {
+    }
 
     @Override
     public File getDataFolder() {

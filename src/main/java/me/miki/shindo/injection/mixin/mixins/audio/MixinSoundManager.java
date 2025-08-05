@@ -18,17 +18,16 @@ import java.util.*;
 @Mixin(SoundManager.class)
 public abstract class MixinSoundManager {
 
-    @Shadow 
-    public abstract boolean isSoundPlaying(ISound sound);
-
-    @Shadow 
-    @Final 
+    private final List<String> pausedSounds = new ArrayList<>();
+    @Shadow
+    @Final
     private Map<String, ISound> playingSounds;
 
     @Shadow
     private boolean loaded;
-    
-    private final List<String> pausedSounds = new ArrayList<>();
+
+    @Shadow
+    public abstract boolean isSoundPlaying(ISound sound);
 
     @Redirect(method = "pauseAllSounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/audio/SoundManager$SoundSystemStarterThread;pause(Ljava/lang/String;)V", remap = false))
     private void onlyPauseSoundIfNecessary(@Coerce SoundSystem soundSystem, String sound) {
@@ -42,12 +41,12 @@ public abstract class MixinSoundManager {
     private Iterator<String> iterateOverPausedSounds(Set<String> keySet) {
         return pausedSounds.iterator();
     }
-    
+
     @Inject(method = "playSound", at = @At("HEAD"))
     public void prePlaySound(ISound p_sound, CallbackInfo ci) {
-    	if(loaded) {
-    		SoundSubtitlesMod.getInstance().soundPlay(p_sound);
-    	}
+        if (loaded) {
+            SoundSubtitlesMod.getInstance().soundPlay(p_sound);
+        }
     }
 
     @Inject(method = "resumeAllSounds", at = @At("TAIL"))

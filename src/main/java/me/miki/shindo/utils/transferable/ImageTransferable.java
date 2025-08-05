@@ -1,12 +1,12 @@
 package me.miki.shindo.utils.transferable;
 
-import java.awt.Image;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class ImageTransferable implements Transferable {
-	
+
     private final Image image;
 
     public ImageTransferable(Image image) {

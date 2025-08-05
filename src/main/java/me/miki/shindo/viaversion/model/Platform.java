@@ -9,10 +9,9 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class Platform {
-	
-    public static int COUNT = 0;
-    public final static List<ProtocolVersion> TEMP_INPUT_PROTOCOLS = new ArrayList<>();
 
+    public final static List<ProtocolVersion> TEMP_INPUT_PROTOCOLS = new ArrayList<>();
+    public static int COUNT = 0;
     private final String name;
     private final BooleanSupplier load;
     private final Runnable executor;

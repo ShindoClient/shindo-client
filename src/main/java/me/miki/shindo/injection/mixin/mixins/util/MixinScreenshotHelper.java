@@ -24,17 +24,17 @@ import java.nio.IntBuffer;
 @Mixin(ScreenShotHelper.class)
 public class MixinScreenshotHelper {
 
-    @Shadow 
+    @Shadow
     private static IntBuffer pixelBuffer;
-    
-    @Shadow 
+
+    @Shadow
     private static int[] pixelValues;
-    
+
     @Inject(method = "saveScreenshot(Ljava/io/File;Ljava/lang/String;IILnet/minecraft/client/shader/Framebuffer;)Lnet/minecraft/util/IChatComponent;", at = @At("HEAD"), cancellable = true)
     private static void screenshotManager(File gameDirectory, String screenshotName, int width, int height, Framebuffer buffer, CallbackInfoReturnable<IChatComponent> cir) {
-    	
+
         if (AsyncScreenshotMod.getInstance().isToggled()) {
-        	
+
             if (OpenGlHelper.isFramebufferEnabled()) {
                 width = buffer.framebufferTextureWidth;
                 height = buffer.framebufferTextureHeight;
@@ -60,17 +60,17 @@ public class MixinScreenshotHelper {
 
             pixelBuffer.get(pixelValues);
             new AsyncScreenshots(width, height, pixelValues).start();
-            
+
             cir.setReturnValue(new ChatComponentText("Capturing screenshot..."));
         }
     }
-    
+
     /**
      * @author
      * @reason
      */
     @Overwrite
     private static File getTimestampedPNGFileForDirectory(File gameDirectory) {
-    	return AsyncScreenshots.getTimestampedPNGFileForDirectory();
+        return AsyncScreenshots.getTimestampedPNGFileForDirectory();
     }
 }

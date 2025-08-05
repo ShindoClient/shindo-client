@@ -12,41 +12,41 @@ import net.minecraft.util.ResourceLocation;
 
 public class ArmorStatusMod extends SimpleHUDMod {
 
-	public ArmorStatusMod() {
-		super(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION);
-	}
+    public ArmorStatusMod() {
+        super(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION);
+    }
 
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-
-		
-		ItemStack[] fakeStack = new ItemStack[4];
-		
-		fakeStack[3] = new ItemStack(Items.diamond_helmet);
-		fakeStack[2] = new ItemStack(Items.diamond_chestplate);
-		fakeStack[1] = new ItemStack(Items.diamond_leggings);
-		fakeStack[0] = new ItemStack(Items.diamond_boots);
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
 
 
-		NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
-		nvg.setupAndDraw(() -> this.drawNanoVG(nvg, this.isEditing() ? fakeStack : mc.thePlayer.inventory.armorInventory));
-	}
+        ItemStack[] fakeStack = new ItemStack[4];
 
-	private void drawNanoVG(NanoVGManager nvg, ItemStack[] items) {
+        fakeStack[3] = new ItemStack(Items.diamond_helmet);
+        fakeStack[2] = new ItemStack(Items.diamond_chestplate);
+        fakeStack[1] = new ItemStack(Items.diamond_leggings);
+        fakeStack[0] = new ItemStack(Items.diamond_boots);
 
-		this.drawBackground(48, 64);
 
-		for(int i = 0; i < 4; i++) {
-			ItemStack item = items[Math.abs(3 - i)];
-			int addY = 16 * i;
-			if (item != null) {
-				drawImage(new ResourceLocation("shindo/armor/" + item.getItem().getUnlocalizedName().replace("item.", "") + ".png"), getX() + 30, getY() + addY, 16, 16);
-				drawText(String.valueOf(item.getMaxDamage() - item.getItemDamage()), 5,  addY + 4, 9F, getHudFont(1));
-			}
-		}
+        NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
+        nvg.setupAndDraw(() -> this.drawNanoVG(nvg, this.isEditing() ? fakeStack : mc.thePlayer.inventory.armorInventory));
+    }
 
-		this.setWidth(48);
-		this.setHeight(16 * 4);
-	}
+    private void drawNanoVG(NanoVGManager nvg, ItemStack[] items) {
+
+        this.drawBackground(48, 64);
+
+        for (int i = 0; i < 4; i++) {
+            ItemStack item = items[Math.abs(3 - i)];
+            int addY = 16 * i;
+            if (item != null) {
+                drawImage(new ResourceLocation("shindo/armor/" + item.getItem().getUnlocalizedName().replace("item.", "") + ".png"), getX() + 30, getY() + addY, 16, 16);
+                drawText(String.valueOf(item.getMaxDamage() - item.getItemDamage()), 5, addY + 4, 9F, getHudFont(1));
+            }
+        }
+
+        this.setWidth(48);
+        this.setHeight(16 * 4);
+    }
 
 }

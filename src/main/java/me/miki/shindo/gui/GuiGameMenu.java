@@ -23,8 +23,8 @@ import java.awt.*;
 
 public class GuiGameMenu extends GuiScreen {
 
-    private Animation introAnimation;
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
+    private Animation introAnimation;
     private int x, y, width, height, centre, scaledWidth, scaledHeight;
 
     @Override
@@ -47,23 +47,23 @@ public class GuiGameMenu extends GuiScreen {
         BlurUtils.drawBlurScreen(20);
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
         screenAnimation.wrap(() -> drawNanoVG(nvg), x, y, width, height, 2 - introAnimation.getValueFloat(), Math.min(introAnimation.getValueFloat(), 1), false);
-        if(introAnimation.isDone(Direction.BACKWARDS)) {
-            this.mc.displayGuiScreen((GuiScreen) null);
+        if (introAnimation.isDone(Direction.BACKWARDS)) {
+            this.mc.displayGuiScreen(null);
             this.mc.setIngameFocus();
         }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     private void drawNanoVG(NanoVGManager nvg) {
-        nvg.drawRect(-5, -5, scaledWidth + 10, scaledHeight + 10,  new Color(0,0,0, 140));
-        nvg.drawText(LegacyIcon.ARROW_LEFT, x, y + 5, new Color(255,255,255, 140),11, Fonts.LEGACYICON);
-        nvg.drawCenteredText( I18n.format("menu.game"), centre, y + 5,  new Color(255,255,255, 200), 13, Fonts.SEMIBOLD);
+        nvg.drawRect(-5, -5, scaledWidth + 10, scaledHeight + 10, new Color(0, 0, 0, 140));
+        nvg.drawText(LegacyIcon.ARROW_LEFT, x, y + 5, new Color(255, 255, 255, 140), 11, Fonts.LEGACYICON);
+        nvg.drawCenteredText(I18n.format("menu.game"), centre, y + 5, new Color(255, 255, 255, 200), 13, Fonts.SEMIBOLD);
 
         float standardPadding = 29.5f;
         float offset = 29.5F;
         drawButton(nvg, "Minecraft Options", LegacyIcon.SLIDERS, offset);
         offset += standardPadding;
-        if(this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()){
+        if (this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()) {
             drawButton(nvg, I18n.format("menu.shareToLan"), LegacyIcon.USERS, offset);
         } else {
             drawButton(nvg, TranslateText.EDIT_HUD.getText(), LegacyIcon.LAYOUT, offset);
@@ -78,16 +78,16 @@ public class GuiGameMenu extends GuiScreen {
         drawButton(nvg, !this.mc.isIntegratedServerRunning() ? I18n.format("menu.disconnect") : TranslateText.EXIT_WORLD_SINGLEPLAYER.getText(), LegacyIcon.LOGOUT, offset);
     }
 
-    private void drawButton(NanoVGManager nvg, String s, String i, Float offset){
-        nvg.drawRoundedRect(x, y + offset, width , 22, 6, new Color(230, 230, 230, 80));
-        float startX = (nvg.getTextWidth(s, 9.5F, Fonts.MEDIUM) + 14) /2;
+    private void drawButton(NanoVGManager nvg, String s, String i, Float offset) {
+        nvg.drawRoundedRect(x, y + offset, width, 22, 6, new Color(230, 230, 230, 80));
+        float startX = (nvg.getTextWidth(s, 9.5F, Fonts.MEDIUM) + 14) / 2;
         nvg.drawText(i, centre - startX, y + offset + 6.5F, Color.WHITE, 9.5F, Fonts.LEGACYICON);
         nvg.drawText(s, centre - startX + 14, y + offset + 7F, Color.WHITE, 9.5F, Fonts.MEDIUM);
     }
 
-    private void drawButton(NanoVGManager nvg, String s, ResourceLocation icon, Float offset){
-        nvg.drawRoundedRect(x, y + offset, width , 22, 6, new Color(230, 230, 230, 80));
-        float startX = (nvg.getTextWidth(s, 9.5F, Fonts.MEDIUM) + 14) /2;
+    private void drawButton(NanoVGManager nvg, String s, ResourceLocation icon, Float offset) {
+        nvg.drawRoundedRect(x, y + offset, width, 22, 6, new Color(230, 230, 230, 80));
+        float startX = (nvg.getTextWidth(s, 9.5F, Fonts.MEDIUM) + 14) / 2;
         nvg.drawImage(icon, centre - startX, y + offset + 6.5F, 9.5F, 9.5F);
         nvg.drawText(s, centre - startX + 14, y + offset + 7F, Color.WHITE, 9.5F, Fonts.MEDIUM);
     }
@@ -95,17 +95,19 @@ public class GuiGameMenu extends GuiScreen {
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (!(mouseButton == 0)) {return;}
+        if (!(mouseButton == 0)) {
+            return;
+        }
         float standardPadding = 29.5f;
         float offset = standardPadding;
 
-        if (MouseUtils.isInside(mouseX, mouseY, x, y + offset, width, 22)){
+        if (MouseUtils.isInside(mouseX, mouseY, x, y + offset, width, 22)) {
             introAnimation.setDirection(Direction.BACKWARDS);
             this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
         }
         offset += standardPadding;
-        if (MouseUtils.isInside(mouseX, mouseY, x, y + offset, width, 22)){
-            if(this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()){
+        if (MouseUtils.isInside(mouseX, mouseY, x, y + offset, width, 22)) {
+            if (this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic()) {
                 this.mc.displayGuiScreen(new GuiShareToLan(this));
             } else {
                 mc.displayGuiScreen(new GuiEditHUD(false));
@@ -142,7 +144,7 @@ public class GuiGameMenu extends GuiScreen {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-        if(keyCode == Keyboard.KEY_ESCAPE) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS);
         }
     }

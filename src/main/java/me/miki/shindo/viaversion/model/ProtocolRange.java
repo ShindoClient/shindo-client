@@ -1,7 +1,6 @@
 package me.miki.shindo.viaversion.model;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-
 import me.miki.shindo.viaversion.ViaLoadingBase;
 
 public class ProtocolRange {

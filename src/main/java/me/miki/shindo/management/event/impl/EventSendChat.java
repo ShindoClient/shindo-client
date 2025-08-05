@@ -4,13 +4,13 @@ import me.miki.shindo.management.event.Event;
 
 public class EventSendChat extends Event {
 
-	private String message;
-	
-	public EventSendChat(String message) {
-		this.message = message;
-	}
+    private final String message;
 
-	public String getMessage() {
-		return message;
-	}
+    public EventSendChat(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

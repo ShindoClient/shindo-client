@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LayerDeadmau5Head.class)
 public abstract class MixinLayerDeadmau5Head {
 
-    @Final @Shadow private RenderPlayer playerRenderer;
+    @Final
+    @Shadow
+    private RenderPlayer playerRenderer;
 
     /**
      * @author

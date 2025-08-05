@@ -61,6 +61,7 @@
     "lwjgl.MixinLinuxKeycodes",
     "lwjgl.MixinWindowsDisplay",
     "model.MixinFaceBakery",
+    "model.MixinModelBase",
     "model.MixinModelBox",
     "model.MixinModelPlayer",
     "multiplayer.MixinPlayerControllerMP",

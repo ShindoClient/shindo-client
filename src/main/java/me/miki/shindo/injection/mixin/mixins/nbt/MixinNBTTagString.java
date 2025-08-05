@@ -1,5 +1,6 @@
 package me.miki.shindo.injection.mixin.mixins.nbt;
 
+import net.minecraft.nbt.NBTTagString;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -8,15 +9,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.nbt.NBTTagString;
-
 @Mixin(NBTTagString.class)
 public class MixinNBTTagString {
 
-    @Shadow 
+    @Shadow
     private String data;
-    
-    @Unique 
+
+    @Unique
     private String dataCache;
 
     @Inject(method = "read", at = @At("HEAD"))
@@ -30,7 +29,7 @@ public class MixinNBTTagString {
      */
     @Overwrite
     public String toString() {
-    	
+
         if (this.dataCache == null) {
             this.dataCache = "\"" + this.data.replace("\"", "\\\"") + "\"";
         }

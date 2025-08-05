@@ -9,24 +9,24 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 
 public class PlayerCounterMod extends SimpleHUDMod {
 
-	private BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
-	
-	public PlayerCounterMod() {
-		super(TranslateText.PLAYER_COUNTER, TranslateText.PLAYER_COUNTER_DESCRIPTION);
-	}
+    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
 
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-		this.draw();
-	}
-	
-	@Override
-	public String getText() {
-		return "Player: " + mc.thePlayer.sendQueue.getPlayerInfoMap().size();
-	}
-	
-	@Override
-	public String getIcon() {
-		return iconSetting.isToggled() ? LegacyIcon.USERS : null;
-	}
+    public PlayerCounterMod() {
+        super(TranslateText.PLAYER_COUNTER, TranslateText.PLAYER_COUNTER_DESCRIPTION);
+    }
+
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
+        this.draw();
+    }
+
+    @Override
+    public String getText() {
+        return "Player: " + mc.thePlayer.sendQueue.getPlayerInfoMap().size();
+    }
+
+    @Override
+    public String getIcon() {
+        return iconSetting.isToggled() ? LegacyIcon.USERS : null;
+    }
 }

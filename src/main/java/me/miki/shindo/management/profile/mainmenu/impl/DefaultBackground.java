@@ -5,25 +5,25 @@ import net.minecraft.util.ResourceLocation;
 
 public class DefaultBackground extends Background {
 
-	private TranslateText nameTranslate;
-	private ResourceLocation image;
-	
-	public DefaultBackground(int id, TranslateText nameTranslate, ResourceLocation image) {
-		super(id, nameTranslate.getText());
-		this.nameTranslate = nameTranslate;
-		this.image = image;
-	}
-	
-	@Override
-	public String getName() {
-		return nameTranslate.getText();
-	}
+    private final TranslateText nameTranslate;
+    private final ResourceLocation image;
 
-	public String getNameKey() {
-		return nameTranslate.getKey();
-	}
+    public DefaultBackground(int id, TranslateText nameTranslate, ResourceLocation image) {
+        super(id, nameTranslate.getText());
+        this.nameTranslate = nameTranslate;
+        this.image = image;
+    }
 
-	public ResourceLocation getImage() {
-		return image;
-	}
+    @Override
+    public String getName() {
+        return nameTranslate.getText();
+    }
+
+    public String getNameKey() {
+        return nameTranslate.getKey();
+    }
+
+    public ResourceLocation getImage() {
+        return image;
+    }
 }

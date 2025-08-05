@@ -22,11 +22,11 @@ public class ClientRoleManager {
             ClientRole.MEMBER
     );
 
-    public static void start(){
+    public static void start() {
         executor.scheduleAtFixedRate(ClientRoleManager::clearCache, 0, 30, TimeUnit.SECONDS);
     }
 
-    public static void stop(){
+    public static void stop() {
         executor.shutdownNow();
     }
 

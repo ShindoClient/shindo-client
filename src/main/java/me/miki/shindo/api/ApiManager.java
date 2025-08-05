@@ -16,26 +16,21 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiManager {
 
+    private static final long CACHE_TTL_MS = 5000;
     private final String uuid;
     private final String name;
     private final String accountType;
-
     private final CheckStatus checkStatus;
     private final GetUser getUser;
     private final PostUser postUser;
-
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
     private final Set<String> watchedUUIDs = ConcurrentHashMap.newKeySet();
-
     // CACHES
     private final Map<String, Boolean> onlineCache = new ConcurrentHashMap<>();
     private final Map<String, String> nameCache = new ConcurrentHashMap<>();
     private final Map<String, String> accountTypeCache = new ConcurrentHashMap<>();
     private final Map<String, Long> lastUpdateTimestamps = new ConcurrentHashMap<>();
     private final Map<String, JsonArray> privilegesCache = new ConcurrentHashMap<>();
-
-    private static final long CACHE_TTL_MS = 5000;
 
     public ApiManager(String uuid, String name, String accountType) {
 

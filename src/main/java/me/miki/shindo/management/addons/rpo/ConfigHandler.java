@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigHandler {
-    private final File configFile;
     public final Options options;
+    private final File configFile;
 
     public ConfigHandler(File configFile) {
         this.configFile = configFile;
@@ -27,8 +27,8 @@ public class ConfigHandler {
     }
 
     public class Options {
-        private List<String> enabledPacks = new ArrayList<>();
         private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        private final List<String> enabledPacks = new ArrayList<>();
 
         void updateOptions() {
             try {

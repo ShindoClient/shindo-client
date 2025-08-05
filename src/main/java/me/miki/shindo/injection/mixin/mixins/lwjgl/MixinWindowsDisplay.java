@@ -11,10 +11,10 @@ public abstract class MixinWindowsDisplay {
 
     @Shadow
     protected abstract void handleMouseButton(int button, int state, long millis);
-    
+
     @Inject(method = "doHandleMessage", at = @At("HEAD"), cancellable = true, remap = false)
     private void doHandleMessage(long hwnd, int msg, long wParam, long lParam, long millis,
-            CallbackInfoReturnable<Long> cir) {
+                                 CallbackInfoReturnable<Long> cir) {
         if (msg == 0x020B) {
             if ((wParam >> 16) == 1L) {
                 handleMouseButton(3, 1, millis);

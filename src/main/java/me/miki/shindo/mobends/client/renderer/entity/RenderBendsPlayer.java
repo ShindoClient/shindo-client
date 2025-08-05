@@ -1,7 +1,5 @@
 package me.miki.shindo.mobends.client.renderer.entity;
 
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.mobends.client.model.entity.ModelBendsPlayer;
 import me.miki.shindo.mobends.client.renderer.entity.layers.LayerBendsCape;
 import me.miki.shindo.mobends.client.renderer.entity.layers.LayerBendsCustomHead;
@@ -17,13 +15,14 @@ import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
-public class RenderBendsPlayer extends RenderPlayer{
-	
-    private boolean smallArms;
-    
+public class RenderBendsPlayer extends RenderPlayer {
+
+    private final boolean smallArms;
+
     @SuppressWarnings("unchecked")
-	public RenderBendsPlayer(RenderManager renderManager) {
+    public RenderBendsPlayer(RenderManager renderManager) {
         super(renderManager, false);
         this.smallArms = false;
         this.mainModel = new ModelBendsPlayer(0.0F, false);
@@ -35,43 +34,38 @@ public class RenderBendsPlayer extends RenderPlayer{
     }
 
     @SuppressWarnings("unchecked")
-	public RenderBendsPlayer(RenderManager renderManager, boolean useSmallArms) {
-    	super(renderManager, useSmallArms);
-    	this.smallArms = useSmallArms;
-    	this.mainModel = new ModelBendsPlayer(0.0F, useSmallArms);
-    	this.layerRenderers.clear();
-    	this.addLayer(new LayerBendsPlayerArmor(this));
+    public RenderBendsPlayer(RenderManager renderManager, boolean useSmallArms) {
+        super(renderManager, useSmallArms);
+        this.smallArms = useSmallArms;
+        this.mainModel = new ModelBendsPlayer(0.0F, useSmallArms);
+        this.layerRenderers.clear();
+        this.addLayer(new LayerBendsPlayerArmor(this));
         this.addLayer(new LayerHeldItem(this));
         this.addLayer(new LayerBendsCape(this));
         this.layerRenderers.add(new LayerBendsCustomHead((ModelBendsPlayer) this.getMainModel()));
     }
-    
-    @Override
-    public ModelPlayer getMainModel()
-    {
-    	if(!(this.mainModel instanceof ModelBendsPlayer)){
-    		this.mainModel = new ModelBendsPlayer(0.0F, this.smallArms);
-    	}
-    	return (ModelBendsPlayer)this.mainModel;
-    }
-    
-    @Override
-    protected void rotateCorpse(AbstractClientPlayer p_77043_1_, float p_77043_2_, float p_77043_3_, float p_77043_4_)
-    {
-	    super.rotateCorpse(p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
-    }
-    
-    private void setModelVisibilities(AbstractClientPlayer p_177137_1_) {
-    	ModelBendsPlayer modelplayer = (ModelBendsPlayer) this.getMainModel();
 
-        if (p_177137_1_.isSpectator())
-        {
+    @Override
+    public ModelPlayer getMainModel() {
+        if (!(this.mainModel instanceof ModelBendsPlayer)) {
+            this.mainModel = new ModelBendsPlayer(0.0F, this.smallArms);
+        }
+        return (ModelBendsPlayer) this.mainModel;
+    }
+
+    @Override
+    protected void rotateCorpse(AbstractClientPlayer p_77043_1_, float p_77043_2_, float p_77043_3_, float p_77043_4_) {
+        super.rotateCorpse(p_77043_1_, p_77043_2_, p_77043_3_, p_77043_4_);
+    }
+
+    private void setModelVisibilities(AbstractClientPlayer p_177137_1_) {
+        ModelBendsPlayer modelplayer = (ModelBendsPlayer) this.getMainModel();
+
+        if (p_177137_1_.isSpectator()) {
             modelplayer.setInvisible(false);
             modelplayer.bipedHead.showModel = true;
             modelplayer.bipedHeadwear.showModel = true;
-        }
-        else
-        {
+        } else {
             ItemStack itemstack = p_177137_1_.inventory.getCurrentItem();
             modelplayer.setInvisible(true);
             modelplayer.bipedHeadwear.showModel = p_177137_1_.isWearing(EnumPlayerModelParts.HAT);
@@ -84,31 +78,24 @@ public class RenderBendsPlayer extends RenderPlayer{
             modelplayer.aimedBow = false;
             modelplayer.isSneak = p_177137_1_.isSneaking();
 
-            if (itemstack == null)
-            {
+            if (itemstack == null) {
                 modelplayer.heldItemRight = 0;
-            }
-            else
-            {
+            } else {
                 modelplayer.heldItemRight = 1;
 
-                if (p_177137_1_.getItemInUseCount() > 0)
-                {
+                if (p_177137_1_.getItemInUseCount() > 0) {
                     EnumAction enumaction = itemstack.getItemUseAction();
 
-                    if (enumaction == EnumAction.BLOCK)
-                    {
+                    if (enumaction == EnumAction.BLOCK) {
                         modelplayer.heldItemRight = 3;
-                    }
-                    else if (enumaction == EnumAction.BOW)
-                    {
+                    } else if (enumaction == EnumAction.BOW) {
                         modelplayer.aimedBow = true;
                     }
                 }
             }
         }
     }
-    
+
     @Override
     protected ResourceLocation getEntityTexture(AbstractClientPlayer entity) {
         return entity.getLocationSkin();
@@ -122,22 +109,22 @@ public class RenderBendsPlayer extends RenderPlayer{
     protected void preRenderCallback(AbstractClientPlayer p_77041_1_, float p_77041_2_) {
         float f1 = 0.9375F;
         GlStateManager.scale(f1, f1, f1);
-        
-        ((ModelBendsPlayer)this.getMainModel()).updateWithEntityData(p_77041_1_);
-        ((ModelBendsPlayer)this.mainModel).postRenderTranslate(0.0625f);
-    
+
+        ((ModelBendsPlayer) this.getMainModel()).updateWithEntityData(p_77041_1_);
+        ((ModelBendsPlayer) this.mainModel).postRenderTranslate(0.0625f);
+
         Data_Player data = Data_Player.get(p_77041_1_.getEntityId());
-    
-		GL11.glPushMatrix();
-		float f5 = 0.0625F;
-		GL11.glScalef(-f5, -f5, f5);
-		data.swordTrail.render((ModelBendsPlayer)this.getMainModel());
-		GL11.glColor4f(1,1,1,1);
-		GL11.glPopMatrix();
-        
-        ((ModelBendsPlayer)this.getMainModel()).postRenderRotate(0.0625f);
+
+        GL11.glPushMatrix();
+        float f5 = 0.0625F;
+        GL11.glScalef(-f5, -f5, f5);
+        data.swordTrail.render((ModelBendsPlayer) this.getMainModel());
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glPopMatrix();
+
+        ((ModelBendsPlayer) this.getMainModel()).postRenderRotate(0.0625f);
     }
-    
+
     @Override
     public void renderRightArm(AbstractClientPlayer clientPlayer) {
         float f = 1.0F;
@@ -149,7 +136,7 @@ public class RenderBendsPlayer extends RenderPlayer{
         modelplayer.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, clientPlayer);
         modelplayer.renderRightArm();
     }
-    
+
     @Override
     public void renderLeftArm(AbstractClientPlayer clientPlayer) {
         float f = 1.0F;
@@ -161,8 +148,8 @@ public class RenderBendsPlayer extends RenderPlayer{
         modelplayer.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, clientPlayer);
         modelplayer.renderLeftArm();
     }
-    
+
     protected void renderLivingAt(AbstractClientPlayer p_77039_1_, double p_77039_2_, double p_77039_4_, double p_77039_6_) {
-    	super.renderLivingAt(p_77039_1_, p_77039_2_, p_77039_4_, p_77039_6_);
+        super.renderLivingAt(p_77039_1_, p_77039_2_, p_77039_4_, p_77039_6_);
     }
 }

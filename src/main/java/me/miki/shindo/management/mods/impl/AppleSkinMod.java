@@ -1,10 +1,5 @@
 package me.miki.shindo.management.mods.impl;
 
-import java.util.Random;
-import java.util.Vector;
-
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.injection.interfaces.IMixinGuiIngame;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderPlayerStats;
@@ -21,31 +16,35 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.FoodStats;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Random;
+import java.util.Vector;
 
 public class AppleSkinMod extends Mod {
 
     public Vector<IntPoint> foodBarOffsets = new Vector<>();
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     private float unclampedFlashAlpha;
     private float flashAlpha;
     private byte alphaDir = 1;
-    
-	public AppleSkinMod() {
-		super(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER);
-	}
 
-	@EventTarget
-	public void onRenderPlayerStats(EventRenderPlayerStats event) {
-		
+    public AppleSkinMod() {
+        super(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER);
+    }
+
+    @EventTarget
+    public void onRenderPlayerStats(EventRenderPlayerStats event) {
+
         ScaledResolution scaledResolution = new ScaledResolution(mc);
         FoodStats stats = mc.thePlayer.getFoodStats();
 
         int right = scaledResolution.getScaledWidth() / 2 + 91;
         int top = scaledResolution.getScaledHeight() - 39;
 
-        this.generateHungerBarOffsets(right, 0, ((IMixinGuiIngame)mc.ingameGUI).client$getUpdateCounter());
+        this.generateHungerBarOffsets(right, 0, ((IMixinGuiIngame) mc.ingameGUI).client$getUpdateCounter());
 
         this.drawSaturationOverlay(0, stats.getSaturationLevel(), 0, stats.getFoodLevel(), right, top, 1.0F);
 
@@ -70,11 +69,11 @@ public class AppleSkinMod extends Mod {
         this.drawHungerOverlay(foodHunger, stats.getFoodLevel(), right, top, flashAlpha, AppleSkinHelper.isRottenFood(heldItem));
 
         this.drawSaturationOverlay(saturationGained, stats.getSaturationLevel(), foodHunger, stats.getFoodLevel(), right, top, flashAlpha);
-	}
-	
-	@EventTarget
-	public void onTick(EventTick event) {
-		
+    }
+
+    @EventTarget
+    public void onTick(EventTick event) {
+
         unclampedFlashAlpha += alphaDir * 0.125F;
 
         if (unclampedFlashAlpha >= 1.5F) {
@@ -84,10 +83,10 @@ public class AppleSkinMod extends Mod {
         }
 
         flashAlpha = Math.max(0.0F, Math.min(1.0F, unclampedFlashAlpha)) * Math.min(1.0F, 1.0F);
-	}
-	
-	private void generateHungerBarOffsets(int right, int top, int ticks) {
-		
+    }
+
+    private void generateHungerBarOffsets(int right, int top, int ticks) {
+
         random.setSeed(ticks * 312871L);
 
         int preferFoodBars = 10;
@@ -97,7 +96,7 @@ public class AppleSkinMod extends Mod {
         float saturationLevel = stats.getSaturationLevel();
         int foodLevel = stats.getFoodLevel();
 
-        boolean shouldAnimatedFood = saturationLevel <= 0.0F && ((IMixinGuiIngame)mc.ingameGUI).client$getUpdateCounter() % (foodLevel * 3 + 1) == 0;
+        boolean shouldAnimatedFood = saturationLevel <= 0.0F && ((IMixinGuiIngame) mc.ingameGUI).client$getUpdateCounter() % (foodLevel * 3 + 1) == 0;
 
         if (foodBarOffsets.size() != preferFoodBars) {
             foodBarOffsets.setSize(preferFoodBars);
@@ -121,10 +120,10 @@ public class AppleSkinMod extends Mod {
             point.x = x - right;
             point.y = y;
         }
-	}
-	
-	private void drawSaturationOverlay(float saturationGained, float saturationLevel, int hungerRestored, int foodLevel, int right, int top, float alpha) {
-		
+    }
+
+    private void drawSaturationOverlay(float saturationGained, float saturationLevel, int hungerRestored, int foodLevel, int right, int top, float alpha) {
+
         if (saturationLevel + saturationGained < 0) {
             return;
         }
@@ -196,14 +195,14 @@ public class AppleSkinMod extends Mod {
 
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	}
-	
-	private void drawHungerOverlay(int hungerRestored, int foodLevel, int right, int top, float alpha, boolean useRottenTextures) {
-		
-		if (hungerRestored <= 0) {
-			return;
-		}
-		
+    }
+
+    private void drawHungerOverlay(int hungerRestored, int foodLevel, int right, int top, float alpha, boolean useRottenTextures) {
+
+        if (hungerRestored <= 0) {
+            return;
+        }
+
         GlStateManager.enableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -217,7 +216,7 @@ public class AppleSkinMod extends Mod {
         int iconSize = 9;
 
         for (int i = startFoodBars; i < endFoodBars; ++i) {
-        	
+
             IntPoint offset = foodBarOffsets.get(i);
 
             if (offset == null) {
@@ -249,15 +248,15 @@ public class AppleSkinMod extends Mod {
 
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	}
-	
-	private void resetFlash() {
+    }
+
+    private void resetFlash() {
         unclampedFlashAlpha = 0.0F;
         flashAlpha = 0.0F;
         alphaDir = 1;
-	}
-	
-	private class IntPoint {
-	    public int x, y;
-	}
+    }
+
+    private class IntPoint {
+        public int x, y;
+    }
 }

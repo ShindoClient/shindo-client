@@ -4,53 +4,53 @@ import me.miki.shindo.management.event.Event;
 
 public class EventPlaySound extends Event {
 
-	private String soundName;
-	private float volume;
-	private float pitch;
-	private float originalVolume;
-	private float originalPitch;
-	
-	public EventPlaySound(String soundName, float volume, float pitch, float originalVolume, float originalPitch) {
-		this.soundName = soundName;
-		this.volume = volume;
-		this.pitch = pitch;
-		this.originalVolume = originalVolume;
-		this.originalPitch = originalPitch;
-	}
+    private final String soundName;
+    private float volume;
+    private float pitch;
+    private float originalVolume;
+    private float originalPitch;
 
-	public float getVolume() {
-		return volume;
-	}
+    public EventPlaySound(String soundName, float volume, float pitch, float originalVolume, float originalPitch) {
+        this.soundName = soundName;
+        this.volume = volume;
+        this.pitch = pitch;
+        this.originalVolume = originalVolume;
+        this.originalPitch = originalPitch;
+    }
 
-	public void setVolume(float volume) {
-		this.volume = volume;
-	}
+    public float getVolume() {
+        return volume;
+    }
 
-	public float getPitch() {
-		return pitch;
-	}
+    public void setVolume(float volume) {
+        this.volume = volume;
+    }
 
-	public void setPitch(float pitch) {
-		this.pitch = pitch;
-	}
+    public float getPitch() {
+        return pitch;
+    }
 
-	public float getOriginalVolume() {
-		return originalVolume;
-	}
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
 
-	public void setOriginalVolume(float originalVolume) {
-		this.originalVolume = originalVolume;
-	}
+    public float getOriginalVolume() {
+        return originalVolume;
+    }
 
-	public float getOriginalPitch() {
-		return originalPitch;
-	}
+    public void setOriginalVolume(float originalVolume) {
+        this.originalVolume = originalVolume;
+    }
 
-	public void setOriginalPitch(float originalPitch) {
-		this.originalPitch = originalPitch;
-	}
+    public float getOriginalPitch() {
+        return originalPitch;
+    }
 
-	public String getSoundName() {
-		return soundName;
-	}
+    public void setOriginalPitch(float originalPitch) {
+        this.originalPitch = originalPitch;
+    }
+
+    public String getSoundName() {
+        return soundName;
+    }
 }

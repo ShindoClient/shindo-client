@@ -18,37 +18,39 @@ import java.io.IOException;
 @Mixin(GuiScreen.class)
 public abstract class MixinGuiScreen {
 
-	@Shadow protected Minecraft mc;
-    
-	@Shadow protected abstract void keyTyped(char typedChar, int keyCode);
-    
-	@Inject(method = "drawScreen", at = @At("TAIL"))
+    @Shadow
+    protected Minecraft mc;
+
+    @Shadow
+    protected abstract void keyTyped(char typedChar, int keyCode);
+
+    @Inject(method = "drawScreen", at = @At("TAIL"))
     public void postDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-		if(InternalSettingsMod.getInstance().getClickEffectsSetting().isToggled()) {
-			Shindo.getInstance().getClickEffects().drawClickEffects();
-		}
-	}
-	
-	@Inject(method = "mouseClicked", at = @At("HEAD"))
-	public void preMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
-		if(InternalSettingsMod.getInstance().getClickEffectsSetting().isToggled()) {
-			Shindo.getInstance().getClickEffects().addClickEffect(mouseX, mouseY);
-		}
-		Sound.play("shindo/audio/click.wav", true);
-	}
-	
-	/**
-	 * @author EldoDebug
-	 * @reason Handle Keyboard Input
-	 */
-	@Overwrite
+        if (InternalSettingsMod.getInstance().getClickEffectsSetting().isToggled()) {
+            Shindo.getInstance().getClickEffects().drawClickEffects();
+        }
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"))
+    public void preMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        if (InternalSettingsMod.getInstance().getClickEffectsSetting().isToggled()) {
+            Shindo.getInstance().getClickEffects().addClickEffect(mouseX, mouseY);
+        }
+        Sound.play("shindo/audio/click.wav", true);
+    }
+
+    /**
+     * @author EldoDebug
+     * @reason Handle Keyboard Input
+     */
+    @Overwrite
     public void handleKeyboardInput() throws IOException {
         char c = Keyboard.getEventCharacter();
-        
+
         if ((Keyboard.getEventKey() == 0 && c >= ' ') || Keyboard.getEventKeyState()) {
             this.keyTyped(c, Keyboard.getEventKey());
         }
-        
+
         mc.dispatchKeypresses();
     }
 }

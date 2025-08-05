@@ -6,46 +6,46 @@ import me.miki.shindo.management.mods.ModCategory;
 
 public class Skin3DMod extends Mod {
 
-	private static Skin3DMod instance;
-	
-	private float baseVoxelSize = 1.15F;
-	private float bodyVoxelWidthSize = 1.05F;
-	private float headVoxelSize = 1.18F;
+    private static Skin3DMod instance;
 
-	private int renderDistanceLOD = 14;
-	
-	public Skin3DMod() {
-		super(TranslateText.SKIN_3D, TranslateText.SKIN_3D_DESCRIPTION, ModCategory.RENDER);
-		
-		instance = this;
-	}
-	
-	@Override
-	public void onEnable() {
-		super.onEnable();
-		
-		if(MoBendsMod.getInstance().isToggled()) {
-			MoBendsMod.getInstance().setToggled(false);
-		}
-	}
+    private final float baseVoxelSize = 1.15F;
+    private final float bodyVoxelWidthSize = 1.05F;
+    private final float headVoxelSize = 1.18F;
 
-	public static Skin3DMod getInstance() {
-		return instance;
-	}
+    private final int renderDistanceLOD = 14;
 
-	public float getBaseVoxelSize() {
-		return baseVoxelSize;
-	}
+    public Skin3DMod() {
+        super(TranslateText.SKIN_3D, TranslateText.SKIN_3D_DESCRIPTION, ModCategory.RENDER);
 
-	public float getBodyVoxelWidthSize() {
-		return bodyVoxelWidthSize;
-	}
+        instance = this;
+    }
 
-	public float getHeadVoxelSize() {
-		return headVoxelSize;
-	}
+    public static Skin3DMod getInstance() {
+        return instance;
+    }
 
-	public int getRenderDistanceLOD() {
-		return renderDistanceLOD;
-	}
+    @Override
+    public void onEnable() {
+        super.onEnable();
+
+        if (MoBendsMod.getInstance().isToggled()) {
+            MoBendsMod.getInstance().setToggled(false);
+        }
+    }
+
+    public float getBaseVoxelSize() {
+        return baseVoxelSize;
+    }
+
+    public float getBodyVoxelWidthSize() {
+        return bodyVoxelWidthSize;
+    }
+
+    public float getHeadVoxelSize() {
+        return headVoxelSize;
+    }
+
+    public int getRenderDistanceLOD() {
+        return renderDistanceLOD;
+    }
 }

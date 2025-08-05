@@ -9,14 +9,14 @@ import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 
 public class FarCameraMod extends Mod {
 
-	private NumberSetting rangeSetting = new NumberSetting(TranslateText.RANGE, this, 15, 0, 50, true);
-	
-	public FarCameraMod() {
-		super(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER);
-	}
+    private final NumberSetting rangeSetting = new NumberSetting(TranslateText.RANGE, this, 15, 0, 50, true);
 
-	@EventTarget
-	public void onCameraRotation(EventCameraRotation event) {
-		event.setThirdPersonDistance(rangeSetting.getValueFloat());
-	}
+    public FarCameraMod() {
+        super(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER);
+    }
+
+    @EventTarget
+    public void onCameraRotation(EventCameraRotation event) {
+        event.setThirdPersonDistance(rangeSetting.getValueFloat());
+    }
 }

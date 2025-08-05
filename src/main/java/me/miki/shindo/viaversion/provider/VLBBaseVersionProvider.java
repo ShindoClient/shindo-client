@@ -2,7 +2,6 @@ package me.miki.shindo.viaversion.provider;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.protocols.base.BaseVersionProvider;
-
 import me.miki.shindo.viaversion.ViaLoadingBase;
 
 public class VLBBaseVersionProvider extends BaseVersionProvider {

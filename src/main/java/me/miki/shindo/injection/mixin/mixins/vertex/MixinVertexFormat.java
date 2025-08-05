@@ -15,18 +15,18 @@ public class MixinVertexFormat {
     @Shadow
     @Final
     private List<VertexFormatElement> elements;
-    
+
     @Shadow
     @Final
     private List<Integer> offsets;
-    
+
     @Shadow
     private int nextOffset;
-    
+
     @Unique
     private int cachedHashCode;
 
-    @Inject(method = "addElement", at = @At(value="RETURN", ordinal=1))
+    @Inject(method = "addElement", at = @At(value = "RETURN", ordinal = 1))
     private void resetHashCode(VertexFormatElement element, CallbackInfoReturnable<VertexFormat> cir) {
         this.cachedHashCode = 0;
     }
@@ -35,18 +35,18 @@ public class MixinVertexFormat {
      * @author
      * @reason
      */
-    @Overwrite(remap=false)
+    @Overwrite(remap = false)
     public int hashCode() {
-    	
+
         if (this.cachedHashCode != 0) {
             return this.cachedHashCode;
         }
-        
+
         int i = this.elements.hashCode();
-        
+
         i = 31 * i + this.offsets.hashCode();
         this.cachedHashCode = i = 31 * i + this.nextOffset;
-        
+
         return i;
     }
 }

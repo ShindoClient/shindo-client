@@ -16,9 +16,8 @@ import java.util.Set;
 
 public class ShindoTweaker implements ITweaker {
 
-    private final List<String> launchArguments = new ArrayList<>();
-
     public static boolean hasOptifine = false;
+    private final List<String> launchArguments = new ArrayList<>();
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
@@ -26,8 +25,7 @@ public class ShindoTweaker implements ITweaker {
         try {
             Class.forName("optifine.Patcher");
             hasOptifine = true;
-        }
-        catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
         }
 
         this.launchArguments.addAll(args);
@@ -84,6 +82,7 @@ public class ShindoTweaker implements ITweaker {
             transformerExceptions.setAccessible(true);
             Object o = transformerExceptions.get(Launch.classLoader);
             ((Set<String>) o).remove("org.lwjgl.");
-        } catch (NoSuchFieldException | IllegalAccessException e) {}
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+        }
     }
 }

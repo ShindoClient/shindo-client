@@ -18,8 +18,8 @@ import java.util.Objects;
 
 public class HttpUtils {
 
-    private static String ACCEPTED_RESPONSE = "application/json";
-    private static Gson gson = new Gson();
+    private static final String ACCEPTED_RESPONSE = "application/json";
+    private static final Gson gson = new Gson();
 
     public static JsonObject readJson(HttpURLConnection connection) {
         return gson.fromJson(readResponse(connection), JsonObject.class);
@@ -114,7 +114,7 @@ public class HttpUtils {
 
         try (FileOutputStream fileOut = new FileOutputStream(outputFile);
              BufferedInputStream in = new BufferedInputStream(Objects.requireNonNull(setupConnection(url, userAgent, timeout, useCaches)).getInputStream())) {
-             IOUtils.copy(in, fileOut);
+            IOUtils.copy(in, fileOut);
         } catch (Exception e) {
             ShindoLogger.error("Failed to download file", e);
             return false;
@@ -183,7 +183,8 @@ public class HttpUtils {
             try {
                 if (in != null) in.close();
                 if (raf != null) raf.close();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
 
             if (connection != null) {
                 connection.disconnect();
@@ -205,18 +206,18 @@ public class HttpUtils {
             connection.setUseCaches(useCaches);
             connection.addRequestProperty("User-Agent", userAgent);
             connection.setRequestProperty("Accept-Language", "en-US");
-	        connection.setRequestProperty("Accept-Charset","UTF-8");
-	        connection.setReadTimeout(timeout);
-	        connection.setConnectTimeout(timeout);
-	        connection.setDoOutput(true);
-	        
-	        return connection;
-		} catch (Exception e) {
-			ShindoLogger.error("Failed to setup connection");
-		}
-        
-		return null;
-	}
+            connection.setRequestProperty("Accept-Charset", "UTF-8");
+            connection.setReadTimeout(timeout);
+            connection.setConnectTimeout(timeout);
+            connection.setDoOutput(true);
+
+            return connection;
+        } catch (Exception e) {
+            ShindoLogger.error("Failed to setup connection");
+        }
+
+        return null;
+    }
 
     public static String encodeURL(String url) {
         try {

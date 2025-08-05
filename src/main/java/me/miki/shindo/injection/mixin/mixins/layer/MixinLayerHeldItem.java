@@ -1,11 +1,5 @@
 package me.miki.shindo.injection.mixin.mixins.layer;
 
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
 import me.miki.shindo.management.mods.impl.AnimationsMod;
 import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import net.minecraft.block.Block;
@@ -23,6 +17,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import org.spongepowered.asm.mixin.*;
 
 @Mixin(LayerHeldItem.class)
 public abstract class MixinLayerHeldItem {
@@ -42,11 +37,11 @@ public abstract class MixinLayerHeldItem {
      */
     @Overwrite
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float f, float g, float partialTicks, float h, float i, float j, float scale) {
-    	
-    	AnimationsMod mod = AnimationsMod.getInstance();
-    	BooleanSetting sneak = mod.getSneakSetting();
+
+        AnimationsMod mod = AnimationsMod.getInstance();
+        BooleanSetting sneak = mod.getSneakSetting();
         ItemStack itemStack = entitylivingbaseIn.getHeldItem();
-        
+
         if (itemStack != null) {
             GlStateManager.pushMatrix();
 
@@ -61,9 +56,9 @@ public abstract class MixinLayerHeldItem {
                 GlStateManager.translate(0.0F, 0.203125F, 0.0F);
             }
 
-            ((ModelBiped)this.livingEntityRenderer.getMainModel()).postRenderArm(0.0625F);
+            ((ModelBiped) this.livingEntityRenderer.getMainModel()).postRenderArm(0.0625F);
             GlStateManager.translate(-0.0625F, 0.4375F, 0.0625F);
-            
+
             if (entitylivingbaseIn instanceof EntityPlayer && ((EntityPlayer) entitylivingbaseIn).fishEntity != null) {
                 itemStack = new ItemStack(Items.fishing_rod, 0);
             }
@@ -75,13 +70,13 @@ public abstract class MixinLayerHeldItem {
             }
 
             if (mod.isToggled() && mod.getBlockHitSetting().isToggled()) {
-            	
+
                 AbstractClientPlayer player = null;
                 if (entitylivingbaseIn instanceof AbstractClientPlayer) {
                     player = (AbstractClientPlayer) entitylivingbaseIn;
                 }
                 EnumAction var26;
-                if (player!= null && player.getItemInUseCount() > 0) {
+                if (player != null && player.getItemInUseCount() > 0) {
                     var26 = itemStack.getItemUseAction();
                     if (var26 == EnumAction.BLOCK) {
                         GlStateManager.translate(0.05F, 0.0F, -0.1F);
@@ -92,9 +87,9 @@ public abstract class MixinLayerHeldItem {
                 }
 
             }
-            
+
             Item item = itemStack.getItem();
-            
+
             if (item instanceof ItemBlock && Block.getBlockFromItem(item).getRenderType() == 2) {
                 GlStateManager.translate(0.0F, 0.1875F, -0.3125F);
                 GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
@@ -104,7 +99,7 @@ public abstract class MixinLayerHeldItem {
             }
 
             minecraft.getItemRenderer().renderItem(entitylivingbaseIn, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
-            
+
             GlStateManager.popMatrix();
         }
     }

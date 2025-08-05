@@ -1,44 +1,44 @@
 package me.miki.shindo.management.nanovg.font;
 
-import java.nio.ByteBuffer;
-
 import net.minecraft.util.ResourceLocation;
+
+import java.nio.ByteBuffer;
 
 public class Font {
 
-	private String name;
-	private ResourceLocation resourceLocation;
-	private boolean loaded;
-	private ByteBuffer buffer;
-	
-	public Font(String name, ResourceLocation resourceLocation) {
-		this.name = name;
-		this.resourceLocation = resourceLocation;
-		this.loaded = false;
-		this.buffer = null;
-	}
+    private final String name;
+    private final ResourceLocation resourceLocation;
+    private boolean loaded;
+    private ByteBuffer buffer;
 
-	public boolean isLoaded() {
-		return loaded;
-	}
+    public Font(String name, ResourceLocation resourceLocation) {
+        this.name = name;
+        this.resourceLocation = resourceLocation;
+        this.loaded = false;
+        this.buffer = null;
+    }
 
-	public void setLoaded(boolean loaded) {
-		this.loaded = loaded;
-	}
+    public boolean isLoaded() {
+        return loaded;
+    }
 
-	public ByteBuffer getBuffer() {
-		return buffer;
-	}
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
 
-	public void setBuffer(ByteBuffer buffer) {
-		this.buffer = buffer;
-	}
+    public ByteBuffer getBuffer() {
+        return buffer;
+    }
 
-	public ResourceLocation getResourceLocation() {
-		return resourceLocation;
-	}
+    public void setBuffer(ByteBuffer buffer) {
+        this.buffer = buffer;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public ResourceLocation getResourceLocation() {
+        return resourceLocation;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

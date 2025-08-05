@@ -6,15 +6,15 @@ import me.miki.shindo.management.mods.ModCategory;
 
 public class NametagMod extends Mod {
 
-	private static NametagMod instance;
-	
-	public NametagMod() {
-		super(TranslateText.NAMETAG, TranslateText.NAMETAG_DESCRIPTION, ModCategory.PLAYER);
-		
-		instance = this;
-	}
+    private static NametagMod instance;
 
-	public static NametagMod getInstance() {
-		return instance;
-	}
+    public NametagMod() {
+        super(TranslateText.NAMETAG, TranslateText.NAMETAG_DESCRIPTION, ModCategory.PLAYER);
+
+        instance = this;
+    }
+
+    public static NametagMod getInstance() {
+        return instance;
+    }
 }

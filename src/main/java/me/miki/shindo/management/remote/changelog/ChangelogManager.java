@@ -14,39 +14,39 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogManager {
 
-	private CopyOnWriteArrayList<Changelog> changelogs = new CopyOnWriteArrayList<Changelog>();
+    private final CopyOnWriteArrayList<Changelog> changelogs = new CopyOnWriteArrayList<Changelog>();
 
-	public ChangelogManager() {
-		Multithreading.runAsync(() -> loadChangelog());
-	}
-	
-	private void loadChangelog() {
+    public ChangelogManager() {
+        Multithreading.runAsync(() -> loadChangelog());
+    }
 
-		JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/changelogs/versions/" + Shindo.getInstance().getVersionIdentifier() + ".json", null);
+    private void loadChangelog() {
+
+        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/changelogs/versions/" + Shindo.getInstance().getVersionIdentifier() + ".json", null);
 
 
-		if(jsonObject != null) {
-			
-			JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs");
-			
-			if(jsonArray != null) {
-				
-				Iterator<JsonElement> iterator = jsonArray.iterator();
-				
-				while(iterator.hasNext()) {
-					
-					JsonElement jsonElement = (JsonElement) iterator.next();
-					Gson gson = new Gson();
-					JsonObject changelogJsonObject = gson.fromJson(jsonElement, JsonObject.class);
-					
-					changelogs.add(new Changelog(JsonUtils.getStringProperty(changelogJsonObject, "text", "null"), 
-							ChangelogType.getTypeById(JsonUtils.getIntProperty(changelogJsonObject, "type", 999))));
-				}
-			}
-		}
-	}
+        if (jsonObject != null) {
 
-	public CopyOnWriteArrayList<Changelog> getChangelogs() {
-		return changelogs;
-	}
+            JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs");
+
+            if (jsonArray != null) {
+
+                Iterator<JsonElement> iterator = jsonArray.iterator();
+
+                while (iterator.hasNext()) {
+
+                    JsonElement jsonElement = iterator.next();
+                    Gson gson = new Gson();
+                    JsonObject changelogJsonObject = gson.fromJson(jsonElement, JsonObject.class);
+
+                    changelogs.add(new Changelog(JsonUtils.getStringProperty(changelogJsonObject, "text", "null"),
+                            ChangelogType.getTypeById(JsonUtils.getIntProperty(changelogJsonObject, "type", 999))));
+                }
+            }
+        }
+    }
+
+    public CopyOnWriteArrayList<Changelog> getChangelogs() {
+        return changelogs;
+    }
 }

@@ -129,15 +129,15 @@ public final class Vector3f {
     }
 
     public boolean normalize() {
-    	
+
         float f = this.x * this.x + this.y * this.y + this.z * this.z;
-        
+
         if (f < 1.0E-5D) {
             return false;
         }
-        
+
         float g = MathUtils.fastInvSqrt(f);
-        
+
         this.x *= g;
         this.y *= g;
         this.z *= g;

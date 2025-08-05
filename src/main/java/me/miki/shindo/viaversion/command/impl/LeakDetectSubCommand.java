@@ -1,8 +1,8 @@
 package me.miki.shindo.viaversion.command.impl;
 
-import io.netty.util.ResourceLeakDetector;
 import com.viaversion.viaversion.api.command.ViaCommandSender;
 import com.viaversion.viaversion.api.command.ViaSubCommand;
+import io.netty.util.ResourceLeakDetector;
 
 import java.util.Arrays;
 import java.util.List;

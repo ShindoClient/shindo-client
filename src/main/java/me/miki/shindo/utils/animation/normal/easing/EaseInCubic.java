@@ -4,16 +4,16 @@ import me.miki.shindo.utils.animation.normal.Animation;
 
 public class EaseInCubic extends Animation {
 
-	public EaseInCubic(int ms, double endPoint) {
-		super(ms, endPoint);
-		this.reset();
-	}
+    public EaseInCubic(int ms, double endPoint) {
+        super(ms, endPoint);
+        this.reset();
+    }
 
-	@Override
-	protected double getEquation(double x) {
-		
-	    double x1 = x / duration;
-	    
-	    return x1 * x1 * x1;
-	}
+    @Override
+    protected double getEquation(double x) {
+
+        double x1 = x / duration;
+
+        return x1 * x1 * x1;
+    }
 }

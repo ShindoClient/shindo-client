@@ -7,30 +7,31 @@ import me.miki.shindo.management.mods.settings.Setting;
 
 public class TextSetting extends Setting {
 
-	private String defaultText, text;
-	
-	public TextSetting(TranslateText tText, Mod parent, String text) {
-		super(tText, parent);
-		this.text = text;
-		this.defaultText = text;
-		
-		Shindo.getInstance().getModManager().addSettings(this);
-	}
-	
-	@Override
-	public void reset() {
-		this.text = defaultText;
-	}
+    private final String defaultText;
+    private String text;
 
-	public String getText() {
-		return text;
-	}
+    public TextSetting(TranslateText tText, Mod parent, String text) {
+        super(tText, parent);
+        this.text = text;
+        this.defaultText = text;
 
-	public void setText(String text) {
-		this.text = text;
-	}
+        Shindo.getInstance().getModManager().addSettings(this);
+    }
 
-	public String getDefaultText() {
-		return defaultText;
-	}
+    @Override
+    public void reset() {
+        this.text = defaultText;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getDefaultText() {
+        return defaultText;
+    }
 }

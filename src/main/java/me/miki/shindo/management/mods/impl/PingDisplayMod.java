@@ -10,24 +10,24 @@ import me.miki.shindo.utils.ServerUtils;
 
 public class PingDisplayMod extends SimpleHUDMod {
 
-	private BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
-	
-	public PingDisplayMod() {
-		super(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION);
-	}
+    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
 
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-		this.draw();
-	}
-	
-	@Override
-	public String getText() {
-		return ServerUtils.getPing() + " ms";
-	}
-	
-	@Override
-	public String getIcon() {
-		return iconSetting.isToggled() ? LegacyIcon.BAR_CHERT : null;
-	}
+    public PingDisplayMod() {
+        super(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION);
+    }
+
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
+        this.draw();
+    }
+
+    @Override
+    public String getText() {
+        return ServerUtils.getPing() + " ms";
+    }
+
+    @Override
+    public String getIcon() {
+        return iconSetting.isToggled() ? LegacyIcon.BAR_CHERT : null;
+    }
 }

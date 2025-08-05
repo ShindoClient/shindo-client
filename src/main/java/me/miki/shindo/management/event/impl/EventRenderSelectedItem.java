@@ -4,13 +4,13 @@ import me.miki.shindo.management.event.Event;
 
 public class EventRenderSelectedItem extends Event {
 
-	private int color;
-	
-	public EventRenderSelectedItem(int color) {
-		this.color = color;
-	}
-	
-	public int getColor() {
-		return color;
-	}
+    private final int color;
+
+    public EventRenderSelectedItem(int color) {
+        this.color = color;
+    }
+
+    public int getColor() {
+        return color;
+    }
 }

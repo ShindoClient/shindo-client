@@ -4,27 +4,27 @@ import me.miki.shindo.management.event.Event;
 
 public class EventToggleFullscreen extends Event {
 
-	private boolean state;
-	private boolean applyState;
-	
-	public EventToggleFullscreen(boolean state) {
-		this.state = state;
-		this.applyState = true;
-	}
+    private boolean state;
+    private boolean applyState;
 
-	public boolean getState() {
-		return state;
-	}
+    public EventToggleFullscreen(boolean state) {
+        this.state = state;
+        this.applyState = true;
+    }
 
-	public void setState(boolean state) {
-		this.state = state;
-	}
+    public boolean getState() {
+        return state;
+    }
 
-	public boolean isApplyState() {
-		return applyState;
-	}
+    public void setState(boolean state) {
+        this.state = state;
+    }
 
-	public void setApplyState(boolean applyState) {
-		this.applyState = applyState;
-	}
+    public boolean isApplyState() {
+        return applyState;
+    }
+
+    public void setApplyState(boolean applyState) {
+        this.applyState = applyState;
+    }
 }

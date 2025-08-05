@@ -4,7 +4,7 @@ import me.miki.shindo.Shindo;
 
 public class SecurityFeature {
 
-	public SecurityFeature() {
-		Shindo.getInstance().getEventManager().register(this);
-	}
+    public SecurityFeature() {
+        Shindo.getInstance().getEventManager().register(this);
+    }
 }

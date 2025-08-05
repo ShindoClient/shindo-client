@@ -12,25 +12,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BlacklistManager {
 
-	private final CopyOnWriteArrayList<Server> blacklist = new CopyOnWriteArrayList<>();
-	
-	public BlacklistManager() {
-		check();
-	}
+    private final CopyOnWriteArrayList<Server> blacklist = new CopyOnWriteArrayList<>();
 
-	public void check(){
-		Multithreading.runAsync(this::loadBlacklists);
-	}
+    public BlacklistManager() {
+        check();
+    }
 
-	private void loadBlacklists() {
-		
-		JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/data/servers/blacklist.json", null);
-		
-		if(jsonObject != null) {
-			
-			JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "blacklist");
-			
-			if(jsonArray != null) {
+    public void check() {
+        Multithreading.runAsync(this::loadBlacklists);
+    }
+
+    private void loadBlacklists() {
+
+        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/data/servers/blacklist.json", null);
+
+        if (jsonObject != null) {
+
+            JsonArray jsonArray = JsonUtils.getArrayProperty(jsonObject, "blacklist");
+
+            if (jsonArray != null) {
 
                 for (JsonElement jsonElement : jsonArray) {
 
@@ -49,11 +49,11 @@ public class BlacklistManager {
 
                     blacklist.add(new Server(serverIp, modsList));
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
-	public CopyOnWriteArrayList<Server> getBlacklist() {
-		return blacklist;
-	}
+    public CopyOnWriteArrayList<Server> getBlacklist() {
+        return blacklist;
+    }
 }

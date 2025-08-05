@@ -4,13 +4,13 @@ import me.miki.shindo.management.event.Event;
 
 public class EventRenderVisualizer extends Event {
 
-	private float partialTicks;
-	
-	public EventRenderVisualizer(float partialTicks) {
-		this.partialTicks = partialTicks;
-	}
+    private final float partialTicks;
 
-	public float getPartialTicks() {
-		return partialTicks;
-	}
+    public EventRenderVisualizer(float partialTicks) {
+        this.partialTicks = partialTicks;
+    }
+
+    public float getPartialTicks() {
+        return partialTicks;
+    }
 }

@@ -14,9 +14,9 @@ import org.lwjgl.input.Keyboard;
 import java.awt.*;
 
 public class PongScene extends GameScene {
+    private static final float PADDLE_HEIGHT = 50, PADDLE_WIDTH = 5, BALL_SIZE = 5;
     private float ballX, ballY, ballVX = 2, ballVY = 2;
     private float paddleY, enemyY;
-    private static final float PADDLE_HEIGHT = 50, PADDLE_WIDTH = 5, BALL_SIZE = 5;
     private boolean gameOver = false;
     private int score = 0;
 

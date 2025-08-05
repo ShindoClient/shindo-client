@@ -1,9 +1,8 @@
 package me.miki.shindo.injection.mixin.mixins.gui;
 
-import org.spongepowered.asm.mixin.Mixin;
-
 import net.minecraft.client.gui.GuiLanguage;
 import net.minecraft.client.gui.GuiScreen;
+import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(GuiLanguage.class)
 public class MixinGuiLanguage extends GuiScreen {

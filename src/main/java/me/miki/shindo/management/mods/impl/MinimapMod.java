@@ -1,10 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
-import java.awt.Color;
-
 import me.miki.shindo.Shindo;
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventLoadWorld;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -22,68 +18,71 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 public class MinimapMod extends HUDMod {
 
-	private NumberSetting widthSetting = new NumberSetting(TranslateText.WIDTH, this, 150, 10, 180, true);
-	private NumberSetting heightSetting = new NumberSetting(TranslateText.HEIGHT, this, 70, 10, 180, true);
-	private NumberSetting alphaSetting = new NumberSetting(TranslateText.ALPHA, this, 1F, 0.0F, 1F, false);
-	
-	private ScreenStencil stencil = new ScreenStencil();
-	private ChunkAtlas chunkAtlas;
-	
-	public MinimapMod() {
-		super(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION);
-	}
+    private final NumberSetting widthSetting = new NumberSetting(TranslateText.WIDTH, this, 150, 10, 180, true);
+    private final NumberSetting heightSetting = new NumberSetting(TranslateText.HEIGHT, this, 70, 10, 180, true);
+    private final NumberSetting alphaSetting = new NumberSetting(TranslateText.ALPHA, this, 1F, 0.0F, 1F, false);
 
-	@Override
-	public void setup() {
-		chunkAtlas = new ChunkAtlas(10);
-	}
-	
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-		
-		NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
-		int width = widthSetting.getValueInt();
-		int height = heightSetting.getValueInt();
-		
-		nvg.setupAndDraw(() -> {
-			nvg.drawShadow(this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale());
-		});
-		
+    private final ScreenStencil stencil = new ScreenStencil();
+    private ChunkAtlas chunkAtlas;
+
+    public MinimapMod() {
+        super(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION);
+    }
+
+    @Override
+    public void setup() {
+        chunkAtlas = new ChunkAtlas(10);
+    }
+
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
+
+        NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
+        int width = widthSetting.getValueInt();
+        int height = heightSetting.getValueInt();
+
+        nvg.setupAndDraw(() -> {
+            nvg.drawShadow(this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale());
+        });
+
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-        
-		stencil.wrap(() -> drawMap(event.getPartialTicks()), this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale(), alphaSetting.getValueFloat());
-		
-		this.setWidth(width);
-		this.setHeight(height);
-	}
-	
-	private void drawMap(float partialTicks) {
-        
-		int width = widthSetting.getValueInt();
-		int height = heightSetting.getValueInt();
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-		EntityPlayer p = mc.thePlayer;
-		
+
+        stencil.wrap(() -> drawMap(event.getPartialTicks()), this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale(), alphaSetting.getValueFloat());
+
+        this.setWidth(width);
+        this.setHeight(height);
+    }
+
+    private void drawMap(float partialTicks) {
+
+        int width = widthSetting.getValueInt();
+        int height = heightSetting.getValueInt();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        EntityPlayer p = mc.thePlayer;
+
         double x = lerp(p.prevPosX, p.posX, partialTicks);
         double z = lerp(p.prevPosZ, p.posZ, partialTicks);
         double yaw = lerp(p.prevRotationYaw, p.rotationYaw, partialTicks);
-        
+
         chunkAtlas.loadChunks((int) x >> 4, (int) z >> 4);
-        
+
         RenderUtils.drawRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), new Color(138, 176, 254));
-        
+
         GlUtils.startTranslate(this.getX() + (width / 2) * this.getScale(), this.getY() + (height / 2) * this.getScale());
-        
+
         GL11.glRotated(180 - yaw, 0, 0, 1);
-        
-		GlStateManager.color(1F, 1F, 1F);
-		GlStateManager.enableTexture2D();
-		GlStateManager.enableAlpha();
+
+        GlStateManager.color(1F, 1F, 1F);
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
         GlStateManager.bindTexture(chunkAtlas.getTextureHandle());
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
@@ -93,9 +92,9 @@ public class MinimapMod extends HUDMod {
 
         double chunkWidth = chunkAtlas.getSpriteWidth();
         double chunkHeight = chunkAtlas.getSpriteHeight();
-        
+
         for (ChunkTile sprite : chunkAtlas) {
-        	
+
             double minX = chunkAtlas.getSpriteX(sprite.getOffset());
             double minY = chunkAtlas.getSpriteY(sprite.getOffset());
 
@@ -112,22 +111,22 @@ public class MinimapMod extends HUDMod {
         }
 
         tessellator.draw();
-        
+
         GlUtils.stopTranslate();
-	}
-	
-	@EventTarget
-	public void onLoadWorld(EventLoadWorld event) {
-		chunkAtlas.clear();
-	}
-	
+    }
+
+    @EventTarget
+    public void onLoadWorld(EventLoadWorld event) {
+        chunkAtlas.clear();
+    }
+
     private double lerp(double prev, double current, float partialTicks) {
         return prev + (current - prev) * partialTicks;
     }
-	
-	@Override
-	public void onEnable() {
-		super.onEnable();
-		chunkAtlas.clear();
-	}
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        chunkAtlas.clear();
+    }
 }

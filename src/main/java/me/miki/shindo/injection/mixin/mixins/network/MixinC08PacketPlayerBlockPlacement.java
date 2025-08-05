@@ -16,22 +16,22 @@ import java.io.IOException;
 @Mixin(C08PacketPlayerBlockPlacement.class)
 public class MixinC08PacketPlayerBlockPlacement {
 
-	@Shadow
+    @Shadow
     private BlockPos position;
-	
-	@Shadow
+
+    @Shadow
     private int placedBlockDirection;
-	
-	@Shadow
+
+    @Shadow
     private ItemStack stack;
-	
-	@Shadow
+
+    @Shadow
     private float facingX;
-	
-	@Shadow
+
+    @Shadow
     private float facingY;
-	
-	@Shadow
+
+    @Shadow
     private float facingZ;
 
     /**

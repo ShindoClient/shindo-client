@@ -3,7 +3,7 @@ package me.miki.shindo.utils.vector;
 import me.miki.shindo.utils.MathUtils;
 
 public final class Quaternion {
-	
+
     public static final Quaternion ONE = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
 
     private float i;
@@ -22,11 +22,11 @@ public final class Quaternion {
     }
 
     public Quaternion(Vector3f vector3f, float f, boolean bl) {
-    	
+
         if (bl) {
             f *= 0.017453292F;
         }
-        
+
         float g = sin(f / 2.0F);
         this.i = vector3f.x() * g;
         this.j = vector3f.y() * g;
@@ -82,6 +82,14 @@ public final class Quaternion {
         quaternion.mul(new Quaternion(0.0F, (float) Math.sin((g / 2.0F)), 0.0F, (float) Math.cos((g / 2.0F))));
         quaternion.mul(new Quaternion(0.0F, 0.0F, (float) Math.sin((h / 2.0F)), (float) Math.cos((h / 2.0F))));
         return quaternion;
+    }
+
+    private static float cos(float f) {
+        return (float) Math.cos(f);
+    }
+
+    private static float sin(float f) {
+        return (float) Math.sin(f);
     }
 
     public Vector3f toXYZ() {
@@ -153,12 +161,11 @@ public final class Quaternion {
     }
 
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Quaternion[").append(r()).append(" + ");
-        stringBuilder.append(i()).append("i + ");
-        stringBuilder.append(j()).append("j + ");
-        stringBuilder.append(k()).append("k]");
-        return stringBuilder.toString();
+        String stringBuilder = "Quaternion[" + r() + " + " +
+                i() + "i + " +
+                j() + "j + " +
+                k() + "k]";
+        return stringBuilder;
     }
 
     public float i() {
@@ -212,18 +219,10 @@ public final class Quaternion {
         this.r = i;
     }
 
-    private static float cos(float f) {
-        return (float) Math.cos(f);
-    }
-
-    private static float sin(float f) {
-        return (float) Math.sin(f);
-    }
-
     public void normalize() {
-    	
+
         float f = i() * i() + j() * j() + k() * k() + r() * r();
-        
+
         if (f > 1.0E-6F) {
             float g = MathUtils.fastInvSqrt(f);
             this.i *= g;

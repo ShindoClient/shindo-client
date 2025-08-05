@@ -1,7 +1,7 @@
 package me.miki.shindo.utils;
 
 public class TimerUtils {
-	
+
     public long lastMs;
 
     public TimerUtils() {
@@ -34,11 +34,11 @@ public class TimerUtils {
         return System.currentTimeMillis() - this.lastMs;
     }
 
-	public long getLastMs() {
-		return lastMs;
-	}
+    public long getLastMs() {
+        return lastMs;
+    }
 
-	public void setLastMs(long lastMs) {
-		this.lastMs = lastMs;
-	}
+    public void setLastMs(long lastMs) {
+        this.lastMs = lastMs;
+    }
 }

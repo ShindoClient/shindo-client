@@ -13,9 +13,10 @@ public class Mod {
     public Minecraft mc = Minecraft.getMinecraft();
     public FontRenderer fr = mc.fontRendererObj;
 
-    private TranslateText nameTranslate, descriptionTranslate;
+    private final TranslateText nameTranslate;
+    private final TranslateText descriptionTranslate;
     private boolean toggled, hide;
-    private SimpleAnimation animation = new SimpleAnimation();
+    private final SimpleAnimation animation = new SimpleAnimation();
     private ModCategory category;
     private String alias = "\u200B"; // zerowidth space
     private Boolean restricted = false, allowed = true;
@@ -75,10 +76,6 @@ public class Mod {
         setToggled(!toggled, true);
     }
 
-    public void setToggled(boolean toggled) {
-        setToggled(toggled, false);
-    }
-
     public void setToggled(boolean toggled, boolean sound) {
 
         this.toggled = toggled;
@@ -114,6 +111,10 @@ public class Mod {
 
     public boolean isToggled() {
         return toggled;
+    }
+
+    public void setToggled(boolean toggled) {
+        setToggled(toggled, false);
     }
 
     public ModCategory getCategory() {

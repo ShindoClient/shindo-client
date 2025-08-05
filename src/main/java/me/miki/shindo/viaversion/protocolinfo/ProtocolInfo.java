@@ -62,6 +62,15 @@ public class ProtocolInfo {
         this.protocolVersion = protocolVersion;
     }
 
+    public static ProtocolInfo fromProtocolVersion(final ProtocolVersion protocolVersion) {
+        for (ProtocolInfo protocolInfo : PROTOCOL_INFOS) {
+            if (protocolInfo.getProtocolVersion().getName().equals(protocolVersion.getName())) {
+                return protocolInfo;
+            }
+        }
+        return null;
+    }
+
     public String getName() {
         return name;
     }
@@ -76,14 +85,5 @@ public class ProtocolInfo {
 
     public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
-    }
-
-    public static ProtocolInfo fromProtocolVersion(final ProtocolVersion protocolVersion) {
-        for (ProtocolInfo protocolInfo : PROTOCOL_INFOS) {
-            if (protocolInfo.getProtocolVersion().getName().equals(protocolVersion.getName())) {
-                return protocolInfo;
-            }
-        }
-        return null;
     }
 }

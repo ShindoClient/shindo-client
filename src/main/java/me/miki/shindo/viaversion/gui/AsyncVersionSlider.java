@@ -1,7 +1,6 @@
 package me.miki.shindo.viaversion.gui;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-
 import me.miki.shindo.viaversion.ViaLoadingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -12,14 +11,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class AsyncVersionSlider extends GuiButton {
-	
-    private float dragValue = (float) (ViaLoadingBase.getProtocols().size() - ViaLoadingBase.getInstance().getTargetVersion().getIndex()) / ViaLoadingBase.getProtocols().size();
 
     private final List<ProtocolVersion> values;
-    private float sliderValue;
     public boolean dragging;
+    private float dragValue = (float) (ViaLoadingBase.getProtocols().size() - ViaLoadingBase.getInstance().getTargetVersion().getIndex()) / ViaLoadingBase.getProtocols().size();
+    private float sliderValue;
 
-    public AsyncVersionSlider(int buttonId, int x, int y , int widthIn, int heightIn) {
+    public AsyncVersionSlider(int buttonId, int x, int y, int widthIn, int heightIn) {
         super(buttonId, x, y, Math.max(widthIn, 110), heightIn, "");
         this.values = ViaLoadingBase.getProtocols();
         Collections.reverse(values);
@@ -36,10 +34,10 @@ public class AsyncVersionSlider extends GuiButton {
     }
 
     protected void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
-    	
+
         if (this.visible) {
             if (this.dragging) {
-                this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
                 this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
                 this.dragValue = sliderValue;
                 this.displayString = values.get((int) (this.sliderValue * (values.size() - 1))).getName();
@@ -48,14 +46,14 @@ public class AsyncVersionSlider extends GuiButton {
 
             mc.getTextureManager().bindTexture(buttonTextures);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
-            this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+            this.drawTexturedModalRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 0, 66, 4, 20);
+            this.drawTexturedModalRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
         }
     }
 
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         if (super.mousePressed(mc, mouseX, mouseY)) {
-            this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+            this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
             this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
             this.dragValue = sliderValue;
             this.displayString = values.get((int) (this.sliderValue * (values.size() - 1))).getName();

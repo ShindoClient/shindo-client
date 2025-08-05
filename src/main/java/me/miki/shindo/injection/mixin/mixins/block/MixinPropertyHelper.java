@@ -1,5 +1,7 @@
 package me.miki.shindo.injection.mixin.mixins.block;
 
+import me.miki.shindo.injection.interfaces.ICachedHashcode;
+import net.minecraft.block.properties.PropertyHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
@@ -7,16 +9,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import me.miki.shindo.injection.interfaces.ICachedHashcode;
-import net.minecraft.block.properties.PropertyHelper;
-
 @Mixin(PropertyHelper.class)
 public class MixinPropertyHelper implements ICachedHashcode {
 
     @Unique
     private int cachedHashcode;
 
-    @Inject(method= "<init>", at= @At("RETURN"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void cacheHashcode(String p_i45652_1_, Class<?> p_i45652_2_, CallbackInfo ci) {
         this.cachedHashcode = this.hashCode();
     }

@@ -16,8 +16,9 @@ import java.awt.*;
 
 public class CompCellGrid extends Comp {
 
-    private CellGridSetting setting;
+    private final CellGridSetting setting;
     private float width, height;
+
     public CompCellGrid(float x, float y, int width, int height, CellGridSetting setting) {
         super(x, y);
         this.width = width;
@@ -60,7 +61,7 @@ public class CompCellGrid extends Comp {
         int index = 0;
         int counter = 0;
         for (boolean[][] layout : CrosshairMod.layoutManager.getLayoutList()) {
-            float x = this.getX() + width - 165  - counter * 40;
+            float x = this.getX() + width - 165 - counter * 40;
             float y = this.getY() + 5 + index * 40;
             nvg.drawRoundedRect(x, y, 35, 35, 2,
                     MouseUtils.isInside(mouseX, mouseY, x, y, 37, 37) ? palette.getBackgroundColor(ColorType.DARK) : palette.getBackgroundColor(ColorType.NORMAL));
@@ -69,7 +70,7 @@ public class CompCellGrid extends Comp {
                 for (int col = 0; col < 11; col++) {
                     nvg.drawRect(
                             this.getX() + width - 158 - counter * 40 + col * 2,
-                            this.getY()  + 13 + index * 40 + row * 2,
+                            this.getY() + 13 + index * 40 + row * 2,
                             2, 2, layout[row][col] ? new Color(255, 255, 255, 255) : new Color(255, 255, 255, 0)
                     );
                 }
@@ -99,7 +100,7 @@ public class CompCellGrid extends Comp {
 
         for (int row = 0; row < 11; row++) {
             for (int col = 0; col < 11; col++) {
-                if (MouseUtils.isInside( mouseX, mouseY,
+                if (MouseUtils.isInside(mouseX, mouseY,
                         this.getX() + width - 115 + col * 10,
                         this.getY() + 5 + row * 10,
                         10, 10
@@ -130,7 +131,7 @@ public class CompCellGrid extends Comp {
         float x = this.getX() + width - 50;
         float y = this.getY() + 125;
 
-        if (MouseUtils.isInside( mouseX, mouseY, x - 9, y, twidth + 20, 20)) {
+        if (MouseUtils.isInside(mouseX, mouseY, x - 9, y, twidth + 20, 20)) {
             setting.setCells(new boolean[11][11]);
         }
     }

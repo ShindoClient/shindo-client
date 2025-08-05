@@ -30,7 +30,6 @@ public class DownloadFile {
     }
 
 
-
     public synchronized void addDownloadedBytes(long bytes) {
         this.downloadedBytes += bytes;
     }

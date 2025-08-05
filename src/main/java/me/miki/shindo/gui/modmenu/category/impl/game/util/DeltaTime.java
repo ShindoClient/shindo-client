@@ -1,14 +1,17 @@
 package me.miki.shindo.gui.modmenu.category.impl.game.util;
 
 public class DeltaTime {
+    private static final DeltaTime dt = new DeltaTime();
     private long lastTime;
     private float deltaTime;
-
-    private static final DeltaTime dt = new DeltaTime();
 
     public DeltaTime() {
         lastTime = System.nanoTime();
         deltaTime = 0;
+    }
+
+    public static DeltaTime getInstance() {
+        return dt;
     }
 
     public void update() {
@@ -19,10 +22,6 @@ public class DeltaTime {
 
     public float getDeltaTime() {
         return deltaTime;
-    }
-
-    public static DeltaTime getInstance() {
-        return dt;
     }
 
 }

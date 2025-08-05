@@ -1,7 +1,6 @@
 package me.miki.shindo.viaversion.platform.viaversion;
 
 import com.viaversion.viaversion.commands.ViaCommandHandler;
-
 import me.miki.shindo.viaversion.command.impl.LeakDetectSubCommand;
 
 public class VLBViaCommandHandler extends ViaCommandHandler {

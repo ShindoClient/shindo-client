@@ -9,18 +9,25 @@ import net.minecraft.util.Timer;
 import java.io.File;
 
 public interface IMixinMinecraft {
-	boolean isRunning();
-	Timer getTimer();
-	void setSession(Session session);
-	void callClickMouse();
-	void callRightClickMouse();
-	DefaultResourcePack getMcDefaultResourcePack();
+    boolean isRunning();
+
+    Timer getTimer();
+
+    void setSession(Session session);
+
+    void callClickMouse();
+
+    void callRightClickMouse();
+
+    DefaultResourcePack getMcDefaultResourcePack();
+
     void resizeWindow(int width, int height);
+
     Entity getRenderViewEntity();
 
-	File getFileResourcepacks();
+    File getFileResourcepacks();
 
-	ResourcePackRepository getMcResourcePackRepository();
+    ResourcePackRepository getMcResourcePackRepository();
 
-	void setMcResourcePackRepository(ResourcePackRepository repo);
+    void setMcResourcePackRepository(ResourcePackRepository repo);
 }

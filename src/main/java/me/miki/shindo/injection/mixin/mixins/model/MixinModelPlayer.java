@@ -1,8 +1,10 @@
 package me.miki.shindo.injection.mixin.mixins.model;
 
 import me.miki.shindo.management.mods.impl.FemaleGenderMod;
+import me.miki.shindo.management.mods.impl.WaveyCapesMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -11,9 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import me.miki.shindo.management.mods.impl.WaveyCapesMod;
-import net.minecraft.client.model.ModelPlayer;
-
 @Mixin(ModelPlayer.class)
 public class MixinModelPlayer extends ModelBase {
 
@@ -21,9 +20,9 @@ public class MixinModelPlayer extends ModelBase {
 
     @Inject(method = "renderCape", at = @At("HEAD"), cancellable = true)
     public void renderCloak(float p_renderCape_1_, CallbackInfo ci) {
-    	if(WaveyCapesMod.getInstance().isToggled()) {
-    		ci.cancel();
-    	}
+        if (WaveyCapesMod.getInstance().isToggled()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

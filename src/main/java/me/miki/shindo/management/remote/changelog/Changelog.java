@@ -2,19 +2,19 @@ package me.miki.shindo.management.remote.changelog;
 
 public class Changelog {
 
-	private String text;
-	private ChangelogType type;
-	
-	public Changelog(String text, ChangelogType type) {
-		this.text = text;
-		this.type = type;
-	}
+    private final String text;
+    private final ChangelogType type;
 
-	public String getText() {
-		return text;
-	}
+    public Changelog(String text, ChangelogType type) {
+        this.text = text;
+        this.type = type;
+    }
 
-	public ChangelogType getType() {
-		return type;
-	}
+    public String getText() {
+        return text;
+    }
+
+    public ChangelogType getType() {
+        return type;
+    }
 }

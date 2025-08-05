@@ -6,7 +6,6 @@ import com.viaversion.viaversion.api.platform.providers.ViaProviders;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.protocol.ProtocolManagerImpl;
-
 import me.miki.shindo.viaversion.model.ComparableProtocolVersion;
 import me.miki.shindo.viaversion.model.Platform;
 import me.miki.shindo.viaversion.platform.ViaBackwardsPlatformImpl;
@@ -16,11 +15,13 @@ import me.miki.shindo.viaversion.platform.viaversion.VLBViaCommandHandler;
 import me.miki.shindo.viaversion.platform.viaversion.VLBViaInjector;
 import me.miki.shindo.viaversion.platform.viaversion.VLBViaProviders;
 import me.miki.shindo.viaversion.util.JLoggerToLog4j;
-
 import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -30,7 +31,8 @@ public class ViaLoadingBase {
     public final static String VERSION = "${vialoadingbase_version}";
     public final static Logger LOGGER = new JLoggerToLog4j(LogManager.getLogger("ViaLoadingBase"));
 
-    public final static Platform PSEUDO_VIA_VERSION = new Platform("ViaVersion", () -> true, () -> {}, protocolVersions -> protocolVersions.addAll(ViaVersionPlatformImpl.createVersionList()));
+    public final static Platform PSEUDO_VIA_VERSION = new Platform("ViaVersion", () -> true, () -> {
+    }, protocolVersions -> protocolVersions.addAll(ViaVersionPlatformImpl.createVersionList()));
     public final static Platform PLATFORM_VIA_BACKWARDS = new Platform("ViaBackwards", () -> inClassPath("com.viaversion.viabackwards.api.ViaBackwardsPlatform"), () -> new ViaBackwardsPlatformImpl(Via.getManager().getPlatform().getDataFolder()));
     public final static Platform PLATFORM_VIA_REWIND = new Platform("ViaRewind", () -> inClassPath("de.gerrygames.viarewind.api.ViaRewindPlatform"), () -> new ViaRewindPlatformImpl(Via.getManager().getPlatform().getDataFolder()));
 
@@ -65,77 +67,8 @@ public class ViaLoadingBase {
         initPlatform();
     }
 
-    public ComparableProtocolVersion getTargetVersion() {
-        if (forceNativeVersionCondition != null && forceNativeVersionCondition.getAsBoolean()) return nativeProtocolVersion;
-
-        return targetProtocolVersion;
-    }
-
-    public void reload(final ProtocolVersion protocolVersion) {
-        reload(fromProtocolVersion(protocolVersion));
-    }
-
-    public void reload(final ComparableProtocolVersion protocolVersion) {
-        this.targetProtocolVersion = protocolVersion;
-
-        if (this.onProtocolReload != null) this.onProtocolReload.accept(targetProtocolVersion);
-    }
-
-    public void initPlatform() {
-        for (Platform platform : platforms) platform.createProtocolPath();
-        for (ProtocolVersion preProtocol : Platform.TEMP_INPUT_PROTOCOLS) PROTOCOLS.put(preProtocol, new ComparableProtocolVersion(preProtocol.getVersion(), preProtocol.getName(), Platform.TEMP_INPUT_PROTOCOLS.indexOf(preProtocol)));
-
-        this.nativeProtocolVersion = fromProtocolVersion(ProtocolVersion.getProtocol(this.nativeVersion));
-        this.targetProtocolVersion = this.nativeProtocolVersion;
-
-        final ViaVersionPlatformImpl viaVersionPlatform = new ViaVersionPlatformImpl(ViaLoadingBase.LOGGER);
-        final ViaManagerImpl.ViaManagerBuilder builder = ViaManagerImpl.builder().
-                platform(viaVersionPlatform).
-                loader(new VLBViaProviders()).
-                injector(new VLBViaInjector()).
-                commandHandler(new VLBViaCommandHandler())
-                ;
-
-        if (this.managerBuilderConsumer != null) this.managerBuilderConsumer.accept(builder);
-
-        Via.init(builder.build());
-
-        final ViaManagerImpl manager = (ViaManagerImpl) Via.getManager();
-        manager.addEnableListener(() -> {
-            for (Platform platform : this.platforms) platform.build(ViaLoadingBase.LOGGER);
-        });
-
-        manager.init();
-        manager.onServerLoaded();
-        manager.getProtocolManager().setMaxProtocolPathSize(Integer.MAX_VALUE);
-        manager.getProtocolManager().setMaxPathDeltaIncrease(-1);
-        ((ProtocolManagerImpl) manager.getProtocolManager()).refreshVersions();
-
-        ViaLoadingBase.LOGGER.info("ViaLoadingBase has loaded " + Platform.COUNT + "/" + platforms.size() + " platforms");
-    }
-
     public static ViaLoadingBase getInstance() {
         return instance;
-    }
-
-    public List<Platform> getSubPlatforms() {
-        return platforms;
-    }
-
-    public File getRunDirectory() {
-        return runDirectory;
-    }
-
-    public int getNativeVersion() {
-        return nativeVersion;
-    }
-
-    public Supplier<JsonObject> getDumpSupplier() {
-        return dumpSupplier;
-    }
-
-    public Consumer<ViaProviders> getProviders() {
-        return providers;
     }
 
     public static boolean inClassPath(final String name) {
@@ -157,6 +90,76 @@ public class ViaLoadingBase {
 
     public static List<ProtocolVersion> getProtocols() {
         return new LinkedList<>(PROTOCOLS.keySet());
+    }
+
+    public ComparableProtocolVersion getTargetVersion() {
+        if (forceNativeVersionCondition != null && forceNativeVersionCondition.getAsBoolean())
+            return nativeProtocolVersion;
+
+        return targetProtocolVersion;
+    }
+
+    public void reload(final ProtocolVersion protocolVersion) {
+        reload(fromProtocolVersion(protocolVersion));
+    }
+
+    public void reload(final ComparableProtocolVersion protocolVersion) {
+        this.targetProtocolVersion = protocolVersion;
+
+        if (this.onProtocolReload != null) this.onProtocolReload.accept(targetProtocolVersion);
+    }
+
+    public void initPlatform() {
+        for (Platform platform : platforms) platform.createProtocolPath();
+        for (ProtocolVersion preProtocol : Platform.TEMP_INPUT_PROTOCOLS)
+            PROTOCOLS.put(preProtocol, new ComparableProtocolVersion(preProtocol.getVersion(), preProtocol.getName(), Platform.TEMP_INPUT_PROTOCOLS.indexOf(preProtocol)));
+
+        this.nativeProtocolVersion = fromProtocolVersion(ProtocolVersion.getProtocol(this.nativeVersion));
+        this.targetProtocolVersion = this.nativeProtocolVersion;
+
+        final ViaVersionPlatformImpl viaVersionPlatform = new ViaVersionPlatformImpl(ViaLoadingBase.LOGGER);
+        final ViaManagerImpl.ViaManagerBuilder builder = ViaManagerImpl.builder().
+                platform(viaVersionPlatform).
+                loader(new VLBViaProviders()).
+                injector(new VLBViaInjector()).
+                commandHandler(new VLBViaCommandHandler());
+
+        if (this.managerBuilderConsumer != null) this.managerBuilderConsumer.accept(builder);
+
+        Via.init(builder.build());
+
+        final ViaManagerImpl manager = (ViaManagerImpl) Via.getManager();
+        manager.addEnableListener(() -> {
+            for (Platform platform : this.platforms) platform.build(ViaLoadingBase.LOGGER);
+        });
+
+        manager.init();
+        manager.onServerLoaded();
+        manager.getProtocolManager().setMaxProtocolPathSize(Integer.MAX_VALUE);
+        manager.getProtocolManager().setMaxPathDeltaIncrease(-1);
+        ((ProtocolManagerImpl) manager.getProtocolManager()).refreshVersions();
+
+        ViaLoadingBase.LOGGER.info("ViaLoadingBase has loaded " + Platform.COUNT + "/" + platforms.size() + " platforms");
+    }
+
+    public List<Platform> getSubPlatforms() {
+        return platforms;
+    }
+
+    public File getRunDirectory() {
+        return runDirectory;
+    }
+
+    public int getNativeVersion() {
+        return nativeVersion;
+    }
+
+    public Supplier<JsonObject> getDumpSupplier() {
+        return dumpSupplier;
+    }
+
+    public Consumer<ViaProviders> getProviders() {
+        return providers;
     }
 
     public static class ViaLoadingBaseBuilder {

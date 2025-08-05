@@ -8,63 +8,67 @@ import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 
 public class AnimationsMod extends Mod {
 
-	private static AnimationsMod instance;
-	
-	private BooleanSetting blockHitSetting = new BooleanSetting(TranslateText.BLOCK_HIT, this, true);
-	private BooleanSetting pushingSetting = new BooleanSetting(TranslateText.PUSHING, this, true);
-	private BooleanSetting pushingParticleSetting = new BooleanSetting(TranslateText.PUSHING_PARTICLES, this, true);
-	private BooleanSetting sneakSetting = new BooleanSetting(TranslateText.SNEAK, this, true);
-	private BooleanSetting smoothSneakSetting = new BooleanSetting(TranslateText.SNEAKSMOOTH, this, false);
-	private NumberSetting smoothSneakSpeedSetting = new NumberSetting(TranslateText.SMOOTH_SPEED, this, 6, 0.5, 20, false);
-	private BooleanSetting healthSetting = new BooleanSetting(TranslateText.HEALTH, this, true);
-	
-	private BooleanSetting armorDamageSetting = new BooleanSetting(TranslateText.ARMOR_DAMAGE, this, false);
-	private BooleanSetting itemSwitchSetting = new BooleanSetting(TranslateText.ITEM_SWITCH, this, false);
-	private BooleanSetting rodSetting = new BooleanSetting(TranslateText.ROD, this, false);
+    private static AnimationsMod instance;
 
-	public AnimationsMod() {
-		super(TranslateText.OLD_ANIMATION, TranslateText.OLD_ANIMATION_DESCRIPTION, ModCategory.RENDER, "oldoam1.7smoothsneak");
-		
-		instance = this;
-	}
+    private final BooleanSetting blockHitSetting = new BooleanSetting(TranslateText.BLOCK_HIT, this, true);
+    private final BooleanSetting pushingSetting = new BooleanSetting(TranslateText.PUSHING, this, true);
+    private final BooleanSetting pushingParticleSetting = new BooleanSetting(TranslateText.PUSHING_PARTICLES, this, true);
+    private final BooleanSetting sneakSetting = new BooleanSetting(TranslateText.SNEAK, this, true);
+    private final BooleanSetting smoothSneakSetting = new BooleanSetting(TranslateText.SNEAKSMOOTH, this, false);
+    private final NumberSetting smoothSneakSpeedSetting = new NumberSetting(TranslateText.SMOOTH_SPEED, this, 6, 0.5, 20, false);
+    private final BooleanSetting healthSetting = new BooleanSetting(TranslateText.HEALTH, this, true);
 
-	public static AnimationsMod getInstance() {
-		return instance;
-	}
+    private final BooleanSetting armorDamageSetting = new BooleanSetting(TranslateText.ARMOR_DAMAGE, this, false);
+    private final BooleanSetting itemSwitchSetting = new BooleanSetting(TranslateText.ITEM_SWITCH, this, false);
+    private final BooleanSetting rodSetting = new BooleanSetting(TranslateText.ROD, this, false);
 
-	public BooleanSetting getBlockHitSetting() {
-		return blockHitSetting;
-	}
+    public AnimationsMod() {
+        super(TranslateText.OLD_ANIMATION, TranslateText.OLD_ANIMATION_DESCRIPTION, ModCategory.RENDER, "oldoam1.7smoothsneak");
 
-	public BooleanSetting getPushingSetting() {
-		return pushingSetting;
-	}
+        instance = this;
+    }
 
-	public BooleanSetting getPushingParticleSetting() {
-		return pushingParticleSetting;
-	}
+    public static AnimationsMod getInstance() {
+        return instance;
+    }
 
-	public BooleanSetting getSneakSetting() {
-		return sneakSetting;
-	}
+    public BooleanSetting getBlockHitSetting() {
+        return blockHitSetting;
+    }
 
-	public BooleanSetting getSmoothSneakSetting() { return smoothSneakSetting; }
+    public BooleanSetting getPushingSetting() {
+        return pushingSetting;
+    }
 
-	public float getSmoothSneakSpeedSetting() { return smoothSneakSpeedSetting.getValueFloat(); }
+    public BooleanSetting getPushingParticleSetting() {
+        return pushingParticleSetting;
+    }
 
-	public BooleanSetting getHealthSetting() {
-		return healthSetting;
-	}
+    public BooleanSetting getSneakSetting() {
+        return sneakSetting;
+    }
 
-	public BooleanSetting getArmorDamageSetting() {
-		return armorDamageSetting;
-	}
+    public BooleanSetting getSmoothSneakSetting() {
+        return smoothSneakSetting;
+    }
 
-	public BooleanSetting getItemSwitchSetting() {
-		return itemSwitchSetting;
-	}
+    public float getSmoothSneakSpeedSetting() {
+        return smoothSneakSpeedSetting.getValueFloat();
+    }
 
-	public BooleanSetting getRodSetting() {
-		return rodSetting;
-	}
+    public BooleanSetting getHealthSetting() {
+        return healthSetting;
+    }
+
+    public BooleanSetting getArmorDamageSetting() {
+        return armorDamageSetting;
+    }
+
+    public BooleanSetting getItemSwitchSetting() {
+        return itemSwitchSetting;
+    }
+
+    public BooleanSetting getRodSetting() {
+        return rodSetting;
+    }
 }

@@ -1,11 +1,5 @@
 package me.miki.shindo.management.mods.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderSelectedItem;
 import me.miki.shindo.management.language.TranslateText;
@@ -23,120 +17,17 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class ItemInfoMod extends Mod {
 
-	private BooleanSetting potionColorSetting = new BooleanSetting(TranslateText.POTION_COLOR, this, false);
-	
-	public ItemInfoMod() {
-		super(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER);
-	}
-	
-	@EventTarget
-	public void onRenderTooltip(EventRenderSelectedItem event) {
-		
-        ItemStack heldItemStack = mc.thePlayer.inventory.getCurrentItem();
-        
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        
-        int addY = 70;
-        
-        if (heldItemStack != null) {
-        	
-        	String s1 = "";
-        	
-            if (heldItemStack.getItem() instanceof ItemPotion) {
-            	s1 = this.getPotionEffectString(heldItemStack);
-            } else {
-            	s1 = this.getEnchantmentString(heldItemStack);
-            }
-            
-            if(PlayerUtils.isCreative()) {
-            	addY = 55;
-            }
-
-        	fr.drawStringWithShadow(s1, (sr.getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(s1) / 2), sr.getScaledHeight() - addY - 1, event.getColor());
-        }
-	}
-	
-	private String getPotionEffectString(ItemStack heldItemStack) {
-        ItemPotion potion = (ItemPotion) heldItemStack.getItem();
-        List<?> effects = potion.getEffects(heldItemStack);
-
-        if (effects == null) {
-            return "";
-        } else {
-            StringBuilder potionBuilder = new StringBuilder();
-            Iterator<?> iterator = effects.iterator();
-
-            while (iterator.hasNext()) {
-                PotionEffect entry = (PotionEffect) iterator.next();
-                int duration = entry.getDuration() / 20;
-
-                if(potionColorSetting.isToggled()) {
-                	if(entry.getPotionID() == Potion.moveSpeed.getId()) {
-                		potionBuilder.append(EnumChatFormatting.AQUA);
-                	}
-                	if(entry.getPotionID() == Potion.regeneration.getId()) {
-                		potionBuilder.append(EnumChatFormatting.LIGHT_PURPLE);
-                	}
-                	if(entry.getPotionID() == Potion.poison.getId()) {
-                		potionBuilder.append(EnumChatFormatting.DARK_GREEN);
-                	}
-                	if(entry.getPotionID() == Potion.jump.getId()) {
-                		potionBuilder.append(EnumChatFormatting.GREEN);
-                	}
-                	if(entry.getPotionID() == Potion.fireResistance.getId()) {
-                		potionBuilder.append(EnumChatFormatting.GOLD);
-                	}
-                	if(entry.getPotionID() == Potion.heal.getId()) {
-                		potionBuilder.append(EnumChatFormatting.RED);
-                	}
-                	if(entry.getPotionID() == Potion.moveSlowdown.getId()) {
-                		potionBuilder.append(EnumChatFormatting.GRAY);
-                	}
-                	if(entry.getPotionID() == Potion.nightVision.getId()) {
-                		potionBuilder.append(EnumChatFormatting.DARK_BLUE);
-                	}
-                	if(entry.getPotionID() == Potion.damageBoost.getId()) {
-                		potionBuilder.append(EnumChatFormatting.DARK_PURPLE);
-                	}
-                }
-                
-                potionBuilder.append(StatCollector.translateToLocal(entry.getEffectName()));
-        		potionBuilder.append(EnumChatFormatting.WHITE);
-                potionBuilder.append(" ");
-                potionBuilder.append(entry.getAmplifier() + 1);
-                potionBuilder.append(" ");
-                potionBuilder.append("(");
-                potionBuilder.append(duration / 60 + String.format(":%02d", new Object[] { Integer.valueOf(duration % 60)}));
-                potionBuilder.append(") ");
-            }
-
-            return potionBuilder.toString().trim();
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-	private String getEnchantmentString(ItemStack heldItemStack) {
-        StringBuilder enchantBuilder = new StringBuilder();
-        Map en = EnchantmentHelper.getEnchantments(heldItemStack);
-        Iterator iterator = en.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-            Entry entry = (Entry) iterator.next();
-
-            enchantBuilder.append((String) this.ENCHANTMENT_SHORT_NAME.get(entry.getKey()));
-            enchantBuilder.append(" ");
-            enchantBuilder.append(entry.getValue());
-            enchantBuilder.append(" ");
-        }
-
-        return enchantBuilder.toString().trim();
-    }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes", "serial" })
-	private final Map ENCHANTMENT_SHORT_NAME = new HashMap() {
-    {
+    @SuppressWarnings({"unchecked", "rawtypes", "serial"})
+    private final Map ENCHANTMENT_SHORT_NAME = new HashMap() {
+        {
             this.put(Integer.valueOf(0), "P");
             this.put(Integer.valueOf(1), "FP");
             this.put(Integer.valueOf(2), "FF");
@@ -166,4 +57,112 @@ public class ItemInfoMod extends Mod {
             this.put(Integer.valueOf(70), "MEN");
         }
     };
+    private final BooleanSetting potionColorSetting = new BooleanSetting(TranslateText.POTION_COLOR, this, false);
+
+    public ItemInfoMod() {
+        super(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER);
+    }
+
+    @EventTarget
+    public void onRenderTooltip(EventRenderSelectedItem event) {
+
+        ItemStack heldItemStack = mc.thePlayer.inventory.getCurrentItem();
+
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+
+        int addY = 70;
+
+        if (heldItemStack != null) {
+
+            String s1 = "";
+
+            if (heldItemStack.getItem() instanceof ItemPotion) {
+                s1 = this.getPotionEffectString(heldItemStack);
+            } else {
+                s1 = this.getEnchantmentString(heldItemStack);
+            }
+
+            if (PlayerUtils.isCreative()) {
+                addY = 55;
+            }
+
+            fr.drawStringWithShadow(s1, (sr.getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(s1) / 2), sr.getScaledHeight() - addY - 1, event.getColor());
+        }
+    }
+
+    private String getPotionEffectString(ItemStack heldItemStack) {
+        ItemPotion potion = (ItemPotion) heldItemStack.getItem();
+        List<?> effects = potion.getEffects(heldItemStack);
+
+        if (effects == null) {
+            return "";
+        } else {
+            StringBuilder potionBuilder = new StringBuilder();
+            Iterator<?> iterator = effects.iterator();
+
+            while (iterator.hasNext()) {
+                PotionEffect entry = (PotionEffect) iterator.next();
+                int duration = entry.getDuration() / 20;
+
+                if (potionColorSetting.isToggled()) {
+                    if (entry.getPotionID() == Potion.moveSpeed.getId()) {
+                        potionBuilder.append(EnumChatFormatting.AQUA);
+                    }
+                    if (entry.getPotionID() == Potion.regeneration.getId()) {
+                        potionBuilder.append(EnumChatFormatting.LIGHT_PURPLE);
+                    }
+                    if (entry.getPotionID() == Potion.poison.getId()) {
+                        potionBuilder.append(EnumChatFormatting.DARK_GREEN);
+                    }
+                    if (entry.getPotionID() == Potion.jump.getId()) {
+                        potionBuilder.append(EnumChatFormatting.GREEN);
+                    }
+                    if (entry.getPotionID() == Potion.fireResistance.getId()) {
+                        potionBuilder.append(EnumChatFormatting.GOLD);
+                    }
+                    if (entry.getPotionID() == Potion.heal.getId()) {
+                        potionBuilder.append(EnumChatFormatting.RED);
+                    }
+                    if (entry.getPotionID() == Potion.moveSlowdown.getId()) {
+                        potionBuilder.append(EnumChatFormatting.GRAY);
+                    }
+                    if (entry.getPotionID() == Potion.nightVision.getId()) {
+                        potionBuilder.append(EnumChatFormatting.DARK_BLUE);
+                    }
+                    if (entry.getPotionID() == Potion.damageBoost.getId()) {
+                        potionBuilder.append(EnumChatFormatting.DARK_PURPLE);
+                    }
+                }
+
+                potionBuilder.append(StatCollector.translateToLocal(entry.getEffectName()));
+                potionBuilder.append(EnumChatFormatting.WHITE);
+                potionBuilder.append(" ");
+                potionBuilder.append(entry.getAmplifier() + 1);
+                potionBuilder.append(" ");
+                potionBuilder.append("(");
+                potionBuilder.append(duration / 60 + String.format(":%02d", new Object[]{Integer.valueOf(duration % 60)}));
+                potionBuilder.append(") ");
+            }
+
+            return potionBuilder.toString().trim();
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private String getEnchantmentString(ItemStack heldItemStack) {
+        StringBuilder enchantBuilder = new StringBuilder();
+        Map en = EnchantmentHelper.getEnchantments(heldItemStack);
+        Iterator iterator = en.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Entry entry = (Entry) iterator.next();
+
+            enchantBuilder.append((String) this.ENCHANTMENT_SHORT_NAME.get(entry.getKey()));
+            enchantBuilder.append(" ");
+            enchantBuilder.append(entry.getValue());
+            enchantBuilder.append(" ");
+        }
+
+        return enchantBuilder.toString().trim();
+    }
 }

@@ -9,138 +9,136 @@ import java.io.IOException;
 
 public class FileManager {
 
-	private final File shindoDir;
-	private final File externalDir;
-	private final File cacheDir;
+    private final File shindoDir;
+    private final File externalDir;
+    private final File cacheDir;
 
-	private final File musicDir;
+    private final File musicDir;
     private final File profileDir;
     private final File screenshotDir;
-	private final File addonsDir;
-	private final File gamesDir;
+    private final File addonsDir;
+    private final File gamesDir;
 
-	private final File serversDir;
+    private final File serversDir;
 
     private final File customCapeDir;
     private final File capeCacheDir;
 
 
+    public FileManager() {
+        File soarDir = new File(Minecraft.getMinecraft().mcDataDir, "soar");
+
+        shindoDir = new File(Minecraft.getMinecraft().mcDataDir, "shindo");
+        externalDir = new File(shindoDir, "external");
+        cacheDir = new File(shindoDir, "cache");
+
+        musicDir = new File(shindoDir, "music");
+        profileDir = new File(shindoDir, "profile");
+        screenshotDir = new File(shindoDir, "screenshots");
+        addonsDir = new File(shindoDir, "addons");
+        gamesDir = new File(shindoDir, "games");
+
+        serversDir = new File(shindoDir, "servers");
+
+        customCapeDir = new File(cacheDir, "custom-cape");
+        capeCacheDir = new File(cacheDir, "cape");
 
 
-	public FileManager() {
-		File soarDir = new File(Minecraft.getMinecraft().mcDataDir, "soar");
+        try {
 
-		shindoDir = new File(Minecraft.getMinecraft().mcDataDir, "shindo");
-		externalDir = new File(shindoDir, "external");
-		cacheDir = new File(shindoDir, "cache");
-
-		musicDir = new File(shindoDir, "music");
-		profileDir = new File(shindoDir, "profile");
-		screenshotDir = new File(shindoDir, "screenshots");
-		addonsDir = new File(shindoDir, "addons");
-		gamesDir = new File(shindoDir, "games");
-
-		serversDir = new File(shindoDir, "servers");
-
-		customCapeDir = new File(cacheDir, "custom-cape");
-		capeCacheDir = new File(cacheDir, "cape");
-
-
-		try{
-
-			if(!shindoDir.exists()){
-				if(soarDir.exists()) {
+            if (!shindoDir.exists()) {
+                if (soarDir.exists()) {
                     boolean migrationSuccess = soarDir.renameTo(shindoDir);
-					if(!migrationSuccess) createDir(shindoDir);
-				} else {
-					createDir(shindoDir);
-				}
-			}
+                    if (!migrationSuccess) createDir(shindoDir);
+                } else {
+                    createDir(shindoDir);
+                }
+            }
 
-			if(!externalDir.exists()) createDir(externalDir);
-			if(!cacheDir.exists()) createDir(cacheDir);
+            if (!externalDir.exists()) createDir(externalDir);
+            if (!cacheDir.exists()) createDir(cacheDir);
 
-			if(!musicDir.exists()) createDir(musicDir);
-			if(!profileDir.exists()) createDir(profileDir);
-			if(!screenshotDir.exists()) createDir(screenshotDir);
-			if(!addonsDir.exists()) createDir(addonsDir);
-			if(!gamesDir.exists()) createDir(gamesDir);
+            if (!musicDir.exists()) createDir(musicDir);
+            if (!profileDir.exists()) createDir(profileDir);
+            if (!screenshotDir.exists()) createDir(screenshotDir);
+            if (!addonsDir.exists()) createDir(addonsDir);
+            if (!gamesDir.exists()) createDir(gamesDir);
 
-			if(!serversDir.exists()) createDir(serversDir);
+            if (!serversDir.exists()) createDir(serversDir);
 
-			if(!customCapeDir.exists()) createDir(customCapeDir);
-			if(!capeCacheDir.exists()) createDir(capeCacheDir);
+            if (!customCapeDir.exists()) createDir(customCapeDir);
+            if (!capeCacheDir.exists()) createDir(capeCacheDir);
 
-			createVersionFile();
+            createVersionFile();
 
-		} catch (Exception e) {
-			ShindoLogger.error("Something has gone very wrong while trying to create the shindo folder which may result in crashes later", e);
-		}
+        } catch (Exception e) {
+            ShindoLogger.error("Something has gone very wrong while trying to create the shindo folder which may result in crashes later", e);
+        }
 
-	}
-	
-	private void createVersionFile() {
-		
-		File versionDir = new File(cacheDir, "version");
-		
-		createDir(versionDir);
-		createFile(new File(versionDir, Shindo.getInstance().getVersionIdentifier() + ".tmp"));
-	}
-	
-	public void createDir(File file) {
-		file.mkdir();
-	}
-	
-	public void createFile(File file) {
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			ShindoLogger.error("Failed to create file " + file.getName(), e);
-		}
-	}
+    }
 
-	public File getShindoDir() {
-		return shindoDir;
-	}
+    private void createVersionFile() {
 
-	public File getExternalDir() {
-		return externalDir;
-	}
+        File versionDir = new File(cacheDir, "version");
 
-	public File getCacheDir() {
-		return cacheDir;
-	}
+        createDir(versionDir);
+        createFile(new File(versionDir, Shindo.getInstance().getVersionIdentifier() + ".tmp"));
+    }
 
-	public File getMusicDir() {
-		return musicDir;
-	}
+    public void createDir(File file) {
+        file.mkdir();
+    }
 
-	public File getProfileDir() {
-		return profileDir;
-	}
+    public void createFile(File file) {
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            ShindoLogger.error("Failed to create file " + file.getName(), e);
+        }
+    }
 
-	public File getScreenshotDir() {
-		return screenshotDir;
-	}
+    public File getShindoDir() {
+        return shindoDir;
+    }
 
-	public File getAddonsDir() {
-		return addonsDir;
-	}
+    public File getExternalDir() {
+        return externalDir;
+    }
 
-	public File getGamesDir() {
-		return gamesDir;
-	}
+    public File getCacheDir() {
+        return cacheDir;
+    }
 
-	public File getServersDir() {
-		return serversDir;
-	}
+    public File getMusicDir() {
+        return musicDir;
+    }
 
-	public File getCustomCapeDir() {
-		return customCapeDir;
-	}
+    public File getProfileDir() {
+        return profileDir;
+    }
 
-	public File getCapeCacheDir() {
-		return capeCacheDir;
-	}
+    public File getScreenshotDir() {
+        return screenshotDir;
+    }
+
+    public File getAddonsDir() {
+        return addonsDir;
+    }
+
+    public File getGamesDir() {
+        return gamesDir;
+    }
+
+    public File getServersDir() {
+        return serversDir;
+    }
+
+    public File getCustomCapeDir() {
+        return customCapeDir;
+    }
+
+    public File getCapeCacheDir() {
+        return capeCacheDir;
+    }
 
 }

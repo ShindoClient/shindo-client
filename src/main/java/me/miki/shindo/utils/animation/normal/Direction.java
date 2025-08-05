@@ -8,7 +8,7 @@ public enum Direction {
         if (this == Direction.FORWARDS) {
             return Direction.BACKWARDS;
         } else {
-        	return Direction.FORWARDS;
+            return Direction.FORWARDS;
         }
     }
 }

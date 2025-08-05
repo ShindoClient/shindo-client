@@ -12,6 +12,15 @@ public class MixinLinuxKeyboard {
     @Final
     private int numlock_mask, modeswitch_mask, caps_lock_mask, shift_lock_mask;
 
+    @Shadow
+    private static native boolean isKeypadKeysym(long keysym);
+
+    @Shadow
+    private static native long getKeySym(long eventp, int group, int index);
+
+    @Shadow
+    private static native long toUpper(long keysym);
+
     /**
      * @author EldoDebug
      * @reason Fixes the keycode mapping for the Linux keyboard.
@@ -23,30 +32,16 @@ public class MixinLinuxKeyboard {
         int group = (eventState & modeswitch_mask) != 0 ? 1 : 0;
         long keysym;
 
-        if((eventState & numlock_mask) != 0 && isKeypadKeysym(keysym = getKeySym(eventp, group, 1))) {
-            if(shift)
+        if ((eventState & numlock_mask) != 0 && isKeypadKeysym(keysym = getKeySym(eventp, group, 1))) {
+            if (shift)
                 keysym = getKeySym(eventp, group, 0);
-        }
-        else {
+        } else {
             keysym = getKeySym(eventp, group, 0);
-            if(shift ^ ((eventState & caps_lock_mask) != 0))
+            if (shift ^ ((eventState & caps_lock_mask) != 0))
                 keysym = toUpper(keysym);
         }
 
         return MixinLinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
     }
-
-    @Shadow
-    private static boolean isKeypadKeysym(long keysym) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Shadow
-    private static long getKeySym(long eventp, int group, int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Shadow
-    private static native long toUpper(long keysym);
 
 }

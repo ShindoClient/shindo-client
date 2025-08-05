@@ -1,11 +1,5 @@
 package me.miki.shindo.utils;
 
-import java.awt.Color;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.injection.interfaces.IMixinRenderManager;
 import net.minecraft.client.Minecraft;
@@ -16,71 +10,76 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.util.ConcurrentModificationException;
+import java.util.List;
 
 public class Render3DUtils {
 
-	private static Minecraft mc = Minecraft.getMinecraft();
-	
-	public static void drawFillBox(AxisAlignedBB box) {
-		
-		GlStateManager.disableCull();
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
-		tessellator.draw();
+    public static void drawFillBox(AxisAlignedBB box) {
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		tessellator.draw();
+        GlStateManager.disableCull();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		tessellator.draw();
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
+        tessellator.draw();
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		tessellator.draw();
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
+        tessellator.draw();
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
-		tessellator.draw();
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
+        tessellator.draw();
 
-		worldrenderer.begin(6, DefaultVertexFormats.POSITION);
-		worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
-		worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
-		worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
-		tessellator.draw();
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
+        tessellator.draw();
 
-		GlStateManager.enableCull();
-	}
-	
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.maxY, box.minZ).endVertex();
+        tessellator.draw();
+
+        worldrenderer.begin(6, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.minZ).endVertex();
+        worldrenderer.pos(box.maxX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.maxZ).endVertex();
+        worldrenderer.pos(box.minX, box.minY, box.minZ).endVertex();
+        tessellator.draw();
+
+        GlStateManager.enableCull();
+    }
+
     public static void drawBoundingBox(final AxisAlignedBB aa) {
 
-    	GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
         glVertex3D(getRenderPos(aa.minX, aa.minY, aa.minZ));
         glVertex3D(getRenderPos(aa.minX, aa.maxY, aa.minZ));
         glVertex3D(getRenderPos(aa.maxX, aa.minY, aa.minZ));
@@ -146,22 +145,22 @@ public class Render3DUtils {
         glVertex3D(getRenderPos(aa.maxX, aa.minY, aa.maxZ));
         GL11.glEnd();
     }
-    
+
     private static void glVertex3D(Vec3 vector3d) {
         GL11.glVertex3d(vector3d.xCoord, vector3d.yCoord, vector3d.zCoord);
     }
-    
+
     private static Vec3 getRenderPos(double x, double y, double z) {
 
-        x -= ((IMixinRenderManager)mc.getRenderManager()).getRenderPosX();
-        y -= ((IMixinRenderManager)mc.getRenderManager()).getRenderPosY();
-        z -= ((IMixinRenderManager)mc.getRenderManager()).getRenderPosZ();
+        x -= ((IMixinRenderManager) mc.getRenderManager()).getRenderPosX();
+        y -= ((IMixinRenderManager) mc.getRenderManager()).getRenderPosY();
+        z -= ((IMixinRenderManager) mc.getRenderManager()).getRenderPosZ();
 
         return new Vec3(x, y, z);
     }
-	
+
     public static void drawTargetIndicator(Entity entity, double rad, Color color) {
-    	
+
         GL11.glPushMatrix();
         GL11.glDisable(3553);
         GL11.glEnable(2848);
@@ -173,18 +172,18 @@ public class Render3DUtils {
         GL11.glHint(3153, 4354);
         GL11.glDepthMask(false);
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
-    	GL11.glShadeModel(GL11.GL_SMOOTH);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
         GlStateManager.disableCull();
         GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
 
-        double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ((IMixinMinecraft)mc).getTimer().renderPartialTicks - (((IMixinRenderManager)mc.getRenderManager())).getRenderPosX();
-        double y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ((IMixinMinecraft)mc).getTimer().renderPartialTicks - (((IMixinRenderManager)mc.getRenderManager())).getRenderPosY()) + Math.sin(System.currentTimeMillis() / 2E+2) + 1;
-        double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ((IMixinMinecraft)mc).getTimer().renderPartialTicks - (((IMixinRenderManager)mc.getRenderManager())).getRenderPosZ();
+        double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ((IMixinMinecraft) mc).getTimer().renderPartialTicks - (((IMixinRenderManager) mc.getRenderManager())).getRenderPosX();
+        double y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ((IMixinMinecraft) mc).getTimer().renderPartialTicks - (((IMixinRenderManager) mc.getRenderManager())).getRenderPosY()) + Math.sin(System.currentTimeMillis() / 2E+2) + 1;
+        double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ((IMixinMinecraft) mc).getTimer().renderPartialTicks - (((IMixinRenderManager) mc.getRenderManager())).getRenderPosZ();
 
         Color c;
 
         for (float i = 0; i < Math.PI * 2; i += Math.PI * 2 / 64.F) {
-        	
+
             double vecX = x + rad * Math.cos(i);
             double vecZ = z + rad * Math.sin(i);
 
@@ -205,7 +204,7 @@ public class Render3DUtils {
         }
 
         GL11.glEnd();
-    	GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glDepthMask(true);
         GL11.glEnable(2929);
         GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
@@ -217,9 +216,9 @@ public class Render3DUtils {
         GL11.glPopMatrix();
         GL11.glColor3f(255, 255, 255);
     }
-    
+
     private static void drawFilledCircleNoGL(final int x, final int y, final double r, final int c, final int quality) {
-    	
+
         final float f = ((c >> 24) & 0xff) / 255F;
         final float f1 = ((c >> 16) & 0xff) / 255F;
         final float f2 = ((c >> 8) & 0xff) / 255F;
@@ -236,7 +235,7 @@ public class Render3DUtils {
 
         GL11.glEnd();
     }
-    
+
     public static void renderBreadCrumbs(final List<Vec3> vec3s, Color color) {
 
         GlStateManager.disableDepth();
@@ -253,9 +252,9 @@ public class Render3DUtils {
 
                 boolean draw = true;
 
-                final double x = v.xCoord - ((IMixinRenderManager)mc.getRenderManager()).getRenderPosX();
-                final double y = v.yCoord -  ((IMixinRenderManager)mc.getRenderManager()).getRenderPosY();
-                final double z = v.zCoord - ((IMixinRenderManager)mc.getRenderManager()).getRenderPosZ();
+                final double x = v.xCoord - ((IMixinRenderManager) mc.getRenderManager()).getRenderPosX();
+                final double y = v.yCoord - ((IMixinRenderManager) mc.getRenderManager()).getRenderPosY();
+                final double z = v.zCoord - ((IMixinRenderManager) mc.getRenderManager()).getRenderPosZ();
 
                 final double distanceFromPlayer = mc.thePlayer.getDistance(v.xCoord, v.yCoord - 1, v.zCoord);
                 int quality = (int) (distanceFromPlayer * 4 + 10);
@@ -287,11 +286,11 @@ public class Render3DUtils {
                     drawFilledCircleNoGL(0, 0, 0.7, new Color(c.getRed(), c.getGreen(), c.getBlue(), 100).hashCode(), quality);
 
                     if (distanceFromPlayer < 4) {
-                    	drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
+                        drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
                     }
 
                     if (distanceFromPlayer < 20) {
-                    	drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
+                        drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
                     }
 
                     GL11.glScalef(0.8f, 0.8f, 0.8f);

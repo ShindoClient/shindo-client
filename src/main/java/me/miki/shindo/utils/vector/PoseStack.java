@@ -1,13 +1,12 @@
 package me.miki.shindo.utils.vector;
 
-import java.util.Deque;
-
 import com.google.common.collect.Queues;
-
 import me.miki.shindo.utils.MathUtils;
 
+import java.util.Deque;
+
 public class PoseStack {
-	
+
     private final Deque<Pose> poseStack;
 
     public PoseStack() {
@@ -36,7 +35,7 @@ public class PoseStack {
         float j = 1.0F / g;
         float k = 1.0F / h;
         float l = MathUtils.fastInvCubeRoot(i * j * k);
-        
+
         pose.normal.mul(Matrix3f.createScaleMatrix(l * i, l * j, l * k));
     }
 
@@ -70,6 +69,6 @@ public class PoseStack {
     }
 
     public void mulPoseMatrix(Matrix4f matrix4f) {
-        ((Pose) this.poseStack.getLast()).pose.multiply(matrix4f);
+        this.poseStack.getLast().pose.multiply(matrix4f);
     }
 }

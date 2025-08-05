@@ -5,7 +5,137 @@ import java.util.List;
 
 public class LayoutManager {
 
-    private List<boolean[][]> layoutList = new ArrayList<>();
+    private final boolean[][] preset4 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset5 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, true, true, true, false, false, false, false},
+            {false, false, false, true, true, false, true, true, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, true, true, false, true, true, false, false, false},
+            {false, false, false, false, true, true, true, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset7 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, false, true, false, true, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, true, false, true, false, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset8 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, true, false, true, false, true, false, false, false},
+            {false, false, true, false, false, true, false, false, true, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, true, true, true, false, true, false, true, true, true, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, true, false, false, true, false, false, true, false, false},
+            {false, false, false, true, false, true, false, true, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset10 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, true, true, true, true, true, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, true, true, true, false, true, false, true, true, true, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, true, true, true, true, true, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset11 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, true, true, true, false, false, false, false},
+            {false, false, false, true, true, false, true, true, false, false, false},
+            {false, false, true, true, false, true, false, true, true, false, false},
+            {false, false, false, true, true, false, true, true, false, false, false},
+            {false, false, false, false, true, true, true, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset13 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, true, true, false, false, false, true, true, false, false},
+            {false, false, true, false, false, false, false, false, true, false, false},
+            {false, false, true, false, false, true, false, false, true, false, false},
+            {false, false, true, false, false, false, false, false, true, false, false},
+            {false, false, true, true, false, false, false, true, true, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset14 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, true, true, true, true, true, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, true, true, true, true, true, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset15 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, true, false, true, false, false, false, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, true, true, false, false, true, false, false, true, true, false},
+            {false, false, false, true, false, false, false, true, false, false, false},
+            {false, false, false, false, true, false, true, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final boolean[][] preset16 = new boolean[][]{
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, true, true, true, false, false, false, false},
+            {false, false, false, false, false, true, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false, false, false}
+    };
+    private final List<boolean[][]> layoutList = new ArrayList<>();
 
     public LayoutManager() {
         init();
@@ -40,147 +170,5 @@ public class LayoutManager {
     public List<boolean[][]> getLayoutList() {
         return layoutList;
     }
-
-
-
-    private final boolean[][] preset4 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset5 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, true, true, true, false, false, false, false},
-            {false, false, false, true, true, false, true, true, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, true, true, false, true, true, false, false, false},
-            {false, false, false, false, true, true, true, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset7 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, false, true, false, true, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, true, false, true, false, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset8 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, true, false, true, false, true, false, false, false},
-            {false, false, true, false, false, true, false, false, true, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, true, true, true, false, true, false, true, true, true, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, true, false, false, true, false, false, true, false, false},
-            {false, false, false, true, false, true, false, true, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset10 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, true, true, true, true, true, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, true, true, true, false, true, false, true, true, true, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, true, true, true, true, true, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset11 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, true, true, true, false, false, false, false},
-            {false, false, false, true, true, false, true, true, false, false, false},
-            {false, false, true, true, false, true, false, true, true, false, false},
-            {false, false, false, true, true, false, true, true, false, false, false},
-            {false, false, false, false, true, true, true, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset13 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, true, true, false, false, false, true, true, false, false},
-            {false, false, true, false, false, false, false, false, true, false, false},
-            {false, false, true, false, false, true, false, false, true, false, false},
-            {false, false, true, false, false, false, false, false, true, false, false},
-            {false, false, true, true, false, false, false, true, true, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset14 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, true, true, true, true, true, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, true, true, true, true, true, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset15 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, true, false, true, false, false, false, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, true, true, false, false, true, false, false, true, true, false},
-            {false, false, false, true, false, false, false, true, false, false, false},
-            {false, false, false, false, true, false, true, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
-
-    private final boolean[][] preset16 = new boolean[][]{
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, true, true, true, false, false, false, false},
-            {false, false, false, false, false, true, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false, false, false}
-    };
 
 }

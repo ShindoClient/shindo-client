@@ -4,23 +4,23 @@ import java.nio.FloatBuffer;
 
 public final class Matrix3f {
 
-    protected float m00;
+    private float m00;
 
-    protected float m01;
+    private float m01;
 
-    protected float m02;
+    private float m02;
 
-    protected float m10;
+    private float m10;
 
-    protected float m11;
+    private float m11;
 
-    protected float m12;
+    private float m12;
 
-    protected float m20;
+    private float m20;
 
-    protected float m21;
+    private float m21;
 
-    protected float m22;
+    private float m22;
 
     public Matrix3f() {
     }
@@ -50,14 +50,6 @@ public final class Matrix3f {
         this.m12 = 2.0F * (n - p);
     }
 
-    public static Matrix3f createScaleMatrix(float f, float g, float h) {
-        Matrix3f matrix3f = new Matrix3f();
-        matrix3f.m00 = f;
-        matrix3f.m11 = g;
-        matrix3f.m22 = h;
-        return matrix3f;
-    }
-
     public Matrix3f(Matrix4f matrix4f) {
         this.m00 = matrix4f.m00;
         this.m01 = matrix4f.m01;
@@ -80,6 +72,18 @@ public final class Matrix3f {
         this.m20 = matrix3f.m20;
         this.m21 = matrix3f.m21;
         this.m22 = matrix3f.m22;
+    }
+
+    public static Matrix3f createScaleMatrix(float f, float g, float h) {
+        Matrix3f matrix3f = new Matrix3f();
+        matrix3f.m00 = f;
+        matrix3f.m11 = g;
+        matrix3f.m22 = h;
+        return matrix3f;
+    }
+
+    private static int bufferIndex(int i, int j) {
+        return j * 3 + i;
     }
 
     public void transpose() {
@@ -118,10 +122,6 @@ public final class Matrix3f {
         i = 31 * i + ((this.m21 != 0.0F) ? Float.floatToIntBits(this.m21) : 0);
         i = 31 * i + ((this.m22 != 0.0F) ? Float.floatToIntBits(this.m22) : 0);
         return i;
-    }
-
-    private static int bufferIndex(int i, int j) {
-        return j * 3 + i;
     }
 
     public void load(FloatBuffer floatBuffer) {
@@ -169,27 +169,26 @@ public final class Matrix3f {
     }
 
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Matrix3f:\n");
-        stringBuilder.append(this.m00);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m01);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m02);
-        stringBuilder.append("\n");
-        stringBuilder.append(this.m10);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m11);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m12);
-        stringBuilder.append("\n");
-        stringBuilder.append(this.m20);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m21);
-        stringBuilder.append(" ");
-        stringBuilder.append(this.m22);
-        stringBuilder.append("\n");
-        return stringBuilder.toString();
+        String stringBuilder = "Matrix3f:\n" +
+                this.m00 +
+                " " +
+                this.m01 +
+                " " +
+                this.m02 +
+                "\n" +
+                this.m10 +
+                " " +
+                this.m11 +
+                " " +
+                this.m12 +
+                "\n" +
+                this.m20 +
+                " " +
+                this.m21 +
+                " " +
+                this.m22 +
+                "\n";
+        return stringBuilder;
     }
 
     public void store(FloatBuffer floatBuffer) {

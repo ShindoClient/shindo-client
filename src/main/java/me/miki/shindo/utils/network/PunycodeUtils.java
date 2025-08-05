@@ -154,6 +154,6 @@ public class PunycodeUtils {
             n++;
         }
 
-        return "xn--" + output.toString();
+        return "xn--" + output;
     }
 }

@@ -1,11 +1,10 @@
 package me.miki.shindo.injection.mixin.mixins.entity;
 
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.player.EntityPlayer;
 
 @Mixin(EntityXPOrb.class)
 public class MixinEntityXPOrb {

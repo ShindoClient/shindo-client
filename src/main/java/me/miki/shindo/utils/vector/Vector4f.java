@@ -3,7 +3,7 @@ package me.miki.shindo.utils.vector;
 import me.miki.shindo.utils.MathUtils;
 
 public class Vector4f {
-	
+
     private float x;
     private float y;
     private float z;
@@ -20,29 +20,29 @@ public class Vector4f {
     }
 
     public boolean equals(Object object) {
-    	
+
         if (this == object) {
             return true;
         }
-        
+
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        
+
         Vector4f vector4f = (Vector4f) object;
-        
+
         if (Float.compare(vector4f.x, this.x) != 0) {
             return false;
         }
-        
+
         if (Float.compare(vector4f.y, this.y) != 0) {
             return false;
         }
-        
+
         if (Float.compare(vector4f.z, this.z) != 0) {
             return false;
         }
-        
+
         return (Float.compare(vector4f.w, this.w) == 0);
     }
 
@@ -96,19 +96,19 @@ public class Vector4f {
     }
 
     public boolean normalize() {
-    	
+
         float f = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
-        
+
         if (f < 1.0E-5D) {
             return false;
         }
-        
+
         float g = MathUtils.fastInvSqrt(f);
         this.x *= g;
         this.y *= g;
         this.z *= g;
         this.w *= g;
-        
+
         return true;
     }
 

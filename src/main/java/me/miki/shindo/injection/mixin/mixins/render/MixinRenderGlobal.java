@@ -18,7 +18,7 @@ public class MixinRenderGlobal implements IMixinRenderGlobal {
 
     @Shadow
     private WorldClient theWorld;
-    
+
     @Redirect(method = "setupTerrain", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/EnumFacing;values()[Lnet/minecraft/util/EnumFacing;"))
     private EnumFacing[] setupTerrain$getCachedArray() {
         return EnumFacings.FACINGS;
@@ -29,9 +29,9 @@ public class MixinRenderGlobal implements IMixinRenderGlobal {
         ((IMixinVisGraph) visgraph).setLimitScan(true);
         return visgraph;
     }
-    
-	@Override
-	public WorldClient getWorldClient() {
-		return theWorld;
-	}
+
+    @Override
+    public WorldClient getWorldClient() {
+        return theWorld;
+    }
 }

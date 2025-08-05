@@ -9,14 +9,14 @@ import me.miki.shindo.management.mods.settings.impl.TextSetting;
 
 public class NameProtectMod extends Mod {
 
-	private TextSetting nameSetting = new TextSetting(TranslateText.NAME, this, "You");
-	
-	public NameProtectMod() {
-		super(TranslateText.NAME_PROTECT, TranslateText.NAME_PROTECT_DESCRIPTION, ModCategory.PLAYER, "nickhider");
-	}
-	
-	@EventTarget
-	public void onText(EventText event) {
-		event.replace(mc.getSession().getUsername(), nameSetting.getText());
-	}
+    private final TextSetting nameSetting = new TextSetting(TranslateText.NAME, this, "You");
+
+    public NameProtectMod() {
+        super(TranslateText.NAME_PROTECT, TranslateText.NAME_PROTECT_DESCRIPTION, ModCategory.PLAYER, "nickhider");
+    }
+
+    @EventTarget
+    public void onText(EventText event) {
+        event.replace(mc.getSession().getUsername(), nameSetting.getText());
+    }
 }

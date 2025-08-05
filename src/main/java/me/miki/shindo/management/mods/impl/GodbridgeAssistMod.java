@@ -12,14 +12,14 @@ import net.minecraft.item.ItemBlock;
 
 public class GodbridgeAssistMod extends HUDMod {
 
-	private int shiftedTicks = 0;
-	
-	public GodbridgeAssistMod() {
-		super(TranslateText.GODBRIDGE_ASSIST, TranslateText.GODBRIDGE_ASSIST_DESCRIPTION);
-	}
+    private int shiftedTicks = 0;
 
-	@EventTarget
-	public void onTick(EventTick event) {
+    public GodbridgeAssistMod() {
+        super(TranslateText.GODBRIDGE_ASSIST, TranslateText.GODBRIDGE_ASSIST_DESCRIPTION);
+    }
+
+    @EventTarget
+    public void onTick(EventTick event) {
         if (mc.inGameHasFocus) {
             if (mc.gameSettings.keyBindSneak.isKeyDown()) {
                 shiftedTicks++;
@@ -27,22 +27,22 @@ public class GodbridgeAssistMod extends HUDMod {
                 shiftedTicks = 0;
             }
         }
-	}
-	
-	@EventTarget
-	public void onRender2D(EventRender2D event) {
-		
-		NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
-		
-		nvg.setupAndDraw(() -> drawNanoVG(nvg));
-	}
-	
-	private void drawNanoVG(NanoVGManager nvg) {
-		
+    }
+
+    @EventTarget
+    public void onRender2D(EventRender2D event) {
+
+        NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
+
+        nvg.setupAndDraw(() -> drawNanoVG(nvg));
+    }
+
+    private void drawNanoVG(NanoVGManager nvg) {
+
         ScaledResolution sr = new ScaledResolution(mc);
-        
+
         if (mc.inGameHasFocus) {
-        	
+
             if (!mc.thePlayer.isCollidedVertically) {
                 return;
             }
@@ -71,17 +71,17 @@ public class GodbridgeAssistMod extends HUDMod {
                 return;
             }
 
-            if (Math.round(Math.abs(mc.thePlayer.posX - Math.floor(mc.thePlayer.posX)) * 10.0D) != 3L && 
-            		Math.round(Math.abs(mc.thePlayer.posX - Math.floor(mc.thePlayer.posX)) * 10.0D) != 7L && 
-            		Math.round(Math.abs(mc.thePlayer.posZ - Math.floor(mc.thePlayer.posZ)) * 10.0D) != 3L && 
-            		Math.round(Math.abs(mc.thePlayer.posZ - Math.floor(mc.thePlayer.posZ)) * 10.0D) != 7L) {
+            if (Math.round(Math.abs(mc.thePlayer.posX - Math.floor(mc.thePlayer.posX)) * 10.0D) != 3L &&
+                    Math.round(Math.abs(mc.thePlayer.posX - Math.floor(mc.thePlayer.posX)) * 10.0D) != 7L &&
+                    Math.round(Math.abs(mc.thePlayer.posZ - Math.floor(mc.thePlayer.posZ)) * 10.0D) != 3L &&
+                    Math.round(Math.abs(mc.thePlayer.posZ - Math.floor(mc.thePlayer.posZ)) * 10.0D) != 7L) {
                 return;
             }
-            
+
             int alpha = (int) ((Math.abs(Math.abs((double) mc.thePlayer.rotationYaw % 90.0D) - 45.0D) / 5) * 255);
             int round = (int) ((Math.abs(Math.abs((double) mc.thePlayer.rotationYaw % 90.0D) - 45.0D) / 5) * 360);
-            
+
             nvg.drawArc(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2, 12, -90, round, 1.6F, this.getFontColor(alpha));
         }
-	}
+    }
 }

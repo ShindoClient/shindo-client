@@ -5,41 +5,43 @@ import net.minecraft.entity.Entity;
 
 public class EventRenderHitbox extends Event {
 
-	private Entity entity;
-	private double x, y, z;
-	private float entityYaw;
-	private float partialTicks;
-	
-	public EventRenderHitbox(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		this.entity = entity;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.entityYaw = entityYaw;
-		this.partialTicks = partialTicks;
-	}
+    private final Entity entity;
+    private final double x;
+    private final double y;
+    private final double z;
+    private final float entityYaw;
+    private final float partialTicks;
 
-	public Entity getEntity() {
-		return entity;
-	}
+    public EventRenderHitbox(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        this.entity = entity;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.entityYaw = entityYaw;
+        this.partialTicks = partialTicks;
+    }
 
-	public double getX() {
-		return x;
-	}
+    public Entity getEntity() {
+        return entity;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public double getX() {
+        return x;
+    }
 
-	public double getZ() {
-		return z;
-	}
+    public double getY() {
+        return y;
+    }
 
-	public float getEntityYaw() {
-		return entityYaw;
-	}
+    public double getZ() {
+        return z;
+    }
 
-	public float getPartialTicks() {
-		return partialTicks;
-	}
+    public float getEntityYaw() {
+        return entityYaw;
+    }
+
+    public float getPartialTicks() {
+        return partialTicks;
+    }
 }

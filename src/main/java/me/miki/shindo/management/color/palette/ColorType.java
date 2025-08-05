@@ -1,15 +1,15 @@
 package me.miki.shindo.management.color.palette;
 
 public enum ColorType {
-	DARK(0), NORMAL(1);
-	
-	private int index;
-	
-	private ColorType(int index) {
-		this.index = index;
-	}
+    DARK(0), NORMAL(1);
 
-	public int getIndex() {
-		return index;
-	}
+    private final int index;
+
+    ColorType(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
 }

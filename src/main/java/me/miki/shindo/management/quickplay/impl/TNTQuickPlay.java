@@ -1,28 +1,28 @@
 package me.miki.shindo.management.quickplay.impl;
 
-import java.util.ArrayList;
-
 import me.miki.shindo.management.quickplay.QuickPlay;
 import me.miki.shindo.management.quickplay.QuickPlayCommand;
 import net.minecraft.util.ResourceLocation;
 
-public class TNTQuickPlay extends QuickPlay{
+import java.util.ArrayList;
 
-	public TNTQuickPlay() {
-		super("TNT", new ResourceLocation("shindo/icons/hypixel/TNT.png"));
-	}
+public class TNTQuickPlay extends QuickPlay {
 
-	@Override
-	public void addCommands() {
-		ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
-		
-		commands.add(new QuickPlayCommand("Lobby", "/l tnt"));
-		commands.add(new QuickPlayCommand("TNT Run", "/play tnt_tntrun"));
-		commands.add(new QuickPlayCommand("PVP Run", "/play tnt_pvprun"));
-		commands.add(new QuickPlayCommand("Bow Spleef", "/play tnt_bowspleef"));
-		commands.add(new QuickPlayCommand("TNT Tag", "/play tnt_tntag"));
-		commands.add(new QuickPlayCommand("TNT Wizards", "/play tnt_capture"));
-		
-		this.setCommands(commands);
-	}
+    public TNTQuickPlay() {
+        super("TNT", new ResourceLocation("shindo/icons/hypixel/TNT.png"));
+    }
+
+    @Override
+    public void addCommands() {
+        ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
+
+        commands.add(new QuickPlayCommand("Lobby", "/l tnt"));
+        commands.add(new QuickPlayCommand("TNT Run", "/play tnt_tntrun"));
+        commands.add(new QuickPlayCommand("PVP Run", "/play tnt_pvprun"));
+        commands.add(new QuickPlayCommand("Bow Spleef", "/play tnt_bowspleef"));
+        commands.add(new QuickPlayCommand("TNT Tag", "/play tnt_tntag"));
+        commands.add(new QuickPlayCommand("TNT Wizards", "/play tnt_capture"));
+
+        this.setCommands(commands);
+    }
 }

@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.modmenu.category.impl.game.scenes;
 
+import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.GamesCategory;
 import me.miki.shindo.gui.modmenu.category.impl.game.GameScene;
 import me.miki.shindo.gui.modmenu.category.impl.game.scenes.score.ScoreSaver;
@@ -9,7 +10,6 @@ import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.Shindo;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -20,14 +20,12 @@ public class TetrisScene extends GameScene {
     private static final int ROWS = 20;
     private static final int COLS = 10;
     private static final float FALL_INTERVAL = 0.5f;
-
+    private final Random random = new Random();
     private int[][] board = new int[ROWS][COLS];
     private Tetromino current;
     private float fallTimer = 0f;
     private boolean gameOver = false;
     private int score = 0;
-
-    private final Random random = new Random();
 
     public TetrisScene(GamesCategory parent) {
         super(parent, "Tetris", "Fit the falling blocks", LegacyIcon.PLAY);
@@ -82,7 +80,7 @@ public class TetrisScene extends GameScene {
         }
 
         // desenha contorno da área de jogo
-        nvg.drawOutlineRoundedRect(getX() + xOffset, getY() + yOffset,  fieldWidth, fieldHeight, 2, 1.5f, palette.getFontColor(ColorType.DARK));
+        nvg.drawOutlineRoundedRect(getX() + xOffset, getY() + yOffset, fieldWidth, fieldHeight, 2, 1.5f, palette.getFontColor(ColorType.DARK));
 
         nvg.restore();
         nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), 10, 8, palette.getBackgroundColor(ColorType.NORMAL));
@@ -228,13 +226,13 @@ public class TetrisScene extends GameScene {
 
         public static Tetromino random(Random random) {
             int[][][] shapes = {
-                    {{1,1,1,1}},                      // I
-                    {{1,1},{1,1}},                    // O
-                    {{0,1,0},{1,1,1}},                // T
-                    {{1,1,0},{0,1,1}},                // S
-                    {{0,1,1},{1,1,0}},                // Z
-                    {{1,0,0},{1,1,1}},                // J
-                    {{0,0,1},{1,1,1}}                 // L
+                    {{1, 1, 1, 1}},                      // I
+                    {{1, 1}, {1, 1}},                    // O
+                    {{0, 1, 0}, {1, 1, 1}},                // T
+                    {{1, 1, 0}, {0, 1, 1}},                // S
+                    {{0, 1, 1}, {1, 1, 0}},                // Z
+                    {{1, 0, 0}, {1, 1, 1}},                // J
+                    {{0, 0, 1}, {1, 1, 1}}                 // L
             };
             int[][] shape = shapes[random.nextInt(shapes.length)];
             Tetromino t = new Tetromino(new int[4][4]);

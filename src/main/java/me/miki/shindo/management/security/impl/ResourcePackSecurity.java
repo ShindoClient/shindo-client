@@ -1,19 +1,19 @@
 package me.miki.shindo.management.security.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.security.SecurityFeature;
 import net.minecraft.network.play.server.S48PacketResourcePackSend;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 public class ResourcePackSecurity extends SecurityFeature {
 
-	@EventTarget
-	public void onReceivePacket(EventReceivePacket event) {
+    @EventTarget
+    public void onReceivePacket(EventReceivePacket event) {
         if (event.getPacket() instanceof S48PacketResourcePackSend) {
             S48PacketResourcePackSend pack = ((S48PacketResourcePackSend) event.getPacket());
 
@@ -21,13 +21,13 @@ public class ResourcePackSecurity extends SecurityFeature {
             String hash = pack.getHash();
 
             if (url.toLowerCase().startsWith("level://")) {
-                if(check(url, hash)) {
-                	event.setCancelled(true);
+                if (check(url, hash)) {
+                    event.setCancelled(true);
                 }
             }
         }
-	}
-	
+    }
+
     private boolean check(String url, String hash) {
         try {
             URI uri = new URI(url);

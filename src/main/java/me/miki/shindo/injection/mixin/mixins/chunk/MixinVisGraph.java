@@ -1,8 +1,8 @@
 package me.miki.shindo.injection.mixin.mixins.chunk;
 
-import java.util.Queue;
-import java.util.Set;
-
+import me.miki.shindo.injection.interfaces.IMixinVisGraph;
+import net.minecraft.client.renderer.chunk.VisGraph;
+import net.minecraft.util.EnumFacing;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,9 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import me.miki.shindo.injection.interfaces.IMixinVisGraph;
-import net.minecraft.client.renderer.chunk.VisGraph;
-import net.minecraft.util.EnumFacing;
+import java.util.Queue;
+import java.util.Set;
 
 @Mixin(VisGraph.class)
 public class MixinVisGraph implements IMixinVisGraph {

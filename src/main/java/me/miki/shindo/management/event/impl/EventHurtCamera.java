@@ -4,17 +4,17 @@ import me.miki.shindo.management.event.Event;
 
 public class EventHurtCamera extends Event {
 
-	private float intensity;
-	
-	public EventHurtCamera() {
-		this.intensity = 1.0F;
-	}
+    private float intensity;
 
-	public float getIntensity() {
-		return intensity;
-	}
+    public EventHurtCamera() {
+        this.intensity = 1.0F;
+    }
 
-	public void setIntensity(float intensity) {
-		this.intensity = intensity;
-	}
+    public float getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(float intensity) {
+        this.intensity = intensity;
+    }
 }
