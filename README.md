@@ -6,7 +6,7 @@
 
 🎮 *A modern and evolving Minecraft client built with love and care.*  
 
-[![Discord](https://img.shields.io/badge/Join%20our%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://shindoclient.github.io/discord)
+[![Discord](https://img.shields.io/badge/Join%20our%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://shindoclient.com/discord)
 [![License](https://img.shields.io/github/license/ShindoClient/Shindo-Client?style=for-the-badge)](https://github.com/ShindoClient/Shindo-Client/blob/master/LICENSE)
 
 </div>
@@ -22,7 +22,7 @@ Feel free to fork, modify, and contribute – just remember to share under the s
 ## 🐛 Issues & Support
 📥 **Found a bug?**  
 - Open an [issue on GitHub](https://github.com/ShindoClient/Shindo-Client/issues).  
-- Or join our [Discord](https://shindoclient.github.io/discord) and talk to us directly.
+- Or join our [Discord](https://shindoclient.com/discord) and talk to us directly.
 
 ---
 
