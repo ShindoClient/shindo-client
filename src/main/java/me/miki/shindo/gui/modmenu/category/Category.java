@@ -2,7 +2,7 @@ package me.miki.shindo.gui.modmenu.category;
 
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.management.language.TranslateText;
-import me.miki.shindo.ui.comp.impl.field.CompSearchBox;
+import me.miki.shindo.ui.comp.field.CompSearchBox;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.Scroll;
@@ -10,17 +10,17 @@ import net.minecraft.client.Minecraft;
 
 public class Category {
 
-    public Minecraft mc = Minecraft.getMinecraft();
-    public Scroll scroll;
     private final String icon;
     private final GuiModMenu parent;
     private final TranslateText nameTranslate;
     private final SimpleAnimation textAnimation = new SimpleAnimation();
     private final ColorAnimation textColorAnimation = new ColorAnimation();
     private final SimpleAnimation categoryAnimation = new SimpleAnimation();
-    private boolean initialized;
     private final boolean showSearchBox;
     private final boolean showTitle;
+    public Minecraft mc = Minecraft.getMinecraft();
+    public Scroll scroll;
+    private boolean initialized;
 
     public Category(GuiModMenu parent, TranslateText nameTranslate, String icon, boolean showSearchBox, boolean showTitle) {
         this.nameTranslate = nameTranslate;

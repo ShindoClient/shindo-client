@@ -1,9 +1,12 @@
 package me.miki.shindo.management.profile;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
 import java.io.File;
 
+@Getter
 public class Profile {
 
     private final SimpleAnimation starAnimation = new SimpleAnimation();
@@ -12,7 +15,9 @@ public class Profile {
     private final int id;
     private final String name;
     private final ProfileIcon icon;
+    @Setter
     private String serverIp;
+    @Setter
     private ProfileType type;
 
     public Profile(int id, String serverIp, File jsonFile, ProfileIcon icon) {
@@ -24,39 +29,4 @@ public class Profile {
         this.type = ProfileType.ALL;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public File getJsonFile() {
-        return jsonFile;
-    }
-
-    public ProfileIcon getIcon() {
-        return icon;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public ProfileType getType() {
-        return type;
-    }
-
-    public void setType(ProfileType type) {
-        this.type = type;
-    }
-
-    public SimpleAnimation getStarAnimation() {
-        return starAnimation;
-    }
-
-    public String getServerIp() {
-        return serverIp;
-    }
-
-    public void setServerIp(String serverIp) {
-        this.serverIp = serverIp;
-    }
 }

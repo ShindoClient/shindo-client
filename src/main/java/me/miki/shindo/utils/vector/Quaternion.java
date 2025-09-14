@@ -161,11 +161,10 @@ public final class Quaternion {
     }
 
     public String toString() {
-        String stringBuilder = "Quaternion[" + r() + " + " +
+        return "Quaternion[" + r() + " + " +
                 i() + "i + " +
                 j() + "j + " +
                 k() + "k]";
-        return stringBuilder;
     }
 
     public float i() {

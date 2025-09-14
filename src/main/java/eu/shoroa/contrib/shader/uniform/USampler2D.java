@@ -8,8 +8,8 @@ package eu.shoroa.contrib.shader.uniform;
 import org.lwjgl.opengl.GL13;
 
 public class USampler2D extends Uniform {
-    private TexSlot slot;
-    private int texture;
+    private final TexSlot slot;
+    private final int texture;
 
     public USampler2D(String name, int texture, int slot) {
         super(name);

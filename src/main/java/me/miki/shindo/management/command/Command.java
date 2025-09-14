@@ -4,9 +4,8 @@ import net.minecraft.client.Minecraft;
 
 public class Command {
 
-    public Minecraft mc = Minecraft.getMinecraft();
-
     private final String prefix;
+    public Minecraft mc = Minecraft.getMinecraft();
 
     public Command(String prefix) {
         this.prefix = prefix;

@@ -18,11 +18,15 @@ public class FileManager {
     private final File screenshotDir;
     private final File addonsDir;
     private final File gamesDir;
+    private final File skinsDir;
 
     private final File serversDir;
 
     private final File customCapeDir;
     private final File capeCacheDir;
+
+    private final File wingCacheDir;
+    private final File bandannaCacheDir;
 
 
     public FileManager() {
@@ -37,11 +41,14 @@ public class FileManager {
         screenshotDir = new File(shindoDir, "screenshots");
         addonsDir = new File(shindoDir, "addons");
         gamesDir = new File(shindoDir, "games");
+        skinsDir = new File(shindoDir, "skins");
 
         serversDir = new File(shindoDir, "servers");
 
         customCapeDir = new File(cacheDir, "custom-cape");
         capeCacheDir = new File(cacheDir, "cape");
+        wingCacheDir = new File(cacheDir, "wing");
+        bandannaCacheDir = new File(cacheDir, "bandanna");
 
 
         try {
@@ -63,11 +70,15 @@ public class FileManager {
             if (!screenshotDir.exists()) createDir(screenshotDir);
             if (!addonsDir.exists()) createDir(addonsDir);
             if (!gamesDir.exists()) createDir(gamesDir);
+            if (!skinsDir.exists()) createDir(skinsDir);
 
             if (!serversDir.exists()) createDir(serversDir);
 
             if (!customCapeDir.exists()) createDir(customCapeDir);
             if (!capeCacheDir.exists()) createDir(capeCacheDir);
+            if (!wingCacheDir.exists()) createDir(wingCacheDir);
+            if (!bandannaCacheDir.exists()) createDir(bandannaCacheDir);
+
 
             createVersionFile();
 
@@ -82,7 +93,7 @@ public class FileManager {
         File versionDir = new File(cacheDir, "version");
 
         createDir(versionDir);
-        createFile(new File(versionDir, Shindo.getInstance().getVersionIdentifier() + ".tmp"));
+        createFile(new File(versionDir, Shindo.getInstance().getVerIdentifier() + ".tmp"));
     }
 
     public void createDir(File file) {
@@ -129,6 +140,10 @@ public class FileManager {
         return gamesDir;
     }
 
+    public File getSkinsDir() {
+        return skinsDir;
+    }
+
     public File getServersDir() {
         return serversDir;
     }
@@ -139,6 +154,14 @@ public class FileManager {
 
     public File getCapeCacheDir() {
         return capeCacheDir;
+    }
+
+    public File getWingCacheDir() {
+        return wingCacheDir;
+    }
+
+    public File getBandannaCacheDir() {
+        return bandannaCacheDir;
     }
 
 }

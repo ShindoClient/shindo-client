@@ -21,17 +21,16 @@ import java.util.Arrays;
 
 public class FreelookMod extends Mod {
 
-    private boolean active;
-    private float yaw;
-    private float pitch;
-    private int previousPerspective;
-    private boolean toggled;
-
     private final BooleanSetting invertYawSetting = new BooleanSetting(TranslateText.INVERT_YAW, this, false);
     private final BooleanSetting invertPitchSetting = new BooleanSetting(TranslateText.INVERT_PITCH, this, false);
     private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.KEYDOWN, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.TOGGLE), new Option(TranslateText.KEYDOWN))));
     private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_V);
+    private boolean active;
+    private float yaw;
+    private float pitch;
+    private int previousPerspective;
+    private boolean toggled;
 
     public FreelookMod() {
         super(TranslateText.FREELOOK, TranslateText.FREELOOK_DESCRIPTION, ModCategory.PLAYER, "perspectivemod", true);

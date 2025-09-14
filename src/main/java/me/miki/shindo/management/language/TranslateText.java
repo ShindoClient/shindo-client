@@ -1,5 +1,8 @@
 package me.miki.shindo.management.language;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public enum TranslateText {
 
     FPS_DISPLAY("text.fpsdisplay.name"), FPS_DISPLAY_DESCRIPTION("text.fpsdisplay.description"),
@@ -9,7 +12,7 @@ public enum TranslateText {
     HEALTH_DISPLAY("text.healthdisplay.name"), HEALTH_DISPLAY_DESCRIPTION("text.healthdisplay.description"),
     WEATHER_DISPLAY("text.weatherdisplay.name"), WEATHER_DISPLAY_DESCRIPTION("text.weatherdisplay.description"),
     SKIN_3D("text.3dskin.name"), SKIN_3D_DESCRIPTION("text.3dskin.description"),
-    WAVEY_CAPES("text.waveycaoes.name"), WAVEY_CAPES_DESCRIPTION("text.waveycapes.description"),
+    WAVEY_CAPES("text.waveycapes.name"), WAVEY_CAPES_DESCRIPTION("text.waveycapes.description"),
     GRAVITY("text.gravity"), VANILLA("text.vanilla"), BASIC("text.basic"), MOVEMENT("text.movement"),
     BLOCKY("text.blocky"), SMOOTH("text.smooth"), STYLE("text.style"), MODE("text.mode"), NONE("text.none"),
     WAVES("text.waves"), HEIGHT_MULTIPLIER("text.heightmultiplier"), WEATHER_CHANGER("text.weatherchanger.name"),
@@ -145,15 +148,69 @@ public enum TranslateText {
     REMOVE_BOT("text.removebot"), PARTICLE("text.particle"), LIGHT("text.light"), CLIENT("text.client"), DARK("text.dark"), FEMALE_GENDER("text.femalegender.name"), FEMALE_GENDER_DESCRIPTION("text.femalegender.description"), EARS("text.ears.name"), EARS_DESCRIPTION("text.ears.description"), PICKUP_ANIM("text.pickup"), PICKUP_VANILLA("text.pickup.vanilla"), PICKUP_BREAD("text.pickup.bread"), PICKUP_POP("text.pickup.pop"), SEARCH_COMPLETE("text.search_complete"),
     SEARCH_FAILED("text.search_failed"), AUTO_GL("text.autogl"), AUTO_GL_DELAY("text.autogldelay"), ADVANCED("text.advanced"),
     UI_SOUNDS("text.ui.sounds"), UI_SOUNDS_DESCRIPTION("text.ui.sounds.description"), EXIT_WORLD_SINGLEPLAYER("text.gamemenu.exitworldsingleplayer"), OPEN_MOD_MENU("text.gamemenu.openshindomenu"), EDIT_HUD("text.gamemenu.edithud"), GRADIENT_SIMPLE("text.gradientsimple"), GENERAL("text.general"), GENERAL_DESCRIPTION("text.general.description"),
-    UI_BLUR("text.ui.blur"), MC_FONT("text.hud.mcfont"), CHANGELOG("text.changelog"), NEWS("text.news"), SEARCH("text.search"),
+    UI_BLUR("text.ui.blur"), MC_FONT("text.hud.mcfont"), CHANGELOG("text.changelog"), NEWS("text.news"), SEARCH("text.search"), DAMPING("text.damping"), JIGGLE_MULTIPLY("text.jigglemultiply"), SPRING_STRENGTH("text.springstrength"), ACCELERATION_MULTIPLIER("text.accelerationmultiplier"),
+
+    CAPES("text.capes"), CAPES_DESCRIPTION("text.capes.description"), OTHERS("text.others"), OTHERS_DESCRIPTION("text.others.description"),
+
+    // Spotify
+    SPOTIFY_AUTH("text.spotify.auth"), SPOTIFY_AUTH_FAILED("text.spotify.auth.failed"),
+    SPOTIFY_AUTH_REFRESH_FAILED("text.spotify.auth.refresh.failed"), SPOTIFY_AUTH_REFRESH("text.spotify.auth.refresh"), SPOTIFY_PLAYBACK("text.spotify.playback"), SPOTIFY_PLAYBACK_START_FAILED("text.spotify.playback.start_failed"),
+    SPOTIFY_PLAYBACK_PAUSE_FAILED("text.spotify.playback.pause_failed"), SPOTIFY_PLAYBACK_RESUME_FAILED("text.spotify.playback.resume_failed"), SPOTIFY_VOLUME_SET_FAILED("text.spotify.volume.set_failed"),
+    SPOTIFY_AUTH_MANUAL_REQUIRED("Please authorize in the browser and then click 'Complete Authorization'"), SPOTIFY_AUTH_SUCCESS("Authorization completed successfully"), SPOTIFY_AUTH_TOKEN_RECEIVED("text.spotify.auth.token_received"),
+    SPOTIFY_NO_ACTIVE_DEVICE("text.spotify.no_active_device"), SPOTIFY_PLAYBACK_STARTED("text.spotify.playback.started"), SPOTIFY_FAIL_BROWSER("text.spotify.fail_browser"), SPOTIFY_CONNECT("text.spotify.connect"),
+
+    SHOW_LYRICS("text.show_lyrics"),
+    LYRICS("text.lyrics"),
+    BY("text.by"),
+    PLAYING("text.playing"),
+    NOW_PLAYING("text.now_playing"),
+    LYRICS_API_URL("text.lyrics_api_url"),
+    YOUR_PLAYLISTS("text.your_playlists"),
+    ROMANIZE_JAPANESE("text.romanize_japanese"),
+    ENABLE_HOTKEYS("text.enable_hotkeys"),
+    SPOTIFY_SETUP("text.spotify.setup"),
+    SPOTIFY_CLIENT_ID("text.spotify.client_id"),
+    SPOTIFY_CLIENT_SECRET("text.spotify.client_secret"),
+    SPOTIFY_TUTORIAL("text.spotify.tutorial"),
+    SPOTIFY_NEXT("text.spotify.next"),
+    SPOTIFY_INVALID_CREDENTIALS("text.spotify.invalid_credentials"),
+    SPOTIFY_SETUP_INSTRUCTIONS("text.spotify.setup_instructions"), CREDENTIALS_SAVED("text.spotify.credentials_saved"),
+    SPOTIFY_SEARCH_FAILED("text.spotify.search_failed"),
+    SPOTIFY_FAILED_TO_PLAY_PLAYLIST("text.spotify.failed_to_play_playlist"),
+    SPOTIFY_FAILED_TO_ADD_TO_QUEUE("text.spotify.failed_to_add_to_queue"),
+    SPOTIFY_ADDED_TO_QUEUE("text.spotify.added_to_queue"),
+    SPOTIFY_FAILED_TO_START_SERVER("text.spotify.failed_to_start_server"),
+    SPOTIFY_FAILED_TO_SAVE_CREDENTIALS("text.spotify.failed_to_save_credentials"),
+    SPOTIFY_FAILED_TO_SAVE_TOKENS("text.spotify.failed_to_save_tokens"),
+    SPOTIFY_PREMIUM_REQUIRED("text.spotify.premium_required"),
+    SPOTIFY_PLAYBACK_RESTRICTED("text.spotify.playback_restricted"),
+
 
     // SHINDO MODS
     PING_NUMBER("text.ping_number"),
 
+    // SHINDO GUIs
+    SPOTIFY("text.spotify"),
+    SPOTIFY_DESCRIPTION("text.spotify_description"),
+
+    ADDONS("text.addons"),
+    ADDON_DESCRIPTIONS("text.addons_description"),
+
+    THEME_DESCRIPTION("text.theme_description"),
+
+    TWEAKER("text.tweaker"),
+
+    GUI("text.gui"),
+
     // SHINDO
     SHINDO("text.shindo"),
     API("text.api"),
+    WEBSOCKET("text.websocket"),
 
+    CUSTOM_WING("text.customwing"),
+    CUSTOM_BANDANNA("text.custombandanna"),
+
+    // ROLES
     STAFF("text.staff"),
     DIAMOND("text.diamond"),
     GOLD("text.gold"),
@@ -164,7 +221,9 @@ public enum TranslateText {
     GOLD_ONLY("text.goldonly");
 
 
+    @Getter
     private final String key;
+    @Setter
     private String text;
 
     TranslateText(String key) {
@@ -175,11 +234,4 @@ public enum TranslateText {
         return text == null ? "null" : text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getKey() {
-        return key;
-    }
 }

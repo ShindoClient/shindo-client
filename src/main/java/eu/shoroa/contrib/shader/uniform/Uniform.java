@@ -14,10 +14,6 @@ public abstract class Uniform {
         this.name = name;
     }
 
-    public String name() {
-        return name;
-    }
-
     public static UInt makeInt(String name, int value) {
         return new UInt(name, value);
     }
@@ -44,6 +40,10 @@ public abstract class Uniform {
 
     public static UVec4 makeVec4(String name, float x, float y, float z, float w) {
         return new UVec4(name, x, y, z, w);
+    }
+
+    public String name() {
+        return name;
     }
 }
 

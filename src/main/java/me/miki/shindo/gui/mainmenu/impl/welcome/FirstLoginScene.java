@@ -13,8 +13,8 @@ import net.minecraft.client.gui.ScaledResolution;
 
 public class FirstLoginScene extends AccountScene {
 
-    private Animation fadeAnimation;
     private final ScreenAlpha screenAlpha = new ScreenAlpha();
+    private Animation fadeAnimation;
 
     public FirstLoginScene(GuiShindoMainMenu parent) {
         super(parent);

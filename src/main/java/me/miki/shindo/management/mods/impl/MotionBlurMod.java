@@ -22,18 +22,15 @@ import java.util.Arrays;
 
 public class MotionBlurMod extends Mod {
 
-    private long lastCheck = 0L;
-
     private final ResourceLocation motion_blur = new ResourceLocation("minecraft:shaders/post/motion_blur.json");
+    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.SHADER, new ArrayList<Option>(Arrays.asList(
+            new Option(TranslateText.ACCUM), new Option(TranslateText.SHADER))));
+    private final NumberSetting amountSetting = new NumberSetting(TranslateText.AMOUNT, this, 0.5, 0.1, 0.9, false);
+    private long lastCheck = 0L;
     private ShaderGroup group;
     private float groupBlur;
     private boolean loaded;
     private int prevWidth, prevHeight;
-
-    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.SHADER, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.ACCUM), new Option(TranslateText.SHADER))));
-
-    private final NumberSetting amountSetting = new NumberSetting(TranslateText.AMOUNT, this, 0.5, 0.1, 0.9, false);
 
     public MotionBlurMod() {
         super(TranslateText.MOTION_BLUR, TranslateText.MOTION_BLUR_DESCRIPTION, ModCategory.RENDER);

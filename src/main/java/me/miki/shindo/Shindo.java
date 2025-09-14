@@ -1,12 +1,18 @@
 package me.miki.shindo;
 
-import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
+import eu.shoroa.contrib.cosmetic.CosmeticManager;
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.injection.mixin.ShindoTweaker;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.account.AccountManager;
+import me.miki.shindo.management.addons.AddonManager;
+import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.command.CommandManager;
+import me.miki.shindo.management.cosmetic.bandanna.BandannaManager;
 import me.miki.shindo.management.cosmetic.cape.CapeManager;
+import me.miki.shindo.management.cosmetic.wing.WingManager;
 import me.miki.shindo.management.event.EventManager;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.language.LanguageManager;
@@ -14,6 +20,7 @@ import me.miki.shindo.management.mods.ModManager;
 import me.miki.shindo.management.mods.RestrictedMod;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.music.MusicManager;
+import me.miki.shindo.management.music.RomanizationManager;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.notification.NotificationManager;
 import me.miki.shindo.management.profile.ProfileManager;
@@ -26,6 +33,8 @@ import me.miki.shindo.management.remote.news.NewsManager;
 import me.miki.shindo.management.remote.update.Update;
 import me.miki.shindo.management.screenshot.ScreenshotManager;
 import me.miki.shindo.management.security.SecurityFeatureManager;
+import me.miki.shindo.management.shader.ShaderManager;
+import me.miki.shindo.management.skin.SkinManager;
 import me.miki.shindo.management.waypoint.WaypointManager;
 import me.miki.shindo.ui.ClickEffects;
 import me.miki.shindo.utils.OptifineUtils;
@@ -39,48 +48,127 @@ import java.util.Arrays;
 
 public class Shindo {
 
+    @Getter
     private static final Shindo instance = new Shindo();
     private final Minecraft mc = Minecraft.getMinecraft();
-    private boolean updateNeeded;
+    @Getter
     private final String name;
+
+    @Getter
     private final String version;
+
+    @Getter
+    private final String author;
+
+    @Getter
     private final int verIdentifier;
 
+    @Setter
+    private boolean updateNeeded;
+
+    @Setter
+    @Getter
     private NanoVGManager nanoVGManager;
+
+    @Getter
     private FileManager fileManager;
+
+    @Getter
     private LanguageManager languageManager;
+
+    @Getter
     private AccountManager accountManager;
+
+    @Getter
     private EventManager eventManager;
+
+    @Getter
     private DownloadManager downloadManager;
+
+    @Getter
     private ModManager modManager;
+
+    @Getter
+    private AddonManager addonManager;
+
+    //@Getter
+    //private CosmeticManager cosmeticManager;
+
+    @Getter
     private CapeManager capeManager;
+
+    @Getter
+    private WingManager wingManager;
+
+    @Getter
+    private BandannaManager bandannaManager;
+
+    @Getter
     private ColorManager colorManager;
+
+    @Getter
     private ProfileManager profileManager;
+
+    @Getter
     private CommandManager commandManager;
+
+    @Getter
     private ScreenshotManager screenshotManager;
+
+    @Getter
     private NotificationManager notificationManager;
+
+    @Getter
     private SecurityFeatureManager securityFeatureManager;
+
+    @Getter
     private MusicManager musicManager;
+
+    @Getter
     private QuickPlayManager quickPlayManager;
+
+    @Getter
     private ChangelogManager changelogManager;
+
+    @Getter
     private NewsManager newsManager;
+
+    @Getter
     private DiscordStats discordStats;
+
+    @Getter
     private WaypointManager waypointManager;
-    private GuiShindoMainMenu mainMenu;
+
+    @Getter
     private Update update;
+
+    @Getter
     private ClickEffects clickEffects;
+
+    @Getter
     private BlacklistManager blacklistManager;
+
+    @Getter
     private RestrictedMod restrictedMod;
+
+    @Getter
+    private ShaderManager shaderManager;
+
+    @Getter
+    private RomanizationManager romanizationManager;
+
+    @Getter
+    private SkinManager skinManager;
+
+    // API instance
+    @Getter
     private ShindoAPI shindoAPI;
 
     public Shindo() {
         name = "Shindo";
-        version = "5.1.08";
-        verIdentifier = 5108;
-    }
-
-    public static Shindo getInstance() {
-        return instance;
+        version = "5.1.09";
+        author = "MikiDevAHM";
+        verIdentifier = 5109;
     }
 
     public void start() {
@@ -102,16 +190,22 @@ public class Shindo {
         eventManager = new EventManager();
         downloadManager = new DownloadManager();
         modManager = new ModManager();
+        addonManager = new AddonManager();
 
+        CosmeticManager.getInstance().init();
         modManager.init();
+        addonManager.init();
 
         capeManager = new CapeManager();
+        wingManager = new WingManager();
+        bandannaManager = new BandannaManager();
         colorManager = new ColorManager();
         profileManager = new ProfileManager();
-        musicManager = new MusicManager();
+        musicManager = new MusicManager(fileManager);
+        romanizationManager = new RomanizationManager();
+        skinManager = new SkinManager();
 
         shindoAPI = new ShindoAPI();
-
         shindoAPI.init();
 
         commandManager = new CommandManager();
@@ -131,15 +225,27 @@ public class Shindo {
 
         InternalSettingsMod.getInstance().setToggled(true);
         clickEffects = new ClickEffects();
+        shaderManager = new ShaderManager();
+        shaderManager.init();
         mc.updateDisplay();
+        RPOAddon.getInstance().setToggled(true, false);
     }
 
     public void stop() {
         ShindoLogger.info("Stopping Shindo");
         profileManager.save();
         accountManager.save();
-        shindoAPI.disconnect();
+        shindoAPI.stop();
+
+        if (shaderManager != null) {
+            shaderManager.cleanup();
+        }
+
         Sound.play("shindo/audio/close.wav", true);
+
+        if (romanizationManager != null) {
+            romanizationManager.shutdown();
+        }
     }
 
     private void removeOptifineZoom() {
@@ -159,127 +265,8 @@ public class Shindo {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public int getVersionIdentifier() {
-        return verIdentifier;
-    }
-
-    public FileManager getFileManager() {
-        return fileManager;
-    }
-
-    public ModManager getModManager() {
-        return modManager;
-    }
-
-    public LanguageManager getLanguageManager() {
-        return languageManager;
-    }
-
-    public EventManager getEventManager() {
-        return eventManager;
-    }
-
-    public DownloadManager getDownloadManager() {
-        return downloadManager;
-    }
-
-    public NanoVGManager getNanoVGManager() {
-        return nanoVGManager;
-    }
-
-    public void setNanoVGManager(NanoVGManager nanoVGManager) {
-        this.nanoVGManager = nanoVGManager;
-    }
-
-    public ColorManager getColorManager() {
-        return colorManager;
-    }
-
-    public ProfileManager getProfileManager() {
-        return profileManager;
-    }
-
-    public AccountManager getAccountManager() {
-        return accountManager;
-    }
-
-    public CapeManager getCapeManager() {
-        return capeManager;
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    public ScreenshotManager getScreenshotManager() {
-        return screenshotManager;
-    }
-
-    public NotificationManager getNotificationManager() {
-        return notificationManager;
-    }
-
-    public SecurityFeatureManager getSecurityFeatureManager() {
-        return securityFeatureManager;
-    }
-
-    public QuickPlayManager getQuickPlayManager() {
-        return quickPlayManager;
-    }
-
-    public ChangelogManager getChangelogManager() {
-        return changelogManager;
-    }
-
-    public NewsManager getNewsManager() {
-        return newsManager;
-    }
-
-    public DiscordStats getDiscordStats() {
-        return discordStats;
-    }
-
-    public WaypointManager getWaypointManager() {
-        return waypointManager;
-    }
-
-    public MusicManager getMusicManager() {
-        return musicManager;
-    }
-
-    public Update getUpdateInstance() {
-        return update;
-    }
-
-    public ShindoAPI getShindoAPI() {
-        return shindoAPI;
-    }
-
     public boolean getUpdateNeeded() {
         return updateNeeded;
     }
 
-    public void setUpdateNeeded(boolean in) {
-        updateNeeded = in;
-    }
-
-    public ClickEffects getClickEffects() {
-        return clickEffects;
-    }
-
-    public BlacklistManager getBlacklistManager() {
-        return blacklistManager;
-    }
-
-    public RestrictedMod getRestrictedMod() {
-        return restrictedMod;
-    }
 }

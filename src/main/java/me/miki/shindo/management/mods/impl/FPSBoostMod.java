@@ -33,7 +33,7 @@ public class FPSBoostMod extends Mod {
 
         if (removeBotSetting.isToggled()) {
             for (Entity entity : mc.theWorld.loadedEntityList) {
-                if (entity.isInvisible() && !ServerUtils.isInTablist(entity)) {
+                if (entity.isInvisible() && !ServerUtils.isInTabList(entity)) {
                     mc.theWorld.removeEntity(entity);
                 }
             }

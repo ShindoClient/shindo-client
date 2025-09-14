@@ -1,15 +1,17 @@
 package me.miki.shindo.utils.mouse;
 
+import lombok.Setter;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class Scroll {
 
-    private float maxScroll = Float.MAX_VALUE;
     private final float minScroll = 0;
-    private float rawScroll;
     private final SimpleAnimation scrollAnimation = new SimpleAnimation(0.0F);
+    @Setter
+    private float maxScroll = Float.MAX_VALUE;
+    private float rawScroll;
 
     public void onScroll() {
         onScroll(2);
@@ -24,9 +26,9 @@ public class Scroll {
         int dWheel = Mouse.getDWheel();
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            rawScroll += dWheel / scrollSpeed;
+            rawScroll += (float) dWheel / scrollSpeed;
         } else {
-            rawScroll += dWheel / (scrollSpeed * 2);
+            rawScroll += (float) dWheel / (scrollSpeed * 2);
         }
 
         rawScroll = Math.max(Math.min(minScroll, rawScroll), -maxScroll);
@@ -51,10 +53,6 @@ public class Scroll {
 
     private void onAnimation(int animationSpeed) {
         scrollAnimation.setAnimation(rawScroll, animationSpeed);
-    }
-
-    public void setMaxScroll(float scroll) {
-        maxScroll = scroll;
     }
 
     public float getValue() {

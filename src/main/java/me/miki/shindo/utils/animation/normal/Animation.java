@@ -1,15 +1,21 @@
 package me.miki.shindo.utils.animation.normal;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.utils.TimerUtils;
 
 public abstract class Animation {
 
     public TimerUtils timer = new TimerUtils();
 
+    @Getter
     protected int duration;
 
+    @Setter
+    @Getter
     protected double endPoint;
 
+    @Getter
     protected Direction direction;
 
     public Animation(int ms, double endPoint) {
@@ -79,22 +85,6 @@ public abstract class Animation {
     }
 
     protected abstract double getEquation(double x);
-
-    public double getEndPoint() {
-        return endPoint;
-    }
-
-    public void setEndPoint(double endPoint) {
-        this.endPoint = endPoint;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public Direction getDirection() {
-        return direction;
-    }
 
     public void setDirection(Direction direction) {
         if (this.direction != direction) {

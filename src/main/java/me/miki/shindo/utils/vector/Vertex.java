@@ -1,7 +1,9 @@
 package me.miki.shindo.utils.vector;
 
+import lombok.Getter;
 import org.lwjgl.util.vector.Vector3f;
 
+@Getter
 public class Vertex {
 
     private final Vector3f pos;
@@ -22,15 +24,4 @@ public class Vertex {
         return new Vertex(this.pos, f, g);
     }
 
-    public Vector3f getPos() {
-        return pos;
-    }
-
-    public float getU() {
-        return u;
-    }
-
-    public float getV() {
-        return v;
-    }
 }

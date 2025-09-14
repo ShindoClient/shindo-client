@@ -22,9 +22,8 @@ import java.util.ArrayList;
 
 public class GamesCategory extends Category {
 
-    private Animation sceneAnimation;
-
     private final ArrayList<GameScene> scenes = new ArrayList<>();
+    private Animation sceneAnimation;
     private GameScene currentScene;
 
     public GamesCategory(GuiModMenu parent) {

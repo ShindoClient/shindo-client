@@ -10,11 +10,11 @@ import java.awt.*;
 
 public class ColorSetting extends Setting {
 
+    private final Color defaultColor;
+    private final boolean showAlpha;
     private float hue, saturation, brightness;
     private int alpha;
-    private final Color defaultColor;
     private Color color;
-    private final boolean showAlpha;
 
     public ColorSetting(TranslateText text, Mod parent, Color color, boolean showAlpha) {
         super(text, parent);

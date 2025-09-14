@@ -1,6 +1,5 @@
 package me.miki.shindo.mobends.client.renderer.entity.layers;
 
-import me.miki.shindo.mobends.client.model.entity.ModelBendsPlayer;
 import me.miki.shindo.mobends.client.renderer.BendsCapeRenderer;
 import me.miki.shindo.mobends.client.renderer.entity.RenderBendsPlayer;
 import net.minecraft.client.Minecraft;

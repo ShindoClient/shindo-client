@@ -18,9 +18,8 @@ import java.util.Arrays;
 
 public class SessionInfoMod extends HUDMod {
 
-    private int killCount;
     private final String[] killTrigger = {"by *", "para *", "fue destrozado a manos de *"};
-
+    private int killCount;
     private long startTime;
 
     public SessionInfoMod() {

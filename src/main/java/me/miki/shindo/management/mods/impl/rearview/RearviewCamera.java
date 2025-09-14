@@ -17,8 +17,8 @@ public class RearviewCamera {
     private final int mirrorFBO;
     private final int mirrorTex;
     private final int mirrorDepth;
-    private long renderEndNanoTime;
     private final RenderGlobalHelper mirrorRenderGlobal;
+    private long renderEndNanoTime;
     private float fov;
     private boolean firstUpdate, recording, lockCamera;
 

@@ -22,11 +22,10 @@ import java.util.List;
 public class PackDisplayMod extends HUDMod {
 
     private final ResourcePackRepository resourcePackRepository = mc.getResourcePackRepository();
+    private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
     private IResourcePack pack;
     private ResourceLocation currentPack;
     private List<ResourcePackRepository.Entry> packs = resourcePackRepository.getRepositoryEntries();
-
-    private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
 
     public PackDisplayMod() {
         super(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION);

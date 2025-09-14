@@ -182,7 +182,7 @@ public class Render3DUtils {
 
         Color c;
 
-        for (float i = 0; i < Math.PI * 2; i += Math.PI * 2 / 64.F) {
+        for (float i = 0; i < Math.PI * 2; i += (float) (Math.PI * 2 / 64.F)) {
 
             double vecX = x + rad * Math.cos(i);
             double vecZ = z + rad * Math.sin(i);
@@ -216,6 +216,7 @@ public class Render3DUtils {
         GL11.glPopMatrix();
         GL11.glColor3f(255, 255, 255);
     }
+
 
     private static void drawFilledCircleNoGL(final int x, final int y, final double r, final int c, final int quality) {
 
@@ -281,16 +282,14 @@ public class Render3DUtils {
                     GL11.glRotated(-(mc.getRenderManager()).playerViewY, 0.0D, 1.0D, 0.0D);
                     GL11.glRotated((mc.getRenderManager()).playerViewX, 1.0D, 0.0D, 0.0D);
 
-                    final Color c = color;
-
-                    drawFilledCircleNoGL(0, 0, 0.7, new Color(c.getRed(), c.getGreen(), c.getBlue(), 100).hashCode(), quality);
+                    drawFilledCircleNoGL(0, 0, 0.7, new Color(color.getRed(), color.getGreen(), color.getBlue(), 100).hashCode(), quality);
 
                     if (distanceFromPlayer < 4) {
-                        drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
+                        drawFilledCircleNoGL(0, 0, 1.4, new Color(color.getRed(), color.getGreen(), color.getBlue(), 50).hashCode(), quality);
                     }
 
                     if (distanceFromPlayer < 20) {
-                        drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
+                        drawFilledCircleNoGL(0, 0, 2.3, new Color(color.getRed(), color.getGreen(), color.getBlue(), 30).hashCode(), quality);
                     }
 
                     GL11.glScalef(0.8f, 0.8f, 0.8f);

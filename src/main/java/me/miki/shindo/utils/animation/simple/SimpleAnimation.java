@@ -1,7 +1,12 @@
 package me.miki.shindo.utils.animation.simple;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class SimpleAnimation {
 
+    @Setter
+    @Getter
     private float value;
     private long lastMS;
 
@@ -34,11 +39,4 @@ public class SimpleAnimation {
         this.value = AnimationUtils.calculateCompensation(value, this.value, deltaValue, delta);
     }
 
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
-    }
 }

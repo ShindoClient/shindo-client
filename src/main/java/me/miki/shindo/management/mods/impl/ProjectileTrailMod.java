@@ -20,11 +20,7 @@ import java.util.Random;
 
 public class ProjectileTrailMod extends Mod {
 
-    private ProjectileTrailType type;
-
     private final ArrayList<Object> throwables = new ArrayList<>();
-    private int ticks;
-
     private final ComboSetting mode = new ComboSetting(TranslateText.TYPE, this, TranslateText.HEARTS, new ArrayList<Option>() {
         private static final long serialVersionUID = 1L;
 
@@ -34,6 +30,8 @@ public class ProjectileTrailMod extends Mod {
             }
         }
     });
+    private ProjectileTrailType type;
+    private int ticks;
 
     public ProjectileTrailMod() {
         super(TranslateText.PROJECTILE_TRAIL, TranslateText.PROJECTILE_TRAIL_DESCRIPTION, ModCategory.PLAYER);

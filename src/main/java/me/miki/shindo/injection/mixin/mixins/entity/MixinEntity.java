@@ -32,9 +32,9 @@ public class MixinEntity {
     @Inject(method = "setVelocity", at = @At("HEAD"))
     public void preSetVelocity(double x, double y, double z, CallbackInfo ci) {
         if (DamageTiltMod.getInstance().isToggled()) {
-            if ((Object) this != null) {
+            if (this != null) {
                 EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-                if (((Object) this).equals(player)) {
+                if (this.equals(player)) {
 
                     float result = (float) (Math.atan2(player.motionZ - z, player.motionX - x) * (180D / Math.PI) - (double) player.rotationYaw);
 

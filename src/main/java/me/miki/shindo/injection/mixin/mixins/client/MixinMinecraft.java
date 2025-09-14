@@ -1,6 +1,7 @@
 package me.miki.shindo.injection.mixin.mixins.client;
 
 import eu.shoroa.contrib.render.ShBlur;
+import eu.shoroa.contrib.util.Time;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiBetterResourcePacks;
 import me.miki.shindo.gui.GuiGameMenu;
@@ -8,9 +9,10 @@ import me.miki.shindo.gui.GuiSplashScreen;
 import me.miki.shindo.injection.interfaces.IMixinEntityLivingBase;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.addons.rpo.RPOConfig;
+import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
+import me.miki.shindo.utils.MacOSUtils;
 import me.miki.shindo.viaversion.fixes.AttackOrder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -30,14 +32,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Session;
 import net.minecraft.util.Timer;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.SystemUtils;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -72,6 +73,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public GuiScreen currentScreen;
     @Shadow
     public EntityRenderer entityRenderer;
+    @Unique
+    long lastFrame = client$getCurrentTime();
     @Shadow
     @Final
     private File fileResourcepacks;
@@ -119,8 +122,26 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Shadow
     public abstract void updateDisplay();
 
+    @Unique
+    private long client$getCurrentTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
+
     @Shadow
     protected abstract void resize(int width, int height);
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/lang/System;nanoTime()J"))
+    public void supsec$render(CallbackInfo ci) {
+        long currentTime = client$getCurrentTime();
+        long deltaTimeMillis = currentTime - lastFrame;
+        lastFrame = currentTime;
+
+        float deltaTimeSeconds = deltaTimeMillis / 1000.0f;
+
+        if (deltaTimeSeconds > 0 && deltaTimeSeconds < 0.1f) {
+            Time.setDelta(deltaTimeSeconds);
+        }
+    }
 
     @Inject(method = "startGame", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;ingameGUI:Lnet/minecraft/client/gui/GuiIngame;", shift = At.Shift.AFTER))
     public void preStartGame(CallbackInfo ci) {
@@ -129,7 +150,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Inject(method = "startGame", at = @At("TAIL"))
     private void onGameStartCompleted(CallbackInfo ci) {
-        RPOConfig.init();
+         RPOAddon.getInstance().init();
     }
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;next()Z"))
@@ -257,7 +278,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Redirect(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V"))
     public void overrideTitle(String title) {
-        Display.setTitle("Shindo Client v" + Shindo.getInstance().getVersion() + " (" + Shindo.getInstance().getVersionIdentifier() + ") for " + title);
+        Display.setTitle("Shindo Client v" + Shindo.getInstance().getVersion() + " (" + Shindo.getInstance().getVerIdentifier() + ") for " + title);
     }
 
     @Inject(method = "updateFramebufferSize", at = @At("HEAD"))
@@ -347,12 +368,14 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
     public void displayGuiScreenInjectHead(GuiScreen guiScreenIn, CallbackInfo ci) {
 
-        if (guiScreenIn instanceof GuiScreenResourcePacks && !(guiScreenIn instanceof GuiBetterResourcePacks)) {
-            GuiScreen parent = Minecraft.getMinecraft().currentScreen;
+        if( Shindo.getInstance().getAddonManager() != null && Shindo.getInstance().getAddonManager().getAddonByName("Resource Pack Organizer").isToggled()) {
+            if (guiScreenIn instanceof GuiScreenResourcePacks && !(guiScreenIn instanceof GuiBetterResourcePacks)) {
+                GuiScreen parent = Minecraft.getMinecraft().currentScreen;
 
-            ci.cancel();
+                ci.cancel();
 
-            Minecraft.getMinecraft().addScheduledTask(() -> displayGuiScreen(new GuiBetterResourcePacks(parent)));
+                Minecraft.getMinecraft().addScheduledTask(() -> displayGuiScreen(new GuiBetterResourcePacks(parent)));
+            }
         }
 
         if (guiScreenIn instanceof GuiIngameMenu) {
@@ -367,6 +390,19 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private void clearLoadedMaps(WorldClient worldClientIn, String loadingMessage, CallbackInfo ci) {
         if (worldClientIn != this.theWorld) {
             this.entityRenderer.getMapItemRenderer().clearLoadedMaps();
+        }
+    }
+
+    /**
+     * Mixin setGameIcon
+     *
+     * @reason change the game icon to a custom one
+     */
+    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
+    private void setGameIcon(CallbackInfo c) {
+        if (Util.getOSType() == Util.EnumOS.OSX) {
+            MacOSUtils.setDockIcon("/assets/minecraft/shindo/osx.png");
+            c.cancel();
         }
     }
 

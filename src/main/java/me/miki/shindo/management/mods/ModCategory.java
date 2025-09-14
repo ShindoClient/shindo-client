@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
@@ -13,7 +14,11 @@ public enum ModCategory {
     OTHER(TranslateText.OTHER);
 
     private final TranslateText nameTranslate;
+
+    @Getter
     private final ColorAnimation textColorAnimation;
+
+    @Getter
     private final SimpleAnimation backgroundAnimation;
 
     ModCategory(TranslateText nameTranslate) {
@@ -26,11 +31,4 @@ public enum ModCategory {
         return nameTranslate.getText();
     }
 
-    public SimpleAnimation getBackgroundAnimation() {
-        return backgroundAnimation;
-    }
-
-    public ColorAnimation getTextColorAnimation() {
-        return textColorAnimation;
-    }
 }

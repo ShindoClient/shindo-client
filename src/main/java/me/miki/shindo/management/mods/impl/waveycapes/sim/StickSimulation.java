@@ -9,11 +9,11 @@ import java.util.List;
 
 public class StickSimulation {
 
+    private final float maxBend = 5;
     public List<Point> points = new ArrayList<>();
     public List<Stick> sticks = new ArrayList<>();
     public float gravity = 20f;
     public int numIterations = 30;
-    private final float maxBend = 5;
 
     public void simulate() {
 

@@ -1,5 +1,7 @@
 package me.miki.shindo.utils.transferable;
 
+import lombok.NonNull;
+
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -24,6 +26,7 @@ public class ImageTransferable implements Transferable {
     }
 
     @Override
+    @NonNull
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (!DataFlavor.imageFlavor.equals(flavor)) {
             throw new UnsupportedFlavorException(flavor);

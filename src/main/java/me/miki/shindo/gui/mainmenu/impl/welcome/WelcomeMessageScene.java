@@ -16,11 +16,10 @@ import java.awt.*;
 
 public class WelcomeMessageScene extends MainMenuScene {
 
+    private final TimerUtils timer = new TimerUtils();
     private Animation fadeAnimation;
     private int step;
     private String message;
-
-    private final TimerUtils timer = new TimerUtils();
 
     public WelcomeMessageScene(GuiShindoMainMenu parent) {
         super(parent);

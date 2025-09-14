@@ -1,5 +1,10 @@
 package me.miki.shindo.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class TimerUtils {
 
     public long lastMs;
@@ -34,11 +39,4 @@ public class TimerUtils {
         return System.currentTimeMillis() - this.lastMs;
     }
 
-    public long getLastMs() {
-        return lastMs;
-    }
-
-    public void setLastMs(long lastMs) {
-        this.lastMs = lastMs;
-    }
 }

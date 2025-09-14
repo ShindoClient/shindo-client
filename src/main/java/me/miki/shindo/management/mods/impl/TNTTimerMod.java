@@ -27,11 +27,10 @@ import java.util.Arrays;
 public class TNTTimerMod extends SimpleHUDMod {
 
     private final DecimalFormat timeFormatter = new DecimalFormat("0.00");
-    private EntityTNTPrimed currentTNT;
-    private float partialTicks;
-
     private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.TAG, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.TAG), new Option(TranslateText.HUD))));
+    private EntityTNTPrimed currentTNT;
+    private float partialTicks;
 
     public TNTTimerMod() {
         super(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION);

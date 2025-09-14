@@ -12,8 +12,8 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.comp.impl.CompKeybind;
-import me.miki.shindo.ui.comp.impl.CompToggleButton;
+import me.miki.shindo.ui.comp.mods.CompKeybind;
+import me.miki.shindo.ui.comp.mods.CompToggleButton;
 
 public class GeneralScene extends SettingScene {
 

@@ -1,8 +1,10 @@
 package me.miki.shindo.management.profile;
 
+import lombok.Getter;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.util.ResourceLocation;
 
+@Getter
 public enum ProfileIcon {
     COMMAND(0, "command"), CRAFTING_TABLE(1, "crafting_table"), FURNACE(2, "furnace"), GRASS(3, "grass"),
     HAY(4, "hay"), PUMPKIN(5, "pumpkin"), TNT(6, "tnt");
@@ -28,15 +30,4 @@ public enum ProfileIcon {
         return ProfileIcon.GRASS;
     }
 
-    public ResourceLocation getIcon() {
-        return icon;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public SimpleAnimation getAnimation() {
-        return animation;
-    }
 }

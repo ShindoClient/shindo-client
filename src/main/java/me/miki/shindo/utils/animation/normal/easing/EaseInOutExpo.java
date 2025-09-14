@@ -20,7 +20,7 @@ public class EaseInOutExpo extends Animation {
             return 1;
         }
 
-        double x1 = x / (duration / 2);
+        double x1 = x / (duration / 2.0);
 
         if (x1 < 1) {
             return 0.5 * Math.pow(2, 10 * (x1 - 1));

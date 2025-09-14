@@ -15,13 +15,11 @@ import java.util.Arrays;
 
 public class TaplookMod extends Mod {
 
-    private boolean active;
-    private int prevPerspective;
-
     private final ComboSetting modeSetting = new ComboSetting(TranslateText.PERSPECTIVE, this, TranslateText.FRONT, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.FRONT), new Option(TranslateText.BEHIND))));
-
     private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_P);
+    private boolean active;
+    private int prevPerspective;
 
     public TaplookMod() {
         super(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER);

@@ -13,8 +13,8 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.ui.comp.impl.CompComboBox;
-import me.miki.shindo.ui.comp.impl.CompToggleButton;
+import me.miki.shindo.ui.comp.mods.CompComboBox;
+import me.miki.shindo.ui.comp.mods.CompToggleButton;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
@@ -34,7 +34,7 @@ public class AppearanceScene extends SettingScene {
 
     @Override
     public void initGui() {
-        modTheme = new CompComboBox(75, InternalSettingsMod.getInstance().getModThemeSetting());
+        modTheme = new CompComboBox(110, InternalSettingsMod.getInstance().getModThemeSetting());
         uiBlur = new CompToggleButton(InternalSettingsMod.getInstance().getBlurSetting());
     }
 
@@ -118,7 +118,7 @@ public class AppearanceScene extends SettingScene {
         nvg.drawText(TranslateText.UI_BLUR.getText(), this.getX() + 8, this.getY() + 11.5F + 212, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
 
 
-        modTheme.setX(this.getX() + this.getWidth() - 87);
+        modTheme.setX(this.getX() + this.getWidth() - 120);
         modTheme.setY(this.getY() + 9.5F + (91 * 2) - yMov2);
         modTheme.draw(mouseX, mouseY, partialTicks);
 

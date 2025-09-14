@@ -17,8 +17,8 @@ import java.awt.*;
 
 public class LoginMessageScene extends MainMenuScene {
 
-    private Animation fadeAnimation;
     private final TimerUtils timer = new TimerUtils();
+    private Animation fadeAnimation;
 
     public LoginMessageScene(GuiShindoMainMenu parent) {
         super(parent);

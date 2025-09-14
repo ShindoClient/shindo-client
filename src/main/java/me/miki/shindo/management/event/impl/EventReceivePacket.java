@@ -1,8 +1,13 @@
 package me.miki.shindo.management.event.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.management.event.Event;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.Packet;
 
+@Getter
+@Setter
 public class EventReceivePacket extends Event {
 
     private Packet<?> packet;
@@ -11,11 +16,4 @@ public class EventReceivePacket extends Event {
         this.packet = packet;
     }
 
-    public Packet<?> getPacket() {
-        return packet;
-    }
-
-    public void setPacket(Packet<?> packet) {
-        this.packet = packet;
-    }
 }

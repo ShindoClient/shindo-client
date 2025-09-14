@@ -23,14 +23,11 @@ import java.awt.*;
 
 public class AccentColorSelectScene extends MainMenuScene {
 
-    private int x, y, width, height;
-
-    private AccentColor currentColor;
-
-    private Animation fadeAnimation;
     private final ScreenAlpha screenAlpha = new ScreenAlpha();
-
     private final Scroll scroll = new Scroll();
+    private int x, y, width, height;
+    private AccentColor currentColor;
+    private Animation fadeAnimation;
 
     public AccentColorSelectScene(GuiShindoMainMenu parent) {
         super(parent);

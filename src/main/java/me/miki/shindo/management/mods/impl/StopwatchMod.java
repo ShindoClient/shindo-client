@@ -21,9 +21,9 @@ public class StopwatchMod extends SimpleHUDMod {
     private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_P);
 
     private final TimerUtils timer = new TimerUtils();
+    private final DecimalFormat timeFormat = new DecimalFormat("0.00");
     private int pressCount;
     private float currentTime;
-    private final DecimalFormat timeFormat = new DecimalFormat("0.00");
 
     public StopwatchMod() {
         super(TranslateText.STOPWATCH, TranslateText.STOPWATCH_DESCRIPTION);

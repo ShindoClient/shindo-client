@@ -27,14 +27,11 @@ import java.util.UUID;
 public class MoBendsMod extends Mod {
 
     private static MoBendsMod instance;
-
-    public List<UUID> currentlyRenderedEntities = new ArrayList<UUID>();
-
     private final boolean loaded;
-    private boolean renderingGuiScreen;
-
     private final BooleanSetting customColorSetting = new BooleanSetting(TranslateText.CUSTOM_COLOR, this, false);
     private final ColorSetting colorSetting = new ColorSetting(TranslateText.COLOR, this, Color.RED, false);
+    public List<UUID> currentlyRenderedEntities = new ArrayList<UUID>();
+    private boolean renderingGuiScreen;
 
     public MoBendsMod() {
         super(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER);

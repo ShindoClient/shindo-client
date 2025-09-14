@@ -1,5 +1,7 @@
 package me.miki.shindo.utils.transferable;
 
+import lombok.NonNull;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
@@ -24,6 +26,7 @@ public class FileTransferable implements Transferable {
     }
 
     @Override
+    @NonNull
     public Object getTransferData(DataFlavor flavor) {
         final ArrayList<File> files = new ArrayList<>();
         files.add(file);

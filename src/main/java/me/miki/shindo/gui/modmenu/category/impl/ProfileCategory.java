@@ -17,7 +17,7 @@ import me.miki.shindo.management.profile.Profile;
 import me.miki.shindo.management.profile.ProfileIcon;
 import me.miki.shindo.management.profile.ProfileManager;
 import me.miki.shindo.management.profile.ProfileType;
-import me.miki.shindo.ui.comp.impl.field.CompTextBox;
+import me.miki.shindo.ui.comp.field.CompTextBox;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.SearchUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
@@ -350,6 +350,6 @@ public class ProfileCategory extends Category {
             return true;
         }
 
-        return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimillar(p.getName(), this.getSearchBox().getText());
+        return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimilar(p.getName(), this.getSearchBox().getText());
     }
 }

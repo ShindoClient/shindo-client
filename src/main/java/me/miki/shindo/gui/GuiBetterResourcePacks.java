@@ -1,7 +1,7 @@
 package me.miki.shindo.gui;
 
 import com.google.common.collect.Lists;
-import me.miki.shindo.management.addons.rpo.RPOConfig;
+import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.addons.rpo.packs.ResourcePackListEntryFolder;
 import me.miki.shindo.management.addons.rpo.packs.ResourcePackListProcessor;
 import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom;
@@ -107,7 +107,7 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
                     mc.gameSettings.resourcePacks.add(entry.getResourcePackName());
                 }
 
-                RPOConfig.get().options.updateEnabledPacks();
+                RPOAddon.getInstance().get().options.updateEnabledPacks();
 
                 mc.gameSettings.saveOptions();
                 mc.refreshResources();

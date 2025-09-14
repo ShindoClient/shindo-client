@@ -6,7 +6,6 @@ import me.miki.shindo.gui.mainmenu.MainMenuScene;
 import me.miki.shindo.gui.mainmenu.impl.MainScene;
 import me.miki.shindo.gui.mainmenu.impl.welcome.LastMessageScene;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
-import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.account.Account;
 import me.miki.shindo.management.account.AccountManager;
 import me.miki.shindo.management.account.AccountType;
@@ -16,19 +15,14 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.notification.NotificationType;
-import me.miki.shindo.ui.comp.impl.field.CompMainMenuTextBox;
-import me.miki.shindo.utils.ImageUtils;
-import me.miki.shindo.utils.Multithreading;
-import me.miki.shindo.utils.file.FileUtils;
+import me.miki.shindo.ui.comp.field.CompMainMenuTextBox;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.input.Keyboard;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -110,6 +104,7 @@ public class AccountScene extends MainMenuScene {
 
         if (mouseButton == 0) {
 
+            /*
             if (MouseUtils.isInside(mouseX, mouseY, acX + acWidth - 30, acY + 86, 20, 20)) {
                 Multithreading.runAsync(() -> {
 
@@ -134,6 +129,8 @@ public class AccountScene extends MainMenuScene {
                     }
                 });
             }
+
+             */
 
             if (MouseUtils.isInside(mouseX, mouseY, acX + (acWidth / 2F) - (96 / 2F), acY + 86 + 25, 96, 20)) {
 
@@ -174,10 +171,13 @@ public class AccountScene extends MainMenuScene {
 
                 Account acc = new Account(nameBox.getText(), "0", "0", "0", AccountType.OFFLINE);
 
+                /*
                 if (offlineSkin != null) {
                     offlineSkin.renameTo(renameFile);
                     offlineSkin = renameFile;
                 }
+
+
 
                 if (offlineSkin != null && offlineSkin.exists()) {
 
@@ -196,6 +196,8 @@ public class AccountScene extends MainMenuScene {
                         instance.getNotificationManager().post(TranslateText.ERROR, "An error occurred while resizing the image", NotificationType.ERROR);
                     }
                 }
+
+                 */
 
                 UUID offlineId = UUID.nameUUIDFromBytes(
                         ("OfflinePlayer:" + acc.getName()).getBytes(StandardCharsets.UTF_8)

@@ -20,11 +20,9 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 
 public class BlockInfoMod extends HUDMod {
 
-    private long lastSelection;
-
-    private Animation introAnimation;
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
-
+    private long lastSelection;
+    private Animation introAnimation;
     private BlockPos pos;
     private IBlockState state;
     private Block block;

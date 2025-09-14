@@ -1,6 +1,8 @@
 package me.miki.shindo.management.remote.update;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.Multithreading;
@@ -8,17 +10,11 @@ import me.miki.shindo.utils.network.HttpUtils;
 
 public class Update {
 
+    @Getter
+    @Setter
     String updateLink = "https://shindoclient.github.io/";
     String updateVersionString = "something is broken lmao";
     int updateBuildID = 0;
-
-    public String getUpdateLink() {
-        return updateLink;
-    }
-
-    public void setUpdateLink(String in) {
-        this.updateLink = in;
-    }
 
     public String getVersionString() {
         return updateVersionString;
@@ -45,7 +41,7 @@ public class Update {
 
     public void checkForUpdates() {
         Shindo g = Shindo.getInstance();
-        if (g.getVersionIdentifier() < this.updateBuildID) {
+        if (g.getVerIdentifier() < this.updateBuildID) {
             g.setUpdateNeeded(true);
         }
     }

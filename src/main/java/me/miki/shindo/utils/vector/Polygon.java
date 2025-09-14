@@ -1,8 +1,10 @@
 package me.miki.shindo.utils.vector;
 
+import lombok.Getter;
 import me.miki.shindo.management.mods.impl.skin3d.SkinDirection;
 import org.lwjgl.util.vector.Vector3f;
 
+@Getter
 public class Polygon {
 
     private final Vertex[] vertices;
@@ -33,11 +35,4 @@ public class Polygon {
         }
     }
 
-    public Vertex[] getVertices() {
-        return vertices;
-    }
-
-    public Vector3f getNormal() {
-        return normal;
-    }
 }

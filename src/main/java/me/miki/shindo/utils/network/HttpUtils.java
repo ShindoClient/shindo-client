@@ -2,10 +2,7 @@ package me.miki.shindo.utils.network;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.remote.download.file.DownloadFile;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -28,6 +25,12 @@ public class HttpUtils {
     public static JsonObject postJson(String url, Object request) {
 
         HttpURLConnection connection = setupConnection(url, UserAgents.MOZILLA, 5000, false);
+
+        if (connection == null) {
+            ShindoLogger.error("Failed to setup connection for post json");
+            return null;
+        }
+
         connection.setDoOutput(true);
         connection.addRequestProperty("Content-Type", ACCEPTED_RESPONSE);
         connection.addRequestProperty("Accept", ACCEPTED_RESPONSE);
@@ -69,7 +72,13 @@ public class HttpUtils {
         try {
             HttpURLConnection connection = setupConnection(url, userAgents, 5000, false);
 
-            if (headers != null) {
+            if (connection == null) {
+                ShindoLogger.error("Failed to setup connection for read json");
+                return null;
+            }
+
+            if (headers != null && !headers.isEmpty()) {
+
                 for (String header : headers.keySet()) {
                     connection.addRequestProperty(header, headers.get(header));
                 }
@@ -110,11 +119,11 @@ public class HttpUtils {
 
 
     public static boolean downloadFile(String url, File outputFile, String userAgent, int timeout, boolean useCaches) {
+
         url = url.replace(" ", "%20");
 
-        try (FileOutputStream fileOut = new FileOutputStream(outputFile);
-             BufferedInputStream in = new BufferedInputStream(Objects.requireNonNull(setupConnection(url, userAgent, timeout, useCaches)).getInputStream())) {
-            IOUtils.copy(in, fileOut);
+        try (FileOutputStream fileOut = new FileOutputStream(outputFile); BufferedInputStream in = new BufferedInputStream(setupConnection(url, userAgent, timeout, useCaches).getInputStream())) {
+            org.apache.commons.io.IOUtils.copy(in, fileOut);
         } catch (Exception e) {
             ShindoLogger.error("Failed to download file", e);
             return false;
@@ -123,77 +132,12 @@ public class HttpUtils {
         return true;
     }
 
-
-    public static boolean downloadFile(String url, File outputFile, String userAgent, int timeout, boolean useCaches, long expectedSize) {
-        InputStream in = null;
-        RandomAccessFile raf = null;
-        HttpURLConnection connection = null;
-
-        try {
-            URL downloadUrl = new URL(url);
-            connection = (HttpURLConnection) downloadUrl.openConnection();
-            connection.setRequestProperty("User-Agent", userAgent);
-            connection.setUseCaches(useCaches);
-            connection.setConnectTimeout(timeout);
-            connection.setReadTimeout(timeout);
-
-            long existingLength = 0;
-            if (outputFile.exists()) {
-                existingLength = outputFile.length();
-                connection.setRequestProperty("Range", "bytes=" + existingLength + "-");
-            }
-
-            connection.connect();
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK &&
-                    responseCode != HttpURLConnection.HTTP_PARTIAL) {
-                return false;
-            }
-
-            in = connection.getInputStream();
-            raf = new RandomAccessFile(outputFile, "rw");
-            raf.seek(existingLength);
-
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                raf.write(buffer, 0, read);
-
-                // Atualiza progresso se estiver usando .part
-                if (outputFile.getName().endsWith(".part")) {
-                    String fileName = outputFile.getName().replace(".part", "");
-                    DownloadFile df = Shindo.getInstance().getDownloadManager().getDownloadByFile(fileName);
-                    if (df != null) {
-                        df.addDownloadedBytes(read);
-                    }
-                }
-            }
-
-            long totalLength = outputFile.length();
-
-            // ✅ Se expectedSize <= 0, não valida tamanho, só considera sucesso
-            return expectedSize <= 0 || totalLength >= expectedSize;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-
-        } finally {
-            try {
-                if (in != null) in.close();
-                if (raf != null) raf.close();
-            } catch (IOException ignored) {
-            }
-
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
+    public static boolean downloadFile(String url, File outputFile, String userAgents) {
+        return downloadFile(url, outputFile, userAgents, 5000, false);
     }
 
-    public static boolean downloadFile(String url, File outputFile, long expectedSize) {
-        return downloadFile(url, outputFile, UserAgents.MOZILLA, 60000, false, expectedSize);
+    public static void downloadFile(String url, File outputFile) {
+        downloadFile(url, outputFile, UserAgents.MOZILLA, 5000, false);
     }
 
 

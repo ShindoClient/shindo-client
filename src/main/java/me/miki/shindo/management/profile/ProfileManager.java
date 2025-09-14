@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.color.ColorManager;
@@ -24,8 +25,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Getter
 public class ProfileManager {
 
     private final CopyOnWriteArrayList<Profile> profiles = new CopyOnWriteArrayList<Profile>();
@@ -46,7 +49,7 @@ public class ProfileManager {
 
             profiles.clear();
 
-            for (File f : profileDir.listFiles()) {
+            for (File f : Objects.requireNonNull(profileDir.listFiles())) {
 
                 if (FileUtils.getExtension(f).equals("json")) {
 
@@ -388,11 +391,4 @@ public class ProfileManager {
         profile.getJsonFile().delete();
     }
 
-    public BackgroundManager getBackgroundManager() {
-        return backgroundManager;
-    }
-
-    public CopyOnWriteArrayList<Profile> getProfiles() {
-        return profiles;
-    }
 }

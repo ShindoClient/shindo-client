@@ -39,7 +39,7 @@ public class Translator {
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
-            StringBuffer content = new StringBuffer();
+            StringBuilder content = new StringBuilder();
 
             while ((inputLine = in.readLine()) != null) {
                 content.append(inputLine);
@@ -75,14 +75,13 @@ public class Translator {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
         String responseLine;
-        StringBuffer responseContent = new StringBuffer();
+        StringBuilder responseContent = new StringBuilder();
         while ((responseLine = br.readLine()) != null) {
             responseContent.append(responseLine.trim());
         }
         br.close();
 
-        JsonParser parser = new JsonParser();
-        JsonArray jsonArray = parser.parse(responseContent.toString()).getAsJsonArray();
+        JsonArray jsonArray = JsonParser.parseString(responseContent.toString()).getAsJsonArray();
 
         StringBuilder sb = new StringBuilder();
         for (JsonElement json : jsonArray) {

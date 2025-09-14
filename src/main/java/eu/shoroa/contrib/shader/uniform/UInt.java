@@ -6,7 +6,7 @@
 package eu.shoroa.contrib.shader.uniform;
 
 public class UInt extends Uniform {
-    private int value;
+    private final int value;
 
     public UInt(String name, int value) {
         super(name);

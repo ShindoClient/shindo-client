@@ -12,7 +12,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 public class VBO {
-    private int vid = GL15.glGenBuffers();
+    private final int vid = GL15.glGenBuffers();
 
     public void bind() {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vid);

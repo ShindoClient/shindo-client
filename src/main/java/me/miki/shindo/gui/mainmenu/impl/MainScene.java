@@ -1,6 +1,7 @@
 package me.miki.shindo.gui.mainmenu.impl;
 
 import me.miki.shindo.Shindo;
+import me.miki.shindo.ShindoAPI;
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
 import me.miki.shindo.gui.mainmenu.MainMenuScene;
 import me.miki.shindo.management.language.TranslateText;
@@ -32,7 +33,8 @@ public class MainScene extends MainMenuScene {
     public void initGui() {
         if (!isConnected) {
             if (Shindo.getInstance().getAccountManager().getCurrentAccount() != null && mc.getSession().getProfile().getId() != null) {
-                Shindo.getInstance().getShindoAPI().connect();
+                ShindoAPI api = Shindo.getInstance().getShindoAPI();
+                api.start();
                 Shindo.getInstance().getNotificationManager().post("[API]", "Is now Connected", NotificationType.INFO);
                 isConnected = true;
             }

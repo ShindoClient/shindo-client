@@ -1,6 +1,9 @@
 package me.miki.shindo.management.cosmetic.cape;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.api.roles.Role;
+import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.cosmetic.cape.impl.Cape;
 import me.miki.shindo.management.cosmetic.cape.impl.CustomCape;
@@ -8,8 +11,6 @@ import me.miki.shindo.management.cosmetic.cape.impl.NormalCape;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
-import me.miki.shindo.management.roles.ClientRole;
-import me.miki.shindo.management.roles.ClientRoleManager;
 import me.miki.shindo.utils.ImageUtils;
 import me.miki.shindo.utils.file.FileUtils;
 import net.minecraft.client.Minecraft;
@@ -21,13 +22,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 public class CapeManager {
 
-    private final Minecraft mc = Minecraft.getMinecraft();
-
     private final ArrayList<Cape> capes = new ArrayList<Cape>();
+
     private Cape currentCape;
 
     public CapeManager() {
@@ -37,33 +39,33 @@ public class CapeManager {
         File customCapeDir = fileManager.getCustomCapeDir();
         File cacheDir = fileManager.getCapeCacheDir();
 
-        capes.add(new NormalCape("None", null, null, CapeCategory.ALL, ClientRole.MEMBER));
+        capes.add(new NormalCape("None", null, null, CapeCategory.ALL, Role.MEMBER));
 
-        add("Minecon 2011", "minecon/2011-sample.png", "minecon/2011.png", CapeCategory.MINECON, ClientRole.MEMBER);
-        add("Minecon 2012", "minecon/2012-sample.png", "minecon/2012.png", CapeCategory.MINECON, ClientRole.MEMBER);
-        add("Minecon 2013", "minecon/2013-sample.png", "minecon/2013.png", CapeCategory.MINECON, ClientRole.MEMBER);
-        add("Minecon 2015", "minecon/2015-sample.png", "minecon/2015.png", CapeCategory.MINECON, ClientRole.MEMBER);
-        add("Minecon 2016", "minecon/2016-sample.png", "minecon/2016.png", CapeCategory.MINECON, ClientRole.MEMBER);
+        add("Minecon 2011", "minecon/2011-sample.png", "minecon/2011.png", CapeCategory.MINECON, Role.MEMBER);
+        add("Minecon 2012", "minecon/2012-sample.png", "minecon/2012.png", CapeCategory.MINECON, Role.MEMBER);
+        add("Minecon 2013", "minecon/2013-sample.png", "minecon/2013.png", CapeCategory.MINECON, Role.MEMBER);
+        add("Minecon 2015", "minecon/2015-sample.png", "minecon/2015.png", CapeCategory.MINECON, Role.MEMBER);
+        add("Minecon 2016", "minecon/2016-sample.png", "minecon/2016.png", CapeCategory.MINECON, Role.MEMBER);
 
-        add("Canada", "flag/canada-sample.png", "flag/canada.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("commonwealth", "flag/commonwealth-sample.png", "flag/commonwealth.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("England", "flag/england-sample.png", "flag/england.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Europe", "flag/europe-sample.png", "flag/europe.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("France", "flag/france-sample.png", "flag/france.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Germany", "flag/germany-sample.png", "flag/germany.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("India", "flag/india-sample.png", "flag/india.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Indonesia", "flag/indonesia-sample.png", "flag/indonesia.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Italy", "flag/italy-sample.png", "flag/italy.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Japan", "flag/japan-sample.png", "flag/japan.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Korea", "flag/korean-sample.png", "flag/korean.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("LGBT", "flag/lgbt-sample.png", "flag/lgbt.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("NATO", "flag/nato-sample.png", "flag/nato.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Scotland", "flag/scotland-sample.png", "flag/scotland.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Trans", "flag/trans-sample.png", "flag/trans.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("Ukraine", "flag/ukraine-sample.png", "flag/ukraine.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("UN", "flag/un-sample.png", "flag/un.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("United Kingdom", "flag/united-kingdom-sample.png", "flag/united-kingdom.png", CapeCategory.FLAG, ClientRole.GOLD);
-        add("United States", "flag/united-states-sample.png", "flag/united-states.png", CapeCategory.FLAG, ClientRole.GOLD);
+        add("Canada", "flag/canada-sample.png", "flag/canada.png", CapeCategory.FLAG, Role.GOLD);
+        add("commonwealth", "flag/commonwealth-sample.png", "flag/commonwealth.png", CapeCategory.FLAG, Role.GOLD);
+        add("England", "flag/england-sample.png", "flag/england.png", CapeCategory.FLAG, Role.GOLD);
+        add("Europe", "flag/europe-sample.png", "flag/europe.png", CapeCategory.FLAG, Role.GOLD);
+        add("France", "flag/france-sample.png", "flag/france.png", CapeCategory.FLAG, Role.GOLD);
+        add("Germany", "flag/germany-sample.png", "flag/germany.png", CapeCategory.FLAG, Role.GOLD);
+        add("India", "flag/india-sample.png", "flag/india.png", CapeCategory.FLAG, Role.GOLD);
+        add("Indonesia", "flag/indonesia-sample.png", "flag/indonesia.png", CapeCategory.FLAG, Role.GOLD);
+        add("Italy", "flag/italy-sample.png", "flag/italy.png", CapeCategory.FLAG, Role.GOLD);
+        add("Japan", "flag/japan-sample.png", "flag/japan.png", CapeCategory.FLAG, Role.GOLD);
+        add("Korea", "flag/korean-sample.png", "flag/korean.png", CapeCategory.FLAG, Role.GOLD);
+        add("LGBT", "flag/lgbt-sample.png", "flag/lgbt.png", CapeCategory.FLAG, Role.GOLD);
+        add("NATO", "flag/nato-sample.png", "flag/nato.png", CapeCategory.FLAG, Role.GOLD);
+        add("Scotland", "flag/scotland-sample.png", "flag/scotland.png", CapeCategory.FLAG, Role.GOLD);
+        add("Trans", "flag/trans-sample.png", "flag/trans.png", CapeCategory.FLAG, Role.GOLD);
+        add("Ukraine", "flag/ukraine-sample.png", "flag/ukraine.png", CapeCategory.FLAG, Role.GOLD);
+        add("UN", "flag/un-sample.png", "flag/un.png", CapeCategory.FLAG, Role.GOLD);
+        add("United Kingdom", "flag/united-kingdom-sample.png", "flag/united-kingdom.png", CapeCategory.FLAG, Role.GOLD);
+        add("United States", "flag/united-states-sample.png", "flag/united-states.png", CapeCategory.FLAG, Role.GOLD);
 
         //add("Blue", "shindo/blue-sample.png", "shindo/blue.png", CapeCategory.SOAR);
         //add("Orange", "shindo/orange-sample.png", "shindo/orange.png", CapeCategory.SOAR);
@@ -76,18 +78,18 @@ public class CapeManager {
         //add("Skylight", "shindo/skylight-sample.png", "shindo/skylight.png", CapeCategory.SOAR);
         //add("Sour Apple", "shindo/sourapple-sample.png", "shindo/sourapple.png", CapeCategory.SOAR);
 
-        add("Aurora", "cartoon/aurora-sample.png", "cartoon/aurora.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Beach Girl", "cartoon/beachgirl-sample.png", "cartoon/beachgirl.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Beach Hut", "cartoon/beachhut-sample.png", "cartoon/beachhut.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Bridgeend", "cartoon/bridgeend-sample.png", "cartoon/bridgeend.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Cat", "cartoon/cat-sample.png", "cartoon/cat.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Cyber Cat", "cartoon/cybercat-sample.png", "cartoon/cybercat.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Decayed", "cartoon/decayed-sample.png", "cartoon/decayed.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Kitty", "cartoon/kitty-sample.png", "cartoon/kitty.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Lost World", "cartoon/lostworld-sample.png", "cartoon/lostworld.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Mountain", "cartoon/mountain-sample.png", "cartoon/mountain.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Stargazing Girl", "cartoon/stargazinggirl-sample.png", "cartoon/stargazinggirl.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
-        add("Stellagate", "cartoon/stellagate-sample.png", "cartoon/stellagate.png", CapeCategory.CARTOON, ClientRole.DIAMOND);
+        add("Aurora", "cartoon/aurora-sample.png", "cartoon/aurora.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Beach Girl", "cartoon/beachgirl-sample.png", "cartoon/beachgirl.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Beach Hut", "cartoon/beachhut-sample.png", "cartoon/beachhut.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Bridgeend", "cartoon/bridgeend-sample.png", "cartoon/bridgeend.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Cat", "cartoon/cat-sample.png", "cartoon/cat.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Cyber Cat", "cartoon/cybercat-sample.png", "cartoon/cybercat.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Decayed", "cartoon/decayed-sample.png", "cartoon/decayed.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Kitty", "cartoon/kitty-sample.png", "cartoon/kitty.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Lost World", "cartoon/lostworld-sample.png", "cartoon/lostworld.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Mountain", "cartoon/mountain-sample.png", "cartoon/mountain.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Stargazing Girl", "cartoon/stargazinggirl-sample.png", "cartoon/stargazinggirl.png", CapeCategory.CARTOON, Role.DIAMOND);
+        add("Stellagate", "cartoon/stellagate-sample.png", "cartoon/stellagate.png", CapeCategory.CARTOON, Role.DIAMOND);
 
         //add("BreadCat", "misc/breadcat-sample.png", "misc/breadcat.png", CapeCategory.MISC);
         //add("Horse", "misc/horse-sample.png", "misc/horse.png", CapeCategory.MISC);
@@ -95,7 +97,8 @@ public class CapeManager {
 
         currentCape = getCapeByName(InternalSettingsMod.getInstance().getCapeConfigName());
 
-        for (File f : customCapeDir.listFiles()) {
+        Minecraft mc = Minecraft.getMinecraft();
+        for (File f : Objects.requireNonNull(customCapeDir.listFiles())) {
 
             if (FileUtils.isImageFile(f)) {
 
@@ -123,7 +126,7 @@ public class CapeManager {
                         DynamicTexture cape = new DynamicTexture(ImageIO.read(f));
 
                         addCustomCape(f.getName().replace("." + FileUtils.getExtension(f), ""), file,
-                                mc.getTextureManager().getDynamicTextureLocation(String.valueOf(f.getName().hashCode()), cape), CapeCategory.CUSTOM, ClientRole.DIAMOND);
+                                mc.getTextureManager().getDynamicTextureLocation(String.valueOf(f.getName().hashCode()), cape), CapeCategory.CUSTOM, Role.DIAMOND);
                     } catch (Exception e) {
                         ShindoLogger.error("Failed to load image", e);
                     }
@@ -156,23 +159,15 @@ public class CapeManager {
         }
     }
 
-    private void add(String name, String samplePath, String capePath, CapeCategory category, ClientRole requiredRole) {
+    private void add(String name, String samplePath, String capePath, CapeCategory category, Role requiredRole) {
 
         String cosmeticPath = "shindo/cosmetics/cape/";
 
         capes.add(new NormalCape(name, new ResourceLocation(cosmeticPath + samplePath), new ResourceLocation(cosmeticPath + capePath), category, requiredRole));
     }
 
-    private void addCustomCape(String name, File sample, ResourceLocation cape, CapeCategory category, ClientRole requiredRole) {
+    private void addCustomCape(String name, File sample, ResourceLocation cape, CapeCategory category, Role requiredRole) {
         capes.add(new CustomCape(name, sample, cape, category, requiredRole));
-    }
-
-    public ArrayList<Cape> getCapes() {
-        return capes;
-    }
-
-    public Cape getCurrentCape() {
-        return currentCape;
     }
 
     public void setCurrentCape(Cape currentCape) {
@@ -192,10 +187,10 @@ public class CapeManager {
     }
 
     public boolean canUseCape(UUID uuid, Cape cape) {
-        return ClientRoleManager.hasRole(uuid, cape.getRequiredRole());
+        return RoleManager.hasAtLeast(uuid, cape.getRequiredRole());
     }
 
-    public TranslateText getTranslateError(ClientRole role) {
+    public TranslateText getTranslateError(Role role) {
         switch (role) {
             case STAFF:
                 return TranslateText.STAFF_ONLY;
@@ -203,13 +198,15 @@ public class CapeManager {
                 return TranslateText.DIAMOND_ONLY;
             case GOLD:
                 return TranslateText.GOLD_ONLY;
+            case MEMBER:
+                return TranslateText.MEMBER;
             default:
                 return TranslateText.NONE;
 
         }
     }
 
-    public TranslateText getTranslateText(ClientRole role) {
+    public TranslateText getTranslateText(Role role) {
         switch (role) {
             case STAFF:
                 return TranslateText.STAFF;

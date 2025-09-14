@@ -40,10 +40,9 @@ public class EntityCullingMod extends Mod {
     private final RenderManager renderManager = mc.getRenderManager();
     private final ConcurrentHashMap<UUID, OcclusionQuery> queries = new ConcurrentHashMap<>();
     private final boolean SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33;
-    private int destroyTimer;
-
     private final NumberSetting delaySetting = new NumberSetting(TranslateText.DELAY, this, 2, 1, 3, true);
     private final NumberSetting distanceSetting = new NumberSetting(TranslateText.DISTANCE, this, 45, 10, 150, true);
+    private int destroyTimer;
 
     public EntityCullingMod() {
         super(TranslateText.ENTITY_CULLING, TranslateText.ENTITY_CULLING_DESCRIPTIONN, ModCategory.OTHER);

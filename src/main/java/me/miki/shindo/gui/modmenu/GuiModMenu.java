@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.modmenu;
 
+import eu.shoroa.contrib.cosmetic.CosmeticManager;
 import eu.shoroa.contrib.render.ShBlur;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiEditHUD;
@@ -15,7 +16,7 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.ui.comp.impl.field.CompSearchBox;
+import me.miki.shindo.ui.comp.field.CompSearchBox;
 import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -37,31 +38,26 @@ import java.util.Objects;
 
 public class GuiModMenu extends GuiScreen {
 
+    private final ArrayList<Category> categories = new ArrayList<Category>();
+    private final SimpleAnimation moveAnimation = new SimpleAnimation();
+    private final ScreenAnimation screenAnimation = new ScreenAnimation();
+    private final Scroll scroll = new Scroll();
+    private final CompSearchBox searchBox = new CompSearchBox();
     private Animation introAnimation;
     private int x, y, width, height;
-
-    private final ArrayList<Category> categories = new ArrayList<Category>();
     private Category currentCategory;
-
-    private final SimpleAnimation moveAnimation = new SimpleAnimation();
-
-    private final ScreenAnimation screenAnimation = new ScreenAnimation();
-
-    private final Scroll scroll = new Scroll();
-
     private boolean toEditHUD, canClose;
-
-    private final CompSearchBox searchBox = new CompSearchBox();
 
     public GuiModMenu() {
 
         categories.add(new HomeCategory(this));
         categories.add(new ModuleCategory(this));
         categories.add(new CosmeticsCategory(this));
-        categories.add(new MusicCategory(this));
+        categories.add(new SpotifyCategory(this));
         categories.add(new GamesCategory(this));
         categories.add(new ProfileCategory(this));
         categories.add(new ScreenshotCategory(this));
+        categories.add(new AddonCategory(this));
         categories.add(new SettingCategory(this));
 
         currentCategory = getCategoryByClass(HomeCategory.class);
@@ -95,6 +91,7 @@ public class GuiModMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 
+        CosmeticManager.getInstance().renderFBO();
         Shindo instance = Shindo.getInstance();
         NanoVGManager nvg = instance.getNanoVGManager();
 
@@ -143,7 +140,7 @@ public class GuiModMenu extends GuiScreen {
 
         int offsetY = 0;
 
-        moveAnimation.setAnimation(categories.indexOf(currentCategory) * 25, 18);
+        moveAnimation.setAnimation(categories.indexOf(currentCategory) * 22, 18);
 
         nvg.save();
 
@@ -157,7 +154,7 @@ public class GuiModMenu extends GuiScreen {
 
             nvg.drawText(c.getIcon(), x + 9F, y + 38 + offsetY, textColor, 14, Fonts.LEGACYICON);
 
-            offsetY += 25;
+            offsetY += 22;
         }
 
         nvg.restore();
@@ -192,12 +189,6 @@ public class GuiModMenu extends GuiScreen {
                     nvg.drawCenteredText(LegacyIcon.FOLDER, folderButtonX + 8.5F, folderButtonY + 9 - (nvg.getTextHeight(LegacyIcon.FOLDER, 9, Fonts.LEGACYICON) / 2), palette.getFontColor(ColorType.NORMAL), 9, Fonts.LEGACYICON);
                 }
 
-                if (Objects.equals(currentCategory.getNameKey(), TranslateText.MUSIC.getKey())) {
-                    float folderButtonX = x + width - 198;
-                    float folderButtonY = y + 6.5F;
-                    nvg.drawRoundedRect(folderButtonX, folderButtonY, 18, 18, 6, palette.getBackgroundColor(ColorType.DARK));
-                    nvg.drawCenteredText(LegacyIcon.FOLDER, folderButtonX + 8.5F, folderButtonY + 9 - (nvg.getTextHeight(LegacyIcon.FOLDER, 9, Fonts.LEGACYICON) / 2), palette.getFontColor(ColorType.NORMAL), 9, Fonts.LEGACYICON);
-                }
                 nvg.scissor(x + 32, y + yOff, width - 32, height - yOff);
                 nvg.translate(0, 50 - (c.getCategoryAnimation().getValue() * 50));
 
@@ -236,7 +227,7 @@ public class GuiModMenu extends GuiScreen {
                 currentCategory = c;
             }
 
-            offsetY += 25;
+            offsetY += 22;
         }
 
         if (MouseUtils.isInside(mouseX, mouseY, x + 5.5F, y + height - 30, 21, 21) && mouseButton == 0) {

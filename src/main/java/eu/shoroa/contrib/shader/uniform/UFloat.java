@@ -6,7 +6,8 @@
 package eu.shoroa.contrib.shader.uniform;
 
 public class UFloat extends Uniform {
-    private float value;
+    private final float value;
+
     public UFloat(String name, float value) {
         super(name);
         this.value = value;

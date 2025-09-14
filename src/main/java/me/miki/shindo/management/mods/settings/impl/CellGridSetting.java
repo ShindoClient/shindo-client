@@ -6,8 +6,8 @@ import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.settings.Setting;
 
 public class CellGridSetting extends Setting {
-    private boolean[][] cells;
     private final boolean[][] defaultCells;
+    private boolean[][] cells;
 
     public CellGridSetting(TranslateText text, Mod parent, boolean[][] cells) {
         super(text, parent);

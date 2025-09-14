@@ -1,5 +1,7 @@
 package me.miki.shindo.management.mods;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.language.TranslateText;
@@ -10,15 +12,29 @@ import net.minecraft.client.gui.FontRenderer;
 
 public class Mod {
 
+    private final TranslateText nameTranslate;
+    private final TranslateText descriptionTranslate;
     public Minecraft mc = Minecraft.getMinecraft();
     public FontRenderer fr = mc.fontRendererObj;
 
-    private final TranslateText nameTranslate;
-    private final TranslateText descriptionTranslate;
-    private boolean toggled, hide;
+    @Getter
     private final SimpleAnimation animation = new SimpleAnimation();
+
+    @Getter
+    private boolean toggled;
+
+    @Setter
+    @Getter
+    private boolean hide;
+
+    @Setter
+    @Getter
     private ModCategory category;
-    private String alias = "\u200B"; // zerowidth space
+
+    @Getter
+    private String alias = "\u200B"; // zero width space
+
+    @Getter
     private Boolean restricted = false, allowed = true;
 
     public Mod(TranslateText nameTranslate, TranslateText descriptionTranslate, ModCategory category) {
@@ -101,44 +117,12 @@ public class Mod {
         return nameTranslate.getKey();
     }
 
-    public boolean isHide() {
-        return hide;
-    }
-
-    public void setHide(boolean hide) {
-        this.hide = hide;
-    }
-
-    public boolean isToggled() {
-        return toggled;
-    }
-
     public void setToggled(boolean toggled) {
         setToggled(toggled, false);
     }
 
-    public ModCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(ModCategory category) {
-        this.category = category;
-    }
-
-    public SimpleAnimation getAnimation() {
-        return animation;
-    }
-
-    public String getAlias() {
-        return this.alias;
-    }
-
     public Boolean isRestricted() {
         return this.restricted;
-    }
-
-    public Boolean getAllowed() {
-        return allowed;
     }
 
     public void setAllowed(boolean modAllowed) {

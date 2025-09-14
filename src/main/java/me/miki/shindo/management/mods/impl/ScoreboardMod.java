@@ -26,12 +26,11 @@ import java.util.List;
 
 public class ScoreboardMod extends HUDMod {
 
-    private ScoreObjective objective;
-    private boolean isFirstLoad;
-
     private final BooleanSetting backgroundSetting = new BooleanSetting(TranslateText.BACKGROUND, this, true);
     private final BooleanSetting numberSetting = new BooleanSetting(TranslateText.NUMBER, this, true);
     private final BooleanSetting shadowSetting = new BooleanSetting(TranslateText.SHADOW, this, false);
+    private ScoreObjective objective;
+    private boolean isFirstLoad;
 
     public ScoreboardMod() {
         super(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION);

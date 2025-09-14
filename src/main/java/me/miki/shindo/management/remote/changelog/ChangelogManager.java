@@ -9,7 +9,6 @@ import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.network.HttpUtils;
 
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ChangelogManager {
@@ -22,7 +21,7 @@ public class ChangelogManager {
 
     private void loadChangelog() {
 
-        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/changelogs/versions/" + Shindo.getInstance().getVersionIdentifier() + ".json", null);
+        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/changelogs/versions/" + Shindo.getInstance().getVerIdentifier() + ".json", null);
 
 
         if (jsonObject != null) {
@@ -31,11 +30,8 @@ public class ChangelogManager {
 
             if (jsonArray != null) {
 
-                Iterator<JsonElement> iterator = jsonArray.iterator();
+                for (JsonElement jsonElement : jsonArray) {
 
-                while (iterator.hasNext()) {
-
-                    JsonElement jsonElement = iterator.next();
                     Gson gson = new Gson();
                     JsonObject changelogJsonObject = gson.fromJson(jsonElement, JsonObject.class);
 

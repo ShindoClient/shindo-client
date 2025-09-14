@@ -113,9 +113,9 @@ public class PunycodeUtils {
     private static String encodePunycode(int[] input) {
         StringBuilder output = new StringBuilder();
 
-        for (int i = 0; i < input.length; i++) {
-            if (input[i] < 128) {
-                output.append((char) input[i]);
+        for (int j : input) {
+            if (j < 128) {
+                output.append((char) j);
             }
         }
 
@@ -130,16 +130,15 @@ public class PunycodeUtils {
 
         while (h < input.length) {
             int m = Integer.MAX_VALUE;
-            for (int i = 0; i < input.length; i++) {
-                if (input[i] >= n && input[i] < m)
-                    m = input[i];
+            for (int j : input) {
+                if (j >= n && j < m)
+                    m = j;
             }
 
             delta += (m - n) * (h + 1);
             n = m;
 
-            for (int i = 0; i < input.length; i++) {
-                int c = input[i];
+            for (int c : input) {
                 if (c < n) {
                     delta++;
                 } else if (c == n) {

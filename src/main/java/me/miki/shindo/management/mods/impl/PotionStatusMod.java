@@ -21,10 +21,8 @@ import java.util.Collection;
 
 public class PotionStatusMod extends HUDMod {
 
-    private int maxString, prevPotionCount;
-
     private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
-
+    private int maxString, prevPotionCount;
     private Collection<PotionEffect> potions;
 
     public PotionStatusMod() {

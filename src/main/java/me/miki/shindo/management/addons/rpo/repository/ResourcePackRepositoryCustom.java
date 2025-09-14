@@ -19,6 +19,7 @@ public class ResourcePackRepositoryCustom extends ResourcePackRepository {
     private final List<Entry> repositoryEntries = Lists.newArrayList();
     private final boolean isReady;
     private List<Entry> repositoryEntriesAll = Lists.newArrayList();
+
     public ResourcePackRepositoryCustom(File dirResourcepacks, File dirServerResourcepacks, IResourcePack rprDefaultResourcePack, IMetadataSerializer rprMetadataSerializer, GameSettings settings, List<String> enabledPacks) {
         super(dirResourcepacks, dirServerResourcepacks, rprDefaultResourcePack, rprMetadataSerializer, settings);
         isReady = true;

@@ -2,6 +2,7 @@ package me.miki.shindo.utils.render;
 
 import me.miki.shindo.utils.ColorUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +18,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 public class RenderUtils {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+    private static Gui gui;
 
     public static void connectPoints(float xOne, float yOne, float xTwo, float yTwo) {
         GL11.glPushMatrix();
@@ -199,5 +201,57 @@ public class RenderUtils {
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
         tessellator.draw();
     }
+
+    public static void fill(int x1, int y1, int x2, int y2, Color c) {
+        drawRect(x1, y1, x2, y2, c);
+    }
+
+    public static void hLine(int startX, int endX, int y, Color c) {
+        if (endX < startX)
+        {
+            int i = startX;
+            startX = endX;
+            endX = i;
+        }
+
+        drawRect(startX, y, endX + 1, y + 1,  c);
+    }
+
+    public static void vLine(int x, int startY, int endY, Color c)
+    {
+        if (endY < startY)
+        {
+            int i = startY;
+            startY = endY;
+            endY = i;
+        }
+
+        drawRect(x, startY + 1, x + 1, endY, c);
+    }
+
+    // barra topo/bottom com leve fade
+    public static void gradientBar(int x1, int y1, int x2, int y2, Color a, Color b) {
+        Tessellator t = Tessellator.getInstance();
+        WorldRenderer wr = t.getWorldRenderer();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+
+        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(x2, y1, 0).color(a.getRed(), a.getGreen(), a.getBlue(), a.getAlpha()).endVertex();
+        wr.pos(x1, y1, 0).color(a.getRed(), a.getGreen(), a.getBlue(), a.getAlpha()).endVertex();
+        wr.pos(x1, y2, 0).color(b.getRed(), b.getGreen(), b.getBlue(), b.getAlpha()).endVertex();
+        wr.pos(x2, y2, 0).color(b.getRed(), b.getGreen(), b.getBlue(), b.getAlpha()).endVertex();
+        t.draw();
+
+        GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    private RenderUtils() {}
 
 }

@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 
 public class OptifineUtils {
 
-    private static Field gameSettings_ofFastRender;
     private static final Minecraft mc = Minecraft.getMinecraft();
+    private static Field gameSettings_ofFastRender;
 
     static {
         try {
@@ -17,8 +17,7 @@ public class OptifineUtils {
 
             gameSettings_ofFastRender = GameSettings.class.getDeclaredField("ofFastRender");
             gameSettings_ofFastRender.setAccessible(true);
-        } catch (ClassNotFoundException ignore) {
-        } catch (NoSuchFieldException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException ignore) {
         }
     }
 
@@ -27,7 +26,7 @@ public class OptifineUtils {
         if (ShindoTweaker.hasOptifine) {
             try {
                 OptifineUtils.gameSettings_ofFastRender.set(mc.gameSettings, false);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
+            } catch (IllegalArgumentException | IllegalAccessException ignored) {
             }
         }
 

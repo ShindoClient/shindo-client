@@ -32,25 +32,20 @@ import java.awt.*;
 
 public class BlockOverlayMod extends Mod {
 
-    protected AxisAlignedBB currentBB;
-    protected AxisAlignedBB slideBB;
-    protected TimerUtils timer = new TimerUtils();
-
     private final SimpleAnimation[] simpleAnimation = {new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F)};
-
     private final BooleanSetting animationSetting = new BooleanSetting(TranslateText.ANIMATION, this, false);
     private final BooleanSetting fillSetting = new BooleanSetting(TranslateText.FILL, this, true);
     private final BooleanSetting outlineSetting = new BooleanSetting(TranslateText.OUTLINE, this, true);
-
     private final NumberSetting fillAlphaSetting = new NumberSetting(TranslateText.FILL_ALPHA, this, 0.15, 0, 1.0, false);
     private final NumberSetting outlineAlphaSetting = new NumberSetting(TranslateText.OUTLINE_ALPHA, this, 0.15, 0, 1.0, false);
-
     private final NumberSetting outlineWidthSetting = new NumberSetting(TranslateText.OUTLINE_WIDTH, this, 4, 1, 10, false);
-
     private final BooleanSetting depthSetting = new BooleanSetting(TranslateText.DEPTH, this, false);
     private final BooleanSetting customColorSetting = new BooleanSetting(TranslateText.CUSTOM_COLOR, this, false);
     private final ColorSetting fillColorSetting = new ColorSetting(TranslateText.FILL_COLOR, this, Color.RED, false);
     private final ColorSetting outlineColorSetting = new ColorSetting(TranslateText.OUTLINE_COLOR, this, Color.RED, false);
+    protected AxisAlignedBB currentBB;
+    protected AxisAlignedBB slideBB;
+    protected TimerUtils timer = new TimerUtils();
 
     public BlockOverlayMod() {
         super(TranslateText.BLOCK_OVERLAY, TranslateText.BLOCK_OVERLAY_DESCRIPTION, ModCategory.RENDER, "blockoutline");

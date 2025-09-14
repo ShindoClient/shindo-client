@@ -12,7 +12,7 @@ public class EaseInOutQuart extends Animation {
     @Override
     protected double getEquation(double x) {
 
-        double x1 = x / (duration / 2);
+        double x1 = x / (duration / 2.0);
 
         if (x1 < 1) {
             return 0.5 * x1 * x1 * x1 * x1;

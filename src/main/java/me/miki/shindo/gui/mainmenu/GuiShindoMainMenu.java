@@ -1,10 +1,7 @@
 package me.miki.shindo.gui.mainmenu;
 
 import me.miki.shindo.Shindo;
-import me.miki.shindo.gui.mainmenu.impl.BackgroundScene;
-import me.miki.shindo.gui.mainmenu.impl.MainScene;
-import me.miki.shindo.gui.mainmenu.impl.ShopScene;
-import me.miki.shindo.gui.mainmenu.impl.UpdateScene;
+import me.miki.shindo.gui.mainmenu.impl.*;
 import me.miki.shindo.gui.mainmenu.impl.login.AccountScene;
 import me.miki.shindo.gui.mainmenu.impl.login.MicrosoftLoginScene;
 import me.miki.shindo.gui.mainmenu.impl.welcome.*;
@@ -20,6 +17,8 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.profile.mainmenu.impl.Background;
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
+import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
+import me.miki.shindo.management.shader.ShaderBackgroundRenderer;
 import me.miki.shindo.utils.SessionUtils;
 import me.miki.shindo.utils.Sound;
 import me.miki.shindo.utils.animation.normal.Animation;
@@ -40,13 +39,19 @@ import java.util.ArrayList;
 
 public class GuiShindoMainMenu extends GuiScreen {
 
+    private final ArrayList<MainMenuScene> scenes = new ArrayList<MainMenuScene>();
+
     private final SimpleAnimation accountAnimation = new SimpleAnimation();
-    private final SimpleAnimation closeFocusAnimation = new SimpleAnimation();
+    private final SimpleAnimation accountSelectFocusAnimation = new SimpleAnimation();
+    private final SimpleAnimation skinFocusAnimation = new SimpleAnimation();
     private final SimpleAnimation shopFocusAnimation = new SimpleAnimation();
     private final SimpleAnimation backgroundSelectFocusAnimation = new SimpleAnimation();
+    private final SimpleAnimation closeFocusAnimation = new SimpleAnimation();
+
     private final SimpleAnimation[] backgroundAnimations = new SimpleAnimation[2];
+
     private MainMenuScene currentScene;
-    private final ArrayList<MainMenuScene> scenes = new ArrayList<MainMenuScene>();
+
 
     private Account removeAccount;
 
@@ -71,6 +76,10 @@ public class GuiShindoMainMenu extends GuiScreen {
         scenes.add(new MicrosoftLoginScene(this));
         scenes.add(new BackgroundScene(this));
         scenes.add(new ShopScene(this));
+        scenes.add(new SkinScene(this));
+
+        scenes.add(new UpdateScene(this));
+
         scenes.add(new WelcomeMessageScene(this));
         scenes.add(new LanguageSelectScene(this));
         scenes.add(new ThemeSelectScene(this));
@@ -79,7 +88,6 @@ public class GuiShindoMainMenu extends GuiScreen {
         scenes.add(new FirstLoginScene(this));
         scenes.add(new CheckingDataScene(this));
         scenes.add(new LastMessageScene(this));
-        scenes.add(new UpdateScene(this));
 
 
         if (instance.getShindoAPI().isFirstLogin()) {
@@ -165,6 +173,14 @@ public class GuiShindoMainMenu extends GuiScreen {
             CustomBackground bg = (CustomBackground) currentBackground;
 
             nvg.drawImage(bg.getImage(), -21 + backgroundAnimations[0].getValue() / 90, backgroundAnimations[1].getValue() * -1 / 90, sr.getScaledWidth() + 21, sr.getScaledHeight() + 20);
+        } else if (currentBackground instanceof ShaderBackground) {
+
+            ShaderBackground bg = (ShaderBackground) currentBackground;
+
+            // Render animated shader background using our renderer
+            ShaderBackgroundRenderer.renderShaderBackground(nvg, bg.getShaderFile(),
+                    -21 + backgroundAnimations[0].getValue() / 90, backgroundAnimations[1].getValue() * -1 / 90,
+                    sr.getScaledWidth() + 21, sr.getScaledHeight() + 20);
         }
 
         nvg.drawText(copyright, sr.getScaledWidth() - (nvg.getTextWidth(copyright, 9, Fonts.REGULAR)) - 4, sr.getScaledHeight() - 12, new Color(255, 255, 255), 9, Fonts.REGULAR);
@@ -180,13 +196,20 @@ public class GuiShindoMainMenu extends GuiScreen {
 
         backgroundSelectFocusAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - 28 - 28, 6, 22, 22) ? 1.0F : 0.0F, 16);
 
-        nvg.drawRoundedRect(sr.getScaledWidth() - 28 - 28, 6, 22, 22, 4, this.getBackgroundColor());
-        nvg.drawCenteredText(LegacyIcon.IMAGE, sr.getScaledWidth() - 19F - 26.5F, 9.5F, new Color(255 - (int) (backgroundSelectFocusAnimation.getValue() * 200), 255, 255 - (int) (backgroundSelectFocusAnimation.getValue() * 200)), 15, Fonts.LEGACYICON);
+        nvg.drawRoundedRect(sr.getScaledWidth() - (28 * 2), 6, 22, 22, 4, this.getBackgroundColor());
+        nvg.drawCenteredText(LegacyIcon.IMAGE, sr.getScaledWidth() - (26 * 2) + 6.5F - 1.5F, 9.5F - 1.5F, new Color(255 - (int) (backgroundSelectFocusAnimation.getValue() * 200), 255, 255 - (int) (backgroundSelectFocusAnimation.getValue() * 200)), 18, Fonts.LEGACYICON);
 
         shopFocusAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 3), 6, 22, 22) ? 1.0F : 0.0F, 16);
 
         nvg.drawRoundedRect(sr.getScaledWidth() - (28 * 3), 6, 22, 22, 4, this.getBackgroundColor());
         nvg.drawCenteredText(LegacyIcon.SHOPPING, sr.getScaledWidth() - (26 * 3) + 4.5F, 9.5F, new Color(255 - (int) (shopFocusAnimation.getValue() * 200), 255, 255), 15, Fonts.LEGACYICON);
+
+        skinFocusAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 4), 6, 22, 22) ? 1.0F : 0.0F, 16);
+
+        // TODO: Adicionar o ícone das skins no arquivo .ttf
+        nvg.drawRoundedRect(sr.getScaledWidth() - (28 * 4), 6, 22, 22, 4, this.getBackgroundColor());
+        nvg.drawCenteredText(LegacyIcon.EDIT, sr.getScaledWidth() - (26 * 4) + 3.5F, 9.5F, new Color(255 - (int) (skinFocusAnimation.getValue() * 200), 255, 255), 15, Fonts.LEGACYICON);
+
     }
 
     private void drawAccount(int mouseX, int mouseY, Shindo instance, NanoVGManager nvg) {
@@ -315,12 +338,16 @@ public class GuiShindoMainMenu extends GuiScreen {
                 mc.shutdown();
             }
 
-            if (MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - 28 - 28, 6, 22, 22) && !this.getCurrentScene().equals(getSceneByClass(BackgroundScene.class))) {
+            if (MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 2), 6, 22, 22) && !this.getCurrentScene().equals(getSceneByClass(BackgroundScene.class))) {
                 this.setCurrentScene(this.getSceneByClass(BackgroundScene.class));
             }
 
             if (MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 3), 6, 22, 22)) {
                 this.setCurrentScene(this.getSceneByClass(ShopScene.class));
+            }
+
+            if (MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 4), 6, 22, 22)) {
+                this.setCurrentScene(this.getSceneByClass(SkinScene.class));
             }
 
             if (openAccount) {

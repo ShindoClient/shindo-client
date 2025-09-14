@@ -23,8 +23,8 @@ public class SpeedometerMod extends SimpleHUDMod {
 
     private final int speedCount = 200;
     private final double[] speeds = new double[speedCount];
-    private long lastUpdate;
     private final DecimalFormat speedFormat = new DecimalFormat("0.00");
+    private long lastUpdate;
 
     public SpeedometerMod() {
         super(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION);

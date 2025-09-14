@@ -17,7 +17,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.notification.NotificationType;
-import me.miki.shindo.ui.comp.impl.field.CompMainMenuTextBox;
+import me.miki.shindo.ui.comp.field.CompMainMenuTextBox;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.SessionUtils;
 import me.miki.shindo.utils.mouse.MouseUtils;

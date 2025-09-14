@@ -24,14 +24,12 @@ import java.util.Arrays;
 
 public class KillEffectsMod extends Mod {
 
-    private EntityLivingBase target;
-    private int entityID;
-
     private final BooleanSetting soundSetting = new BooleanSetting(TranslateText.SOUND, this, true);
     private final ComboSetting effectSetting = new ComboSetting(TranslateText.EFFECT, this, TranslateText.BLOOD, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.LIGHTING), new Option(TranslateText.FLAMES), new Option(TranslateText.CLOUD), new Option(TranslateText.BLOOD))));
-
     private final NumberSetting multiplierSetting = new NumberSetting(TranslateText.MULTIPLIER, this, 1, 1, 10, true);
+    private EntityLivingBase target;
+    private int entityID;
 
     public KillEffectsMod() {
         super(TranslateText.KILL_EFFECTS, TranslateText.KILL_EFFECTS_DESCRIPTION, ModCategory.RENDER);

@@ -1,11 +1,13 @@
 package me.miki.shindo.management.cosmetic.wing;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
+@Getter
 public enum WingCategory {
-    ALL(TranslateText.ALL.getText()), LUNAR("Lunar");
+    ALL(TranslateText.ALL.getText()), SHINDO("Shindo"), LUNAR("Lunar");
 
     private final String name;
     private final SimpleAnimation backgroundAnimation = new SimpleAnimation();
@@ -15,15 +17,4 @@ public enum WingCategory {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public SimpleAnimation getBackgroundAnimation() {
-        return backgroundAnimation;
-    }
-
-    public ColorAnimation getTextColorAnimation() {
-        return textColorAnimation;
-    }
 }

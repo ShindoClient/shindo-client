@@ -25,11 +25,10 @@ public class ScreenshotCategory extends Category {
 
     // todo: add delete confirm dialog
 
-    private Screenshot currentScreenshot;
-
     private final SimpleAnimation leftAnimation = new SimpleAnimation();
     private final SimpleAnimation rightAnimation = new SimpleAnimation();
     private final SimpleAnimation trashAnimation = new SimpleAnimation();
+    private Screenshot currentScreenshot;
 
     public ScreenshotCategory(GuiModMenu parent) {
         super(parent, TranslateText.SCREENSHOT, LegacyIcon.CAMERA, false, true);

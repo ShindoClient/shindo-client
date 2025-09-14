@@ -11,6 +11,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.profile.mainmenu.impl.Background;
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
+import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.file.FileUtils;
 import net.minecraft.util.ResourceLocation;
@@ -45,6 +46,15 @@ public class BackgroundManager {
         backgrounds.add(new DefaultBackground(0, TranslateText.GRADIENT, new ResourceLocation("shindo/mainmenu/background.png")));
         backgrounds.add(new DefaultBackground(1, TranslateText.NIGHT, new ResourceLocation("shindo/mainmenu/background-night.png")));
         backgrounds.add(new DefaultBackground(2, TranslateText.DOLPHIN, new ResourceLocation("shindo/mainmenu/background-dolphin.png")));
+
+        File shaderDir = new File(fileManager.getShindoDir(), "shaders");
+        if (!shaderDir.exists()) {
+            fileManager.createDir(shaderDir);
+        }
+
+        File menuShaderFile = new File(shaderDir, "menu.fsh");
+        // The ShaderBackground will handle loading from resources with ResourceLocation
+        backgrounds.add(new ShaderBackground(4, TranslateText.SHADER, menuShaderFile));
         backgrounds.add(new DefaultBackground(999, TranslateText.ADD, null));
 
         ArrayList<String> removeImages = load();

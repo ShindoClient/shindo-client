@@ -16,7 +16,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
@@ -71,26 +71,31 @@ dependencies {
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
+
+    // Shindo
     embed(files('libs/lwjgl-shindo.jar'))
     embed(files('libs/lwjgl-shindo-natives.jar'))
+
+    embed(files('libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar'))
+    embed(files('libs/ViaRewind-2.0.4-SNAPSHOT.jar'))
+    embed(files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar'))
+    embed(files("libs/snakeyaml-2.0.jar"))
 
     // Feather
     embed(files('libs/feather/favif-0.0.1.jar'))
     embed(files('libs/feather/fcef-0.1.1.jar'))
     embed(files('libs/feather/fwebp-0.0.1.jar'))
 
-    // LibGDX
-    embed('javazoom:jlayer:1.0.1')
+    // Other
+    embed('com.fasterxml.jackson.core:jackson-databind:2.19.2')
+    embed('org.apache.httpcomponents.client5:httpclient5-cache:5.5')
+    embed('org.mockito:mockito-core:5.18.0')
+    embed('org.slf4j:slf4j-simple:2.0.17')
+    embed('org.slf4j:slf4j-api:2.0.17')
+    embed('com.google.code.gson:gson:2.13.1')
 
-    embed(files('libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar'))
-    embed(files('libs/ViaRewind-2.0.4-SNAPSHOT.jar'))
-    embed(files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar'))
-    embed(files("libs/snakeyaml-2.0.jar"))
-    embed(files("libs/slf4j-api-2.0.7.jar"))
-
-    embed('fr.litarvan:openauth:1.1.6')
-    embed("com.google.code.gson:gson:2.10.1")
-    embed('org.tukaani:xz:1.9')
+    embed('org.java-websocket:Java-WebSocket:1.6.0')
+    embed('org.projectlombok:lombok:1.18.30')
 }
 
 mixin {
@@ -106,7 +111,6 @@ processResources {
         into("build/classes/main")
     }
 }
-
 
 jar {
     dependsOn configurations.compile

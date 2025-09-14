@@ -16,11 +16,11 @@ public enum ProjectileTrailType {
     SWIRL(EnumParticleTypes.SPELL_MOB, TranslateText.SWIRL, 1.0F, 0.0F, 1),
     WHITE_SMOKE(EnumParticleTypes.SNOW_SHOVEL, TranslateText.WHITE_SMOKE, 0.07F, 0.0F, 2);
 
+    private final TranslateText nameTranslate;
     public EnumParticleTypes particle;
     public float velocity;
     public float translate;
     public int count;
-    private final TranslateText nameTranslate;
 
     ProjectileTrailType(EnumParticleTypes particle, TranslateText nameTranslate, float velocity, float translate, int count) {
         this.particle = particle;

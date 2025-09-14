@@ -21,11 +21,11 @@ import java.awt.*;
 
 public class LanguageSelectScene extends MainMenuScene {
 
+    private final ScreenAlpha screenAlpha = new ScreenAlpha();
+    private final Scroll scroll = new Scroll();
     LanguageManager languageManager = Shindo.getInstance().getLanguageManager();
     private int x, y, width, height;
     private Animation fadeAnimation;
-    private final ScreenAlpha screenAlpha = new ScreenAlpha();
-    private final Scroll scroll = new Scroll();
     private Language currentLanguage = languageManager.getCurrentLanguage();
 
     public LanguageSelectScene(GuiShindoMainMenu parent) {

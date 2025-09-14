@@ -9,10 +9,9 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
-import java.io.FileInputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 
 public class IOUtils {
 
@@ -67,7 +66,7 @@ public class IOUtils {
     public static ByteBuffer resourceToByteBuffer(File file) {
 
         try {
-            byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(new FileInputStream(file));
+            byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(Files.newInputStream(file.toPath()));
 
             ByteBuffer data = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.nativeOrder()).put(bytes);
             data.flip();

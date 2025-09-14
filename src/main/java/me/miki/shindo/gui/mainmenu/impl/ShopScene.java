@@ -21,10 +21,10 @@ import java.util.ArrayList;
 public class ShopScene extends MainMenuScene {
 
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
-    private Animation introAnimation;
     private final ArrayList<TranslateText> goldFeatures = new ArrayList<>();
     //private ArrayList<TranslateText> diamondFeatures = new ArrayList<>();
     private final TranslateText info;
+    private Animation introAnimation;
 
     public ShopScene(GuiShindoMainMenu parent) {
         super(parent);

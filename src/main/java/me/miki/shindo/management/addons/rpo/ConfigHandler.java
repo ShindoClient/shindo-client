@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
@@ -28,6 +29,7 @@ public class ConfigHandler {
 
     public class Options {
         private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        @Getter
         private final List<String> enabledPacks = new ArrayList<>();
 
         void updateOptions() {
@@ -46,10 +48,6 @@ public class ConfigHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-
-        public List<String> getEnabledPacks() {
-            return enabledPacks;
         }
 
         public void updateEnabledPacks() {

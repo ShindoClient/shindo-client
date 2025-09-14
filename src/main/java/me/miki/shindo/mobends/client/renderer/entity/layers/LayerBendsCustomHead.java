@@ -19,8 +19,6 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumFacing;
 
-import java.util.UUID;
-
 @SuppressWarnings("rawtypes")
 public class LayerBendsCustomHead implements LayerRenderer {
 

@@ -15,19 +15,17 @@ import org.lwjgl.input.Keyboard;
 
 public class ZoomMod extends Mod {
 
-    public boolean wasCinematic;
     private final SimpleAnimation zoomAnimation = new SimpleAnimation();
+    private final BooleanSetting scrollSetting = new BooleanSetting(TranslateText.SCROLL, this, false);
+    private final BooleanSetting smoothZoomSetting = new BooleanSetting(TranslateText.SMOOTH_ZOOM, this, false);
+    private final NumberSetting zoomSpeedSetting = new NumberSetting(TranslateText.ZOOM_SPEED, this, 14, 5, 20, true);
+    private final NumberSetting factorSetting = new NumberSetting(TranslateText.ZOOM_FACTOR, this, 4, 2, 15, true);
+    private final BooleanSetting smoothCameraSetting = new BooleanSetting(TranslateText.SMOOTH_CAMERA, this, true);
+    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_C);
+    public boolean wasCinematic;
     private boolean active;
     private float lastSensitivity;
     private float currentFactor = 1;
-    private final BooleanSetting scrollSetting = new BooleanSetting(TranslateText.SCROLL, this, false);
-    private final BooleanSetting smoothZoomSetting = new BooleanSetting(TranslateText.SMOOTH_ZOOM, this, false);
-
-    private final NumberSetting zoomSpeedSetting = new NumberSetting(TranslateText.ZOOM_SPEED, this, 14, 5, 20, true);
-    private final NumberSetting factorSetting = new NumberSetting(TranslateText.ZOOM_FACTOR, this, 4, 2, 15, true);
-
-    private final BooleanSetting smoothCameraSetting = new BooleanSetting(TranslateText.SMOOTH_CAMERA, this, true);
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_C);
 
     public ZoomMod() {
         super(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCategory.PLAYER);

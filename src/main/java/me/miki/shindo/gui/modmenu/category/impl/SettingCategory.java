@@ -23,9 +23,8 @@ import java.util.ArrayList;
 
 public class SettingCategory extends Category {
 
-    private Animation sceneAnimation;
-
     private final ArrayList<SettingScene> scenes = new ArrayList<SettingScene>();
+    private Animation sceneAnimation;
     private SettingScene currentScene;
 
     public SettingCategory(GuiModMenu parent) {

@@ -36,16 +36,16 @@ public class UpdateScene extends MainMenuScene {
         int acHeight = 190;
         int acX = sr.getScaledWidth() / 2 - (acWidth / 2);
         int acY = sr.getScaledHeight() / 2 - (acHeight / 2);
-        Update u = instance.getUpdateInstance();
+        Update u = instance.getUpdate();
         nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, this.getBackgroundColor());
-        nvg.drawCenteredText("Update Available", acX + (acWidth / 2), acY + 12, Color.WHITE, 14, Fonts.MEDIUM);
-        nvg.drawCenteredText("Would you like to update?", acX + (acWidth / 2), acY + 30, Color.WHITE, 9, Fonts.REGULAR);
-        nvg.drawCenteredText(instance.getVersion() + " -> " + u.getVersionString(), acX + (acWidth / 2), acY + 48, Color.WHITE, 9, Fonts.REGULAR);
-        nvg.drawCenteredText(instance.getVersionIdentifier() + " -> " + u.getBuildID(), acX + (acWidth / 2), acY + 60, Color.WHITE, 5, Fonts.REGULAR);
-        nvg.drawRoundedRect(acX + acWidth / 2 - 90, acY + acHeight - 64, 180, 20, 4.5F, this.getBackgroundColor());
-        nvg.drawCenteredText("Go to update", acX + acWidth / 2, acY + acHeight - 54 - (nvg.getTextHeight("Go to update", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
-        nvg.drawRoundedRect(acX + acWidth / 2 - 90, acY + acHeight - 32, 180, 20, 4.5F, this.getBackgroundColor());
-        nvg.drawCenteredText("Maybe Later", acX + acWidth / 2, acY + acHeight - 22 - (nvg.getTextHeight("Maybe Later", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
+        nvg.drawCenteredText("Update Available", acX + (acWidth / 2F), acY + 12, Color.WHITE, 14, Fonts.MEDIUM);
+        nvg.drawCenteredText("Would you like to update?", acX + (acWidth / 2F), acY + 30, Color.WHITE, 9, Fonts.REGULAR);
+        nvg.drawCenteredText(instance.getVersion() + " -> " + u.getVersionString(), acX + (acWidth / 2F), acY + 48, Color.WHITE, 9, Fonts.REGULAR);
+        nvg.drawCenteredText(instance.getVerIdentifier() + " -> " + u.getBuildID(), acX + (acWidth / 2F), acY + 60, Color.WHITE, 5, Fonts.REGULAR);
+        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 64, 180, 20, 4.5F, this.getBackgroundColor());
+        nvg.drawCenteredText("Go to update", acX + acWidth / 2F, acY + acHeight - 54 - (nvg.getTextHeight("Go to update", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
+        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 32, 180, 20, 4.5F, this.getBackgroundColor());
+        nvg.drawCenteredText("Maybe Later", acX + acWidth / 2F, acY + acHeight - 22 - (nvg.getTextHeight("Maybe Later", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
 
     }
 
@@ -66,7 +66,7 @@ public class UpdateScene extends MainMenuScene {
             Shindo instance = Shindo.getInstance();
             if (MouseUtils.isInside(mouseX, mouseY, acX + acWidth / 2 - 90, acY + acHeight - 64, 180, 20)) {
                 try {
-                    Desktop.getDesktop().browse(new URI(instance.getUpdateInstance().getUpdateLink()));
+                    Desktop.getDesktop().browse(new URI(instance.getUpdate().getUpdateLink()));
                 } catch (Exception ignored) {
                 }
             }

@@ -20,7 +20,8 @@ import java.util.ArrayList;
 
 public final class UIShader {
     private int pid, vid, fid;
-    private String vSrc, fSrc;
+    private final String vSrc;
+    private final String fSrc;
     private VBO vbo;
 
     public UIShader(String vSrc, String fSrc) {

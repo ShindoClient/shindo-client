@@ -24,10 +24,10 @@ import java.net.URL;
 
 public class HomeCategory extends Category {
 
-    Color onlineColour = new Color(85, 155, 89, 255);
-    Color noColour = new Color(0, 0, 0, 0);
     private final Scroll changelogScroll = new Scroll();
     private final Scroll newsScroll = new Scroll();
+    Color onlineColour = new Color(85, 155, 89, 255);
+    Color noColour = new Color(0, 0, 0, 0);
 
     public HomeCategory(GuiModMenu parent) {
         super(parent, TranslateText.HOME, LegacyIcon.HOME, false, false);

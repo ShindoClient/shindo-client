@@ -3,6 +3,7 @@ package me.miki.shindo.gui.mainmenu.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
 import me.miki.shindo.gui.mainmenu.MainMenuScene;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.language.TranslateText;
@@ -13,6 +14,8 @@ import me.miki.shindo.management.profile.mainmenu.BackgroundManager;
 import me.miki.shindo.management.profile.mainmenu.impl.Background;
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
+import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
+import me.miki.shindo.management.shader.ShaderBackgroundRenderer;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -31,8 +34,8 @@ import java.io.IOException;
 public class BackgroundScene extends MainMenuScene {
 
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
-    private Animation introAnimation;
     private final Scroll scroll = new Scroll();
+    private Animation introAnimation;
 
     public BackgroundScene(GuiShindoMainMenu parent) {
         super(parent);
@@ -118,6 +121,14 @@ public class BackgroundScene extends MainMenuScene {
                 nvg.drawText(LegacyIcon.TRASH, acX + offsetX + 100, acY + 38 + offsetY, palette.getMaterialRed((int) (cusBackground.getTrashAnimation().getValue() * 255)), 10, Fonts.LEGACYICON);
             }
 
+            if (bg instanceof ShaderBackground) {
+                ShaderBackground shaderBackground = (ShaderBackground) bg;
+
+                // Draw a preview of the shader background
+                ShaderBackgroundRenderer.renderShaderPreview(nvg, shaderBackground.getShaderFile(),
+                        acX + 11 + offsetX, acY + 35 + offsetY, 102.5F, 57.5F);
+            }
+
             nvg.drawRoundedRectVarying(acX + offsetX + 11, acY + offsetY + 76.5F, 102.5F, 16, 0, 0, 6, 6, this.getBackgroundColor());
             nvg.drawCenteredText(bg.getName(), acX + offsetX + 11 + (102.5F / 2), acY + offsetY + 80, Color.WHITE, 10, Fonts.REGULAR);
 
@@ -174,6 +185,7 @@ public class BackgroundScene extends MainMenuScene {
                                     FileUtils.copyFile(file, destFile);
                                     backgroundManager.addCustomBackground(destFile);
                                 } catch (IOException e) {
+                                    ShindoLogger.error("An error occurred while copying the background file: " + file.getName(), e);
                                 }
                             }
                         });

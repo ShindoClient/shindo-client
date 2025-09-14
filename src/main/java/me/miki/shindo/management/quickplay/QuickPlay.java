@@ -6,10 +6,9 @@ import java.util.ArrayList;
 
 public class QuickPlay {
 
-    private ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
-
     private final String name;
     private final ResourceLocation icon;
+    private ArrayList<QuickPlayCommand> commands = new ArrayList<QuickPlayCommand>();
 
     public QuickPlay(String name, ResourceLocation icon) {
         this.name = name;

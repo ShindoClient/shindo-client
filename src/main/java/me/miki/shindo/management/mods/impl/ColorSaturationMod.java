@@ -18,17 +18,16 @@ import java.io.IOException;
 public class ColorSaturationMod extends Mod {
 
     private final ResourceLocation colorsaturation = new ResourceLocation("minecraft:shaders/post/colorsaturation.json");
+    private final NumberSetting hueSetting = new NumberSetting(TranslateText.HUE, this, 0, 0, 1.0, false);
+    private final NumberSetting brightnessSetting = new NumberSetting(TranslateText.BRIGHTNESS, this, 0.5, 0, 1.0, false);
+    private final NumberSetting contrastSetting = new NumberSetting(TranslateText.CONTRAST, this, 0.5, 0, 1.0, false);
+    private final NumberSetting saturationSetting = new NumberSetting(TranslateText.SATURATION, this, 0.5, 0, 1.0, false);
     private ShaderGroup group;
     private float prevHue;
     private float prevSaturation;
     private float prevBrightness;
     private float prevContrast;
     private int prevWidth, prevHeight;
-
-    private final NumberSetting hueSetting = new NumberSetting(TranslateText.HUE, this, 0, 0, 1.0, false);
-    private final NumberSetting brightnessSetting = new NumberSetting(TranslateText.BRIGHTNESS, this, 0.5, 0, 1.0, false);
-    private final NumberSetting contrastSetting = new NumberSetting(TranslateText.CONTRAST, this, 0.5, 0, 1.0, false);
-    private final NumberSetting saturationSetting = new NumberSetting(TranslateText.SATURATION, this, 0.5, 0, 1.0, false);
 
     public ColorSaturationMod() {
         super(TranslateText.COLOR_SATURATION, TranslateText.COLOR_SATURATION_DESCRIPTION, ModCategory.RENDER);

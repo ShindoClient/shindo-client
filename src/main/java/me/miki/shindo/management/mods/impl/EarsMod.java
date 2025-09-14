@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
@@ -10,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class EarsMod extends Mod {
 
+    @Getter
     private static EarsMod instance;
 
     public EarsMod() {
@@ -17,7 +19,6 @@ public class EarsMod extends Mod {
 
         instance = this;
     }
-
 
     public static void drawLeft(AbstractClientPlayer entitylivingbaseIn, float partialTicks, RenderPlayer playerRenderer) {
         playerRenderer.bindTexture(new ResourceLocation("shindo/cosmetics/ears/blackcatleft.png"));
@@ -61,7 +62,15 @@ public class EarsMod extends Mod {
         GlStateManager.rotate(-f, 0.0F, 1.0F, 0.0F);
     }
 
-    public static EarsMod getInstance() {
-        return instance;
+    @Override
+    public void onEnable() {
+        super.onEnable();
+//		Shindo.getInstance().getCosmeticManager().getCosmetic(EarsLayer.class).enabled = true;
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+//		Shindo.getInstance().getCosmeticManager().getCosmetic(EarsLayer.class).enabled = false;
     }
 }

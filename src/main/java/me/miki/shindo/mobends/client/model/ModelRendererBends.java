@@ -2,7 +2,6 @@ package me.miki.shindo.mobends.client.model;
 
 import me.miki.shindo.mobends.util.SmoothVector3f;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;

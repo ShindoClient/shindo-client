@@ -28,24 +28,19 @@ public class MechvibesMod extends Mod {
     private final Sound mouseRightSound = new Sound();
 
     private final HashMap<Integer, SoundKey> keyMap = new HashMap<Integer, SoundKey>();
-    private float tempKeyboardVolume;
-    private String tempKeyboardMode;
-
-    private float tempMouseVolume;
-
-    private boolean mouseLeftPress, mouseRightPress;
-
-    private boolean loaded;
-
     private final BooleanSetting keyboardSetting = new BooleanSetting(TranslateText.KEYBOARD, this, true);
     private final ComboSetting keyTypeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.NK_CREAM, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.NK_CREAM), new Option(TranslateText.MX_BLUE),
             new Option(TranslateText.MX_SILVER), new Option(TranslateText.RAZER_GREEN),
             new Option(TranslateText.HYPERX_AQUA), new Option(TranslateText.MX_BLACK), new Option(TranslateText.TOPRE_PURPLE))));
     private final NumberSetting keyboardVolumeSetting = new NumberSetting(TranslateText.KEYBOARD_VOLUME, this, 0.5, 0.0, 1.0, false);
-
     private final BooleanSetting mouseSetting = new BooleanSetting(TranslateText.MOUSE, this, true);
     private final NumberSetting mouseVolumeSetting = new NumberSetting(TranslateText.MOUSE_VOLUME, this, 0.5, 0.0, 1.0, false);
+    private float tempKeyboardVolume;
+    private String tempKeyboardMode;
+    private float tempMouseVolume;
+    private boolean mouseLeftPress, mouseRightPress;
+    private boolean loaded;
 
     public MechvibesMod() {
         super(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER);

@@ -18,13 +18,12 @@ import java.awt.*;
 
 public class LastMessageScene extends MainMenuScene {
 
-    private Animation fadeAnimation;
     private final Animation blurAnimation;
+    private final TimerUtils timer = new TimerUtils();
+    private Animation fadeAnimation;
     private int step;
     private String message;
     private boolean soundPlayed = false;
-
-    private final TimerUtils timer = new TimerUtils();
 
     public LastMessageScene(GuiShindoMainMenu parent) {
         super(parent);

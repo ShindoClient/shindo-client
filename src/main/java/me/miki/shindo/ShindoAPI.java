@@ -1,11 +1,12 @@
 package me.miki.shindo;
 
-import me.miki.shindo.api.ApiManager;
-import me.miki.shindo.api.utils.SSLBypass;
+import lombok.Getter;
+import me.miki.shindo.api.roles.RoleManager;
+import me.miki.shindo.api.ws.integration.ShindoApiWsBootstrap;
+import me.miki.shindo.api.ws.presence.PresenceTracker;
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.management.file.FileManager;
-import me.miki.shindo.management.roles.ClientRoleManager;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
@@ -13,16 +14,28 @@ import java.util.UUID;
 
 public class ShindoAPI {
 
+    private final RoleManager roleManager = new RoleManager();
+    private final PresenceTracker presence = new PresenceTracker();
+
+    @Getter
     private final File firstLoginFile;
-    private ApiManager apiManager;
+
+    @Getter
     private long launchTime;
+
+    @Getter
     private GuiModMenu modMenu;
+
+    @Getter
     private GuiShindoMainMenu mainMenu;
+
+    @Getter
+    private ShindoApiWsBootstrap ws;
 
 
     public ShindoAPI() {
-        FileManager fileManager = Shindo.getInstance().getFileManager();
 
+        FileManager fileManager = Shindo.getInstance().getFileManager();
         firstLoginFile = new File(fileManager.getCacheDir(), "first.tmp");
     }
 
@@ -32,41 +45,22 @@ public class ShindoAPI {
         mainMenu = new GuiShindoMainMenu();
     }
 
-    public void connect() {
-        SSLBypass.disableCertificateValidation();
+    public void start() {
+        UUID uuid = Minecraft.getMinecraft().getSession().getProfile().getId();
+        ws = new ShindoApiWsBootstrap("wss://ws.shindoclient.com/websocket")
+                .withUuid(uuid::toString)
+                .withName(() -> Minecraft.getMinecraft().getSession().getUsername())
+                .withAccountType(() -> Shindo.getInstance().getAccountManager().getCurrentAccount().getType().toString())
+                .withRoleManager(roleManager)
+                .withPresenceTracker(presence);
 
-        String username = Minecraft.getMinecraft().getSession().getUsername();
-        String uuid = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
-        String accountType = Shindo.getInstance()
-                .getAccountManager()
-                .getCurrentAccount()
-                .getType()
-                .name();
-
-        // Inicializa o ApiManager com dados corretos
-        this.apiManager = new ApiManager(uuid, username, accountType);
-        apiManager.notifyEvent("join");
-        ClientRoleManager.start();
+        ws.start();
     }
 
-    public void disconnect() {
-        if (apiManager != null) {
-            apiManager.notifyEvent("leave");
-            apiManager.shutdown();
-            ClientRoleManager.stop();
+    public void stop() {
+        if (ws != null) {
+            ws.stop();
         }
-    }
-
-    public GuiModMenu getModMenu() {
-        return modMenu;
-    }
-
-    public long getLaunchTime() {
-        return launchTime;
-    }
-
-    public GuiShindoMainMenu getMainMenu() {
-        return mainMenu;
     }
 
     public void createFirstLoginFile() {
@@ -75,14 +69,5 @@ public class ShindoAPI {
 
     public boolean isFirstLogin() {
         return !firstLoginFile.exists();
-    }
-
-    public boolean isOnline(UUID uuid) {
-        return apiManager.isOnline(uuid.toString());
-    }
-
-    public boolean hasRole(String uuid, String role) {
-        return apiManager.hasRole(uuid, role);
-
     }
 }

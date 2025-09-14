@@ -6,11 +6,11 @@ import java.util.Locale;
 
 public class SearchUtils {
 
-    public static boolean isSimillar(String s1, String s2) {
-        return isSimillar(s1, s2, 1);
+    public static boolean isSimilar(String s1, String s2) {
+        return isSimilar(s1, s2, 1);
     }
 
-    public static boolean isSimillar(String s1, String s2, int searchDistance) {
+    public static boolean isSimilar(String s1, String s2, int searchDistance) {
 
         s1 = s1.toLowerCase(Locale.ENGLISH);
         s2 = s2.toLowerCase(Locale.ENGLISH);

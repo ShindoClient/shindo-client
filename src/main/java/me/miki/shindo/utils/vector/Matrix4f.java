@@ -269,7 +269,7 @@ public final class Matrix4f {
     }
 
     public String toString() {
-        String stringBuilder = "Matrix4f:\n" +
+        return "Matrix4f:\n" +
                 this.m00 +
                 " " +
                 this.m01 +
@@ -302,7 +302,6 @@ public final class Matrix4f {
                 " " +
                 this.m33 +
                 "\n";
-        return stringBuilder;
     }
 
     public void store(FloatBuffer floatBuffer) {

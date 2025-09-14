@@ -17,7 +17,7 @@ import java.io.IOException;
 @Mixin(AnvilChunkLoader.class)
 public class MixinAnvilChunkLoader {
 
-    @Inject(method = "loadChunk", at = {@At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompressedStreamTools;read(Ljava/io/DataInputStream;)Lnet/minecraft/nbt/NBTTagCompound;", shift = At.Shift.AFTER)}, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "loadChunk", at = {@At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompressedStreamTools;read(Ljava/io/DataInputStream;)Lnet/minecraft/nbt/NBTTagCompound;", shift = At.Shift.AFTER)}, locals = LocalCapture.CAPTURE_FAILHARD)
     private void closeInputstream(final World worldIn, final int x, final int z, final CallbackInfoReturnable<Chunk> cir, final ChunkCoordIntPair pair, final NBTTagCompound nbt, final DataInputStream inputStream) throws IOException {
         inputStream.close();
     }

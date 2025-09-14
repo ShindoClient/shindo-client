@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods;
 
+import lombok.Getter;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.mods.settings.Setting;
 import me.miki.shindo.utils.Sound;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Getter
 public class ModManager {
 
     private final ArrayList<Mod> mods = new ArrayList<Mod>();
@@ -138,10 +140,6 @@ public class ModManager {
         mods.add(new ZoomMod());
     }
 
-    public ArrayList<Mod> getMods() {
-        return mods;
-    }
-
     public Mod getModByTranslateKey(String key) {
 
         for (Mod m : mods) {
@@ -166,10 +164,6 @@ public class ModManager {
         return result;
     }
 
-    public ArrayList<Setting> getSettings() {
-        return settings;
-    }
-
     public ArrayList<Setting> getSettingsByMod(Mod m) {
 
         ArrayList<Setting> result = new ArrayList<Setting>();
@@ -189,27 +183,27 @@ public class ModManager {
 
     public String getWords(Mod mod) {
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for (Mod m : mods) {
             if (m.equals(mod)) {
-                result = result + m.getName() + " ";
+                result.append(m.getName()).append(" ");
             }
         }
 
         for (Setting s : settings) {
             if (s.getParent().equals(mod)) {
-                result = result + s.getName() + " ";
+                result.append(s.getName()).append(" ");
             }
         }
 
         for (Mod m : mods) {
             if (m.equals(mod) && !Objects.equals(m.getAlias(), "\u200B")) {
-                result = result + m.getAlias() + " ";
+                result.append(m.getAlias()).append(" ");
             }
         }
 
-        return result;
+        return result.toString();
     }
 
     public void addSettings(Setting... settingsList) {

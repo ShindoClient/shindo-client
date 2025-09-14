@@ -27,16 +27,12 @@ import java.util.Arrays;
 public class ModernHotbarMod extends HUDMod {
 
     private final SimpleAnimation animation = new SimpleAnimation(0.0F);
-
-    private float barX, barY, barWidth, barHeight, selX;
-
     private final ComboSetting designSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.CLIENT, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.NORMAL), new Option(TranslateText.SHINDO), new Option(TranslateText.CHILL), new Option(TranslateText.CLIENT))));
-
     private final BooleanSetting smoothSetting = new BooleanSetting(TranslateText.SMOOTH, this, true);
-
     private final ComboSetting pickupAnimation = new ComboSetting(TranslateText.PICKUP_ANIM, this, TranslateText.PICKUP_POP, new ArrayList<Option>(Arrays.asList(
             new Option(TranslateText.PICKUP_POP), new Option(TranslateText.PICKUP_BREAD), new Option(TranslateText.PICKUP_VANILLA))));
+    private float barX, barY, barWidth, barHeight, selX;
 
     public ModernHotbarMod() {
         super(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION);

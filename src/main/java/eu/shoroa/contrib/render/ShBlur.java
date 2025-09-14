@@ -28,21 +28,20 @@ import java.nio.FloatBuffer;
 
 public class ShBlur {
     private static final ShBlur instance = new ShBlur();
-
-    public static ShBlur getInstance() {
-        return instance;
-    }
-
-    private int nvgImage = -1;
     private final Minecraft mc = Minecraft.getMinecraft();
+    private int nvgImage = -1;
     private Framebuffer framebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer1 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer2 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer3 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(128);
-    private UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
+    private final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
     private long lastUpdate = System.currentTimeMillis();
-    private float radius = 4f;
+    private final float radius = 4f;
+
+    public static ShBlur getInstance() {
+        return instance;
+    }
 
     public void init() {
         framebuffer.createFramebuffer(mc.displayWidth / 2, mc.displayHeight / 2);
@@ -94,7 +93,7 @@ public class ShBlur {
 
     public void render() {
         if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
-        if(Util.getOSType() == Util.EnumOS.OSX) return;
+        if (Util.getOSType() == Util.EnumOS.OSX) return;
         if (nvgImage == -1) {
             nvgImage = nvgImageFromHandle(framebuffer3.framebufferTexture, mc.displayWidth, mc.displayHeight);
         }
@@ -153,7 +152,7 @@ public class ShBlur {
 
     public void drawBlur(float x, float y, float w, float h, float radius) {
         if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
-        if(Util.getOSType() == Util.EnumOS.OSX) return;
+        if (Util.getOSType() == Util.EnumOS.OSX) return;
         long ctx = Shindo.getInstance().getNanoVGManager().getContext();
         ScaledResolution sr = new ScaledResolution(mc);
 
@@ -179,7 +178,7 @@ public class ShBlur {
 
     public void drawBlur(Runnable r) {
         if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
-        if(Util.getOSType() == Util.EnumOS.OSX) return;
+        if (Util.getOSType() == Util.EnumOS.OSX) return;
         long ctx = Shindo.getInstance().getNanoVGManager().getContext();
         ScaledResolution sr = new ScaledResolution(mc);
         NVGPaint paint = NVGPaint.calloc();

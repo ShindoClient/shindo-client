@@ -1,5 +1,6 @@
 package me.miki.shindo.ui.particle;
 
+import lombok.Getter;
 import me.miki.shindo.utils.TimerUtils;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -9,14 +10,30 @@ import java.util.Random;
 
 public class Particle {
 
-    private final float size;
-    private final float ySpeed = new Random().nextInt(5);
-    private final float xSpeed = new Random().nextInt(5);
     private final Minecraft mc = Minecraft.getMinecraft();
+
+    @Getter
+    private final float size;
+
+    @Getter
+    private final float ySpeed = new Random().nextInt(5);
+
+    @Getter
+    private final float xSpeed = new Random().nextInt(5);
+
+    @Getter
     private final TimerUtils timer = new TimerUtils();
+
+    @Getter
     private float x;
+
+    @Getter
     private float y;
+
+    @Getter
     private int height;
+
+    @Getter
     private int width;
 
     public Particle(int x, int y) {
@@ -79,36 +96,6 @@ public class Particle {
         return (float) (0.3f + Math.random() * (0.6f - 0.3f + 1.0F));
     }
 
-    public float getX() {
-        return x;
-    }
 
-    public float getY() {
-        return y;
-    }
-
-    public float getSize() {
-        return size;
-    }
-
-    public float getySpeed() {
-        return ySpeed;
-    }
-
-    public float getxSpeed() {
-        return xSpeed;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public TimerUtils getTimer() {
-        return timer;
-    }
 }
 

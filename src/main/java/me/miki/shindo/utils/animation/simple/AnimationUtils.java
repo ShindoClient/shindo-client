@@ -10,13 +10,13 @@ public class AnimationUtils {
 
         if (diff > speed) {
             if (current - add > target) {
-                current -= add;
+                current -= (float) add;
             } else {
                 current = target;
             }
         } else if (diff < -speed) {
             if (current + add < target) {
-                current += add;
+                current += (float) add;
             } else {
                 current = target;
             }

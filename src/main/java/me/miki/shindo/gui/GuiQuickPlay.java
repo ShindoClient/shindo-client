@@ -25,9 +25,8 @@ import java.io.IOException;
 public class GuiQuickPlay extends GuiScreen {
 
     private final Scroll scroll = new Scroll();
-
-    private Animation introAnimation;
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
+    private Animation introAnimation;
     private Animation sceneChangeAnimation;
 
     private QuickPlay currentQuickPlay;

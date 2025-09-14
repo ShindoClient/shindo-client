@@ -18,16 +18,13 @@ import java.io.File;
 
 public class KillSoundsMod extends Mod {
 
-    private EntityLivingBase target;
-
-    private File prevCustomSound;
-
     private final Sound oofSound = new Sound();
     private final Sound customSound = new Sound();
-
     private final NumberSetting volumeSetting = new NumberSetting(TranslateText.VOLUME, this, 0.5, 0.0, 1.0, false);
     private final BooleanSetting customSoundSetting = new BooleanSetting(TranslateText.CUSTOM_SOUND, this, false);
     private final SoundSetting soundSetting = new SoundSetting(TranslateText.SOUND, this);
+    private EntityLivingBase target;
+    private File prevCustomSound;
 
     public KillSoundsMod() {
         super(TranslateText.KILL_SOUNDS, TranslateText.KILL_SOUNDS_DESCRIPTION, ModCategory.OTHER);

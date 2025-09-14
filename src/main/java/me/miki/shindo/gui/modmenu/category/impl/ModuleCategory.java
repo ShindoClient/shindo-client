@@ -17,8 +17,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.comp.impl.*;
-import me.miki.shindo.ui.comp.impl.field.CompModTextBox;
+import me.miki.shindo.ui.comp.mods.*;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.SearchUtils;
@@ -35,13 +34,13 @@ import java.util.ArrayList;
 
 public class ModuleCategory extends Category {
 
+    private final Scroll settingScroll = new Scroll();
+    private final ArrayList<ModuleSetting> comps = new ArrayList<ModuleSetting>();
     Color noColour = new Color(0, 0, 0, 0);
     private ModCategory currentCategory;
-    private final Scroll settingScroll = new Scroll();
     private boolean openSetting;
     private Animation settingAnimation;
     private Mod currentMod;
-    private final ArrayList<ModuleSetting> comps = new ArrayList<ModuleSetting>();
 
     public ModuleCategory(GuiModMenu parent) {
         super(parent, TranslateText.MODULE, LegacyIcon.ARCHIVE, true, true);
@@ -110,7 +109,7 @@ public class ModuleCategory extends Category {
 
             nvg.drawText(c.getName(), this.getX() + 15 + offsetX + ((textWidth + 20) - textWidth) / 2, this.getY() + offsetY + 1.5F, textColor, 9, Fonts.MEDIUM);
 
-            offsetX += textWidth + 28;
+            offsetX += (int) (textWidth + 28);
         }
 
         offsetY = offsetY + 23;
@@ -582,7 +581,7 @@ public class ModuleCategory extends Category {
             return true;
         }
 
-        return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimillar(Shindo.getInstance().getModManager().getWords(m), this.getSearchBox().getText());
+        return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimilar(Shindo.getInstance().getModManager().getWords(m), this.getSearchBox().getText());
     }
 
     private int getModuleSettingHeight() {

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.event.impl.EventSendChat;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 
 public class HypixelMod extends Mod {
 
+    @Getter
     private static HypixelMod instance;
 
     private final BooleanSetting autoggSetting = new BooleanSetting(TranslateText.AUTO_GG, this, false);
@@ -53,10 +55,6 @@ public class HypixelMod extends Mod {
         super(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, "hytill");
 
         instance = this;
-    }
-
-    public static HypixelMod getInstance() {
-        return instance;
     }
 
     @Override

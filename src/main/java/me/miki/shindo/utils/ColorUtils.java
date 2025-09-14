@@ -22,6 +22,13 @@ public class ColorUtils {
         return ColorUtils.interpolateColorHue(start, end, angle / 360f);
     }
 
+    public static Color interpolateColor(Color from, Color to, double delta) {
+        int red = MathUtils.interpolateInt(from.getRed(), to.getRed(), delta);
+        int green = MathUtils.interpolateInt(from.getGreen(), to.getGreen(), delta);
+        int blue = MathUtils.interpolateInt(from.getBlue(), to.getBlue(), delta);
+        int alpha = MathUtils.interpolateInt(from.getAlpha(), to.getAlpha(), delta);
+        return new Color(red, green, blue, alpha);
+    }
 
     private static Color interpolateColorHue(Color color1, Color color2, float amount) {
 
@@ -105,9 +112,7 @@ public class ColorUtils {
 
     public static float getAlphaByInt(int color) {
 
-        float a = (float) (color >> 24 & 255) / 255.0F;
-
-        return a;
+        return (float) (color >> 24 & 255) / 255.0F;
     }
 
     public static void color(int color) {

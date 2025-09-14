@@ -1,5 +1,6 @@
 package me.miki.shindo.ui;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.nanovg.NanoVGManager;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 public class ClickEffects {
 
+    @Getter
     private static ClickEffects instance;
 
     private final ArrayList<ClickEffect> effects = new ArrayList<ClickEffect>();
@@ -19,10 +21,6 @@ public class ClickEffects {
 
     public ClickEffects() {
         instance = this;
-    }
-
-    public static ClickEffects getInstance() {
-        return instance;
     }
 
     public void drawClickEffects() {
@@ -43,7 +41,7 @@ public class ClickEffects {
         effects.add(new ClickEffect(mouseX, mouseY));
     }
 
-    private class ClickEffect {
+    private static class ClickEffect {
 
         private final Animation animation;
         private final int x;

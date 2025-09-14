@@ -6,7 +6,11 @@
 package eu.shoroa.contrib.shader.uniform;
 
 public class UVec4 extends Uniform {
-    private float x, y, z, w;
+    private final float x;
+    private final float y;
+    private final float z;
+    private final float w;
+
     public UVec4(String name, float x, float y, float z, float w) {
         super(name);
         this.x = x;

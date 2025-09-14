@@ -77,7 +77,6 @@ public class WingRenderLayer implements LayerRenderer<AbstractClientPlayer> {
             super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
             GlStateManager.pushMatrix();
             float f1 = 0.0F;
-            Minecraft.getMinecraft();
             if (Minecraft.getMinecraft().thePlayer.capabilities.isFlying) {
                 f1 = ageInTicks / 200.0F;
             } else {

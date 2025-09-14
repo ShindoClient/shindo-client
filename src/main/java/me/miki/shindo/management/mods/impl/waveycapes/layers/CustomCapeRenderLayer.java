@@ -19,8 +19,8 @@ public class CustomCapeRenderLayer implements LayerRenderer<AbstractClientPlayer
 
     public static final int partCount = 16;
     private final RenderPlayer playerRenderer;
-    private ModelRenderer[] customCape = new ModelRenderer[partCount];
     private final SmoothCapeRenderer smoothCapeRenderer = new SmoothCapeRenderer();
+    private ModelRenderer[] customCape = new ModelRenderer[partCount];
 
     public CustomCapeRenderLayer(RenderPlayer playerRenderer, ModelBase model) {
         this.playerRenderer = playerRenderer;

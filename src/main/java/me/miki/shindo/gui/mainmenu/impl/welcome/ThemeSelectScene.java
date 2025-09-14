@@ -20,11 +20,10 @@ import java.awt.*;
 
 public class ThemeSelectScene extends MainMenuScene {
 
-    private int x, y, width, height;
-
-    private Animation fadeAnimation;
     private final ScreenAlpha screenAlpha = new ScreenAlpha();
     private final Scroll scroll = new Scroll();
+    private int x, y, width, height;
+    private Animation fadeAnimation;
     private Theme currentTheme = Theme.DARK;
 
     public ThemeSelectScene(GuiShindoMainMenu parent) {

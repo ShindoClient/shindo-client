@@ -8,12 +8,11 @@ public class ServerUtils {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    public static boolean isInTablist(Entity entity) {
+    public static boolean isInTabList(Entity entity) {
         if (isJoinServer()) {
             for (NetworkPlayerInfo item : mc.getNetHandler().getPlayerInfoMap()) {
-                NetworkPlayerInfo playerInfo = item;
 
-                if (playerInfo != null && playerInfo.getGameProfile() != null && playerInfo.getGameProfile().getName().contains(entity.getName())) {
+                if (item != null && item.getGameProfile() != null && item.getGameProfile().getName().contains(entity.getName())) {
                     return true;
                 }
             }

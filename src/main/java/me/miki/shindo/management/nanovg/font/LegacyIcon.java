@@ -115,4 +115,27 @@ public class LegacyIcon {
     public static final String EXPERIMENTAL = "Ê";
     public static final String GRID = "Ë";
 
+    // SHINDO ICONS
+    public static final String PIECE = "Ò";
+    public static final String COPYRIGHT = "Ó";
+    public static final String SPOTIFY = "Ô";
+    public static final String NET_DISABLED = "Õ";
+    public static final String NET_NOTFOUND = "Ö";
+    public static final String NET_ERROR = "×";
+    public static final String NET_LOW = "Ø";
+    public static final String NET_MEDIUM = "Ù";
+    public static final String NET_MAX = "Ú";
+    public static final String CHAT_BOX = "Û";
+    public static final String SHOW = "Ü";
+    public static final String HIDE = "ý";
+    public static final String IMAGE_PLUS = "Ć";
+    public static final String IMAGE_MINUS = "ć";
+    public static final String IMAGE_EDIT = "Ĉ";
+    public static final String TWEAKER = "";
+    //public static final String
+    //public static final String
+    //public static final String
+    //public static final String
+    //public static final String
+
 }

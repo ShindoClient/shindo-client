@@ -17,10 +17,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class BloodParticlesMod extends Mod {
 
-    private EntityLivingBase target;
-
     private final NumberSetting amountSetting = new NumberSetting(TranslateText.AMOUNT, this, 2, 1, 10, true);
     private final BooleanSetting soundSetting = new BooleanSetting(TranslateText.SOUND, this, true);
+    private EntityLivingBase target;
 
     public BloodParticlesMod() {
         super(TranslateText.BLOOD_PARTICLES, TranslateText.BLOOD_PARTICLES_DESCRIPTION, ModCategory.RENDER);

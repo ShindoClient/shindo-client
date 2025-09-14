@@ -14,13 +14,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldSettings;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class PlayerUtils {
 
-    public static Map<Integer, Float> MODIFIER_BY_TICK = new HashMap<>();
     private static final Minecraft mc = Minecraft.getMinecraft();
+    public static Map<Integer, Float> MODIFIER_BY_TICK = new HashMap<>();
 
     static {
         MODIFIER_BY_TICK.put(0, 0.0F);
@@ -307,13 +306,10 @@ public class PlayerUtils {
                     ItemPotion potion = (ItemPotion) item;
 
                     if (potion.getEffects(is) != null) {
-                        Iterator<PotionEffect> iterator = potion.getEffects(is).iterator();
 
-                        while (iterator.hasNext()) {
-                            Object o = iterator.next();
-                            PotionEffect effect = (PotionEffect) o;
+                        for (PotionEffect o : potion.getEffects(is)) {
 
-                            if (effect.getPotionID() == inputPotion.id) {
+                            if (o.getPotionID() == inputPotion.id) {
                                 ++count;
                             }
                         }

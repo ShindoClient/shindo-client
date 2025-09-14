@@ -23,10 +23,8 @@ import java.util.Vector;
 
 public class AppleSkinMod extends Mod {
 
-    public Vector<IntPoint> foodBarOffsets = new Vector<>();
-
     private final Random random = new Random();
-
+    public Vector<IntPoint> foodBarOffsets = new Vector<>();
     private float unclampedFlashAlpha;
     private float flashAlpha;
     private byte alphaDir = 1;

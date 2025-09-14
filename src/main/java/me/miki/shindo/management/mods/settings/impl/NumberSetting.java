@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.settings.impl;
 
+import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -8,10 +9,12 @@ import me.miki.shindo.management.mods.settings.Setting;
 public class NumberSetting extends Setting {
 
     private final double defaultValue;
-    private double value;
     private final double minValue;
     private final double maxValue;
     private final boolean integer;
+
+    @Setter
+    private double value;
 
     public NumberSetting(TranslateText text, Mod parent, double defaultValue, double minValue, double maxValue, boolean integer) {
         super(text, parent);
@@ -37,10 +40,6 @@ public class NumberSetting extends Setting {
         }
 
         return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 
     public int getValueInt() {

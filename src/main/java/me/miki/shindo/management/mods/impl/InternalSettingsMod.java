@@ -33,6 +33,10 @@ public class InternalSettingsMod extends Mod {
 
     private final TextSetting capeNameSetting = new TextSetting(TranslateText.CUSTOM_CAPE, this, "None");
 
+    private final TextSetting wingNameSetting = new TextSetting(TranslateText.CUSTOM_WING, this, "None");
+
+    private final TextSetting bandannaNameSetting = new TextSetting(TranslateText.CUSTOM_BANDANNA, this, "None");
+
     private final BooleanSetting clickEffectsSetting = new BooleanSetting(TranslateText.CLICK_EFFECT, this, true);
 
     private final BooleanSetting soundsUISetting = new BooleanSetting(TranslateText.UI_SOUNDS, this, true);
@@ -111,5 +115,21 @@ public class InternalSettingsMod extends Mod {
 
     public void setCapeConfigName(String a) {
         capeNameSetting.setText(a);
+    }
+
+    public String getWingConfigName() {
+        return wingNameSetting.getText();
+    }
+
+    public void setWingConfigName(String a) {
+        wingNameSetting.setText(a);
+    }
+
+    public String getBandannaConfigName() {
+        return bandannaNameSetting.getText();
+    }
+
+    public void setBandannaConfigName(String a) {
+        bandannaNameSetting.setText(a);
     }
 }

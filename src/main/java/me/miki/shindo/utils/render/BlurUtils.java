@@ -2,6 +2,7 @@ package me.miki.shindo.utils.render;
 
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
+import me.miki.shindo.logger.ShindoLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;
@@ -13,7 +14,6 @@ public class BlurUtils {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     private static ShaderGroup blurShader;
-    private static Framebuffer buffer;
 
     private static float lastScale = 0;
     private static float lastScaleWidth = 0;
@@ -21,12 +21,12 @@ public class BlurUtils {
 
     private static void reinitShader() {
         try {
-            buffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+            Framebuffer buffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
             buffer.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
             blurShader = new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), new ResourceLocation("shaders/post/blurArea.json"));
             blurShader.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
         } catch (Exception e) {
-            e.printStackTrace();
+            ShindoLogger.error("Failed to load blur shader", e);
         }
     }
 
