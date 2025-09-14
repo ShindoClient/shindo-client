@@ -22,7 +22,7 @@ Feel free to fork, modify, and contribute – just remember to share under the s
 ## 🐛 Issues & Support
 📥 **Found a bug?**  
 - Open an [issue on GitHub](https://github.com/ShindoClient/Shindo-Client/issues).  
-- Or join our [Discord](https://shindoclient.github.io/discord) and talk to us directly.
+- Or join our [Discord](https://shindoclient.com/discord) and talk to us directly.
 
 ---
 
