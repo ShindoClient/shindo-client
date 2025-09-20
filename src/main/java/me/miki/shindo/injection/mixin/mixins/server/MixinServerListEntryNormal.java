@@ -110,7 +110,7 @@ public abstract class MixinServerListEntryNormal implements GuiListExtended.IGui
 
         if (isFeaturedServer) {
             mc.getTextureManager().bindTexture(ServerDataHook.STAR_ICON);
-            RenderUtils.drawModalRectWithCustomSizedTexture(x - 20, y + 10, 0.0F, 0.0F, 12, 12, 16,16);
+            RenderUtils.drawModalRectWithCustomSizedTexture(x - 20, y + 10, 0.0F, 0.0F, 12, 12, 12,12);
         }
 
         boolean flag = this.server.version > 47;
