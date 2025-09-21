@@ -1,8 +1,12 @@
 package me.miki.shindo.injection.mixin.mixins.server;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import me.miki.shindo.Shindo;
 import me.miki.shindo.hooks.ServerDataHook;
 import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.management.nanovg.NanoVGManager;
+import me.miki.shindo.management.nanovg.font.Fonts;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -22,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -109,8 +114,10 @@ public abstract class MixinServerListEntryNormal implements GuiListExtended.IGui
         boolean isFeaturedServer = (server instanceof ServerDataHook);
 
         if (isFeaturedServer) {
-            mc.getTextureManager().bindTexture(ServerDataHook.STAR_ICON);
-            RenderUtils.drawModalRectWithCustomSizedTexture(x - 20, y + 10, 0.0F, 0.0F, 12, 12, 12,12);
+            Shindo instance = Shindo.getInstance();
+            NanoVGManager nvg = instance.getNanoVGManager();
+
+            nvg.setupAndDraw(() -> nvg.drawText(LegacyIcon.STAR_FILL, x - 20, y + 10, Color.YELLOW, 14F, Fonts.LEGACYICON));
         }
 
         boolean flag = this.server.version > 47;

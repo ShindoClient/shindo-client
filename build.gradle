@@ -89,9 +89,6 @@ dependencies {
     // Other
     embed('com.fasterxml.jackson.core:jackson-databind:2.19.2')
     embed('org.apache.httpcomponents.client5:httpclient5-cache:5.5')
-    embed('org.mockito:mockito-core:5.18.0')
-    embed('org.slf4j:slf4j-simple:2.0.17')
-    embed('org.slf4j:slf4j-api:2.0.17')
     embed('com.google.code.gson:gson:2.13.1')
 
     embed('org.java-websocket:Java-WebSocket:1.6.0')
@@ -99,7 +96,6 @@ dependencies {
 }
 
 mixin {
-    defaultObfuscationEnv = "notch"
     add sourceSets.main, "mixins.shindo.refmap.json"
 }
 
@@ -114,6 +110,7 @@ processResources {
 
 jar {
     dependsOn configurations.compile
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest.attributes(
             "MixinConfigs": "mixins.shindo.json",
@@ -122,12 +119,13 @@ jar {
             "Manifest-Version": 1.0,
             "FMLAT": "shindo_at.cfg"
     )
+
     from {
-        configurations.embed.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
+        configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
     } {
         exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-        exclude '/META-INF/**', 'META-INF'
+        exclude 'META-INF/**'            // amplia exclusões de META-INF (inclui signatures e stuff)
+        exclude 'META-INF/versions/**'   // <--- multi-release (Java 9+)
+        exclude 'module-info.class'      // <--- módulo Java 9
     }
 }
