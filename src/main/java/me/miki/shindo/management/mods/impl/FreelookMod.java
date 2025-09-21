@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventCameraRotation;
 import me.miki.shindo.management.event.impl.EventKey;
@@ -23,17 +24,22 @@ public class FreelookMod extends Mod {
 
     private final BooleanSetting invertYawSetting = new BooleanSetting(TranslateText.INVERT_YAW, this, false);
     private final BooleanSetting invertPitchSetting = new BooleanSetting(TranslateText.INVERT_PITCH, this, false);
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.KEYDOWN, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.TOGGLE), new Option(TranslateText.KEYDOWN))));
+    private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.KEYDOWN, new ArrayList<Option>(Arrays.asList(new Option(TranslateText.TOGGLE), new Option(TranslateText.KEYDOWN))));
     private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_V);
+    @Getter
     private boolean active;
     private float yaw;
     private float pitch;
     private int previousPerspective;
     private boolean toggled;
 
+    @Getter
+    private static FreelookMod instance;
+
     public FreelookMod() {
         super(TranslateText.FREELOOK, TranslateText.FREELOOK_DESCRIPTION, ModCategory.PLAYER, "perspectivemod", true);
+
+        instance = this;
     }
 
     @EventTarget
@@ -122,5 +128,15 @@ public class FreelookMod extends Mod {
             mc.gameSettings.thirdPersonView = previousPerspective;
             mc.renderGlobal.setDisplayListEntitiesDirty();
         }
+    }
+
+    /** Yaw da câmera enquanto o freelook está ativo (em graus). */
+    public float getCameraYaw() {
+        return yaw;
+    }
+
+    /** Pitch da câmera enquanto o freelook está ativo (em graus). */
+    public float getCameraPitch() {
+        return pitch;
     }
 }

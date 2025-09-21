@@ -6,6 +6,7 @@ import me.miki.shindo.api.ws.presence.PresenceTracker;
 import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventHitOverlay;
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity;
+import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.management.mods.impl.NametagMod;
 import me.miki.shindo.management.mods.impl.Skin3DMod;
 import me.miki.shindo.utils.render.RenderUtils;
@@ -47,7 +48,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
         super(renderManager);
     }
 
-    @Inject(method = "renderName", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderName*", at = @At("HEAD"), cancellable = true)
     public void preRenderName(T entity, double x, double y, double z, CallbackInfo ci) {
 
         if (this.canRenderName(entity)) {
@@ -61,13 +62,24 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
                 String s = entity.getDisplayName().getFormattedText();
                 GlStateManager.alphaFunc(516, 0.1F);
 
+                float viewYaw = this.renderManager.playerViewY;
+                float viewPitch = this.renderManager.playerViewX;
+
+                FreelookMod freelook = FreelookMod.getInstance();
+                if (freelook.isToggled() && freelook.isActive()) {
+                    viewYaw = freelook.getCameraYaw();
+                    viewPitch = freelook.getCameraPitch();
+
+                    if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2) viewYaw += 180.0F;
+                }
+
                 if (entity.isSneaking()) {
                     FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
                     GlStateManager.pushMatrix();
                     GlStateManager.translate((float) x, (float) y + entity.height + 0.5F - (entity.isChild() ? entity.height / 2.0F : 0.0F), (float) z);
                     GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-                    GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-                    GlStateManager.rotate(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+                    GlStateManager.rotate(-viewYaw, 0.0F, 1.0F, 0.0F);
+                    GlStateManager.rotate(viewPitch, 1.0F, 0.0F, 0.0F);
                     GlStateManager.scale(-0.02666667F, -0.02666667F, 0.02666667F);
                     GlStateManager.translate(0.0F, 9.374999F, 0.0F);
                     GlStateManager.disableLighting();

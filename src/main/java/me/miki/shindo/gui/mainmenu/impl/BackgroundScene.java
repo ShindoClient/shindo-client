@@ -164,7 +164,7 @@ public class BackgroundScene extends MainMenuScene {
         int offsetY = (int) (0 + scroll.getValue());
         int index = 1;
 
-        if (!MouseUtils.isInside(mouseX, mouseY, acX, acY, acWidth, acHeight) && !MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - 28 - 28, 6, 22, 22)) {
+        if (!MouseUtils.isInside(mouseX, mouseY, acX, acY, acWidth, acHeight) && !MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 2), 6, 22, 22)) {
             introAnimation.setDirection(Direction.BACKWARDS);
         }
 

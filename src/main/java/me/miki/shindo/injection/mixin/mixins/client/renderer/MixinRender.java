@@ -3,6 +3,7 @@ package me.miki.shindo.injection.mixin.mixins.client.renderer;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.api.ws.presence.PresenceTracker;
+import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -43,14 +44,25 @@ public abstract class MixinRender<T extends Entity> {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
         if (d0 <= (double) (maxDistance * maxDistance)) {
+            float viewYaw = this.renderManager.playerViewY;
+            float viewPitch = this.renderManager.playerViewX;
+
+            FreelookMod freelook = FreelookMod.getInstance();
+            if (freelook.isToggled() && freelook.isActive()) {
+                viewYaw = freelook.getCameraYaw();
+                viewPitch = freelook.getCameraPitch();
+
+                if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2) viewYaw += 180.0F;
+            }
+
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
             float f = 1.6F;
             float f1 = 0.016666668F * f;
             GlStateManager.pushMatrix();
             GlStateManager.translate((float) x + 0.0F, (float) y + entityIn.height + 0.5F, (float) z);
             GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(-viewYaw, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(viewPitch, 1.0F, 0.0F, 0.0F);
             GlStateManager.scale(-f1, -f1, f1);
             GlStateManager.disableLighting();
             GlStateManager.depthMask(false);

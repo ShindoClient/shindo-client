@@ -11,8 +11,10 @@ import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 import me.miki.shindo.utils.animation.normal.easing.EaseInOutCirc;
 import me.miki.shindo.utils.buffer.ScreenAnimation;
+import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
 import net.minecraft.client.gui.ScaledResolution;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
@@ -66,7 +68,28 @@ public class SkinScene extends MainMenuScene {
         nvg.scissor(acX, acY + 25, acWidth, acHeight - 25);
         nvg.translate(0, scroll.getValue());
 
-
         nvg.restore();
+    }
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        ScaledResolution sr = new ScaledResolution(mc);
+
+        int acWidth = 400;
+        int acHeight = 300;
+        int acX = sr.getScaledWidth() / 2 - (acWidth / 2);
+        int acY = sr.getScaledHeight() / 2 - (acHeight / 2);
+
+
+        if (!MouseUtils.isInside(mouseX, mouseY, acX, acY, acWidth, acHeight) && !MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() - (28 * 4), 6, 22, 22)) {
+            introAnimation.setDirection(Direction.BACKWARDS);
+        }
+    }
+
+    @Override
+    public void keyTyped(char typedChar, int keyCode) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            introAnimation.setDirection(Direction.BACKWARDS);
+        }
     }
 }

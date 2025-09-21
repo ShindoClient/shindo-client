@@ -97,14 +97,6 @@ public class ShopScene extends MainMenuScene {
         nvg.drawRoundedRect(acX + acWidth - (82) - 20 + 5, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
         nvg.drawCenteredText(TranslateText.SOON.getText(), acX + acWidth - (82) - 15 + (72 / 2F), acY + 159, Color.WHITE, 10, Fonts.MEDIUM);
 
-        //offsetY = 0;
-        //for(TranslateText t : diamondFeatures) {
-        //
-        //    nvg.drawText(LegacyIcon.CHECK_CIRCLE, acX + acWidth - (82) - 20 + 5, acY + 87 + offsetY, Color.WHITE, 9, Fonts.LEGACYICON);
-        //    nvg.drawText(t.getText(), acX + acWidth - (82) - 20 + 16, acY + 88 + offsetY, Color.WHITE, 8, Fonts.REGULAR);
-        //
-        //    offsetY+=12;
-        //}
     }
 
     @Override
