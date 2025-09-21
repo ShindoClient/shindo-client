@@ -228,7 +228,6 @@ public class Shindo {
         shaderManager = new ShaderManager();
         shaderManager.init();
         mc.updateDisplay();
-        RPOAddon.getInstance().setToggled(true, false);
     }
 
     public void stop() {

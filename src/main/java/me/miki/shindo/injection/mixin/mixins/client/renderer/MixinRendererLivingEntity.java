@@ -141,7 +141,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
     }
 
     @SuppressWarnings("unchecked")
-    @Inject(method = "doRender", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "doRender*", at = @At("HEAD"), cancellable = true)
     public void preDoRender(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
 
         EventRendererLivingEntity event = new EventRendererLivingEntity((RendererLivingEntity<EntityLivingBase>) (Object) this, entity, x, y, z);
@@ -152,7 +152,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
         }
     }
 
-    @Redirect(method = "canRenderName", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;livingPlayer:Lnet/minecraft/entity/Entity;"))
+    @Redirect(method = "canRenderName*", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderManager;livingPlayer:Lnet/minecraft/entity/Entity;"))
     public Entity renderOwnName(RenderManager manager) {
 
         if (NametagMod.getInstance().isToggled()) {
