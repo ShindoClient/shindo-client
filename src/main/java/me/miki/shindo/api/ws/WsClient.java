@@ -20,6 +20,7 @@ public class WsClient extends WebSocketClient {
     private final List<Listener> listeners = new ArrayList<>();
     private final AtomicBoolean open = new AtomicBoolean(false);
     private final Queue<JsonObject> outbox = new ConcurrentLinkedQueue<>();
+
     public WsClient(URI serverUri, boolean ssl) {
         super(serverUri);
         if (ssl && serverUri.toString().startsWith("wss://")) {

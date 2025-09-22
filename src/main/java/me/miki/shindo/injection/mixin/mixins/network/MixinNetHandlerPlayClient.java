@@ -17,7 +17,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S19PacketEntityStatus;
-import net.minecraft.network.play.server.S48PacketResourcePackSend;
 import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

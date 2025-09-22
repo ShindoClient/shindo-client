@@ -20,16 +20,14 @@ import java.io.IOException;
 public abstract class MixinGuiScreen {
 
     @Shadow
+    public int width;
+    @Shadow
+    public int height;
+    @Shadow
     protected Minecraft mc;
 
     @Shadow
     protected abstract void keyTyped(char typedChar, int keyCode);
-
-    @Shadow
-    public int width;
-
-    @Shadow
-    public int height;
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void postDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
@@ -64,7 +62,7 @@ public abstract class MixinGuiScreen {
 
     @Inject(method = "handleInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleKeyboardInput()V"), cancellable = true)
     private void patcher$checkScreen(CallbackInfo ci) {
-        if ((GuiScreen) (Object) this != this.mc.currentScreen) {
+        if ((Object) this != this.mc.currentScreen) {
             ResolutionHelper.setScaleOverride(-1);
             ci.cancel();
         }

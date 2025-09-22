@@ -9,18 +9,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 @Mixin(AbstractResourcePack.class)
 public abstract class MixinAbstractResourcePack {
-    @Shadow protected abstract InputStream getInputStreamByName(String name) throws IOException;
+    @Shadow
+    protected abstract InputStream getInputStreamByName(String name) throws IOException;
 
     @Inject(method = "getPackImage", at = @At("HEAD"), cancellable = true)
     private void patcher$downscalePackImage(CallbackInfoReturnable<BufferedImage> cir) throws IOException {
-        if (!PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDownscalePackImagesSetting().isToggled()) return;
+        if (!PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDownscalePackImagesSetting().isToggled())
+            return;
 
         BufferedImage image = TextureUtil.readBufferedImage(this.getInputStreamByName("pack.png"));
         if (image == null) {

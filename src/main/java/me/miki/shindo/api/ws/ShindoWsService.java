@@ -8,8 +8,8 @@ import me.miki.shindo.api.ws.presence.PresenceTracker;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

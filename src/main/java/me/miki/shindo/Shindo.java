@@ -7,7 +7,6 @@ import me.miki.shindo.injection.mixin.ShindoTweaker;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.account.AccountManager;
 import me.miki.shindo.management.addons.AddonManager;
-import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.command.CommandManager;
 import me.miki.shindo.management.cosmetic.bandanna.BandannaManager;

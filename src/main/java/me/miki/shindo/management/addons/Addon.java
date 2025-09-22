@@ -3,7 +3,6 @@ package me.miki.shindo.management.addons;
 import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.notification.NotificationType;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
 @Getter
@@ -27,7 +26,8 @@ public class Addon {
         this.setup();
     }
 
-    public void setup() {}
+    public void setup() {
+    }
 
 
     public void onEnable() {

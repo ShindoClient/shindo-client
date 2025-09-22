@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
@@ -28,14 +29,13 @@ public class ShindoApiWsBootstrap {
     private final AtomicBoolean started = new AtomicBoolean(false);
 
     private final String wsUrl;
+    private final AtomicReference<String> lastUuidSent = new AtomicReference<>(null);
     private Supplier<String> uuidSupplier;
     private Supplier<String> nameSupplier;
     private Supplier<String> accountTypeSupplier;
     private Supplier<String[]> rolesSupplier;
-
     private RoleManager roleManager;
     private PresenceTracker presence;
-
     @Getter
     private ShindoWsService service;
 
@@ -90,6 +90,71 @@ public class ShindoApiWsBootstrap {
         return this;
     }
 
+    // helper para montar o PlayerInfo atual sem depender do ShindoWsService
+    private ShindoWsService.PlayerInfo buildPlayerInfo() {
+        String uuid = getOrDefault(uuidSupplier);
+        String name = getOrDefault(nameSupplier);
+        String accountType = normalizeAccountType(getOrDefault(accountTypeSupplier));
+
+        String[] roles;
+        if (rolesSupplier != null) {
+            roles = rolesSupplier.get();
+        } else if (roleManager != null) {
+            roles = (roleManager != null)
+                    ? RolesAdapter.toWsRoles(RoleManager.getDirectRoles(safeUUID(uuid)))
+                    : new String[0];
+        } else {
+            roles = new String[0];
+        }
+        if (roles == null || roles.length == 0) roles = new String[]{"MEMBER"};
+
+        return new ShindoWsService.PlayerInfo(uuid, name, roles, accountType);
+    }
+
+    /**
+     * Atualiza a identidade atual no WS sem reconectar.
+     * - Se o UUID mudou (troca de conta real), reconecta.
+     * - Caso contrário, envia um 'auth.update' com os campos atuais.
+     */
+    public void updateIdentityNow() {
+        ShindoWsService s = this.service;
+        if (s == null) return;
+
+        ShindoWsService.PlayerInfo info = buildPlayerInfo();
+        String currentUuid = info.uuid;
+
+        // Se não está aberto, tenta reconectar:
+        if (!s.isOpen()) {
+            // reconecta com os suppliers já configurados
+            stop();
+            start();
+            return;
+        }
+
+        // Se mudou de jogador (uuid diferente), reconecta para re-Identify completo
+        String last = lastUuidSent.get();
+        if (last != null && !last.equals(currentUuid)) {
+            stop();
+            start();
+            return;
+        }
+
+        // Senão, só envia um update "quente"
+        JsonObject p = new JsonObject();
+        p.addProperty("uuid", info.uuid);
+        p.addProperty("name", info.name);
+        p.addProperty("accountType", info.accountType);
+        JsonArray r = new JsonArray();
+        for (String role : info.roles) r.add(role);
+        p.add("roles", r);
+
+        send("auth.update", p); // ajuste o tipo caso seu backend use outro nome
+
+        // cacheia para debounce
+        lastUuidSent.set(currentUuid);
+    }
+
+
     public synchronized void start() {
         if (started.getAndSet(true)) return;
 
@@ -125,26 +190,17 @@ public class ShindoApiWsBootstrap {
                     } catch (Exception ignored) {
                     }
                 }
-                presence.handleMessage(type, payload);
+                if (presence != null) {
+                    presence.handleMessage(type, payload);
+                }
             }
         });
 
         service.setProvider(() -> {
-            String uuid = getOrDefault(uuidSupplier);
-            String name = getOrDefault(nameSupplier);
-            String accountType = normalizeAccountType(getOrDefault(accountTypeSupplier));
-
-            String[] roles;
-            if (rolesSupplier != null) {
-                roles = rolesSupplier.get();
-            } else if (roleManager != null) {
-                roles = RolesAdapter.toWsRoles(RoleManager.getDirectRoles(safeUUID(uuid)));
-            } else {
-                roles = new String[0];
-            }
-            if (roles == null || roles.length == 0) roles = new String[]{"MEMBER"};
-
-            return new ShindoWsService.PlayerInfo(uuid, name, roles, accountType);
+            ShindoWsService.PlayerInfo info = buildPlayerInfo();
+            // cacheia o uuid que estamos anunciando
+            lastUuidSent.set(info.uuid);
+            return info;
         });
 
         service.connect();
@@ -166,6 +222,7 @@ public class ShindoApiWsBootstrap {
         ShindoWsService s = this.service;
         if (s != null && s.isOpen()) s.send(type, payload);
     }
+
 
     public void send(String type) {
         send(type, new JsonObject());

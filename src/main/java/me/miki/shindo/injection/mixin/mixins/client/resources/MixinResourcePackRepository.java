@@ -13,7 +13,9 @@ import java.io.File;
 @Mixin(ResourcePackRepository.class)
 public class MixinResourcePackRepository {
 
-    @Shadow @Final private File dirServerResourcepacks;
+    @Shadow
+    @Final
+    private File dirServerResourcepacks;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Inject(method = "deleteOldServerResourcesPacks", at = @At("HEAD"))

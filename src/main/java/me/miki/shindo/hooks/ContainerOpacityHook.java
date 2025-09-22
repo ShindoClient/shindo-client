@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 public class ContainerOpacityHook {
 
     public static void beginTransparency() {
-        if(PatcherAddon.getInstance().isToggled()) {
+        if (PatcherAddon.getInstance().isToggled()) {
             float containerOpacity = PatcherAddon.getInstance().getContainerOacitySetting().getValueFloat();
             if (containerOpacity == 1.0f) return;
 
@@ -20,7 +20,7 @@ public class ContainerOpacityHook {
     }
 
     public static void endTransparency() {
-        if(PatcherAddon.getInstance().isToggled()) {
+        if (PatcherAddon.getInstance().isToggled()) {
             if (PatcherAddon.getInstance().getContainerOacitySetting().getValueFloat() == 1.0f) return;
 
             GlStateManager.disableBlend();

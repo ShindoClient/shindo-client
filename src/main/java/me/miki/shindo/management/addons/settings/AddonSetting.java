@@ -2,7 +2,6 @@ package me.miki.shindo.management.addons.settings;
 
 import lombok.Getter;
 import me.miki.shindo.management.addons.Addon;
-import me.miki.shindo.management.language.TranslateText;
 
 @Getter
 public class AddonSetting {

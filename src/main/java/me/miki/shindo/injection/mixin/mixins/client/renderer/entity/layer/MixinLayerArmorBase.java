@@ -22,6 +22,7 @@ public class MixinLayerArmorBase {
 
     @Inject(method = "renderGlint", at = @At("HEAD"), cancellable = true)
     private void disableEnchantGlint(CallbackInfo ci) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled()) ci.cancel();
+        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled())
+            ci.cancel();
     }
 }

@@ -19,9 +19,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public final class UIShader {
-    private int pid, vid, fid;
     private final String vSrc;
     private final String fSrc;
+    private int pid, vid, fid;
     private VBO vbo;
 
     public UIShader(String vSrc, String fSrc) {

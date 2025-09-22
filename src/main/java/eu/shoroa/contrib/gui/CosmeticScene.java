@@ -6,10 +6,10 @@ import me.miki.shindo.management.language.TranslateText;
 
 public class CosmeticScene {
 
-    protected CosmeticsCategory parent;
     private final String icon;
     private final TranslateText nameTranslate;
     private final TranslateText descriptionTranslate;
+    protected CosmeticsCategory parent;
 
     public CosmeticScene(CosmeticsCategory parent, TranslateText nameTranslate, TranslateText descriptionTranslate, String icon) {
         this.parent = parent;

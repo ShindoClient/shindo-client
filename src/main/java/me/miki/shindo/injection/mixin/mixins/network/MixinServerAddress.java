@@ -11,7 +11,9 @@ import java.net.IDN;
 @Mixin(ServerAddress.class)
 public class MixinServerAddress {
 
-    @Shadow @Final private String ipAddress;
+    @Shadow
+    @Final
+    private String ipAddress;
 
     /**
      * @author LlamaLad7

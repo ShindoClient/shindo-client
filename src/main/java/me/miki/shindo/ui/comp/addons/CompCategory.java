@@ -1,10 +1,8 @@
 package me.miki.shindo.ui.comp.addons;
 
 import lombok.Getter;
-import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.addons.settings.impl.CategorySetting;
-import me.miki.shindo.management.addons.settings.impl.ComboSetting;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.nanovg.NanoVGManager;

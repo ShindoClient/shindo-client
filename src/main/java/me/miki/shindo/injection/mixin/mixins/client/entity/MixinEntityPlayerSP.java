@@ -18,6 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP extends AbstractClientPlayer {
 
+    //#if MC==10809
+    @Shadow
+    public float timeInPortal;
+    @Shadow
+    public float prevTimeInPortal;
+
     public MixinEntityPlayerSP(World worldIn, GameProfile playerProfile) {
         super(worldIn, playerProfile);
     }
@@ -42,10 +48,6 @@ public class MixinEntityPlayerSP extends AbstractClientPlayer {
     private void preOnUpdateWalkingPlayer(CallbackInfo ci) {
         new EventMotionUpdate().call();
     }
-
-    //#if MC==10809
-    @Shadow public float timeInPortal;
-    @Shadow public float prevTimeInPortal;
 
     @Override
     public void removePotionEffectClient(int potionId) {

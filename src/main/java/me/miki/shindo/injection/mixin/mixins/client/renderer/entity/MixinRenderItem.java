@@ -39,7 +39,8 @@ public abstract class MixinRenderItem {
     private void renderEffect(IBakedModel model) {
 
 
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled()) return;
+        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled())
+            return;
         int color = -8372020;
 
         if (GlintColorMod.getInstance().isToggled()) {

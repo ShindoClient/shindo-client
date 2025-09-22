@@ -20,6 +20,9 @@ public class RenderUtils {
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static Gui gui;
 
+    private RenderUtils() {
+    }
+
     public static void connectPoints(float xOne, float yOne, float xTwo, float yTwo) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
@@ -106,7 +109,6 @@ public class RenderUtils {
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
         tessellator.draw();
     }
-
 
     public static void drawRect(float x, float y, float width, float height, Color color) {
 
@@ -207,20 +209,17 @@ public class RenderUtils {
     }
 
     public static void hLine(int startX, int endX, int y, Color c) {
-        if (endX < startX)
-        {
+        if (endX < startX) {
             int i = startX;
             startX = endX;
             endX = i;
         }
 
-        drawRect(startX, y, endX + 1, y + 1,  c);
+        drawRect(startX, y, endX + 1, y + 1, c);
     }
 
-    public static void vLine(int x, int startY, int endY, Color c)
-    {
-        if (endY < startY)
-        {
+    public static void vLine(int x, int startY, int endY, Color c) {
+        if (endY < startY) {
             int i = startY;
             startY = endY;
             endY = i;
@@ -251,7 +250,5 @@ public class RenderUtils {
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
-
-    private RenderUtils() {}
 
 }

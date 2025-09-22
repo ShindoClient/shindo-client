@@ -150,7 +150,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Inject(method = "startGame", at = @At("TAIL"))
     private void onGameStartCompleted(CallbackInfo ci) {
-         RPOAddon.getInstance().init();
+        RPOAddon.getInstance().init();
     }
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;next()Z"))
@@ -368,7 +368,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
     public void displayGuiScreenInjectHead(GuiScreen guiScreenIn, CallbackInfo ci) {
 
-        if( Shindo.getInstance().getAddonManager() != null && Shindo.getInstance().getAddonManager().getAddonByName("Resource Pack Organizer").isToggled()) {
+        if (Shindo.getInstance().getAddonManager() != null && Shindo.getInstance().getAddonManager().getAddonByName("Resource Pack Organizer").isToggled()) {
             if (guiScreenIn instanceof GuiScreenResourcePacks && !(guiScreenIn instanceof GuiBetterResourcePacks)) {
                 GuiScreen parent = Minecraft.getMinecraft().currentScreen;
 

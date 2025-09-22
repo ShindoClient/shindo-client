@@ -15,18 +15,18 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockNetherWart.class)
-public class MixinBlockNetherWart extends MixinBlock{
+public class MixinBlockNetherWart extends MixinBlock {
     //#if MC==10809
     @Override
     public void getSelectedBoundingBox(World worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled()  && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
+        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled() && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
             CropUtilities.updateWartMaxY(worldIn, pos, worldIn.getBlockState(pos).getBlock());
         }
     }
 
     @Override
     public void collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end, CallbackInfoReturnable<MovingObjectPosition> cir) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled()  && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
+        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled() && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
             CropUtilities.updateWartMaxY(worldIn, pos, worldIn.getBlockState(pos).getBlock());
         }
     }

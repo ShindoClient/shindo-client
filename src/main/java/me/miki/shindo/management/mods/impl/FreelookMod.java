@@ -22,6 +22,8 @@ import java.util.Arrays;
 
 public class FreelookMod extends Mod {
 
+    @Getter
+    private static FreelookMod instance;
     private final BooleanSetting invertYawSetting = new BooleanSetting(TranslateText.INVERT_YAW, this, false);
     private final BooleanSetting invertPitchSetting = new BooleanSetting(TranslateText.INVERT_PITCH, this, false);
     private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.KEYDOWN, new ArrayList<Option>(Arrays.asList(new Option(TranslateText.TOGGLE), new Option(TranslateText.KEYDOWN))));
@@ -32,9 +34,6 @@ public class FreelookMod extends Mod {
     private float pitch;
     private int previousPerspective;
     private boolean toggled;
-
-    @Getter
-    private static FreelookMod instance;
 
     public FreelookMod() {
         super(TranslateText.FREELOOK, TranslateText.FREELOOK_DESCRIPTION, ModCategory.PLAYER, "perspectivemod", true);
@@ -130,12 +129,16 @@ public class FreelookMod extends Mod {
         }
     }
 
-    /** Yaw da câmera enquanto o freelook está ativo (em graus). */
+    /**
+     * Yaw da câmera enquanto o freelook está ativo (em graus).
+     */
     public float getCameraYaw() {
         return yaw;
     }
 
-    /** Pitch da câmera enquanto o freelook está ativo (em graus). */
+    /**
+     * Pitch da câmera enquanto o freelook está ativo (em graus).
+     */
     public float getCameraPitch() {
         return pitch;
     }

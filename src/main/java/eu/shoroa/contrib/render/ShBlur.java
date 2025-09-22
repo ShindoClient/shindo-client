@@ -29,15 +29,15 @@ import java.nio.FloatBuffer;
 public class ShBlur {
     private static final ShBlur instance = new ShBlur();
     private final Minecraft mc = Minecraft.getMinecraft();
+    private final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
+    private final float radius = 4f;
     private int nvgImage = -1;
     private Framebuffer framebuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer1 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer2 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private Framebuffer framebuffer3 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(128);
-    private final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
     private long lastUpdate = System.currentTimeMillis();
-    private final float radius = 4f;
 
     public static ShBlur getInstance() {
         return instance;

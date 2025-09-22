@@ -30,7 +30,8 @@ public class MixinGuiMultiplayer extends GuiScreen {
     @Shadow
     private GuiButton btnDeleteServer;
 
-    @Shadow private ServerList savedServerList;
+    @Shadow
+    private ServerList savedServerList;
 
     @Inject(method = "initGui", at = @At("TAIL"))
     public void preInitGui(CallbackInfo ci) {
@@ -60,12 +61,10 @@ public class MixinGuiMultiplayer extends GuiScreen {
         this.btnEditServer.enabled = false;
         this.btnDeleteServer.enabled = false;
 
-        if (guilistextended$iguilistentry != null && !(guilistextended$iguilistentry instanceof ServerListEntryLanScan))
-        {
+        if (guilistextended$iguilistentry != null && !(guilistextended$iguilistentry instanceof ServerListEntryLanScan)) {
             this.btnSelectServer.enabled = true;
 
-            if (guilistextended$iguilistentry instanceof ServerListEntryNormal)
-            {
+            if (guilistextended$iguilistentry instanceof ServerListEntryNormal) {
                 this.btnEditServer.enabled = true;
                 this.btnDeleteServer.enabled = true;
             }
@@ -83,8 +82,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
      * @reason
      */
     @Overwrite
-    public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_)
-    {
+    public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_) {
         return p_175392_2_ > ((IMixinServerList) savedServerList).getFeaturedServerCount();
     }
 }

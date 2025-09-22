@@ -5,7 +5,6 @@ import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.settings.AddonSetting;
-import me.miki.shindo.management.language.TranslateText;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Keyboard;

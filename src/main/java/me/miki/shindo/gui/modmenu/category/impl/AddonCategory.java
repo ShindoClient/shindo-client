@@ -19,7 +19,6 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.ui.comp.Comp;
 import me.miki.shindo.ui.comp.addons.*;
 import me.miki.shindo.utils.ColorUtils;
-import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.SearchUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -271,7 +270,7 @@ public class AddonCategory extends Category {
                     soundSelect.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
                 }
 
-                if(s.comp instanceof CompCategory) {
+                if (s.comp instanceof CompCategory) {
                     CompCategory categorySetting = (CompCategory) s.comp;
 
                     categorySetting.setX(this.getX() + 20);
@@ -313,17 +312,17 @@ public class AddonCategory extends Category {
         float offsetY = 13 + scroll.getValue();
 
         if (!openSetting) {
-        for (AddonType t : AddonType.values()) {
+            for (AddonType t : AddonType.values()) {
 
-            float textWidth = nvg.getTextWidth(t.getName(), 9, Fonts.MEDIUM);
+                float textWidth = nvg.getTextWidth(t.getName(), 9, Fonts.MEDIUM);
 
-            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16) && mouseButton == 0) {
-                currentType = t;
-                scroll.reset();
+                if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16) && mouseButton == 0) {
+                    currentType = t;
+                    scroll.reset();
+                }
+
+                offsetX += (int) (textWidth + 28);
             }
-
-            offsetX += (int) (textWidth + 28);
-        }
             offsetX = 0;
             offsetY = offsetY + 23;
 
@@ -334,7 +333,7 @@ public class AddonCategory extends Category {
                 }
 
                 if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight()) && mouseButton == 0) {
-                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + offsetX + 20 , this.getY() + offsetY + 100, 75F, 15F)) {
+                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + offsetX + 20, this.getY() + offsetY + 100, 75F, 15F)) {
                         a.toggle();
                     }
 
@@ -443,7 +442,7 @@ public class AddonCategory extends Category {
                                     ColorSetting cSetting = (ColorSetting) s;
                                     CompColorPicker picker = new CompColorPicker(cSetting);
 
-                                    picker.setX(this.getX()  + 298);
+                                    picker.setX(this.getX() + 298);
                                     picker.setY(this.getY() + offsetY + 8.5F);
                                     picker.setScale(0.8F);
 

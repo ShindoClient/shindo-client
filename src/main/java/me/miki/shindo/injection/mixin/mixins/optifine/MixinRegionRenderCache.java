@@ -1,10 +1,9 @@
 package me.miki.shindo.injection.mixin.mixins.optifine;
 
 //#if MC==10809
-import net.minecraft.client.renderer.RegionRenderCache;
-//#endif
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.RegionRenderCache;
 import net.minecraft.util.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

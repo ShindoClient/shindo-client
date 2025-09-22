@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockCactus.class)
-public class MixinBlockCactus extends MixinBlock{
+public class MixinBlockCactus extends MixinBlock {
     //#if MC==10809
     @Inject(method = "getSelectedBoundingBox", at = @At("HEAD"))
     public void patcher$getSelectedBoundingBox(World worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {

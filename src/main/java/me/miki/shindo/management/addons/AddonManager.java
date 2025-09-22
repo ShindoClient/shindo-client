@@ -4,13 +4,10 @@ import lombok.Getter;
 import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.addons.settings.AddonSetting;
-import me.miki.shindo.management.mods.Mod;
-import me.miki.shindo.management.mods.settings.Setting;
 import me.miki.shindo.utils.Sound;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 
 @Getter
 public class AddonManager {

@@ -60,7 +60,7 @@ public class CropUtilities {
     }
 
     public static void updateCactusBox(Block block) {
-        ((BlockAccessor)block).invokerSetBlockBounds(
+        ((BlockAccessor) block).invokerSetBlockBounds(
                 (float) CACTUS_BOX.minX,
                 (float) CACTUS_BOX.minY,
                 (float) CACTUS_BOX.minZ,

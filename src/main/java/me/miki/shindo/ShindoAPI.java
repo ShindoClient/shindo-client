@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ShindoAPI {
 
@@ -46,11 +47,36 @@ public class ShindoAPI {
     }
 
     public void start() {
-        UUID uuid = Minecraft.getMinecraft().getSession().getProfile().getId();
+        // Suppliers sempre leem o estado ATUAL (session/account), então não precisamos recriar o bootstrap a cada troca
+        Supplier<String> uuidSup = () -> {
+            try {
+                UUID id = Minecraft.getMinecraft().getSession().getProfile().getId();
+                return id != null ? id.toString() : "";
+            } catch (Exception e) {
+                return "";
+            }
+        };
+
+        Supplier<String> nameSup = () -> {
+            try {
+                return Minecraft.getMinecraft().getSession().getUsername();
+            } catch (Exception e) {
+                return "";
+            }
+        };
+
+        Supplier<String> typeSup = () -> {
+            try {
+                return Shindo.getInstance().getAccountManager().getCurrentAccount().getType().toString();
+            } catch (Exception e) {
+                return "OFFLINE";
+            }
+        };
+
         ws = new ShindoApiWsBootstrap("wss://ws.shindoclient.com/websocket")
-                .withUuid(uuid::toString)
-                .withName(() -> Minecraft.getMinecraft().getSession().getUsername())
-                .withAccountType(() -> Shindo.getInstance().getAccountManager().getCurrentAccount().getType().toString())
+                .withUuid(uuidSup)
+                .withName(nameSup)
+                .withAccountType(typeSup)
                 .withRoleManager(roleManager)
                 .withPresenceTracker(presence);
 
@@ -60,6 +86,7 @@ public class ShindoAPI {
     public void stop() {
         if (ws != null) {
             ws.stop();
+            ws = null;
         }
     }
 

@@ -9,6 +9,7 @@ public class RoleManager {
     private final List<Consumer<UUID>> listeners = new ArrayList<>();
 
     public static Set<Role> getDirectRoles(UUID uuid) {
+        if (uuid == null) return Collections.singleton(Role.MEMBER); // <- evita NPE
         return roles.getOrDefault(uuid, Collections.singleton(Role.MEMBER));
     }
 
@@ -22,7 +23,7 @@ public class RoleManager {
     }
 
     public void setRoles(UUID uuid, Set<Role> newRoles) {
-        if (uuid == null) return;
+        if (uuid == null) return; // <- evita put(null,...)
         Set<Role> copy = EnumSet.noneOf(Role.class);
         if (newRoles != null) copy.addAll(newRoles);
         if (copy.isEmpty()) copy.add(Role.MEMBER);
@@ -31,6 +32,7 @@ public class RoleManager {
     }
 
     public void addRole(UUID uuid, Role role) {
+        if (uuid == null) return; // <- evita compute com null
         roles.compute(uuid, (k, v) -> {
             Set<Role> s = (v == null) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(v);
             s.add(role);
@@ -40,6 +42,7 @@ public class RoleManager {
     }
 
     public void removeRole(UUID uuid, Role role) {
+        if (uuid == null) return; // <- evita computeIfPresent com null
         roles.computeIfPresent(uuid, (k, v) -> {
             Set<Role> s = EnumSet.copyOf(v);
             s.remove(role);

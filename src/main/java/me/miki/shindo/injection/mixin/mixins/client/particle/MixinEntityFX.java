@@ -15,13 +15,13 @@ public class MixinEntityFX implements IMixinEntityFX {
     private float cullState;
 
     @Override
-    public void setCullState(float cullState) {
-        this.cullState = cullState;
+    public float getCullState() {
+        return this.cullState;
     }
 
     @Override
-    public float getCullState() {
-        return this.cullState;
+    public void setCullState(float cullState) {
+        this.cullState = cullState;
     }
 
     @Redirect(method = "renderParticle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/EntityFX;getBrightnessForRender(F)I"))

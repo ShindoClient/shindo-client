@@ -14,12 +14,10 @@ public class Mod {
 
     private final TranslateText nameTranslate;
     private final TranslateText descriptionTranslate;
-    public Minecraft mc = Minecraft.getMinecraft();
-    public FontRenderer fr = mc.fontRendererObj;
-
     @Getter
     private final SimpleAnimation animation = new SimpleAnimation();
-
+    public Minecraft mc = Minecraft.getMinecraft();
+    public FontRenderer fr = mc.fontRendererObj;
     @Getter
     private boolean toggled;
 
