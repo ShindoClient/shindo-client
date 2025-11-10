@@ -5,23 +5,35 @@ import me.miki.shindo.management.event.impl.EventScrollMouse;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.event.impl.EventZoomFov;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import org.lwjgl.input.Keyboard;
 
 public class ZoomMod extends Mod {
 
     private final SimpleAnimation zoomAnimation = new SimpleAnimation();
-    private final BooleanSetting scrollSetting = new BooleanSetting(TranslateText.SCROLL, this, false);
-    private final BooleanSetting smoothZoomSetting = new BooleanSetting(TranslateText.SMOOTH_ZOOM, this, false);
-    private final NumberSetting zoomSpeedSetting = new NumberSetting(TranslateText.ZOOM_SPEED, this, 14, 5, 20, true);
-    private final NumberSetting factorSetting = new NumberSetting(TranslateText.ZOOM_FACTOR, this, 4, 2, 15, true);
-    private final BooleanSetting smoothCameraSetting = new BooleanSetting(TranslateText.SMOOTH_CAMERA, this, true);
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_C);
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SCROLL, category = "Behavior")
+    private boolean scrollSetting;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_ZOOM, category = "Behavior")
+    private boolean smoothZoomSetting;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_SPEED, category = "Behavior", min = 5, max = 20, step = 1, current = 14)
+    private double zoomSpeedSetting = 14;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_FACTOR, category = "Behavior", min = 2, max = 15, step = 1, current = 4)
+    private double factorSetting = 4;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_CAMERA, category = "Behavior")
+    private boolean smoothCameraSetting = true;
+
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, category = "Controls", keyCode = Keyboard.KEY_C)
+    private int zoomKey = Keyboard.KEY_C;
+
     public boolean wasCinematic;
     private boolean active;
     private float lastSensitivity;
@@ -33,13 +45,13 @@ public class ZoomMod extends Mod {
 
     @EventTarget
     public void onTick(EventTick event) {
-        if (keybindSetting.isKeyDown()) {
+        if (Keyboard.isKeyDown(zoomKey)) {
             if (!active) {
                 active = true;
                 lastSensitivity = mc.gameSettings.mouseSensitivity;
                 resetFactor();
                 wasCinematic = this.mc.gameSettings.smoothCamera;
-                mc.gameSettings.smoothCamera = smoothCameraSetting.isToggled();
+                mc.gameSettings.smoothCamera = smoothCameraSetting;
                 mc.renderGlobal.setDisplayListEntitiesDirty();
             }
         } else if (active) {
@@ -53,14 +65,14 @@ public class ZoomMod extends Mod {
     @EventTarget
     public void onFov(EventZoomFov event) {
 
-        zoomAnimation.setAnimation(currentFactor, zoomSpeedSetting.getValueFloat());
+        zoomAnimation.setAnimation(currentFactor, (float) zoomSpeedSetting);
 
-        event.setFov(event.getFov() * (smoothZoomSetting.isToggled() ? zoomAnimation.getValue() : currentFactor));
+        event.setFov(event.getFov() * (smoothZoomSetting ? zoomAnimation.getValue() : currentFactor));
     }
 
     @EventTarget
     public void onScroll(EventScrollMouse event) {
-        if (active && scrollSetting.isToggled()) {
+        if (active && scrollSetting) {
             event.setCancelled(true);
             if (event.getAmount() < 0) {
                 if (currentFactor < 0.98) {
@@ -75,7 +87,7 @@ public class ZoomMod extends Mod {
     }
 
     public void resetFactor() {
-        setFactor(1 / factorSetting.getValueFloat());
+        setFactor(1 / (float) factorSetting);
     }
 
     public void setFactor(float factor) {

@@ -5,15 +5,20 @@ import eu.shoroa.contrib.impl.BoobsCosmetic;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class FemaleGenderMod extends Mod {
 
     private static FemaleGenderMod instance;
-    private final NumberSetting damping = new NumberSetting(TranslateText.DAMPING, this, 0.95, 0.1, 2.0, false);
-    private final NumberSetting springStrength = new NumberSetting(TranslateText.SPRING_STRENGTH, this, 0.8, 0.1, 4.0, false);
-    private final NumberSetting jiggleMultiplier = new NumberSetting(TranslateText.JIGGLE_MULTIPLY, this, 15, 1, 20, false);
-    private final NumberSetting accelerationMultiplier = new NumberSetting(TranslateText.ACCELERATION_MULTIPLIER, this, 1.5, 0.1, 6.0, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DAMPING, min = 0.1, max = 2.0, current = 0.95)
+    private double damping = 0.95;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRING_STRENGTH, min = 0.1, max = 4.0, current = 0.8)
+    private double springStrength = 0.8;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.JIGGLE_MULTIPLY, min = 1, max = 20, current = 15)
+    private double jiggleMultiplier = 15;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ACCELERATION_MULTIPLIER, min = 0.1, max = 6.0, current = 1.5)
+    private double accelerationMultiplier = 1.5;
 
     public FemaleGenderMod() {
         super(TranslateText.FEMALE_GENDER, TranslateText.FEMALE_GENDER_DESCRIPTION, ModCategory.PLAYER, "boobs");
@@ -37,18 +42,18 @@ public class FemaleGenderMod extends Mod {
     }
 
     public float getDamping() {
-        return (float) damping.getValue();
+        return (float) damping;
     }
 
     public float getSpringStrength() {
-        return (float) springStrength.getValue();
+        return (float) springStrength;
     }
 
     public float getJiggleMultiplier() {
-        return (float) jiggleMultiplier.getValue();
+        return (float) jiggleMultiplier;
     }
 
     public float getAccelerationMultiplier() {
-        return (float) accelerationMultiplier.getValue();
+        return (float) accelerationMultiplier;
     }
 }

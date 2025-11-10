@@ -5,9 +5,6 @@ import me.miki.shindo.management.event.impl.EventRenderHitbox;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ColorSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
@@ -21,18 +18,26 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class HitBoxMod extends Mod {
 
     private final Color eyeHeightColor = Color.RED;
     private final Color lookVectorColor = Color.BLUE;
 
-    private final ColorSetting colorSetting = new ColorSetting(TranslateText.COLOR, this, new Color(255, 255, 255), false);
-    private final NumberSetting alphaSetting = new NumberSetting(TranslateText.ALPHA, this, 1, 0, 1.0, false);
-    private final BooleanSetting boundingBoxSetting = new BooleanSetting(TranslateText.BOUNDING_BOX, this, true);
-    private final BooleanSetting eyeHeightSetting = new BooleanSetting(TranslateText.EYE_HEIGHT, this, true);
-    private final BooleanSetting lookVectorSetting = new BooleanSetting(TranslateText.LOOK_VECTOR, this, true);
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
+    private Color colorSetting = new Color(255, 255, 255);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0, max = 1.0, current = 1)
+    private double alphaSetting = 1;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BOUNDING_BOX)
+    private boolean boundingBoxSetting = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.EYE_HEIGHT)
+    private boolean eyeHeightSetting = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOOK_VECTOR)
+    private boolean lookVectorSetting = true;
 
-    private final NumberSetting lineWidthSetting = new NumberSetting(TranslateText.LINE_WIDTH, this, 2, 1, 5, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1, max = 5, current = 2, step = 1)
+    private int lineWidthSetting = 2;
 
     public HitBoxMod() {
         super(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER);
@@ -54,28 +59,28 @@ public class HitBoxMod extends Mod {
         GlStateManager.disableLighting();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
-        GL11.glLineWidth(lineWidthSetting.getValueFloat());
+        GL11.glLineWidth(lineWidthSetting);
 
-        if (boundingBoxSetting.isToggled()) {
+        if (boundingBoxSetting) {
             AxisAlignedBB box = event.getEntity().getEntityBoundingBox();
             AxisAlignedBB offsetBox = new AxisAlignedBB(box.minX - event.getEntity().posX + event.getX(),
                     box.minY - event.getEntity().posY + event.getY(), box.minZ - event.getEntity().posZ + event.getZ(),
                     box.maxX - event.getEntity().posX + event.getX(), box.maxY - event.getEntity().posY + event.getY(),
                     box.maxZ - event.getEntity().posZ + event.getZ());
-            Color boundingBoxColor = colorSetting.getColor();
-            RenderGlobal.drawOutlinedBoundingBox(offsetBox, boundingBoxColor.getRed(), boundingBoxColor.getGreen(), boundingBoxColor.getBlue(), (int) (alphaSetting.getValue() * 255));
+            Color boundingBoxColor = colorSetting;
+            RenderGlobal.drawOutlinedBoundingBox(offsetBox, boundingBoxColor.getRed(), boundingBoxColor.getGreen(), boundingBoxColor.getBlue(), (int) (alphaSetting * 255));
         }
 
-        if (eyeHeightSetting.isToggled() && event.getEntity() instanceof EntityLivingBase) {
+        if (eyeHeightSetting && event.getEntity() instanceof EntityLivingBase) {
             RenderGlobal.drawOutlinedBoundingBox(
                     new AxisAlignedBB(event.getX() - half, event.getY() + event.getEntity().getEyeHeight() - 0.009999999776482582D,
                             event.getZ() - half, event.getX() + half,
                             event.getY() + event.getEntity().getEyeHeight() + 0.009999999776482582D, event.getZ() + half),
                     eyeHeightColor.getRed(), eyeHeightColor.getGreen(), eyeHeightColor.getBlue(),
-                    (int) (alphaSetting.getValue() * 255));
+                    (int) (alphaSetting * 255));
         }
 
-        if (lookVectorSetting.isToggled()) {
+        if (lookVectorSetting) {
 
             Tessellator tessellator = Tessellator.getInstance();
             WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -86,7 +91,7 @@ public class HitBoxMod extends Mod {
                     .endVertex();
             worldrenderer.pos(event.getX() + look.xCoord * 2,
                             event.getY() + event.getEntity().getEyeHeight() + look.yCoord * 2, event.getZ() + look.zCoord * 2)
-                    .color(lookVectorColor.getRed(), lookVectorColor.getGreen(), lookVectorColor.getBlue(), (int) (alphaSetting.getValue() * 255)).endVertex();
+                    .color(lookVectorColor.getRed(), lookVectorColor.getGreen(), lookVectorColor.getBlue(), (int) (alphaSetting * 255)).endVertex();
             tessellator.draw();
         }
 

@@ -9,7 +9,6 @@ import me.miki.shindo.management.event.impl.EventRender3D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
 import me.miki.shindo.management.waypoint.Waypoint;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.render.RenderUtils;
@@ -20,9 +19,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class WaypointMod extends Mod {
 
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_B);
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_B)
+    private int keybindSetting = Keyboard.KEY_B;
 
     public WaypointMod() {
         super(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD);
@@ -80,7 +82,7 @@ public class WaypointMod extends Mod {
     @EventTarget
     public void onKey(EventKey event) {
 
-        if (event.getKeyCode() == keybindSetting.getKeyCode()) {
+        if (event.getKeyCode() == keybindSetting) {
             mc.displayGuiScreen(new GuiWaypoint());
         }
     }

@@ -5,9 +5,10 @@ import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventShader;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.client.shader.ShaderUniform;
@@ -18,10 +19,14 @@ import java.io.IOException;
 public class ColorSaturationMod extends Mod {
 
     private final ResourceLocation colorsaturation = new ResourceLocation("minecraft:shaders/post/colorsaturation.json");
-    private final NumberSetting hueSetting = new NumberSetting(TranslateText.HUE, this, 0, 0, 1.0, false);
-    private final NumberSetting brightnessSetting = new NumberSetting(TranslateText.BRIGHTNESS, this, 0.5, 0, 1.0, false);
-    private final NumberSetting contrastSetting = new NumberSetting(TranslateText.CONTRAST, this, 0.5, 0, 1.0, false);
-    private final NumberSetting saturationSetting = new NumberSetting(TranslateText.SATURATION, this, 0.5, 0, 1.0, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, category = "Color Grading", min = 0, max = 1, current = 0)
+    private double hueSetting;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BRIGHTNESS, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    private double brightnessSetting = 0.5;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.CONTRAST, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    private double contrastSetting = 0.5;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SATURATION, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    private double saturationSetting = 0.5;
     private ShaderGroup group;
     private float prevHue;
     private float prevSaturation;
@@ -38,10 +43,10 @@ public class ColorSaturationMod extends Mod {
 
         ScaledResolution sr = new ScaledResolution(mc);
 
-        float hue = hueSetting.getValueFloat();
-        float saturation = saturationSetting.getValueFloat();
-        float brightness = brightnessSetting.getValueFloat();
-        float contrast = contrastSetting.getValueFloat();
+        float hue = (float) hueSetting;
+        float saturation = (float) saturationSetting;
+        float brightness = (float) brightnessSetting;
+        float contrast = (float) contrastSetting;
 
         if (group == null || prevWidth != sr.getScaledWidth() || prevHeight != sr.getScaledHeight()) {
 

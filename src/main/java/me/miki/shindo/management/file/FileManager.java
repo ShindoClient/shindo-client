@@ -27,6 +27,7 @@ public class FileManager {
 
     private final File wingCacheDir;
     private final File bandannaCacheDir;
+    private final File profileIconDir;
 
 
     public FileManager() {
@@ -49,6 +50,7 @@ public class FileManager {
         capeCacheDir = new File(cacheDir, "cape");
         wingCacheDir = new File(cacheDir, "wing");
         bandannaCacheDir = new File(cacheDir, "bandanna");
+        profileIconDir = new File(cacheDir, "profile-icon");
 
 
         try {
@@ -78,6 +80,7 @@ public class FileManager {
             if (!capeCacheDir.exists()) createDir(capeCacheDir);
             if (!wingCacheDir.exists()) createDir(wingCacheDir);
             if (!bandannaCacheDir.exists()) createDir(bandannaCacheDir);
+            if (!profileIconDir.exists()) createDir(profileIconDir);
 
 
             createVersionFile();
@@ -162,6 +165,10 @@ public class FileManager {
 
     public File getBandannaCacheDir() {
         return bandannaCacheDir;
+    }
+
+    public File getProfileIconDir() {
+        return profileIconDir;
     }
 
 }

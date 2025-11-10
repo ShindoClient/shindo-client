@@ -4,16 +4,18 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class PlayerDisplayMod extends HUDMod {
 
-    private final NumberSetting yawOffsetSetting = new NumberSetting(TranslateText.YAW_OFFSET, this, 0, -90, 120, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.YAW_OFFSET, min = -90, max = 120, current = 0, step = 1)
+    private int yawOffsetSetting = 0;
 
     public PlayerDisplayMod() {
         super(TranslateText.PLAYER_DISPLAY, TranslateText.PLAYER_DISPLAY_DESCRIPTION, "paperdoll");
@@ -28,7 +30,7 @@ public class PlayerDisplayMod extends HUDMod {
         GlStateManager.translate(this.getX() + (15 * this.getScale()), this.getY() + (58 * this.getScale()), -500.0F);
         GlStateManager.scale(-this.getScale() * 30, this.getScale() * 30, this.getScale() * 30);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.rotate(mc.thePlayer.rotationYaw + yawOffsetSetting.getValueFloat(), 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(mc.thePlayer.rotationYaw + yawOffsetSetting, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);

@@ -1,20 +1,21 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 
 public class ClientSpooferMod extends Mod {
 
+    @Getter
     private static ClientSpooferMod instance;
 
-    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.VANILLA, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.VANILLA), new Option(TranslateText.FORGE))));
+    @Getter
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    private SpoofType spoofType = SpoofType.VANILLA;
 
     public ClientSpooferMod() {
         super(TranslateText.CLIENT_SPOOFER, TranslateText.CLIENT_SPOOFER_DESCRIPTION, ModCategory.OTHER);
@@ -22,11 +23,19 @@ public class ClientSpooferMod extends Mod {
         instance = this;
     }
 
-    public static ClientSpooferMod getInstance() {
-        return instance;
-    }
+    public enum SpoofType implements PropertyEnum {
+        VANILLA(TranslateText.VANILLA),
+        FORGE(TranslateText.FORGE);
 
-    public ComboSetting getTypeSetting() {
-        return typeSetting;
+        private final TranslateText translate;
+
+        SpoofType(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

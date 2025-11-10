@@ -6,40 +6,53 @@ import me.miki.shindo.management.event.impl.EventKey;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.*;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.impl.*;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
+import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class InternalSettingsMod extends Mod {
 
     private static InternalSettingsMod instance;
 
-    private final ComboSetting modThemeSetting = new ComboSetting(TranslateText.HUD_THEME, this, TranslateText.NORMAL, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.NORMAL), new Option(TranslateText.GLOW), new Option(TranslateText.OUTLINE), new Option(TranslateText.VANILLA),
-            new Option(TranslateText.OUTLINE_GLOW), new Option(TranslateText.VANILLA_GLOW), new Option(TranslateText.SHADOW),
-            new Option(TranslateText.DARK), new Option(TranslateText.LIGHT), new Option(TranslateText.RECT), new Option(TranslateText.MODERN),
-            new Option(TranslateText.TEXT), new Option(TranslateText.GRADIENT_SIMPLE))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
+    private HudTheme hudTheme = HudTheme.NORMAL;
 
-    private final BooleanSetting blurSetting = new BooleanSetting(TranslateText.UI_BLUR, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_BLUR)
+    private boolean blurSetting = true;
 
-    private final BooleanSetting mcFontSetting = new BooleanSetting(TranslateText.MC_FONT, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MC_FONT)
+    private boolean mcFontSetting = false;
 
-    private final NumberSetting volumeSetting = new NumberSetting(TranslateText.VOLUME, this, 0.8, 0, 1, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.VOLUME, min = 0, max = 1, current = 0.8)
+    private double volumeSetting = 0.8;
 
-    private final KeybindSetting modMenuKeybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_RSHIFT);
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_RSHIFT)
+    private int modMenuKeybindSetting = Keyboard.KEY_RSHIFT;
 
-    private final TextSetting capeNameSetting = new TextSetting(TranslateText.CUSTOM_CAPE, this, "None");
+    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_CAPE, text = "None")
+    private String capeNameSetting = "None";
 
-    private final TextSetting wingNameSetting = new TextSetting(TranslateText.CUSTOM_WING, this, "None");
+    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_WING, text = "None")
+    private String wingNameSetting = "None";
 
-    private final TextSetting bandannaNameSetting = new TextSetting(TranslateText.CUSTOM_BANDANNA, this, "None");
+    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_BANDANNA, text = "None")
+    private String bandannaNameSetting = "None";
 
-    private final BooleanSetting clickEffectsSetting = new BooleanSetting(TranslateText.CLICK_EFFECT, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CLICK_EFFECT)
+    private boolean clickEffectsSetting = true;
 
-    private final BooleanSetting soundsUISetting = new BooleanSetting(TranslateText.UI_SOUNDS, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_SOUNDS)
+    private boolean soundsUISetting = true;
+
+    @Property(type = PropertyType.COMBO, name = "Settings Layout")
+    private SettingsLayout settingsLayout = SettingsLayout.SINGLE_COLUMN;
+
+    @Property(type = PropertyType.COMBO, name = "Module Layout")
+    private ModuleLayout moduleLayout = ModuleLayout.SINGLE_COLUMN;
 
     public InternalSettingsMod() {
         super(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER);
@@ -59,77 +72,187 @@ public class InternalSettingsMod extends Mod {
 
     @EventTarget
     public void onKey(EventKey event) {
-        if (event.getKeyCode() == modMenuKeybindSetting.getKeyCode()) {
+        if (event.getKeyCode() == modMenuKeybindSetting) {
             mc.displayGuiScreen(Shindo.getInstance().getShindoAPI().getModMenu());
         }
 
 //		Uncomment to enable the ability to change the theme of the mod menu using the down arrow key
         if (event.getKeyCode() == Keyboard.KEY_DOWN) {
-            int max = modThemeSetting.getOptions().size();
-            int modeIndex = modThemeSetting.getOptions().indexOf(modThemeSetting.getOption());
-
-            if (modeIndex > 0) {
-                modeIndex--;
-            } else {
-                modeIndex = max - 1;
+            ComboSetting combo = getModThemeSetting();
+            if (combo != null) {
+                int max = combo.getOptions().size();
+                int modeIndex = combo.getOptions().indexOf(combo.getOption());
+                modeIndex = modeIndex > 0 ? modeIndex - 1 : max - 1;
+                combo.setOption(combo.getOptions().get(modeIndex));
             }
-
-            //mcFontSetting.setToggled(!mcFontSetting.isToggled());
-
-            modThemeSetting.setOption(modThemeSetting.getOptions().get(modeIndex));
-
         }
     }
 
     public BooleanSetting getClickEffectsSetting() {
-        return clickEffectsSetting;
+        return SettingRegistry.getBooleanSetting(this, "clickEffectsSetting");
     }
 
     public BooleanSetting getSoundsUISetting() {
-        return soundsUISetting;
+        return SettingRegistry.getBooleanSetting(this, "soundsUISetting");
+    }
+
+    public ComboSetting getSettingsLayoutSetting() {
+        return SettingRegistry.getComboSetting(this, "settingsLayout");
+    }
+
+    public ComboSetting getModuleLayoutSetting() {
+        return SettingRegistry.getComboSetting(this, "moduleLayout");
+    }
+
+    public SettingsPanel.LayoutMode getSettingsLayoutMode() {
+        return settingsLayout == SettingsLayout.COMPACT_GRID
+                ? SettingsPanel.LayoutMode.DOUBLE_COLUMN
+                : SettingsPanel.LayoutMode.SINGLE_COLUMN;
+    }
+
+    public void setSettingsLayoutMode(SettingsPanel.LayoutMode mode) {
+        SettingsLayout target = mode == SettingsPanel.LayoutMode.DOUBLE_COLUMN
+                ? SettingsLayout.COMPACT_GRID
+                : SettingsLayout.SINGLE_COLUMN;
+        ComboSetting combo = getSettingsLayoutSetting();
+        if (combo != null && target.ordinal() < combo.getOptions().size()) {
+            combo.setOption(combo.getOptions().get(target.ordinal()));
+        }
+    }
+
+    public int getModuleGridColumns() {
+        switch (moduleLayout) {
+            case THREE_COLUMNS:
+                return 3;
+            case TWO_COLUMNS:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
+    public void setModuleGridColumns(int columns) {
+        int normalized = Math.max(1, Math.min(columns, 3));
+        ModuleLayout target = ModuleLayout.values()[normalized - 1];
+        ComboSetting combo = getModuleLayoutSetting();
+        if (combo != null && target.ordinal() < combo.getOptions().size()) {
+            combo.setOption(combo.getOptions().get(target.ordinal()));
+        }
     }
 
     public NumberSetting getVolumeSetting() {
-        return volumeSetting;
+        return SettingRegistry.getNumberSetting(this, "volumeSetting");
     }
 
     public ComboSetting getModThemeSetting() {
-        return modThemeSetting;
+        return SettingRegistry.getComboSetting(this, "hudTheme");
+    }
+
+    public HudTheme getHudTheme() {
+        return hudTheme;
+    }
+
+    public SettingsLayout getSettingsLayout() {
+        return settingsLayout;
+    }
+
+    public ModuleLayout getModuleLayout() {
+        return moduleLayout;
     }
 
     public BooleanSetting getBlurSetting() {
-        return blurSetting;
+        return SettingRegistry.getBooleanSetting(this, "blurSetting");
     }
 
     public KeybindSetting getModMenuKeybindSetting() {
-        return modMenuKeybindSetting;
+        return SettingRegistry.getKeybindSetting(this, "modMenuKeybindSetting");
     }
 
     public BooleanSetting getMCHUDFont() {
-        return mcFontSetting;
+        return SettingRegistry.getBooleanSetting(this, "mcFontSetting");
     }
 
     public String getCapeConfigName() {
-        return capeNameSetting.getText();
+        return capeNameSetting;
     }
 
     public void setCapeConfigName(String a) {
-        capeNameSetting.setText(a);
+        capeNameSetting = a;
     }
 
     public String getWingConfigName() {
-        return wingNameSetting.getText();
+        return wingNameSetting;
     }
 
     public void setWingConfigName(String a) {
-        wingNameSetting.setText(a);
+        wingNameSetting = a;
     }
 
     public String getBandannaConfigName() {
-        return bandannaNameSetting.getText();
+        return bandannaNameSetting;
     }
 
     public void setBandannaConfigName(String a) {
-        bandannaNameSetting.setText(a);
+        bandannaNameSetting = a;
+    }
+
+    public enum HudTheme implements PropertyEnum {
+        NORMAL(TranslateText.NORMAL),
+        GLOW(TranslateText.GLOW),
+        OUTLINE(TranslateText.OUTLINE),
+        VANILLA(TranslateText.VANILLA),
+        OUTLINE_GLOW(TranslateText.OUTLINE_GLOW),
+        VANILLA_GLOW(TranslateText.VANILLA_GLOW),
+        SHADOW(TranslateText.SHADOW),
+        DARK(TranslateText.DARK),
+        LIGHT(TranslateText.LIGHT),
+        RECT(TranslateText.RECT),
+        MODERN(TranslateText.MODERN),
+        TEXT(TranslateText.TEXT),
+        GRADIENT_SIMPLE(TranslateText.GRADIENT_SIMPLE);
+
+        private final TranslateText translate;
+
+        HudTheme(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
+    }
+
+    public enum SettingsLayout implements PropertyEnum {
+        SINGLE_COLUMN("Single Column"),
+        COMPACT_GRID("Compact Grid");
+
+        private final String displayName;
+
+        SettingsLayout(String displayName) {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    public enum ModuleLayout implements PropertyEnum {
+        SINGLE_COLUMN("Single Column"),
+        TWO_COLUMNS("Two Columns"),
+        THREE_COLUMNS("Three Columns");
+
+        private final String displayName;
+
+        ModuleLayout(String displayName) {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 }

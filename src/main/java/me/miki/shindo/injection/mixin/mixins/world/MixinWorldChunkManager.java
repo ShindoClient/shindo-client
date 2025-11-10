@@ -1,9 +1,7 @@
 package me.miki.shindo.injection.mixin.mixins.world;
 
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import net.minecraft.world.biome.WorldChunkManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,10 +15,9 @@ public class MixinWorldChunkManager {
     public void preGetTemperatureAtHeight(float p_76939_1_, int p_76939_2_, CallbackInfoReturnable<Float> cir) {
 
         WeatherChangerMod mod = WeatherChangerMod.getInstance();
-        ComboSetting setting = mod.getWeatherSetting();
-        Option weather = setting.getOption();
+        Weather weather = mod.getWeather();
 
-        if (mod.isToggled() && weather.getTranslate().equals(TranslateText.SNOW)) {
+        if (mod.isToggled() && weather == Weather.SNOW) {
             cir.setReturnValue(0F);
         }
     }

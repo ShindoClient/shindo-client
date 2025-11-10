@@ -3,9 +3,10 @@ package me.miki.shindo.management.mods.impl;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderDamageTint;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.utils.PlayerUtils;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,7 +21,8 @@ public class DamageTintMod extends Mod {
     private final ResourceLocation shape = new ResourceLocation("shindo/shape.png");
     private final SimpleAnimation animation = new SimpleAnimation(0.0F);
 
-    private final NumberSetting healthSetting = new NumberSetting(TranslateText.HEALTH, this, 10, 5, 16, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, category = "Thresholds", min = 5, max = 16, step = 1, current = 10)
+    private double healthSetting = 10;
 
     public DamageTintMod() {
         super(TranslateText.DAMAGE_TINT, TranslateText.DAMAGE_TINT_DESCRIPTION, ModCategory.RENDER);
@@ -29,7 +31,7 @@ public class DamageTintMod extends Mod {
     @EventTarget
     public void onRenderDamageTint(EventRenderDamageTint event) {
 
-        float threshold = healthSetting.getValueFloat();
+        float threshold = (float) healthSetting;
 
         ScaledResolution sr = new ScaledResolution(mc);
 

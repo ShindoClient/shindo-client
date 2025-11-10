@@ -12,7 +12,7 @@ public class Update {
 
     @Getter
     @Setter
-    String updateLink = "https://shindoclient.github.io/";
+    String updateLink = "https://shindoclient.com/";
     String updateVersionString = "something is broken lmao";
     int updateBuildID = 0;
 
@@ -47,9 +47,9 @@ public class Update {
     }
 
     private void checkUpdates() {
-        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/data/meta/client.json", null);
+        JsonObject jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/meta/client.json", null);
         if (jsonObject != null) {
-            setUpdateLink(JsonUtils.getStringProperty(jsonObject, "updatelink", "https://shindoclient.github.io/"));
+            setUpdateLink(JsonUtils.getStringProperty(jsonObject, "updatelink", "https://shindoclient.com/"));
             setVersionString(JsonUtils.getStringProperty(jsonObject, "latestversionstring", "something is broken lmao"));
             setBuildID(JsonUtils.getIntProperty(jsonObject, "latestversion", 0));
             checkForUpdates();

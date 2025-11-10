@@ -4,11 +4,10 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.buffer.ScreenStencil;
@@ -17,17 +16,19 @@ import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CompassMod extends SimpleHUDMod {
 
     private final ScreenStencil stencil = new ScreenStencil();
 
-    private final ComboSetting designSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.SIMPLE, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.SIMPLE), new Option(TranslateText.FANCY))));
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
-    private final NumberSetting widthSetting = new NumberSetting(TranslateText.WIDTH, this, 180, 50, 450, true);
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
+    private Design design = Design.SIMPLE;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    private boolean iconSetting = true;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, category = "Layout", min = 50, max = 450, step = 1, current = 180)
+    private int widthSetting = 180;
 
     public CompassMod() {
         super(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION);
@@ -36,14 +37,13 @@ public class CompassMod extends SimpleHUDMod {
     @EventTarget
     public void onRender2D(EventRender2D event) {
 
-        Option design = designSetting.getOption();
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        if (design.getTranslate().equals(TranslateText.SIMPLE)) {
+        if (design == Design.SIMPLE) {
             this.draw();
         } else {
             nvg.setupAndDraw(() -> {
-                this.drawBackground(widthSetting.getValueInt(), 29);
+                this.drawBackground(widthSetting, 29);
             });
             stencil.wrap(() -> drawNanoVG(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), 6 * this.getScale());
         }
@@ -57,7 +57,7 @@ public class CompassMod extends SimpleHUDMod {
         int angle4 = (int) MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) * -1 - 360;
         int angle5 = (int) MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) * -1 - 360;
         int angle6 = (int) MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) * -1 - 360;
-        int width = widthSetting.getValueInt();
+        int width = widthSetting;
 
         this.renderMarker(this.getX() + ((width / 2) * this.getScale()), this.getY() + (2.5F * this.getScale()), this.getFontColor());
 
@@ -255,6 +255,22 @@ public class CompassMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.COMPASS : null;
+        return iconSetting ? LegacyIcon.COMPASS : null;
+    }
+
+    private enum Design implements PropertyEnum {
+        SIMPLE(TranslateText.SIMPLE),
+        FANCY(TranslateText.FANCY);
+
+        private final TranslateText translate;
+
+        Design(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

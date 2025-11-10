@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.libs.openauth.microsoft.MicrosoftAuthenticationException;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.file.FileManager;
@@ -51,17 +52,27 @@ public class AccountManager {
             load();
         }
 
-        if (getAccountByName(currentAccount) != null) {
+        Account storedAccount = getAccountByName(currentAccount);
+        if (storedAccount != null) {
 
-            if (getAccountByName(currentAccount).getType().equals(AccountType.MICROSOFT)) {
+            if (storedAccount.getType().equals(AccountType.MICROSOFT)) {
                 ShindoLogger.info("Login into Microsoft account");
-                Account acc = getAccountByName(currentAccount);
-                Multithreading.runAsync(() -> {
-                    SessionUtils.getInstance().setUserMicrosoft(acc.getEmail(), acc.getPassword());
-                });
+                Account acc = storedAccount;
+                if (acc.getRefreshToken() == null || acc.getRefreshToken().isEmpty()) {
+                    ShindoLogger.warn("Stored Microsoft account is missing a refresh token. Please sign in again.");
+                } else {
+                    Multithreading.runAsync(() -> {
+                        try {
+                            SessionUtils.getInstance().loginMicrosoftAccount(acc);
+                            save();
+                        } catch (MicrosoftAuthenticationException e) {
+                            ShindoLogger.error("Failed to login Microsoft account", e);
+                        }
+                    });
+                }
             } else {
                 ShindoLogger.info("Login into Offline account");
-                Account acc = getAccountByName(currentAccount);
+                Account acc = storedAccount;
                 File f = new File(skinDir, acc.getName() + ".png");
 
                 UUID offlineId = UUID.nameUUIDFromBytes(
@@ -98,9 +109,8 @@ public class AccountManager {
 
                 accJsonObject.addProperty("Name", acc.getName());
                 accJsonObject.addProperty("UUID", acc.getUuid());
-                accJsonObject.addProperty("Email", acc.getEmail());
-                accJsonObject.addProperty("Password", acc.getPassword());
                 accJsonObject.addProperty("Account Type", acc.getType().getId());
+                accJsonObject.addProperty("RefreshToken", acc.getRefreshToken());
 
                 jsonArray.add(accJsonObject);
             }
@@ -137,16 +147,14 @@ public class AccountManager {
                         JsonElement jsonElement = iterator.next();
                         JsonObject accJsonObject = gson.fromJson(jsonElement, JsonObject.class);
 
-                        accounts.add(
-                                new Account(
-                                        JsonUtils.getStringProperty(accJsonObject, "Name", "null"),
-                                        JsonUtils.getStringProperty(accJsonObject, "UUID", "null"),
-                                        JsonUtils.getStringProperty(accJsonObject, "Email", "0"),
-                                        JsonUtils.getStringProperty(accJsonObject, "Password", "0"),
-                                        AccountType.getAccountTypeById(JsonUtils.getIntProperty(accJsonObject, "Account Type", 0)
-                                        )
+                        Account account = new Account(
+                                JsonUtils.getStringProperty(accJsonObject, "Name", "null"),
+                                JsonUtils.getStringProperty(accJsonObject, "UUID", "null"),
+                                AccountType.getAccountTypeById(JsonUtils.getIntProperty(accJsonObject, "Account Type", 0)
                                 )
                         );
+                        account.setRefreshToken(JsonUtils.getStringProperty(accJsonObject, "RefreshToken", ""));
+                        accounts.add(account);
                     }
                 }
             }
@@ -174,10 +182,13 @@ public class AccountManager {
         return null;
     }
 
-    public Account getAccountByEmail(String email) {
+    public Account getAccountByUuid(String uuid) {
+        if (uuid == null || uuid.equalsIgnoreCase("null")) {
+            return null;
+        }
 
         for (Account acc : accounts) {
-            if (acc.getEmail().equals(email)) {
+            if (acc.getUuid() != null && acc.getUuid().equalsIgnoreCase(uuid)) {
                 return acc;
             }
         }

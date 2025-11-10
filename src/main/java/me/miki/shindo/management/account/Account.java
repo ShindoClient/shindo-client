@@ -6,18 +6,20 @@ public class Account {
 
     private String name;
     private String uuid;
-    private String email;
-    private String password;
     private AccountType type;
+    private String refreshToken;
 
     private File skinFile;
 
-    public Account(String name, String uuid, String email, String password, AccountType type) {
+    public Account(String name, String uuid, AccountType type) {
+        this(name, uuid, type, "");
+    }
+
+    public Account(String name, String uuid, AccountType type, String refreshToken) {
         this.name = name;
         this.uuid = uuid;
-        this.email = email;
-        this.password = password;
         this.type = type;
+        this.refreshToken = refreshToken == null ? "" : refreshToken;
     }
 
     public String getName() {
@@ -36,28 +38,20 @@ public class Account {
         this.uuid = uuid;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public AccountType getType() {
         return type;
     }
 
     public void setType(AccountType type) {
         this.type = type;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public File getSkinFile() {

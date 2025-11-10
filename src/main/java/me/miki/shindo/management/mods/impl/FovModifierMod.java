@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventFovUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.utils.PlayerUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -16,10 +17,14 @@ import java.util.Collection;
 
 public class FovModifierMod extends Mod {
 
-    private final NumberSetting sprintingSetting = new NumberSetting(TranslateText.SPRINTING, this, 1, -5, 5, false);
-    private final NumberSetting bowSetting = new NumberSetting(TranslateText.BOW, this, 1, -5, 5, false);
-    private final NumberSetting speedSetting = new NumberSetting(TranslateText.SPEED, this, 1, -5, 5, false);
-    private final NumberSetting slownessSetting = new NumberSetting(TranslateText.SLOWNESS, this, 1, -5, 5, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRINTING, category = "Modifiers", min = -5, max = 5, current = 1)
+    private double sprintingSetting = 1;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BOW, category = "Modifiers", min = -5, max = 5, current = 1)
+    private double bowSetting = 1;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, category = "Modifiers", min = -5, max = 5, current = 1)
+    private double speedSetting = 1;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SLOWNESS, category = "Modifiers", min = -5, max = 5, current = 1)
+    private double slownessSetting = 1;
 
     public FovModifierMod() {
         super(TranslateText.FOV_MODIFIER, TranslateText.FOV_MODIFIER_DESCRIPTION, ModCategory.PLAYER);
@@ -33,10 +38,10 @@ public class FovModifierMod extends Mod {
         ItemStack item = entity.getItemInUse();
         int useDuration = entity.getItemInUseDuration();
 
-        float sprintingFov = sprintingSetting.getValueFloat();
-        float bowFov = bowSetting.getValueFloat();
-        float speedFov = speedSetting.getValueFloat();
-        float slownessFov = slownessSetting.getValueFloat();
+        float sprintingFov = (float) sprintingSetting;
+        float bowFov = (float) bowSetting;
+        float speedFov = (float) speedSetting;
+        float slownessFov = (float) slownessSetting;
 
         if (entity.isSprinting()) {
             base += 0.15000000596046448 * sprintingFov;

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl.waveycapes.layers;
 
 import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.WaveyCapesMod;
+import me.miki.shindo.management.mods.impl.WaveyCapesMod.Movement;
 import me.miki.shindo.management.mods.impl.waveycapes.sim.StickSimulation;
 import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.vector.Matrix4f;
@@ -306,7 +306,7 @@ public class SmoothCapeRenderer {
 
         WaveyCapesMod mod = WaveyCapesMod.getInstance();
 
-        if (mod.getMovementSetting().getOption().getTranslate().equals(TranslateText.BASIC)) {
+        if (mod.getMovement() == Movement.BASIC) {
             modifyPoseStackSimulation(layer, poseStack, abstractClientPlayer, h, part);
             return;
         }

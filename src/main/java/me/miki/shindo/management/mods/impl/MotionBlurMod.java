@@ -4,12 +4,10 @@ import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventShader;
 import me.miki.shindo.management.event.impl.EventUpdateDisplay;
+import me.miki.shindo.management.annotation.Range;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.utils.Sound;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.ShaderGroup;
@@ -17,15 +15,19 @@ import net.minecraft.client.shader.ShaderUniform;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class MotionBlurMod extends Mod {
 
     private final ResourceLocation motion_blur = new ResourceLocation("minecraft:shaders/post/motion_blur.json");
-    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.SHADER, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.ACCUM), new Option(TranslateText.SHADER))));
-    private final NumberSetting amountSetting = new NumberSetting(TranslateText.AMOUNT, this, 0.5, 0.1, 0.9, false);
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    private Mode mode = Mode.SHADER;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AMOUNT, min = 0.1, max = 0.9, current = 0.5)
+    private double amountSetting = 0.5;
+
     private long lastCheck = 0L;
     private ShaderGroup group;
     private float groupBlur;
@@ -46,14 +48,14 @@ public class MotionBlurMod extends Mod {
 
         ScaledResolution sr = new ScaledResolution(mc);
 
-        if (typeSetting.getOption().getTranslate().equals(TranslateText.SHADER)) {
+        if (mode == Mode.SHADER) {
 
             if (group == null || prevWidth != sr.getScaledWidth() || prevHeight != sr.getScaledHeight()) {
 
                 prevWidth = sr.getScaledWidth();
                 prevHeight = sr.getScaledHeight();
 
-                groupBlur = amountSetting.getValueFloat();
+                groupBlur = (float) amountSetting;
 
                 try {
                     group = new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), motion_blur);
@@ -63,15 +65,15 @@ public class MotionBlurMod extends Mod {
                 }
             }
 
-            if (groupBlur != amountSetting.getValueFloat() || !loaded) {
+            if (groupBlur != (float) amountSetting || !loaded) {
                 loaded = true;
                 ((IMixinShaderGroup) group).getListShaders().forEach((shader) -> {
                     ShaderUniform factor = shader.getShaderManager().getShaderUniform("BlurFactor");
                     if (factor != null) {
-                        factor.set(amountSetting.getValueFloat());
+                        factor.set((float) amountSetting);
                     }
                 });
-                groupBlur = amountSetting.getValueFloat();
+                groupBlur = (float) amountSetting;
             }
 
             event.getGroups().add(group);
@@ -81,7 +83,7 @@ public class MotionBlurMod extends Mod {
     @EventTarget
     public void onUpdateDisplay(EventUpdateDisplay event) {
 
-        if (typeSetting.getOption().getTranslate().equals(TranslateText.ACCUM)) {
+        if (mode == Mode.ACCUM) {
 
             if (group != null) {
                 group = null;
@@ -90,8 +92,8 @@ public class MotionBlurMod extends Mod {
 
             if (mc.thePlayer != null) {
 
-                GL11.glAccum(259, amountSetting.getValueFloat());
-                GL11.glAccum(256, 1.0f - amountSetting.getValueFloat());
+                GL11.glAccum(259, (float) amountSetting);
+                GL11.glAccum(256, 1.0f - (float) amountSetting);
                 GL11.glAccum(258, 1.0f);
 
                 if (lastCheck + 1000L < System.currentTimeMillis()) {
@@ -115,5 +117,21 @@ public class MotionBlurMod extends Mod {
     public void onEnable() {
         group = null;
         super.onEnable();
+    }
+
+    private enum Mode implements PropertyEnum {
+        ACCUM(TranslateText.ACCUM),
+        SHADER(TranslateText.SHADER);
+
+        private final TranslateText translate;
+
+        Mode(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

@@ -7,11 +7,9 @@ package eu.shoroa.contrib.render;
 
 import eu.shoroa.contrib.shader.UIShader;
 import eu.shoroa.contrib.shader.uniform.Uniform;
+import lombok.Getter;
 import me.miki.shindo.Shindo;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;
@@ -27,6 +25,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 public class ShBlur {
+    @Getter
     private static final ShBlur instance = new ShBlur();
     private final Minecraft mc = Minecraft.getMinecraft();
     private final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
@@ -38,10 +37,6 @@ public class ShBlur {
     private Framebuffer framebuffer3 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
     private FloatBuffer weightBuffer = BufferUtils.createFloatBuffer(128);
     private long lastUpdate = System.currentTimeMillis();
-
-    public static ShBlur getInstance() {
-        return instance;
-    }
 
     public void init() {
         framebuffer.createFramebuffer(mc.displayWidth / 2, mc.displayHeight / 2);
@@ -156,9 +151,9 @@ public class ShBlur {
         long ctx = Shindo.getInstance().getNanoVGManager().getContext();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        ComboSetting setting = InternalSettingsMod.getInstance().getModThemeSetting();
-        Option theme = setting.getOption();
-        boolean rectShape = theme.getTranslate().equals(TranslateText.RECT) || theme.getTranslate().equals(TranslateText.GRADIENT_SIMPLE);
+        InternalSettingsMod.HudTheme theme = InternalSettingsMod.getInstance().getHudTheme();
+        boolean rectShape = theme == InternalSettingsMod.HudTheme.RECT
+                || theme == InternalSettingsMod.HudTheme.GRADIENT_SIMPLE;
 
         NVGPaint paint = NVGPaint.calloc();
 

@@ -3,11 +3,10 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonManager;
 import me.miki.shindo.management.addons.AddonType;
-import me.miki.shindo.management.addons.settings.AddonSetting;
-import me.miki.shindo.management.addons.settings.impl.*;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
@@ -16,17 +15,15 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.comp.addons.*;
+import me.miki.shindo.management.mods.impl.InternalSettingsMod;
+import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.SearchUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation;
-import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -35,8 +32,15 @@ import java.util.ArrayList;
 public class AddonCategory extends Category {
 
     private final Scroll settingScroll = new Scroll();
-    private final ArrayList<AddonsSetting> comps = new ArrayList<AddonsSetting>();
+    private final SettingsPanel settingsPanel = new SettingsPanel();
     Color noColour = new Color(0, 0, 0, 0);
+    private static final float TYPE_CHIP_HEIGHT = 22F;
+    private static final float TYPE_CHIP_GAP = 8F;
+    private static final float CHIP_HORIZONTAL_PADDING = 12F;
+    private static final float CARD_HORIZONTAL_PADDING = 18F;
+    private static final float CARD_COLUMN_GAP = 16F;
+    private static final float CARD_ROW_GAP = 16F;
+    private static final float CARD_HEIGHT = 108F;
     private AddonType currentType;
     private boolean openSetting;
     private Animation settingAnimation;
@@ -54,6 +58,7 @@ public class AddonCategory extends Category {
         openSetting = false;
         settingAnimation = new SmoothStepAnimation(260, 1.0);
         settingAnimation.setValue(1.0);
+        settingsPanel.clear();
 
     }
 
@@ -63,6 +68,7 @@ public class AddonCategory extends Category {
         openSetting = false;
         settingAnimation = new SmoothStepAnimation(260, 1.0);
         settingAnimation.setValue(1.0);
+        settingsPanel.clear();
     }
 
     @Override
@@ -75,9 +81,6 @@ public class AddonCategory extends Category {
         ColorPalette palette = colorManager.getPalette();
         AccentColor accentColor = colorManager.getCurrentColor();
 
-        int offsetX = 0;
-        float offsetY = 13;
-        int index = 1;
         float scrollValue = scroll.getValue();
 
         settingAnimation.setDirection(openSetting ? Direction.BACKWARDS : Direction.FORWARDS);
@@ -85,81 +88,113 @@ public class AddonCategory extends Category {
         if (settingAnimation.isDone(Direction.FORWARDS)) {
             this.setCanClose(true);
             currentAddon = null;
+            settingsPanel.clear();
         }
+
+        ArrayList<Addon> visibleAddons = collectVisibleAddons(addonManager);
+        float contentStartY = this.getY() + 52F;
+        float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
+        float viewportHeight = this.getHeight() - (contentStartY - this.getY()) - 24F;
 
         nvg.save();
         nvg.translate((float) -(600 - (settingAnimation.getValue() * 600)), 0);
 
-        //Draw addon scene
-
         nvg.save();
         nvg.translate(0, scrollValue);
+        // draw filter chips
+        float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
+        float chipY = this.getY() + 16F;
+        for (AddonType type : AddonType.values()) {
+            float labelWidth = nvg.getTextWidth(type.getName(), 9.5F, Fonts.MEDIUM);
+            float chipWidth = labelWidth + (CHIP_HORIZONTAL_PADDING * 2);
+            boolean isCurrent = type.equals(currentType);
+            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT);
 
-        for (AddonType t : AddonType.values()) {
+            type.getBackgroundAnimation().setAnimation(isCurrent ? 1.0F : 0.0F, 16);
 
-            float textWidth = nvg.getTextWidth(t.getName(), 9, Fonts.MEDIUM);
-            boolean isCurrentType = t.equals(currentType);
+            Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered || isCurrent ? 210 : 168);
+            Color start = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (type.getBackgroundAnimation().getValue() * 255));
+            Color end = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (type.getBackgroundAnimation().getValue() * 255));
+            Color textColor = type.getTextColorAnimation().getColor(isCurrent ? Color.WHITE : palette.getFontColor(ColorType.DARK), 18);
 
-            t.getBackgroundAnimation().setAnimation(isCurrentType ? 1.0F : 0.0F, 16);
+            nvg.drawRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, base);
+            nvg.drawGradientRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, start, end);
+            nvg.drawCenteredText(type.getName(), chipX + chipWidth / 2F, chipY + 4F, textColor, 9.5F, Fonts.MEDIUM);
 
-            Color defaultColor = palette.getBackgroundColor(ColorType.DARK);
-            Color color1 = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (t.getBackgroundAnimation().getValue() * 255));
-            Color color2 = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (t.getBackgroundAnimation().getValue() * 255));
-            Color textColor = t.getTextColorAnimation().getColor(isCurrentType ? Color.WHITE : palette.getFontColor(ColorType.DARK), 20);
-
-            nvg.drawRoundedRect(this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16, 6, defaultColor);
-            nvg.drawGradientRoundedRect(this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16, 6, color1, color2);
-
-            nvg.drawText(t.getName(), this.getX() + 15 + offsetX + ((textWidth + 20) - textWidth) / 2, this.getY() + offsetY + 1.5F, textColor, 9, Fonts.MEDIUM);
-
-            offsetX += (int) (textWidth + 28);
+            chipX += chipWidth + TYPE_CHIP_GAP;
         }
 
-        offsetX = 0;
-        offsetY = offsetY + 23;
+        for (int i = 0; i < visibleAddons.size(); i++) {
+            Addon addon = visibleAddons.get(i);
+            int column = i % 2;
+            int row = i / 2;
 
-        for (Addon a : addonManager.getAddons()) {
+            float cardX = this.getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP);
+            float cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP);
 
-
-            if (filterAddon(a)) {
+            if (cardY + scrollValue > this.getY() + this.getHeight() || cardY + scrollValue + CARD_HEIGHT < this.getY()) {
                 continue;
             }
 
-            if (offsetY + scrollValue + 100 > 0 && offsetY + scrollValue < this.getHeight()) {
+            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT);
+            addon.getAnimation().setAnimation(addon.isToggled() ? 1.0F : 0.0F, 16);
 
-                nvg.drawRoundedRect(this.getX() + offsetX + 15, this.getY() + offsetY, 105, 120, 4, palette.getBackgroundColor(ColorType.DARK));
-                nvg.drawRoundedImage(new ResourceLocation("shindo/logo.png"), this.getX() + offsetX + 20F, this.getY() + offsetY + 10, 95, 95, 4);
+            Color cardBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered ? 224 : 188);
+            Color overlayStart = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (addon.getAnimation().getValue() * 60));
+            Color overlayEnd = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (addon.getAnimation().getValue() * 60));
 
-                nvg.drawRoundedRect(this.getX() + offsetX + 20, this.getY() + offsetY + 5, 95, 15, 4, palette.getBackgroundColor(ColorType.NORMAL));
-                nvg.drawCenteredText(a.getName(), this.getX() + offsetX + 15 + 52.5F, this.getY() + offsetY + 9.5F, palette.getFontColor(ColorType.DARK), 7, Fonts.MEDIUM);
+            //nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10, 6);
+            nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12F, cardBase);
+            nvg.drawGradientRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12F, overlayStart, overlayEnd);
 
-                nvg.drawRoundedRect(this.getX() + offsetX + 20, this.getY() + offsetY + 100, 75F, 15, 4, palette.getBackgroundColor(ColorType.NORMAL));
+            float titleX = cardX + 16F;
+            float titleY = cardY + 18F;
+            float textWidth = cardWidth - 32F;
 
-                a.getAnimation().setAnimation(a.isToggled() ? 1.0F : 0.0F, 16);
+            nvg.drawText(addon.getName(), titleX, titleY, palette.getFontColor(ColorType.DARK), 11.5F, Fonts.MEDIUM);
 
-                nvg.save();
-                nvg.scale(this.getX() + offsetX + 20, this.getY() + offsetY + 100, 75F, 15, a.getAnimation().getValue());
-                nvg.drawGradientRoundedRect(this.getX() + offsetX + 20, this.getY() + offsetY + 100, 75F, 15, 4, ColorUtils.applyAlpha(accentColor.getColor1(), (int) (a.getAnimation().getValue() * 255)), ColorUtils.applyAlpha(accentColor.getColor2(), (int) (a.getAnimation().getValue() * 255)));
-                nvg.drawCenteredText("Enabled", this.getX() + offsetX + 20 + 37.5F, this.getY() + offsetY + 105, palette.getFontColor(ColorType.NORMAL), 7, Fonts.MEDIUM);
-                nvg.restore();
-                nvg.drawCenteredText(a.isToggled() ? "" : "Disabled", this.getX() + offsetX + 20 + 37.5F, this.getY() + offsetY + 105, palette.getFontColor(ColorType.NORMAL), 7, Fonts.MEDIUM);
+            String description = addon.getDescription() == null ? "" : addon.getDescription();
+            String wrapped = nvg.getLimitText(description, 8.5F, Fonts.REGULAR, textWidth);
+            nvg.drawText(wrapped, titleX, titleY + 16F, palette.getFontColor(ColorType.NORMAL), 8.5F, Fonts.REGULAR);
 
-                nvg.drawRoundedRect(this.getX() + offsetX + 100, this.getY() + offsetY + 100, 15, 15, 4, palette.getBackgroundColor(ColorType.NORMAL));
+            String typeName = addon.getType().getName();
+            //float badgeWidth = Math.max(42F, nvg.getTextWidth(typeName, 8F, Fonts.MEDIUM) + 20F);
+            //float badgeX = cardX + 16F;
+            //float badgeY = cardY + CARD_HEIGHT - 30F;
 
-                if (addonManager.getSettingByAddon(a) != null) {
-                    nvg.drawCenteredText(LegacyIcon.SETTINGS, this.getX() + offsetX + 107F, this.getY() + offsetY + 101, palette.getFontColor(ColorType.NORMAL), 13, Fonts.LEGACYICON);
-                }
+            //Color badgeBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 206);
+            //nvg.drawRoundedRect(badgeX, badgeY, badgeWidth, 18F, 6F, badgeBase);
+            //nvg.drawCenteredText(typeName, badgeX + badgeWidth / 2F, badgeY + 9F, palette.getFontColor(ColorType.DARK), 8F, Fonts.MEDIUM);
 
+            float toggleWidth = 68F;
+            float toggleHeight = 22F;
+            float toggleX = cardX + cardWidth - toggleWidth - 16F;
+            float toggleY = cardY + CARD_HEIGHT - toggleHeight - 18F;
+
+            Color toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 204);
+            Color toggleActiveStart = ColorUtils.applyAlpha(accentColor.getColor1(), 200);
+            Color toggleActiveEnd = ColorUtils.applyAlpha(accentColor.getColor2(), 200);
+
+            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, 12F, toggleBase);
+
+            nvg.save();
+            nvg.scale(toggleX, toggleY, toggleWidth, toggleHeight, addon.getAnimation().getValue());
+            nvg.drawGradientRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, 12F, toggleActiveStart, toggleActiveEnd);
+            nvg.restore();
+
+            String toggleLabel = addon.isToggled() ? TranslateText.STATUS_ENABLED.getText() : TranslateText.STATUS_DISABLED.getText();
+            nvg.drawCenteredText(toggleLabel, toggleX + toggleWidth / 2F, toggleY + toggleHeight / 2F, palette.getFontColor(ColorType.DARK), 8.5F, Fonts.MEDIUM);
+
+            ArrayList<Setting> settings = addonManager.getSettingByAddon(addon);
+            if (settings != null && !settings.isEmpty()) {
+                float settingsSize = 20F;
+                float settingsX = cardX + cardWidth - settingsSize - 16F;
+                float settingsY = cardY + 14F;
+
+                Color settingsBg = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered ? 208 : 176);
+                nvg.drawRoundedRect(settingsX, settingsY, settingsSize, settingsSize, 6F, settingsBg);
+                nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + settingsSize / 2F, settingsY + settingsSize / 2F, palette.getFontColor(ColorType.DARK), 10F, Fonts.LEGACYICON);
             }
-
-            offsetX += 130;
-
-            if (index % 3 == 0) {
-                offsetX = 0;
-                offsetY += 115;
-            }
-
-            index++;
         }
 
         nvg.restore();
@@ -173,132 +208,46 @@ public class AddonCategory extends Category {
 
         if (currentAddon != null) {
 
-            int setIndex = 0;
-
             if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight())) {
                 settingScroll.onScroll();
                 settingScroll.onAnimation();
             }
 
-            offsetY = 15;
-            offsetX = 0;
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+
+            float headerX = this.getX() + 15;
+            float headerY = this.getY() + 15;
+            float headerWidth = this.getWidth() - 30;
+            float headerHeight = this.getHeight() - 30;
+
+            nvg.drawRoundedRect(headerX, headerY, headerWidth, headerHeight, 10, palette.getBackgroundColor(ColorType.DARK));
+            //nvg.drawRoundedRect(headerX + 1F, headerY + 1F, headerWidth - 2F, headerHeight - 2F, 9F,ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
+            nvg.drawText(LegacyIcon.CHEVRON_LEFT, headerX + 10, headerY + 8, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
+            nvg.drawText(currentAddon.getName(), headerX + 27, headerY + 9, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
+            nvg.drawText(LegacyIcon.REFRESH, headerX + headerWidth - 24, headerY + 7.5F, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
+
+            float contentX = this.getX() + 25;
+            float contentY = headerY + 32;
+            float contentWidth = this.getWidth() - 50;
+            float viewportHeight2 = headerHeight - 47;
 
             nvg.save();
-
-            nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY, this.getWidth() - 30, this.getHeight() - 30, 10, palette.getBackgroundColor(ColorType.DARK));
-            nvg.drawText(LegacyIcon.CHEVRON_LEFT, this.getX() + 25, this.getY() + offsetY + 8, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
-            nvg.drawText(currentAddon.getName(), this.getX() + 42, this.getY() + offsetY + 9, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
-            nvg.drawText(LegacyIcon.REFRESH, this.getX() + this.getWidth() - 39, this.getY() + offsetY + 7.5F, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
-
-            offsetY = 44;
-
-            nvg.scissor(this.getX() + 15, this.getY() + offsetY, this.getWidth() - 30, this.getHeight() - 59);
-            nvg.translate(0, settingScroll.getValue());
-
-            for (AddonsSetting s : comps) {
-
-                s.openAnimation.setAnimation(s.openY, 16);
-
-                nvg.drawText(s.setting.getName(), this.getX() + offsetX + 26, this.getY() + offsetY + 15F + s.openAnimation.getValue(), palette.getFontColor(ColorType.DARK), 10, Fonts.MEDIUM);
-
-                if (s.comp instanceof CompToggleButton) {
-
-                    CompToggleButton toggleButton = (CompToggleButton) s.comp;
-
-                    toggleButton.setX(this.getX() + 368);
-                    toggleButton.setY(this.getY() + offsetY + 12 + s.openAnimation.getValue());
-                    toggleButton.setScale(0.85F);
-                }
-
-                if (s.comp instanceof CompSlider) {
-
-                    CompSlider slider = (CompSlider) s.comp;
-
-                    slider.setX(this.getX() + 322);
-                    slider.setY(this.getY() + offsetY + 17 + s.openAnimation.getValue());
-                    slider.setWidth(75);
-                }
-
-                if (s.comp instanceof CompComboBox) {
-
-                    CompComboBox comboBox = (CompComboBox) s.comp;
-
-                    comboBox.setX(this.getX() + 322);
-                    comboBox.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompKeybind) {
-
-                    CompKeybind keybind = (CompKeybind) s.comp;
-
-                    keybind.setX(this.getX() + 322);
-                    keybind.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompAddonTextBox) {
-
-                    CompAddonTextBox textBox = (CompAddonTextBox) s.comp;
-
-                    textBox.setX(this.getX() + 322);
-                    textBox.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                    textBox.setWidth(75);
-                    textBox.setHeight(16);
-                }
-
-                if (s.comp instanceof CompColorPicker) {
-
-                    CompColorPicker picker = (CompColorPicker) s.comp;
-
-                    picker.setX(this.getX() + 298);
-                    picker.setY(this.getY() + offsetY + 12.5F + s.openAnimation.getValue());
-                    picker.setScale(0.8F);
-                }
-
-                if (s.comp instanceof CompImageSelect) {
-
-                    CompImageSelect imageSelect = (CompImageSelect) s.comp;
-
-                    imageSelect.setX(this.getX() + 381);
-                    imageSelect.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompSoundSelect) {
-
-                    CompSoundSelect soundSelect = (CompSoundSelect) s.comp;
-
-                    soundSelect.setX(this.getX() + 381);
-                    soundSelect.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompCategory) {
-                    CompCategory categorySetting = (CompCategory) s.comp;
-
-                    categorySetting.setX(this.getX() + 20);
-                    categorySetting.setY(this.getY() + offsetY + 25 + s.openAnimation.getValue());
-
-                }
-
-
-                s.comp.draw(mouseX, (int) (mouseY - settingScroll.getValue()), partialTicks);
-
-
-                offsetY += 29;
-            }
-
+            nvg.scissor(headerX + 5, contentY - 5, headerWidth - 10, viewportHeight2 + 10);
+            settingsPanel.draw(mouseX, mouseY, partialTicks, contentX, contentY, contentWidth, viewportHeight2, nvg, palette, settingScroll);
             nvg.restore();
-
-            settingScroll.setMaxScroll(this.getAddonSettingHeight());
         }
 
         nvg.restore();
 
         int scrollMax = 0;
 
-        if (index > 3) {
-            scrollMax += (int) Math.ceil((index - 3) / 3.0);
+        if (!visibleAddons.isEmpty()) {
+            float totalRows = (float) Math.ceil(visibleAddons.size() / 2.0);
+            float contentHeight = totalRows * CARD_HEIGHT + Math.max(0, totalRows - 1) * CARD_ROW_GAP;
+            scrollMax = (int) Math.max(0, contentHeight - viewportHeight);
         }
 
-        scroll.setMaxScroll(scrollMax * 56);
+        scroll.setMaxScroll(scrollMax);
     }
 
     @Override
@@ -307,232 +256,106 @@ public class AddonCategory extends Category {
         NanoVGManager nvg = instance.getNanoVGManager();
         AddonManager addonManager = instance.getAddonManager();
 
-        int index = 1;
-        int offsetX = 0;
-        float offsetY = 13 + scroll.getValue();
+        float scrollValue = scroll.getValue();
+        float contentStartY = this.getY() + 52F;
+        float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
 
         if (!openSetting) {
+            float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
+            float chipY = this.getY() + 16F;
             for (AddonType t : AddonType.values()) {
 
-                float textWidth = nvg.getTextWidth(t.getName(), 9, Fonts.MEDIUM);
+                float textWidth = nvg.getTextWidth(t.getName(), 9.5F, Fonts.MEDIUM);
+                float chipWidth = textWidth + (CHIP_HORIZONTAL_PADDING * 2);
 
-                if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16) && mouseButton == 0) {
+                if (MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT) && mouseButton == 0) {
                     currentType = t;
                     scroll.reset();
+                    scroll.onAnimation();
                 }
 
-                offsetX += (int) (textWidth + 28);
+                chipX += chipWidth + TYPE_CHIP_GAP;
             }
-            offsetX = 0;
-            offsetY = offsetY + 23;
 
-            for (Addon a : addonManager.getAddons()) {
+            ArrayList<Addon> visibleAddons = collectVisibleAddons(addonManager);
+            for (int i = 0; i < visibleAddons.size(); i++) {
+                Addon addon = visibleAddons.get(i);
+                int column = i % 2;
+                int row = i / 2;
 
-                if (filterAddon(a)) {
+                float cardX = this.getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP);
+                float cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP);
+
+                if (!MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)) {
                     continue;
                 }
 
-                if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight()) && mouseButton == 0) {
-                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + offsetX + 20, this.getY() + offsetY + 100, 75F, 15F)) {
-                        a.toggle();
+                if (mouseButton == 0) {
+                    float toggleWidth = 68F;
+                    float toggleHeight = 22F;
+                    float toggleX = cardX + cardWidth - toggleWidth - 16F;
+                    float toggleY = cardY + CARD_HEIGHT - toggleHeight - 18F + scrollValue;
+
+                    if (MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
+                        addon.toggle();
+                        return;
                     }
 
+                    ArrayList<Setting> settings = addonManager.getSettingByAddon(addon);
+                    if (settings != null && !settings.isEmpty()) {
+                        float settingsSize = 20F;
+                        float settingsX = cardX + cardWidth - settingsSize - 16F;
+                        float settingsY = cardY + 14F + scrollValue;
 
-                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + offsetX + 100, this.getY() + offsetY + 100, 15, 15) && !openSetting) {
+                        if (MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, settingsSize, settingsSize)) {
 
-                        ArrayList<AddonSetting> settings = addonManager.getSettingByAddon(a);
-                        int setIndex = 0;
-
-                        offsetX = 0;
-                        offsetY = 44;
-
-                        if (settings != null) {
-
-                            comps.clear();
-
-                            for (AddonSetting s : settings) {
-
-                                if (s instanceof BooleanSetting) {
-
-                                    BooleanSetting bSetting = (BooleanSetting) s;
-
-                                    CompToggleButton toggleButton = new CompToggleButton(bSetting);
-
-                                    toggleButton.setX(this.getX() + 368);
-                                    toggleButton.setY(this.getY() + offsetY + 8);
-                                    toggleButton.setScale(0.85F);
-
-                                    comps.add(new AddonsSetting(s, toggleButton));
-                                }
-
-                                if (s instanceof NumberSetting) {
-
-                                    NumberSetting nSetting = (NumberSetting) s;
-
-                                    CompSlider slider = new CompSlider(nSetting);
-
-                                    slider.setX(this.getX() + 322);
-                                    slider.setY(this.getY() + offsetY + 13);
-                                    slider.setWidth(75);
-
-                                    comps.add(new AddonsSetting(s, slider));
-                                }
-
-                                if (s instanceof ComboSetting) {
-
-                                    ComboSetting cSetting = (ComboSetting) s;
-
-                                    CompComboBox comboBox = new CompComboBox(75, cSetting);
-
-                                    comboBox.setX(this.getX() + 322);
-                                    comboBox.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new AddonsSetting(s, comboBox));
-                                }
-
-                                if (s instanceof ImageSetting) {
-
-                                    ImageSetting iSetting = (ImageSetting) s;
-                                    CompImageSelect imageSelect = new CompImageSelect(iSetting);
-
-                                    imageSelect.setX(this.getX() + 381);
-                                    imageSelect.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new AddonsSetting(s, imageSelect));
-                                }
-
-                                if (s instanceof SoundSetting) {
-
-                                    SoundSetting sSetting = (SoundSetting) s;
-                                    CompSoundSelect soundSelect = new CompSoundSelect(sSetting);
-
-                                    soundSelect.setX(this.getX() + 381);
-                                    soundSelect.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new AddonsSetting(s, soundSelect));
-                                }
-
-                                if (s instanceof KeybindSetting) {
-
-                                    KeybindSetting kSetting = (KeybindSetting) s;
-                                    CompKeybind keybind = new CompKeybind(75, kSetting);
-
-                                    keybind.setX(this.getX() + 322);
-                                    keybind.setY(this.getY() + offsetY + 7);
-
-                                    comps.add(new AddonsSetting(s, keybind));
-                                }
-
-                                if (s instanceof TextSetting) {
-
-                                    TextSetting tSetting = (TextSetting) s;
-
-                                    CompAddonTextBox textBox = new CompAddonTextBox(tSetting);
-
-                                    textBox.setX(this.getX() + 322);
-                                    textBox.setY(this.getY() + offsetY + 7);
-                                    textBox.setWidth(75);
-                                    textBox.setHeight(16);
-
-                                    comps.add(new AddonsSetting(s, textBox));
-                                }
-
-                                if (s instanceof ColorSetting) {
-
-                                    ColorSetting cSetting = (ColorSetting) s;
-                                    CompColorPicker picker = new CompColorPicker(cSetting);
-
-                                    picker.setX(this.getX() + 298);
-                                    picker.setY(this.getY() + offsetY + 8.5F);
-                                    picker.setScale(0.8F);
-
-                                    comps.add(new AddonsSetting(s, picker));
-                                }
-
-                                if (s instanceof CategorySetting) {
-                                    CategorySetting cSetting = (CategorySetting) s;
-
-                                    CompCategory category = new CompCategory(this.getWidth() - 45, cSetting);
-
-                                    category.setX(this.getX() + 20);
-                                    category.setY(this.getY() + offsetY + 25);
-
-                                    comps.add(new AddonsSetting(s, category));
-                                }
-
-
-                                offsetY += 29;
-                            }
-
+                            settingsPanel.buildEntries(settings);
                             settingScroll.resetAll();
-                            currentAddon = a;
+                            currentAddon = addon;
                             openSetting = true;
                             this.setCanClose(false);
+                            return;
                         }
                     }
                 }
-
-                offsetX += 130;
-
-                if (index % 3 == 0) {
-                    offsetX = 0;
-                    offsetY += 115;
-                }
-
-                index++;
             }
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
             if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 22, this.getY() + 20, 18, 18) && mouseButton == 0) {
                 openSetting = false;
+                settingsPanel.clear();
+                return;
             }
             int x = getX() - 32, y = getY() - 31, width = getWidth() + 32, height = getHeight() + 31;
             if (!MouseUtils.isInside(mouseX, mouseY, x - 5, y - 5, width + 10, height + 10) && mouseButton == 0) {
                 openSetting = false;
+                settingsPanel.clear();
+                return;
             }
 
-            for (AddonsSetting s : comps) {
+            float headerX = this.getX() + 15;
+            float headerY = this.getY() + 15;
+            float headerWidth = this.getWidth() - 30;
+            float headerHeight = this.getHeight() - 30;
+            float contentX = this.getX() + 25;
+            float contentY = headerY + 32;
+            float contentWidth = this.getWidth() - 50;
+            float viewportHeight = headerHeight - 47;
 
-                if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight()) && mouseButton == 0) {
-
-                    s.comp.mouseClicked(mouseX, (int) (mouseY - settingScroll.getValue()), mouseButton);
-
-                    if (s.comp instanceof CompColorPicker) {
-
-                        CompColorPicker picker = (CompColorPicker) s.comp;
-                        int openIndex = 1;
-
-                        if (!picker.isInsideOpen(mouseX, (int) (mouseY - settingScroll.getValue()))) {
-                            continue;
-                        }
-
-                        for (int i = 0; i < comps.size(); i++) {
-
-                            if ((openIndex * 2) + (comps.indexOf(s)) < comps.size()) {
-
-                                AddonsSetting s2 = comps.get((openIndex * 2) + (comps.indexOf(s)));
-                                int add = picker.isShowAlpha() ? 100 : 85;
-
-                                s2.openY += picker.isOpen() ? add : -add;
-                            }
-
-                            openIndex++;
-                        }
-                    }
-                }
+            if (settingsPanel.mouseClicked(mouseX, mouseY, mouseButton, contentX, contentY, contentWidth, viewportHeight, settingScroll)) {
+                return;
             }
 
-            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 41, this.getY() + 15 + 6F, 16, 16) && mouseButton == 0) {
-
-                for (AddonsSetting s : comps) {
-                    s.setting.reset();
-                }
+            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 41, this.getY() + 21, 16, 16) && mouseButton == 0) {
+                settingsPanel.resetSettings();
             }
         }
 
         if (openSetting && mouseButton == 3) {
             openSetting = false;
+            settingsPanel.clear();
         }
 
 
@@ -540,45 +363,30 @@ public class AddonCategory extends Category {
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-
-        for (AddonsSetting s : comps) {
-
-            if (mouseButton == 0) {
-                s.comp.mouseReleased(mouseX, mouseY, mouseButton);
-            }
+        if (currentAddon != null) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+            settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll);
         }
     }
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-
-        boolean binding = false;
-
-        for (AddonsSetting s : comps) {
-
-            if (s.comp instanceof CompKeybind) {
-
-                CompKeybind keybind = (CompKeybind) s.comp;
-
-                if (keybind.isBinding()) {
-                    binding = true;
-                }
-            }
-
-            s.comp.keyTyped(typedChar, keyCode);
-        }
-
-        if (binding) {
-            return;
+        if (currentAddon != null) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+            settingsPanel.keyTyped(typedChar, keyCode);
         }
 
         if (openSetting && keyCode == Keyboard.KEY_ESCAPE) {
             openSetting = false;
+            settingsPanel.clear();
+            return;
         }
+
         if (!openSetting) {
             scroll.onKey(keyCode);
-            if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE)
+            if (keyCode != Keyboard.KEY_DOWN && keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_ESCAPE) {
                 this.getSearchBox().setFocused(true);
+            }
         }
     }
 
@@ -591,44 +399,14 @@ public class AddonCategory extends Category {
         return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimilar(Shindo.getInstance().getAddonManager().getWords(a), this.getSearchBox().getText());
     }
 
-    private int getAddonSettingHeight() {
-
-        int oddOutput = 0;
-        int evenOutput = 0;
-        int oddTotal = 0;
-        int evenTotal = 0;
-
-        for (int i = 0; i < comps.size(); i++) {
-
-            oddOutput += 29;
-
-            AddonsSetting s = comps.get(i);
-            if (s.comp instanceof CompColorPicker) {
-                CompColorPicker picker = (CompColorPicker) s.comp;
-                if (picker.isOpen()) {
-                    int add = picker.isShowAlpha() ? 100 : 85;
-                    oddTotal += add;
-                }
+    private ArrayList<Addon> collectVisibleAddons(AddonManager addonManager) {
+        ArrayList<Addon> visible = new ArrayList<Addon>();
+        for (Addon addon : addonManager.getAddons()) {
+            if (!filterAddon(addon)) {
+                visible.add(addon);
             }
         }
-
-        int output = Math.max(oddOutput, evenOutput) + Math.max(oddTotal, evenTotal);
-
-        return Math.max(0, output - (this.getHeight() - 72));
+        return visible;
     }
 
-    private static class AddonsSetting {
-
-        private final SimpleAnimation openAnimation = new SimpleAnimation();
-
-        private final AddonSetting setting;
-        private final Comp comp;
-        private float openY;
-
-        public AddonsSetting(AddonSetting setting, Comp comp) {
-            this.setting = setting;
-            this.comp = comp;
-            this.openY = 0;
-        }
-    }
 }

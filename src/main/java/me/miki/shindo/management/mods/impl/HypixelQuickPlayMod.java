@@ -6,12 +6,14 @@ import me.miki.shindo.management.event.impl.EventKey;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
 import org.lwjgl.input.Keyboard;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class HypixelQuickPlayMod extends Mod {
 
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_N);
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_N)
+    private int keybindSetting = Keyboard.KEY_N;
 
     public HypixelQuickPlayMod() {
         super(TranslateText.HYPIXEL_QUICK_PLAY, TranslateText.HYPIXEL_QUICK_PLAY_DESCRIPTION, ModCategory.PLAYER);
@@ -20,7 +22,7 @@ public class HypixelQuickPlayMod extends Mod {
     @EventTarget
     public void onKey(EventKey event) {
 
-        if (event.getKeyCode() == keybindSetting.getKeyCode()) {
+        if (event.getKeyCode() == keybindSetting) {
             mc.displayGuiScreen(new GuiQuickPlay());
         }
     }

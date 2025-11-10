@@ -8,7 +8,6 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
 import me.miki.shindo.management.mods.impl.minimap.ChunkAtlas;
 import me.miki.shindo.management.mods.impl.minimap.ChunkTile;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.GlUtils;
 import me.miki.shindo.utils.buffer.ScreenStencil;
@@ -22,11 +21,16 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class MinimapMod extends HUDMod {
 
-    private final NumberSetting widthSetting = new NumberSetting(TranslateText.WIDTH, this, 150, 10, 180, true);
-    private final NumberSetting heightSetting = new NumberSetting(TranslateText.HEIGHT, this, 70, 10, 180, true);
-    private final NumberSetting alphaSetting = new NumberSetting(TranslateText.ALPHA, this, 1F, 0.0F, 1F, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 10, max = 180, current = 150, step = 1)
+    private int widthSetting = 150;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT, min = 10, max = 180, current = 70, step = 1)
+    private int heightSetting = 70;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0F, max = 1F, current = 1F)
+    private double alphaSetting = 1F;
 
     private final ScreenStencil stencil = new ScreenStencil();
     private ChunkAtlas chunkAtlas;
@@ -44,8 +48,8 @@ public class MinimapMod extends HUDMod {
     public void onRender2D(EventRender2D event) {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
-        int width = widthSetting.getValueInt();
-        int height = heightSetting.getValueInt();
+        int width = widthSetting;
+        int height = heightSetting;
 
         nvg.setupAndDraw(() -> {
             nvg.drawShadow(this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale());
@@ -54,7 +58,7 @@ public class MinimapMod extends HUDMod {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
 
-        stencil.wrap(() -> drawMap(event.getPartialTicks()), this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale(), alphaSetting.getValueFloat());
+        stencil.wrap(() -> drawMap(event.getPartialTicks()), this.getX(), this.getY(), width * this.getScale(), height * this.getScale(), 6 * this.getScale(), (float) alphaSetting);
 
         this.setWidth(width);
         this.setHeight(height);
@@ -62,8 +66,8 @@ public class MinimapMod extends HUDMod {
 
     private void drawMap(float partialTicks) {
 
-        int width = widthSetting.getValueInt();
-        int height = heightSetting.getValueInt();
+        int width = widthSetting;
+        int height = heightSetting;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
         EntityPlayer p = mc.thePlayer;

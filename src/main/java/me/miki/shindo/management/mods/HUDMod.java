@@ -1,14 +1,14 @@
 package me.miki.shindo.management.mods;
 
 import eu.shoroa.contrib.render.ShBlur;
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiEditHUD;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Font;
 import me.miki.shindo.management.nanovg.font.Fonts;
@@ -18,10 +18,17 @@ import net.minecraft.util.ResourceLocation;
 import java.awt.*;
 import java.io.File;
 
+@Getter
 public class HUDMod extends Mod {
 
+
+
+    @Setter
     private int x, y, draggingX, draggingY, width, height;
+
     private float scale;
+
+    @Setter
     private boolean dragging, draggable;
 
     public HUDMod(TranslateText nameTranslate, TranslateText descriptionText) {
@@ -182,21 +189,20 @@ public class HUDMod extends Mod {
         NanoVGManager nvg = instance.getNanoVGManager();
         ColorManager colorManager = instance.getColorManager();
         AccentColor currentColor = colorManager.getCurrentColor();
-        ComboSetting setting = InternalSettingsMod.getInstance().getModThemeSetting();
-        Option theme = setting.getOption();
+        InternalSettingsMod.HudTheme theme = InternalSettingsMod.getInstance().getHudTheme();
 
-        boolean isNormal = theme.getTranslate().equals(TranslateText.NORMAL);
-        boolean isVanilla = theme.getTranslate().equals(TranslateText.VANILLA);
-        boolean isGlow = theme.getTranslate().equals(TranslateText.GLOW);
-        boolean isVanillaGlow = theme.getTranslate().equals(TranslateText.VANILLA_GLOW);
-        boolean isOutline = theme.getTranslate().equals(TranslateText.OUTLINE);
-        boolean isOutlineGlow = theme.getTranslate().equals(TranslateText.OUTLINE_GLOW);
-        boolean isShadow = theme.getTranslate().equals(TranslateText.SHADOW);
-        boolean isDark = theme.getTranslate().equals(TranslateText.DARK);
-        boolean isLight = theme.getTranslate().equals(TranslateText.LIGHT);
-        boolean isRect = theme.getTranslate().equals(TranslateText.RECT);
-        boolean isModern = theme.getTranslate().equals(TranslateText.MODERN);
-        boolean isSimpGrad = theme.getTranslate().equals(TranslateText.GRADIENT_SIMPLE);
+        boolean isNormal = theme == InternalSettingsMod.HudTheme.NORMAL;
+        boolean isVanilla = theme == InternalSettingsMod.HudTheme.VANILLA;
+        boolean isGlow = theme == InternalSettingsMod.HudTheme.GLOW;
+        boolean isVanillaGlow = theme == InternalSettingsMod.HudTheme.VANILLA_GLOW;
+        boolean isOutline = theme == InternalSettingsMod.HudTheme.OUTLINE;
+        boolean isOutlineGlow = theme == InternalSettingsMod.HudTheme.OUTLINE_GLOW;
+        boolean isShadow = theme == InternalSettingsMod.HudTheme.SHADOW;
+        boolean isDark = theme == InternalSettingsMod.HudTheme.DARK;
+        boolean isLight = theme == InternalSettingsMod.HudTheme.LIGHT;
+        boolean isRect = theme == InternalSettingsMod.HudTheme.RECT;
+        boolean isModern = theme == InternalSettingsMod.HudTheme.MODERN;
+        boolean isSimpGrad = theme == InternalSettingsMod.HudTheme.GRADIENT_SIMPLE;
         boolean isBlur = InternalSettingsMod.getInstance().getBlurSetting().isToggled();
 
         float lastWidth = width * scale;
@@ -265,8 +271,8 @@ public class HUDMod extends Mod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
         float lastSize = size * scale;
-        Option theme = InternalSettingsMod.getInstance().getModThemeSetting().getOption();
-        boolean isText = theme.getTranslate().equals(TranslateText.TEXT);
+        InternalSettingsMod.HudTheme theme = InternalSettingsMod.getInstance().getHudTheme();
+        boolean isText = theme == InternalSettingsMod.HudTheme.TEXT;
 
         if (isText) {
             nvg.save();
@@ -317,11 +323,10 @@ public class HUDMod extends Mod {
 
     public Color getFontColor(int alpha) {
 
-        ComboSetting setting = InternalSettingsMod.getInstance().getModThemeSetting();
-        Option theme = setting.getOption();
+        InternalSettingsMod.HudTheme theme = InternalSettingsMod.getInstance().getHudTheme();
 
-        boolean isDark = theme.getTranslate().equals(TranslateText.DARK);
-        boolean isLight = theme.getTranslate().equals(TranslateText.LIGHT);
+        boolean isDark = theme == InternalSettingsMod.HudTheme.DARK;
+        boolean isLight = theme == InternalSettingsMod.HudTheme.LIGHT;
 
         if (isDark || isLight) {
             return Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(alpha);
@@ -338,64 +343,12 @@ public class HUDMod extends Mod {
         return mc.currentScreen instanceof GuiEditHUD;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getDraggingX() {
-        return draggingX;
-    }
-
-    public void setDraggingX(int draggingX) {
-        this.draggingX = draggingX;
-    }
-
-    public int getDraggingY() {
-        return draggingY;
-    }
-
-    public void setDraggingY(int draggingY) {
-        this.draggingY = draggingY;
-    }
-
     public int getWidth() {
         return (int) (width * scale);
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return (int) (height * scale);
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public boolean isDragging() {
-        return dragging;
-    }
-
-    public void setDragging(boolean dragging) {
-        this.dragging = dragging;
-    }
-
-    public float getScale() {
-        return scale;
     }
 
     public void setScale(float scale) {
@@ -414,14 +367,6 @@ public class HUDMod extends Mod {
         }
 
         this.scale = scale;
-    }
-
-    public boolean isDraggable() {
-        return draggable;
-    }
-
-    public void setDraggable(boolean draggable) {
-        this.draggable = draggable;
     }
 
     public Font getHudFont(int in) {

@@ -1,6 +1,9 @@
 package me.miki.shindo.management.cosmetic.wing.layer;
 
+import me.miki.shindo.Shindo;
 import me.miki.shindo.injection.interfaces.IMixinModelBase;
+import me.miki.shindo.management.cosmetic.wing.WingManager;
+import me.miki.shindo.management.cosmetic.wing.impl.Wing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBase;
@@ -9,7 +12,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class WingRenderLayer implements LayerRenderer<AbstractClientPlayer> {
@@ -49,21 +51,34 @@ public class WingRenderLayer implements LayerRenderer<AbstractClientPlayer> {
         wing.addChild(wingTip);
 
         this.modelDragonWings.textureWidth = bw;
-        this.modelDragonWings.textureWidth = bh;
+        this.modelDragonWings.textureHeight = bh;
     }
 
     @Override
     public void doRenderLayer(AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float HeadYaw, float headPitch, float scale) {
 
-        if (player.getName().equals(mc.thePlayer.getName())) {
-            if (player.isSneaking()) {
-                GL11.glTranslated(0.0D, 0.225D, 0.0D);
-            }
+        if (mc.thePlayer == null || !player.getUniqueID().equals(mc.thePlayer.getUniqueID())) {
+            return;
+        }
 
-            GlStateManager.pushMatrix();
-            this.modelDragonWings.render(player, limbSwing, limbSwingAmount, ageInTicks, HeadYaw, headPitch, scale);
-            this.modelDragonWings.setRotationAngles(scale, limbSwing, limbSwingAmount, ageInTicks, HeadYaw, headPitch, player);
-            GL11.glPopMatrix();
+        WingManager wingManager = Shindo.getInstance().getWingManager();
+        Wing activeWing = wingManager != null ? wingManager.getCurrentWing() : null;
+        if (activeWing == null || activeWing.getWing() == null) {
+            return;
+        }
+
+        mc.getTextureManager().bindTexture(activeWing.getWing());
+
+        if (player.isSneaking()) {
+            GL11.glTranslated(0.0D, 0.225D, 0.0D);
+        }
+
+        GlStateManager.pushMatrix();
+        this.modelDragonWings.render(player, limbSwing, limbSwingAmount, ageInTicks, HeadYaw, headPitch, scale);
+        this.modelDragonWings.setRotationAngles(scale, limbSwing, limbSwingAmount, ageInTicks, HeadYaw, headPitch, player);
+        GL11.glPopMatrix();
+        if (!player.isSneaking()) {
+            GL11.glTranslated(0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -83,7 +98,6 @@ public class WingRenderLayer implements LayerRenderer<AbstractClientPlayer> {
                 f1 = ageInTicks / 80.0F;
             }
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("shindo/cosmetics/wing/test.png"));
             float anSpeed = 100.0F;
             if (!entityIn.onGround || WingRenderLayer.this.flying) {
                 anSpeed = 50.0F;
@@ -121,6 +135,7 @@ public class WingRenderLayer implements LayerRenderer<AbstractClientPlayer> {
             }
 
             GlStateManager.popMatrix();
+            WingRenderLayer.this.flying = !entityIn.onGround;
         }
     }
 }

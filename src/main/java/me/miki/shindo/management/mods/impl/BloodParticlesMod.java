@@ -6,8 +6,6 @@ import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import net.minecraft.block.Block;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,10 +13,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class BloodParticlesMod extends Mod {
 
-    private final NumberSetting amountSetting = new NumberSetting(TranslateText.AMOUNT, this, 2, 1, 10, true);
-    private final BooleanSetting soundSetting = new BooleanSetting(TranslateText.SOUND, this, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AMOUNT, min = 1, max = 10, current = 2, step = 1)
+    private int amountSetting = 2;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)
+    private boolean soundSetting = true;
+
     private EntityLivingBase target;
 
     public BloodParticlesMod() {
@@ -33,12 +37,12 @@ public class BloodParticlesMod extends Mod {
         }
 
         if (target != null) {
-            for (int i = 0; i < amountSetting.getValueInt(); i++) {
+            for (int i = 0; i < amountSetting; i++) {
                 mc.theWorld.spawnParticle(EnumParticleTypes.BLOCK_CRACK, target.posX, target.posY + target.height - 0.75, target.posZ, 0, 0, 0, Block.getStateId(Blocks.redstone_block.getDefaultState()));
             }
         }
 
-        if (soundSetting.isToggled() && target != null) {
+        if (soundSetting && target != null) {
             mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation("dig.stone"), 4.0F, 1.2F, ((float) target.posX), ((float) target.posY), ((float) target.posZ)));
         }
     }

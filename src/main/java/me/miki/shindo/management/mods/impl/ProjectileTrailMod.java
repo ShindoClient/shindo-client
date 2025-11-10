@@ -5,9 +5,9 @@ import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.impl.projectiletrail.ProjectileTrailType;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFishHook;
@@ -21,16 +21,8 @@ import java.util.Random;
 public class ProjectileTrailMod extends Mod {
 
     private final ArrayList<Object> throwables = new ArrayList<>();
-    private final ComboSetting mode = new ComboSetting(TranslateText.TYPE, this, TranslateText.HEARTS, new ArrayList<Option>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            for (ProjectileTrailType t : ProjectileTrailType.values()) {
-                add(new Option(t.getNameTranslate()));
-            }
-        }
-    });
-    private ProjectileTrailType type;
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    private ProjectileTrailType type = ProjectileTrailType.HEARTS;
     private int ticks;
 
     public ProjectileTrailMod() {
@@ -40,7 +32,7 @@ public class ProjectileTrailMod extends Mod {
     @EventTarget
     public void onUpdate(EventUpdate event) {
 
-        type = ProjectileTrailType.getTypeByKey(mode.getOption().getNameKey());
+        ProjectileTrailType currentType = type;
         ticks = ticks >= 20 ? 0 : ticks + 2;
 
         updateThrowables();
@@ -50,7 +42,7 @@ public class ProjectileTrailMod extends Mod {
             Entity entity = iterator.next();
 
             if (entity != null && (isValidEntity(entity) || throwables.contains(entity)) && entity.getDistanceToEntity(mc.thePlayer) > 3.0F) {
-                spawnParticle(type, entity.getPositionVector());
+                spawnParticle(currentType, entity.getPositionVector());
             }
         }
     }

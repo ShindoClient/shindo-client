@@ -4,12 +4,14 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class PlayerCounterMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean iconSetting = true;
 
     public PlayerCounterMod() {
         super(TranslateText.PLAYER_COUNTER, TranslateText.PLAYER_COUNTER_DESCRIPTION);
@@ -27,6 +29,6 @@ public class PlayerCounterMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.USERS : null;
+        return iconSetting ? LegacyIcon.USERS : null;
     }
 }

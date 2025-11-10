@@ -10,8 +10,6 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.impl.hypixel.HypixelGameMode;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.ServerUtils;
@@ -29,23 +27,33 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class HypixelMod extends Mod {
 
     @Getter
     private static HypixelMod instance;
 
-    private final BooleanSetting autoggSetting = new BooleanSetting(TranslateText.AUTO_GG, this, false);
-    private final NumberSetting autoggDelaySetting = new NumberSetting(TranslateText.AUTO_GG_DELAY, this, 3, 0, 5, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GG)
+    private boolean autoggSetting = false;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_GG_DELAY, min = 0, max = 5, current = 3, step = 1)
+    private int autoggDelaySetting = 3;
 
-    private final BooleanSetting autoglSetting = new BooleanSetting(TranslateText.AUTO_GL, this, false);
-    private final NumberSetting autoglDelaySetting = new NumberSetting(TranslateText.AUTO_GL_DELAY, this, 1, 0, 5, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GL)
+    private boolean autoglSetting = false;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_GL_DELAY, min = 0, max = 5, current = 1, step = 1)
+    private int autoglDelaySetting = 1;
 
-    private final BooleanSetting autoPlaySetting = new BooleanSetting(TranslateText.AUTO_PLAY, this, false);
-    private final NumberSetting autoPlayDelaySetting = new NumberSetting(TranslateText.AUTO_PLAY_DELAY, this, 3, 0, 5, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_PLAY)
+    private boolean autoPlaySetting = false;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_PLAY_DELAY, min = 0, max = 5, current = 3, step = 1)
+    private int autoPlayDelaySetting = 3;
 
-    private final BooleanSetting autoTipSetting = new BooleanSetting(TranslateText.AUTO_TIP, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_TIP)
+    private boolean autoTipSetting = true;
 
-    private final BooleanSetting antiLSetting = new BooleanSetting(TranslateText.ANTI_L, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANTI_L)
+    private boolean antiLSetting = false;
 
     private final TimerUtils tipTimer = new TimerUtils();
 
@@ -96,7 +104,7 @@ public class HypixelMod extends Mod {
             }
         }
 
-        if (autoTipSetting.isToggled()) {
+        if (autoTipSetting) {
             if (tipTimer.delay(1200000)) {
                 mc.thePlayer.sendChatMessage("/tip all");
                 tipTimer.reset();
@@ -144,17 +152,17 @@ public class HypixelMod extends Mod {
             S02PacketChat chatPacket = (S02PacketChat) event.getPacket();
             String chatMessage = chatPacket.getChatComponent().getUnformattedText();
 
-            if (antiLSetting.isToggled()) {
+            if (antiLSetting) {
                 Pattern regex = Pattern.compile(".*\\b[Ll]+\\b.*");
                 Matcher matcher = regex.matcher(chatMessage);
 
                 event.setCancelled(matcher.find());
             }
 
-            if (autoglSetting.isToggled() && chatMessage.contains("The game starts in 5")) {
+            if (autoglSetting && chatMessage.contains("The game starts in 5")) {
                 Multithreading.schedule(() -> {
                     mc.thePlayer.sendChatMessage("/achat gl");
-                }, autoglDelaySetting.getValueInt(), TimeUnit.SECONDS);
+                }, autoglDelaySetting, TimeUnit.SECONDS);
             }
         }
 
@@ -164,10 +172,10 @@ public class HypixelMod extends Mod {
             if (titlePacket.getMessage() != null) {
                 String title = titlePacket.getMessage().getFormattedText();
 
-                if (autoggSetting.isToggled() && title.startsWith("\2476\247l") && title.endsWith("\247r")) {
+                if (autoggSetting && title.startsWith("\2476\247l") && title.endsWith("\247r")) {
                     Multithreading.schedule(() -> {
                         mc.thePlayer.sendChatMessage("/achat gg");
-                    }, autoggDelaySetting.getValueInt(), TimeUnit.SECONDS);
+                    }, autoggDelaySetting, TimeUnit.SECONDS);
                 }
 
                 if (title.startsWith("\2476\247l") && title.endsWith("\247r") || title.startsWith("\247c\247lY") && title.endsWith("\247r")) {
@@ -242,10 +250,10 @@ public class HypixelMod extends Mod {
     }
 
     private void sendNextGame() {
-        if (autoPlaySetting.isToggled()) {
+        if (autoPlaySetting) {
             Multithreading.schedule(() -> {
                 mc.thePlayer.sendChatMessage(currentMode.getCommand());
-            }, autoPlayDelaySetting.getValueInt(), TimeUnit.SECONDS);
+            }, autoPlayDelaySetting, TimeUnit.SECONDS);
         }
     }
 }

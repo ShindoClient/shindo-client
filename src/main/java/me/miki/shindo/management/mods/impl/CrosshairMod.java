@@ -7,9 +7,8 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.impl.crosshair.LayoutManager;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.CellGridSetting;
-import me.miki.shindo.management.mods.settings.impl.ColorSetting;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -20,9 +19,14 @@ public class CrosshairMod extends Mod {
 
     public static final LayoutManager layoutManager = new LayoutManager();
 
-    private final ColorSetting colorSetting = new ColorSetting(TranslateText.COLOR, this, Color.RED, false);
-    private final BooleanSetting hideThirdPersonViewSetting = new BooleanSetting(TranslateText.HIDE_THIRD_PERSON_VIEW, this, false);
-    private final CellGridSetting cellGridSetting = new CellGridSetting(TranslateText.DESIGN, this, layoutManager.getLayout(0));
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, category = "Display")
+    private Color crosshairColor = Color.RED;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_THIRD_PERSON_VIEW, category = "Display")
+    private boolean hideInThirdPerson;
+
+    @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN, category = "Design")
+    private boolean[][] crosshairLayout = layoutManager.getLayout(0);
 
     public CrosshairMod() {
         super(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER);
@@ -33,20 +37,29 @@ public class CrosshairMod extends Mod {
 
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 
-        if ((hideThirdPersonViewSetting.isToggled() && mc.gameSettings.thirdPersonView != 0)) {
+        if (hideInThirdPerson && mc.gameSettings.thirdPersonView != 0) {
             event.setCancelled(true);
         }
 
-        if ((!hideThirdPersonViewSetting.isToggled()) || (hideThirdPersonViewSetting.isToggled() && mc.gameSettings.thirdPersonView == 0)) {
+        if (!hideInThirdPerson || mc.gameSettings.thirdPersonView == 0) {
+            boolean[][] grid = crosshairLayout;
+            if (grid == null) {
+                return;
+            }
 
-            for (int row = 0; row < 11; row++) {
-                for (int col = 0; col < 11; col++) {
-                    if (cellGridSetting.getCells()[row][col] && isToggled()) {
-                        RenderUtils.drawRect(
-                                sr.getScaledWidth() / 2F - 5 + col,
+            boolean toggled = isToggled();
+            int rows = Math.min(grid.length, 11);
+            for (int row = 0; row < rows; row++) {
+                boolean[] cells = grid[row];
+                if (cells == null) {
+                    continue;
+                }
+                int cols = Math.min(cells.length, 11);
+                for (int col = 0; col < cols; col++) {
+                    if (cells[col] && toggled) {
+                        RenderUtils.drawRect(sr.getScaledWidth() / 2F - 5 + col,
                                 sr.getScaledHeight() / 2F - 5 + row,
-                                1, 1, colorSetting.getColor()
-                        );
+                                1, 1, crosshairColor);
                     }
                 }
             }

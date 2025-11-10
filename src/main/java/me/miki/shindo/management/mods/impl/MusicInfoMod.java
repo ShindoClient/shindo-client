@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.libs.spotify.model_objects.specification.ArtistSimplified;
 import me.miki.shindo.libs.spotify.model_objects.specification.Track;
@@ -10,13 +11,12 @@ import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.TextSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.management.music.LyricsManager;
 import me.miki.shindo.management.music.MusicManager;
 import me.miki.shindo.management.nanovg.NanoVGManager;
+import me.miki.shindo.management.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.impl.TextSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
@@ -26,16 +26,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfoCallback {
     private static final ResourceLocation PLACEHOLDER_IMAGE = new ResourceLocation("soar/music.png");
     private static final long LYRICS_SCROLL_DURATION = 500L;
+    @Getter
     private static MusicInfoMod instance;
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
-    private final BooleanSetting showLyricsSetting = new BooleanSetting(TranslateText.SHOW_LYRICS, this, true);
-    private final BooleanSetting romanizeJapaneseSetting = new BooleanSetting(TranslateText.ROMANIZE_JAPANESE, this, false);
-    private final BooleanSetting enableHotkeysSetting = new BooleanSetting(TranslateText.ENABLE_HOTKEYS, this, true);
-    private final ComboSetting designSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.SIMPLE, new ArrayList<Option>(Arrays.asList(new Option(TranslateText.SIMPLE), new Option(TranslateText.ADVANCED))));
-    private final TextSetting lyricsApiUrlSetting = new TextSetting(TranslateText.LYRICS_API_URL, this, "https://spotify.mopigames.gay/");
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean iconSetting = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHOW_LYRICS)
+    private boolean showLyricsSetting = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ROMANIZE_JAPANESE)
+    private boolean romanizeJapaneseSetting = false;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ENABLE_HOTKEYS)
+    private boolean enableHotkeysSetting = true;
+    @Getter
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
+    private Design design = Design.SIMPLE;
+    @Property(type = PropertyType.TEXT, translate = TranslateText.LYRICS_API_URL, text = "https://spotify.mopigames.gay/")
+    private String lyricsApiUrlSetting = "https://spotify.mopigames.gay/";
     private final int visibleLyrics = 5;
     private float addX;
     private boolean back;
@@ -51,18 +62,13 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
         instance = this;
     }
 
-    public static MusicInfoMod getInstance() {
-        return instance;
-    }
-
     @EventTarget
     public void onRender2D(EventRender2D event) {
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
-        Option option = this.designSetting.getOption();
         this.updateDynamicHeight();
-        if (option.getTranslate().equals(TranslateText.SIMPLE)) {
+        if (design == Design.SIMPLE) {
             this.draw();
-        } else if (option.getTranslate().equals(TranslateText.ADVANCED)) {
+        } else if (design == Design.ADVANCED) {
             nvg.setupAndDraw(this::drawAdvancedNanoVG);
         }
     }
@@ -78,7 +84,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
 
     @EventTarget
     public void onKey(EventKey event) {
-        if (!this.isToggled() || !this.enableHotkeysSetting.isToggled()) {
+        if (!this.isToggled() || !this.enableHotkeysSetting) {
             return;
         }
 
@@ -128,7 +134,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
         int baseHeight = 85;
         if (musicManager == null || !musicManager.isPlaying() || musicManager.getCurrentTrack() == null) {
             baseHeight = 75;
-        } else if (this.showLyricsSetting.isToggled() && musicManager.getLyricsManager() != null && (lyrics = (lyricsManager = musicManager.getLyricsManager()).getCurrentLyrics()) != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
+        } else if (this.showLyricsSetting && musicManager.getLyricsManager() != null && (lyrics = (lyricsManager = musicManager.getLyricsManager()).getCurrentLyrics()) != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
             baseHeight = 110 + this.visibleLyrics * 12;
         }
         this.cachedHeight = baseHeight;
@@ -136,7 +142,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
     }
 
     private void updateLyrics(Track currentTrack, long position) {
-        if (!this.showLyricsSetting.isToggled() || currentTrack == null) {
+        if (!this.showLyricsSetting || currentTrack == null) {
             return;
         }
         MusicManager musicManager = Shindo.getInstance().getMusicManager();
@@ -149,7 +155,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
             lyricsManager.reset();
             lyricsManager.fetchLyrics(currentTrack).thenAcceptAsync(lyrics -> {
                 if (lyrics != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
-                    if (this.romanizeJapaneseSetting.isToggled()) {
+                    if (this.romanizeJapaneseSetting) {
                         lyricsManager.processLyricsRomanization(lyrics);
                     }
                 }
@@ -164,7 +170,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
         MusicManager musicManager = Shindo.getInstance().getMusicManager();
         boolean hasLyrics = false;
         int baseHeight = this.cachedHeight;
-        if (this.showLyricsSetting.isToggled() && musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null && musicManager.getLyricsManager() != null && (lyrics = (lyricsManager = musicManager.getLyricsManager()).getCurrentLyrics()) != null && !lyrics.getLines().isEmpty()) {
+        if (this.showLyricsSetting && musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null && musicManager.getLyricsManager() != null && (lyrics = (lyricsManager = musicManager.getLyricsManager()).getCurrentLyrics()) != null && !lyrics.getLines().isEmpty()) {
             hasLyrics = true;
         }
         this.drawBackground(155.0f, baseHeight);
@@ -213,7 +219,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
             float totalTimeWidth = this.getTextWidth(totalTime, 9.0f, this.getHudFont(1));
             this.drawText(totalTime, 163.0f - totalTimeWidth - 5.5f, timeY, 6.0f, this.getHudFont(1));
 
-            if (hasLyrics && this.showLyricsSetting.isToggled()) {
+            if (hasLyrics && this.showLyricsSetting) {
                 float lyricsHeaderY = timeY + 15.0f;
                 LyricsManager lyricsManager2 = musicManager.getLyricsManager();
                 List<LyricsManager.LyricsLine> visibleLines = lyricsManager2.getVisibleLines(this.visibleLyrics);
@@ -238,7 +244,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
                         String text = line.getWords();
 
                         // Use romanized text if available and the setting is enabled
-                        if (this.romanizeJapaneseSetting.isToggled() && line.getRomanizedWords() != null) {
+                        if (this.romanizeJapaneseSetting && line.getRomanizedWords() != null) {
                             text = line.getRomanizedWords();
                         }
 
@@ -350,7 +356,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
 
     @Override
     public String getIcon() {
-        return this.iconSetting.isToggled() ? "9" : null;
+        return this.iconSetting ? "9" : null;
     }
 
     @Override
@@ -369,22 +375,34 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
     }
 
     public BooleanSetting getShowLyricsSetting() {
-        return this.showLyricsSetting;
+        return SettingRegistry.getBooleanSetting(this, "showLyricsSetting");
     }
 
     public TextSetting getLyricsApiUrlSetting() {
-        return this.lyricsApiUrlSetting;
+        return SettingRegistry.getTextSetting(this, "lyricsApiUrlSetting");
     }
 
     public BooleanSetting getRomanizeJapaneseSetting() {
-        return this.romanizeJapaneseSetting;
+        return SettingRegistry.getBooleanSetting(this, "romanizeJapaneseSetting");
     }
 
     public BooleanSetting getEnableHotkeysSetting() {
-        return this.enableHotkeysSetting;
+        return SettingRegistry.getBooleanSetting(this, "enableHotkeysSetting");
     }
 
-    public ComboSetting getDesignSetting() {
-        return this.designSetting;
+    public enum Design implements PropertyEnum {
+        SIMPLE(TranslateText.SIMPLE),
+        ADVANCED(TranslateText.ADVANCED);
+
+        private final TranslateText translate;
+
+        Design(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

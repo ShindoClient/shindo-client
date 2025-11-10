@@ -9,7 +9,7 @@ import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.waypoint.Waypoint;
 import me.miki.shindo.management.waypoint.WaypointManager;
-import me.miki.shindo.ui.comp.field.CompTextBox;
+import me.miki.shindo.ui.comp.impl.field.CompTextBox;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 import me.miki.shindo.utils.animation.normal.easing.EaseBackIn;

@@ -4,8 +4,9 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.ColorUtils;
@@ -18,8 +19,10 @@ import java.text.DecimalFormat;
 
 public class SpeedometerMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
-    private final BooleanSetting graphSetting = new BooleanSetting(TranslateText.GRAPH, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean showIcon = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.GRAPH)
+    private boolean showGraph = true;
 
     private final int speedCount = 200;
     private final double[] speeds = new double[speedCount];
@@ -35,7 +38,7 @@ public class SpeedometerMod extends SimpleHUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        if (graphSetting.isToggled()) {
+        if (showGraph) {
             nvg.setupAndDraw(() -> drawNanoVG());
 
             GlUtils.startTranslate(this.getX() - 3, this.getY());
@@ -88,7 +91,7 @@ public class SpeedometerMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.ACTIVITY : null;
+        return showIcon ? LegacyIcon.ACTIVITY : null;
     }
 
     private void addSpeed(double speed) {

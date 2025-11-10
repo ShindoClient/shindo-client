@@ -6,7 +6,9 @@ import net.minecraft.util.ResourceLocation;
 public enum Language {
 
     ENGLISH("en-us", "English (United States)", new ResourceLocation("shindo/flag/us.png")),
-    PORTUGUESE("pt-br", "Português (Brasileiro)", new ResourceLocation("shindo/flag/br.png"));
+    GERMAN("de-de", "Deutsch", new ResourceLocation("shindo/flag/de.png")),
+    PORTUGUESE("pt-br", "Português (Brasileiro)", new ResourceLocation("shindo/flag/br.png")),
+    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", new ResourceLocation("shindo/flag/pt.png"));
 
     private final SimpleAnimation animation = new SimpleAnimation();
 

@@ -1,18 +1,27 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
+
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class ClearGlassMod extends Mod {
 
+    @Getter
     private static ClearGlassMod instance;
 
-    private final BooleanSetting normalSetting = new BooleanSetting(TranslateText.NORMAL, this, true);
-    private final BooleanSetting stainedSetting = new BooleanSetting(TranslateText.STAINED, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NORMAL)
+    private boolean normalSetting = true;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.STAINED)
+    private boolean stainedSetting = true;
 
     private boolean prevNormal, prevStained;
 
@@ -22,28 +31,24 @@ public class ClearGlassMod extends Mod {
         instance = this;
     }
 
-    public static ClearGlassMod getInstance() {
-        return instance;
-    }
-
     @EventTarget
     public void onUpdate(EventUpdate event) {
 
-        if (prevNormal != normalSetting.isToggled()) {
-            prevNormal = normalSetting.isToggled();
+        if (prevNormal != normalSetting) {
+            prevNormal = normalSetting;
             mc.renderGlobal.loadRenderers();
         }
 
-        if (prevStained != stainedSetting.isToggled()) {
-            prevStained = stainedSetting.isToggled();
+        if (prevStained != stainedSetting) {
+            prevStained = stainedSetting;
             mc.renderGlobal.loadRenderers();
         }
     }
 
     @Override
     public void onEnable() {
-        prevNormal = normalSetting.isToggled();
-        prevStained = stainedSetting.isToggled();
+        prevNormal = normalSetting;
+        prevStained = stainedSetting;
         super.onEnable();
         mc.renderGlobal.loadRenderers();
     }
@@ -55,10 +60,10 @@ public class ClearGlassMod extends Mod {
     }
 
     public BooleanSetting getNormalSetting() {
-        return normalSetting;
+        return SettingRegistry.getBooleanSetting(this, "normalSetting");
     }
 
     public BooleanSetting getStainedSetting() {
-        return stainedSetting;
+        return SettingRegistry.getBooleanSetting(this, "stainedSetting");
     }
 }

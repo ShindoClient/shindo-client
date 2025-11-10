@@ -34,6 +34,8 @@ import me.miki.shindo.management.screenshot.ScreenshotManager;
 import me.miki.shindo.management.security.SecurityFeatureManager;
 import me.miki.shindo.management.shader.ShaderManager;
 import me.miki.shindo.management.skin.SkinManager;
+import me.miki.shindo.management.tweaker.ConnectionTweakerManager;
+import me.miki.shindo.management.tweaker.proxy.WarpProxyManager;
 import me.miki.shindo.management.waypoint.WaypointManager;
 import me.miki.shindo.ui.ClickEffects;
 import me.miki.shindo.utils.OptifineUtils;
@@ -139,6 +141,12 @@ public class Shindo {
     private WaypointManager waypointManager;
 
     @Getter
+    private WarpProxyManager warpProxyManager;
+
+    @Getter
+    private ConnectionTweakerManager connectionTweakerManager;
+
+    @Getter
     private Update update;
 
     @Getter
@@ -194,6 +202,9 @@ public class Shindo {
         CosmeticManager.getInstance().init();
         modManager.init();
         addonManager.init();
+
+        warpProxyManager = new WarpProxyManager();
+        connectionTweakerManager = new ConnectionTweakerManager();
 
         capeManager = new CapeManager();
         wingManager = new WingManager();

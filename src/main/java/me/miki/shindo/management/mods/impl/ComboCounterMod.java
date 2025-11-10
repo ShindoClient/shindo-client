@@ -6,13 +6,15 @@ import me.miki.shindo.management.event.impl.EventDamageEntity;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 
 public class ComboCounterMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    private boolean iconSetting = true;
 
     private long hitTime = -1;
     private int combo, possibleTarget;
@@ -60,6 +62,6 @@ public class ComboCounterMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.BAR_CHERT : null;
+        return iconSetting ? LegacyIcon.BAR_CHERT : null;
     }
 }

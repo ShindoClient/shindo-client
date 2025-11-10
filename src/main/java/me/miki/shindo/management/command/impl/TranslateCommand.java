@@ -4,8 +4,7 @@ import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.command.Command;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.ChatTranslateMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.ChatTranslateMod.Language;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.translate.Translator;
 import net.minecraft.util.ChatComponentText;
@@ -22,17 +21,21 @@ public class TranslateCommand extends Command {
     @Override
     public void onCommand(String message) {
 
-        ComboSetting setting = ChatTranslateMod.getInstance().getLanguageSetting();
-        Option option = setting.getOption();
+        Language language = ChatTranslateMod.getInstance().getLanguage();
 
-        if (option.getTranslate().equals(TranslateText.JAPANESE)) {
-            to = Translator.JAPANESE;
-        } else if (option.getTranslate().equals(TranslateText.ENGLISH)) {
-            to = Translator.ENGLISH;
-        } else if (option.getTranslate().equals(TranslateText.CHINESE)) {
-            to = Translator.CHINESE_SIMPLIFIED;
-        } else if (option.getTranslate().equals(TranslateText.POLISH)) {
-            to = Translator.POLISH;
+        switch (language) {
+            case JAPANESE:
+                to = Translator.JAPANESE;
+                break;
+            case ENGLISH:
+                to = Translator.ENGLISH;
+                break;
+            case CHINESE:
+                to = Translator.CHINESE_SIMPLIFIED;
+                break;
+            case POLISH:
+                to = Translator.POLISH;
+                break;
         }
 
         String text = message;

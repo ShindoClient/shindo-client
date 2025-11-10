@@ -1,39 +1,41 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 public class WaveyCapesMod extends Mod {
 
+    @Getter
     private static WaveyCapesMod instance;
 
-    private final NumberSetting gravitySetting = new NumberSetting(TranslateText.GRAVITY, this, 15, 2, 30, false);
-    private final ComboSetting movementSetting = new ComboSetting(TranslateText.MOVEMENT, this, TranslateText.BASIC, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.VANILLA), new Option(TranslateText.BASIC))));
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.GRAVITY, min = 2, max = 30, current = 15)
+    private double gravitySetting = 15;
 
-    private final ComboSetting styleSetting = new ComboSetting(TranslateText.STYLE, this, TranslateText.SMOOTH, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.BLOCKY), new Option(TranslateText.SMOOTH))));
+    @Getter
+    @Property(type = PropertyType.COMBO, translate = TranslateText.MOVEMENT)
+    private Movement movement = Movement.BASIC;
 
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.WAVES, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.NONE), new Option(TranslateText.WAVES))));
+    @Getter
+    @Property(type = PropertyType.COMBO, translate = TranslateText.STYLE)
+    private CapeStyle style = CapeStyle.SMOOTH;
 
-    private final NumberSetting heightMultiplierSetting = new NumberSetting(TranslateText.HEIGHT_MULTIPLIER, this, 6, 2, 10, true);
+    @Getter
+    @Property(type = PropertyType.COMBO, translate = TranslateText.MODE)
+    private CapeMode mode = CapeMode.WAVES;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT_MULTIPLIER, min = 2, max = 10, current = 6, step = 1)
+    private int heightMultiplierSetting = 6;
 
     public WaveyCapesMod() {
         super(TranslateText.WAVEY_CAPES, TranslateText.WAVEY_CAPES_DESCRIPTION, ModCategory.RENDER, "clothcapesoftfabriccloak");
 
         instance = this;
-    }
-
-    public static WaveyCapesMod getInstance() {
-        return instance;
     }
 
     @Override
@@ -46,22 +48,58 @@ public class WaveyCapesMod extends Mod {
     }
 
     public NumberSetting getGravitySetting() {
-        return gravitySetting;
-    }
-
-    public ComboSetting getMovementSetting() {
-        return movementSetting;
-    }
-
-    public ComboSetting getStyleSetting() {
-        return styleSetting;
-    }
-
-    public ComboSetting getModeSetting() {
-        return modeSetting;
+        return SettingRegistry.getNumberSetting(this, "gravitySetting");
     }
 
     public NumberSetting getHeightMultiplierSetting() {
-        return heightMultiplierSetting;
+        return SettingRegistry.getNumberSetting(this, "heightMultiplierSetting");
+    }
+
+    public enum Movement implements PropertyEnum {
+        VANILLA(TranslateText.VANILLA),
+        BASIC(TranslateText.BASIC);
+
+        private final TranslateText translate;
+
+        Movement(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
+    }
+
+    public enum CapeStyle implements PropertyEnum {
+        BLOCKY(TranslateText.BLOCKY),
+        SMOOTH(TranslateText.SMOOTH);
+
+        private final TranslateText translate;
+
+        CapeStyle(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
+    }
+
+    public enum CapeMode implements PropertyEnum {
+        NONE(TranslateText.NONE),
+        WAVES(TranslateText.WAVES);
+
+        private final TranslateText translate;
+
+        CapeMode(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

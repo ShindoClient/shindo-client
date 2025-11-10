@@ -5,23 +5,22 @@ import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ColorSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.utils.ColorUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class GlintColorMod extends Mod {
 
     private static GlintColorMod instance;
 
-    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.SYNC, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.SYNC), new Option(TranslateText.RAINBOW), new Option(TranslateText.CUSTOM))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    private GlintType glintType = GlintType.SYNC;
 
-    private final ColorSetting colorSetting = new ColorSetting(TranslateText.COLOR, this, Color.RED, false);
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
+    private Color colorSetting = Color.RED;
 
     public GlintColorMod() {
         super(TranslateText.GLINT_COLOR, TranslateText.GLINT_COLOR_DESCRIPTION, ModCategory.RENDER, "changeru");
@@ -35,19 +34,34 @@ public class GlintColorMod extends Mod {
 
     public Color getGlintColor() {
 
-        Option type = typeSetting.getOption();
+        switch (glintType) {
+            case SYNC: {
+                AccentColor currentColor = Shindo.getInstance().getColorManager().getCurrentColor();
+                return currentColor.getInterpolateColor();
+            }
+            case RAINBOW:
+                return ColorUtils.getRainbow(0, 25, 255);
+            case CUSTOM:
+                return ColorUtils.applyAlpha(colorSetting, 255);
+            default:
+                return Color.RED;
+        }
+    }
 
-        if (type.getTranslate().equals(TranslateText.SYNC)) {
+    private enum GlintType implements PropertyEnum {
+        SYNC(TranslateText.SYNC),
+        RAINBOW(TranslateText.RAINBOW),
+        CUSTOM(TranslateText.CUSTOM);
 
-            AccentColor currentColor = Shindo.getInstance().getColorManager().getCurrentColor();
+        private final TranslateText translate;
 
-            return currentColor.getInterpolateColor();
-        } else if (type.getTranslate().equals(TranslateText.RAINBOW)) {
-            return ColorUtils.getRainbow(0, 25, 255);
-        } else if (type.getTranslate().equals(TranslateText.CUSTOM)) {
-            return ColorUtils.applyAlpha(colorSetting.getColor(), 255);
-        } else {
-            return Color.RED;
+        GlintType(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
         }
     }
 }

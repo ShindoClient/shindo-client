@@ -9,25 +9,26 @@ import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.config.PropertyEnum;
 import net.minecraft.entity.Entity;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Keyboard;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FreelookMod extends Mod {
 
     @Getter
     private static FreelookMod instance;
-    private final BooleanSetting invertYawSetting = new BooleanSetting(TranslateText.INVERT_YAW, this, false);
-    private final BooleanSetting invertPitchSetting = new BooleanSetting(TranslateText.INVERT_PITCH, this, false);
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.KEYDOWN, new ArrayList<Option>(Arrays.asList(new Option(TranslateText.TOGGLE), new Option(TranslateText.KEYDOWN))));
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_V);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_YAW, category = "Controls")
+    private boolean invertYawSetting;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_PITCH, category = "Controls")
+    private boolean invertPitchSetting;
+    @Property(type = PropertyType.COMBO, translate = TranslateText.MODE, category = "Controls")
+    private Mode modeSetting = Mode.KEYDOWN;
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, category = "Controls", keyCode = Keyboard.KEY_V)
+    private int keybindSetting = Keyboard.KEY_V;
     @Getter
     private boolean active;
     private float yaw;
@@ -44,17 +45,17 @@ public class FreelookMod extends Mod {
     @EventTarget
     public void onTick(EventTick event) {
 
-        Option mode = modeSetting.getOption();
+        Mode mode = modeSetting;
 
-        if (mode.getTranslate().equals(TranslateText.KEYDOWN)) {
-            if (keybindSetting.isKeyDown()) {
+        if (mode == Mode.KEYDOWN) {
+            if (isKeyBindDown()) {
                 start();
             } else {
                 stop();
             }
         }
 
-        if (mode.getTranslate().equals(TranslateText.TOGGLE)) {
+        if (mode == Mode.TOGGLE) {
             if (toggled) {
                 start();
             } else {
@@ -66,10 +67,10 @@ public class FreelookMod extends Mod {
     @EventTarget
     public void onKey(EventKey event) {
 
-        Option mode = modeSetting.getOption();
+        Mode mode = modeSetting;
 
-        if (mode.getTranslate().equals(TranslateText.TOGGLE)) {
-            if (keybindSetting.isKeyDown()) {
+        if (mode == Mode.TOGGLE) {
+            if (event.getKeyCode() == keybindSetting && mc.currentScreen == null) {
                 toggled = !toggled;
             }
         }
@@ -96,11 +97,11 @@ public class FreelookMod extends Mod {
             event.setCancelled(true);
             pitch = -pitch;
 
-            if (!invertPitchSetting.isToggled()) {
+            if (!invertPitchSetting) {
                 pitch = -pitch;
             }
 
-            if (invertYawSetting.isToggled()) {
+            if (invertYawSetting) {
                 yaw = -yaw;
             }
 
@@ -129,6 +130,10 @@ public class FreelookMod extends Mod {
         }
     }
 
+    private boolean isKeyBindDown() {
+        return Keyboard.isKeyDown(keybindSetting) && !(mc.currentScreen instanceof Gui);
+    }
+
     /**
      * Yaw da câmera enquanto o freelook está ativo (em graus).
      */
@@ -141,5 +146,21 @@ public class FreelookMod extends Mod {
      */
     public float getCameraPitch() {
         return pitch;
+    }
+
+    private enum Mode implements PropertyEnum {
+        TOGGLE(TranslateText.TOGGLE),
+        KEYDOWN(TranslateText.KEYDOWN);
+
+        private final TranslateText translate;
+
+        Mode(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

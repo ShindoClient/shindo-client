@@ -91,14 +91,19 @@ public class HttpClient
 
         StringBuilder response = new StringBuilder();
 
-        try
-        {
-            InputStream inputStream = connection.getInputStream();
+        try {
+            InputStream inputStream;
 
-            // check if the url corresponds to a related authentication url
-            if(this.checkUrl(connection.getURL()))
-            {
-                // then patch the input stream like in the old MicrosoftPatchedHttpURLConnection class.
+            try {
+                inputStream = connection.getInputStream();
+            } catch (IOException e) {
+                inputStream = connection.getErrorStream();
+                if (inputStream == null) {
+                    throw new MicrosoftAuthenticationException(e);
+                }
+            }
+
+            if (this.checkUrl(connection.getURL())) {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int n;
                 byte[] data = new byte[8192];
@@ -124,9 +129,8 @@ public class HttpClient
             } catch (IOException e) {
                 throw new MicrosoftAuthenticationException(e);
             }
-        } catch (IOException e)
-        {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new MicrosoftAuthenticationException(e);
         }
 
         return response.toString();

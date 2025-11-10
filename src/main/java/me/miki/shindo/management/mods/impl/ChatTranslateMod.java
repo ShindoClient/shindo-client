@@ -1,12 +1,14 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.network.play.server.S02PacketChat;
@@ -15,24 +17,18 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class ChatTranslateMod extends Mod {
 
+    @Getter
     private static ChatTranslateMod instance;
 
-    private final ComboSetting languageSetting = new ComboSetting(TranslateText.LANGUAGE, this, TranslateText.JAPANESE, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.JAPANESE), new Option(TranslateText.ENGLISH), new Option(TranslateText.CHINESE), new Option(TranslateText.POLISH))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.LANGUAGE)
+    private Language languageSetting = Language.JAPANESE;
 
     public ChatTranslateMod() {
         super(TranslateText.CHAT_TRANSLATE, TranslateText.CHAT_TRANSLATE_DESCRIPTION, ModCategory.OTHER);
 
         instance = this;
-    }
-
-    public static ChatTranslateMod getInstance() {
-        return instance;
     }
 
     @EventTarget
@@ -55,7 +51,25 @@ public class ChatTranslateMod extends Mod {
         }
     }
 
-    public ComboSetting getLanguageSetting() {
+    public Language getLanguage() {
         return languageSetting;
+    }
+
+    public enum Language implements PropertyEnum {
+        JAPANESE(TranslateText.JAPANESE),
+        ENGLISH(TranslateText.ENGLISH),
+        CHINESE(TranslateText.CHINESE),
+        POLISH(TranslateText.POLISH);
+
+        private final TranslateText translate;
+
+        Language(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

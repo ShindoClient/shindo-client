@@ -1,8 +1,7 @@
 package me.miki.shindo.injection.mixin.mixins.client.gui;
 
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InventoryMod;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.InventoryMod.AnimationType;
 import me.miki.shindo.ui.particle.ParticleEngine;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.easing.EaseBackIn;
@@ -49,9 +48,9 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
         if (mod.isToggled() && mod.getAnimationSetting().isToggled()) {
 
-            Option option = mod.getAnimationTypeSetting().getOption();
+            AnimationType type = mod.getAnimationType();
 
-            if (option.getTranslate().equals(TranslateText.NORMAL)) {
+            if (type == AnimationType.NORMAL) {
                 client$xAnimation = new SimpleAnimation(0.0F);
                 client$yAnimation = new SimpleAnimation(0.0F);
             } else {
@@ -79,9 +78,9 @@ public abstract class MixinGuiContainer extends GuiScreen {
             double xmod = 0;
             double ymod = 0;
 
-            Option option = mod.getAnimationTypeSetting().getOption();
+            AnimationType type = mod.getAnimationType();
 
-            if (option.getTranslate().equals(TranslateText.NORMAL)) {
+            if (type == AnimationType.NORMAL) {
 
                 client$xAnimation.setAnimation(this.width, 18);
                 client$yAnimation.setAnimation(this.height, 18);

@@ -1,5 +1,7 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventPreRenderTick;
@@ -8,8 +10,9 @@ import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ColorSetting;
+import me.miki.shindo.management.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.impl.ColorSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import me.miki.shindo.mobends.AnimatedEntity;
 import me.miki.shindo.mobends.client.model.entity.ModelBendsPlayer;
 import me.miki.shindo.mobends.client.renderer.entity.RenderBendsPlayer;
@@ -22,15 +25,23 @@ import org.lwjgl.util.vector.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class MoBendsMod extends Mod {
 
+    @Getter
     private static MoBendsMod instance;
     private final boolean loaded;
-    private final BooleanSetting customColorSetting = new BooleanSetting(TranslateText.CUSTOM_COLOR, this, false);
-    private final ColorSetting colorSetting = new ColorSetting(TranslateText.COLOR, this, Color.RED, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
+    private boolean customColorSetting = false;
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
+    private Color colorSetting = Color.RED;
     public List<UUID> currentlyRenderedEntities = new ArrayList<UUID>();
+    @Getter
+    @Setter
     private boolean renderingGuiScreen;
 
     public MoBendsMod() {
@@ -39,10 +50,6 @@ public class MoBendsMod extends Mod {
         instance = this;
         loaded = false;
         renderingGuiScreen = false;
-    }
-
-    public static MoBendsMod getInstance() {
-        return instance;
     }
 
     @EventTarget
@@ -100,7 +107,7 @@ public class MoBendsMod extends Mod {
             return;
         }
 
-        if (AnimatedEntity.getByEntity(event.getEntity()).animate) {
+        if (Objects.requireNonNull(AnimatedEntity.getByEntity(event.getEntity())).animate) {
             AbstractClientPlayer player = (AbstractClientPlayer) event.getEntity();
 
             if (!currentlyRenderedEntities.contains(event.getEntity().getUniqueID())) {
@@ -142,18 +149,11 @@ public class MoBendsMod extends Mod {
     }
 
     public ColorSetting getColorSetting() {
-        return colorSetting;
+        return SettingRegistry.getColorSetting(this, "colorSetting");
     }
 
     public BooleanSetting getCustomColorSetting() {
-        return customColorSetting;
+        return SettingRegistry.getBooleanSetting(this, "customColorSetting");
     }
 
-    public boolean isRenderingGuiScreen() {
-        return renderingGuiScreen;
-    }
-
-    public void setRenderingGuiScreen(boolean renderingGuiScreen) {
-        this.renderingGuiScreen = renderingGuiScreen;
-    }
 }

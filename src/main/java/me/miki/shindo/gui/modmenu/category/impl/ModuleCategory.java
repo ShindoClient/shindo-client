@@ -3,6 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
@@ -11,15 +12,12 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.ModManager;
-import me.miki.shindo.management.mods.settings.Setting;
-import me.miki.shindo.management.mods.settings.impl.*;
+import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.comp.mods.*;
+import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.utils.ColorUtils;
-import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.SearchUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -35,12 +33,14 @@ import java.util.ArrayList;
 public class ModuleCategory extends Category {
 
     private final Scroll settingScroll = new Scroll();
-    private final ArrayList<ModuleSetting> comps = new ArrayList<ModuleSetting>();
+    private final SettingsPanel settingsPanel = new SettingsPanel();
+    private final ArrayList<ModuleCard> moduleCardCache = new ArrayList<ModuleCard>();
     Color noColour = new Color(0, 0, 0, 0);
     private ModCategory currentCategory;
     private boolean openSetting;
     private Animation settingAnimation;
     private Mod currentMod;
+    private float moduleContentHeight;
 
     public ModuleCategory(GuiModMenu parent) {
         super(parent, TranslateText.MODULE, LegacyIcon.ARCHIVE, true, true);
@@ -52,6 +52,7 @@ public class ModuleCategory extends Category {
         openSetting = false;
         settingAnimation = new SmoothStepAnimation(260, 1.0);
         settingAnimation.setValue(1.0);
+        settingsPanel.clear();
     }
 
     @Override
@@ -60,6 +61,7 @@ public class ModuleCategory extends Category {
         openSetting = false;
         settingAnimation = new SmoothStepAnimation(260, 1.0);
         settingAnimation.setValue(1.0);
+        settingsPanel.clear();
     }
 
     @Override
@@ -74,14 +76,16 @@ public class ModuleCategory extends Category {
 
         int offsetX = 0;
         float offsetY = 13;
-        int index = 1;
         float scrollValue = scroll.getValue();
+        int moduleColumns = resolveModuleColumns();
+        CardStyle cardStyle = getCardStyle(moduleColumns);
 
         settingAnimation.setDirection(openSetting ? Direction.BACKWARDS : Direction.FORWARDS);
 
         if (settingAnimation.isDone(Direction.FORWARDS)) {
             this.setCanClose(true);
             currentMod = null;
+            settingsPanel.clear();
         }
 
         nvg.save();
@@ -114,43 +118,81 @@ public class ModuleCategory extends Category {
 
         offsetY = offsetY + 23;
 
-        for (Mod m : modManager.getMods()) {
+        rebuildModuleCards(modManager, offsetY, moduleColumns);
 
+        for (ModuleCard card : moduleCardCache) {
 
-            if (filterMod(m)) {
-                continue;
-            }
+            if (card.y + scrollValue + card.height > 0 && card.y + scrollValue < this.getHeight()) {
 
-            if (offsetY + scrollValue + 45 > 0 && offsetY + scrollValue < this.getHeight()) {
+                float cardY = this.getY() + card.y;
+                float radius = moduleColumns == 3 ? 7F : 9F;
 
-                nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY, this.getWidth() - 30, 40, 8, palette.getBackgroundColor(ColorType.DARK));
-                nvg.drawRoundedRect(this.getX() + 21, this.getY() + offsetY + 6, 28, 28, 6, palette.getBackgroundColor(ColorType.NORMAL));
-                if (m.isRestricted()) {
-                    nvg.drawText(m.getName(), this.getX() + 56, this.getY() + offsetY + 9F, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
-                    nvg.drawText(m.getDescription(), this.getX() + 56 + (nvg.getTextWidth(m.getName(), 13, Fonts.MEDIUM)) + 5, this.getY() + offsetY + 12, palette.getFontColor(ColorType.NORMAL), 9, Fonts.REGULAR);
-                    nvg.drawText(LegacyIcon.INFO, this.getX() + 56, this.getY() + offsetY + 23, new Color(255, 145, 0), 9, Fonts.LEGACYICON);
-                    nvg.drawText("This mod may be restricted on some servers", this.getX() + 57 + (nvg.getTextWidth(LegacyIcon.INFO, 9, Fonts.LEGACYICON)), this.getY() + offsetY + 24, new Color(255, 145, 0), 9, Fonts.REGULAR);
-                } else {
-                    nvg.drawText(m.getName(), this.getX() + 56, this.getY() + offsetY + 15F, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
-                    nvg.drawText(m.getDescription(), this.getX() + 56 + (nvg.getTextWidth(m.getName(), 13, Fonts.MEDIUM)) + 5, this.getY() + offsetY + 17, palette.getFontColor(ColorType.NORMAL), 9, Fonts.REGULAR);
+                float iconX = card.x + cardStyle.leftPadding;
+                float iconY = cardY + (card.height - cardStyle.iconSize) / 2F;
+
+                boolean hasSettings = modManager.getSettingsByMod(card.mod) != null;
+                float settingsX = card.x + card.width - cardStyle.settingsSize - cardStyle.settingsPadding;
+                float settingsY = cardY + (card.height - cardStyle.settingsSize) / 2F;
+                float textSpacing = moduleColumns == 3 ? 8F : 10F;
+                float textX = iconX + cardStyle.iconSize + textSpacing;
+                float textRight = card.x + card.width - cardStyle.textRightPadding;
+                if (hasSettings) {
+                    textRight -= (cardStyle.settingsSize + cardStyle.settingsPadding);
+                }
+                float textWidth = Math.max(80F, textRight - textX);
+
+                boolean hovered = MouseUtils.isInside(mouseX, mouseY, card.x, cardY + scrollValue, card.width, card.height) && !MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollValue, cardStyle.settingsSize, cardStyle.settingsSize);
+                card.mod.getHoverAnimation().setAnimation(hovered ? 1.0F : 0.0F, 18);
+                float hoverProgress = card.mod.getHoverAnimation().getValue();
+
+                boolean settingsHover = MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollValue, cardStyle.settingsSize, cardStyle.settingsSize);
+                card.mod.getSettingsHoverAnimation().setAnimation(settingsHover ? 1.0F : 0.0F, 18);
+                float settingsHoverAnimation = card.mod.getAnimation().getValue();
+
+                int overlayAlpha = (int) (18 + (hoverProgress * 26));
+                int fillAlpha = (int) (220 + (hoverProgress * 32));
+                int outlineAlpha = (int) (hoverProgress * 220);
+
+                nvg.drawRoundedRect(card.x, cardY, card.width, card.height, 8F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), fillAlpha));
+                nvg.drawGradientRoundedRect(card.x, cardY, card.width, card.height, 8F, ColorUtils.applyAlpha(accentColor.getColor1(), overlayAlpha), ColorUtils.applyAlpha(accentColor.getColor2(), overlayAlpha));
+
+                if (outlineAlpha > 0) {
+                    nvg.drawOutlineRoundedRect(card.x, cardY, card.width, card.height, 8F, 1.0F, ColorUtils.applyAlpha(accentColor.getColor2(), outlineAlpha));
                 }
 
-                m.getAnimation().setAnimation(m.isToggled() ? 1.0F : 0.0F, 16);
+                nvg.drawRoundedRect(iconX, iconY, cardStyle.iconSize, cardStyle.iconSize, 6F, palette.getBackgroundColor(ColorType.NORMAL));
+
+                card.mod.getAnimation().setAnimation(card.mod.isToggled() ? 1.0F : 0.0F, 16);
 
                 nvg.save();
-                nvg.scale(this.getX() + 21, this.getY() + offsetY + 6, 28, 28, m.getAnimation().getValue());
-
-                nvg.drawGradientRoundedRect(this.getX() + 21, this.getY() + offsetY + 6, 28, 28, 6, ColorUtils.applyAlpha(accentColor.getColor1(), (int) (m.getAnimation().getValue() * 255)), ColorUtils.applyAlpha(accentColor.getColor2(), (int) (m.getAnimation().getValue() * 255)));
-
+                nvg.scale(iconX, iconY, cardStyle.iconSize, cardStyle.iconSize, card.mod.getAnimation().getValue());
+                nvg.drawGradientRoundedRect(iconX, iconY, cardStyle.iconSize, cardStyle.iconSize, 6F, ColorUtils.applyAlpha(accentColor.getColor1(), (int) (card.mod.getAnimation().getValue() * 255)), ColorUtils.applyAlpha(accentColor.getColor2(), (int) (card.mod.getAnimation().getValue() * 255)));
                 nvg.restore();
 
-                if (modManager.getSettingsByMod(m) != null) {
-                    nvg.drawText(LegacyIcon.SETTINGS, this.getX() + this.getWidth() - 39, this.getY() + offsetY + 13.5F, palette.getFontColor(ColorType.NORMAL), 13, Fonts.LEGACYICON);
+
+
+                String modName = nvg.getLimitText(card.mod.getName(), 11.5F, Fonts.MEDIUM, textWidth);
+                nvg.drawText(modName, textX, cardY + 14F, palette.getFontColor(ColorType.DARK), 11.5F, Fonts.MEDIUM);
+
+                if (card.mod.isRestricted()) {
+                    String warning = "Restricted on some servers";
+                    nvg.drawText(nvg.getLimitText(warning, 8F, Fonts.REGULAR, textWidth), textX + 10F, cardY + 36F, new Color(255, 180, 90), 8F, Fonts.REGULAR);
+                    nvg.drawText(LegacyIcon.INFO, textX, cardY + card.height - 17F, new Color(255, 180, 90), 8.5F, Fonts.LEGACYICON);
+                }
+
+                String description = nvg.getLimitText(card.mod.getDescription(), 8.5F, Fonts.REGULAR, textWidth);
+                nvg.drawText(description, textX, cardY + 26F, palette.getFontColor(ColorType.NORMAL), 8.5F, Fonts.REGULAR);
+
+                if (hasSettings) {
+                    nvg.drawRoundedRect(settingsX, settingsY, cardStyle.settingsSize, cardStyle.settingsSize, 5F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 180));
+                    nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + cardStyle.settingsSize / 2F - 1F, settingsY + cardStyle.settingsSize / 2F - 6F, palette.getFontColor(ColorType.DARK), 14F, Fonts.LEGACYICON);
+
+
+
+                    nvg.drawGradientOutlineRoundedRect(settingsX, settingsY, cardStyle.settingsSize, cardStyle.settingsSize, 5F, 1.0F, ColorUtils.applyAlpha(accentColor.getColor1(), (int) (settingsHoverAnimation * 255)), ColorUtils.applyAlpha(accentColor.getColor2(), (int) (settingsHoverAnimation * 255)));
+
                 }
             }
-
-            index++;
-            offsetY += 50;
         }
 
         nvg.restore();
@@ -166,131 +208,38 @@ public class ModuleCategory extends Category {
 
         if (currentMod != null) {
 
-            int setIndex = 0;
-
             if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight())) {
                 settingScroll.onScroll();
                 settingScroll.onAnimation();
             }
 
-            offsetY = 15;
-            offsetX = 0;
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+
+            float headerX = this.getX() + 15;
+            float headerY = this.getY() + 15;
+            float headerWidth = this.getWidth() - 30;
+            float headerHeight = this.getHeight() - 30;
+
+            nvg.drawRoundedRect(headerX, headerY, headerWidth, headerHeight, 10, palette.getBackgroundColor(ColorType.DARK));
+            nvg.drawText(LegacyIcon.CHEVRON_LEFT, headerX + 10, headerY + 8, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
+            nvg.drawText(currentMod.getName(), headerX + 27, headerY + 9, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
+            nvg.drawText(LegacyIcon.REFRESH, headerX + headerWidth - 24, headerY + 7.5F, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
+
+            float contentX = this.getX() + 25;
+            float contentY = headerY + 32;
+            float contentWidth = this.getWidth() - 50;
+            float viewportHeight = headerHeight - 47;
 
             nvg.save();
-
-            nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY, this.getWidth() - 30, this.getHeight() - 30, 10, palette.getBackgroundColor(ColorType.DARK));
-            nvg.drawText(LegacyIcon.CHEVRON_LEFT, this.getX() + 25, this.getY() + offsetY + 8, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
-            nvg.drawText(currentMod.getName(), this.getX() + 42, this.getY() + offsetY + 9, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
-            nvg.drawText(LegacyIcon.REFRESH, this.getX() + this.getWidth() - 39, this.getY() + offsetY + 7.5F, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
-
-            offsetY = 44;
-
-            nvg.scissor(this.getX() + 15, this.getY() + offsetY, this.getWidth() - 30, this.getHeight() - 59);
-            nvg.translate(0, settingScroll.getValue());
-
-            for (ModuleSetting s : comps) {
-
-                s.openAnimation.setAnimation(s.openY, 16);
-
-                nvg.drawText(s.setting.getName(), this.getX() + offsetX + 26, this.getY() + offsetY + 15F + s.openAnimation.getValue(), palette.getFontColor(ColorType.DARK), 10, Fonts.MEDIUM);
-
-                if (s.comp instanceof CompToggleButton) {
-
-                    CompToggleButton toggleButton = (CompToggleButton) s.comp;
-
-                    toggleButton.setX(this.getX() + offsetX + 168);
-                    toggleButton.setY(this.getY() + offsetY + 12 + s.openAnimation.getValue());
-                    toggleButton.setScale(0.85F);
-                }
-
-                if (s.comp instanceof CompSlider) {
-
-                    CompSlider slider = (CompSlider) s.comp;
-
-                    slider.setX(this.getX() + offsetX + 122);
-                    slider.setY(this.getY() + offsetY + 17 + s.openAnimation.getValue());
-                    slider.setWidth(75);
-                }
-
-                if (s.comp instanceof CompComboBox) {
-
-                    CompComboBox comboBox = (CompComboBox) s.comp;
-
-                    comboBox.setX(this.getX() + offsetX + 122);
-                    comboBox.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompKeybind) {
-
-                    CompKeybind keybind = (CompKeybind) s.comp;
-
-                    keybind.setX(this.getX() + offsetX + 122);
-                    keybind.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompModTextBox) {
-
-                    CompModTextBox textBox = (CompModTextBox) s.comp;
-
-                    textBox.setX(this.getX() + offsetX + 122);
-                    textBox.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                    textBox.setWidth(75);
-                    textBox.setHeight(16);
-                }
-
-                if (s.comp instanceof CompColorPicker) {
-
-                    CompColorPicker picker = (CompColorPicker) s.comp;
-
-                    picker.setX(this.getX() + offsetX + 98);
-                    picker.setY(this.getY() + offsetY + 12.5F + s.openAnimation.getValue());
-                    picker.setScale(0.8F);
-                }
-
-                if (s.comp instanceof CompImageSelect) {
-
-                    CompImageSelect imageSelect = (CompImageSelect) s.comp;
-
-                    imageSelect.setX(this.getX() + offsetX + 181);
-                    imageSelect.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompSoundSelect) {
-
-                    CompSoundSelect soundSelect = (CompSoundSelect) s.comp;
-
-                    soundSelect.setX(this.getX() + offsetX + 181);
-                    soundSelect.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                }
-
-                if (s.comp instanceof CompCellGrid) {
-                    CompCellGrid grid = (CompCellGrid) s.comp;
-
-                    grid.setX(this.getX() + offsetX + 122);
-                    grid.setY(this.getY() + offsetY + 11 + s.openAnimation.getValue());
-                    grid.setWidth(270);
-                    grid.setHeight(160);
-                }
-
-                s.comp.draw(mouseX, (int) (mouseY - settingScroll.getValue()), partialTicks);
-
-                offsetX += 194;
-                setIndex++;
-
-                if (setIndex % 2 == 0) {
-                    offsetY += 29;
-                    offsetX = 0;
-                }
-            }
-
+            nvg.scissor(headerX + 5, contentY - 5, headerWidth - 10, viewportHeight + 10);
+            settingsPanel.draw(mouseX, mouseY, partialTicks, contentX, contentY, contentWidth, viewportHeight, nvg, palette, settingScroll);
             nvg.restore();
-
-            settingScroll.setMaxScroll(this.getModuleSettingHeight());
         }
 
         nvg.restore();
 
-        scroll.setMaxScroll((index - (index > 5 ? 5.18F : index)) * 50);
+        float viewportHeight = this.getHeight() - 26F;
+        scroll.setMaxScroll(Math.max(0F, moduleContentHeight - viewportHeight));
     }
 
     @Override
@@ -318,252 +267,112 @@ public class ModuleCategory extends Category {
 
             offsetY = offsetY + 23;
 
-            for (Mod m : modManager.getMods()) {
+            if (moduleCardCache.isEmpty()) {
+                rebuildModuleCards(modManager, 36F, resolveModuleColumns());
+            }
 
-                if (filterMod(m)) {
+            CardStyle cardStyle = getCardStyle(resolveModuleColumns());
+
+            for (ModuleCard card : moduleCardCache) {
+
+                float cardY = this.getY() + card.y + scroll.getValue();
+
+                if (!MouseUtils.isInside(mouseX, mouseY, card.x, cardY, card.width, card.height)) {
                     continue;
                 }
 
                 if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight()) && mouseButton == 0) {
-                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 15, this.getY() + offsetY, this.getWidth() - 60, 40)) {
-                        m.toggle();
-                    }
 
-                    if (MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 44, this.getY() + offsetY + 9, 22, 22) && !openSetting) {
+                    float settingsX = card.x + card.width - cardStyle.settingsSize - cardStyle.settingsPadding;
+                    float settingsY = cardY + (card.height - cardStyle.settingsSize) / 2F;
 
-                        ArrayList<Setting> settings = modManager.getSettingsByMod(m);
-                        int setIndex = 0;
+                    if (MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, cardStyle.settingsSize, cardStyle.settingsSize) && !openSetting) {
 
-                        offsetX = 0;
-                        offsetY = 44;
+                        ArrayList<Setting> settings = modManager.getSettingsByMod(card.mod);
 
                         if (settings != null) {
 
-                            comps.clear();
-
-                            for (Setting s : settings) {
-
-                                if (s instanceof BooleanSetting) {
-
-                                    BooleanSetting bSetting = (BooleanSetting) s;
-
-                                    CompToggleButton toggleButton = new CompToggleButton(bSetting);
-
-                                    toggleButton.setX(this.getX() + offsetX + 168);
-                                    toggleButton.setY(this.getY() + offsetY + 8);
-                                    toggleButton.setScale(0.85F);
-
-                                    comps.add(new ModuleSetting(s, toggleButton));
-                                }
-
-                                if (s instanceof NumberSetting) {
-
-                                    NumberSetting nSetting = (NumberSetting) s;
-
-                                    CompSlider slider = new CompSlider(nSetting);
-
-                                    slider.setX(this.getX() + offsetX + 122);
-                                    slider.setY(this.getY() + offsetY + 13);
-                                    slider.setWidth(75);
-
-                                    comps.add(new ModuleSetting(s, slider));
-                                }
-
-                                if (s instanceof ComboSetting) {
-
-                                    ComboSetting cSetting = (ComboSetting) s;
-
-                                    CompComboBox comboBox = new CompComboBox(75, cSetting);
-
-                                    comboBox.setX(this.getX() + offsetX + 122);
-                                    comboBox.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new ModuleSetting(s, comboBox));
-                                }
-
-                                if (s instanceof ImageSetting) {
-
-                                    ImageSetting iSetting = (ImageSetting) s;
-                                    CompImageSelect imageSelect = new CompImageSelect(iSetting);
-
-                                    imageSelect.setX(this.getX() + offsetX + 181);
-                                    imageSelect.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new ModuleSetting(s, imageSelect));
-                                }
-
-                                if (s instanceof SoundSetting) {
-
-                                    SoundSetting sSetting = (SoundSetting) s;
-                                    CompSoundSelect soundSelect = new CompSoundSelect(sSetting);
-
-                                    soundSelect.setX(this.getX() + offsetX + 181);
-                                    soundSelect.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new ModuleSetting(s, soundSelect));
-                                }
-
-                                if (s instanceof KeybindSetting) {
-
-                                    KeybindSetting kSetting = (KeybindSetting) s;
-                                    CompKeybind keybind = new CompKeybind(75, kSetting);
-
-                                    keybind.setX(this.getX() + offsetX + 122);
-                                    keybind.setY(this.getY() + offsetY + 7);
-
-                                    comps.add(new ModuleSetting(s, keybind));
-                                }
-
-                                if (s instanceof TextSetting) {
-
-                                    TextSetting tSetting = (TextSetting) s;
-
-                                    CompModTextBox textBox = new CompModTextBox(tSetting);
-
-                                    textBox.setX(this.getX() + offsetX + 122);
-                                    textBox.setY(this.getY() + offsetY + 7);
-                                    textBox.setWidth(75);
-                                    textBox.setHeight(16);
-
-                                    comps.add(new ModuleSetting(s, textBox));
-                                }
-
-                                if (s instanceof ColorSetting) {
-
-                                    ColorSetting cSetting = (ColorSetting) s;
-                                    CompColorPicker picker = new CompColorPicker(cSetting);
-
-                                    picker.setX(this.getX() + offsetX + 98);
-                                    picker.setY(this.getY() + offsetY + 8.5F);
-                                    picker.setScale(0.8F);
-
-                                    comps.add(new ModuleSetting(s, picker));
-                                }
-
-                                if (s instanceof CellGridSetting) {
-                                    CellGridSetting setting = (CellGridSetting) s;
-                                    CompCellGrid cellGrid = new CompCellGrid(270, 160, setting);
-                                    cellGrid.setX(this.getX() + offsetX + 122);
-                                    cellGrid.setY(this.getY() + offsetY + 11);
-
-                                    comps.add(new ModuleSetting(s, cellGrid));
-                                }
-
-                                offsetX += 194;
-                                setIndex++;
-
-                                if (setIndex % 2 == 0) {
-                                    offsetY += 29;
-                                    offsetX = 0;
-                                }
-                            }
-
+                            settingsPanel.buildEntries(settings);
                             settingScroll.resetAll();
-                            currentMod = m;
+                            currentMod = card.mod;
                             openSetting = true;
                             this.setCanClose(false);
                         }
+                        continue;
+                    }
+
+                    float toggleX = card.x + cardStyle.leftPadding;
+                    float toggleWidth = card.width - (cardStyle.leftPadding + cardStyle.settingsSize + cardStyle.settingsPadding + 10F);
+
+                    if (MouseUtils.isInside(mouseX, mouseY, toggleX, cardY, toggleWidth, card.height)) {
+                        card.mod.toggle();
                     }
                 }
-
-                offsetY += 50;
             }
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
             if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 22, this.getY() + 20, 18, 18) && mouseButton == 0) {
                 openSetting = false;
+                settingsPanel.clear();
+                return;
             }
             int x = getX() - 32, y = getY() - 31, width = getWidth() + 32, height = getHeight() + 31;
             if (!MouseUtils.isInside(mouseX, mouseY, x - 5, y - 5, width + 10, height + 10) && mouseButton == 0) {
                 openSetting = false;
+                settingsPanel.clear();
+                return;
             }
 
-            for (ModuleSetting s : comps) {
+            float headerY = this.getY() + 15;
+            float headerHeight = this.getHeight() - 30;
+            float contentX = this.getX() + 25;
+            float contentY = headerY + 32;
+            float contentWidth = this.getWidth() - 50;
+            float viewportHeight = headerHeight - 47;
 
-                if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), this.getWidth(), this.getHeight()) && mouseButton == 0) {
-
-                    s.comp.mouseClicked(mouseX, (int) (mouseY - settingScroll.getValue()), mouseButton);
-
-                    if (s.comp instanceof CompColorPicker) {
-
-                        CompColorPicker picker = (CompColorPicker) s.comp;
-                        int openIndex = 1;
-
-                        if (!picker.isInsideOpen(mouseX, (int) (mouseY - settingScroll.getValue()))) {
-                            continue;
-                        }
-
-                        for (int i = 0; i < comps.size(); i++) {
-
-                            if ((openIndex * 2) + (comps.indexOf(s)) < comps.size()) {
-
-                                ModuleSetting s2 = comps.get((openIndex * 2) + (comps.indexOf(s)));
-                                int add = picker.isShowAlpha() ? 100 : 85;
-
-                                s2.openY += picker.isOpen() ? add : -add;
-                            }
-
-                            openIndex++;
-                        }
-                    }
-                }
+            if (settingsPanel.mouseClicked(mouseX, mouseY, mouseButton, contentX, contentY, contentWidth, viewportHeight, settingScroll)) {
+                return;
             }
 
-            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 41, this.getY() + 15 + 6F, 16, 16) && mouseButton == 0) {
-
-                for (ModuleSetting s : comps) {
-                    s.setting.reset();
-                }
+            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 41, this.getY() + 21, 16, 16) && mouseButton == 0) {
+                settingsPanel.resetSettings();
             }
         }
 
         if (openSetting && mouseButton == 3) {
             openSetting = false;
+            settingsPanel.clear();
         }
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-
-        for (ModuleSetting s : comps) {
-
-            if (mouseButton == 0) {
-                s.comp.mouseReleased(mouseX, mouseY, mouseButton);
-            }
+        if (currentMod != null) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+            settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll);
         }
     }
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-
-        boolean binding = false;
-
-        for (ModuleSetting s : comps) {
-
-            if (s.comp instanceof CompKeybind) {
-
-                CompKeybind keybind = (CompKeybind) s.comp;
-
-                if (keybind.isBinding()) {
-                    binding = true;
-                }
-            }
-
-            s.comp.keyTyped(typedChar, keyCode);
-        }
-
-        if (binding) {
-            return;
+        if (currentMod != null) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().getSettingsLayoutMode());
+            settingsPanel.keyTyped(typedChar, keyCode);
         }
 
         if (openSetting && keyCode == Keyboard.KEY_ESCAPE) {
             openSetting = false;
+            settingsPanel.clear();
+            return;
         }
+
         if (!openSetting) {
             scroll.onKey(keyCode);
-            if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE)
+            if (keyCode != Keyboard.KEY_DOWN && keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_ESCAPE) {
                 this.getSearchBox().setFocused(true);
+            }
         }
     }
 
@@ -584,52 +393,88 @@ public class ModuleCategory extends Category {
         return !this.getSearchBox().getText().isEmpty() && !SearchUtils.isSimilar(Shindo.getInstance().getModManager().getWords(m), this.getSearchBox().getText());
     }
 
-    private int getModuleSettingHeight() {
+    private void rebuildModuleCards(ModManager modManager, float startOffset, int columns) {
+        moduleCardCache.clear();
 
-        int oddOutput = 0;
-        int evenOutput = 0;
-        int oddTotal = 0;
-        int evenTotal = 0;
+        int normalizedColumns = Math.max(1, Math.min(columns, 2));
+        float spacingX = normalizedColumns > 1 ? 24F : 0F;
+        float spacingY = 14F;
+        float cardHeight = 54F;
+        float availableWidth = this.getWidth() - 30F;
+        float cardWidth = normalizedColumns == 1 ? availableWidth : (availableWidth - spacingX) / 2F;
 
-        for (int i = 0; i < comps.size(); i++) {
+        int columnIndex = 0;
+        float rowY = startOffset;
 
-            if (MathUtils.isOdd(i + 1)) {
-                oddOutput += 29;
-            } else {
-                evenOutput += 29;
+        for (Mod m : modManager.getMods()) {
+            if (filterMod(m)) {
+                continue;
             }
 
-            ModuleSetting s = comps.get(i);
-            if (s.comp instanceof CompColorPicker) {
-                CompColorPicker picker = (CompColorPicker) s.comp;
-                if (picker.isOpen()) {
-                    int add = picker.isShowAlpha() ? 100 : 85;
-                    if (MathUtils.isOdd(i + 1)) {
-                        oddTotal += add;
-                    } else {
-                        evenTotal += add;
-                    }
-                }
+            float cardX = this.getX() + 15 + columnIndex * (cardWidth + spacingX);
+            moduleCardCache.add(new ModuleCard(m, cardX, rowY, cardWidth, cardHeight));
+
+            columnIndex++;
+            if (columnIndex >= normalizedColumns) {
+                columnIndex = 0;
+                rowY += cardHeight + spacingY;
             }
         }
 
-        int output = Math.max(oddOutput, evenOutput) + Math.max(oddTotal, evenTotal);
+        if (moduleCardCache.isEmpty()) {
+            moduleContentHeight = Math.max(0F, startOffset - 13F);
+            return;
+        }
 
-        return Math.max(0, output - (this.getHeight() - 72));
+        ModuleCard last = moduleCardCache.get(moduleCardCache.size() - 1);
+        float lastBottom = last.y + last.height;
+
+        moduleContentHeight = Math.max(0F, lastBottom - 13F);
     }
 
-    private class ModuleSetting {
+    private int resolveModuleColumns() {
+        return Math.max(1, Math.min(2, InternalSettingsMod.getInstance().getModuleGridColumns()));
+    }
 
-        private final SimpleAnimation openAnimation = new SimpleAnimation();
+    private CardStyle getCardStyle(int columns) {
+        switch (columns) {
+            case 1:
+                return new CardStyle(28F, 20F, 18F, 14F, 18F);
+            case 2:
+                return new CardStyle(28F, 18F, 18F, 12F, 16F);
+        }
+        return new CardStyle(26F, 20F, 18F, 14F, 18F);
+    }
 
-        private final Setting setting;
-        private final Comp comp;
-        private float openY;
+    private static class ModuleCard {
+        final Mod mod;
+        final float x;
+        final float y;
+        final float width;
+        final float height;
 
-        public ModuleSetting(Setting setting, Comp comp) {
-            this.setting = setting;
-            this.comp = comp;
-            this.openY = 0;
+        ModuleCard(Mod mod, float x, float y, float width, float height) {
+            this.mod = mod;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+    }
+
+    private static class CardStyle {
+        final float iconSize;
+        final float leftPadding;
+        final float settingsSize;
+        final float settingsPadding;
+        final float textRightPadding;
+
+        CardStyle(float iconSize, float leftPadding, float settingsSize, float settingsPadding, float textRightPadding) {
+            this.iconSize = iconSize;
+            this.leftPadding = leftPadding;
+            this.settingsSize = settingsSize;
+            this.settingsPadding = settingsPadding;
+            this.textRightPadding = textRightPadding;
         }
     }
 }

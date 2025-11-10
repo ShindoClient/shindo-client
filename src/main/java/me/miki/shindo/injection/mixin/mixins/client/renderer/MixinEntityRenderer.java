@@ -3,10 +3,8 @@ package me.miki.shindo.injection.mixin.mixins.client.renderer;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.event.impl.*;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.*;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -179,11 +177,9 @@ public abstract class MixinEntityRenderer {
     public void preAddRainParticles(CallbackInfo ci) {
 
         WeatherChangerMod mod = WeatherChangerMod.getInstance();
-        ComboSetting setting = mod.getWeatherSetting();
-        Option weather = setting.getOption();
+        Weather weather = mod.getWeather();
 
-        if (mod.isToggled() && (weather.getTranslate().equals(TranslateText.CLEAR) ||
-                weather.getTranslate().equals(TranslateText.SNOW))) {
+        if (mod.isToggled() && (weather == Weather.CLEAR || weather == Weather.SNOW)) {
             ci.cancel();
         }
     }

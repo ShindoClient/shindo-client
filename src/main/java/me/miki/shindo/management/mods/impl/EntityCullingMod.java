@@ -8,7 +8,6 @@ import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -33,6 +32,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class EntityCullingMod extends Mod {
 
     public static boolean shouldPerformCulling = false;
@@ -40,8 +41,10 @@ public class EntityCullingMod extends Mod {
     private final RenderManager renderManager = mc.getRenderManager();
     private final ConcurrentHashMap<UUID, OcclusionQuery> queries = new ConcurrentHashMap<>();
     private final boolean SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33;
-    private final NumberSetting delaySetting = new NumberSetting(TranslateText.DELAY, this, 2, 1, 3, true);
-    private final NumberSetting distanceSetting = new NumberSetting(TranslateText.DISTANCE, this, 45, 10, 150, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1, max = 3, current = 2, step = 1)
+    private int delaySetting = 2;
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DISTANCE, min = 10, max = 150, current = 45, step = 1)
+    private int distanceSetting = 45;
     private int destroyTimer;
 
     public EntityCullingMod() {
@@ -127,7 +130,7 @@ public class EntityCullingMod extends Mod {
 
             final float entityDistance = entity.getDistanceToEntity(mc.thePlayer);
 
-            if (entityDistance > distanceSetting.getValueFloat()) {
+            if (entityDistance > distanceSetting) {
                 event.setCancelled(true);
             }
         }
@@ -206,7 +209,7 @@ public class EntityCullingMod extends Mod {
     private void check() {
         long delay = 0;
 
-        switch (delaySetting.getValueInt() - 1) {
+        switch (delaySetting - 1) {
             case 0: {
                 delay = 10;
                 break;

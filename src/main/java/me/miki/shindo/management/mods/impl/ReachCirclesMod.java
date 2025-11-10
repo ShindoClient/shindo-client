@@ -7,7 +7,6 @@ import me.miki.shindo.management.event.impl.EventRender3D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.utils.ColorUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,9 +16,12 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.Iterator;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class ReachCirclesMod extends Mod {
 
-    private final NumberSetting lineWidthSetting = new NumberSetting(TranslateText.LINE_WIDTH, this, 2, 1, 5, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1, max = 5, current = 2, step = 1)
+    private int lineWidthSetting = 2;
 
     public ReachCirclesMod() {
         super(TranslateText.REACH_CIRCLES, TranslateText.REACH_CIRCLES_DESCRIPTION, ModCategory.PLAYER);
@@ -65,7 +67,7 @@ public class ReachCirclesMod extends Mod {
         GL11.glPushMatrix();
         Color color = ColorUtils.applyAlpha(currentColor.getInterpolateColor(), 120);
 
-        GL11.glLineWidth(lineWidthSetting.getValueFloat());
+        GL11.glLineWidth(lineWidthSetting);
         ColorUtils.setColor(color.getRGB());
         GL11.glBegin(1);
 

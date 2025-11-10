@@ -8,8 +8,8 @@ import java.awt.*;
 
 public class ColorPalette {
 
-    private final ColorAnimation[] backgroundColorAnimations = new ColorAnimation[3];
-    private final ColorAnimation[] fontColorAnimations = new ColorAnimation[3];
+    private final ColorAnimation[] backgroundColorAnimations = new ColorAnimation[ColorType.values().length];
+    private final ColorAnimation[] fontColorAnimations = new ColorAnimation[ColorType.values().length];
 
     public ColorPalette() {
 
@@ -37,6 +37,8 @@ public class ColorPalette {
         switch (type) {
             case DARK:
                 return theme.getDarkBackgroundColor(alpha);
+            case MID:
+                return theme.getMidBackgroundColor(alpha);
             case NORMAL:
                 return theme.getNormalBackgroundColor(alpha);
             default:
@@ -59,6 +61,8 @@ public class ColorPalette {
         switch (type) {
             case DARK:
                 return theme.getDarkFontColor(alpha);
+            case MID:
+                return theme.getMidFontColor(alpha);
             case NORMAL:
                 return theme.getNormalFontColor(alpha);
             default:

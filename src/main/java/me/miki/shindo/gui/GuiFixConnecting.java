@@ -1,6 +1,8 @@
 package me.miki.shindo.gui;
 
+import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.impl.EventJoinServer;
+import me.miki.shindo.management.tweaker.proxy.WarpProxyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
@@ -20,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +65,7 @@ public class GuiFixConnecting extends GuiScreen {
                         return;
                     }
 
-                    inetaddress = InetAddress.getByName(ip);
+                    inetaddress = resolveAddress(ip, port);
                     networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, mc.gameSettings.isUsingNativeTransport());
                     networkManager.setNetHandler(new NetHandlerLoginClient(networkManager, mc, previousGuiScreen));
                     networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
@@ -107,7 +110,7 @@ public class GuiFixConnecting extends GuiScreen {
                         return;
                     }
 
-                    inetaddress = InetAddress.getByName(ip);
+                    inetaddress = resolveAddress(ip, port);
                     networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, mc.gameSettings.isUsingNativeTransport());
                     networkManager.setNetHandler(new NetHandlerLoginClient(networkManager, mc, previousGuiScreen));
                     networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
@@ -178,5 +181,20 @@ public class GuiFixConnecting extends GuiScreen {
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    private InetAddress resolveAddress(String host, int port) throws UnknownHostException {
+        WarpProxyManager warpProxyManager = Shindo.getInstance().getWarpProxyManager();
+        if (warpProxyManager != null && warpProxyManager.isEnabled()) {
+            try {
+                InetSocketAddress endpoint = warpProxyManager.resolveEndpoint(host, port);
+                if (endpoint != null && endpoint.getAddress() != null) {
+                    return endpoint.getAddress();
+                }
+            } catch (IOException exception) {
+                logger.warn("Warp proxy resolution failed for host {}", host, exception);
+            }
+        }
+        return InetAddress.getByName(host);
     }
 }

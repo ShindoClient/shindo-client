@@ -1,9 +1,10 @@
 package me.miki.shindo.management.mods.impl.projectiletrail;
 
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.PropertyEnum;
 import net.minecraft.util.EnumParticleTypes;
 
-public enum ProjectileTrailType {
+public enum ProjectileTrailType implements PropertyEnum {
 
     BLACK_SMOKE(EnumParticleTypes.SMOKE_NORMAL, TranslateText.BLACK_SMOKE, 0.07F, 0.0F, 2),
     FIRE(EnumParticleTypes.FLAME, TranslateText.FIRE, 0.1F, 0.0F, 1),
@@ -42,6 +43,11 @@ public enum ProjectileTrailType {
     }
 
     public TranslateText getNameTranslate() {
+        return nameTranslate;
+    }
+
+    @Override
+    public TranslateText getTranslate() {
         return nameTranslate;
     }
 }

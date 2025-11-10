@@ -6,10 +6,9 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.impl.mechibes.SoundKey;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.RandomUtils;
 import me.miki.shindo.utils.Sound;
@@ -17,8 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,14 +25,21 @@ public class MechvibesMod extends Mod {
     private final Sound mouseRightSound = new Sound();
 
     private final HashMap<Integer, SoundKey> keyMap = new HashMap<Integer, SoundKey>();
-    private final BooleanSetting keyboardSetting = new BooleanSetting(TranslateText.KEYBOARD, this, true);
-    private final ComboSetting keyTypeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.NK_CREAM, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.NK_CREAM), new Option(TranslateText.MX_BLUE),
-            new Option(TranslateText.MX_SILVER), new Option(TranslateText.RAZER_GREEN),
-            new Option(TranslateText.HYPERX_AQUA), new Option(TranslateText.MX_BLACK), new Option(TranslateText.TOPRE_PURPLE))));
-    private final NumberSetting keyboardVolumeSetting = new NumberSetting(TranslateText.KEYBOARD_VOLUME, this, 0.5, 0.0, 1.0, false);
-    private final BooleanSetting mouseSetting = new BooleanSetting(TranslateText.MOUSE, this, true);
-    private final NumberSetting mouseVolumeSetting = new NumberSetting(TranslateText.MOUSE_VOLUME, this, 0.5, 0.0, 1.0, false);
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.KEYBOARD, category = "Keyboard")
+    private boolean keyboardEnabled = true;
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE, category = "Keyboard")
+    private KeyType keyType = KeyType.NK_CREAM;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.KEYBOARD_VOLUME, category = "Keyboard", min = 0, max = 1, step = 0.05, current = 0.5)
+    private double keyboardVolume = 0.5;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MOUSE, category = "Mouse")
+    private boolean mouseEnabled = true;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MOUSE_VOLUME, category = "Mouse", min = 0, max = 1, step = 0.05, current = 0.5)
+    private double mouseVolume = 0.5;
     private float tempKeyboardVolume;
     private String tempKeyboardMode;
     private float tempMouseVolume;
@@ -55,7 +59,7 @@ public class MechvibesMod extends Mod {
     public void onEnable() {
         super.onEnable();
 
-        loadKeyboardSounds(getKeyboardType(keyTypeSetting.getOption()).replace("-", "_"));
+        loadKeyboardSounds(keyType.getResourceFolder());
         loadMouseSounds();
     }
 
@@ -64,55 +68,52 @@ public class MechvibesMod extends Mod {
 
         if (loaded) {
 
-            String mode = getKeyboardType(keyTypeSetting.getOption());
+            String mode = keyType.getResourceFolder();
 
-            if (tempKeyboardMode != mode) {
-
+            if (!mode.equals(tempKeyboardMode)) {
                 tempKeyboardMode = mode;
-
-                loadKeyboardSounds(mode.replace("-", "_"));
+                loadKeyboardSounds(mode);
             }
 
-            if (tempKeyboardVolume != keyboardVolumeSetting.getValueFloat()) {
-
-                tempKeyboardVolume = keyboardVolumeSetting.getValueFloat();
-
-                for (Map.Entry<Integer, SoundKey> map : keyMap.entrySet()) {
-                    map.getValue().setVolume(tempKeyboardVolume);
+            float currentKeyboardVolume = (float) keyboardVolume;
+            if (Float.compare(tempKeyboardVolume, currentKeyboardVolume) != 0) {
+                tempKeyboardVolume = currentKeyboardVolume;
+                for (SoundKey key : keyMap.values()) {
+                    key.setVolume(tempKeyboardVolume);
                 }
             }
 
-            if (tempMouseVolume != mouseVolumeSetting.getValueFloat()) {
-
-                tempMouseVolume = mouseVolumeSetting.getValueFloat();
-
+            float currentMouseVolume = (float) mouseVolume;
+            if (Float.compare(tempMouseVolume, currentMouseVolume) != 0) {
+                tempMouseVolume = currentMouseVolume;
                 mouseLeftSound.setVolume(tempMouseVolume);
                 mouseRightSound.setVolume(tempMouseVolume);
             }
 
-            for (Map.Entry<Integer, SoundKey> map : keyMap.entrySet()) {
-                if (map.getValue().isPressed() && !Keyboard.isKeyDown(map.getKey())) {
-                    map.getValue().setPressed(false);
+            for (Map.Entry<Integer, SoundKey> entry : keyMap.entrySet()) {
+                SoundKey key = entry.getValue();
+                if (key.isPressed() && !Keyboard.isKeyDown(entry.getKey())) {
+                    key.setPressed(false);
                 }
             }
 
-            if (keyboardSetting.isToggled()) {
+            if (keyboardEnabled) {
                 for (int keyCode = 0; keyCode < 256; keyCode++) {
-                    if (Keyboard.isKeyDown(keyCode)) {
-                        if (keyMap.get(keyCode) != null) {
-                            SoundKey key = keyMap.get(keyCode);
-                            if (!key.isPressed()) {
-                                key.play();
-                                key.setPressed(true);
-                            }
-
-                            continue;
-                        }
+                    if (!Keyboard.isKeyDown(keyCode)) {
+                        continue;
+                    }
+                    SoundKey key = keyMap.get(keyCode);
+                    if (key == null) {
+                        continue;
+                    }
+                    if (!key.isPressed()) {
+                        key.play();
+                        key.setPressed(true);
                     }
                 }
             }
 
-            if (mouseSetting.isToggled()) {
+            if (mouseEnabled) {
 
                 if (Mouse.isButtonDown(0) && !mouseLeftPress) {
                     mouseLeftPress = true;
@@ -180,39 +181,6 @@ public class MechvibesMod extends Mod {
         });
     }
 
-    private String getKeyboardType(Option option) {
-
-        if (option.getTranslate().equals(TranslateText.NK_CREAM)) {
-            return "nk-cream";
-        }
-
-        if (option.getTranslate().equals(TranslateText.MX_BLUE)) {
-            return "mx-blue";
-        }
-
-        if (option.getTranslate().equals(TranslateText.MX_SILVER)) {
-            return "mx-silver";
-        }
-
-        if (option.getTranslate().equals(TranslateText.RAZER_GREEN)) {
-            return "razer-green";
-        }
-
-        if (option.getTranslate().equals(TranslateText.HYPERX_AQUA)) {
-            return "hyperX-aqua";
-        }
-
-        if (option.getTranslate().equals(TranslateText.MX_BLACK)) {
-            return "mx-black";
-        }
-
-        if (option.getTranslate().equals(TranslateText.TOPRE_PURPLE)) {
-            return "topre-purple";
-        }
-
-        return "nk-cream";
-    }
-
     private void loadMouseSounds() {
         Multithreading.runAsync(() -> {
             try {
@@ -220,7 +188,36 @@ public class MechvibesMod extends Mod {
                 mouseRightSound.loadClip(new ResourceLocation("shindo/mechvibes/mouse.wav"));
             } catch (Exception e) {
             }
+            mouseLeftSound.setVolume((float) mouseVolume);
+            mouseRightSound.setVolume((float) mouseVolume);
             loaded = true;
         });
+    }
+
+    private enum KeyType implements PropertyEnum {
+        NK_CREAM("nk_cream", TranslateText.NK_CREAM),
+        MX_BLUE("mx_blue", TranslateText.MX_BLUE),
+        MX_SILVER("mx_silver", TranslateText.MX_SILVER),
+        RAZER_GREEN("razer_green", TranslateText.RAZER_GREEN),
+        HYPERX_AQUA("hyperx_aqua", TranslateText.HYPERX_AQUA),
+        MX_BLACK("mx_black", TranslateText.MX_BLACK),
+        TOPRE_PURPLE("topre_purple", TranslateText.TOPRE_PURPLE);
+
+        private final String resourceFolder;
+        private final TranslateText translate;
+
+        KeyType(String resourceFolder, TranslateText translate) {
+            this.resourceFolder = resourceFolder;
+            this.translate = translate;
+        }
+
+        String getResourceFolder() {
+            return resourceFolder;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

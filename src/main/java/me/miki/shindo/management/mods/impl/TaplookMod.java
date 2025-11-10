@@ -5,19 +5,17 @@ import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class TaplookMod extends Mod {
 
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.PERSPECTIVE, this, TranslateText.FRONT, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.FRONT), new Option(TranslateText.BEHIND))));
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_P);
+    @Property(type = PropertyType.COMBO, translate = TranslateText.PERSPECTIVE)
+    private Perspective perspective = Perspective.FRONT;
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_P)
+    private int keybindSetting = Keyboard.KEY_P;
     private boolean active;
     private int prevPerspective;
 
@@ -27,7 +25,7 @@ public class TaplookMod extends Mod {
 
     @EventTarget
     public void onTick(EventTick event) {
-        if (keybindSetting.isKeyDown()) {
+        if (Keyboard.isKeyDown(keybindSetting)) {
             if (!active) {
                 this.start();
             }
@@ -38,12 +36,11 @@ public class TaplookMod extends Mod {
 
     private void start() {
 
-        Option option = modeSetting.getOption();
-        int perspective = option.getTranslate().equals(TranslateText.FRONT) ? 2 : 1;
+        int perspectiveView = perspective == Perspective.FRONT ? 2 : 1;
 
         active = true;
         prevPerspective = mc.gameSettings.thirdPersonView;
-        mc.gameSettings.thirdPersonView = perspective;
+        mc.gameSettings.thirdPersonView = perspectiveView;
         mc.renderGlobal.setDisplayListEntitiesDirty();
     }
 
@@ -51,5 +48,21 @@ public class TaplookMod extends Mod {
         active = false;
         mc.gameSettings.thirdPersonView = prevPerspective;
         mc.renderGlobal.setDisplayListEntitiesDirty();
+    }
+
+    private enum Perspective implements PropertyEnum {
+        FRONT(TranslateText.FRONT),
+        BEHIND(TranslateText.BEHIND);
+
+        private final TranslateText translate;
+
+        Perspective(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

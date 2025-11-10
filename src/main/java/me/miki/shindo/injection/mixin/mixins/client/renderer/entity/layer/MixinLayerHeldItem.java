@@ -1,7 +1,7 @@
 package me.miki.shindo.injection.mixin.mixins.client.renderer.entity.layer;
 
 import me.miki.shindo.management.mods.impl.AnimationsMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;

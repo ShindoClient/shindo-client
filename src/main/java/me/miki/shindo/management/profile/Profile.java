@@ -16,16 +16,19 @@ public class Profile {
     private final String name;
     private final ProfileIcon icon;
     @Setter
+    private File customIcon;
+    @Setter
     private String serverIp;
     @Setter
     private ProfileType type;
 
-    public Profile(int id, String serverIp, File jsonFile, ProfileIcon icon) {
+    public Profile(int id, String serverIp, File jsonFile, ProfileIcon icon, File customIcon) {
         this.id = id;
         this.jsonFile = jsonFile;
         this.name = jsonFile != null ? jsonFile.getName().replace(".json", "") : "";
         this.serverIp = serverIp;
         this.icon = icon;
+        this.customIcon = customIcon;
         this.type = ProfileType.ALL;
     }
 
