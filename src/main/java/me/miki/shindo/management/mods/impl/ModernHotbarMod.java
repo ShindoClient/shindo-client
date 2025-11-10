@@ -8,9 +8,6 @@ import me.miki.shindo.management.event.impl.EventRenderExpBar;
 import me.miki.shindo.management.event.impl.EventRenderTooltip;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
@@ -21,17 +18,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class ModernHotbarMod extends HUDMod {
 
     private final SimpleAnimation animation = new SimpleAnimation(0.0F);
-    private final ComboSetting designSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.CLIENT, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.NORMAL), new Option(TranslateText.SHINDO), new Option(TranslateText.CHILL), new Option(TranslateText.CLIENT))));
-    private final BooleanSetting smoothSetting = new BooleanSetting(TranslateText.SMOOTH, this, true);
-    private final ComboSetting pickupAnimation = new ComboSetting(TranslateText.PICKUP_ANIM, this, TranslateText.PICKUP_POP, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.PICKUP_POP), new Option(TranslateText.PICKUP_BREAD), new Option(TranslateText.PICKUP_VANILLA))));
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
+    private Design design = Design.CLIENT;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH)
+    private boolean smoothSetting = true;
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.PICKUP_ANIM)
+    private PickupAnimation pickupAnimation = PickupAnimation.PICKUP_POP;
+
     private float barX, barY, barWidth, barHeight, selX;
 
     public ModernHotbarMod() {
@@ -45,7 +48,7 @@ public class ModernHotbarMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
         ScaledResolution sr = new ScaledResolution(mc);
-        Option option = designSetting.getOption();
+        Design currentDesign = design;
         if (this.isEditing()) {
             return;
         }
@@ -65,7 +68,7 @@ public class ModernHotbarMod extends HUDMod {
                 int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
                 int l = sr.getScaledHeight() - 16 - 3;
 
-                if (option.getTranslate().equals(TranslateText.CHILL)) {
+                if (currentDesign == Design.CHILL) {
                     l = l + 4;
                 }
 
@@ -79,9 +82,9 @@ public class ModernHotbarMod extends HUDMod {
     }
 
     private void renderHotBarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer entityPlayer) {
-        Option option = pickupAnimation.getOption();
+        PickupAnimation animationMode = pickupAnimation;
         ItemStack itemstack = entityPlayer.inventory.mainInventory[index];
-        boolean animTreatment = option.getTranslate().equals(TranslateText.PICKUP_BREAD);
+        boolean animTreatment = animationMode == PickupAnimation.PICKUP_BREAD;
 
         if (itemstack != null) {
             float take = (animTreatment) ? partialTicks / 2 : partialTicks;
@@ -90,10 +93,10 @@ public class ModernHotbarMod extends HUDMod {
                 // from betterhotbarmod
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(xPos + 8, yPos + 12, 0.0F);
-                if (option.getTranslate().equals(TranslateText.PICKUP_BREAD)) {
+                if (animationMode == PickupAnimation.PICKUP_BREAD) {
                     float scaleAmount = 1.0F + progress / 2.5F;
                     GlStateManager.scale(Math.max(1.0F, scaleAmount / (1.0F / (scaleAmount / 2))), scaleAmount, 1.0F);
-                } else if (option.getTranslate().equals(TranslateText.PICKUP_POP)) {
+                } else if (animationMode == PickupAnimation.PICKUP_POP) {
                     float scaleAmount = 1.0F + progress / 5.0F;
                     GlStateManager.scale(scaleAmount, scaleAmount, 1.0F);
                 } else {
@@ -117,23 +120,23 @@ public class ModernHotbarMod extends HUDMod {
     private void drawNanoVG(NanoVGManager nvg) {
 
         ScaledResolution sr = new ScaledResolution(mc);
-        Option option = designSetting.getOption();
+        Design currentDesign = design;
         AccentColor currentColor = Shindo.getInstance().getColorManager().getCurrentColor();
-        boolean isText = InternalSettingsMod.getInstance().getModThemeSetting().getOption().getTranslate().equals(TranslateText.TEXT);
+        boolean isText = InternalSettingsMod.getInstance().getHudTheme() == InternalSettingsMod.HudTheme.TEXT;
 
         if (mc.getRenderViewEntity() instanceof EntityPlayer) {
 
-            if (!option.getTranslate().equals(TranslateText.CHILL)) {
+            if (currentDesign != Design.CHILL) {
 
                 barX = sr.getScaledWidth() / 2.0F - 91;
                 barY = sr.getScaledHeight() - 26;
                 barWidth = 91 * 2;
                 barHeight = 22;
 
-                if (option.getTranslate().equals(TranslateText.SHINDO)) {
+                if (currentDesign == Design.SHINDO) {
                     nvg.drawShadow(barX, barY, barWidth, barHeight, 6);
                     nvg.drawGradientRoundedRect(barX, barY, barWidth, barHeight, 6, ColorUtils.applyAlpha(currentColor.getColor1(), 190), ColorUtils.applyAlpha(currentColor.getColor2(), 190));
-                } else if (option.getTranslate().equals(TranslateText.CLIENT)) {
+                } else if (currentDesign == Design.CLIENT) {
                     if (isText) {
                         nvg.drawShadow(barX, barY, barWidth, barHeight, 6);
                     }
@@ -160,15 +163,15 @@ public class ModernHotbarMod extends HUDMod {
 
             int i = sr.getScaledWidth() / 2;
 
-            if (smoothSetting.isToggled()) {
+            if (smoothSetting) {
                 animation.setAnimation(i - 91 - 1 + entityplayer.inventory.currentItem * 20, 18);
                 selX = animation.getValue();
             } else {
                 selX = i - 91 - 1 + entityplayer.inventory.currentItem * 20;
             }
 
-            if (!option.getTranslate().equals(TranslateText.CHILL)) {
-                if (option.getTranslate().equals(TranslateText.SHINDO)) {
+            if (currentDesign != Design.CHILL) {
+                if (currentDesign == Design.SHINDO) {
                     nvg.drawRoundedRect(selX + 1, sr.getScaledHeight() - 22 - 4, 22, 22, 6, new Color(255, 255, 255, 140));
                 } else {
                     nvg.drawRoundedRect(selX + 1, sr.getScaledHeight() - 22 - 4, 22, 22, 6, new Color(0, 0, 0, 100));
@@ -187,8 +190,41 @@ public class ModernHotbarMod extends HUDMod {
     @EventTarget
     public void onRenderExpBar(EventRenderExpBar event) {
 
-        Option option = designSetting.getOption();
+        event.setCancelled(design != Design.CHILL);
+    }
 
-        event.setCancelled(!option.getTranslate().equals(TranslateText.CHILL));
+    private enum Design implements PropertyEnum {
+        NORMAL(TranslateText.NORMAL),
+        SHINDO(TranslateText.SHINDO),
+        CHILL(TranslateText.CHILL),
+        CLIENT(TranslateText.CLIENT);
+
+        private final TranslateText translate;
+
+        Design(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
+    }
+
+    private enum PickupAnimation implements PropertyEnum {
+        PICKUP_POP(TranslateText.PICKUP_POP),
+        PICKUP_BREAD(TranslateText.PICKUP_BREAD),
+        PICKUP_VANILLA(TranslateText.PICKUP_VANILLA);
+
+        private final TranslateText translate;
+
+        PickupAnimation(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

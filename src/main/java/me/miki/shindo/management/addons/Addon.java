@@ -3,10 +3,11 @@ package me.miki.shindo.management.addons;
 import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.management.settings.config.ConfigOwner;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
 @Getter
-public class Addon {
+public class Addon implements ConfigOwner {
 
     private final SimpleAnimation animation = new SimpleAnimation();
 
@@ -55,6 +56,16 @@ public class Addon {
             onDisable();
             if (sound) Shindo.getInstance().getAddonManager().playToggleSound(false);
         }
+    }
+
+    @Override
+    public String getConfigId() {
+        return getName().toLowerCase().replace(' ', '_');
+    }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
     }
 
 }

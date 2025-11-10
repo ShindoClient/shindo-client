@@ -1,10 +1,8 @@
 package me.miki.shindo.injection.mixin.mixins.world;
 
 import me.miki.shindo.injection.interfaces.IMixinWorld;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import me.miki.shindo.utils.EnumFacings;
 import me.miki.shindo.viaversion.fixes.FixedSoundEngine;
 import net.minecraft.client.particle.EntityFX;
@@ -44,10 +42,9 @@ public abstract class MixinWorld implements IMixinWorld {
     public void preGetRainStrength(float delta, CallbackInfoReturnable<Float> cir) {
 
         WeatherChangerMod mod = WeatherChangerMod.getInstance();
-        ComboSetting setting = mod.getWeatherSetting();
-        Option weather = setting.getOption();
+        Weather weather = mod.getWeather();
 
-        if (mod.isToggled() && weather.getTranslate().equals(TranslateText.CLEAR)) {
+        if (mod.isToggled() && weather == Weather.CLEAR) {
             cir.setReturnValue(0f);
         } else if (mod.isToggled()) {
             cir.setReturnValue(mod.getRainStrength().getValueFloat());
@@ -58,10 +55,9 @@ public abstract class MixinWorld implements IMixinWorld {
     public void preGgetThunderStrength(float delta, CallbackInfoReturnable<Float> cir) {
 
         WeatherChangerMod mod = WeatherChangerMod.getInstance();
-        ComboSetting setting = mod.getWeatherSetting();
-        Option weather = setting.getOption();
+        Weather weather = mod.getWeather();
 
-        if (mod.isToggled() && !weather.getTranslate().equals(TranslateText.STORM)) {
+        if (mod.isToggled() && weather != Weather.STORM) {
             cir.setReturnValue(0f);
         } else if (mod.isToggled()) {
             cir.setReturnValue(mod.getThunderStrength().getValueFloat());

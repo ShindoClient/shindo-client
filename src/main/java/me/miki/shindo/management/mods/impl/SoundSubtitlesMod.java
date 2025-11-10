@@ -10,7 +10,6 @@ import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
 import me.miki.shindo.management.mods.impl.subtitle.Subtitle;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.client.Minecraft;
@@ -27,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class SoundSubtitlesMod extends HUDMod {
 
     private static SoundSubtitlesMod instance;
@@ -34,7 +35,8 @@ public class SoundSubtitlesMod extends HUDMod {
     private final List<Subtitle> subtitles = Lists.newArrayList();
     private final HashMap<String, String> soundMap = new HashMap<>();
 
-    private final NumberSetting maxSetting = new NumberSetting(TranslateText.MAX, this, 3, 1, 10, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1, max = 10, current = 3, step = 1)
+    private int maxSetting = 3;
 
     private final SimpleAnimation backgroundAnimation = new SimpleAnimation(0.0F);
 
@@ -153,7 +155,7 @@ public class SoundSubtitlesMod extends HUDMod {
 
     public void soundPlay(ISound soundIn) {
 
-        if (subtitles.size() >= maxSetting.getValue()) {
+        if (subtitles.size() >= maxSetting) {
             return;
         }
 

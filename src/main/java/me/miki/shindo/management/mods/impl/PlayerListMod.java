@@ -5,13 +5,15 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class PlayerListMod extends HUDMod {
 
-    private final NumberSetting maxSetting = new NumberSetting(TranslateText.MAX, this, 16, 1, 100, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1, max = 100, current = 16, step = 1)
+    private int maxSetting = 16;
 
     private int index;
     private float maxName;
@@ -50,7 +52,7 @@ public class PlayerListMod extends HUDMod {
                 this.drawPlayerHead(playerInfo.getLocationSkin(), 5.5F, offsetY, 12, 12, 2.5F);
                 this.drawText(name, 20, offsetY + 2.5F, 9, getHudFont(1));
 
-                if (prevIndex > maxSetting.getValueInt()) {
+                if (prevIndex > maxSetting) {
                     prevIndex++;
                     index = prevIndex;
                     break;

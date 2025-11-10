@@ -17,6 +17,10 @@ public class ShindoLogger {
         logger.warn("[SC/WARN] {}", message);
     }
 
+    public static void warn(String message, Exception e) {
+        logger.warn("[SC/WARN] {}", message, e);
+    }
+
     public static void error(String message) {
         logger.error("[SC/ERROR] {}", message);
     }

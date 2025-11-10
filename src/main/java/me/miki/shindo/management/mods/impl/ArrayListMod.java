@@ -8,26 +8,33 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ArrayListMod extends HUDMod {
 
-    private final BooleanSetting backgroundSetting = new BooleanSetting(TranslateText.BACKGROUND, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
+    private boolean backgroundEnabled = true;
 
-    private final BooleanSetting hudSetting = new BooleanSetting(TranslateText.HUD, this, false);
-    private final BooleanSetting renderSetting = new BooleanSetting(TranslateText.RENDER, this, false);
-    private final BooleanSetting playerSetting = new BooleanSetting(TranslateText.PLAYER, this, false);
-    private final BooleanSetting otherSetting = new BooleanSetting(TranslateText.OTHER, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HUD)
+    private boolean includeHudMods = false;
 
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.MODE, this, TranslateText.RIGHT, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.RIGHT), new Option(TranslateText.LEFT))));
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.RENDER)
+    private boolean includeRenderMods = false;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PLAYER)
+    private boolean includePlayerMods = false;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.OTHER)
+    private boolean includeOtherMods = false;
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.MODE)
+    private Mode modeSetting = Mode.RIGHT;
 
 
     public ArrayListMod() {
@@ -52,19 +59,19 @@ public class ArrayListMod extends HUDMod {
 
         for (Mod m : instance.getModManager().getMods()) {
 
-            if (!hudSetting.isToggled() && m.getCategory().equals(ModCategory.HUD)) {
+            if (!includeHudMods && m.getCategory().equals(ModCategory.HUD)) {
                 continue;
             }
 
-            if (!renderSetting.isToggled() && m.getCategory().equals(ModCategory.RENDER)) {
+            if (!includeRenderMods && m.getCategory().equals(ModCategory.RENDER)) {
                 continue;
             }
 
-            if (!playerSetting.isToggled() && m.getCategory().equals(ModCategory.PLAYER)) {
+            if (!includePlayerMods && m.getCategory().equals(ModCategory.PLAYER)) {
                 continue;
             }
 
-            if (!otherSetting.isToggled() && m.getCategory().equals(ModCategory.OTHER)) {
+            if (!includeOtherMods && m.getCategory().equals(ModCategory.OTHER)) {
                 continue;
             }
 
@@ -84,13 +91,13 @@ public class ArrayListMod extends HUDMod {
 
         int y = 0;
         int colorIndex = 0;
-        boolean isRight = modeSetting.getOption().getTranslate().equals(TranslateText.RIGHT);
+        boolean isRight = modeSetting == Mode.RIGHT;
 
         for (Mod m : enabledMods) {
 
             float nameWidth = this.getTextWidth(m.getName(), 8.5F, getHudFont(1));
 
-            if (backgroundSetting.isToggled()) {
+            if (backgroundEnabled) {
                 this.drawRect((isRight ? (maxWidth - nameWidth) : 0), y, nameWidth + 5, 12, new Color(0, 0, 0, 100));
             }
 
@@ -103,5 +110,21 @@ public class ArrayListMod extends HUDMod {
 
         this.setWidth(maxWidth + 4);
         this.setHeight(y);
+    }
+
+    private enum Mode implements PropertyEnum {
+        RIGHT(TranslateText.RIGHT),
+        LEFT(TranslateText.LEFT);
+
+        private final TranslateText translate;
+
+        Mode(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

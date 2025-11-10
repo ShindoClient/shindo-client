@@ -60,14 +60,14 @@ public class AsyncScreenshots extends Thread {
             image.setRGB(0, 0, width, height, pixelValues, 0, width);
             ImageIO.write(image, "png", screenshot);
 
-            if (AsyncScreenshotMod.getInstance().getMessageSetting().isToggled()) {
+            if (AsyncScreenshotMod.getInstance().isMessageEnabled()) {
                 mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText(EnumChatFormatting.UNDERLINE + "Saved screenshot" + EnumChatFormatting.RESET + " ")
                         .appendSibling(new ChatComponentText("[Open] ").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GOLD).setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ".scmd screenshot open " + screenshot.getName())))
                                 .appendSibling(new ChatComponentText("[Copy] ").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.BLUE).setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ".scmd screenshot copy " + screenshot.getName())))
                                         .appendSibling(new ChatComponentText("[Delete]").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED).setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ".scmd screenshot del " + screenshot.getName())))))));
             }
 
-            if (AsyncScreenshotMod.getInstance().getClipboardSetting().isToggled()) {
+            if (AsyncScreenshotMod.getInstance().isClipboardEnabled()) {
                 mc.thePlayer.sendChatMessage(".scmd screenshot copy " + screenshot.getName());
             }
         } catch (Exception e) {

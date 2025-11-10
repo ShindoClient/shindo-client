@@ -5,15 +5,19 @@ import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 public class ToggleSprintMod extends SimpleHUDMod {
 
-    private final BooleanSetting hudSetting = new BooleanSetting(TranslateText.HUD, this, true);
-    private final BooleanSetting alwaysSetting = new BooleanSetting(TranslateText.ALWAYS, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HUD)
+    private boolean hudEnabled = true;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ALWAYS)
+    private boolean alwaysSprint = false;
 
     private long startTime;
     private boolean wasDown;
@@ -32,16 +36,16 @@ public class ToggleSprintMod extends SimpleHUDMod {
     @EventTarget
     public void onRender2D(EventRender2D event) {
 
-        if (hudSetting.isToggled()) {
+        if (hudEnabled) {
             this.draw();
         }
 
-        this.setDraggable(hudSetting.isToggled());
+        this.setDraggable(hudEnabled);
     }
 
     @EventTarget
     public void onUpdate(EventUpdate event) {
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), state.equals(State.HELD) || state.equals(State.TOGGLED) || alwaysSetting.isToggled());
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), state.equals(State.HELD) || state.equals(State.TOGGLED) || alwaysSprint);
     }
 
     @EventTarget
@@ -49,7 +53,7 @@ public class ToggleSprintMod extends SimpleHUDMod {
 
         boolean down = Keyboard.isKeyDown(mc.gameSettings.keyBindSprint.getKeyCode());
 
-        if (alwaysSetting.isToggled() || mc.currentScreen != null) {
+        if (alwaysSprint || mc.currentScreen != null) {
             return;
         }
 
@@ -80,7 +84,7 @@ public class ToggleSprintMod extends SimpleHUDMod {
 
         String prefix = "Sprinting";
 
-        if (alwaysSetting.isToggled()) {
+        if (alwaysSprint) {
             return prefix + " (Always)";
         }
 

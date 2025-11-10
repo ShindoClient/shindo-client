@@ -5,9 +5,9 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import org.lwjgl.nanovg.NVGColor;
@@ -15,17 +15,16 @@ import org.lwjgl.nanovg.NanoVG;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class ClockMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    private boolean iconSetting = true;
 
-    private final ComboSetting modeSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.SIMPLE, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.SIMPLE), new Option(TranslateText.FANCY))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN, category = "Display")
+    private Design design = Design.SIMPLE;
 
     private final DateFormat df = new SimpleDateFormat("HH:mm a", Locale.US);
 
@@ -36,7 +35,7 @@ public class ClockMod extends SimpleHUDMod {
     @EventTarget
     public void onRender2D(EventRender2D event) {
 
-        if (modeSetting.getOption().getTranslate().equals(TranslateText.SIMPLE)) {
+        if (design == Design.SIMPLE) {
             this.draw();
         } else {
             Shindo.getInstance().getNanoVGManager().setupAndDraw(this::drawNanoVG);
@@ -50,7 +49,23 @@ public class ClockMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.CLOCK : null;
+        return iconSetting ? LegacyIcon.CLOCK : null;
+    }
+
+    private enum Design implements PropertyEnum {
+        SIMPLE(TranslateText.SIMPLE),
+        FANCY(TranslateText.FANCY);
+
+        private final TranslateText translate;
+
+        Design(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 
     private void drawNanoVG() {

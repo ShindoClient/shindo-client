@@ -29,6 +29,7 @@ public class ShindoHandler {
     @EventTarget
     public void onTick(EventTick event) {
         OptifineUtils.disableFastRender();
+        instance.getProfileManager().handleAutoSave();
     }
 
     @EventTarget

@@ -1,24 +1,28 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class WeatherChangerMod extends Mod {
 
+    @Getter
     private static WeatherChangerMod instance;
 
-    private final ComboSetting weatherSetting = new ComboSetting(TranslateText.WEATHER, this, TranslateText.CLEAR, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.CLEAR), new Option(TranslateText.RAIN), new Option(TranslateText.STORM), new Option(TranslateText.SNOW))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.WEATHER)
+    private Weather weather = Weather.CLEAR;
 
-    private final NumberSetting rainStrength = new NumberSetting(TranslateText.RAIN_STRENGTH, this, 1, 0, 1, false);
-    private final NumberSetting thunderStrength = new NumberSetting(TranslateText.THUNDER_STRENGTH, this, 1, 0, 1, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.RAIN_STRENGTH, min = 0, max = 1, current = 1)
+    private double rainStrength = 1;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.THUNDER_STRENGTH, min = 0, max = 1, current = 1)
+    private double thunderStrength = 1;
 
     public WeatherChangerMod() {
         super(TranslateText.WEATHER_CHANGER, TranslateText.WEATHER_CHANGER_DESCRIPTION, ModCategory.WORLD);
@@ -26,19 +30,33 @@ public class WeatherChangerMod extends Mod {
         instance = this;
     }
 
-    public static WeatherChangerMod getInstance() {
-        return instance;
-    }
-
-    public ComboSetting getWeatherSetting() {
-        return weatherSetting;
+    public Weather getWeather() {
+        return weather;
     }
 
     public NumberSetting getRainStrength() {
-        return rainStrength;
+        return SettingRegistry.getNumberSetting(this, "rainStrength");
     }
 
     public NumberSetting getThunderStrength() {
-        return thunderStrength;
+        return SettingRegistry.getNumberSetting(this, "thunderStrength");
+    }
+
+    public enum Weather implements PropertyEnum {
+        CLEAR(TranslateText.CLEAR),
+        RAIN(TranslateText.RAIN),
+        STORM(TranslateText.STORM),
+        SNOW(TranslateText.SNOW);
+
+        private final TranslateText translate;
+
+        Weather(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

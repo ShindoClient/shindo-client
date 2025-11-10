@@ -7,7 +7,6 @@ import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventSwitchTexture;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.ColorUtils;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -19,10 +18,13 @@ import net.minecraft.util.ResourceLocation;
 import java.io.IOException;
 import java.util.List;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class PackDisplayMod extends HUDMod {
 
     private final ResourcePackRepository resourcePackRepository = mc.getResourcePackRepository();
-    private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
+    private boolean compactSetting = false;
     private IResourcePack pack;
     private ResourceLocation currentPack;
     private List<ResourcePackRepository.Entry> packs = resourcePackRepository.getRepositoryEntries();
@@ -55,7 +57,7 @@ public class PackDisplayMod extends HUDMod {
         String name = ColorUtils.removeColorCode(pack.getPackName()).replace(".zip", "");
 
         float stringWidth = this.getTextWidth(name, 9, getHudFont(1));
-        boolean compact = compactSetting.isToggled();
+        boolean compact = compactSetting;
         int imgSize = compact ? 12 : 30;
         float imgX = compact ? 5F : 4.5F;
         float imgY = compact ? 3F : 4.5F;

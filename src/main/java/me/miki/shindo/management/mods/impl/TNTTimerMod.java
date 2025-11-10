@@ -6,8 +6,6 @@ import me.miki.shindo.management.event.impl.EventRenderTNT;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.utils.ServerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -21,14 +19,15 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class TNTTimerMod extends SimpleHUDMod {
 
     private final DecimalFormat timeFormatter = new DecimalFormat("0.00");
-    private final ComboSetting typeSetting = new ComboSetting(TranslateText.TYPE, this, TranslateText.TAG, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.TAG), new Option(TranslateText.HUD))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    private DisplayMode displayMode = DisplayMode.TAG;
     private EntityTNTPrimed currentTNT;
     private float partialTicks;
 
@@ -39,9 +38,7 @@ public class TNTTimerMod extends SimpleHUDMod {
     @EventTarget
     public void onRender2D(EventRender2D event) {
 
-        Option option = typeSetting.getOption();
-
-        if (option.getTranslate().equals(TranslateText.HUD)) {
+        if (displayMode == DisplayMode.HUD) {
             this.draw();
             this.setCategory(ModCategory.HUD);
             this.setDraggable(true);
@@ -54,9 +51,7 @@ public class TNTTimerMod extends SimpleHUDMod {
     @EventTarget
     public void onRenderTNT(EventRenderTNT event) {
 
-        Option option = typeSetting.getOption();
-
-        if (option.getTranslate().equals(TranslateText.TAG)) {
+        if (displayMode == DisplayMode.TAG) {
 
             int fuseTimer = ServerUtils.isHypixel() ? event.getEntity().fuse - 28 : event.getEntity().fuse;
 
@@ -136,5 +131,21 @@ public class TNTTimerMod extends SimpleHUDMod {
         }
 
         return "There is no TNT";
+    }
+
+    private enum DisplayMode implements PropertyEnum {
+        TAG(TranslateText.TAG),
+        HUD(TranslateText.HUD);
+
+        private final TranslateText translate;
+
+        DisplayMode(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

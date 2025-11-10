@@ -1,11 +1,15 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting;
 
+import lombok.Getter;
 import me.miki.shindo.gui.modmenu.category.impl.SettingCategory;
 import me.miki.shindo.management.language.TranslateText;
 
 public class SettingScene {
 
+    private static final int HEADER_OFFSET = 56;
+
     private final SettingCategory parent;
+    @Getter
     private final String icon;
     private final TranslateText nameTranslate;
     private final TranslateText descriptionTranslate;
@@ -32,10 +36,6 @@ public class SettingScene {
     public void keyTyped(char typedChar, int keyCode) {
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
     public String getName() {
         return nameTranslate.getText();
     }
@@ -58,5 +58,17 @@ public class SettingScene {
 
     public int getHeight() {
         return parent.getSceneHeight();
+    }
+
+    public int getContentY() {
+        return parent.getSceneY() + HEADER_OFFSET;
+    }
+
+    public int getContentHeight() {
+        return Math.max(0, parent.getSceneHeight() - HEADER_OFFSET);
+    }
+
+    public int getHeaderOffset() {
+        return HEADER_OFFSET;
     }
 }

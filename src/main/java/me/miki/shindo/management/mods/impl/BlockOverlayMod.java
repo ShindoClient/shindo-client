@@ -7,9 +7,6 @@ import me.miki.shindo.management.event.impl.EventBlockHighlightRender;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ColorSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.Render3DUtils;
 import me.miki.shindo.utils.TimerUtils;
@@ -30,19 +27,42 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class BlockOverlayMod extends Mod {
 
     private final SimpleAnimation[] simpleAnimation = {new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F), new SimpleAnimation(0.0F)};
-    private final BooleanSetting animationSetting = new BooleanSetting(TranslateText.ANIMATION, this, false);
-    private final BooleanSetting fillSetting = new BooleanSetting(TranslateText.FILL, this, true);
-    private final BooleanSetting outlineSetting = new BooleanSetting(TranslateText.OUTLINE, this, true);
-    private final NumberSetting fillAlphaSetting = new NumberSetting(TranslateText.FILL_ALPHA, this, 0.15, 0, 1.0, false);
-    private final NumberSetting outlineAlphaSetting = new NumberSetting(TranslateText.OUTLINE_ALPHA, this, 0.15, 0, 1.0, false);
-    private final NumberSetting outlineWidthSetting = new NumberSetting(TranslateText.OUTLINE_WIDTH, this, 4, 1, 10, false);
-    private final BooleanSetting depthSetting = new BooleanSetting(TranslateText.DEPTH, this, false);
-    private final BooleanSetting customColorSetting = new BooleanSetting(TranslateText.CUSTOM_COLOR, this, false);
-    private final ColorSetting fillColorSetting = new ColorSetting(TranslateText.FILL_COLOR, this, Color.RED, false);
-    private final ColorSetting outlineColorSetting = new ColorSetting(TranslateText.OUTLINE_COLOR, this, Color.RED, false);
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
+    private boolean animationSetting = false;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.FILL)
+    private boolean fillSetting = true;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.OUTLINE)
+    private boolean outlineSetting = true;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.FILL_ALPHA, min = 0, max = 1.0, current = 0.15)
+    private double fillAlphaSetting = 0.15;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_ALPHA, min = 0, max = 1.0, current = 0.15)
+    private double outlineAlphaSetting = 0.15;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_WIDTH, min = 1, max = 10, current = 4)
+    private double outlineWidthSetting = 4;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.DEPTH)
+    private boolean depthSetting = false;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
+    private boolean customColorSetting = false;
+
+    @Property(type = PropertyType.COLOR, translate = TranslateText.FILL_COLOR)
+    private Color fillColorSetting = Color.RED;
+
+    @Property(type = PropertyType.COLOR, translate = TranslateText.OUTLINE_COLOR)
+    private Color outlineColorSetting = Color.RED;
+
     protected AxisAlignedBB currentBB;
     protected AxisAlignedBB slideBB;
     protected TimerUtils timer = new TimerUtils();
@@ -65,7 +85,7 @@ public class BlockOverlayMod extends Mod {
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 
-        if (depthSetting.isToggled()) {
+        if (depthSetting) {
             GlStateManager.disableDepth();
         }
 
@@ -88,7 +108,7 @@ public class BlockOverlayMod extends Mod {
 
             AxisAlignedBB selectedBox = block.getSelectedBoundingBox(mc.theWorld, blockpos);
 
-            if (animationSetting.isToggled()) {
+            if (animationSetting) {
 
                 if (!selectedBox.equals(currentBB)) {
                     slideBB = currentBB;
@@ -115,14 +135,14 @@ public class BlockOverlayMod extends Mod {
                             simpleAnimation[5].getValue() + 0.01
                     );
 
-                    if (fillSetting.isToggled()) {
-                        ColorUtils.setColor(customColorSetting.isToggled() ? fillColorSetting.getColor().getRGB() : currentColor.getInterpolateColor().getRGB(), fillAlphaSetting.getValueFloat());
+                    if (fillSetting) {
+                        ColorUtils.setColor(customColorSetting ? fillColorSetting.getRGB() : currentColor.getInterpolateColor().getRGB(), (float) fillAlphaSetting);
                         Render3DUtils.drawFillBox(interpolateAxis(renderBB));
                     }
 
-                    if (outlineSetting.isToggled()) {
-                        ColorUtils.setColor(customColorSetting.isToggled() ? outlineColorSetting.getColor().getRGB() : currentColor.getInterpolateColor().getRGB(), outlineAlphaSetting.getValueFloat());
-                        GL11.glLineWidth(outlineWidthSetting.getValueFloat());
+                    if (outlineSetting) {
+                        ColorUtils.setColor(customColorSetting ? outlineColorSetting.getRGB() : currentColor.getInterpolateColor().getRGB(), (float) outlineAlphaSetting);
+                        GL11.glLineWidth((float) outlineWidthSetting);
                         RenderGlobal.drawSelectionBoundingBox(interpolateAxis(renderBB));
                     }
                 }
@@ -130,14 +150,14 @@ public class BlockOverlayMod extends Mod {
 
                 selectedBox = selectedBox.expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D).offset(-x, -y, -z);
 
-                if (fillSetting.isToggled()) {
-                    ColorUtils.setColor(customColorSetting.isToggled() ? fillColorSetting.getColor().getRGB() : currentColor.getInterpolateColor().getRGB(), fillAlphaSetting.getValueFloat());
+                if (fillSetting) {
+                    ColorUtils.setColor(customColorSetting ? fillColorSetting.getRGB() : currentColor.getInterpolateColor().getRGB(), (float) fillAlphaSetting);
                     Render3DUtils.drawFillBox(selectedBox);
                 }
 
-                if (outlineSetting.isToggled()) {
-                    ColorUtils.setColor(customColorSetting.isToggled() ? outlineColorSetting.getColor().getRGB() : currentColor.getInterpolateColor().getRGB(), outlineAlphaSetting.getValueFloat());
-                    GL11.glLineWidth(outlineWidthSetting.getValueFloat());
+                if (outlineSetting) {
+                    ColorUtils.setColor(customColorSetting ? outlineColorSetting.getRGB() : currentColor.getInterpolateColor().getRGB(), (float) outlineAlphaSetting);
+                    GL11.glLineWidth((float) outlineWidthSetting);
                     RenderGlobal.drawSelectionBoundingBox(selectedBox);
                 }
             }
@@ -148,7 +168,7 @@ public class BlockOverlayMod extends Mod {
 
         GlStateManager.disableBlend();
 
-        if (depthSetting.isToggled()) {
+        if (depthSetting) {
             GlStateManager.enableDepth();
         }
 

@@ -10,6 +10,7 @@ import me.miki.shindo.libs.openauth.microsoft.MicrosoftAuthResult;
 import me.miki.shindo.libs.openauth.microsoft.MicrosoftAuthenticationException;
 import me.miki.shindo.libs.openauth.microsoft.MicrosoftAuthenticator;
 import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.management.account.Account;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 
@@ -56,16 +57,24 @@ public class SessionUtils {
 
     }
 
-    public void setUserMicrosoft(String email, String password) {
-
+    public MicrosoftAuthResult loginMicrosoftAccount(Account account) throws MicrosoftAuthenticationException {
         MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
-        try {
-            MicrosoftAuthResult acc = authenticator.loginWithCredentials(email, password);
-            ((IMixinMinecraft) mc).setSession(new Session(acc.getProfile().getName(), acc.getProfile().getId(), acc.getAccessToken(), "legacy"));
-
-        } catch (MicrosoftAuthenticationException e) {
-            ShindoLogger.error("Microsoft Authentication Failed");
+        if (account.getRefreshToken() == null || account.getRefreshToken().isEmpty()) {
+            throw new MicrosoftAuthenticationException("Missing Microsoft refresh token");
         }
+
+        MicrosoftAuthResult result = authenticator.loginWithRefreshToken(account.getRefreshToken());
+
+        applyMicrosoftAuthResult(result);
+        account.setName(result.getProfile().getName());
+        account.setUuid(result.getProfile().getId());
+        account.setRefreshToken(result.getRefreshToken());
+
+        return result;
+    }
+
+    public void applyMicrosoftAuthResult(MicrosoftAuthResult result) {
+        ((IMixinMinecraft) mc).setSession(new Session(result.getProfile().getName(), result.getProfile().getId(), result.getAccessToken(), "legacy"));
     }
 
     //Sets the session.

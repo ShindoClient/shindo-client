@@ -4,19 +4,42 @@ import lombok.Getter;
 import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.management.annotation.Author;
+import me.miki.shindo.management.annotation.Description;
+import me.miki.shindo.management.annotation.Name;
+import me.miki.shindo.management.annotation.NotNull;
+import me.miki.shindo.management.annotation.Since;
+import me.miki.shindo.management.annotation.Version;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.notification.NotificationType;
+import me.miki.shindo.management.settings.config.ConfigOwner;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
-public class Mod {
+@Name("Mod")
+@Description("Base class for every Shindo client module.")
+@Author({"MikiDevAHM"})
+public class Mod implements ConfigOwner {
 
     private final TranslateText nameTranslate;
     private final TranslateText descriptionTranslate;
+
     @Getter
+    @NotNull
     private final SimpleAnimation animation = new SimpleAnimation();
+
+    @Getter
+    @NotNull
+    private final SimpleAnimation hoverAnimation = new SimpleAnimation();
+
+    @Getter
+    @NotNull
+    private final SimpleAnimation settingsHoverAnimation = new SimpleAnimation();
+
+    @NotNull
     public Minecraft mc = Minecraft.getMinecraft();
+    @NotNull
     public FontRenderer fr = mc.fontRendererObj;
     @Getter
     private boolean toggled;
@@ -125,6 +148,16 @@ public class Mod {
 
     public void setAllowed(boolean modAllowed) {
         this.allowed = modAllowed;
+    }
+
+    @Override
+    public String getConfigId() {
+        return getNameKey();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return getName();
     }
 
 }

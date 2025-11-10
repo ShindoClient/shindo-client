@@ -3,7 +3,8 @@ package me.miki.shindo.management.addons;
 import lombok.Getter;
 import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
-import me.miki.shindo.management.addons.settings.AddonSetting;
+import me.miki.shindo.management.settings.Setting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import me.miki.shindo.utils.Sound;
 
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import java.util.Arrays;
 public class AddonManager {
 
     private final ArrayList<Addon> addons = new ArrayList<Addon>();
-    private final ArrayList<AddonSetting> settings = new ArrayList<AddonSetting>();
+    private final ArrayList<Setting> settings = new ArrayList<Setting>();
 
 
     public void init() {
-        addons.add(new RPOAddon());
-        addons.add(new PatcherAddon());
+        registerAddon(new RPOAddon());
+        registerAddon(new PatcherAddon());
     }
 
     public Addon getAddonByName(String name) {
@@ -32,11 +33,11 @@ public class AddonManager {
         return null;
     }
 
-    public ArrayList<AddonSetting> getSettingByAddon(Addon a) {
+    public ArrayList<Setting> getSettingByAddon(Addon a) {
 
-        ArrayList<AddonSetting> result = new ArrayList<AddonSetting>();
+        ArrayList<Setting> result = new ArrayList<Setting>();
 
-        for (AddonSetting s : settings) {
+        for (Setting s : settings) {
             if (s.getParent().equals(a)) {
                 result.add(s);
             }
@@ -61,8 +62,13 @@ public class AddonManager {
         return result.toString();
     }
 
-    public void addSettings(AddonSetting... settingsList) {
+    public void addSettings(Setting... settingsList) {
         settings.addAll(Arrays.asList(settingsList));
+    }
+
+    private void registerAddon(Addon addon) {
+        addons.add(addon);
+        SettingRegistry.applyMetadata(addon);
     }
 
 

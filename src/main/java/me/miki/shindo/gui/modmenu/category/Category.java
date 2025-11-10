@@ -2,7 +2,7 @@ package me.miki.shindo.gui.modmenu.category;
 
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.management.language.TranslateText;
-import me.miki.shindo.ui.comp.field.CompSearchBox;
+import me.miki.shindo.ui.comp.impl.field.CompSearchBox;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.Scroll;

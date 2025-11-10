@@ -1,10 +1,8 @@
 package me.miki.shindo.injection.mixin.mixins.world;
 
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.TimeChangerMod;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -26,10 +24,8 @@ public class MixinWorldInfo {
 
         if (mod.isToggled()) {
 
-            ComboSetting setting = mod.getWeatherSetting();
-            Option weather = setting.getOption();
-
-            cir.setReturnValue(weather.getTranslate().equals(TranslateText.CLEAR));
+            Weather weather = mod.getWeather();
+            cir.setReturnValue(weather == Weather.CLEAR);
         }
     }
 
@@ -39,10 +35,8 @@ public class MixinWorldInfo {
         WeatherChangerMod mod = WeatherChangerMod.getInstance();
 
         if (mod.isToggled()) {
-            ComboSetting setting = mod.getWeatherSetting();
-            Option weather = setting.getOption();
-
-            cir.setReturnValue(weather.getTranslate().equals(TranslateText.STORM));
+            Weather weather = mod.getWeather();
+            cir.setReturnValue(weather == Weather.STORM);
         }
     }
 

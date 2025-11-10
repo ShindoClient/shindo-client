@@ -5,8 +5,6 @@ import me.miki.shindo.management.event.impl.EventDamageEntity;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.ClientSpooferMod;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -46,13 +44,13 @@ public class MixinNetHandlerPlayClient {
 
         if (ClientSpooferMod.getInstance().isToggled()) {
 
-            ComboSetting setting = ClientSpooferMod.getInstance().getTypeSetting();
-            Option type = setting.getOption();
-
-            if (type.getTranslate().equals(TranslateText.VANILLA)) {
-                data = new PacketBuffer(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName());
-            } else if (type.getTranslate().equals(TranslateText.FORGE)) {
-                data = new PacketBuffer(Unpooled.buffer()).writeString("FML");
+            switch (ClientSpooferMod.getInstance().getSpoofType()) {
+                case VANILLA:
+                    data = new PacketBuffer(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName());
+                    break;
+                case FORGE:
+                    data = new PacketBuffer(Unpooled.buffer()).writeString("FML");
+                    break;
             }
         }
 

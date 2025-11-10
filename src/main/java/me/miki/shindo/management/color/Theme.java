@@ -28,18 +28,24 @@ public enum Theme {
     private final String name;
     private final int id;
     private final Color darkBackgroundColor;
+    private final Color midBackgroundColor;
     private final Color normalBackgroundColor;
     private final Color darkFontColor;
     private final Color normalFontColor;
+    private final Color midFontColor;
 
     Theme(int id, String name, Color darkBackgroundColor, Color normalBackgroundColor,
           Color darkFontColor, Color normalFontColor) {
         this.name = name;
         this.id = id;
-        this.darkBackgroundColor = darkBackgroundColor;
+        Color adjustedDark = ColorUtils.darken(darkBackgroundColor, 0.12F);
+        Color adjustedNormal = ColorUtils.lighten(normalBackgroundColor, 0.10F);
+        this.darkBackgroundColor = adjustedDark;
+        this.normalBackgroundColor = adjustedNormal;
+        this.midBackgroundColor = ColorUtils.interpolateColor(adjustedDark, adjustedNormal, 0.5D);
         this.darkFontColor = darkFontColor;
-        this.normalBackgroundColor = normalBackgroundColor;
         this.normalFontColor = normalFontColor;
+        this.midFontColor = ColorUtils.interpolateColor(darkFontColor, normalFontColor, 0.5D);
     }
 
     public static Theme getThemeById(int id) {
@@ -65,12 +71,20 @@ public enum Theme {
         return darkBackgroundColor;
     }
 
+    public Color getMidBackgroundColor() {
+        return midBackgroundColor;
+    }
+
     public Color getNormalBackgroundColor() {
         return normalBackgroundColor;
     }
 
     public Color getDarkFontColor() {
         return darkFontColor;
+    }
+
+    public Color getMidFontColor() {
+        return midFontColor;
     }
 
     public Color getNormalFontColor() {
@@ -81,12 +95,20 @@ public enum Theme {
         return ColorUtils.applyAlpha(darkBackgroundColor, alpha);
     }
 
+    public Color getMidBackgroundColor(int alpha) {
+        return ColorUtils.applyAlpha(midBackgroundColor, alpha);
+    }
+
     public Color getNormalBackgroundColor(int alpha) {
         return ColorUtils.applyAlpha(normalBackgroundColor, alpha);
     }
 
     public Color getDarkFontColor(int alpha) {
         return ColorUtils.applyAlpha(darkFontColor, alpha);
+    }
+
+    public Color getMidFontColor(int alpha) {
+        return ColorUtils.applyAlpha(midFontColor, alpha);
     }
 
     public Color getNormalFontColor(int alpha) {

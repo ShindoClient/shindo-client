@@ -21,7 +21,7 @@ public class NewsManager {
 
     private void loadNews() {
 
-        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/data/news/news.json", null);
+        JsonObject jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/news/news.json", null);
 
         if (jsonObject != null) {
 

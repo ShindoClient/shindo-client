@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventRenderSelectedItem;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.utils.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -57,7 +58,8 @@ public class ItemInfoMod extends Mod {
             this.put(Integer.valueOf(70), "MEN");
         }
     };
-    private final BooleanSetting potionColorSetting = new BooleanSetting(TranslateText.POTION_COLOR, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.POTION_COLOR, category = "Display")
+    private boolean potionColorSetting;
 
     public ItemInfoMod() {
         super(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER);
@@ -104,7 +106,7 @@ public class ItemInfoMod extends Mod {
                 PotionEffect entry = (PotionEffect) iterator.next();
                 int duration = entry.getDuration() / 20;
 
-                if (potionColorSetting.isToggled()) {
+                if (potionColorSetting) {
                     if (entry.getPotionID() == Potion.moveSpeed.getId()) {
                         potionBuilder.append(EnumChatFormatting.AQUA);
                     }

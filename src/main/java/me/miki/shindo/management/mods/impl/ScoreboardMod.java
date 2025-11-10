@@ -7,8 +7,9 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventRenderScoreboard;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.GlUtils;
@@ -26,9 +27,12 @@ import java.util.List;
 
 public class ScoreboardMod extends HUDMod {
 
-    private final BooleanSetting backgroundSetting = new BooleanSetting(TranslateText.BACKGROUND, this, true);
-    private final BooleanSetting numberSetting = new BooleanSetting(TranslateText.NUMBER, this, true);
-    private final BooleanSetting shadowSetting = new BooleanSetting(TranslateText.SHADOW, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
+    private boolean showBackground = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NUMBER)
+    private boolean showNumbers = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHADOW)
+    private boolean drawShadow = false;
     private ScoreObjective objective;
     private boolean isFirstLoad;
 
@@ -57,7 +61,7 @@ public class ScoreboardMod extends HUDMod {
             Collections.reverse(filteredScores);
 
             nvg.setupAndDraw(() -> {
-                if (shadowSetting.isToggled()) {
+                if (drawShadow) {
                     this.drawShadow(0, 0, this.getWidth() / this.getScale(), this.getHeight() / this.getScale(), 0);
                 }
             });
@@ -75,7 +79,7 @@ public class ScoreboardMod extends HUDMod {
                 ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(score.getPlayerName());
                 String s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName());
 
-                if (numberSetting.isToggled()) {
+                if (showNumbers) {
                     s += ": " + EnumChatFormatting.RED + score.getScorePoints();
                 }
 
@@ -94,11 +98,11 @@ public class ScoreboardMod extends HUDMod {
                 String playerName = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName());
                 String scorePoints = EnumChatFormatting.RED + "" + score.getScorePoints();
 
-                RenderUtils.drawRect(this.getX(), this.getY() + (index * fr.FONT_HEIGHT) + 1, maxWidth + 4, fr.FONT_HEIGHT, backgroundSetting.isToggled() ? ColorUtils.getColorByInt(1342177280) : new Color(0, 0, 0, 0));
+                RenderUtils.drawRect(this.getX(), this.getY() + (index * fr.FONT_HEIGHT) + 1, maxWidth + 4, fr.FONT_HEIGHT, showBackground ? ColorUtils.getColorByInt(1342177280) : new Color(0, 0, 0, 0));
 
                 fr.drawString(playerName, this.getX() + 2, this.getY() + (index * fr.FONT_HEIGHT) + 1, 553648127);
 
-                if (numberSetting.isToggled()) {
+                if (showNumbers) {
                     fr.drawString(scorePoints, (this.getX() + 2 + maxWidth + 2) - fr.getStringWidth(scorePoints), this.getY() + (index * fr.FONT_HEIGHT) + 1, 553648127);
                 }
 
@@ -106,8 +110,8 @@ public class ScoreboardMod extends HUDMod {
 
                     String displayName = objective.getDisplayName();
 
-                    RenderUtils.drawRect(this.getX(), this.getY(), 2 + maxWidth + 2, fr.FONT_HEIGHT, backgroundSetting.isToggled() ? ColorUtils.getColorByInt(1610612736) : new Color(0, 0, 0, 0));
-                    RenderUtils.drawRect(this.getX(), this.getY() + fr.FONT_HEIGHT, 2 + maxWidth + 2, 1, backgroundSetting.isToggled() ? ColorUtils.getColorByInt(1610612736) : new Color(0, 0, 0, 0));
+                    RenderUtils.drawRect(this.getX(), this.getY(), 2 + maxWidth + 2, fr.FONT_HEIGHT, showBackground ? ColorUtils.getColorByInt(1610612736) : new Color(0, 0, 0, 0));
+                    RenderUtils.drawRect(this.getX(), this.getY() + fr.FONT_HEIGHT, 2 + maxWidth + 2, 1, showBackground ? ColorUtils.getColorByInt(1610612736) : new Color(0, 0, 0, 0));
 
                     fr.drawString(displayName, this.getX() + 2 + maxWidth / 2 - fr.getStringWidth(displayName) / 2, this.getY() + 1, 553648127);
                 }

@@ -1,11 +1,13 @@
 package eu.shoroa.contrib.gui;
 
 
+import lombok.Getter;
 import me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory;
 import me.miki.shindo.management.language.TranslateText;
 
 public class CosmeticScene {
 
+    @Getter
     private final String icon;
     private final TranslateText nameTranslate;
     private final TranslateText descriptionTranslate;
@@ -33,10 +35,6 @@ public class CosmeticScene {
     public void keyTyped(char typedChar, int keyCode) {
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
     public String getName() {
         return nameTranslate.getText();
     }
@@ -46,18 +44,18 @@ public class CosmeticScene {
     }
 
     public int getX() {
-        return parent.getSceneX();
+        return parent.getX();
     }
 
     public int getY() {
-        return parent.getSceneY();
+        return parent.getY();
     }
 
     public int getWidth() {
-        return parent.getSceneWidth();
+        return parent.getWidth();
     }
 
     public int getHeight() {
-        return parent.getSceneHeight();
+        return parent.getHeight();
     }
 }

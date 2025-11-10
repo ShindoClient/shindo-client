@@ -21,7 +21,7 @@ public class ChangelogManager {
 
     private void loadChangelog() {
 
-        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/changelogs/versions/" + Shindo.getInstance().getVerIdentifier() + ".json", null);
+        JsonObject jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/changelogs/versions/" + Shindo.getInstance().getVerIdentifier() + ".json", null);
 
 
         if (jsonObject != null) {

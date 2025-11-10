@@ -1,10 +1,11 @@
 package me.miki.shindo.management.mods.impl.waveycapes.layers;
 
 import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.WaveyCapesMod;
+import me.miki.shindo.management.mods.impl.WaveyCapesMod.CapeMode;
+import me.miki.shindo.management.mods.impl.WaveyCapesMod.CapeStyle;
+import me.miki.shindo.management.mods.impl.WaveyCapesMod.Movement;
 import me.miki.shindo.management.mods.impl.waveycapes.sim.StickSimulation;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
 import me.miki.shindo.utils.MathUtils;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBase;
@@ -44,8 +45,8 @@ public class CustomCapeRenderLayer implements LayerRenderer<AbstractClientPlayer
     public void doRenderLayer(AbstractClientPlayer abstractClientPlayer, float paramFloat1, float paramFloat2, float deltaTick, float animationTick, float paramFloat5, float paramFloat6, float paramFloat7) {
 
         WaveyCapesMod mod = WaveyCapesMod.getInstance();
-        ComboSetting movementSetting = mod.getMovementSetting();
-        ComboSetting styleSetting = mod.getStyleSetting();
+        Movement movement = mod.getMovement();
+        CapeStyle style = mod.getStyle();
 
         if (abstractClientPlayer.isInvisible() || !mod.isToggled()) {
             return;
@@ -57,14 +58,14 @@ public class CustomCapeRenderLayer implements LayerRenderer<AbstractClientPlayer
             return;
         }
 
-        if (movementSetting.getOption().getTranslate().equals(TranslateText.BASIC)) {
+        if (movement == Movement.BASIC) {
             IMixinEntityPlayer holder = (IMixinEntityPlayer) abstractClientPlayer;
             holder.updateSimulation(abstractClientPlayer, partCount);
         }
 
         this.playerRenderer.bindTexture(abstractClientPlayer.getLocationCape());
 
-        if (styleSetting.getOption().getTranslate().equals(TranslateText.SMOOTH)) {
+        if (style == CapeStyle.SMOOTH) {
             smoothCapeRenderer.renderSmoothCape(this, abstractClientPlayer, deltaTick);
         } else {
             ModelRenderer[] parts = customCape;
@@ -81,9 +82,8 @@ public class CustomCapeRenderLayer implements LayerRenderer<AbstractClientPlayer
     private void modifyPoseStack(AbstractClientPlayer abstractClientPlayer, float h, int part) {
 
         WaveyCapesMod mod = WaveyCapesMod.getInstance();
-        ComboSetting movementSetting = mod.getMovementSetting();
 
-        if (movementSetting.getOption().getTranslate().equals(TranslateText.BASIC)) {
+        if (mod.getMovement() == Movement.BASIC) {
             modifyPoseStackSimulation(abstractClientPlayer, h, part);
             return;
         }
@@ -172,9 +172,9 @@ public class CustomCapeRenderLayer implements LayerRenderer<AbstractClientPlayer
 
     public float getNatrualWindSwing(int part) {
 
-        ComboSetting modeSetting = WaveyCapesMod.getInstance().getModeSetting();
+        CapeMode mode = WaveyCapesMod.getInstance().getMode();
 
-        if (modeSetting.getOption().getTranslate().equals(TranslateText.WAVES)) {
+        if (mode == CapeMode.WAVES) {
             long highlightedPart = (System.currentTimeMillis() / 3) % 360;
             float relativePart = (float) (part + 1) / partCount;
 

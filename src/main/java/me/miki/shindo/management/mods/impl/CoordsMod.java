@@ -4,23 +4,21 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
+import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class CoordsMod extends SimpleHUDMod {
 
-    private final ComboSetting designSetting = new ComboSetting(TranslateText.DESIGN, this, TranslateText.SIMPLE, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.SIMPLE), new Option(TranslateText.FANCY))));
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
+    private Design design = Design.SIMPLE;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    private boolean iconSetting = true;
 
     public CoordsMod() {
         super(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, "coordinates");
@@ -29,10 +27,9 @@ public class CoordsMod extends SimpleHUDMod {
     @EventTarget
     public void onRender2D(EventRender2D event) {
 
-        Option design = designSetting.getOption();
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        if (design.getTranslate().equals(TranslateText.SIMPLE)) {
+        if (design == Design.SIMPLE) {
             this.draw();
         } else {
             nvg.setupAndDraw(() -> drawNanoVG());
@@ -69,6 +66,22 @@ public class CoordsMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.MAP_PIN : null;
+        return iconSetting ? LegacyIcon.MAP_PIN : null;
+    }
+
+    private enum Design implements PropertyEnum {
+        SIMPLE(TranslateText.SIMPLE),
+        FANCY(TranslateText.FANCY);
+
+        private final TranslateText translate;
+
+        Design(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

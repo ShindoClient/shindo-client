@@ -2,20 +2,17 @@ package me.miki.shindo.management.mods.impl;
 
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ComboSetting;
-import me.miki.shindo.management.mods.settings.impl.combo.Option;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyEnum;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class NameDisplayMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean iconSetting = true;
 
-    private final ComboSetting prefixSetting = new ComboSetting(TranslateText.PREFIX, this, TranslateText.NAME, new ArrayList<Option>(Arrays.asList(
-            new Option(TranslateText.NAME), new Option(TranslateText.IGN))));
+    @Property(type = PropertyType.COMBO, translate = TranslateText.PREFIX)
+    private Prefix prefix = Prefix.NAME;
 
     public NameDisplayMod() {
         super(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION);
@@ -24,22 +21,40 @@ public class NameDisplayMod extends SimpleHUDMod {
     @Override
     public String getText() {
 
-        Option option = prefixSetting.getOption();
-        String prefix = "null";
+        String label;
 
-        if (option.getTranslate().equals(TranslateText.NAME)) {
-            prefix = "Name";
+        switch (prefix) {
+            case NAME:
+                label = "Name";
+                break;
+            case IGN:
+                label = "Ign";
+                break;
+            default:
+                label = "Name";
         }
 
-        if (option.getTranslate().equals(TranslateText.IGN)) {
-            prefix = "Ign";
-        }
-
-        return prefix + ": " + mc.thePlayer.getGameProfile().getName();
+        return label + ": " + mc.thePlayer.getGameProfile().getName();
     }
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.USER : null;
+        return iconSetting ? LegacyIcon.USER : null;
+    }
+
+    private enum Prefix implements PropertyEnum {
+        NAME(TranslateText.NAME),
+        IGN(TranslateText.IGN);
+
+        private final TranslateText translate;
+
+        Prefix(TranslateText translate) {
+            this.translate = translate;
+        }
+
+        @Override
+        public TranslateText getTranslate() {
+            return translate;
+        }
     }
 }

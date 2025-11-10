@@ -15,7 +15,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.notification.NotificationType;
-import me.miki.shindo.ui.comp.field.CompMainMenuTextBox;
+import me.miki.shindo.ui.comp.impl.field.CompMainMenuTextBox;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
@@ -169,7 +169,7 @@ public class AccountScene extends MainMenuScene {
                     return;
                 }
 
-                Account acc = new Account(nameBox.getText(), "0", "0", "0", AccountType.OFFLINE);
+                Account acc = new Account(nameBox.getText(), "0", AccountType.OFFLINE);
 
                 /*
                 if (offlineSkin != null) {

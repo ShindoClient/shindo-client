@@ -5,22 +5,27 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.ImageSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 public class ImageDisplayMod extends HUDMod {
 
-    private final NumberSetting radiusSetting = new NumberSetting(TranslateText.RADIUS, this, 6, 2, 64, true);
-    private final NumberSetting alphaSetting = new NumberSetting(TranslateText.ALPHA, this, 1.0F, 0.0F, 1.0F, false);
-    private final BooleanSetting shadowSetting = new BooleanSetting(TranslateText.SHADOW, this, false);
-    private final ImageSetting imageSetting = new ImageSetting(TranslateText.IMAGE, this);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.RADIUS, min = 2, max = 64, current = 6, step = 1)
+    private int radiusSetting = 6;
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0F, max = 1.0F, current = 1.0F)
+    private double alphaSetting = 1.0F;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHADOW)
+    private boolean shadowSetting;
+
+    @Property(type = PropertyType.IMAGE, translate = TranslateText.IMAGE)
+    private File imageFile;
 
     private BufferedImage image;
     private File prevImage;
@@ -39,12 +44,10 @@ public class ImageDisplayMod extends HUDMod {
 
     private void drawNanoVG() {
 
-        if (imageSetting.getImage() != null && prevImage != imageSetting.getImage()) {
-
-            prevImage = imageSetting.getImage();
-
+        if (imageFile != null && !imageFile.equals(prevImage)) {
+            prevImage = imageFile;
             try {
-                image = ImageIO.read(imageSetting.getImage());
+                image = ImageIO.read(imageFile);
             } catch (IOException e) {
             }
         }
@@ -67,11 +70,11 @@ public class ImageDisplayMod extends HUDMod {
                 }
             }
 
-            if (shadowSetting.isToggled()) {
-                this.drawShadow(0, 0, width, height, radiusSetting.getValueFloat());
+            if (shadowSetting) {
+                this.drawShadow(0, 0, width, height, radiusSetting);
             }
 
-            this.drawRoundedImage(imageSetting.getImage(), 0, 0, width, height, radiusSetting.getValueFloat(), alphaSetting.getValueFloat());
+            this.drawRoundedImage(imageFile, 0, 0, width, height, radiusSetting, (float) alphaSetting);
 
             this.setWidth(width);
             this.setHeight(height);

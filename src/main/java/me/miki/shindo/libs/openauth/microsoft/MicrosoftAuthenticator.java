@@ -25,13 +25,14 @@ package me.miki.shindo.libs.openauth.microsoft;
  * https://github.com/XboxReplay/xboxlive-auth
  */
 
-import lombok.Getter;
+import com.google.gson.Gson;
 import me.miki.shindo.libs.openauth.microsoft.model.request.MinecraftLoginRequest;
 import me.miki.shindo.libs.openauth.microsoft.model.request.XSTSAuthorizationProperties;
 import me.miki.shindo.libs.openauth.microsoft.model.request.XboxLiveLoginProperties;
 import me.miki.shindo.libs.openauth.microsoft.model.request.XboxLoginRequest;
 import me.miki.shindo.libs.openauth.microsoft.model.response.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.Arrays;
@@ -60,6 +61,8 @@ public class MicrosoftAuthenticator {
     public static final String MICROSOFT_AUTHORIZATION_ENDPOINT = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
     public static final String MICROSOFT_TOKEN_ENDPOINT = "https://login.live.com/oauth20_token.srf";
     public static final String MICROSOFT_REDIRECTION_ENDPOINT = "https://login.live.com/oauth20_desktop.srf";
+    public static final String MICROSOFT_DEVICE_AUTHORIZATION_ENDPOINT = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode";
+    public static final String MICROSOFT_DEVICE_SCOPE = "XboxLive.signin offline_access";
 
     public static final String XBOX_LIVE_AUTH_HOST = "user.auth.xboxlive.com";
     public static final String XBOX_LIVE_CLIENT_ID = "000000004C12AE6F";
@@ -79,9 +82,11 @@ public class MicrosoftAuthenticator {
 
 
     private final HttpClient http;
+    private final Gson gson;
 
     public MicrosoftAuthenticator() {
         this.http = new HttpClient();
+        this.gson = new Gson();
     }
 
     /**
@@ -285,6 +290,40 @@ public class MicrosoftAuthenticator {
         params.put("response_type", "token");
 
         return params;
+    }
+
+    public MicrosoftDeviceCodeResponse requestDeviceCode() throws MicrosoftAuthenticationException {
+        Map<String, String> params = new HashMap<>();
+        params.put("client_id", XBOX_LIVE_CLIENT_ID);
+        params.put("scope", MICROSOFT_DEVICE_SCOPE);
+
+        return http.postFormGetJson(MICROSOFT_DEVICE_AUTHORIZATION_ENDPOINT, params, MicrosoftDeviceCodeResponse.class);
+    }
+
+    public MicrosoftDeviceCodePollResponse pollDeviceCode(String deviceCode) throws MicrosoftAuthenticationException {
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "urn:ietf:params:oauth:grant-type:device_code");
+        params.put("client_id", XBOX_LIVE_CLIENT_ID);
+        params.put("device_code", deviceCode);
+
+        HttpURLConnection connection = http.postForm(MICROSOFT_TOKEN_ENDPOINT, params);
+        int responseCode;
+
+        try {
+            responseCode = connection.getResponseCode();
+        } catch (IOException e) {
+            throw new MicrosoftAuthenticationException(e);
+        }
+
+        String body = http.readResponse(connection);
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            MicrosoftRefreshResponse response = gson.fromJson(body, MicrosoftRefreshResponse.class);
+            return MicrosoftDeviceCodePollResponse.success(response);
+        }
+
+        MicrosoftDeviceCodeErrorResponse error = gson.fromJson(body, MicrosoftDeviceCodeErrorResponse.class);
+        return MicrosoftDeviceCodePollResponse.failure(error);
     }
 
     protected AuthTokens extractTokens(String url) throws MicrosoftAuthenticationException {

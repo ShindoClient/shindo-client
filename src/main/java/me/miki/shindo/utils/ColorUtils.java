@@ -110,6 +110,34 @@ public class ColorUtils {
         return new Color(r, g, b, alpha);
     }
 
+    public static Color lighten(Color color, float amount) {
+        amount = Math.max(0F, Math.min(1F, amount));
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+        int a = color.getAlpha();
+
+        int newR = (int) Math.min(255, r + ((255 - r) * amount));
+        int newG = (int) Math.min(255, g + ((255 - g) * amount));
+        int newB = (int) Math.min(255, b + ((255 - b) * amount));
+
+        return new Color(newR, newG, newB, a);
+    }
+
+    public static Color darken(Color color, float amount) {
+        amount = Math.max(0F, Math.min(1F, amount));
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+        int a = color.getAlpha();
+
+        int newR = (int) Math.max(0, r - (r * amount));
+        int newG = (int) Math.max(0, g - (g * amount));
+        int newB = (int) Math.max(0, b - (b * amount));
+
+        return new Color(newR, newG, newB, a);
+    }
+
     public static float getAlphaByInt(int color) {
 
         return (float) (color >> 24 & 255) / 255.0F;

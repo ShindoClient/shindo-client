@@ -18,8 +18,10 @@ package me.miki.shindo.management.nanovg;
  * https://github.com/Polyfrost/OneConfig/blob/develop-v0/LICENSE
  */
 
+import lombok.Getter;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.nanovg.asset.AssetManager;
+import me.miki.shindo.management.nanovg.asset.NVGAsset;
 import me.miki.shindo.management.nanovg.font.Font;
 import me.miki.shindo.management.nanovg.font.FontManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
@@ -47,6 +49,7 @@ public class NanoVGManager {
     private final long nvg;
 
     private final FontManager fontManager;
+    @Getter
     private final AssetManager assetManager;
 
     public NanoVGManager() {
@@ -513,36 +516,6 @@ public class NanoVGManager {
         return text + (isRemoved ? "..." : "");
     }
 
-    public void scale(float x, float y, float scale) {
-        NanoVG.nvgTranslate(nvg, x, y);
-        NanoVG.nvgScale(nvg, scale, scale);
-        NanoVG.nvgTranslate(nvg, -x, -y);
-    }
-
-    public void scale(float x, float y, float width, float height, float scale) {
-        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2);
-        NanoVG.nvgScale(nvg, scale, scale);
-        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2);
-    }
-
-    public void rotate(float x, float y, float width, float height, float angle) {
-        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2);
-        NanoVG.nvgRotate(nvg, angle);
-        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2);
-    }
-
-    public void translate(float x, float y) {
-        NanoVG.nvgTranslate(nvg, x, y);
-    }
-
-    public void setAlpha(float alpha) {
-        NanoVG.nvgGlobalAlpha(nvg, alpha);
-    }
-
-    public void scissor(float x, float y, float width, float height) {
-        NanoVG.nvgScissor(nvg, x, y, width, height);
-    }
-
     public void drawSvg(ResourceLocation location, float x, float y, float width, float height, Color color) {
 
         if (assetManager.loadSvg(nvg, location, width, height)) {
@@ -582,6 +555,28 @@ public class NanoVGManager {
 
             imagePaint.free();
         }
+    }
+
+    public Dimension getImageSize(ResourceLocation location) {
+        if (!assetManager.loadImage(nvg, location)) {
+            return null;
+        }
+        NVGAsset asset = assetManager.getImageAsset(location);
+        if (asset == null) {
+            return null;
+        }
+        return new Dimension(asset.getWidth(), asset.getHeight());
+    }
+
+    public Dimension getImageSize(File file) {
+        if (!assetManager.loadImage(nvg, file)) {
+            return null;
+        }
+        NVGAsset asset = assetManager.getImageAsset(file);
+        if (asset == null) {
+            return null;
+        }
+        return new Dimension(asset.getWidth(), asset.getHeight());
     }
 
     public void drawImage(ResourceLocation location, float x, float y, float width, float height, int alpha) {
@@ -763,8 +758,42 @@ public class NanoVGManager {
         assetManager.loadImage(nvg, location);
     }
 
-    public AssetManager getAssetManager() {
-        return assetManager;
+    public void scale(float x, float y, float scale) {
+        NanoVG.nvgTranslate(nvg, x, y);
+        NanoVG.nvgScale(nvg, scale, scale);
+        NanoVG.nvgTranslate(nvg, -x, -y);
+    }
+
+    public void scale(float x, float y, float width, float height, float scale) {
+        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2);
+        NanoVG.nvgScale(nvg, scale, scale);
+        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2);
+    }
+
+    public void rotate(float x, float y, float width, float height, float angle) {
+        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2);
+        NanoVG.nvgRotate(nvg, angle);
+        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2);
+    }
+
+    public void translate(float x, float y) {
+        NanoVG.nvgTranslate(nvg, x, y);
+    }
+
+    public void setAlpha(float alpha) {
+        NanoVG.nvgGlobalAlpha(nvg, alpha);
+    }
+
+    public void scissor(float x, float y, float width, float height) {
+        NanoVG.nvgScissor(nvg, x, y, width, height);
+    }
+
+    public void intersectScissor(float x, float y, float width, float height) {
+        NanoVG.nvgIntersectScissor(nvg, x, y, width, height);
+    }
+
+    public void resetScissor() {
+        NanoVG.nnvgResetScissor(nvg);
     }
 
     public void save() {

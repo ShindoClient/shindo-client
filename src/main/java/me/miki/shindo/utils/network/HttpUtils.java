@@ -2,6 +2,7 @@ package me.miki.shindo.utils.network;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import lombok.var;
 import me.miki.shindo.logger.ShindoLogger;
 
 import java.io.*;
@@ -23,6 +24,10 @@ public class HttpUtils {
     }
 
     public static JsonObject postJson(String url, Object request) {
+        return postJson(url, request, null);
+    }
+
+    public static JsonObject postJson(String url, Object request, Map<String, String> headers) {
 
         HttpURLConnection connection = setupConnection(url, UserAgents.MOZILLA, 5000, false);
 
@@ -35,11 +40,22 @@ public class HttpUtils {
         connection.addRequestProperty("Content-Type", ACCEPTED_RESPONSE);
         connection.addRequestProperty("Accept", ACCEPTED_RESPONSE);
 
+        if (headers != null && !headers.isEmpty()) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    connection.addRequestProperty(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
         try {
             connection.setRequestMethod("POST");
-            connection.getOutputStream().write(gson.toJson(request).getBytes(StandardCharsets.UTF_8));
+            try (var output = connection.getOutputStream()) {
+                output.write(gson.toJson(request).getBytes(StandardCharsets.UTF_8));
+            }
         } catch (IOException e) {
             ShindoLogger.error("Failed to post json", e);
+            return null;
         }
 
         return readJson(connection);

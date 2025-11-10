@@ -6,11 +6,13 @@ import me.miki.shindo.gui.mainmenu.impl.login.AccountScene;
 import me.miki.shindo.gui.mainmenu.impl.login.MicrosoftLoginScene;
 import me.miki.shindo.gui.mainmenu.impl.welcome.*;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
+import me.miki.shindo.libs.openauth.microsoft.MicrosoftAuthenticationException;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.account.Account;
 import me.miki.shindo.management.account.AccountManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.event.impl.EventRenderNotification;
+import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
@@ -19,6 +21,7 @@ import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer;
+import me.miki.shindo.management.notification.NotificationType;
 import me.miki.shindo.utils.SessionUtils;
 import me.miki.shindo.utils.Sound;
 import me.miki.shindo.utils.animation.normal.Animation;
@@ -381,8 +384,19 @@ public class GuiShindoMainMenu extends GuiScreen {
                             switch (acc.getType()) {
                                 case MICROSOFT:
                                     ShindoLogger.info("Microsoft Account Login");
-                                    SessionUtils.getInstance().setUserMicrosoft(acc.getEmail(), acc.getPassword());
-                                    accountManager.setCurrentAccount(acc);
+                                    if (acc.getRefreshToken() == null || acc.getRefreshToken().isEmpty()) {
+                                        Shindo.getInstance().getNotificationManager().post(TranslateText.ERROR, "Re-login required for this Microsoft account", NotificationType.ERROR);
+                                        break;
+                                    }
+                                    try {
+                                        SessionUtils.getInstance().loginMicrosoftAccount(acc);
+                                        accountManager.setCurrentAccount(acc);
+                                        accountManager.save();
+                                        Shindo.getInstance().getNotificationManager().post(TranslateText.ADDED, "Microsoft Account " + acc.getName(), NotificationType.SUCCESS);
+                                    } catch (MicrosoftAuthenticationException e) {
+                                        ShindoLogger.error("Microsoft Authentication Failed", e);
+                                        Shindo.getInstance().getNotificationManager().post(TranslateText.ERROR, "Microsoft login failed", NotificationType.ERROR);
+                                    }
                                     break;
                                 case OFFLINE:
                                     ShindoLogger.info("Offline Account Login");

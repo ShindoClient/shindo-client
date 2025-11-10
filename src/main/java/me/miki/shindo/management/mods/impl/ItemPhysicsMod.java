@@ -1,24 +1,27 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
+
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class ItemPhysicsMod extends Mod {
 
+    @Getter
     private static ItemPhysicsMod instance;
 
-    private final NumberSetting speedSetting = new NumberSetting(TranslateText.SPEED, this, 1, 0.5, 4, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = 0.5, max = 4, current = 1)
+    private double speedSetting = 1;
 
     public ItemPhysicsMod() {
         super(TranslateText.ITEM_PHYSICS, TranslateText.ITEM_PHYSICS_DESCRIPTION, ModCategory.RENDER);
 
         instance = this;
-    }
-
-    public static ItemPhysicsMod getInstance() {
-        return instance;
     }
 
     @Override
@@ -31,6 +34,6 @@ public class ItemPhysicsMod extends Mod {
     }
 
     public NumberSetting getSpeedSetting() {
-        return speedSetting;
+        return SettingRegistry.getNumberSetting(this, "speedSetting");
     }
 }

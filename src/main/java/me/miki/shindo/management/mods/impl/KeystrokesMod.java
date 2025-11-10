@@ -5,17 +5,20 @@ import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class KeystrokesMod extends HUDMod {
 
-    private final BooleanSetting spaceSetting = new BooleanSetting(TranslateText.SPACE, this, true);
-    private final BooleanSetting unmarkedSetting = new BooleanSetting(TranslateText.UNMARKED, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SPACE)
+    private boolean spaceSetting = true;
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UNMARKED)
+    private boolean unmarkedSetting = false;
 
     private final SimpleAnimation[] animations = new SimpleAnimation[5];
 
@@ -81,14 +84,14 @@ public class KeystrokesMod extends HUDMod {
         this.drawHighlight(64, 32, 28, 28, 6, this.getFontColor((int) (120 * animations[3].getValue())));
         this.restore();
 
-        if (!unmarkedSetting.isToggled()) {
+        if (!unmarkedSetting) {
             this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindForward.getKeyCode()), 32 + (28 / 2), (28 / 2) - 4, 12, getHudFont(1));
             this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindLeft.getKeyCode()), (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
             this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindBack.getKeyCode()), 32 + (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
             this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindRight.getKeyCode()), 64 + (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
         }
 
-        if (spaceSetting.isToggled()) {
+        if (spaceSetting) {
 
             this.drawBackground(0, 64, (28 * 3) + 8, 22);
 
@@ -97,17 +100,17 @@ public class KeystrokesMod extends HUDMod {
             this.drawHighlight(0, 64, (28 * 3) + 8, 22, 6, this.getFontColor((int) (120 * animations[4].getValue())));
             this.restore();
 
-            if (!unmarkedSetting.isToggled()) {
+            if (!unmarkedSetting) {
                 this.drawRoundedRect(10, 74F, (26 * 3) - 6, 2, 1);
             }
         }
 
         this.setWidth(28 * 3 + 8);
-        this.setHeight(spaceSetting.isToggled() ? 64 + 22 : 32 + 28);
+        this.setHeight(spaceSetting ? 64 + 22 : 32 + 28);
     }
 
     private void drawHighlight(float addX, float addY, float width, float height, float radius, Color color) {
-        boolean rect = InternalSettingsMod.getInstance().getModThemeSetting().getOption().getTranslate().equals(TranslateText.RECT);
+        boolean rect = InternalSettingsMod.getInstance().getHudTheme() == InternalSettingsMod.HudTheme.RECT;
         if (!rect) this.drawRoundedRect(addX, addY, width, height, radius, color);
         else this.drawRect(addX, addY, width, height, color);
     }

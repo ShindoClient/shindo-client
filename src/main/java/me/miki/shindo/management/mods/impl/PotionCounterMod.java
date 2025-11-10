@@ -3,15 +3,17 @@ package me.miki.shindo.management.mods.impl;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.PlayerUtils;
 import net.minecraft.potion.Potion;
 
 public class PotionCounterMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean showIcon = true;
 
     public PotionCounterMod() {
         super(TranslateText.POTION_COUNTER, TranslateText.POTION_COUNTER_DESCRIPTION);
@@ -32,6 +34,6 @@ public class PotionCounterMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.ARCHIVE : null;
+        return showIcon ? LegacyIcon.ARCHIVE : null;
     }
 }

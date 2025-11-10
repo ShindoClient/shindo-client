@@ -5,11 +5,13 @@ import me.miki.shindo.management.event.impl.EventText;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.TextSetting;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class NameProtectMod extends Mod {
 
-    private final TextSetting nameSetting = new TextSetting(TranslateText.NAME, this, "You");
+    @Property(type = PropertyType.TEXT, translate = TranslateText.NAME, text = "You")
+    private String nameSetting = "You";
 
     public NameProtectMod() {
         super(TranslateText.NAME_PROTECT, TranslateText.NAME_PROTECT_DESCRIPTION, ModCategory.PLAYER, "nickhider");
@@ -17,6 +19,6 @@ public class NameProtectMod extends Mod {
 
     @EventTarget
     public void onText(EventText event) {
-        event.replace(mc.getSession().getUsername(), nameSetting.getText());
+        event.replace(mc.getSession().getUsername(), nameSetting);
     }
 }

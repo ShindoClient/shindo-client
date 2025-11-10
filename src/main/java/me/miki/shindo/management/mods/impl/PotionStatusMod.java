@@ -1,12 +1,13 @@
 package me.miki.shindo.management.mods.impl;
 
 import me.miki.shindo.Shindo;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.HUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.utils.GlUtils;
 import me.miki.shindo.utils.render.RenderUtils;
@@ -21,7 +22,8 @@ import java.util.Collection;
 
 public class PotionStatusMod extends HUDMod {
 
-    private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
+    private boolean compact = false;
     private int maxString, prevPotionCount;
     private Collection<PotionEffect> potions;
 
@@ -48,7 +50,7 @@ public class PotionStatusMod extends HUDMod {
 
         if (!potions.isEmpty()) {
 
-            int ySize = compactSetting.isToggled() ? 22 : 23;
+            int ySize = compact ? 22 : 23;
             int offsetY = 16;
 
             for (PotionEffect potioneffect : potions) {
@@ -61,7 +63,7 @@ public class PotionStatusMod extends HUDMod {
 
                 GlUtils.startScale(this.getX(), this.getY(), this.getScale());
 
-                if (compactSetting.isToggled()) {
+                if (compact) {
                     GlUtils.startScale((this.getX() + 21) - 20, (this.getY() + offsetY) - 11 - offsetY - 2F, 18, 18, 0.72F);
                     RenderUtils.drawTexturedModalRect((this.getX() + 21) - 20, (this.getY() + offsetY) - 11, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
                     GlUtils.stopScale();
@@ -78,7 +80,7 @@ public class PotionStatusMod extends HUDMod {
 
     private void drawNanoVG(NanoVGManager nvg) {
 
-        int ySize = compactSetting.isToggled() ? 16 : 23;
+        int ySize = compact ? 16 : 23;
         int offsetY = 16;
 
         if (potions.isEmpty()) {
@@ -105,7 +107,7 @@ public class PotionStatusMod extends HUDMod {
 
                 String time = Potion.getDurationString(potioneffect);
 
-                if (compactSetting.isToggled()) {
+                if (compact) {
                     this.drawText(name + " | " + time, 20, offsetY - 10.5F, 9, getHudFont(1));
                 } else {
                     this.drawText(name, 25, offsetY - 12, 9, getHudFont(1));
@@ -114,7 +116,7 @@ public class PotionStatusMod extends HUDMod {
 
                 offsetY += ySize;
 
-                if (compactSetting.isToggled()) {
+                if (compact) {
 
                     float totalWidth = nvg.getTextWidth(name + " | " + time, 9, getHudFont(1));
 

@@ -24,7 +24,7 @@ public class BlacklistManager {
 
     private void loadBlacklists() {
 
-        JsonObject jsonObject = HttpUtils.readJson("https://shindoclient.github.io/data/servers/blacklist.json", null);
+        JsonObject jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/servers/blacklist.json", null);
 
         if (jsonObject != null) {
 

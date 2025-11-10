@@ -3,10 +3,13 @@ package me.miki.shindo.management.mods.impl;
 import lombok.Getter;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.impl.BooleanSetting;
+import me.miki.shindo.management.settings.impl.NumberSetting;
+import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import me.miki.shindo.utils.Sound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IChatComponent;
@@ -16,15 +19,26 @@ public class ChatMod extends Mod {
     @Getter
     private static ChatMod instance;
 
-    private final BooleanSetting smoothSetting = new BooleanSetting(TranslateText.SMOOTH, this, true);
-    private final NumberSetting smoothSpeedSetting = new NumberSetting(TranslateText.SMOOTH_SPEED, this, 4, 1, 10, true);
-    private final BooleanSetting headSetting = new BooleanSetting(TranslateText.HEAD, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH, category = "Animation")
+    private boolean smoothSetting = true;
 
-    private final BooleanSetting infinitySetting = new BooleanSetting(TranslateText.INFINITY, this, false);
-    private final BooleanSetting backgroundSetting = new BooleanSetting(TranslateText.BACKGROUND, this, true);
-    private final BooleanSetting compactSetting = new BooleanSetting(TranslateText.COMPACT, this, false);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SMOOTH_SPEED, category = "Animation", min = 1, max = 10, step = 1, current = 4)
+    private double smoothSpeedSetting = 4;
 
-    //private final BooleanSetting pingSetting = new BooleanSetting(TranslateText.PING_SOUND, this, false);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HEAD, category = "Display")
+    private boolean headSetting;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INFINITY, category = "Display")
+    private boolean infinitySetting;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND, category = "Display")
+    private boolean backgroundSetting = true;
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT, category = "Display")
+    private boolean compactSetting;
+
+    //@Property(type = PropertyType.BOOLEAN, translate = TranslateText.PING_SOUND)
+private boolean pingSetting = false;
 
     public ChatMod() {
         super(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, "betterchatting");
@@ -50,26 +64,26 @@ public class ChatMod extends Mod {
     }
 
     public BooleanSetting getSmoothSetting() {
-        return smoothSetting;
+        return SettingRegistry.getBooleanSetting(this, "smoothSetting");
     }
 
     public NumberSetting getSmoothSpeedSetting() {
-        return smoothSpeedSetting;
+        return SettingRegistry.getNumberSetting(this, "smoothSpeedSetting");
     }
 
     public BooleanSetting getHeadSetting() {
-        return headSetting;
+        return SettingRegistry.getBooleanSetting(this, "headSetting");
     }
 
     public BooleanSetting getInfinitySetting() {
-        return infinitySetting;
+        return SettingRegistry.getBooleanSetting(this, "infinitySetting");
     }
 
     public BooleanSetting getBackgroundSetting() {
-        return backgroundSetting;
+        return SettingRegistry.getBooleanSetting(this, "backgroundSetting");
     }
 
     public BooleanSetting getCompactSetting() {
-        return compactSetting;
+        return SettingRegistry.getBooleanSetting(this, "compactSetting");
     }
 }

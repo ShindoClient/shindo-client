@@ -5,11 +5,13 @@ import me.miki.shindo.management.event.impl.EventHurtCamera;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
-import me.miki.shindo.management.mods.settings.impl.NumberSetting;
 
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 public class MinimalDamageShakeMod extends Mod {
 
-    private final NumberSetting intensitySetting = new NumberSetting(TranslateText.INTENSITY, this, 0, 0, 100, true);
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.INTENSITY, min = 0, max = 100, current = 0, step = 1)
+    private int intensitySetting = 0;
 
     public MinimalDamageShakeMod() {
         super(TranslateText.MINIMAL_DAMAGE_SHAKE, TranslateText.MINIMAL_DAMAGE_SHAKE_DESCRIPTION, ModCategory.RENDER, "nohurtcam");
@@ -17,6 +19,6 @@ public class MinimalDamageShakeMod extends Mod {
 
     @EventTarget
     public void onHurtCamera(EventHurtCamera event) {
-        event.setIntensity(intensitySetting.getValueFloat() / 100F);
+        event.setIntensity(intensitySetting / 100F);
     }
 }

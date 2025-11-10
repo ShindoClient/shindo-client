@@ -5,9 +5,9 @@ import me.miki.shindo.management.event.impl.EventKey;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.settings.config.Property;
+import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.mods.SimpleHUDMod;
-import me.miki.shindo.management.mods.settings.impl.BooleanSetting;
-import me.miki.shindo.management.mods.settings.impl.KeybindSetting;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.TimerUtils;
 import org.lwjgl.input.Keyboard;
@@ -16,9 +16,11 @@ import java.text.DecimalFormat;
 
 public class StopwatchMod extends SimpleHUDMod {
 
-    private final BooleanSetting iconSetting = new BooleanSetting(TranslateText.ICON, this, true);
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
+    private boolean iconSetting = true;
 
-    private final KeybindSetting keybindSetting = new KeybindSetting(TranslateText.KEYBIND, this, Keyboard.KEY_P);
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_P)
+    private int keybind = Keyboard.KEY_P;
 
     private final TimerUtils timer = new TimerUtils();
     private final DecimalFormat timeFormat = new DecimalFormat("0.00");
@@ -53,7 +55,7 @@ public class StopwatchMod extends SimpleHUDMod {
 
     @EventTarget
     public void onKey(EventKey event) {
-        if (event.getKeyCode() == keybindSetting.getKeyCode()) {
+        if (event.getKeyCode() == keybind) {
             pressCount++;
         }
     }
@@ -65,7 +67,7 @@ public class StopwatchMod extends SimpleHUDMod {
 
     @Override
     public String getIcon() {
-        return iconSetting.isToggled() ? LegacyIcon.WATCH : null;
+        return iconSetting ? LegacyIcon.WATCH : null;
     }
 
     @Override

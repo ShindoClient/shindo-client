@@ -3,6 +3,7 @@ package me.miki.shindo;
 import lombok.Getter;
 import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.api.ws.integration.ShindoApiWsBootstrap;
+import me.miki.shindo.api.ws.session.ShindoSessionClient;
 import me.miki.shindo.api.ws.presence.PresenceTracker;
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
@@ -77,6 +78,7 @@ public class ShindoAPI {
                 .withUuid(uuidSup)
                 .withName(nameSup)
                 .withAccountType(typeSup)
+                .withSessionProvider(new ShindoSessionClient())
                 .withRoleManager(roleManager)
                 .withPresenceTracker(presence);
 

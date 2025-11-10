@@ -16,7 +16,8 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
-import me.miki.shindo.ui.comp.field.CompSearchBox;
+import me.miki.shindo.ui.comp.impl.CompIconButton;
+import me.miki.shindo.ui.comp.impl.field.CompSearchBox;
 import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -43,6 +44,8 @@ public class GuiModMenu extends GuiScreen {
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
     private final Scroll scroll = new Scroll();
     private final CompSearchBox searchBox = new CompSearchBox();
+    private final CompIconButton layoutButton = new CompIconButton(21F, () -> LegacyIcon.LAYOUT);
+    private final CompIconButton folderButton = new CompIconButton(18F, () -> LegacyIcon.FOLDER);
     private Animation introAnimation;
     private int x, y, width, height;
     private Category currentCategory;
@@ -52,12 +55,13 @@ public class GuiModMenu extends GuiScreen {
 
         categories.add(new HomeCategory(this));
         categories.add(new ModuleCategory(this));
+        categories.add(new AddonCategory(this));
         categories.add(new CosmeticsCategory(this));
         categories.add(new SpotifyCategory(this));
-        categories.add(new GamesCategory(this));
+        //categories.add(new GamesCategory(this));
         categories.add(new ProfileCategory(this));
         categories.add(new ScreenshotCategory(this));
-        categories.add(new AddonCategory(this));
+        categories.add(new TweakerCategory(this));
         categories.add(new SettingCategory(this));
 
         currentCategory = getCategoryByClass(HomeCategory.class);
@@ -86,6 +90,18 @@ public class GuiModMenu extends GuiScreen {
         scroll.resetAll();
         toEditHUD = false;
         canClose = true;
+
+        layoutButton.onClick(() -> {
+            toEditHUD = true;
+            introAnimation.setDirection(Direction.BACKWARDS);
+        });
+        layoutButton.setFontSize(14F);
+        layoutButton.setRadius(6F);
+        layoutButton.enabledWhen(() -> canClose);
+
+        folderButton.setRadius(6F);
+        folderButton.setFontSize(9F);
+        folderButton.setVisible(false);
     }
 
     @Override
@@ -159,8 +175,8 @@ public class GuiModMenu extends GuiScreen {
 
         nvg.restore();
 
-        nvg.drawGradientRoundedRect(x + 5.5F, y + height - 30, 21, 21, 6, currentColor.getColor1(), currentColor.getColor2());
-        nvg.drawText(LegacyIcon.LAYOUT, x + 9, y + height - 26.5F, Color.WHITE, 14, Fonts.LEGACYICON);
+        layoutButton.setBounds(x + 5.5F, y + height - 30, 21, 21);
+        layoutButton.draw(mouseX, mouseY, partialTicks);
 
         for (Category c : categories) {
 
@@ -182,11 +198,27 @@ public class GuiModMenu extends GuiScreen {
                     searchBox.draw(mouseX, mouseY, partialTicks);
                 }
                 int yOff = (currentCategory.isShowTitle()) ? 31 : 0;
-                if (Objects.equals(currentCategory.getNameKey(), TranslateText.COSMETICS.getKey())) {
+                folderButton.setVisible(false);
+
+                if (currentCategory instanceof me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory) {
+                    me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory cosmeticsCategory = (me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory) currentCategory;
+                    if (cosmeticsCategory.shouldShowCustomCapeFolder()) {
+                        float folderButtonX = x + width - 198;
+                        float folderButtonY = y + 6.5F;
+                        folderButton.setVisible(true);
+                        folderButton.setBounds(folderButtonX, folderButtonY, 18F, 18F);
+                        folderButton.setIconColorSupplier(() -> palette.getFontColor(ColorType.NORMAL));
+                        folderButton.onClick(() -> FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getCustomCapeDir()));
+                        folderButton.draw(mouseX, mouseY, partialTicks);
+                    }
+                } else if (Objects.equals(currentCategory.getNameKey(), TranslateText.MUSIC.getKey())) {
                     float folderButtonX = x + width - 198;
                     float folderButtonY = y + 6.5F;
-                    nvg.drawRoundedRect(folderButtonX, folderButtonY, 18, 18, 6, palette.getBackgroundColor(ColorType.DARK));
-                    nvg.drawCenteredText(LegacyIcon.FOLDER, folderButtonX + 8.5F, folderButtonY + 9 - (nvg.getTextHeight(LegacyIcon.FOLDER, 9, Fonts.LEGACYICON) / 2), palette.getFontColor(ColorType.NORMAL), 9, Fonts.LEGACYICON);
+                    folderButton.setVisible(true);
+                    folderButton.setBounds(folderButtonX, folderButtonY, 18F, 18F);
+                    folderButton.setIconColorSupplier(() -> palette.getFontColor(ColorType.NORMAL));
+                    folderButton.onClick(() -> FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getMusicDir()));
+                    folderButton.draw(mouseX, mouseY, partialTicks);
                 }
 
                 nvg.scissor(x + 32, y + yOff, width - 32, height - yOff);
@@ -230,30 +262,11 @@ public class GuiModMenu extends GuiScreen {
             offsetY += 22;
         }
 
-        if (MouseUtils.isInside(mouseX, mouseY, x + 5.5F, y + height - 30, 21, 21) && mouseButton == 0) {
-            toEditHUD = true;
-            introAnimation.setDirection(Direction.BACKWARDS);
-        }
-
         currentCategory.mouseClicked(mouseX, mouseY, mouseButton);
         searchBox.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if (Objects.equals(currentCategory.getNameKey(), TranslateText.COSMETICS.getKey())) {
-            float folderButtonX = x + width - 198;
-            float folderButtonY = y + 6.5F;
-            if (MouseUtils.isInside(mouseX, mouseY, folderButtonX, folderButtonY, 18, 18)) {
-                FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getCustomCapeDir());
-            }
-        }
-
-        if (Objects.equals(currentCategory.getNameKey(), TranslateText.MUSIC.getKey())) {
-            float folderButtonX = x + width - 198;
-            float folderButtonY = y + 6.5F;
-            if (MouseUtils.isInside(mouseX, mouseY, folderButtonX, folderButtonY, 18, 18)) {
-                FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getMusicDir());
-            }
-        }
-
+        layoutButton.mouseClicked(mouseX, mouseY, mouseButton);
+        folderButton.mouseClicked(mouseX, mouseY, mouseButton);
         try {
             super.mouseClicked(mouseX, mouseY, mouseButton);
         } catch (IOException e) {
@@ -263,6 +276,8 @@ public class GuiModMenu extends GuiScreen {
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         currentCategory.mouseReleased(mouseX, mouseY, mouseButton);
+        layoutButton.mouseReleased(mouseX, mouseY, mouseButton);
+        folderButton.mouseReleased(mouseX, mouseY, mouseButton);
     }
 
     @Override
