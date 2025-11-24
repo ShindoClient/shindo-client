@@ -1,6 +1,8 @@
 package me.miki.shindo.injection.mixin.mixins.network;
 
 import io.netty.buffer.Unpooled;
+import me.miki.shindo.hooks.ResourcePackValidationHook;
+import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.event.impl.EventDamageEntity;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
 import me.miki.shindo.management.language.TranslateText;
@@ -15,6 +17,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S19PacketEntityStatus;
+import net.minecraft.network.play.server.S48PacketResourcePackSend;
 import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -73,6 +76,14 @@ public class MixinNetHandlerPlayClient {
 
         if (event.isCancelled()) {
             ci.cancel(); // cancela a exibição
+        }
+    }
+
+    @Inject(method = "handleResourcePack", at = @At("HEAD"), cancellable = true)
+    private void shindo$resourceExploitFix(S48PacketResourcePackSend packetIn, CallbackInfo ci) {
+        PatcherAddon addon = PatcherAddon.getInstance();
+        if (addon != null && addon.isToggled() && addon.getResourceExploitFixSetting().isToggled() && !ResourcePackValidationHook.validate(packetIn)) {
+            ci.cancel();
         }
     }
 }

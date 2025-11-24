@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer;
+import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
@@ -36,23 +38,23 @@ import java.util.ArrayList;
 
 public class ProfileCategory extends Category {
 
-    private static final float TYPE_CHIP_HEIGHT = 22F;
-    private static final float CHIP_PADDING = 12F;
-    private static final float CHIP_GAP = 8F;
     private static final float CARD_HORIZONTAL_PADDING = 18F;
     private static final float CARD_COLUMN_GAP = 18F;
     private static final float CARD_ROW_GAP = 14F;
     private static final float CARD_HEIGHT = 94F;
     private static final float ICON_SIZE = 44F;
+    private static final float CHIP_GAP = 8F;
 
     private final CompTextBox nameBox = new CompTextBox();
     private final CompTextBox serverIpBox = new CompTextBox();
+    private final ArrayList<FilterChip> typeChips = new ArrayList<FilterChip>();
     private ProfileType currentType;
     private Animation profileAnimation;
     private boolean openProfile;
     private ProfileIcon currentIcon;
     private boolean useCustomIcon;
     private File selectedCustomIcon;
+    private float gridStartY;
 
     public ProfileCategory(GuiModMenu parent) {
         super(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true);
@@ -67,6 +69,7 @@ public class ProfileCategory extends Category {
         profileAnimation.setValue(1.0);
         useCustomIcon = false;
         selectedCustomIcon = null;
+        gridStartY = 0F;
     }
 
     @Override
@@ -77,6 +80,7 @@ public class ProfileCategory extends Category {
         profileAnimation.setValue(1.0);
         useCustomIcon = false;
         selectedCustomIcon = null;
+        gridStartY = 0F;
     }
 
     @Override
@@ -101,36 +105,14 @@ public class ProfileCategory extends Category {
         ArrayList<Profile> visibleProfiles = collectVisibleProfiles(profileManager);
 
         float scrollValue = scroll.getValue();
-        float contentStartY = this.getY() + 56F;
+        float chipBlockBottom = drawTypeChips(nvg, palette, accentColor, mouseX, mouseY);
+        float contentStartY = chipBlockBottom + 24F;
+        this.gridStartY = contentStartY;
         float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
         float viewportHeight = this.getHeight() - (contentStartY - this.getY()) - 28F;
 
         nvg.save();
         nvg.translate((float) -(600 - (profileAnimation.getValue() * 600)), 0);
-
-        float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
-        float chipY = this.getY() + 16F;
-
-        for (ProfileType type : ProfileType.values()) {
-
-            float labelWidth = nvg.getTextWidth(type.getName(), 9.5F, Fonts.MEDIUM);
-            float chipWidth = labelWidth + CHIP_PADDING * 2;
-            boolean isCurrent = type.equals(currentType);
-            boolean hovered = !openProfile && MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT);
-
-            type.getBackgroundAnimation().setAnimation(isCurrent ? 1.0F : 0.0F, 16);
-
-            Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), hovered || isCurrent ? 200 : 160);
-            Color start = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (type.getBackgroundAnimation().getValue() * 255));
-            Color end = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (type.getBackgroundAnimation().getValue() * 255));
-            Color textColor = type.getTextColorAnimation().getColor(isCurrent ? Color.WHITE : palette.getFontColor(ColorType.DARK), 18);
-
-            nvg.drawRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, base);
-            nvg.drawGradientRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, start, end);
-            nvg.drawCenteredText(type.getName(), chipX + chipWidth / 2F, chipY + 4F, textColor, 9.5F, Fonts.MEDIUM);
-
-            chipX += chipWidth + CHIP_GAP;
-        }
 
         if (!openProfile && MouseUtils.isInside(mouseX, mouseY, this.getX(), contentStartY - 6F, this.getWidth(), this.getHeight() - (contentStartY - this.getY()) + 6F)) {
             scroll.onScroll();
@@ -352,12 +334,11 @@ public class ProfileCategory extends Category {
 
         Shindo instance = Shindo.getInstance();
         ProfileManager profileManager = instance.getProfileManager();
-        NanoVGManager nvg = instance.getNanoVGManager();
         ModManager modManager = instance.getModManager();
         FileManager fileManager = instance.getFileManager();
 
         float scrollValue = scroll.getValue();
-        float contentStartY = this.getY() + 56F;
+        float contentStartY = gridStartY > 0 ? gridStartY : this.getY() + 56F;
         float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
 
         if (openProfile && profileAnimation.isDone(Direction.BACKWARDS)) {
@@ -425,20 +406,13 @@ public class ProfileCategory extends Category {
 
         } else {
 
-            float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
-            float chipY = this.getY() + 16F;
-            for (ProfileType t : ProfileType.values()) {
-
-                float textWidth = nvg.getTextWidth(t.getName(), 9.5F, Fonts.MEDIUM);
-                float chipWidth = textWidth + CHIP_PADDING * 2;
-
-                if (MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT) && mouseButton == 0) {
-                    currentType = t;
-                    scroll.reset();
-                    scroll.onAnimation();
+            if (mouseButton == 0) {
+                for (FilterChip chip : typeChips) {
+                    if (chip.contains(mouseX, mouseY)) {
+                        chip.click();
+                        return;
+                    }
                 }
-
-                chipX += chipWidth + CHIP_GAP;
             }
 
             ArrayList<Profile> visibleProfiles = collectVisibleProfiles(profileManager);
@@ -517,6 +491,46 @@ public class ProfileCategory extends Category {
             if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE)
                 this.getSearchBox().setFocused(true);
         }
+    }
+
+    private float drawTypeChips(NanoVGManager nvg, ColorPalette palette, AccentColor accentColor, int mouseX, int mouseY) {
+
+        typeChips.clear();
+
+        float startX = this.getX() + CARD_HORIZONTAL_PADDING;
+        float maxX = this.getX() + this.getWidth() - CARD_HORIZONTAL_PADDING;
+        float currentX = startX;
+        float currentY = this.getY() + 16F;
+        float blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT;
+
+        for (ProfileType type : ProfileType.values()) {
+            String label = type.getName();
+            float chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null);
+
+            if (currentX + chipWidth > maxX) {
+                currentX = startX;
+                currentY += CategoryChipRenderer.CHIP_HEIGHT + CHIP_GAP;
+                blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT;
+            }
+
+            boolean active = type.equals(currentType);
+            boolean hovered = !openProfile && MouseUtils.isInside(mouseX, mouseY, currentX, currentY, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+
+            CategoryChipRenderer.drawChip(nvg, palette, accentColor, currentX, currentY, chipWidth, label, null, active, hovered);
+
+            FilterChip chip = new FilterChip(() -> {
+                if (currentType != type) {
+                    currentType = type;
+                    scroll.resetAll();
+                }
+            });
+            chip.setBounds(currentX, currentY, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+            typeChips.add(chip);
+
+            currentX += chipWidth + CHIP_GAP;
+        }
+
+        return blockBottom;
     }
 
     private void openCustomIconPicker() {

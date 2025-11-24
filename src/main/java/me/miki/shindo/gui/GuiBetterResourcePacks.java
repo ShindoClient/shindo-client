@@ -107,7 +107,7 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
                     mc.gameSettings.resourcePacks.add(entry.getResourcePackName());
                 }
 
-                RPOAddon.getInstance().get().options.updateEnabledPacks();
+                RPOAddon.getInstance().get().getOptions().updateEnabledPacks();
 
                 mc.gameSettings.saveOptions();
                 mc.refreshResources();

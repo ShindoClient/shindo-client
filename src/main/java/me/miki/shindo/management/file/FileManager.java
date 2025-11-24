@@ -17,6 +17,7 @@ public class FileManager {
     private final File profileDir;
     private final File screenshotDir;
     private final File addonsDir;
+    private final File addonConfigDir;
     private final File gamesDir;
     private final File skinsDir;
 
@@ -41,6 +42,7 @@ public class FileManager {
         profileDir = new File(shindoDir, "profile");
         screenshotDir = new File(shindoDir, "screenshots");
         addonsDir = new File(shindoDir, "addons");
+        addonConfigDir = new File(addonsDir, "configs");
         gamesDir = new File(shindoDir, "games");
         skinsDir = new File(shindoDir, "skins");
 
@@ -71,6 +73,7 @@ public class FileManager {
             if (!profileDir.exists()) createDir(profileDir);
             if (!screenshotDir.exists()) createDir(screenshotDir);
             if (!addonsDir.exists()) createDir(addonsDir);
+            if (!addonConfigDir.exists()) createDir(addonConfigDir);
             if (!gamesDir.exists()) createDir(gamesDir);
             if (!skinsDir.exists()) createDir(skinsDir);
 
@@ -100,7 +103,9 @@ public class FileManager {
     }
 
     public void createDir(File file) {
-        file.mkdir();
+        if (file != null && !file.exists()) {
+            file.mkdirs();
+        }
     }
 
     public void createFile(File file) {
@@ -137,6 +142,10 @@ public class FileManager {
 
     public File getAddonsDir() {
         return addonsDir;
+    }
+
+    public File getAddonConfigDir() {
+        return addonConfigDir;
     }
 
     public File getGamesDir() {

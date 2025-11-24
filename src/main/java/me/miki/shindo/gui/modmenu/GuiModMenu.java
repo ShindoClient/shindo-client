@@ -61,7 +61,7 @@ public class GuiModMenu extends GuiScreen {
         //categories.add(new GamesCategory(this));
         categories.add(new ProfileCategory(this));
         categories.add(new ScreenshotCategory(this));
-        categories.add(new TweakerCategory(this));
+        categories.add(new NetworkCategory(this));
         categories.add(new SettingCategory(this));
 
         currentCategory = getCategoryByClass(HomeCategory.class);
@@ -200,8 +200,8 @@ public class GuiModMenu extends GuiScreen {
                 int yOff = (currentCategory.isShowTitle()) ? 31 : 0;
                 folderButton.setVisible(false);
 
-                if (currentCategory instanceof me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory) {
-                    me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory cosmeticsCategory = (me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory) currentCategory;
+                if (currentCategory instanceof CosmeticsCategory) {
+                    CosmeticsCategory cosmeticsCategory = (CosmeticsCategory) currentCategory;
                     if (cosmeticsCategory.shouldShowCustomCapeFolder()) {
                         float folderButtonX = x + width - 198;
                         float folderButtonY = y + 6.5F;
@@ -211,14 +211,6 @@ public class GuiModMenu extends GuiScreen {
                         folderButton.onClick(() -> FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getCustomCapeDir()));
                         folderButton.draw(mouseX, mouseY, partialTicks);
                     }
-                } else if (Objects.equals(currentCategory.getNameKey(), TranslateText.MUSIC.getKey())) {
-                    float folderButtonX = x + width - 198;
-                    float folderButtonY = y + 6.5F;
-                    folderButton.setVisible(true);
-                    folderButton.setBounds(folderButtonX, folderButtonY, 18F, 18F);
-                    folderButton.setIconColorSupplier(() -> palette.getFontColor(ColorType.NORMAL));
-                    folderButton.onClick(() -> FileUtils.openFolderAtPath(Shindo.getInstance().getFileManager().getMusicDir()));
-                    folderButton.draw(mouseX, mouseY, partialTicks);
                 }
 
                 nvg.scissor(x + 32, y + yOff, width - 32, height - yOff);

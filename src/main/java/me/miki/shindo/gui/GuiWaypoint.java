@@ -122,7 +122,7 @@ public class GuiWaypoint extends GuiScreen {
         scroll.setMaxScroll(index < 3 ? 0 : (index - 3) * 66);
 
         nvg.drawRoundedRect(x + width - 130, y + 25 + 10, 120, height - 35 - 10, 6, palette.getBackgroundColor(ColorType.DARK));
-        nvg.drawCenteredText("Create a waypoint", x + width - 130 + (120 / 2), y + 25 + 18, palette.getFontColor(ColorType.DARK), 10.5F, Fonts.MEDIUM);
+        nvg.drawCenteredText("Create a waypoint", x + width - 130 + (120 / 2F), y + 25 + 18, palette.getFontColor(ColorType.DARK), 10.5F, Fonts.MEDIUM);
 
         textBox.setDefaultText("Name");
         textBox.setPosition(x + width - 120, y + 25 + 34, 100, 18);
@@ -150,7 +150,7 @@ public class GuiWaypoint extends GuiScreen {
         }
 
         nvg.drawRoundedRect(x + width - 85, y + height - 34, 65, 18, 6, palette.getBackgroundColor(ColorType.NORMAL));
-        nvg.drawCenteredText("Save", x + width - 85 + (65 / 2), y + height - 29, palette.getFontColor(ColorType.DARK), 9, Fonts.REGULAR);
+        nvg.drawCenteredText("Save", x + width - 85 + (65 / 2F), y + height - 29, palette.getFontColor(ColorType.DARK), 9, Fonts.REGULAR);
 
         if (removeWaypoint != null) {
             waypointManager.getWaypoints().remove(removeWaypoint);

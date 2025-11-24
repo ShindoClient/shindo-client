@@ -37,14 +37,16 @@ public class UpdateScene extends MainMenuScene {
         int acX = sr.getScaledWidth() / 2 - (acWidth / 2);
         int acY = sr.getScaledHeight() / 2 - (acHeight / 2);
         Update u = instance.getUpdate();
-        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, this.getBackgroundColor());
+        Color panelColor = getPanelColor();
+        Color controlColor = getControlColor();
+        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, panelColor);
         nvg.drawCenteredText("Update Available", acX + (acWidth / 2F), acY + 12, Color.WHITE, 14, Fonts.MEDIUM);
         nvg.drawCenteredText("Would you like to update?", acX + (acWidth / 2F), acY + 30, Color.WHITE, 9, Fonts.REGULAR);
         nvg.drawCenteredText(instance.getVersion() + " -> " + u.getVersionString(), acX + (acWidth / 2F), acY + 48, Color.WHITE, 9, Fonts.REGULAR);
         nvg.drawCenteredText(instance.getVerIdentifier() + " -> " + u.getBuildID(), acX + (acWidth / 2F), acY + 60, Color.WHITE, 5, Fonts.REGULAR);
-        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 64, 180, 20, 4.5F, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 64, 180, 20, 4.5F, controlColor);
         nvg.drawCenteredText("Go to update", acX + acWidth / 2F, acY + acHeight - 54 - (nvg.getTextHeight("Go to update", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
-        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 32, 180, 20, 4.5F, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX + acWidth / 2F - 90, acY + acHeight - 32, 180, 20, 4.5F, controlColor);
         nvg.drawCenteredText("Maybe Later", acX + acWidth / 2F, acY + acHeight - 22 - (nvg.getTextHeight("Maybe Later", 9.5F, Fonts.REGULAR) / 2), Color.WHITE, 9.5F, Fonts.REGULAR);
 
     }

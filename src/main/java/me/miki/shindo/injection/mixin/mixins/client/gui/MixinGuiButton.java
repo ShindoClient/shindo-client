@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiButton {
 
     @Shadow
-    public int width;
+    protected int width;
     @Shadow
-    public int height;
+    protected int height;
     @Shadow
     public int xPosition;
     @Shadow
@@ -29,8 +30,6 @@ public abstract class MixinGuiButton {
     public boolean enabled;
     @Shadow
     protected boolean hovered;
-    @Shadow
-    protected int packedFGColor;
 
     @Inject(method = "drawButton", at = @At("HEAD"), cancellable = true)
     private void shindo$drawButton(Minecraft mc, int mouseX, int mouseY, CallbackInfo ci) {
@@ -43,8 +42,16 @@ public abstract class MixinGuiButton {
         if (VanillaButtonRenderer.drawButton((GuiButton) (Object) this,
                 this.xPosition, this.yPosition, this.width, this.height,
                 this.enabled, this.visible, this.hovered,
-                this.packedFGColor, mc, mouseX, mouseY, null)) {
+                this.shindo$resolveTextColor(), mc, mouseX, mouseY, null)) {
             ci.cancel();
         }
+    }
+
+    @Unique
+    private int shindo$resolveTextColor() {
+        if (!this.enabled) {
+            return 10526880;
+        }
+        return this.hovered ? 16777120 : 14737632;
     }
 }

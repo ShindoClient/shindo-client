@@ -1,15 +1,16 @@
 package me.miki.shindo.ui.theme;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
-import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.utils.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.Color;
 import java.util.Objects;
@@ -24,12 +25,7 @@ public final class VanillaButtonRenderer {
     private VanillaButtonRenderer() {
     }
 
-    public static boolean drawButton(GuiButton button,
-                                     int x, int y, int width, int height,
-                                     boolean enabled, boolean visible, boolean hovered,
-                                     int packedForegroundColor,
-                                     Minecraft mc, int mouseX, int mouseY,
-                                     Consumer<ButtonThemeContext> afterBackground) {
+    public static boolean drawButton(GuiButton button, int x, int y, int width, int height, boolean enabled, boolean visible, boolean hovered, int packedForegroundColor, Minecraft mc, int mouseX, int mouseY, Consumer<ButtonThemeContext> afterBackground) {
         Objects.requireNonNull(button, "button");
 
         if (!visible) {
@@ -57,14 +53,13 @@ public final class VanillaButtonRenderer {
 
         float radius = Math.min(6F, height / 2F);
         float textSize = Math.max(9F, Math.min(12F, height - 6F));
+        String label = button.displayString == null ? "" : button.displayString;
+        Color textColor = resolveTextColor(enabled, palette, hovered, packedForegroundColor);
 
         nvg.setupAndDraw(() -> {
-            Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID),
-                    enabled ? (hovered ? 210 : 190) : 135);
-            Color overlayStart = ColorUtils.applyAlpha(accent.getColor1(),
-                    enabled ? (hovered ? 110 : 82) : 45);
-            Color overlayEnd = ColorUtils.applyAlpha(accent.getColor2(),
-                    enabled ? (hovered ? 110 : 82) : 45);
+            Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), enabled ? (hovered ? 210 : 190) : 135);
+            Color overlayStart = ColorUtils.applyAlpha(accent.getColor1(), enabled ? (hovered ? 110 : 82) : 45);
+            Color overlayEnd = ColorUtils.applyAlpha(accent.getColor2(), enabled ? (hovered ? 110 : 82) : 45);
 
             nvg.drawRoundedRect(x, y, width, height, radius, base);
             nvg.drawGradientRoundedRect(x, y, width, height, radius, overlayStart, overlayEnd);
@@ -77,15 +72,15 @@ public final class VanillaButtonRenderer {
             if (afterBackground != null) {
                 afterBackground.accept(new ButtonThemeContext(button, nvg, palette, accent, hovered, textSize, x, y, width, height));
             }
-
-            String label = button.displayString;
-            if (label != null && !label.isEmpty()) {
-                Color textColor = resolveTextColor(enabled, palette, hovered, packedForegroundColor);
-                nvg.drawCenteredText(label, x + (width / 2F),
-                        y + (height / 2F) - (textSize / 2F),
-                        textColor, textSize, Fonts.MEDIUM);
-            }
         }, true);
+
+        if (!label.isEmpty()) {
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            mc.fontRendererObj.drawStringWithShadow(label,
+                    x + width / 2F - (mc.fontRendererObj.getStringWidth(label) / 2F),
+                    y + (height - 8) / 2F,
+                    textColor.getRGB());
+        }
 
         return true;
     }
@@ -106,6 +101,7 @@ public final class VanillaButtonRenderer {
         return palette.getFontColor(ColorType.DARK);
     }
 
+    @Getter
     public static final class ButtonThemeContext {
         private final GuiButton button;
         private final NanoVGManager nvg;
@@ -118,8 +114,7 @@ public final class VanillaButtonRenderer {
         private final int width;
         private final int height;
 
-        private ButtonThemeContext(GuiButton button, NanoVGManager nvg, ColorPalette palette, AccentColor accent,
-                                   boolean hovered, float textSize, int x, int y, int width, int height) {
+        private ButtonThemeContext(GuiButton button, NanoVGManager nvg, ColorPalette palette, AccentColor accent, boolean hovered, float textSize, int x, int y, int width, int height) {
             this.button = button;
             this.nvg = nvg;
             this.palette = palette;
@@ -132,44 +127,5 @@ public final class VanillaButtonRenderer {
             this.height = height;
         }
 
-        public GuiButton getButton() {
-            return button;
-        }
-
-        public NanoVGManager getNvg() {
-            return nvg;
-        }
-
-        public ColorPalette getPalette() {
-            return palette;
-        }
-
-        public AccentColor getAccent() {
-            return accent;
-        }
-
-        public boolean isHovered() {
-            return hovered;
-        }
-
-        public float getTextSize() {
-            return textSize;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
     }
 }

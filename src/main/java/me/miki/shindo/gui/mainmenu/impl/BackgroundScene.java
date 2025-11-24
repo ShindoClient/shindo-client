@@ -60,7 +60,9 @@ public class BackgroundScene extends MainMenuScene {
 
     private void drawNanoVG(int mouseX, int mouseY, ScaledResolution sr, Shindo instance, NanoVGManager nvg) {
         BackgroundManager backgroundManager = instance.getProfileManager().getBackgroundManager();
-        ColorPalette palette = instance.getColorManager().getPalette();
+        ColorPalette palette = getMenuPalette();
+        Color panelColor = getPanelColor();
+        Color controlColor = getControlColor();
 
         int acWidth = 240;
         int acHeight = 148;
@@ -74,7 +76,7 @@ public class BackgroundScene extends MainMenuScene {
         scroll.onScroll();
         scroll.onAnimation();
 
-        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, panelColor);
         nvg.drawCenteredText(TranslateText.SELECT_BACKGROUND.getText(), acX + (acWidth / 2F), acY + 8, Color.WHITE, 14, Fonts.SEMIBOLD);
 
         nvg.save();
@@ -129,7 +131,7 @@ public class BackgroundScene extends MainMenuScene {
                         acX + 11 + offsetX, acY + 35 + offsetY, 102.5F, 57.5F);
             }
 
-            nvg.drawRoundedRectVarying(acX + offsetX + 11, acY + offsetY + 76.5F, 102.5F, 16, 0, 0, 6, 6, this.getBackgroundColor());
+            nvg.drawRoundedRectVarying(acX + offsetX + 11, acY + offsetY + 76.5F, 102.5F, 16, 0, 0, 6, 6, controlColor);
             nvg.drawCenteredText(bg.getName(), acX + offsetX + 11 + (102.5F / 2), acY + offsetY + 80, Color.WHITE, 10, Fonts.REGULAR);
 
             offsetX += 115;

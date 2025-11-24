@@ -3,6 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl.setting.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.SettingCategory;
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene;
+import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
@@ -62,6 +63,7 @@ public class GeneralScene extends SettingScene {
         NanoVGManager nvg = instance.getNanoVGManager();
         ColorManager colorManager = instance.getColorManager();
         ColorPalette palette = colorManager.getPalette();
+        AccentColor accentColor = colorManager.getCurrentColor();
 
         float baseX = getX();
         float baseY = getContentY();
@@ -104,6 +106,8 @@ public class GeneralScene extends SettingScene {
         }
 
         nvg.restore();
+
+        drawScrollbar(nvg, palette, accentColor, baseX, baseY, baseWidth, baseHeight, contentHeight, scrollValue);
     }
 
     @Override
@@ -137,5 +141,36 @@ public class GeneralScene extends SettingScene {
             card.keyTyped(typedChar, keyCode);
         }
         contentScroll.onKey(keyCode);
+    }
+
+    private void drawScrollbar(NanoVGManager nvg,
+                               ColorPalette palette,
+                               AccentColor accent,
+                               float baseX,
+                               float baseY,
+                               float baseWidth,
+                               float baseHeight,
+                               float contentHeight,
+                               float scrollValue) {
+        float maxScroll = Math.max(0F, contentHeight - baseHeight);
+        if (maxScroll <= 0F) {
+            return;
+        }
+
+        float trackX = baseX + baseWidth - 8F;
+        float trackY = baseY + 8F;
+        float trackWidth = 4F;
+        float trackHeight = baseHeight - 16F;
+
+        nvg.drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 120));
+
+        float visibleRatio = Math.min(1F, baseHeight / contentHeight);
+        float handleHeight = Math.max(24F, trackHeight * visibleRatio);
+        float scrollOffset = -scrollValue;
+        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
+
+        nvg.drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F,
+                ColorUtils.applyAlpha(accent.getColor1(), 190), ColorUtils.applyAlpha(accent.getColor2(), 190));
     }
 }

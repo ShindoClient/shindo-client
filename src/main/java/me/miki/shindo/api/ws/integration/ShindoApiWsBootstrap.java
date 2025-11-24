@@ -6,11 +6,15 @@ import lombok.Getter;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.api.roles.adapter.RolesAdapter;
+import me.miki.shindo.api.ws.AccountType;
+import me.miki.shindo.api.ws.GatewayMessageType;
 import me.miki.shindo.api.ws.ShindoWsService;
+import me.miki.shindo.api.ws.WsIdentity;
 import me.miki.shindo.api.ws.presence.PresenceTracker;
 import me.miki.shindo.logger.ShindoLogger;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,7 +45,6 @@ public class ShindoApiWsBootstrap {
     private Supplier<String[]> rolesSupplier;
     private RoleManager roleManager;
     private PresenceTracker presence;
-    private ShindoWsService.SessionProvider sessionProvider;
 
     @Getter
     private ShindoWsService service;
@@ -66,11 +69,6 @@ public class ShindoApiWsBootstrap {
         }
     }
 
-    private static String normalizeAccountType(String value) {
-        String normalized = (value == null ? "" : value.trim().toUpperCase());
-        return "MICROSOFT".equals(normalized) ? "MICROSOFT" : "OFFLINE";
-    }
-
     public ShindoApiWsBootstrap withUuid(Supplier<String> supplier) {
         this.uuidSupplier = supplier;
         return this;
@@ -83,11 +81,6 @@ public class ShindoApiWsBootstrap {
 
     public ShindoApiWsBootstrap withAccountType(Supplier<String> supplier) {
         this.accountTypeSupplier = supplier;
-        return this;
-    }
-
-    public ShindoApiWsBootstrap withSessionProvider(ShindoWsService.SessionProvider provider) {
-        this.sessionProvider = provider;
         return this;
     }
 
@@ -106,10 +99,20 @@ public class ShindoApiWsBootstrap {
         return this;
     }
 
-    private ShindoWsService.PlayerInfo buildPlayerInfo() {
-        String uuid = getOrDefault(uuidSupplier);
-        String name = getOrDefault(nameSupplier);
-        String accountType = normalizeAccountType(getOrDefault(accountTypeSupplier));
+    private WsIdentity buildPlayerInfo() {
+        String uuid = safeTrim(getOrDefault(uuidSupplier));
+        String name = safeTrim(getOrDefault(nameSupplier));
+        AccountType accountType = AccountType.from(getOrDefault(accountTypeSupplier));
+
+        boolean validUuid = !uuid.isEmpty() && safeUUID(uuid) != null;
+        if (!validUuid) {
+            uuid = generateOfflineUuid(name);
+            accountType = AccountType.OFFLINE;
+        }
+
+        if (name.isEmpty()) {
+            name = "Player";
+        }
 
         String[] roles;
         if (rolesSupplier != null) {
@@ -123,7 +126,16 @@ public class ShindoApiWsBootstrap {
             roles = new String[]{"MEMBER"};
         }
 
-        return new ShindoWsService.PlayerInfo(uuid, name, roles, accountType);
+        return new WsIdentity(uuid, name, roles, accountType);
+    }
+
+    private static String safeTrim(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private static String generateOfflineUuid(String name) {
+        String baseName = name.isEmpty() ? "Player" : name;
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + baseName).getBytes(StandardCharsets.UTF_8)).toString();
     }
 
     /**
@@ -138,9 +150,9 @@ public class ShindoApiWsBootstrap {
             return;
         }
 
-        ShindoWsService.PlayerInfo info = buildPlayerInfo();
-        String currentUuid = info.uuid;
-        String currentName = info.name;
+        WsIdentity info = buildPlayerInfo();
+        String currentUuid = info.getUuid();
+        String currentName = info.getName();
 
         if (!currentService.isOpen()) {
             restart();
@@ -151,7 +163,6 @@ public class ShindoApiWsBootstrap {
         if (lastUuid != null && !lastUuid.equals(currentUuid)) {
             lastUuidSent.set(currentUuid);
             lastNameSent.set(currentName);
-            currentService.invalidateSession();
             currentService.reauthenticate();
             return;
         }
@@ -159,12 +170,11 @@ public class ShindoApiWsBootstrap {
         String lastName = lastNameSent.get();
         if (lastName != null && !lastName.equals(currentName)) {
             lastNameSent.set(currentName);
-            currentService.invalidateSession();
             currentService.reauthenticate();
             return;
         }
 
-        currentService.pushRoles(info.roles);
+        currentService.pushRoles(info.getRoles());
         lastUuidSent.set(currentUuid);
         lastNameSent.set(currentName);
     }
@@ -178,22 +188,20 @@ public class ShindoApiWsBootstrap {
         boolean ssl = wsUrl.startsWith("wss://");
 
         service = new ShindoWsService(uri, ssl);
-        service.setSessionProvider(sessionProvider);
         service.setPresenceTracker(presence);
         service.setRoleManager(roleManager);
 
         service.addListener(new ShindoWsService.Listener() {
             @Override
             public void onMessage(String type, JsonObject payload) {
-                if ("auth.error".equals(type)) {
+                if (GatewayMessageType.AUTH_ERROR.matches(type)) {
                     ShindoLogger.warn("Gateway rejected authentication payload: " + (payload != null ? payload.toString() : "unknown"));
                     if (service != null) {
-                        service.invalidateSession();
                         service.reauthenticate();
                     }
                     return;
                 }
-                if ("auth.ok".equals(type)) {
+                if (GatewayMessageType.AUTH_OK.matches(type)) {
                     syncRolesFromAuth(payload);
                 }
                 if (presence != null) {
@@ -203,9 +211,9 @@ public class ShindoApiWsBootstrap {
         });
 
         service.setProvider(() -> {
-            ShindoWsService.PlayerInfo info = buildPlayerInfo();
-            lastUuidSent.set(info.uuid);
-            lastNameSent.set(info.name);
+            WsIdentity info = buildPlayerInfo();
+            lastUuidSent.set(info.getUuid());
+            lastNameSent.set(info.getName());
             return info;
         });
 

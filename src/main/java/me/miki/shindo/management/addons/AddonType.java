@@ -8,6 +8,7 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 public enum AddonType {
     ALL(TranslateText.ALL),
     RENDER(TranslateText.RENDER),
+    QOL(TranslateText.QOL),
     OTHER(TranslateText.OTHER);
 
 

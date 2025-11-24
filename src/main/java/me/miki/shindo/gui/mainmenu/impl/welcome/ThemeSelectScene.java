@@ -64,7 +64,9 @@ public class ThemeSelectScene extends MainMenuScene {
         int offsetX = 0;
         int index = 1;
 
-        nvg.drawRoundedRect(x, y, width, height, 8, this.getBackgroundColor());
+        Color panelColor = getPanelColor();
+        Color controlColor = getControlColor();
+        nvg.drawRoundedRect(x, y, width, height, 8, panelColor);
         nvg.drawCenteredText("Choose a theme", x + (width / 2), y + 10, Color.WHITE, 16, Fonts.MEDIUM);
         nvg.drawRect(x, y + 27, width, 1, Color.WHITE);
 
@@ -94,7 +96,7 @@ public class ThemeSelectScene extends MainMenuScene {
 
         nvg.restore();
 
-        nvg.drawRoundedRect(x + width - 86, y + height - 26, 80, 20, 6, this.getBackgroundColor());
+        nvg.drawRoundedRect(x + width - 86, y + height - 26, 80, 20, 6, controlColor);
         nvg.drawCenteredText("Next", x + width - 86 + (80 / 2), y + height - 20, Color.WHITE, 10, Fonts.REGULAR);
     }
 

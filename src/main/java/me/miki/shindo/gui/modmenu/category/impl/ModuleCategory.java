@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer;
+import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip;
 import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
@@ -32,9 +34,12 @@ import java.util.ArrayList;
 
 public class ModuleCategory extends Category {
 
+    private static final float CHIP_GAP = 8F;
+
     private final Scroll settingScroll = new Scroll();
     private final SettingsPanel settingsPanel = new SettingsPanel();
     private final ArrayList<ModuleCard> moduleCardCache = new ArrayList<ModuleCard>();
+    private final ArrayList<FilterChip> categoryChips = new ArrayList<>();
     Color noColour = new Color(0, 0, 0, 0);
     private ModCategory currentCategory;
     private boolean openSetting;
@@ -74,8 +79,6 @@ public class ModuleCategory extends Category {
         ColorPalette palette = colorManager.getPalette();
         AccentColor accentColor = colorManager.getCurrentColor();
 
-        int offsetX = 0;
-        float offsetY = 13;
         float scrollValue = scroll.getValue();
         int moduleColumns = resolveModuleColumns();
         CardStyle cardStyle = getCardStyle(moduleColumns);
@@ -96,29 +99,8 @@ public class ModuleCategory extends Category {
         nvg.save();
         nvg.translate(0, scrollValue);
 
-        for (ModCategory c : ModCategory.values()) {
-
-            float textWidth = nvg.getTextWidth(c.getName(), 9, Fonts.MEDIUM);
-            boolean isCurrentCategory = c.equals(currentCategory);
-
-            c.getBackgroundAnimation().setAnimation(isCurrentCategory ? 1.0F : 0.0F, 16);
-
-            Color defaultColor = palette.getBackgroundColor(ColorType.DARK);
-            Color color1 = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (c.getBackgroundAnimation().getValue() * 255));
-            Color color2 = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (c.getBackgroundAnimation().getValue() * 255));
-            Color textColor = c.getTextColorAnimation().getColor(isCurrentCategory ? Color.WHITE : palette.getFontColor(ColorType.DARK), 20);
-
-            nvg.drawRoundedRect(this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16, 6, defaultColor);
-            nvg.drawGradientRoundedRect(this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16, 6, color1, color2);
-
-            nvg.drawText(c.getName(), this.getX() + 15 + offsetX + ((textWidth + 20) - textWidth) / 2, this.getY() + offsetY + 1.5F, textColor, 9, Fonts.MEDIUM);
-
-            offsetX += (int) (textWidth + 28);
-        }
-
-        offsetY = offsetY + 23;
-
-        rebuildModuleCards(modManager, offsetY, moduleColumns);
+        float chipBlockOffset = drawCategoryChips(nvg, palette, accentColor, scrollValue, mouseX, mouseY);
+        rebuildModuleCards(modManager, chipBlockOffset, moduleColumns);
 
         for (ModuleCard card : moduleCardCache) {
 
@@ -147,7 +129,7 @@ public class ModuleCategory extends Category {
 
                 boolean settingsHover = MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollValue, cardStyle.settingsSize, cardStyle.settingsSize);
                 card.mod.getSettingsHoverAnimation().setAnimation(settingsHover ? 1.0F : 0.0F, 18);
-                float settingsHoverAnimation = card.mod.getAnimation().getValue();
+                float settingsHoverAnimation = card.mod.getSettingsHoverAnimation().getValue();
 
                 int overlayAlpha = (int) (18 + (hoverProgress * 26));
                 int fillAlpha = (int) (220 + (hoverProgress * 32));
@@ -249,27 +231,16 @@ public class ModuleCategory extends Category {
         NanoVGManager nvg = instance.getNanoVGManager();
         ModManager modManager = instance.getModManager();
 
-        int offsetX = 0;
-        float offsetY = 13 + scroll.getValue();
+        if (!openSetting && mouseButton == 0) {
+            for (FilterChip chip : categoryChips) {
+                if (chip.contains(mouseX, mouseY)) {
+                    chip.click();
+                    return;
+                }
+            }
+        }
 
         if (!openSetting) {
-            for (ModCategory c : ModCategory.values()) {
-
-                float textWidth = nvg.getTextWidth(c.getName(), 9, Fonts.MEDIUM);
-
-                if (MouseUtils.isInside(mouseX, mouseY, this.getX() + 15 + offsetX, this.getY() + offsetY - 3, textWidth + 20, 16) && mouseButton == 0) {
-                    currentCategory = c;
-                    scroll.reset();
-                }
-
-                offsetX += (int) (textWidth + 28);
-            }
-
-            offsetY = offsetY + 23;
-
-            if (moduleCardCache.isEmpty()) {
-                rebuildModuleCards(modManager, 36F, resolveModuleColumns());
-            }
 
             CardStyle cardStyle = getCardStyle(resolveModuleColumns());
 
@@ -434,6 +405,52 @@ public class ModuleCategory extends Category {
 
     private int resolveModuleColumns() {
         return Math.max(1, Math.min(2, InternalSettingsMod.getInstance().getModuleGridColumns()));
+    }
+
+    private float drawCategoryChips(NanoVGManager nvg,
+                                    ColorPalette palette,
+                                    AccentColor accentColor,
+                                    float scrollOffset,
+                                    int mouseX,
+                                    int mouseY) {
+
+        categoryChips.clear();
+
+        float startX = this.getX() + 18F;
+        float maxX = this.getX() + this.getWidth() - 18F;
+        float currentX = startX;
+        float currentY = this.getY() + 16F;
+        float blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT;
+
+        for (ModCategory category : ModCategory.values()) {
+            String label = category.getName();
+            float chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null);
+
+            if (currentX + chipWidth > maxX) {
+                currentX = startX;
+                currentY += CategoryChipRenderer.CHIP_HEIGHT + CHIP_GAP;
+                blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT;
+            }
+
+            boolean active = category.equals(currentCategory);
+            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+
+            CategoryChipRenderer.drawChip(nvg, palette, accentColor, currentX, currentY, chipWidth, label, null, active, hovered);
+
+            FilterChip chip = new FilterChip(() -> {
+                if (currentCategory != category) {
+                    currentCategory = category;
+                    scroll.resetAll();
+                    moduleCardCache.clear();
+                }
+            });
+            chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+            categoryChips.add(chip);
+
+            currentX += chipWidth + CHIP_GAP;
+        }
+
+        return (blockBottom - this.getY()) + CHIP_GAP;
     }
 
     private CardStyle getCardStyle(int columns) {

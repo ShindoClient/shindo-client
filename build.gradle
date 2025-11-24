@@ -81,11 +81,6 @@ dependencies {
     embed(files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar'))
     embed(files("libs/snakeyaml-2.0.jar"))
 
-    // Feather
-    embed(files('libs/feather/favif-0.0.1.jar'))
-    embed(files('libs/feather/fcef-0.1.1.jar'))
-    embed(files('libs/feather/fwebp-0.0.1.jar'))
-
     // Other
     embed('com.fasterxml.jackson.core:jackson-databind:2.19.2')
     embed('org.apache.httpcomponents.client5:httpclient5-cache:5.5')
@@ -93,6 +88,8 @@ dependencies {
 
     embed('org.java-websocket:Java-WebSocket:1.6.0')
     embed('org.projectlombok:lombok:1.18.30')
+    embed('net.lenni0451.commons:httpclient:1.9.0')
+    embed('net.lenni0451.commons:gson:1.9.0')
 }
 
 mixin {

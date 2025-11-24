@@ -17,7 +17,7 @@ import me.miki.shindo.management.mods.ModManager;
 import me.miki.shindo.management.profile.mainmenu.BackgroundManager;
 import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.management.settings.impl.*;
-import me.miki.shindo.management.tweaker.ConnectionTweakerManager;
+import me.miki.shindo.management.network.ConnectionTweakerManager;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.file.FileUtils;

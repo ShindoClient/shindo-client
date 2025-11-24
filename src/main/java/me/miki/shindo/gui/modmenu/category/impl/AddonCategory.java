@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer;
+import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip;
 import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonManager;
@@ -22,25 +24,33 @@ import me.miki.shindo.utils.SearchUtils;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation;
+import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddonCategory extends Category {
 
     private final Scroll settingScroll = new Scroll();
     private final SettingsPanel settingsPanel = new SettingsPanel();
     Color noColour = new Color(0, 0, 0, 0);
-    private static final float TYPE_CHIP_HEIGHT = 22F;
     private static final float TYPE_CHIP_GAP = 8F;
     private static final float CHIP_HORIZONTAL_PADDING = 12F;
     private static final float CARD_HORIZONTAL_PADDING = 18F;
     private static final float CARD_COLUMN_GAP = 16F;
     private static final float CARD_ROW_GAP = 16F;
-    private static final float CARD_HEIGHT = 108F;
+    private static final float CARD_HEIGHT = 122F;
+    private static final float CARD_RADIUS = 14F;
+    private static final float TOGGLE_WIDTH = 58F;
+    private static final float TOGGLE_HEIGHT = 26F;
+    private static final float SETTINGS_BUTTON_SIZE = 24F;
+    private final Map<Addon, CardLayout> cardLayouts = new HashMap<>();
+    private final ArrayList<FilterChip> typeChips = new ArrayList<>();
     private AddonType currentType;
     private boolean openSetting;
     private Animation settingAnimation;
@@ -48,7 +58,7 @@ public class AddonCategory extends Category {
 
 
     public AddonCategory(GuiModMenu parent) {
-        super(parent, TranslateText.ADDONS, LegacyIcon.PIECE, true, true);
+        super(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true);
 
     }
 
@@ -101,28 +111,9 @@ public class AddonCategory extends Category {
 
         nvg.save();
         nvg.translate(0, scrollValue);
-        // draw filter chips
-        float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
-        float chipY = this.getY() + 16F;
-        for (AddonType type : AddonType.values()) {
-            float labelWidth = nvg.getTextWidth(type.getName(), 9.5F, Fonts.MEDIUM);
-            float chipWidth = labelWidth + (CHIP_HORIZONTAL_PADDING * 2);
-            boolean isCurrent = type.equals(currentType);
-            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT);
+        drawTypeChips(nvg, palette, accentColor, scrollValue, mouseX, mouseY);
 
-            type.getBackgroundAnimation().setAnimation(isCurrent ? 1.0F : 0.0F, 16);
-
-            Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered || isCurrent ? 210 : 168);
-            Color start = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (type.getBackgroundAnimation().getValue() * 255));
-            Color end = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (type.getBackgroundAnimation().getValue() * 255));
-            Color textColor = type.getTextColorAnimation().getColor(isCurrent ? Color.WHITE : palette.getFontColor(ColorType.DARK), 18);
-
-            nvg.drawRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, base);
-            nvg.drawGradientRoundedRect(chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT, 6F, start, end);
-            nvg.drawCenteredText(type.getName(), chipX + chipWidth / 2F, chipY + 4F, textColor, 9.5F, Fonts.MEDIUM);
-
-            chipX += chipWidth + TYPE_CHIP_GAP;
-        }
+        cardLayouts.clear();
 
         for (int i = 0; i < visibleAddons.size(); i++) {
             Addon addon = visibleAddons.get(i);
@@ -136,65 +127,28 @@ public class AddonCategory extends Category {
                 continue;
             }
 
-            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT);
-            addon.getAnimation().setAnimation(addon.isToggled() ? 1.0F : 0.0F, 16);
-
-            Color cardBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered ? 224 : 188);
-            Color overlayStart = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (addon.getAnimation().getValue() * 60));
-            Color overlayEnd = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (addon.getAnimation().getValue() * 60));
-
-            //nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10, 6);
-            nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12F, cardBase);
-            nvg.drawGradientRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12F, overlayStart, overlayEnd);
-
-            float titleX = cardX + 16F;
-            float titleY = cardY + 18F;
-            float textWidth = cardWidth - 32F;
-
-            nvg.drawText(addon.getName(), titleX, titleY, palette.getFontColor(ColorType.DARK), 11.5F, Fonts.MEDIUM);
-
-            String description = addon.getDescription() == null ? "" : addon.getDescription();
-            String wrapped = nvg.getLimitText(description, 8.5F, Fonts.REGULAR, textWidth);
-            nvg.drawText(wrapped, titleX, titleY + 16F, palette.getFontColor(ColorType.NORMAL), 8.5F, Fonts.REGULAR);
-
-            String typeName = addon.getType().getName();
-            //float badgeWidth = Math.max(42F, nvg.getTextWidth(typeName, 8F, Fonts.MEDIUM) + 20F);
-            //float badgeX = cardX + 16F;
-            //float badgeY = cardY + CARD_HEIGHT - 30F;
-
-            //Color badgeBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 206);
-            //nvg.drawRoundedRect(badgeX, badgeY, badgeWidth, 18F, 6F, badgeBase);
-            //nvg.drawCenteredText(typeName, badgeX + badgeWidth / 2F, badgeY + 9F, palette.getFontColor(ColorType.DARK), 8F, Fonts.MEDIUM);
-
-            float toggleWidth = 68F;
-            float toggleHeight = 22F;
-            float toggleX = cardX + cardWidth - toggleWidth - 16F;
-            float toggleY = cardY + CARD_HEIGHT - toggleHeight - 18F;
-
-            Color toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 204);
-            Color toggleActiveStart = ColorUtils.applyAlpha(accentColor.getColor1(), 200);
-            Color toggleActiveEnd = ColorUtils.applyAlpha(accentColor.getColor2(), 200);
-
-            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, 12F, toggleBase);
-
-            nvg.save();
-            nvg.scale(toggleX, toggleY, toggleWidth, toggleHeight, addon.getAnimation().getValue());
-            nvg.drawGradientRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, 12F, toggleActiveStart, toggleActiveEnd);
-            nvg.restore();
-
-            String toggleLabel = addon.isToggled() ? TranslateText.STATUS_ENABLED.getText() : TranslateText.STATUS_DISABLED.getText();
-            nvg.drawCenteredText(toggleLabel, toggleX + toggleWidth / 2F, toggleY + toggleHeight / 2F, palette.getFontColor(ColorType.DARK), 8.5F, Fonts.MEDIUM);
-
             ArrayList<Setting> settings = addonManager.getSettingByAddon(addon);
-            if (settings != null && !settings.isEmpty()) {
-                float settingsSize = 20F;
-                float settingsX = cardX + cardWidth - settingsSize - 16F;
-                float settingsY = cardY + 14F;
+            boolean hasSettings = settings != null && !settings.isEmpty();
 
-                Color settingsBg = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered ? 208 : 176);
-                nvg.drawRoundedRect(settingsX, settingsY, settingsSize, settingsSize, 6F, settingsBg);
-                nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + settingsSize / 2F, settingsY + settingsSize / 2F, palette.getFontColor(ColorType.DARK), 10F, Fonts.LEGACYICON);
+            CardLayout layout = new CardLayout();
+            layout.cardX = cardX;
+            layout.cardY = cardY + scrollValue;
+            layout.cardWidth = cardWidth;
+            layout.cardHeight = CARD_HEIGHT;
+            layout.toggleX = cardX + cardWidth - TOGGLE_WIDTH - 18F;
+            layout.toggleY = cardY + CARD_HEIGHT - TOGGLE_HEIGHT - 18F + scrollValue;
+            layout.toggleWidth = TOGGLE_WIDTH;
+            layout.toggleHeight = TOGGLE_HEIGHT;
+            if (hasSettings) {
+                layout.hasSettings = true;
+                layout.settingsSize = SETTINGS_BUTTON_SIZE;
+                layout.settingsX = cardX + cardWidth - SETTINGS_BUTTON_SIZE - 18F;
+                layout.settingsY = cardY + 12F + scrollValue;
             }
+            cardLayouts.put(addon, layout);
+
+            boolean hovered = !openSetting && layout.contains(mouseX, mouseY);
+            drawAddonCard(nvg, palette, accentColor, addon, cardX, cardY, cardWidth, hovered, hasSettings, mouseX, mouseY);
         }
 
         nvg.restore();
@@ -253,70 +207,38 @@ public class AddonCategory extends Category {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         Shindo instance = Shindo.getInstance();
-        NanoVGManager nvg = instance.getNanoVGManager();
         AddonManager addonManager = instance.getAddonManager();
 
-        float scrollValue = scroll.getValue();
-        float contentStartY = this.getY() + 52F;
-        float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
-
-        if (!openSetting) {
-            float chipX = this.getX() + CARD_HORIZONTAL_PADDING;
-            float chipY = this.getY() + 16F;
-            for (AddonType t : AddonType.values()) {
-
-                float textWidth = nvg.getTextWidth(t.getName(), 9.5F, Fonts.MEDIUM);
-                float chipWidth = textWidth + (CHIP_HORIZONTAL_PADDING * 2);
-
-                if (MouseUtils.isInside(mouseX, mouseY, chipX, chipY - 4F, chipWidth, TYPE_CHIP_HEIGHT) && mouseButton == 0) {
-                    currentType = t;
-                    scroll.reset();
-                    scroll.onAnimation();
+        if (!openSetting && mouseButton == 0) {
+            for (FilterChip chip : typeChips) {
+                if (chip.contains(mouseX, mouseY)) {
+                    chip.click();
+                    return;
                 }
-
-                chipX += chipWidth + TYPE_CHIP_GAP;
             }
+        }
 
+        if (!openSetting && mouseButton == 0) {
             ArrayList<Addon> visibleAddons = collectVisibleAddons(addonManager);
-            for (int i = 0; i < visibleAddons.size(); i++) {
-                Addon addon = visibleAddons.get(i);
-                int column = i % 2;
-                int row = i / 2;
-
-                float cardX = this.getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP);
-                float cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP);
-
-                if (!MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)) {
+            for (Addon addon : visibleAddons) {
+                CardLayout layout = cardLayouts.get(addon);
+                if (layout == null || !layout.contains(mouseX, mouseY)) {
                     continue;
                 }
 
-                if (mouseButton == 0) {
-                    float toggleWidth = 68F;
-                    float toggleHeight = 22F;
-                    float toggleX = cardX + cardWidth - toggleWidth - 16F;
-                    float toggleY = cardY + CARD_HEIGHT - toggleHeight - 18F + scrollValue;
+                if (layout.insideToggle(mouseX, mouseY)) {
+                    addon.toggle();
+                    return;
+                }
 
-                    if (MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
-                        addon.toggle();
-                        return;
-                    }
-
-                    ArrayList<Setting> settings = addonManager.getSettingByAddon(addon);
-                    if (settings != null && !settings.isEmpty()) {
-                        float settingsSize = 20F;
-                        float settingsX = cardX + cardWidth - settingsSize - 16F;
-                        float settingsY = cardY + 14F + scrollValue;
-
-                        if (MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, settingsSize, settingsSize)) {
-
-                            settingsPanel.buildEntries(settings);
-                            settingScroll.resetAll();
-                            currentAddon = addon;
-                            openSetting = true;
-                            this.setCanClose(false);
-                            return;
-                        }
-                    }
+                ArrayList<Setting> settings = addonManager.getSettingByAddon(addon);
+                if (settings != null && !settings.isEmpty() && layout.insideSettings(mouseX, mouseY)) {
+                    settingsPanel.buildEntries(settings);
+                    settingScroll.resetAll();
+                    currentAddon = addon;
+                    openSetting = true;
+                    this.setCanClose(false);
+                    return;
                 }
             }
         }
@@ -390,6 +312,117 @@ public class AddonCategory extends Category {
         }
     }
 
+    private void drawAddonCard(NanoVGManager nvg, ColorPalette palette, AccentColor accentColor, Addon addon, float cardX, float cardY, float cardWidth, boolean hovered, boolean hasSettings, int mouseX, int mouseY) {
+
+        addon.getAnimation().setAnimation(addon.isToggled() ? 1.0F : 0.0F, 16);
+
+        Color cardBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), hovered ? 236 : 206);
+        Color overlayStart = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (addon.getAnimation().getValue() * 70));
+        Color overlayEnd = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (addon.getAnimation().getValue() * 70));
+
+        nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, CARD_RADIUS, cardBase);
+        if (addon.getAnimation().getValue() > 0F) {
+            nvg.drawGradientRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, CARD_RADIUS, overlayStart, overlayEnd);
+        }
+
+        float padding = 18F;
+        float titleX = cardX + padding;
+        float titleY = cardY + padding;
+        float textWidth = cardWidth - (padding * 2);
+
+        nvg.drawText(addon.getName(), titleX, titleY, palette.getFontColor(ColorType.DARK), 12F, Fonts.SEMIBOLD);
+
+        String description = addon.getDescription() == null ? "" : addon.getDescription();
+        String wrapped = nvg.getLimitText(description, 8.6F, Fonts.REGULAR, textWidth);
+        nvg.drawText(wrapped, titleX, titleY + 20F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 8.6F, Fonts.REGULAR);
+
+        String typeName = addon.getType().getName();
+        float chipWidth = Math.max(48F, nvg.getTextWidth(typeName, 8F, Fonts.MEDIUM) + 18F);
+        float chipX = cardX + cardWidth - chipWidth - 18F;
+        if (hasSettings) {
+            chipX -= SETTINGS_BUTTON_SIZE + 10F;
+        }
+        chipX = Math.max(chipX, titleX);
+        //float chipY = cardY + padding - 4F;
+        //Color chipBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 225);
+        //nvg.drawRoundedRect(chipX, chipY, chipWidth, 18F, 9F, chipBase);
+       // nvg.drawCenteredText(typeName, chipX + chipWidth / 2F, chipY + 9F, palette.getFontColor(ColorType.DARK), 8F, Fonts.MEDIUM);
+
+        if (hasSettings) {
+            float settingsX = cardX + cardWidth - SETTINGS_BUTTON_SIZE - 18F;
+            float settingsY = cardY + padding - 6F;
+
+            Color settingsBg = palette.getBackgroundColor(ColorType.DARK);
+
+            nvg.drawRoundedRect(settingsX, settingsY, SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE, 8F, settingsBg);
+            nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + (SETTINGS_BUTTON_SIZE / 2F) - 1F, settingsY + 5F, palette.getFontColor(ColorType.DARK), 14F, Fonts.LEGACYICON);
+
+            if (MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE)) {
+                nvg.drawGradientOutlineRoundedRect(settingsX, settingsY, SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE, 8F, 2F, accentColor.getColor1(), accentColor.getColor2());
+            }
+        }
+
+        //float statusY = cardY + CARD_HEIGHT - 34F;
+        //Color statusColor = addon.isToggled() ? new Color(96, 209, 153) : new Color(216, 118, 118);
+        //nvg.drawCircle(titleX, statusY + 3F, 3.5F, statusColor);
+        //String statusText = addon.isToggled() ? TranslateText.STATUS_ENABLED.getText() : TranslateText.STATUS_DISABLED.getText();
+        //nvg.drawText(statusText, titleX + 10F, statusY - 4F, palette.getFontColor(ColorType.DARK), 8.5F, Fonts.MEDIUM);
+
+        float toggleX = cardX + cardWidth - TOGGLE_WIDTH - 18F;
+        float toggleY = cardY + CARD_HEIGHT - TOGGLE_HEIGHT - 18F;
+        float toggleRadius = TOGGLE_HEIGHT / 2F;
+
+        Color toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210);
+        nvg.drawRoundedRect(toggleX, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, toggleRadius, toggleBase);
+
+        if (addon.getAnimation().getValue() > 0F) {
+            nvg.drawGradientRoundedRect(toggleX, toggleY, TOGGLE_WIDTH, TOGGLE_HEIGHT, toggleRadius,
+                    ColorUtils.applyAlpha(accentColor.getColor1(), (int) (addon.getAnimation().getValue() * 255)),
+                    ColorUtils.applyAlpha(accentColor.getColor2(), (int) (addon.getAnimation().getValue() * 255)));
+        }
+
+        float knobSize = TOGGLE_HEIGHT - 8F;
+        float knobX = toggleX + 4F + addon.getAnimation().getValue() * (TOGGLE_WIDTH - knobSize - 8F);
+        float knobY = toggleY + 4F;
+        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2F, Color.WHITE);
+    }
+
+    private void drawTypeChips(NanoVGManager nvg, ColorPalette palette, AccentColor accentColor, float scrollOffset, int mouseX, int mouseY) {
+
+        typeChips.clear();
+
+        float startX = this.getX() + CARD_HORIZONTAL_PADDING;
+        float maxX = this.getX() + this.getWidth() - CARD_HORIZONTAL_PADDING;
+        float currentX = startX;
+        float currentY = this.getY() + 12F;
+
+        for (AddonType type : AddonType.values()) {
+            String label = type.getName();
+            float chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null);
+
+            if (currentX + chipWidth > maxX) {
+                currentX = startX;
+                currentY += CategoryChipRenderer.CHIP_HEIGHT + TYPE_CHIP_GAP;
+            }
+
+            boolean active = type.equals(currentType);
+            boolean hovered = !openSetting && MouseUtils.isInside(mouseX, mouseY, currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+
+            CategoryChipRenderer.drawChip(nvg, palette, accentColor, currentX, currentY, chipWidth, label, null, active, hovered);
+
+            FilterChip chip = new FilterChip(() -> {
+                if (currentType != type) {
+                    currentType = type;
+                    scroll.resetAll();
+                }
+            });
+            chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT);
+            typeChips.add(chip);
+
+            currentX += chipWidth + TYPE_CHIP_GAP;
+        }
+    }
+
     private boolean filterAddon(Addon a) {
 
         if (!currentType.equals(AddonType.ALL) && !a.getType().equals(currentType)) {
@@ -407,6 +440,33 @@ public class AddonCategory extends Category {
             }
         }
         return visible;
+    }
+
+    private static class CardLayout {
+        float cardX;
+        float cardY;
+        float cardWidth;
+        float cardHeight;
+        float toggleX;
+        float toggleY;
+        float toggleWidth;
+        float toggleHeight;
+        float settingsX;
+        float settingsY;
+        float settingsSize;
+        boolean hasSettings;
+
+        boolean contains(int mouseX, int mouseY) {
+            return MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight);
+        }
+
+        boolean insideToggle(int mouseX, int mouseY) {
+            return MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight);
+        }
+
+        boolean insideSettings(int mouseX, int mouseY) {
+            return hasSettings && MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, settingsSize, settingsSize);
+        }
     }
 
 }

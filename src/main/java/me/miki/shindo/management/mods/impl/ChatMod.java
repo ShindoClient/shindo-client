@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl;
 
 import lombok.Getter;
+import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.Property;
@@ -37,8 +38,14 @@ public class ChatMod extends Mod {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT, category = "Display")
     private boolean compactSetting;
 
-    //@Property(type = PropertyType.BOOLEAN, translate = TranslateText.PING_SOUND)
-private boolean pingSetting = false;
+    @Property(type = PropertyType.BOOLEAN, name = "Highlight Mentions", category = "Display", current = 1)
+    private boolean highlightMentionsSetting = true;
+
+    @Property(type = PropertyType.BOOLEAN, name = "Mention Ping", category = "Alerts")
+    private boolean mentionPingSetting;
+
+    @Property(type = PropertyType.BOOLEAN, name = "Right Click Copy", category = "Interaction", current = 1)
+    private boolean rightClickCopySetting = true;
 
     public ChatMod() {
         super(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, "betterchatting");
@@ -46,8 +53,13 @@ private boolean pingSetting = false;
         instance = this;
     }
 
-    //@EventTarget
+    @EventTarget
     public void onChatMessage(EventReceiveChat event) {
+
+        if (!isToggled() || !getMentionPingSetting().isToggled()) {
+            return;
+        }
+
         Minecraft mc = Minecraft.getMinecraft();
         IChatComponent component = event.getMessage();
 
@@ -85,5 +97,17 @@ private boolean pingSetting = false;
 
     public BooleanSetting getCompactSetting() {
         return SettingRegistry.getBooleanSetting(this, "compactSetting");
+    }
+
+    public BooleanSetting getHighlightMentionsSetting() {
+        return SettingRegistry.getBooleanSetting(this, "highlightMentionsSetting");
+    }
+
+    public BooleanSetting getMentionPingSetting() {
+        return SettingRegistry.getBooleanSetting(this, "mentionPingSetting");
+    }
+
+    public BooleanSetting getRightClickCopySetting() {
+        return SettingRegistry.getBooleanSetting(this, "rightClickCopySetting");
     }
 }

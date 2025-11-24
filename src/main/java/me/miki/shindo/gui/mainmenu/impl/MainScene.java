@@ -4,11 +4,13 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.ShindoAPI;
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu;
 import me.miki.shindo.gui.mainmenu.MainMenuScene;
+import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.notification.NotificationType;
+import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import net.minecraft.client.gui.GuiMultiplayer;
@@ -23,23 +25,11 @@ public class MainScene extends MainMenuScene {
     private final SimpleAnimation singlePlayerAnimation = new SimpleAnimation();
     private final SimpleAnimation multiplayerAnimation = new SimpleAnimation();
     private final SimpleAnimation optionsAnimation = new SimpleAnimation();
-    boolean isConnected = false;
 
     public MainScene(GuiShindoMainMenu parent) {
         super(parent);
     }
 
-    @Override
-    public void initGui() {
-        if (!isConnected) {
-            if (Shindo.getInstance().getAccountManager().getCurrentAccount() != null && mc.getSession().getProfile().getId() != null) {
-                ShindoAPI api = Shindo.getInstance().getShindoAPI();
-                api.start();
-                Shindo.getInstance().getNotificationManager().post("[API]", "Is now Connected", NotificationType.INFO);
-                isConnected = true;
-            }
-        }
-    }
 
     /**
      * Renders the current scene of the main menu.
@@ -63,7 +53,7 @@ public class MainScene extends MainMenuScene {
         }
         NanoVGManager nvg = instance.getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG(nvg, mouseX, mouseY));
+        nvg.setupAndDraw(() -> drawNanoVG(instance, nvg, mouseX, mouseY));
     }
 
     /**
@@ -74,28 +64,26 @@ public class MainScene extends MainMenuScene {
      * @param mouseX The current X coordinate of the mouse cursor.
      * @param mouseY The current Y coordinate of the mouse cursor.
      */
-    private void drawNanoVG(NanoVGManager nvg, int mouseX, int mouseY) {
+    private void drawNanoVG(Shindo instance, NanoVGManager nvg, int mouseX, int mouseY) {
+
 
         ScaledResolution sr = new ScaledResolution(mc);
-
+        float centerX = sr.getScaledWidth() / 2F;
         float yPos = sr.getScaledHeight() / 2F - 22;
+        float width = 180F;
+        float height = 20F;
+        float spacing = 26F;
 
-        nvg.drawCenteredText(LegacyIcon.SHINDO, sr.getScaledWidth() / 2F, sr.getScaledHeight() / 2F - (nvg.getTextHeight(LegacyIcon.SHINDO, 54, Fonts.LEGACYICON) / 2) - 60, Color.WHITE, 54, Fonts.LEGACYICON);
+        nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, sr.getScaledHeight() / 2F - (nvg.getTextHeight(LegacyIcon.SHINDO, 54, Fonts.LEGACYICON) / 2) - 60, Color.WHITE, 54, Fonts.LEGACYICON);
 
-        singlePlayerAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() / 2F - (180 / 2F), yPos, 180, 20) ? 1.0F : 0.0F, 16);
+        singlePlayerAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2F), yPos, width, height) ? 1.0F : 0.0F, 16);
+        drawMenuButton(nvg, centerX, yPos, width, height, TranslateText.SINGLEPLAYER.getText(), singlePlayerAnimation.getValue());
 
-        nvg.drawRoundedRect(sr.getScaledWidth() / 2F - (180 / 2F), yPos, 180, 20, 4.5F, new Color(230 - (int) (singlePlayerAnimation.getValue() * 20), 230 - (int) (singlePlayerAnimation.getValue() * 20), 230 - (int) (singlePlayerAnimation.getValue() * 20), 120));
-        nvg.drawCenteredText(TranslateText.SINGLEPLAYER.getText(), sr.getScaledWidth() / 2F, yPos + 6.5F, Color.WHITE, 9.5F, Fonts.REGULAR);
+        multiplayerAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2F), yPos + spacing, width, height) ? 1.0F : 0.0F, 16);
+        drawMenuButton(nvg, centerX, yPos + spacing, width, height, TranslateText.MULTIPLAYER.getText(), multiplayerAnimation.getValue());
 
-        multiplayerAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() / 2F - (180 / 2F), yPos + 26, 180, 20) ? 1.0F : 0.0F, 16);
-
-        nvg.drawRoundedRect(sr.getScaledWidth() / 2F - (180 / 2F), yPos + 26, 180, 20, 4.5F, new Color(230 - (int) (multiplayerAnimation.getValue() * 20), 230 - (int) (multiplayerAnimation.getValue() * 20), 230 - (int) (multiplayerAnimation.getValue() * 20), 120));
-        nvg.drawCenteredText(TranslateText.MULTIPLAYER.getText(), sr.getScaledWidth() / 2F, yPos + 6.5F + 26, Color.WHITE, 9.5F, Fonts.REGULAR);
-
-        optionsAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, sr.getScaledWidth() / 2F - (180 / 2F), yPos + (26 * 2), 180, 20) ? 1.0F : 0.0F, 16);
-
-        nvg.drawRoundedRect(sr.getScaledWidth() / 2F - (180 / 2F), yPos + (26 * 2), 180, 20, 4.5F, new Color(230 - (int) (optionsAnimation.getValue() * 20), 230 - (int) (optionsAnimation.getValue() * 20), 230 - (int) (optionsAnimation.getValue() * 20), 120));
-        nvg.drawCenteredText(TranslateText.SETTINGS.getText(), sr.getScaledWidth() / 2F, yPos + 6.5F + (26 * 2), Color.WHITE, 9.5F, Fonts.REGULAR);
+        optionsAnimation.setAnimation(MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2F), yPos + (spacing * 2), width, height) ? 1.0F : 0.0F, 16);
+        drawMenuButton(nvg, centerX, yPos + (spacing * 2), width, height, TranslateText.SETTINGS.getText(), optionsAnimation.getValue());
     }
 
     /**
@@ -130,5 +118,28 @@ public class MainScene extends MainMenuScene {
                 mc.displayGuiScreen(new GuiOptions(this.getParent(), mc.gameSettings));
             }
         }
+    }
+
+    private void drawMenuButton(NanoVGManager nvg, float centerX, float y, float width, float height, String label, float hoverProgress) {
+        float radius = 6F;
+        float buttonX = centerX - (width / 2F);
+        Color baseColor = getControlColor();
+        AccentColor accent = getMenuAccent();
+
+        if (hoverProgress > 0.01F && accent != null) {
+            Color glowStart = ColorUtils.applyAlpha(accent.getColor1(), (int) (80 + 140 * hoverProgress));
+            Color glowEnd = ColorUtils.applyAlpha(accent.getColor2(), (int) (80 + 140 * hoverProgress));
+            nvg.drawGradientShadow(buttonX, y, width, height, radius, glowStart, glowEnd);
+        }
+
+        Color fillColor = ColorUtils.applyAlpha(baseColor, (int) (200 + 40 * hoverProgress));
+        nvg.drawRoundedRect(buttonX, y, width, height, radius, fillColor);
+
+        if (hoverProgress > 0.01F && accent != null) {
+            Color outline = ColorUtils.applyAlpha(accent.getColor2(), (int) (80 + 90 * hoverProgress));
+            nvg.drawOutlineRoundedRect(buttonX, y, width, height, radius, 1.0F, outline);
+        }
+
+        nvg.drawCenteredText(label, centerX, y + 6.5F, Color.WHITE, 9.5F, Fonts.REGULAR);
     }
 }

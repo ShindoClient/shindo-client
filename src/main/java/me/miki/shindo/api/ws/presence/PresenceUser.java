@@ -1,15 +1,11 @@
 package me.miki.shindo.api.ws.presence;
 
+import lombok.Data;
+
+@Data
 public final class PresenceUser {
     public final String uuid;
     public final String name;
     public final String accountType;
-    public volatile long lastSeen;
-
-    public PresenceUser(String uuid, String name, String accountType, long lastSeen) {
-        this.uuid = uuid;
-        this.name = name;
-        this.accountType = accountType;
-        this.lastSeen = lastSeen;
-    }
+    public final long lastSeen;
 }

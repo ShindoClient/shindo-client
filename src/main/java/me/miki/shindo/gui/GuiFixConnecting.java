@@ -2,7 +2,7 @@ package me.miki.shindo.gui;
 
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.impl.EventJoinServer;
-import me.miki.shindo.management.tweaker.proxy.WarpProxyManager;
+import me.miki.shindo.management.network.proxy.WarpProxyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;

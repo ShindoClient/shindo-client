@@ -8,13 +8,15 @@ run/
 
 ### IntelliJ IDEA ###
 .idea/
+.img/
+.img
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+implement
 ### Eclipse ###
 .apt_generated
 .classpath

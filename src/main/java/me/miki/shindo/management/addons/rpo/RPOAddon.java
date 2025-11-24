@@ -8,6 +8,7 @@ import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCus
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RPOAddon extends Addon {
@@ -23,8 +24,10 @@ public class RPOAddon extends Addon {
     }
 
     public void init() {
-        config = new ConfigHandler(new File(Shindo.getInstance().getFileManager().getAddonsDir(), "rpo.json"));
-        List<String> enabled = config.options.getEnabledPacks();
+        File configDir = Shindo.getInstance().getFileManager().getAddonConfigDir();
+        config = new ConfigHandler(new File(configDir, "rpo.json"));
+
+        List<String> enabled = new ArrayList<>(config.getOptions().getEnabledPacks());
 
         ResourcePackRepositoryCustom.overrideRepository(enabled);
 
@@ -35,6 +38,10 @@ public class RPOAddon extends Addon {
     }
 
     public ConfigHandler get() {
+        if (config == null) {
+            File configDir = Shindo.getInstance().getFileManager().getAddonConfigDir();
+            config = new ConfigHandler(new File(configDir, "rpo.json"));
+        }
         return config;
     }
 

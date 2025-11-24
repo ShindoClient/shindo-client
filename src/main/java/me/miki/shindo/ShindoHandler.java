@@ -6,6 +6,8 @@ import me.miki.shindo.management.cosmetic.cape.impl.Cape;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.profile.Profile;
+import me.miki.shindo.management.skin.Skin;
+import me.miki.shindo.management.skin.SkinManager;
 import me.miki.shindo.utils.OptifineUtils;
 import me.miki.shindo.utils.TargetUtils;
 import net.minecraft.client.Minecraft;
@@ -84,5 +86,25 @@ public class ShindoHandler {
                 event.setCape(currentCape.getCape());
             }
         }
+    }
+
+    @EventTarget
+    public void onSkin(EventLocationSkin event) {
+        if (mc.thePlayer == null || event.getPlayerInfo() == null || event.getPlayerInfo().getGameProfile() == null) {
+            return;
+        }
+        if (!event.getPlayerInfo().getGameProfile().getId().equals(mc.thePlayer.getGameProfile().getId())) {
+            return;
+        }
+        SkinManager skinManager = instance.getSkinManager();
+        if (skinManager == null) {
+            return;
+        }
+        Skin skin = skinManager.getCurrentSkin();
+        if (skin == null || skin.getTexture() == null) {
+            return;
+        }
+        event.setCancelled(true);
+        event.setSkin(skin.getTexture());
     }
 }

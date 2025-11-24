@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.event.impl.EventSendPacket;
-import me.miki.shindo.management.tweaker.ConnectionTweakerManager;
+import me.miki.shindo.management.network.ConnectionTweakerManager;
 import me.miki.shindo.viaversion.netty.event.CompressionReorderEvent;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;

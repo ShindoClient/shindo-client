@@ -8,6 +8,7 @@ import me.miki.shindo.utils.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -41,6 +42,10 @@ public abstract class MixinGuiNewChat extends Gui {
     private int client$sameMessageAmount, client$line;
     @Unique
     private ChatLine client$drawingChatLine = null;
+    @Unique
+    private boolean client$highlightCurrentLine;
+    @Unique
+    private static final int client$MENTION_COLOR = 0x00F8D77C;
 
     @Shadow
     public abstract int getLineCount();
@@ -50,6 +55,9 @@ public abstract class MixinGuiNewChat extends Gui {
 
     @Shadow
     public abstract void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId);
+
+    @Shadow
+    public abstract IChatComponent getChatComponent(int mouseX, int mouseY);
 
     @Unique
     private void client$updatePercentage(long diff) {
@@ -62,6 +70,7 @@ public abstract class MixinGuiNewChat extends Gui {
     @Inject(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ChatLine;getChatComponent()Lnet/minecraft/util/IChatComponent;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void getChatLine(int updateCounter, CallbackInfo ci, int i, boolean bl, int j, int k, float f, float g, int l, int m, ChatLine chatLine, int n, double d, int o, int p, int q) {
         client$drawingChatLine = chatLine;
+        client$highlightCurrentLine = client$shouldHighlightLine(chatLine);
     }
 
     @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
@@ -77,6 +86,11 @@ public abstract class MixinGuiNewChat extends Gui {
             lastOpacity = (color & ~(0xFF << 24)) | (opacity << 24);
         } else {
             lastOpacity = color;
+        }
+
+        if (client$highlightCurrentLine && mod.isToggled() && mod.getHighlightMentionsSetting().isToggled()) {
+            int alpha = lastOpacity & 0xFF000000;
+            lastOpacity = alpha | (client$MENTION_COLOR & 0x00FFFFFF);
         }
 
         if (mod.isToggled() && mod.getHeadSetting().isToggled()) {
@@ -211,5 +225,44 @@ public abstract class MixinGuiNewChat extends Gui {
             return -1;
         }
         return instance.getChatLineID();
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void client$copyOnRightClick(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        ChatMod mod = ChatMod.getInstance();
+        if (mouseButton != 1 || !mod.isToggled() || !mod.getRightClickCopySetting().isToggled()) {
+            return;
+        }
+        IChatComponent component = this.getChatComponent(mouseX, mouseY);
+        if (component == null) {
+            return;
+        }
+        String text = component.getUnformattedText().trim();
+        if (text.isEmpty()) {
+            return;
+        }
+        GuiScreen.setClipboardString(text);
+        if (mc.thePlayer != null) {
+            mc.thePlayer.playSound("random.click", 0.7F, 1.0F);
+        }
+        ci.cancel();
+    }
+
+    @Unique
+    private boolean client$shouldHighlightLine(ChatLine chatLine) {
+        ChatMod mod = ChatMod.getInstance();
+        if (!mod.isToggled() || !mod.getHighlightMentionsSetting().isToggled()) {
+            return false;
+        }
+        if (mc.thePlayer == null || chatLine == null) {
+            return false;
+        }
+        IChatComponent component = chatLine.getChatComponent();
+        if (component == null) {
+            return false;
+        }
+        String plain = EnumChatFormatting.getTextWithoutFormattingCodes(component.getUnformattedText());
+        String playerName = mc.thePlayer.getName();
+        return plain != null && playerName != null && plain.toLowerCase().contains(playerName.toLowerCase());
     }
 }

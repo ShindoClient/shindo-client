@@ -9,6 +9,7 @@ import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.settings.impl.*;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
+import me.miki.shindo.management.screenshot.ScreenshotDisplayMode;
 import org.lwjgl.input.Keyboard;
 
 import me.miki.shindo.management.settings.config.Property;
@@ -53,6 +54,9 @@ public class InternalSettingsMod extends Mod {
 
     @Property(type = PropertyType.COMBO, name = "Module Layout")
     private ModuleLayout moduleLayout = ModuleLayout.SINGLE_COLUMN;
+
+    @Property(type = PropertyType.COMBO, name = "Screenshot Display")
+    private ScreenshotDisplayMode screenshotDisplayMode = ScreenshotDisplayMode.FILMSTRIP;
 
     public InternalSettingsMod() {
         super(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER);
@@ -104,6 +108,10 @@ public class InternalSettingsMod extends Mod {
         return SettingRegistry.getComboSetting(this, "moduleLayout");
     }
 
+    public ComboSetting getScreenshotDisplaySetting() {
+        return SettingRegistry.getComboSetting(this, "screenshotDisplayMode");
+    }
+
     public SettingsPanel.LayoutMode getSettingsLayoutMode() {
         return settingsLayout == SettingsLayout.COMPACT_GRID
                 ? SettingsPanel.LayoutMode.DOUBLE_COLUMN
@@ -122,8 +130,6 @@ public class InternalSettingsMod extends Mod {
 
     public int getModuleGridColumns() {
         switch (moduleLayout) {
-            case THREE_COLUMNS:
-                return 3;
             case TWO_COLUMNS:
                 return 2;
             default:
@@ -132,9 +138,21 @@ public class InternalSettingsMod extends Mod {
     }
 
     public void setModuleGridColumns(int columns) {
-        int normalized = Math.max(1, Math.min(columns, 3));
+        int normalized = Math.max(1, Math.min(columns, ModuleLayout.values().length));
         ModuleLayout target = ModuleLayout.values()[normalized - 1];
         ComboSetting combo = getModuleLayoutSetting();
+        if (combo != null && target.ordinal() < combo.getOptions().size()) {
+            combo.setOption(combo.getOptions().get(target.ordinal()));
+        }
+    }
+
+    public ScreenshotDisplayMode getScreenshotDisplayMode() {
+        return screenshotDisplayMode;
+    }
+
+    public void setScreenshotDisplayMode(ScreenshotDisplayMode mode) {
+        ScreenshotDisplayMode target = mode == null ? ScreenshotDisplayMode.FILMSTRIP : mode;
+        ComboSetting combo = getScreenshotDisplaySetting();
         if (combo != null && target.ordinal() < combo.getOptions().size()) {
             combo.setOption(combo.getOptions().get(target.ordinal()));
         }
@@ -241,8 +259,7 @@ public class InternalSettingsMod extends Mod {
 
     public enum ModuleLayout implements PropertyEnum {
         SINGLE_COLUMN("Single Column"),
-        TWO_COLUMNS("Two Columns"),
-        THREE_COLUMNS("Three Columns");
+        TWO_COLUMNS("Two Columns");
 
         private final String displayName;
 

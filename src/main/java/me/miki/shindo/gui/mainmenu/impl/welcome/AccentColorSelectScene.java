@@ -56,7 +56,7 @@ public class AccentColorSelectScene extends MainMenuScene {
         screenAlpha.wrap(() -> drawNanoVG(), fadeAnimation.getValueFloat());
 
         if (fadeAnimation.isDone(Direction.BACKWARDS)) {
-            this.setCurrentScene(this.getSceneByClass(LoginMessageScene.class));
+            this.setCurrentScene(this.getSceneByClass(CheckingDataScene.class));
         }
     }
 
@@ -70,7 +70,9 @@ public class AccentColorSelectScene extends MainMenuScene {
         int offsetY = 0;
         int index = 1;
 
-        nvg.drawRoundedRect(x, y, width, height, 8, this.getBackgroundColor());
+        Color panelColor = getPanelColor();
+        Color controlColor = getControlColor();
+        nvg.drawRoundedRect(x, y, width, height, 8, panelColor);
         nvg.drawCenteredText("Choose a accent color", x + (width / 2), y + 10, Color.WHITE, 16, Fonts.MEDIUM);
         nvg.drawRect(x, y + 27, width, 1, Color.WHITE);
 
@@ -90,7 +92,7 @@ public class AccentColorSelectScene extends MainMenuScene {
 
             color.getAnimation().setAnimation(color.equals(currentColor) ? 1.0F : 0.0F, 16);
 
-            nvg.drawCenteredText(LegacyIcon.CHECK, x + offsetX + 10 + (32 / 2), y + offsetY + 40 + 8, new Color(255, 255, 255, (int) (color.getAnimation().getValue() * 255)), 16, Fonts.LEGACYICON);
+            nvg.drawCenteredText(LegacyIcon.CHECK, x + offsetX + 10 + (32 / 2F), y + offsetY + 40 + 8, new Color(255, 255, 255, (int) (color.getAnimation().getValue() * 255)), 16, Fonts.LEGACYICON);
 
             offsetX += 40;
 
@@ -106,8 +108,8 @@ public class AccentColorSelectScene extends MainMenuScene {
 
         nvg.restore();
 
-        nvg.drawRoundedRect(x + width - 108, y + height - 26, 96, 20, 6, this.getBackgroundColor());
-        nvg.drawCenteredText("Next", x + width - 108 + (96 / 2), y + height - 20, Color.WHITE, 10, Fonts.REGULAR);
+        nvg.drawRoundedRect(x + width - 108, y + height - 26, 96, 20, 6, controlColor);
+        nvg.drawCenteredText("Next", x + width - 108 + (96 / 2F), y + height - 20, Color.WHITE, 10, Fonts.REGULAR);
     }
 
     @Override

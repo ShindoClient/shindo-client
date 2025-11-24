@@ -84,13 +84,15 @@ public class LanguageScene extends SettingScene {
         cardHeight = Math.max(66F, Math.min(86F, viewportHeight / estimatedRows));
 
         float totalContentHeight = calculateTotalContentHeight(Language.values().length);
-
-
-        float scrollOffset = languageScroll.getValue();
+        languageScroll.setMaxScroll(Math.max(0F, totalContentHeight - viewportHeight));
+        if (MouseUtils.isInside(mouseX, mouseY, viewportX, viewportY, viewportWidth, viewportHeight)) {
+            languageScroll.onScroll();
+        }
+        languageScroll.onAnimation();
+        float scrollValue = languageScroll.getValue();
 
         nvg.save();
         nvg.scissor(viewportX, viewportY, viewportWidth, viewportHeight);
-        nvg.translate(0, scrollOffset);
 
         int index = 0;
         for (Language language : Language.values()) {
@@ -98,7 +100,7 @@ public class LanguageScene extends SettingScene {
             int column = index % columns;
 
             float cardX = viewportX + column * (cardWidth + ROW_GAP);
-            float cardY = viewportY + row * (cardHeight + ROW_GAP);
+            float cardY = viewportY + row * (cardHeight + ROW_GAP) + scrollValue;
 
             boolean cardHovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight);
             boolean selected = language.equals(languageManager.getCurrentLanguage());
@@ -114,9 +116,7 @@ public class LanguageScene extends SettingScene {
 
         nvg.restore();
 
-        languageScroll.onScroll();
-        languageScroll.onAnimation();
-        languageScroll.setMaxScroll(Math.max(0F, totalContentHeight - viewportHeight));
+        drawScrollbar(nvg, palette, accentColor, viewportX, viewportY, viewportWidth, viewportHeight, totalContentHeight, scrollValue);
     }
 
     private float calculateTotalContentHeight(int languageCount) {
@@ -150,6 +150,36 @@ public class LanguageScene extends SettingScene {
         }
     }
 
+    private void drawScrollbar(NanoVGManager nvg,
+                               ColorPalette palette,
+                               AccentColor accent,
+                               float baseX,
+                               float baseY,
+                               float baseWidth,
+                               float baseHeight,
+                               float contentHeight,
+                               float scrollValue) {
+        float maxScroll = Math.max(0F, contentHeight - baseHeight);
+        if (maxScroll <= 0F) {
+            return;
+        }
+        float trackX = baseX + baseWidth - 8F;
+        float trackY = baseY + 6F;
+        float trackWidth = 4F;
+        float trackHeight = baseHeight - 12F;
+
+        nvg.drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 120));
+
+        float visibleRatio = Math.min(1F, baseHeight / contentHeight);
+        float handleHeight = Math.max(24F, trackHeight * visibleRatio);
+        float scrollOffset = -scrollValue;
+        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
+
+        nvg.drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F,
+                ColorUtils.applyAlpha(accent.getColor1(), 190), ColorUtils.applyAlpha(accent.getColor2(), 190));
+    }
+
     private void drawFlag(NanoVGManager nvg, ResourceLocation flag, float x, float y, float size) {
         float flagWidth = size * 1.6F;
         float flagHeight = size;
@@ -166,6 +196,7 @@ public class LanguageScene extends SettingScene {
         float baseY = getContentY();
         float baseWidth = getWidth();
         float baseHeight = getContentHeight();
+
         if (!MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) {
             return;
         }

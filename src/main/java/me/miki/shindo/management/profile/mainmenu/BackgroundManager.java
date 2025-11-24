@@ -4,14 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.Getter;
+import lombok.Setter;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.profile.mainmenu.impl.Background;
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
-import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.file.FileUtils;
 import net.minecraft.util.ResourceLocation;
@@ -20,13 +22,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BackgroundManager {
 
+    @Getter
     private final CopyOnWriteArrayList<Background> backgrounds = new CopyOnWriteArrayList<Background>();
+
     private final CopyOnWriteArrayList<CustomBackground> removeBackgrounds = new CopyOnWriteArrayList<CustomBackground>();
+
+    @Setter
+    @Getter
     private Background currentBackground;
 
     public BackgroundManager() {
@@ -43,7 +50,7 @@ public class BackgroundManager {
             fileManager.createFile(dataJson);
         }
 
-        backgrounds.add(new DefaultBackground(0, TranslateText.GRADIENT, new ResourceLocation("shindo/mainmenu/background.png")));
+        backgrounds.add(new DefaultBackground(0, TranslateText.BUTTERFLY, new ResourceLocation("shindo/mainmenu/background-butterfly.png")));
         backgrounds.add(new DefaultBackground(1, TranslateText.NIGHT, new ResourceLocation("shindo/mainmenu/background-night.png")));
         backgrounds.add(new DefaultBackground(2, TranslateText.DOLPHIN, new ResourceLocation("shindo/mainmenu/background-dolphin.png")));
 
@@ -52,14 +59,14 @@ public class BackgroundManager {
             fileManager.createDir(shaderDir);
         }
 
-        File menuShaderFile = new File(shaderDir, "menu.fsh");
+        //File menuShaderFile = new File(shaderDir, "menu.fsh");
         // The ShaderBackground will handle loading from resources with ResourceLocation
-        backgrounds.add(new ShaderBackground(4, TranslateText.SHADER, menuShaderFile));
+        //backgrounds.add(new ShaderBackground(4, TranslateText.SHADER, menuShaderFile));
         backgrounds.add(new DefaultBackground(999, TranslateText.ADD, null));
 
         ArrayList<String> removeImages = load();
 
-        for (File f : bgCacheDir.listFiles()) {
+        for (File f : Objects.requireNonNull(bgCacheDir.listFiles())) {
             if (FileUtils.getExtension(f).equals("png")) {
                 if (!removeImages.isEmpty() && removeImages.contains(f.getName())) {
                     f.delete();
@@ -90,11 +97,8 @@ public class BackgroundManager {
 
                 if (jsonArray != null) {
 
-                    Iterator<JsonElement> iterator = jsonArray.iterator();
+                    for (JsonElement jsonElement : jsonArray) {
 
-                    while (iterator.hasNext()) {
-
-                        JsonElement jsonElement = iterator.next();
                         JsonObject rJsonObject = gson.fromJson(jsonElement, JsonObject.class);
 
                         output.add(JsonUtils.getStringProperty(rJsonObject, "Image", "null"));
@@ -102,6 +106,7 @@ public class BackgroundManager {
                 }
             }
         } catch (Exception e) {
+            ShindoLogger.error("An error occurred while loading backgrounds.", e);
         }
 
         return output;
@@ -133,11 +138,8 @@ public class BackgroundManager {
             gson.toJson(jsonObject, writer);
 
         } catch (Exception e) {
+            ShindoLogger.error("An error occurred while saving backgrounds.", e);
         }
-    }
-
-    public CopyOnWriteArrayList<Background> getBackgrounds() {
-        return backgrounds;
     }
 
     public Background getBackgroundById(int id) {
@@ -183,11 +185,4 @@ public class BackgroundManager {
         save();
     }
 
-    public Background getCurrentBackground() {
-        return currentBackground;
-    }
-
-    public void setCurrentBackground(Background currentBackground) {
-        this.currentBackground = currentBackground;
-    }
 }

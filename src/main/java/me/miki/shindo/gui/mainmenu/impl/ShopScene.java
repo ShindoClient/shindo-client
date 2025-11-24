@@ -32,10 +32,6 @@ public class ShopScene extends MainMenuScene {
         goldFeatures.add(TranslateText.SPECIAL_BADGE);
         goldFeatures.add(TranslateText.SPECIAL_CAPE);
 
-        //diamondFeatures.add(TranslateText.SPECIAL_BADGE);
-        //diamondFeatures.add(TranslateText.SPECIAL_CAPE);
-        //diamondFeatures.add(TranslateText.CUSTOM_CAPE);
-
         info = TranslateText.PURCHASE;
     }
 
@@ -67,18 +63,20 @@ public class ShopScene extends MainMenuScene {
 
         int offsetY = 0;
 
-        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, this.getBackgroundColor());
+        Color panelColor = getPanelColor();
+        Color controlColor = getControlColor();
+
+        nvg.drawRoundedRect(acX, acY, acWidth, acHeight, 8, getBackgroundColor());
         nvg.drawCenteredText(TranslateText.PRICING_PLANS.getText(), acX + (acWidth / 2F), acY + 12, Color.WHITE, 14, Fonts.MEDIUM);
         nvg.drawCenteredText(TranslateText.PRICING_PLANS_DESCRIPTION.getText(), acX + (acWidth / 2F), acY + 30, Color.WHITE, 9, Fonts.REGULAR);
-        nvg.drawRoundedRect(acX + 20, acY + 50, 82, 128, 6, this.getBackgroundColor());
-        nvg.drawRoundedRect(acX + acWidth - (82) - 20, acY + 50, 82, 128, 6, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX + 20, acY + 50, 82, 128, 6, panelColor);
+        nvg.drawRoundedRect(acX + acWidth - (82) - 20, acY + 50, 82, 128, 6, panelColor);
 
         nvg.drawCenteredText(TranslateText.PREMIUM.getText(), acX + 20 + (82 / 2F), acY + 58, Color.WHITE, 12, Fonts.MEDIUM);
         nvg.drawCenteredText("20$ / " + TranslateText.LIFETIME.getText(), acX + 20 + (82 / 2F), acY + 71, Color.WHITE, 8, Fonts.REGULAR);
         nvg.drawRect(acX + 20, acY + 80, 82, 1, Color.WHITE);
 
-        nvg.drawRoundedRect(acX + 25, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
-        nvg.drawRoundedRect(acX + 25, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX + 25, acY + 158 - 5, 72, 20, 6, controlColor);
         nvg.drawCenteredText(info.getText(), acX + 25 + (72 / 2F), acY + 159, Color.WHITE, 10, Fonts.MEDIUM);
 
         for (TranslateText t : goldFeatures) {
@@ -93,8 +91,7 @@ public class ShopScene extends MainMenuScene {
         nvg.drawCenteredText("?? / " + TranslateText.MONTH.getText(), acX + acWidth - (82) - 20 + (82 / 2F), acY + 71, Color.WHITE, 8, Fonts.REGULAR);
         nvg.drawRect(acX + acWidth - (82) - 20, acY + 80, 82, 1, Color.WHITE);
 
-        nvg.drawRoundedRect(acX + acWidth - (82) - 20 + 5, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
-        nvg.drawRoundedRect(acX + acWidth - (82) - 20 + 5, acY + 158 - 5, 72, 20, 6, this.getBackgroundColor());
+        nvg.drawRoundedRect(acX + acWidth - (82) - 20 + 5, acY + 158 - 5, 72, 20, 6, controlColor);
         nvg.drawCenteredText(TranslateText.SOON.getText(), acX + acWidth - (82) - 15 + (72 / 2F), acY + 159, Color.WHITE, 10, Fonts.MEDIUM);
 
     }

@@ -119,19 +119,23 @@ public class LegacyIcon {
     public static final String PIECE = "Ò";
     public static final String COPYRIGHT = "Ó";
     public static final String SPOTIFY = "Ô";
-    public static final String NET_DISABLED = "Õ";
-    public static final String NET_NOTFOUND = "Ö";
-    public static final String NET_ERROR = "×";
-    public static final String NET_LOW = "Ø";
-    public static final String NET_MEDIUM = "Ù";
-    public static final String NET_MAX = "Ú";
-    public static final String CHAT_BOX = "Û";
-    public static final String SHOW = "Ü";
-    public static final String HIDE = "ý";
-    public static final String IMAGE_PLUS = "Ć";
-    public static final String IMAGE_MINUS = "ć";
-    public static final String IMAGE_EDIT = "Ĉ";
-    public static final String TWEAKER = "";
+    public static final String BACKSPACE = "Ö";
+    public static final String PERFORMANCE = "Õ";
+    public static final String COOKIE = "×";
+    public static final String NET = "Ø";
+    public static final String IMAGE_MINUS = "Ù";
+    public static final String IMAGE_PLUS = "Ú";
+    public static final String IMAGE_EDIT = "Û";
+    public static final String BLUR = "Ü";
+    public static final String SELL = "Ý";
+    public static final String STACK = "è";
+    public static final String BOLT = "é";
+    public static final String SKIN = "ê";
+    public static final String ARROW_DROP_UP = "à";
+    public static final String ARROW_DROP_DOWN = "á";
+    public static final String ARROW_DROP_RIGHT = "â";
+    public static final String ARROW_DROP_LEFT = "ã";
+    public static final String DNS = "Þ";
     //public static final String
     //public static final String
     //public static final String

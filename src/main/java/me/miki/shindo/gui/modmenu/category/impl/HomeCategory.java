@@ -3,6 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.gui.modmenu.category.Category;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
@@ -101,7 +102,7 @@ public class HomeCategory extends Category {
         for (Changelog c : changelogManager.getChangelogs()) {
             float tbSize = nvg.getTextBoxHeight(c.getText(), 8, Fonts.MEDIUM, 174 - 33);
             nvg.drawRoundedRect(this.getX() + 230 + 8, this.getY() + 40 + offsetChangelogY + ((tbSize / 2) - 4), 13, 13, 7F, c.getType().getColor());
-            nvg.drawCenteredText(c.getType().getText(), this.getX() + 230 + 8 + (13 / 2), this.getY() + 42F + offsetChangelogY + ((tbSize / 2) - 3), Color.WHITE, 7, Fonts.LEGACYICON);
+            nvg.drawCenteredText(c.getType().getText(), this.getX() + 230 + 8 + (13 / 2F), this.getY() + 42F + offsetChangelogY + ((tbSize / 2) - 3), Color.WHITE, 7, Fonts.LEGACYICON);
             nvg.drawTextBox(c.getText(), this.getX() + 230 + 25, this.getY() + 43F + offsetChangelogY, 174 - 33, palette.getFontColor(ColorType.DARK), 8, Fonts.MEDIUM);
             offsetChangelogY += (int) (tbSize + 9);
         }
@@ -137,7 +138,7 @@ public class HomeCategory extends Category {
         }
         // join button
         nvg.drawRoundedRect(discordStartX + discordWidth - 60, discordStartY + 60, 52, 18, 9, new Color(114, 137, 214));
-        nvg.drawCenteredText(TranslateText.JOIN.getText() + " >", discordStartX + discordWidth - 60 + (52 / 2), discordStartY + 66, Color.WHITE, 7, Fonts.REGULAR);
+        nvg.drawCenteredText(TranslateText.JOIN.getText() + " >", discordStartX + discordWidth - 60 + (52 / 2F), discordStartY + 66, Color.WHITE, 7, Fonts.REGULAR);
 
     }
 
@@ -147,8 +148,9 @@ public class HomeCategory extends Category {
         int discordStartY = this.getY() + 179;
         if (MouseUtils.isInside(mouseX, mouseY, discordStartX + 174 - 60, discordStartY + 60, 52, 18)) {
             try {
-                Desktop.getDesktop().browse(new URL("https://shindoclient.github.io/discord").toURI());
+                Desktop.getDesktop().browse(new URL("https://shindoclient.com/discord").toURI());
             } catch (Exception e) {
+                ShindoLogger.error("An error occurred while opening the Discord Server Link.", e);
             }
         }
     }

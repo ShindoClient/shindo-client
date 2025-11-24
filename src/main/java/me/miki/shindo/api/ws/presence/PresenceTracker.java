@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public class PresenceTracker {
     private static final Map<String, PresenceUser> online = new ConcurrentHashMap<>();
 

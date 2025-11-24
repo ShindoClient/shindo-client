@@ -9,6 +9,7 @@ import me.miki.shindo.gui.GuiSplashScreen;
 import me.miki.shindo.injection.interfaces.IMixinEntityLivingBase;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.logger.ShindoLogger;
+import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
@@ -466,6 +467,10 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;loadEntityShader(Lnet/minecraft/entity/Entity;)V"))
     private void keepShadersOnPerspectiveChange(EntityRenderer entityRenderer, Entity entityIn) {
+        PatcherAddon addon = PatcherAddon.getInstance();
+        if (addon == null || !addon.isToggled() || !addon.getKeepShadersOnPerspectiveChangeSetting().isToggled()) {
+            entityRenderer.loadEntityShader(entityIn);
+        }
     }
 
     @Override

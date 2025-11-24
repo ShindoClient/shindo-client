@@ -1,8 +1,10 @@
 package me.miki.shindo.management.event.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.event.Event;
 import net.minecraft.entity.Entity;
 
+@Getter
 public class EventDamageEntity extends Event {
 
     private final Entity entity;
@@ -11,7 +13,4 @@ public class EventDamageEntity extends Event {
         this.entity = entity;
     }
 
-    public Entity getEntity() {
-        return entity;
-    }
 }

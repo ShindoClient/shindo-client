@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import me.miki.shindo.injection.mixin.ShindoTweaker;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.account.AccountManager;
 import me.miki.shindo.management.addons.AddonManager;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.command.CommandManager;
-import me.miki.shindo.management.cosmetic.bandanna.BandannaManager;
 import me.miki.shindo.management.cosmetic.cape.CapeManager;
-import me.miki.shindo.management.cosmetic.wing.WingManager;
 import me.miki.shindo.management.event.EventManager;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.management.language.LanguageManager;
@@ -34,8 +31,8 @@ import me.miki.shindo.management.screenshot.ScreenshotManager;
 import me.miki.shindo.management.security.SecurityFeatureManager;
 import me.miki.shindo.management.shader.ShaderManager;
 import me.miki.shindo.management.skin.SkinManager;
-import me.miki.shindo.management.tweaker.ConnectionTweakerManager;
-import me.miki.shindo.management.tweaker.proxy.WarpProxyManager;
+import me.miki.shindo.management.network.ConnectionTweakerManager;
+import me.miki.shindo.management.network.proxy.WarpProxyManager;
 import me.miki.shindo.management.waypoint.WaypointManager;
 import me.miki.shindo.ui.ClickEffects;
 import me.miki.shindo.utils.OptifineUtils;
@@ -51,7 +48,9 @@ public class Shindo {
 
     @Getter
     private static final Shindo instance = new Shindo();
+
     private final Minecraft mc = Minecraft.getMinecraft();
+
     @Getter
     private final String name;
 
@@ -78,9 +77,6 @@ public class Shindo {
     private LanguageManager languageManager;
 
     @Getter
-    private AccountManager accountManager;
-
-    @Getter
     private EventManager eventManager;
 
     @Getter
@@ -92,17 +88,8 @@ public class Shindo {
     @Getter
     private AddonManager addonManager;
 
-    //@Getter
-    //private CosmeticManager cosmeticManager;
-
     @Getter
     private CapeManager capeManager;
-
-    @Getter
-    private WingManager wingManager;
-
-    @Getter
-    private BandannaManager bandannaManager;
 
     @Getter
     private ColorManager colorManager;
@@ -167,15 +154,13 @@ public class Shindo {
     @Getter
     private SkinManager skinManager;
 
-    // API instance
     @Getter
     private ShindoAPI shindoAPI;
-
     public Shindo() {
         name = "Shindo";
-        version = "5.1.09";
+        version = "5.1.10";
         author = "MikiDevAHM";
-        verIdentifier = 5109;
+        verIdentifier = 5110;
     }
 
     public void start() {
@@ -193,7 +178,6 @@ public class Shindo {
         }
         fileManager = new FileManager();
         languageManager = new LanguageManager();
-        accountManager = new AccountManager();
         eventManager = new EventManager();
         downloadManager = new DownloadManager();
         modManager = new ModManager();
@@ -207,8 +191,6 @@ public class Shindo {
         connectionTweakerManager = new ConnectionTweakerManager();
 
         capeManager = new CapeManager();
-        wingManager = new WingManager();
-        bandannaManager = new BandannaManager();
         colorManager = new ColorManager();
         profileManager = new ProfileManager();
         musicManager = new MusicManager(fileManager);
@@ -238,12 +220,13 @@ public class Shindo {
         shaderManager = new ShaderManager();
         shaderManager.init();
         mc.updateDisplay();
+
+        shindoAPI.start();
     }
 
     public void stop() {
         ShindoLogger.info("Stopping Shindo");
         profileManager.save();
-        accountManager.save();
         shindoAPI.stop();
 
         if (shaderManager != null) {

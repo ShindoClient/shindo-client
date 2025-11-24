@@ -5,6 +5,7 @@ import me.miki.shindo.discord.ipc.IPCClient;
 import me.miki.shindo.discord.ipc.IPCListener;
 import me.miki.shindo.discord.ipc.entities.RichPresence;
 import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException;
+import me.miki.shindo.logger.ShindoLogger;
 
 import java.time.OffsetDateTime;
 
@@ -32,7 +33,7 @@ public class DiscordRPC {
         try {
             client.connect();
         } catch (NoDiscordClientException e) {
-            e.printStackTrace();
+            ShindoLogger.error("An error occurred while connecting to the Discord IPC Client", e);
         }
     }
 
