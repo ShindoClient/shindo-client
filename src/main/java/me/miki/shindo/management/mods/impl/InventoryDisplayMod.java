@@ -25,7 +25,7 @@ public class InventoryDisplayMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
 
         GlUtils.startScale(this.getX(), this.getY(), this.getScale());
 

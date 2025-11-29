@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.modmenu.category.impl.shared;
 
+import lombok.Data;
 import lombok.Getter;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.palette.ColorPalette;
@@ -277,12 +278,11 @@ public class SettingsPanel {
             return 0F;
         }
 
-        float availableWidth = innerWidth;
-        float columnWidth = (availableWidth - COLUMN_GAP) / 2F;
+        float columnWidth = (innerWidth - COLUMN_GAP) / 2F;
 
         if (rowEntries.size() == 1) {
             RowEntry only = rowEntries.get(0);
-            positionedEntries.add(new PositionedEntry(only.entry, innerX, yCursor, availableWidth, only.height, false));
+            positionedEntries.add(new PositionedEntry(only.entry, innerX, yCursor, innerWidth, only.height, false));
             return only.height;
         }
 
@@ -402,7 +402,11 @@ public class SettingsPanel {
             CompColorPicker picker = (CompColorPicker) comp;
             float scale = Math.max(0.6F, Math.min(1.0F, width / 180F));
             picker.setScale(scale);
-            picker.setX(right - (120F * scale));
+            // Quando aberto, precisa de: 100*scale (HSB) + 12*scale (hue) + margem = ~118*scale
+            // Posiciona para garantir que não saia da borda
+            float pickerWidth = 118F * scale;
+            float pickerX = Math.max(x + componentPadding, right - pickerWidth - componentPadding);
+            picker.setX(pickerX);
             picker.setY(componentY);
             return;
         }
@@ -429,6 +433,7 @@ public class SettingsPanel {
         }
     }
 
+    @Data
     private static class PositionedEntry {
         final Entry entry;
         final float x;
@@ -436,15 +441,6 @@ public class SettingsPanel {
         final float width;
         final float height;
         final boolean isCategory;
-
-        PositionedEntry(Entry entry, float x, float y, float width, float height, boolean isCategory) {
-            this.entry = entry;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.isCategory = isCategory;
-        }
     }
 
     private EntryState getState(Setting setting) {
@@ -457,13 +453,9 @@ public class SettingsPanel {
         boolean initialized = false;
     }
 
+    @Data
     private static class RowEntry {
         final Entry entry;
         final float height;
-
-        RowEntry(Entry entry, float height) {
-            this.entry = entry;
-            this.height = height;
-        }
     }
 }

@@ -21,13 +21,13 @@ public class FreelookMod extends Mod {
 
     @Getter
     private static FreelookMod instance;
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_YAW, category = "Controls")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_YAW)
     private boolean invertYawSetting;
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_PITCH, category = "Controls")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_PITCH)
     private boolean invertPitchSetting;
-    @Property(type = PropertyType.COMBO, translate = TranslateText.MODE, category = "Controls")
+    @Property(type = PropertyType.COMBO, translate = TranslateText.MODE)
     private Mode modeSetting = Mode.KEYDOWN;
-    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, category = "Controls", keyCode = Keyboard.KEY_V)
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_V)
     private int keybindSetting = Keyboard.KEY_V;
     @Getter
     private boolean active;

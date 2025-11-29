@@ -17,15 +17,19 @@ public class ParticleCustomizerMod extends Mod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ALWAYS_SHARPNESS)
     private boolean alwaysSharpnessSetting = false;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ALWAYS_CRITICALS)
     private boolean alwaysCriticalsSetting = false;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHARPNESS)
     private boolean sharpnessSetting = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CRITICALS)
     private boolean criticalsSetting = false;
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SHARPNESS_AMOUNT, min = 1, max = 10, current = 2, step = 1)
     private int sharpnessAmountSetting = 2;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.CRITICALS_AMOUNT, min = 1, max = 10, current = 2, step = 1)
     private int criticalsAmountSetting = 2;
 

@@ -19,13 +19,13 @@ import java.io.IOException;
 public class ColorSaturationMod extends Mod {
 
     private final ResourceLocation colorsaturation = new ResourceLocation("minecraft:shaders/post/colorsaturation.json");
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, category = "Color Grading", min = 0, max = 1, current = 0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, min = 0, max = 1, current = 0)
     private double hueSetting;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.BRIGHTNESS, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BRIGHTNESS, min = 0, max = 1, current = 0.5)
     private double brightnessSetting = 0.5;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.CONTRAST, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.CONTRAST, min = 0, max = 1, current = 0.5)
     private double contrastSetting = 0.5;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SATURATION, category = "Color Grading", min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SATURATION, min = 0, max = 1, current = 0.5)
     private double saturationSetting = 0.5;
     private ShaderGroup group;
     private float prevHue;

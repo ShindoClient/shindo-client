@@ -37,16 +37,13 @@ public class ReachCirclesMod extends Mod {
         GL11.glDisable(2929);
         GL11.glEnable(2848);
         GL11.glDepthMask(false);
-        Iterator<Entity> iterator = mc.theWorld.loadedEntityList.iterator();
 
-        while (iterator.hasNext()) {
-            Object o = iterator.next();
-            Entity entity = (Entity) o;
+        for (Entity o : mc.theWorld.loadedEntityList) {
 
-            if (entity instanceof EntityLivingBase && !entity.isInvisible() && !entity.isSneaking() && entity != mc.thePlayer && ((EntityLivingBase) entity).canEntityBeSeen(mc.thePlayer) && !entity.isInvisible() && entity instanceof EntityPlayer) {
-                double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosX;
-                double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosY;
-                double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosZ;
+            if (o instanceof EntityLivingBase && !o.isInvisible() && !o.isSneaking() && o != mc.thePlayer && ((EntityLivingBase) o).canEntityBeSeen(mc.thePlayer) && !o.isInvisible() && o instanceof EntityPlayer) {
+                double posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosX;
+                double posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosY;
+                double posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * (double) event.getPartialTicks() - mc.getRenderManager().viewerPosZ;
 
                 this.circle(posX, posY, posZ, mc.playerController.isInCreativeMode() ? 4.7D : 3.4D);
             }

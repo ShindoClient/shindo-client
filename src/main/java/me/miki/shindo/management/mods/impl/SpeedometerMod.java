@@ -21,6 +21,7 @@ public class SpeedometerMod extends SimpleHUDMod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean showIcon = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.GRAPH)
     private boolean showGraph = true;
 
@@ -39,7 +40,7 @@ public class SpeedometerMod extends SimpleHUDMod {
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
         if (showGraph) {
-            nvg.setupAndDraw(() -> drawNanoVG());
+            nvg.setupAndDraw(this::drawNanoVG);
 
             GlUtils.startTranslate(this.getX() - 3, this.getY());
 

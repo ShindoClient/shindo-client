@@ -24,10 +24,10 @@ public class CompassMod extends SimpleHUDMod {
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private Design design = Design.SIMPLE;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, category = "Layout", min = 50, max = 450, step = 1, current = 180)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 50, max = 450, step = 1, current = 180)
     private int widthSetting = 180;
 
     public CompassMod() {

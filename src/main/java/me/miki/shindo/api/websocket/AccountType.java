@@ -1,4 +1,4 @@
-package me.miki.shindo.api.ws;
+package me.miki.shindo.api.websocket;
 
 import java.util.Locale;
 

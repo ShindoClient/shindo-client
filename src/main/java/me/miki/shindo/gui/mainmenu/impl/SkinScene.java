@@ -362,8 +362,9 @@ public class SkinScene extends MainMenuScene {
         formState.nameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2F), 22);
         formState.nameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK));
         formState.nameField.setFontColor(Color.WHITE);
+        formState.nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.getText());
         formState.nameField.draw(mouseX, mouseY, 0);
-        currentY += 32F;
+        currentY += 40F;
 
         nvg.drawText(tx(TranslateText.SKIN_FORM_SOURCE_LABEL), drawX + inset, currentY - 6, palette.getFontColor(ColorType.NORMAL), 9, Fonts.REGULAR);
         drawSourceChips(mouseX, mouseY, nvg, palette, accent, drawX + inset, currentY + 4F);
@@ -373,14 +374,16 @@ public class SkinScene extends MainMenuScene {
             formState.usernameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2F), 22);
             formState.usernameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK));
             formState.usernameField.setFontColor(Color.WHITE);
+            formState.usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.getText());
             formState.usernameField.draw(mouseX, mouseY, 0);
         } else {
             formState.uuidField.setPosition(drawX + inset, currentY, formWidth - (inset * 2F), 22);
             formState.uuidField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK));
             formState.uuidField.setFontColor(Color.WHITE);
+            formState.uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.getText());
             formState.uuidField.draw(mouseX, mouseY, 0);
         }
-        currentY += 32F;
+        currentY += 40F;
 
         nvg.drawText(tx(TranslateText.SKIN_FORM_MODEL_LABEL), drawX + inset, currentY - 6, palette.getFontColor(ColorType.NORMAL), 9, Fonts.REGULAR);
         drawTypeChips(mouseX, mouseY, nvg, palette, accent, drawX + inset, currentY + 4F);

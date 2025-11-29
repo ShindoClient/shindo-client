@@ -13,6 +13,7 @@ import me.miki.shindo.management.settings.impl.NumberSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import me.miki.shindo.utils.Sound;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IChatComponent;
 
 public class ChatMod extends Mod {
@@ -61,19 +62,17 @@ public class ChatMod extends Mod {
         }
 
         Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer player = mc.thePlayer;
+
         IChatComponent component = event.getMessage();
-
-        String name = mc.thePlayer.getName();
-        String text = component.getUnformattedText().toLowerCase().replaceFirst("<.+>", "");
-
-        String[] names = new String[]{name};
-        for (String n : names) {
-            if (text.contains(n.toLowerCase())) {
-                Sound.play("shindo/audio/ping.wav", false);
-                break;
-            }
+        String name = player.getName().toLowerCase();
+        String text = component.getUnformattedText().toLowerCase();
+        text = text.replaceFirst("<.+>", "");
+        if (text.contains(name)) {
+            Sound.play("shindo/audio/ping.wav", false);
         }
     }
+
 
     public BooleanSetting getSmoothSetting() {
         return SettingRegistry.getBooleanSetting(this, "smoothSetting");

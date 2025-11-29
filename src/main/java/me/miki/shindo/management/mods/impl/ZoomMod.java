@@ -16,22 +16,22 @@ public class ZoomMod extends Mod {
 
     private final SimpleAnimation zoomAnimation = new SimpleAnimation();
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SCROLL, category = "Behavior")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SCROLL)
     private boolean scrollSetting;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_ZOOM, category = "Behavior")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_ZOOM)
     private boolean smoothZoomSetting;
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_SPEED, category = "Behavior", min = 5, max = 20, step = 1, current = 14)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_SPEED, min = 5, max = 20, step = 1, current = 14)
     private double zoomSpeedSetting = 14;
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_FACTOR, category = "Behavior", min = 2, max = 15, step = 1, current = 4)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ZOOM_FACTOR, min = 2, max = 15, step = 1, current = 4)
     private double factorSetting = 4;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_CAMERA, category = "Behavior")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH_CAMERA)
     private boolean smoothCameraSetting = true;
 
-    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, category = "Controls", keyCode = Keyboard.KEY_C)
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_C)
     private int zoomKey = Keyboard.KEY_C;
 
     public boolean wasCinematic;
@@ -76,11 +76,11 @@ public class ZoomMod extends Mod {
             event.setCancelled(true);
             if (event.getAmount() < 0) {
                 if (currentFactor < 0.98) {
-                    currentFactor += 0.03;
+                    currentFactor += 0.03F;
                 }
             } else if (event.getAmount() > 0) {
                 if (currentFactor > 0.06) {
-                    currentFactor -= 0.03;
+                    currentFactor -= 0.03F;
                 }
             }
         }

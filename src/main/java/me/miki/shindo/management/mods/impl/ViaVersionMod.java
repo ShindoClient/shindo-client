@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl;
 
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
@@ -9,8 +10,10 @@ import me.miki.shindo.viaversion.ViaLoadingBase;
 import me.miki.shindo.viaversion.ViaShindo;
 import me.miki.shindo.viaversion.protocolinfo.ProtocolInfo;
 
+@Getter
 public class ViaVersionMod extends Mod {
 
+    @Getter
     private static ViaVersionMod instance;
 
     private boolean loaded;
@@ -20,10 +23,6 @@ public class ViaVersionMod extends Mod {
 
         instance = this;
         loaded = false;
-    }
-
-    public static ViaVersionMod getInstance() {
-        return instance;
     }
 
     @Override
@@ -50,7 +49,4 @@ public class ViaVersionMod extends Mod {
         }
     }
 
-    public boolean isLoaded() {
-        return loaded;
-    }
 }

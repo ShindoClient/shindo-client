@@ -13,6 +13,7 @@ public class OverlayEditorMod extends Mod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_PUMPKIN)
     private boolean hidePumpkinSetting = false;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_FIRE)
     private boolean hideFireSetting = false;
 

@@ -6,6 +6,9 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+
+import java.util.Objects;
+
 public class NameDisplayMod extends SimpleHUDMod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
@@ -23,18 +26,13 @@ public class NameDisplayMod extends SimpleHUDMod {
 
         String label;
 
-        switch (prefix) {
-            case NAME:
-                label = "Name";
-                break;
-            case IGN:
-                label = "Ign";
-                break;
-            default:
-                label = "Name";
+        if (Objects.requireNonNull(prefix) == Prefix.IGN) {
+            label = "Ign";
+        } else {
+            label = "Name";
         }
 
-        return label + ": " + mc.thePlayer.getGameProfile().getName();
+        return label + ": " + mc.getSession().getUsername();
     }
 
     @Override

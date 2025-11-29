@@ -25,6 +25,9 @@ import me.miki.shindo.management.nanovg.asset.NVGAsset;
 import me.miki.shindo.management.nanovg.font.Font;
 import me.miki.shindo.management.nanovg.font.FontManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
+import me.miki.shindo.management.color.AccentColor;
+import me.miki.shindo.management.color.palette.ColorPalette;
+import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.MathUtils;
 import net.minecraft.client.Minecraft;
@@ -802,6 +805,48 @@ public class NanoVGManager {
 
     public void restore() {
         NanoVG.nvgRestore(nvg);
+    }
+
+    /**
+     * Desenha uma scrollbar vertical padronizada usada nas cenas de configuracoes.
+     */
+    public void drawScrollbar(float baseX, float baseY, float baseWidth, float baseHeight, float contentHeight, float scrollValue, ColorPalette palette, AccentColor accent, float minHandleHeight) {
+
+        float maxScroll = Math.max(0F, contentHeight - baseHeight);
+        if (maxScroll <= 0F) {
+            return;
+        }
+
+        float trackX = baseX + baseWidth - 10F;
+        float trackY = baseY + 10F;
+        float trackWidth = 4F;
+        float trackHeight = Math.max(0F, baseHeight - 20F);
+
+        drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 130));
+
+        float visibleRatio = Math.min(1F, baseHeight / Math.max(contentHeight, 1F));
+        float handleHeight = Math.max(minHandleHeight, trackHeight * visibleRatio);
+        float scrollOffset = -scrollValue;
+        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
+
+        drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F, ColorUtils.applyAlpha(accent.getColor1(), 190), ColorUtils.applyAlpha(accent.getColor2(), 190));
+    }
+
+    /**
+     * Desenha um container padronizado com sombra e bordas duplas.
+     * Usado em cenas de configurações e outras interfaces que precisam de um container destacado.
+     *
+     * @param x Posição X do container
+     * @param y Posição Y do container
+     * @param width Largura do container
+     * @param height Altura do container
+     * @param radius Raio dos cantos arredondados
+     * @param palette Paleta de cores atual
+     */
+    public void drawContainer(float x, float y, float width, float height, float radius, ColorPalette palette) {
+        drawShadow(x, y, width, height, radius, 7);
+        drawRoundedRect(x, y, width, height, radius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
+        drawRoundedRect(x + 1F, y + 1F, width - 2F, height - 2F, radius - 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
     }
 
     public NVGColor getColor(Color color) {

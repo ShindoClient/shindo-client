@@ -31,6 +31,7 @@ import me.miki.shindo.utils.file.FileUtils;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import org.lwjgl.input.Keyboard;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -104,15 +105,21 @@ public class ProfileCategory extends Category {
 
         ArrayList<Profile> visibleProfiles = collectVisibleProfiles(profileManager);
 
+
+
         float scrollValue = scroll.getValue();
+
+
+        nvg.save();
+        nvg.translate((float) -(600 - (profileAnimation.getValue() * 600)), 0);
+
         float chipBlockBottom = drawTypeChips(nvg, palette, accentColor, mouseX, mouseY);
         float contentStartY = chipBlockBottom + 24F;
         this.gridStartY = contentStartY;
         float cardWidth = ((this.getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2F);
         float viewportHeight = this.getHeight() - (contentStartY - this.getY()) - 28F;
 
-        nvg.save();
-        nvg.translate((float) -(600 - (profileAnimation.getValue() * 600)), 0);
+
 
         if (!openProfile && MouseUtils.isInside(mouseX, mouseY, this.getX(), contentStartY - 6F, this.getWidth(), this.getHeight() - (contentStartY - this.getY()) + 6F)) {
             scroll.onScroll();
@@ -120,7 +127,7 @@ public class ProfileCategory extends Category {
         }
 
         nvg.save();
-        nvg.scissor(this.getX(), contentStartY - 6F, this.getWidth(), this.getHeight() - (contentStartY - this.getY()) + 6F);
+        nvg.intersectScissor(this.getX(), contentStartY - 6F, this.getWidth(), this.getHeight() - (contentStartY - this.getY()) + 6F);
         nvg.translate(0, scrollValue);
 
         for (int i = 0; i < visibleProfiles.size(); i++) {
@@ -189,21 +196,6 @@ public class ProfileCategory extends Category {
             serverInfo = nvg.getLimitText(serverInfo, 8.5F, Fonts.REGULAR, textWidth);
             nvg.drawText(serverInfo, textX, cardY + 36F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220), 8.5F, Fonts.REGULAR);
 
-            if (isDefault) {
-                float badgeWidth = Math.max(54F, nvg.getTextWidth("Default", 8F, Fonts.MEDIUM) + 18F);
-                float badgeX = textX;
-                float badgeY = cardY + CARD_HEIGHT - 28F;
-
-                //nvg.drawRoundedRect(badgeX, badgeY, badgeWidth, 18F, 6F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210));
-                //nvg.drawCenteredText("Default", badgeX + badgeWidth / 2F, badgeY + 9F, palette.getFontColor(ColorType.DARK), 8F, Fonts.MEDIUM);
-            } else {
-                float badgeWidth = Math.max(48F, nvg.getTextWidth(profile.getType().getName(), 8F, Fonts.MEDIUM) + 18F);
-                float badgeX = textX;
-                float badgeY = cardY + CARD_HEIGHT - 28F;
-
-                //nvg.drawRoundedRect(badgeX, badgeY, badgeWidth, 18F, 6F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200));
-                //nvg.drawCenteredText(profile.getType().getName(), badgeX + badgeWidth / 2F, badgeY + 9F, palette.getFontColor(ColorType.DARK), 8F, Fonts.MEDIUM);
-            }
 
             if (!isDefault) {
                 float starSize = 18F;
@@ -287,7 +279,7 @@ public class ProfileCategory extends Category {
         if (selectedCustomIcon != null) {
             nvg.drawRoundedImage(selectedCustomIcon, customTileX, customTileY, iconTileSize, iconTileSize, 8F);
         } else {
-            nvg.drawCenteredText(LegacyIcon.PLUS, customTileX + iconTileSize / 2F, customTileY + iconTileSize / 2F - 5, palette.getFontColor(ColorType.DARK), 14F, Fonts.LEGACYICON);
+            nvg.drawCenteredText(LegacyIcon.PLUS, customTileX + iconTileSize / 2F, customTileY + iconTileSize / 2F - 6, palette.getFontColor(ColorType.DARK), 12F, Fonts.LEGACYICON);
         }
 
         if (useCustomIcon) {
@@ -295,8 +287,6 @@ public class ProfileCategory extends Category {
         } else {
             nvg.drawOutlineRoundedRect(customTileX, customTileY, iconTileSize, iconTileSize, 8F, 1.2F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 100));
         }
-
-       //nvg.drawCenteredText(LegacyIcon.FOLDER, customTileX + iconTileSize - 8F, customTileY + iconTileSize - 6F, ColorUtils.applyAlpha(Color.WHITE, 200), 10F, Fonts.LEGACYICON);
 
         float fieldStartY = panelY + 130F;
         float fieldWidth = (panelWidth - 48F) / 2F - 15F;
@@ -310,9 +300,6 @@ public class ProfileCategory extends Category {
         serverIpBox.setPosition(panelX + 24F + fieldWidth + 24F, fieldStartY + 20F, fieldWidth, 20F);
         serverIpBox.setDefaultText(TranslateText.SERVER_IP.getText());
         serverIpBox.draw(mouseX, mouseY, partialTicks);
-
-        // String hint = "Selecting a profile will now auto-save while active.";
-        // nvg.drawText(hint, panelX + 24F, panelY + panelHeight - 74F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220), 8.5F, Fonts.REGULAR);
 
         float createButtonWidth = 80F;
         float createButtonHeight = 20F;
@@ -361,8 +348,9 @@ public class ProfileCategory extends Category {
                 iconSelectorX += iconTileSize + iconSelectorGap;
             }
 
-            float customTileX = this.getX() + this.getWidth() - CARD_HORIZONTAL_PADDING - iconTileSize - 24F;
-            float customTileY = this.getY() + 66F;
+            float customTileX = panelX + panelWidth - iconTileSize - 24F;
+            float customTileY = panelY + 66F;
+
 
             if (MouseUtils.isInside(mouseX, mouseY, customTileX, customTileY, iconTileSize, iconTileSize) && mouseButton == 0) {
                 if (selectedCustomIcon != null && !useCustomIcon) {
@@ -535,39 +523,25 @@ public class ProfileCategory extends Category {
 
     private void openCustomIconPicker() {
         Multithreading.runAsync(() -> {
-            File file = FileUtils.selectImageFile();
-
-            if (file == null) {
-                return;
-            }
-
             FileManager fileManager = Shindo.getInstance().getFileManager();
+
+            File file = FileUtils.selectImageFile();
             File iconDir = fileManager.getProfileIconDir();
-            fileManager.createDir(iconDir);
 
-            String extension = FileUtils.getExtension(file);
-            if (extension == null || "null".equalsIgnoreCase(extension)) {
-                extension = "png";
-            }
+            if (file != null && iconDir.exists() && file.exists() && FileUtils.getExtension(file).equals("png")) {
+                File destFile = new File(iconDir, file.getName());
 
-            String baseName = FileUtils.getBaseName(file);
-            String sanitized = baseName == null ? "custom_icon" : baseName.replaceAll("[^a-zA-Z0-9-_]", "_");
-            if (sanitized.isEmpty()) {
-                sanitized = "custom_icon";
-            }
-
-            File destination = new File(iconDir, sanitized + "_" + System.currentTimeMillis() + "." + extension.toLowerCase());
-
-            try {
-                FileUtils.copyFile(file, destination);
-                File previousIcon = selectedCustomIcon;
-                selectedCustomIcon = destination;
-                useCustomIcon = true;
-                if (previousIcon != null && previousIcon.exists()) {
-                    previousIcon.delete();
+                try {
+                    FileUtils.copyFile(file, destFile);
+                    File previousIcon = selectedCustomIcon;
+                    selectedCustomIcon = destFile;
+                    useCustomIcon = true;
+                    if (previousIcon != null && previousIcon.exists()) {
+                        previousIcon.delete();
+                    }
+                } catch (IOException e) {
+                    ShindoLogger.error("Failed to copy custom profile icon", e);
                 }
-            } catch (IOException e) {
-                ShindoLogger.error("Failed to copy custom profile icon", e);
             }
         });
     }

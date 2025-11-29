@@ -13,7 +13,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 
 public class ComboCounterMod extends SimpleHUDMod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
     private long hitTime = -1;

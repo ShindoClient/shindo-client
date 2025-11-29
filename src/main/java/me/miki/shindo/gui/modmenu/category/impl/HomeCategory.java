@@ -9,6 +9,7 @@ import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.music.MusicManager;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
@@ -17,16 +18,24 @@ import me.miki.shindo.management.remote.changelog.ChangelogManager;
 import me.miki.shindo.management.remote.discord.DiscordStats;
 import me.miki.shindo.management.remote.news.News;
 import me.miki.shindo.management.remote.news.NewsManager;
+import me.miki.shindo.libs.spotify.model_objects.specification.Track;
+import me.miki.shindo.utils.ColorUtils;
+import me.miki.shindo.utils.TimerUtils;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.net.URL;
+import java.util.List;
 
 public class HomeCategory extends Category {
 
     private final Scroll changelogScroll = new Scroll();
     private final Scroll newsScroll = new Scroll();
+    private final TimerUtils newsRotationTimer = new TimerUtils();
+    private int currentNewsIndex = 0;
     Color onlineColour = new Color(85, 155, 89, 255);
     Color noColour = new Color(0, 0, 0, 0);
 
@@ -38,6 +47,8 @@ public class HomeCategory extends Category {
     public void initGui() {
         changelogScroll.resetAll();
         newsScroll.resetAll();
+        newsRotationTimer.reset();
+        currentNewsIndex = 0;
         Shindo.getInstance().getDiscordStats().check();
     }
 
@@ -55,48 +66,68 @@ public class HomeCategory extends Category {
         int standardPadding = 8;
         int outerPadding = 15;
 
-        // news
-        int offsetNewsY = 0;
-        nvg.drawRoundedRect(this.getX() + outerPadding, this.getY() + outerPadding, 200, 250, 8, palette.getBackgroundColor(ColorType.DARK));
-        nvg.drawText(TranslateText.NEWS.getText(), this.getX() + outerPadding + 8, this.getY() + 15 + 8, palette.getFontColor(ColorType.DARK), 11F, Fonts.SEMIBOLD);
+        // News - altura igual ao changelog (151)
+        List<News> newsList = newsManager.getNews();
+        if (!newsList.isEmpty()) {
+            // Rotação automática a cada 15 segundos
+            if (newsRotationTimer.delay(15000)) {
+                currentNewsIndex = (currentNewsIndex + 1) % newsList.size();
+                newsRotationTimer.reset();
+            }
 
-        nvg.save();
-        nvg.scissor(this.getX() + outerPadding, this.getY() + outerPadding + 20, 200, 230);
-        nvg.translate(0, newsScroll.getValue());
+            News currentNews = newsList.get(currentNewsIndex);
+            float newsHeight = 151F; // Mesma altura do changelog
+            nvg.drawRoundedRect(this.getX() + outerPadding, this.getY() + outerPadding, 200, newsHeight, 8, palette.getBackgroundColor(ColorType.DARK));
+            nvg.drawText(TranslateText.NEWS.getText(), this.getX() + outerPadding + 8, this.getY() + 15 + 8, palette.getFontColor(ColorType.DARK), 11F, Fonts.SEMIBOLD);
 
-        for (News n : newsManager.getNews()) {
-            float titleSize = nvg.getTextBoxHeight(n.getTitle(), 10, Fonts.SEMIBOLD, 180);
-            nvg.drawTextBox(n.getTitle(), this.getX() + outerPadding + 8, this.getY() + 43F + offsetNewsY, 180, palette.getFontColor(ColorType.DARK), 10, Fonts.SEMIBOLD);
-            offsetNewsY += (int) (titleSize);
-            float subTitleSize = nvg.getTextBoxHeight(n.getSubTitle(), 8.5F, Fonts.MEDIUM, 180);
-            nvg.drawTextBox(n.getSubTitle(), this.getX() + outerPadding + 8, this.getY() + 43F + offsetNewsY, 180, palette.getFontColor(ColorType.DARK), 8.5F, Fonts.MEDIUM);
-            offsetNewsY += (int) (subTitleSize + 1);
-            float bodySize = nvg.getTextBoxHeight(n.getBody(), 8, Fonts.REGULAR, 180);
-            nvg.drawTextBox(n.getBody(), this.getX() + outerPadding + 8, this.getY() + 43F + offsetNewsY, 180, palette.getFontColor(ColorType.DARK), 8, Fonts.REGULAR);
-            offsetNewsY += (int) (bodySize + 9);
+            nvg.save();
+            nvg.scissor(this.getX() + outerPadding, this.getY() + outerPadding + 20, 200, newsHeight - 20);
+            nvg.translate(0, newsScroll.getValue());
+
+            float newsY = this.getY() + 43F;
+            float titleSize = nvg.getTextBoxHeight(currentNews.getTitle(), 10, Fonts.SEMIBOLD, 180);
+            nvg.drawTextBox(currentNews.getTitle(), this.getX() + outerPadding + 8, newsY, 180, palette.getFontColor(ColorType.DARK), 10, Fonts.SEMIBOLD);
+            newsY += titleSize + 2;
+            float subTitleSize = nvg.getTextBoxHeight(currentNews.getSubTitle(), 8.5F, Fonts.MEDIUM, 180);
+            nvg.drawTextBox(currentNews.getSubTitle(), this.getX() + outerPadding + 8, newsY, 180, palette.getFontColor(ColorType.DARK), 8.5F, Fonts.MEDIUM);
+            newsY += subTitleSize + 3;
+            float bodySize = nvg.getTextBoxHeight(currentNews.getBody(), 8, Fonts.REGULAR, 180);
+            nvg.drawTextBox(currentNews.getBody(), this.getX() + outerPadding + 8, newsY, 180, palette.getFontColor(ColorType.DARK), 8, Fonts.REGULAR);
+
+            nvg.restore();
+
+            if (MouseUtils.isInside(mouseX, mouseY, this.getX() + outerPadding, this.getY() + outerPadding, 200, newsHeight)) {
+                newsScroll.onScroll();
+            }
+            newsScroll.onAnimation();
+            newsScroll.setMaxScroll(Math.max((int) (titleSize + subTitleSize + bodySize + 10) - (int) (newsHeight - 40), 0));
+
+            // Shadow
+            nvg.drawVerticalGradientRect(this.getX() + outerPadding + 8, this.getY() + outerPadding + 20, 200 - 16, 8, palette.getBackgroundColor(ColorType.DARK), noColour);
+            nvg.drawVerticalGradientRect(this.getX() + outerPadding + 8, this.getY() + outerPadding + newsHeight - 8, 200 - 16, 8, noColour, palette.getBackgroundColor(ColorType.DARK));
         }
-        nvg.restore();
-
-        if (MouseUtils.isInside(mouseX, mouseY, this.getX() + outerPadding, this.getY() + outerPadding, 200, 250)) {
-            newsScroll.onScroll();
-        }
-        newsScroll.onAnimation();
-        newsScroll.setMaxScroll(Math.max(offsetNewsY - 225, 0));
-
-        // shadow
-        nvg.drawVerticalGradientRect(this.getX() + outerPadding + 8, this.getY() + outerPadding + 20, 200 - 16, 8, palette.getBackgroundColor(ColorType.DARK), noColour);
-        nvg.drawVerticalGradientRect(this.getX() + outerPadding + 8, this.getY() + outerPadding + 250 - 8, 200 - 16, 8, noColour, palette.getBackgroundColor(ColorType.DARK));
 
 
-        // Changelog
-
+        // Changelog com progressbar
         int offsetChangelogY = 0;
+        float changelogHeight = 151F;
 
-        nvg.drawRoundedRect(this.getX() + 230, this.getY() + outerPadding, 174, 151, 8, palette.getBackgroundColor(ColorType.DARK));
+        nvg.drawRoundedRect(this.getX() + 230, this.getY() + outerPadding, 174, changelogHeight, 8, palette.getBackgroundColor(ColorType.DARK));
         nvg.drawText(TranslateText.CHANGELOG.getText(), this.getX() + 230 + 8, this.getY() + 15 + 8, palette.getFontColor(ColorType.DARK), 11F, Fonts.SEMIBOLD);
 
+        // Progressbar de 15 segundos
+        float progressBarX = this.getX() + outerPadding + 8;
+        float progressBarY = this.getY() + outerPadding + changelogHeight - 12;
+        float progressBarWidth = 200 - 16;
+        float progressBarHeight = 2F;
+        long elapsed = newsRotationTimer.getElapsedTime();
+        float progress = Math.min(1.0F, elapsed / 15000.0F);
+
+        nvg.drawRoundedRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150));
+        nvg.drawRoundedRect(progressBarX, progressBarY, progressBarWidth * progress, progressBarHeight, 1F, currentColor.getColor1());
+
         nvg.save();
-        nvg.scissor(this.getX() + 230, this.getY() + outerPadding + 20, 174, 131);
+        nvg.scissor(this.getX() + 230, this.getY() + outerPadding + 20, 174, changelogHeight - 32);
         nvg.translate(0, changelogScroll.getValue());
 
         for (Changelog c : changelogManager.getChangelogs()) {
@@ -107,20 +138,107 @@ public class HomeCategory extends Category {
             offsetChangelogY += (int) (tbSize + 9);
         }
         nvg.restore();
-        if (offsetChangelogY > 130 && MouseUtils.isInside(mouseX, mouseY, this.getX() + 230, this.getY() + outerPadding, 174, 151)) {
+        if (offsetChangelogY > (changelogHeight - 40) && MouseUtils.isInside(mouseX, mouseY, this.getX() + 230, this.getY() + outerPadding, 174, changelogHeight)) {
             changelogScroll.onScroll();
         }
         changelogScroll.onAnimation();
-        changelogScroll.setMaxScroll(Math.max(offsetChangelogY - 120, 0));
+        changelogScroll.setMaxScroll(Math.max(offsetChangelogY - (int) (changelogHeight - 40), 0));
 
-        nvg.drawVerticalGradientRect(this.getX() + 230 + 8, this.getY() + outerPadding + 20, 174 - 16, 8, palette.getBackgroundColor(ColorType.DARK), noColour);
-        nvg.drawVerticalGradientRect(this.getX() + 230 + 8, this.getY() + outerPadding + 151 - 8, 174 - 16, 8, noColour, palette.getBackgroundColor(ColorType.DARK));
 
+        // Player & Spotify Card (no espaço que sobrou)
+        float playerCardY = this.getY() + outerPadding + 151 + 12; // Abaixo do changelog
+        float playerCardHeight = 99F; // Altura do card (86 do discord + 13 de espaço)
+        float playerCardX = this.getX() + outerPadding;
+        float playerCardWidth = 200F;
+
+        nvg.drawRoundedRect(playerCardX, playerCardY, playerCardWidth, playerCardHeight, 8, palette.getBackgroundColor(ColorType.DARK));
+
+        MusicManager musicManager = instance.getMusicManager();
+        Minecraft mc = Minecraft.getMinecraft();
+        boolean spotifyLinked = musicManager != null && musicManager.isAuthorized();
+
+        // Player head e nome
+        float headSize = 32F;
+        float headX = playerCardX + 8;
+        float headY = playerCardY + 8;
+        String playerName = mc.getSession() != null ? mc.getSession().getUsername() : "Player";
+        ResourceLocation playerHead = mc.thePlayer != null ? mc.thePlayer.getLocationSkin() : new ResourceLocation("textures/entity/steve.png");
+
+        nvg.drawPlayerHead(playerHead, headX, headY, headSize, headSize, 4F);
+        nvg.drawText(playerName, headX + headSize + 8, headY + 10, palette.getFontColor(ColorType.DARK), 10F, Fonts.MEDIUM);
+
+        // Spotify controls
+        float spotifyY = headY + headSize + 8;
+        if (spotifyLinked && musicManager != null) {
+            Track currentTrack = musicManager.getCurrentTrack();
+            boolean isPlaying = musicManager.isPlaying();
+            long trackPosition = musicManager.getCurrentPosition();
+            long trackDuration = (long) (musicManager.getEndTime() * 1000); // getEndTime retorna em segundos
+
+            if (currentTrack != null) {
+                // Ícone da música (se couber)
+                float iconSize = 16F;
+                float iconX = headX;
+                float iconY = spotifyY;
+                nvg.drawText(LegacyIcon.MUSIC, iconX, iconY, palette.getFontColor(ColorType.NORMAL), iconSize, Fonts.LEGACYICON);
+
+                // Nome da música
+                String trackName = currentTrack.getName();
+                String artistName = currentTrack.getArtists() != null && currentTrack.getArtists().length > 0 ? currentTrack.getArtists()[0].getName() : "Unknown";
+                float trackNameX = iconX + iconSize + 4;
+                float trackNameWidth = playerCardWidth - 8;
+                nvg.drawText(nvg.getLimitText(trackName, 9F, Fonts.MEDIUM, trackNameWidth), trackNameX, iconY, palette.getFontColor(ColorType.DARK), 9F, Fonts.MEDIUM);
+                nvg.drawText(nvg.getLimitText(artistName, 7.5F, Fonts.REGULAR, trackNameWidth), trackNameX, iconY + 12, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 7.5F, Fonts.REGULAR);
+
+                // Controles
+                float controlsY = spotifyY + 24;
+                float controlsCenterX = playerCardX + playerCardWidth / 2F;
+                float controlSize = 14F;
+                float controlSpacing = 24F;
+
+                // Previous
+                boolean prevHovered = MouseUtils.isInside(mouseX, mouseY, controlsCenterX - controlSpacing - controlSize / 2F, controlsY, controlSize, controlSize);
+                nvg.drawCenteredText(LegacyIcon.BACK, controlsCenterX - controlSpacing, controlsY + 2, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), prevHovered ? 255 : 200), controlSize, Fonts.LEGACYICON);
+
+                // Play/Pause
+                boolean playHovered = MouseUtils.isInside(mouseX, mouseY, controlsCenterX - controlSize / 2F, controlsY, controlSize, controlSize);
+                String playIcon = isPlaying ? LegacyIcon.PAUSE : LegacyIcon.PLAY;
+                nvg.drawCenteredText(playIcon, controlsCenterX, controlsY + 2, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), playHovered ? 255 : 200), controlSize, Fonts.LEGACYICON);
+
+                // Next
+                boolean nextHovered = MouseUtils.isInside(mouseX, mouseY, controlsCenterX + controlSpacing - controlSize / 2F, controlsY, controlSize, controlSize);
+                nvg.drawCenteredText(LegacyIcon.FORWARD, controlsCenterX + controlSpacing, controlsY + 2, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), nextHovered ? 255 : 200), controlSize, Fonts.LEGACYICON);
+
+                // Progress bar
+                float progressBarY2 = controlsY + controlSize + 6;
+                float progressBarWidth2 = playerCardWidth - 16;
+                float progressBarHeight2 = 2F;
+                float progress2 = trackDuration > 0 ? (float) trackPosition / (float) trackDuration : 0F;
+
+                nvg.drawRoundedRect(headX, progressBarY2, progressBarWidth2, progressBarHeight2, 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150));
+                nvg.drawRoundedRect(headX, progressBarY2, progressBarWidth2 * progress2, progressBarHeight2, 1F, currentColor.getColor1());
+
+                // Tempo
+                String currentTime = formatTime(trackPosition / 1000);
+                String totalTime = formatTime(trackDuration / 1000);
+                float timeWidth = nvg.getTextWidth(currentTime + " / " + totalTime, 7F, Fonts.REGULAR);
+
+                nvg.drawText( currentTime + " / " + totalTime, headX + progressBarWidth2 - timeWidth, progressBarY2 - 9, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180), 7F, Fonts.REGULAR);
+            } else {
+                // Nada tocando
+                nvg.drawText(TranslateText.NOTHING_IS_PLAYING.getText(), headX, spotifyY, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 8F, Fonts.REGULAR);
+            }
+        } else {
+            // Spotify não linkado
+            nvg.drawText("Spotify not linked", headX, spotifyY, ColorUtils.applyAlpha(new Color(255, 180, 90), 220), 8F, Fonts.REGULAR);
+            nvg.drawTextBox("Link your Spotify account in the Spotify category to control music here.", headX, spotifyY + 12, playerCardWidth - 16, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180), 7F, Fonts.REGULAR);
+        }
 
         // Discord
         int discordStartX = this.getX() + 230;
-        int discordStartY = this.getY() + 179;
+        int discordStartY = (int) (playerCardY);
         int discordWidth = 174;
+
         //bg
         nvg.drawRoundedRect(discordStartX, discordStartY, discordWidth, 86, 8, palette.getBackgroundColor(ColorType.DARK));
         // Discord branding
@@ -142,15 +260,85 @@ public class HomeCategory extends Category {
 
     }
 
+    private String formatTime(long seconds) {
+        long minutes = seconds / 60L;
+        long remainingSeconds = seconds % 60L;
+        return String.format("%02d:%02d", minutes, remainingSeconds);
+    }
+
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        int outerPadding = 15;
         int discordStartX = this.getX() + 230;
-        int discordStartY = this.getY() + 179;
+        int discordStartY = (this.getY() + outerPadding + 151 + 12); // Abaixo do player card
         if (MouseUtils.isInside(mouseX, mouseY, discordStartX + 174 - 60, discordStartY + 60, 52, 18)) {
             try {
                 Desktop.getDesktop().browse(new URL("https://shindoclient.com/discord").toURI());
             } catch (Exception e) {
                 ShindoLogger.error("An error occurred while opening the Discord Server Link.", e);
+            }
+        }
+
+        // Spotify controls
+        MusicManager musicManager = Shindo.getInstance().getMusicManager();
+        if (musicManager != null && musicManager.isAuthorized()) {
+            float playerCardY = this.getY() + outerPadding + 151 + 12; // Abaixo do changelog
+            float playerCardHeight = 99F; // Altura do card (86 do discord + 13 de espaço)
+            float playerCardX = this.getX() + outerPadding;
+            float playerCardWidth = 200F;
+
+
+            // Player head e nome
+            float headSize = 32F;
+            float headX = playerCardX + 8;
+            float headY = playerCardY + 8;
+
+            // Spotify controls
+            float spotifyY = headY + headSize + 8;
+
+            float controlsY = spotifyY + 24;
+            float controlsCenterX = playerCardX + playerCardWidth / 2F;
+            float controlSize = 14F;
+            float controlSpacing = 24F;
+
+            if (mouseButton == 0) {
+                // Previous
+                if (MouseUtils.isInside(mouseX, mouseY, controlsCenterX - controlSpacing - controlSize / 2F, controlsY, controlSize, controlSize)) {
+                    musicManager.previousTrack();
+                    return;
+                }
+
+                // Play/Pause
+                if (MouseUtils.isInside(mouseX, mouseY, controlsCenterX - controlSize / 2F, controlsY, controlSize, controlSize)) {
+                    if (musicManager.isPlaying()) {
+                        musicManager.pause();
+                    } else {
+                        musicManager.resume();
+                    }
+                    return;
+                }
+
+                // Next
+                if (MouseUtils.isInside(mouseX, mouseY, controlsCenterX + controlSpacing - controlSize / 2F, controlsY, controlSize, controlSize)) {
+                    musicManager.nextTrack();
+                    return;
+                }
+
+                // Progress bar click (seek)
+                float progressBarY = controlsY + controlSize + 6;
+                float progressBarWidth = 200 - 16;
+                if (MouseUtils.isInside(mouseX, mouseY, this.getX() + outerPadding + 8, progressBarY, progressBarWidth, 2F)) {
+                    Track currentTrack = musicManager.getCurrentTrack();
+                    if (currentTrack != null) {
+                        long trackDuration = (long) (musicManager.getEndTime() * 1000);
+                        if (trackDuration > 0) {
+                            float relativeX = mouseX - (this.getX() + outerPadding + 8);
+                            float progress = Math.max(0F, Math.min(1F, relativeX / progressBarWidth));
+                            long seekPosition = (long) (trackDuration * progress);
+                            musicManager.seekToPosition(seekPosition);
+                        }
+                    }
+                }
             }
         }
     }

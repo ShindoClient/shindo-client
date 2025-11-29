@@ -88,7 +88,7 @@ public class JumpCircleMod extends Mod {
         GlStateManager.resetColor();
     }
 
-    private class JumpCircle {
+    private static class JumpCircle {
 
         private final Minecraft mc = Minecraft.getMinecraft();
 
@@ -99,7 +99,7 @@ public class JumpCircleMod extends Mod {
         public JumpCircle(Vec3 vector) {
             this.vector = vector;
             this.prevTick = 20;
-            this.prevTick = this.tick = 20;
+            this.tick = 20;
         }
 
         public double getAnimation(float pt) {

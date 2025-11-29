@@ -20,12 +20,15 @@ import net.minecraft.util.ResourceLocation;
 
 public class KillEffectsMod extends Mod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND, category = "Audio")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)
     private boolean soundSetting = true;
+
     @Property(type = PropertyType.COMBO, translate = TranslateText.EFFECT)
     private EffectType effectType = EffectType.BLOOD;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MULTIPLIER, category = "Effects", min = 1, max = 10, step = 1, current = 1)
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MULTIPLIER, min = 1, max = 10, step = 1, current = 1)
     private int multiplierSetting = 1;
+
     private EntityLivingBase target;
     private int entityID;
 
@@ -35,7 +38,7 @@ public class KillEffectsMod extends Mod {
 
     @EventTarget
     public void onUpdate(EventUpdate event) {
-        if (mc.objectMouseOver != null & mc.objectMouseOver.entityHit != null) {
+        if (mc.objectMouseOver != null && mc.objectMouseOver.entityHit != null) {
             if (mc.objectMouseOver.entityHit instanceof EntityLivingBase) {
                 target = (EntityLivingBase) mc.objectMouseOver.entityHit;
             }

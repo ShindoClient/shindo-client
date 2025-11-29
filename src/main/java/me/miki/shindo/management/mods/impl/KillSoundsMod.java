@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventMotionUpdate;
 import me.miki.shindo.management.event.impl.EventTick;
@@ -43,7 +44,7 @@ public class KillSoundsMod extends Mod {
                     try {
                         customSound.loadClip(soundFile);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        ShindoLogger.error("An error occurred while loading the custom sound file: " + soundFile.getAbsolutePath(), e);
                     }
                 }
                 customSound.setVolume((float) volumeSetting);
@@ -55,7 +56,7 @@ public class KillSoundsMod extends Mod {
 
     @EventTarget
     public void onUpdate(EventUpdate event) {
-        if (mc.objectMouseOver != null & mc.objectMouseOver.entityHit != null) {
+        if (mc.objectMouseOver != null && mc.objectMouseOver.entityHit != null) {
             if (mc.objectMouseOver.entityHit instanceof EntityLivingBase) {
                 target = (EntityLivingBase) mc.objectMouseOver.entityHit;
             }
@@ -86,6 +87,7 @@ public class KillSoundsMod extends Mod {
         try {
             oofSound.loadClip(new ResourceLocation("shindo/audio/oof.wav"));
         } catch (Exception e) {
+            ShindoLogger.error("An error occurred while loading the custom sound file: " + soundFile.getAbsolutePath(), e);
         }
     }
 }

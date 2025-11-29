@@ -2,7 +2,7 @@ package me.miki.shindo.injection.mixin.mixins.client.renderer;
 
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
-import me.miki.shindo.api.ws.presence.PresenceTracker;
+import me.miki.shindo.api.websocket.presence.PresenceTracker;
 import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventHitOverlay;
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity;
@@ -37,10 +37,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
 
     @Unique
     private float red;
+
     @Unique
     private float green;
+
     @Unique
     private float blue;
+
     @Unique
     private float alpha;
 

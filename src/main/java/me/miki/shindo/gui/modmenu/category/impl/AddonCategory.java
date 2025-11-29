@@ -174,8 +174,10 @@ public class AddonCategory extends Category {
             float headerWidth = this.getWidth() - 30;
             float headerHeight = this.getHeight() - 30;
 
-            nvg.drawRoundedRect(headerX, headerY, headerWidth, headerHeight, 10, palette.getBackgroundColor(ColorType.DARK));
-            //nvg.drawRoundedRect(headerX + 1F, headerY + 1F, headerWidth - 2F, headerHeight - 2F, 9F,ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
+            nvg.drawShadow(headerX, headerY, headerWidth, headerHeight, 12F, 7);
+            nvg.drawRoundedRect(headerX, headerY, headerWidth, headerHeight, 12F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
+            nvg.drawRoundedRect(headerX + 1F, headerY + 1F, headerWidth - 2F, headerHeight - 2F, 11F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
+
             nvg.drawText(LegacyIcon.CHEVRON_LEFT, headerX + 10, headerY + 8, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);
             nvg.drawText(currentAddon.getName(), headerX + 27, headerY + 9, palette.getFontColor(ColorType.DARK), 13, Fonts.MEDIUM);
             nvg.drawText(LegacyIcon.REFRESH, headerX + headerWidth - 24, headerY + 7.5F, palette.getFontColor(ColorType.DARK), 13, Fonts.LEGACYICON);

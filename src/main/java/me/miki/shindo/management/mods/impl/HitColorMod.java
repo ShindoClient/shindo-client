@@ -14,11 +14,11 @@ import java.awt.*;
 
 public class HitColorMod extends Mod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR, category = "Customization")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private boolean customColorSetting;
-    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, category = "Customization", color = 0xFFFF0000)
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, color = 0xFFFF0000)
     private Color colorSetting = new Color(255, 0, 0);
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, category = "Appearance", min = 0, max = 1, current = 0.45)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0, max = 1, current = 0.45)
     private double alphaSetting = 0.45;
 
     public HitColorMod() {

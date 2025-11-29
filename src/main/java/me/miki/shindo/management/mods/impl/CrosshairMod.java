@@ -19,13 +19,13 @@ public class CrosshairMod extends Mod {
 
     public static final LayoutManager layoutManager = new LayoutManager();
 
-    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, category = "Display")
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
     private Color crosshairColor = Color.RED;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_THIRD_PERSON_VIEW, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_THIRD_PERSON_VIEW)
     private boolean hideInThirdPerson;
 
-    @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN, category = "Design")
+    @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN)
     private boolean[][] crosshairLayout = layoutManager.getLayout(0);
 
     public CrosshairMod() {

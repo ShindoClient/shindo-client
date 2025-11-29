@@ -21,7 +21,7 @@ public class DamageTintMod extends Mod {
     private final ResourceLocation shape = new ResourceLocation("shindo/shape.png");
     private final SimpleAnimation animation = new SimpleAnimation(0.0F);
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, category = "Thresholds", min = 5, max = 16, step = 1, current = 10)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, min = 5, max = 16, step = 1, current = 10)
     private double healthSetting = 10;
 
     public DamageTintMod() {

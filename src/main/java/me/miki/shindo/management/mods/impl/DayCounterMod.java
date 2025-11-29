@@ -10,7 +10,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 
 public class DayCounterMod extends SimpleHUDMod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
     public DayCounterMod() {

@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting.impl;
 
+import lombok.Data;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.SettingCategory;
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene;
@@ -31,12 +32,7 @@ public class LanguageScene extends SettingScene {
     private final Scroll languageScroll = new Scroll();
     private final List<LanguageCard> languageCards = new ArrayList<LanguageCard>();
 
-    private float viewportX;
-    private float viewportY;
-    private float viewportWidth;
-    private float viewportHeight;
     private int columns;
-    private float cardWidth;
     private float cardHeight;
 
     public LanguageScene(SettingCategory parent) {
@@ -70,16 +66,16 @@ public class LanguageScene extends SettingScene {
         languageCards.clear();
 
         nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7);
-        nvg.drawRoundedRect(baseX, baseY, baseWidth, baseHeight, containerRadius,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
+        nvg.drawRoundedRect(baseX, baseY, baseWidth, baseHeight, containerRadius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
+        nvg.drawRoundedRect(baseX + 1F, baseY + 1F, baseWidth - 2F, baseHeight - 2F, containerRadius - 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
 
-        viewportX = baseX + OUTER_PADDING;
-        viewportY = baseY + OUTER_PADDING;
-        viewportWidth = baseWidth - OUTER_PADDING * 2F;
-        viewportHeight = baseHeight - OUTER_PADDING * 2F;
+        float viewportX = baseX + OUTER_PADDING;
+        float viewportY = baseY + OUTER_PADDING;
+        float viewportWidth = baseWidth - OUTER_PADDING * 2F;
+        float viewportHeight = baseHeight - OUTER_PADDING * 2F;
 
         columns = viewportWidth > 420F ? 2 : 1;
-        cardWidth = (viewportWidth - (ROW_GAP * (columns - 1))) / columns;
+        float cardWidth = (viewportWidth - (ROW_GAP * (columns - 1))) / columns;
         float estimatedRows = Math.max(1F, (float) Language.values().length / (float) columns);
         cardHeight = Math.max(66F, Math.min(86F, viewportHeight / estimatedRows));
 
@@ -116,7 +112,7 @@ public class LanguageScene extends SettingScene {
 
         nvg.restore();
 
-        drawScrollbar(nvg, palette, accentColor, viewportX, viewportY, viewportWidth, viewportHeight, totalContentHeight, scrollValue);
+        nvg.drawScrollbar(viewportX + 20, viewportY, viewportWidth, viewportHeight, totalContentHeight, scrollValue, palette, accentColor, 24F);
     }
 
     private float calculateTotalContentHeight(int languageCount) {
@@ -150,40 +146,9 @@ public class LanguageScene extends SettingScene {
         }
     }
 
-    private void drawScrollbar(NanoVGManager nvg,
-                               ColorPalette palette,
-                               AccentColor accent,
-                               float baseX,
-                               float baseY,
-                               float baseWidth,
-                               float baseHeight,
-                               float contentHeight,
-                               float scrollValue) {
-        float maxScroll = Math.max(0F, contentHeight - baseHeight);
-        if (maxScroll <= 0F) {
-            return;
-        }
-        float trackX = baseX + baseWidth - 8F;
-        float trackY = baseY + 6F;
-        float trackWidth = 4F;
-        float trackHeight = baseHeight - 12F;
-
-        nvg.drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 120));
-
-        float visibleRatio = Math.min(1F, baseHeight / contentHeight);
-        float handleHeight = Math.max(24F, trackHeight * visibleRatio);
-        float scrollOffset = -scrollValue;
-        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
-
-        nvg.drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F,
-                ColorUtils.applyAlpha(accent.getColor1(), 190), ColorUtils.applyAlpha(accent.getColor2(), 190));
-    }
-
     private void drawFlag(NanoVGManager nvg, ResourceLocation flag, float x, float y, float size) {
         float flagWidth = size * 1.6F;
-        float flagHeight = size;
-        nvg.drawRoundedImage(flag, x, y, flagWidth, flagHeight, 6F);
+        nvg.drawRoundedImage(flag, x, y, flagWidth, size, 6F);
     }
 
     @Override
@@ -217,19 +182,12 @@ public class LanguageScene extends SettingScene {
         languageScroll.onKey(keyCode);
     }
 
+    @Data
     private static class LanguageCard {
         final Language language;
         final float x;
         final float y;
         final float width;
         final float height;
-
-        LanguageCard(Language language, float x, float y, float width, float height) {
-            this.language = language;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
     }
 }

@@ -1,5 +1,10 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting.impl;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.modmenu.category.impl.SettingCategory;
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene;
@@ -9,52 +14,80 @@ import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.layout.UILayoutManager;
+import me.miki.shindo.management.layout.UILayoutManager.LayoutType;
+import me.miki.shindo.management.layout.UILayoutManager.Layouts;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.screenshot.ScreenshotDisplayMode;
+import me.miki.shindo.management.settings.config.ConfigOwner;
 import me.miki.shindo.management.settings.impl.ComboSetting;
+import me.miki.shindo.management.settings.impl.combo.Option;
 import me.miki.shindo.ui.comp.impl.CompDropdown;
 import me.miki.shindo.utils.ColorUtils;
-import me.miki.shindo.utils.mouse.MouseUtils;
-import me.miki.shindo.utils.mouse.Scroll;
-
-import java.awt.*;
 
 public class LayoutScene extends SettingScene {
 
-    private static final float VERTICAL_PADDING_TOP = 28F;
-    private static final float VERTICAL_PADDING_BOTTOM = 24F;
-    private static final float HORIZONTAL_PADDING = 22F;
-    private static final float SECTION_SPACING = 32F;
-    private static final float INFO_BLOCK_HEIGHT = 46F;
-    private static final float DROPDOWN_SPACING = 16F;
-    private static final float DROPDOWN_CONTROL_HEIGHT = 22F;
+    private static final float PANEL_PADDING = 16F;
+    private static final float CARD_RADIUS = 12F;
     private static final float PREVIEW_RADIUS = 12F;
-    private static final float LAYOUT_PREVIEW_HEIGHT = 164F;
-    private static final float MODULE_PREVIEW_HEIGHT = 158F;
-    private static final float SCREENSHOT_PREVIEW_HEIGHT = 140F;
+    private static final float LAYOUT_PREVIEW_HEIGHT = 170F;
+    private static final float MODULE_PREVIEW_HEIGHT = 152F;
+    private static final float SCREENSHOT_PREVIEW_HEIGHT = 146F;
 
-    private final Scroll contentScroll = new Scroll();
-    private CompDropdown layoutDropdown;
-    private CompDropdown moduleDropdown;
-    private CompDropdown screenshotDropdown;
+    private final UILayoutManager layoutManager = Shindo.getInstance().getUiLayoutManager();
+
+    private Layouts selectedArea = Layouts.SETTINGS;
+    private LayoutType selectedType;
+
+    private ComboSetting areaSetting;
+    private ComboSetting typeSetting;
+    private CompDropdown areaDropdown;
+    private CompDropdown typeDropdown;
+
+    private final List<Option> areaOptions = new ArrayList<Option>();
+    private final List<Option> typeOptions = new ArrayList<Option>();
 
     public LayoutScene(SettingCategory parent) {
-        super(parent, TranslateText.SETTINGS_LAYOUT_TITLE, TranslateText.SETTINGS_LAYOUT_DESCRIPTION, LegacyIcon.GRID);
+        super(parent, TranslateText.SETTINGS_LAYOUT_TITLE, TranslateText.SETTINGS_LAYOUT_DESCRIPTION, me.miki.shindo.management.nanovg.font.LegacyIcon.GRID);
     }
 
     @Override
     public void initGui() {
-        contentScroll.resetAll();
-        layoutDropdown = createDropdown(InternalSettingsMod.getInstance().getSettingsLayoutSetting());
-        moduleDropdown = createDropdown(InternalSettingsMod.getInstance().getModuleLayoutSetting());
-        screenshotDropdown = createDropdown(InternalSettingsMod.getInstance().getScreenshotDisplaySetting());
+        selectedArea = Layouts.SETTINGS;
+        selectedType = layoutManager.getSelectedType(selectedArea);
+        buildAreaSetting();
+        buildTypeSetting();
     }
 
-    private CompDropdown createDropdown(ComboSetting setting) {
-        return setting == null ? null : new CompDropdown(0F, 0F, 0F, setting);
+    private void buildAreaSetting() {
+        areaOptions.clear();
+        for (Layouts value : Layouts.values()) {
+            areaOptions.add(new Option(value.getTitle()));
+        }
+        areaSetting = new ComboSetting("layout-area", dummyOwner(), areaOptions.get(selectedArea.ordinal()).getNameKey(), areaOptions);
+        areaDropdown = new CompDropdown(0F, 0F, 0F, areaSetting);
+        areaDropdown.setOpenUp(true);
+    }
+
+    private void buildTypeSetting() {
+        typeOptions.clear();
+        List<LayoutType> types = layoutManager.getTypes(selectedArea);
+        for (LayoutType type : types) {
+            typeOptions.add(new Option(type.getTitle()));
+        }
+        String defaultKey = !typeOptions.isEmpty() ? typeOptions.get(0).getNameKey() : "none";
+        int selectedIdx = types.indexOf(selectedType != null ? selectedType : layoutManager.getSelectedType(selectedArea));
+        if (selectedIdx < 0 && !types.isEmpty()) {
+            selectedIdx = 0;
+        }
+        if (selectedIdx >= 0 && selectedIdx < typeOptions.size()) {
+            defaultKey = typeOptions.get(selectedIdx).getNameKey();
+        }
+        typeSetting = new ComboSetting("layout-type", dummyOwner(), defaultKey, typeOptions);
+        typeDropdown = new CompDropdown(0F, 0F, 0F, typeSetting);
+        typeDropdown.setOpenUp(true);
     }
 
     @Override
@@ -68,146 +101,114 @@ public class LayoutScene extends SettingScene {
         float baseY = getContentY();
         float baseWidth = getWidth();
         float baseHeight = getContentHeight();
-
         if (baseWidth <= 0F || baseHeight <= 0F) {
             return;
         }
 
-        SettingsPanel.LayoutMode layoutMode = InternalSettingsMod.getInstance().getSettingsLayoutMode();
-        int moduleColumns = InternalSettingsMod.getInstance().getModuleGridColumns();
-        ScreenshotDisplayMode screenshotMode = InternalSettingsMod.getInstance().getScreenshotDisplayMode();
+        float leftWidth = Math.min(120F, Math.max(100F, baseWidth * 0.18F));
+        float leftX = baseX + PANEL_PADDING;
+        float leftY = baseY + PANEL_PADDING;
+        float leftHeight = baseHeight - (PANEL_PADDING * 2F);
 
-        float layoutSectionHeight = calculateSectionHeight(LAYOUT_PREVIEW_HEIGHT, layoutDropdown);
-        float moduleSectionHeight = calculateSectionHeight(MODULE_PREVIEW_HEIGHT, moduleDropdown);
-        float screenshotSectionHeight = calculateSectionHeight(SCREENSHOT_PREVIEW_HEIGHT, screenshotDropdown);
-        float contentHeight = VERTICAL_PADDING_TOP + layoutSectionHeight + SECTION_SPACING + moduleSectionHeight + SECTION_SPACING + screenshotSectionHeight + VERTICAL_PADDING_BOTTOM;
+        float gap = 14F;
+        float rightX = leftX + leftWidth + gap;
+        float rightY = leftY;
+        float rightWidth = Math.max(0F, baseWidth - leftWidth - (PANEL_PADDING * 2F) - gap);
+        float rightHeight = leftHeight;
 
-        contentScroll.setMaxScroll(Math.max(0F, contentHeight - baseHeight));
-        if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) {
-            contentScroll.onScroll();
+        drawContainer(nvg, palette, leftX, leftY, leftWidth, leftHeight);
+        drawContainer(nvg, palette, rightX, rightY, rightWidth, rightHeight);
+
+        syncSelections();
+        drawLeftCard(nvg, palette, accent, leftX, leftY, leftWidth, leftHeight, mouseX, mouseY, partialTicks);
+        drawPreviewPanel(nvg, palette, accent, rightX, rightY, rightWidth, rightHeight, mouseX, mouseY, partialTicks);
+    }
+
+    private void syncSelections() {
+        // Area sync
+        int areaIdx = areaSetting.getOptions().indexOf(areaSetting.getOption());
+        if (areaIdx >= 0 && areaIdx < Layouts.values().length) {
+            Layouts newArea = Layouts.values()[areaIdx];
+            if (newArea != selectedArea) {
+                selectedArea = newArea;
+                selectedType = layoutManager.getSelectedType(selectedArea);
+                buildTypeSetting();
+            }
         }
-        contentScroll.onAnimation();
 
-        float scrollValue = contentScroll.getValue();
-        float currentY = baseY + VERTICAL_PADDING_TOP + scrollValue;
-        float innerX = baseX + HORIZONTAL_PADDING;
-        float innerWidth = baseWidth - (HORIZONTAL_PADDING * 2F);
+        // Type sync
+        List<LayoutType> types = layoutManager.getTypes(selectedArea);
+        if (types.isEmpty()) {
+            return;
+        }
+        int typeIdx = typeSetting.getOptions().indexOf(typeSetting.getOption());
+        if (typeIdx >= 0 && typeIdx < types.size()) {
+            LayoutType newType = types.get(typeIdx);
+            if (newType != selectedType) {
+                selectedType = newType;
+                layoutManager.selectType(selectedType);
+            }
+        }
+    }
 
-        drawContainerBackground(nvg, palette, baseX, baseY, baseWidth, baseHeight);
+    private void drawContainer(NanoVGManager nvg, ColorPalette palette, float x, float y, float width, float height) {
+        nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7);
+        nvg.drawRoundedRect(x, y, width, height, CARD_RADIUS, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
+        nvg.drawRoundedRect(x + 1F, y + 1F, width - 2F, height - 2F, CARD_RADIUS - 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
+    }
+
+    private void drawLeftCard(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, int mouseX, int mouseY, float partialTicks) {
+        String areaTitle = selectedArea.getTitle();
+        String areaDesc = selectedArea.getDescription();
+
+        float headerX = x + 12F;
+        float headerY = y + 14F;
+        float headerWidth = width - 24F;
+
+        nvg.drawText(areaTitle, headerX, headerY, palette.getFontColor(ColorType.DARK), 13.5F, Fonts.MEDIUM);
+        nvg.drawText(nvg.getLimitText(areaDesc, 9F, Fonts.REGULAR, headerWidth),
+                headerX, headerY + 16F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9F, Fonts.REGULAR);
+
+        float dropdownWidth = width - 24F;
+        float dropdownX = x + 12F;
+        float dropdownY = y + height - typeDropdown.getHeight() - 10F;
+        typeDropdown.setX(dropdownX);
+        typeDropdown.setY(dropdownY);
+        typeDropdown.setWidth(dropdownWidth);
+        typeDropdown.draw(mouseX, mouseY, partialTicks);
+    }
+
+    private void drawPreviewPanel(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, int mouseX, int mouseY, float partialTicks) {
+        InternalSettingsMod settings = InternalSettingsMod.getInstance();
+        SettingsPanel.LayoutMode layoutMode = settings.getSettingsLayoutMode();
+        int moduleColumns = settings.getModuleGridColumns();
+        ScreenshotDisplayMode screenshotMode = settings.getScreenshotDisplayMode();
+
+        float previewX = x + 14F;
+        float previewY = y + 14F;
+        float previewWidth = width - 28F;
+        float previewHeight = Math.max(0F, height - (previewY - y) - areaDropdown.getHeight() - 12F);
 
         nvg.save();
-        nvg.scissor(baseX, baseY, baseWidth, baseHeight);
+        nvg.intersectScissor(x, y, width, height);
 
-        currentY += drawLayoutSection(nvg, palette, accent, innerX, currentY, innerWidth, layoutMode, mouseX, mouseY, partialTicks);
-        currentY += SECTION_SPACING;
-        currentY += drawModuleSection(nvg, palette, accent, innerX, currentY, innerWidth, moduleColumns, mouseX, mouseY, partialTicks);
-        currentY += SECTION_SPACING;
-        drawScreenshotSection(nvg, palette, accent, innerX, currentY, innerWidth, screenshotMode, mouseX, mouseY, partialTicks);
+        if (selectedArea == Layouts.SETTINGS) {
+            drawLayoutPreview(nvg, palette, accent, previewX, previewY, previewWidth, Math.min(previewHeight, LAYOUT_PREVIEW_HEIGHT), layoutMode);
+        } else if (selectedArea == Layouts.MODULES) {
+            drawModulePreview(nvg, palette, accent, previewX, previewY, previewWidth, Math.min(previewHeight, MODULE_PREVIEW_HEIGHT), moduleColumns);
+        } else if (selectedArea == Layouts.SCREENSHOTS) {
+            drawScreenshotPreview(nvg, palette, accent, previewX, previewY, previewWidth, Math.min(previewHeight, SCREENSHOT_PREVIEW_HEIGHT), screenshotMode);
+        }
 
         nvg.restore();
 
-        drawScrollbar(nvg, palette, accent, baseX, baseY, baseWidth, baseHeight, contentHeight, scrollValue);
-    }
-
-    private void drawContainerBackground(NanoVGManager nvg, ColorPalette palette, float x, float y, float width, float height) {
-        float radius = 12F;
-        nvg.drawShadow(x, y, width, height, radius, 6);
-        nvg.drawRoundedRect(x, y, width, height, radius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
-        nvg.drawRoundedRect(x + 1F, y + 1F, width - 2F, height - 2F, radius - 1F,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
-    }
-
-    private float drawLayoutSection(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float startY, float width,
-                                    SettingsPanel.LayoutMode layoutMode, int mouseX, int mouseY, float partialTicks) {
-        float sectionHeight = calculateSectionHeight(LAYOUT_PREVIEW_HEIGHT, layoutDropdown);
-        float labelY = startY;
-
-        nvg.drawText(TranslateText.SETTINGS_LAYOUT_SECTION_LAYOUT.getText(), x, labelY, palette.getFontColor(ColorType.DARK), 12.5F, Fonts.MEDIUM);
-        TranslateText titleKey = layoutMode == SettingsPanel.LayoutMode.SINGLE_COLUMN
-                ? TranslateText.SETTINGS_LAYOUT_SINGLE_TITLE
-                : TranslateText.SETTINGS_LAYOUT_DOUBLE_TITLE;
-        TranslateText descriptionKey = layoutMode == SettingsPanel.LayoutMode.SINGLE_COLUMN
-                ? TranslateText.SETTINGS_LAYOUT_SINGLE_DESCRIPTION
-                : TranslateText.SETTINGS_LAYOUT_DOUBLE_DESCRIPTION;
-
-        nvg.drawText(titleKey.getText(), x, labelY + 16F, palette.getFontColor(ColorType.DARK), 11F, Fonts.MEDIUM);
-        nvg.drawText(descriptionKey.getText(), x, labelY + 30F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 8.5F, Fonts.REGULAR);
-
-        float previewY = labelY + INFO_BLOCK_HEIGHT;
-        drawLayoutPreview(nvg, palette, accent, x, previewY, width, LAYOUT_PREVIEW_HEIGHT, layoutMode);
-
-        float dropdownY = previewY + LAYOUT_PREVIEW_HEIGHT + DROPDOWN_SPACING;
-        if (layoutDropdown != null) {
-            float dropdownWidth = Math.min(280F, width);
-            setDropdownBounds(layoutDropdown, x, dropdownY, dropdownWidth);
-            layoutDropdown.draw(mouseX, mouseY, partialTicks);
-        }
-
-        return sectionHeight;
-    }
-
-    private float drawModuleSection(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float startY, float width,
-                                    int moduleColumns, int mouseX, int mouseY, float partialTicks) {
-        float sectionHeight = calculateSectionHeight(MODULE_PREVIEW_HEIGHT, moduleDropdown);
-
-        nvg.drawText(TranslateText.SETTINGS_LAYOUT_SECTION_MODULE.getText(), x, startY, palette.getFontColor(ColorType.DARK), 12.5F, Fonts.MEDIUM);
-
-        TranslateText titleKey;
-        TranslateText descriptionKey;
-        if (moduleColumns >= 2) {
-            titleKey = TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_TITLE;
-            descriptionKey = TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_DESCRIPTION;
-        } else {
-            titleKey = TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_TITLE;
-            descriptionKey = TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION;
-        }
-
-        nvg.drawText(titleKey.getText(), x, startY + 16F, palette.getFontColor(ColorType.DARK), 11F, Fonts.MEDIUM);
-        nvg.drawText(descriptionKey.getText(), x, startY + 30F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 8.5F, Fonts.REGULAR);
-
-        float previewY = startY + INFO_BLOCK_HEIGHT;
-        drawModulePreview(nvg, palette, accent, x, previewY, width, MODULE_PREVIEW_HEIGHT, moduleColumns);
-
-        float dropdownY = previewY + MODULE_PREVIEW_HEIGHT + DROPDOWN_SPACING;
-        if (moduleDropdown != null) {
-            float dropdownWidth = Math.min(280F, width);
-            setDropdownBounds(moduleDropdown, x, dropdownY, dropdownWidth);
-            moduleDropdown.draw(mouseX, mouseY, partialTicks);
-        }
-
-        return sectionHeight;
-    }
-
-    private void drawScreenshotSection(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float startY, float width,
-                                       ScreenshotDisplayMode mode, int mouseX, int mouseY, float partialTicks) {
-        float sectionHeight = calculateSectionHeight(SCREENSHOT_PREVIEW_HEIGHT, screenshotDropdown);
-        nvg.drawText(TranslateText.SETTINGS_LAYOUT_SECTION_SCREENSHOT.getText(), x, startY, palette.getFontColor(ColorType.DARK), 12.5F, Fonts.MEDIUM);
-
-        String title = mode.getTranslate().getText();
-        String description = mode.getDescription();
-        nvg.drawText(title, x, startY + 16F, palette.getFontColor(ColorType.DARK), 11F, Fonts.MEDIUM);
-        nvg.drawText(description, x, startY + 30F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 8.5F, Fonts.REGULAR);
-
-        float previewY = startY + INFO_BLOCK_HEIGHT;
-        drawScreenshotPreview(nvg, palette, accent, x, previewY, width, SCREENSHOT_PREVIEW_HEIGHT, mode);
-
-        float dropdownY = previewY + SCREENSHOT_PREVIEW_HEIGHT + DROPDOWN_SPACING;
-        if (screenshotDropdown != null) {
-            float dropdownWidth = Math.min(300F, width);
-            setDropdownBounds(screenshotDropdown, x, dropdownY, dropdownWidth);
-            screenshotDropdown.draw(mouseX, mouseY, partialTicks);
-        }
-    }
-
-    private void setDropdownBounds(CompDropdown dropdown, float x, float y, float width) {
-        dropdown.setX(x);
-        dropdown.setY(y);
-        dropdown.setWidth(width);
-    }
-
-    private float calculateSectionHeight(float previewHeight, CompDropdown dropdown) {
-        float dropdownHeight = dropdown != null ? (DROPDOWN_CONTROL_HEIGHT + dropdown.getDropdownHeight()) : DROPDOWN_CONTROL_HEIGHT;
-        return INFO_BLOCK_HEIGHT + previewHeight + DROPDOWN_SPACING + dropdownHeight + 12F;
+        float dropdownWidth = Math.min(220F, previewWidth);
+        float dropdownX = previewX;
+        float dropdownY = y + height - areaDropdown.getHeight() - 10F;
+        areaDropdown.setX(dropdownX);
+        areaDropdown.setY(dropdownY);
+        areaDropdown.setWidth(dropdownWidth);
+        areaDropdown.draw(mouseX, mouseY, partialTicks);
     }
 
     private void drawLayoutPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, SettingsPanel.LayoutMode layoutMode) {
@@ -216,7 +217,6 @@ public class LayoutScene extends SettingScene {
         Color detailColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220);
 
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base);
-        //nvg.drawRoundedRect(x + 14F, y + 12F, width - 28F, 10F, 4F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 140));
 
         int columns = layoutMode == SettingsPanel.LayoutMode.SINGLE_COLUMN ? 1 : 2;
         int rows = 3;
@@ -239,7 +239,9 @@ public class LayoutScene extends SettingScene {
             }
         }
 
-        //nvg.drawGradientRoundedRect(x + padding, y + height - 18F, width - (padding * 2F), 5F, 3F, ColorUtils.applyAlpha(accent.getColor1(), 160), ColorUtils.applyAlpha(accent.getColor2(), 160));
+        float footerWidth = width - (padding * 2F);
+        nvg.drawGradientRoundedRect(x + padding, y + height - padding - 6F, footerWidth, 6F, 3F,
+                ColorUtils.applyAlpha(accent.getColor1(), 160), ColorUtils.applyAlpha(accent.getColor2(), 160));
     }
 
     private void drawModulePreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, int columns) {
@@ -264,7 +266,8 @@ public class LayoutScene extends SettingScene {
                 float cardY = y + padding + row * (cardHeight + rowGap);
                 nvg.drawRoundedRect(cardX, cardY, columnWidth, cardHeight, 6F, cardColor);
                 nvg.drawRoundedRect(cardX + 9F, cardY + 11F, columnWidth - 34F, 6F, 3F, pillColor);
-                nvg.drawRoundedRect(cardX + columnWidth - 20F, cardY + 10F, 12F, 12F, 6F, ColorUtils.applyAlpha(accent.getColor1(), 200));
+                nvg.drawRoundedRect(cardX + columnWidth - 20F, cardY + 10F, 12F, 12F, 6F,
+                        ColorUtils.applyAlpha(accent.getColor1(), 200));
             }
         }
     }
@@ -275,13 +278,13 @@ public class LayoutScene extends SettingScene {
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, background);
 
         if (mode == ScreenshotDisplayMode.GRID) {
-            drawGridPreview(nvg, palette, accent, x, y, width, height);
+            drawGridPreview(nvg, palette, x, y, width, height);
         } else {
             drawFilmstripPreview(nvg, palette, accent, x, y, width, height);
         }
     }
 
-    private void drawGridPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height) {
+    private void drawGridPreview(NanoVGManager nvg, ColorPalette palette, float x, float y, float width, float height) {
         int columns = 3;
         int rows = 2;
         float padding = 16F;
@@ -300,8 +303,6 @@ public class LayoutScene extends SettingScene {
                         ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210));
             }
         }
-
-        //nvg.drawGradientRoundedRect(x + padding, y + height - padding - 6F, width - (padding * 2F), 6F, 3F, ColorUtils.applyAlpha(accent.getColor1(), 160), ColorUtils.applyAlpha(accent.getColor2(), 160));
     }
 
     private void drawFilmstripPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height) {
@@ -324,72 +325,22 @@ public class LayoutScene extends SettingScene {
         }
     }
 
-    private void drawScrollbar(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float baseX, float baseY, float baseWidth,
-                               float baseHeight, float contentHeight, float scrollValue) {
-        if (contentHeight <= baseHeight) {
-            return;
-        }
-
-        float maxScroll = Math.max(0F, contentHeight - baseHeight);
-        float trackX = baseX + baseWidth - 10F;
-        float trackY = baseY + 10F;
-        float trackWidth = 4F;
-        float trackHeight = baseHeight - 20F;
-
-        nvg.drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 120));
-
-        float visibleRatio = Math.min(1F, baseHeight / contentHeight);
-        float handleHeight = Math.max(28F, trackHeight * visibleRatio);
-        float scrollOffset = -scrollValue;
-        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
-
-        nvg.drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F,
-                ColorUtils.applyAlpha(accent.getColor1(), 190),
-                ColorUtils.applyAlpha(accent.getColor2(), 190));
-    }
-
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton != 0) {
             return;
         }
 
-        float baseX = getX();
-        float baseY = getContentY();
-        float baseWidth = getWidth();
-        float baseHeight = getContentHeight();
-
-        if (!MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) {
-            closeDropdowns();
-            return;
-        }
-
-        if (layoutDropdown != null) {
-            layoutDropdown.mouseClicked(mouseX, mouseY, mouseButton);
-        }
-        if (moduleDropdown != null) {
-            moduleDropdown.mouseClicked(mouseX, mouseY, mouseButton);
-        }
-        if (screenshotDropdown != null) {
-            screenshotDropdown.mouseClicked(mouseX, mouseY, mouseButton);
-        }
+        typeDropdown.mouseClicked(mouseX, mouseY, mouseButton);
+        areaDropdown.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    private void closeDropdowns() {
-        if (layoutDropdown != null) {
-            layoutDropdown.setOpen(false);
-        }
-        if (moduleDropdown != null) {
-            moduleDropdown.setOpen(false);
-        }
-        if (screenshotDropdown != null) {
-            screenshotDropdown.setOpen(false);
-        }
-    }
-
-    @Override
-    public void keyTyped(char typedChar, int keyCode) {
-        contentScroll.onKey(keyCode);
+    private ConfigOwner dummyOwner() {
+        return new ConfigOwner() {
+            @Override
+            public String getConfigId() {
+                return "layout-scene-temp";
+            }
+        };
     }
 }

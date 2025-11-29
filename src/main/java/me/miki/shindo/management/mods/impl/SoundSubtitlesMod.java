@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
@@ -30,6 +32,7 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class SoundSubtitlesMod extends HUDMod {
 
+    @Getter
     private static SoundSubtitlesMod instance;
 
     private final List<Subtitle> subtitles = Lists.newArrayList();
@@ -48,17 +51,13 @@ public class SoundSubtitlesMod extends HUDMod {
         ResourceLocation mapped = new ResourceLocation("shindo/soundtitles/data.json");
 
         try {
-            JsonObject obj = new JsonParser().parse(read(mc.getResourceManager().getResource(mapped).getInputStream())).getAsJsonObject();
+            JsonObject obj = JsonParser.parseString(read(mc.getResourceManager().getResource(mapped).getInputStream())).getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
                 soundMap.put(entry.getKey(), entry.getValue().getAsString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ShindoLogger.error("Failed to load sound subtitles", e);
         }
-    }
-
-    public static SoundSubtitlesMod getInstance() {
-        return instance;
     }
 
     @EventTarget
@@ -66,7 +65,7 @@ public class SoundSubtitlesMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
     }
 
     private void drawNanoVG() {
@@ -135,7 +134,7 @@ public class SoundSubtitlesMod extends HUDMod {
                     animationOffsetY = 0;
                 }
 
-                this.drawCenteredText(subtitle.getString(), subtitleWidth / 2, animationOffsetY + 4, 9, getHudFont(1), this.getFontColor(opacity));
+                this.drawCenteredText(subtitle.getString(), subtitleWidth / 2F, animationOffsetY + 4, 9, getHudFont(1), this.getFontColor(opacity));
 
                 if (!flag) {
                     if (d0 > 0.0D) {

@@ -1,4 +1,4 @@
-package me.miki.shindo.api.ws.presence;
+package me.miki.shindo.api.websocket.presence;
 
 import lombok.Data;
 

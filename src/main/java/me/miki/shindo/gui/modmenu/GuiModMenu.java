@@ -1,6 +1,5 @@
 package me.miki.shindo.gui.modmenu;
 
-import eu.shoroa.contrib.cosmetic.CosmeticManager;
 import eu.shoroa.contrib.render.ShBlur;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiEditHUD;
@@ -107,7 +106,6 @@ public class GuiModMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 
-        CosmeticManager.getInstance().renderFBO();
         Shindo instance = Shindo.getInstance();
         NanoVGManager nvg = instance.getNanoVGManager();
 

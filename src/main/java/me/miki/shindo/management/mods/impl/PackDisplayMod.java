@@ -22,9 +22,11 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class PackDisplayMod extends HUDMod {
 
-    private final ResourcePackRepository resourcePackRepository = mc.getResourcePackRepository();
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private boolean compactSetting = false;
+
+    private final ResourcePackRepository resourcePackRepository = mc.getResourcePackRepository();
+
     private IResourcePack pack;
     private ResourceLocation currentPack;
     private List<ResourcePackRepository.Entry> packs = resourcePackRepository.getRepositoryEntries();
@@ -49,7 +51,7 @@ public class PackDisplayMod extends HUDMod {
             pack = this.getCurrentPack();
         }
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
     }
 
     private void drawNanoVG() {
@@ -96,9 +98,8 @@ public class PackDisplayMod extends HUDMod {
     }
 
     private IResourcePack getCurrentPack() {
-        if (packs.size() > 0) {
-            final IResourcePack last = packs.get(packs.size() - 1).getResourcePack();
-            return last;
+        if (!packs.isEmpty()) {
+            return packs.get(packs.size() - 1).getResourcePack();
         }
         return ((IMixinMinecraft) mc).getMcDefaultResourcePack();
     }

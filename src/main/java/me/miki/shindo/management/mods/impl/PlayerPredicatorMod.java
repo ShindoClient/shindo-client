@@ -1,5 +1,8 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.injection.interfaces.IMixinS14PacketEntity;
 import me.miki.shindo.management.event.EventTarget;
@@ -105,15 +108,10 @@ public class PlayerPredicatorMod extends Mod {
         }
     }
 
-    private class Position {
+    @AllArgsConstructor
+    private static class Position {
 
         private double x, y, z;
-
-        private Position(double x, double y, double z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
 
         private double squareDistanceTo(double x, double y, double z) {
 

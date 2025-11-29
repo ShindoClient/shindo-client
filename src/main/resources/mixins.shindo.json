@@ -74,7 +74,6 @@
     "mixins.client.renderer.entity.layer.MixinLayerArmorBase",
     "mixins.client.renderer.entity.layer.MixinLayerArrow",
     "mixins.client.renderer.entity.layer.MixinLayerCreeperCharge",
-    "mixins.client.renderer.entity.layer.MixinLayerDeadmau5Head",
     "mixins.client.renderer.entity.layer.MixinLayerHeldItem",
     "mixins.client.renderer.entity.layer.MixinLayerSpiderEyes",
     "mixins.client.renderer.entity.layer.MixinLayerWitherAura",

@@ -30,7 +30,7 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfoCallback {
-    private static final ResourceLocation PLACEHOLDER_IMAGE = new ResourceLocation("soar/music.png");
+    private static final ResourceLocation PLACEHOLDER_IMAGE = new ResourceLocation("shindo/music.png");
     private static final long LYRICS_SCROLL_DURATION = 500L;
     @Getter
     private static MusicInfoMod instance;

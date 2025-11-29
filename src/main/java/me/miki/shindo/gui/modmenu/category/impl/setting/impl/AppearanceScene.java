@@ -110,8 +110,7 @@ public class AppearanceScene extends SettingScene {
         float containerRadius = 12F;
         nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7);
         nvg.drawRoundedRect(baseX, baseY, baseWidth, baseHeight, containerRadius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210));
-        nvg.drawRoundedRect(baseX + 1F, baseY + 1F, baseWidth - 2F, baseHeight - 2F, containerRadius - 1F,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
+        nvg.drawRoundedRect(baseX + 1F, baseY + 1F, baseWidth - 2F, baseHeight - 2F, containerRadius - 1F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230));
 
         float top = baseY + OUTER_PADDING;
         float themeHeight = 122F;
@@ -176,7 +175,7 @@ public class AppearanceScene extends SettingScene {
         nvg.resetScissor();
         nvg.restore();
 
-        drawScrollbar(nvg, palette, currentAccent, baseX, baseY, baseWidth, baseHeight, contentHeight, verticalScroll);
+        nvg.drawScrollbar(baseX, baseY, baseWidth, baseHeight, contentHeight, verticalScroll, palette, currentAccent, 30F);
     }
 
     private void drawSectionTitle(NanoVGManager nvg, String title, String subtitle, float x, float y, ColorPalette palette) {
@@ -293,30 +292,6 @@ public class AppearanceScene extends SettingScene {
             card.draw(mouseX, mouseY, partialTicks);
             currentY += cardHeight + 18F;
         }
-    }
-
-    private void drawScrollbar(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float baseX, float baseY, float baseWidth, float baseHeight, float contentHeight, float scrollValue) {
-
-        float maxScroll = Math.max(0F, contentHeight - baseHeight);
-        if (maxScroll <= 0F) {
-            return;
-        }
-
-        float trackX = baseX + baseWidth - 10F;
-        float trackY = baseY + 12F;
-        float trackWidth = 4F;
-        float trackHeight = baseHeight - 24F;
-
-        nvg.drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2F,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 130));
-
-        float visibleRatio = Math.min(1F, baseHeight / contentHeight);
-        float handleHeight = Math.max(30F, trackHeight * visibleRatio);
-        float scrollOffset = -scrollValue;
-        float handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll);
-
-        nvg.drawGradientRoundedRect(trackX - 1F, handleY, trackWidth + 2F, handleHeight, 3F,
-                ColorUtils.applyAlpha(accent.getColor1(), 190), ColorUtils.applyAlpha(accent.getColor2(), 190));
     }
 
     @Override

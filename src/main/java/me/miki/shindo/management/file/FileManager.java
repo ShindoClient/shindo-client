@@ -1,5 +1,6 @@
 package me.miki.shindo.management.file;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import net.minecraft.client.Minecraft;
@@ -7,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import java.io.File;
 import java.io.IOException;
 
+@Getter
 public class FileManager {
 
     private final File shindoDir;
@@ -26,8 +28,6 @@ public class FileManager {
     private final File customCapeDir;
     private final File capeCacheDir;
 
-    private final File wingCacheDir;
-    private final File bandannaCacheDir;
     private final File profileIconDir;
 
 
@@ -50,8 +50,6 @@ public class FileManager {
 
         customCapeDir = new File(cacheDir, "custom-cape");
         capeCacheDir = new File(cacheDir, "cape");
-        wingCacheDir = new File(cacheDir, "wing");
-        bandannaCacheDir = new File(cacheDir, "bandanna");
         profileIconDir = new File(cacheDir, "profile-icon");
 
 
@@ -81,8 +79,6 @@ public class FileManager {
 
             if (!customCapeDir.exists()) createDir(customCapeDir);
             if (!capeCacheDir.exists()) createDir(capeCacheDir);
-            if (!wingCacheDir.exists()) createDir(wingCacheDir);
-            if (!bandannaCacheDir.exists()) createDir(bandannaCacheDir);
             if (!profileIconDir.exists()) createDir(profileIconDir);
 
 
@@ -114,70 +110,6 @@ public class FileManager {
         } catch (IOException e) {
             ShindoLogger.error("Failed to create file " + file.getName(), e);
         }
-    }
-
-    public File getShindoDir() {
-        return shindoDir;
-    }
-
-    public File getExternalDir() {
-        return externalDir;
-    }
-
-    public File getCacheDir() {
-        return cacheDir;
-    }
-
-    public File getMusicDir() {
-        return musicDir;
-    }
-
-    public File getProfileDir() {
-        return profileDir;
-    }
-
-    public File getScreenshotDir() {
-        return screenshotDir;
-    }
-
-    public File getAddonsDir() {
-        return addonsDir;
-    }
-
-    public File getAddonConfigDir() {
-        return addonConfigDir;
-    }
-
-    public File getGamesDir() {
-        return gamesDir;
-    }
-
-    public File getSkinsDir() {
-        return skinsDir;
-    }
-
-    public File getServersDir() {
-        return serversDir;
-    }
-
-    public File getCustomCapeDir() {
-        return customCapeDir;
-    }
-
-    public File getCapeCacheDir() {
-        return capeCacheDir;
-    }
-
-    public File getWingCacheDir() {
-        return wingCacheDir;
-    }
-
-    public File getBandannaCacheDir() {
-        return bandannaCacheDir;
-    }
-
-    public File getProfileIconDir() {
-        return profileIconDir;
     }
 
 }

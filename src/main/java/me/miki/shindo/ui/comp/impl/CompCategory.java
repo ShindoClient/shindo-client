@@ -60,11 +60,11 @@ public class CompCategory extends Comp {
         ctx.nvg().drawText(setting.getName(), x + 14, y + 11, palette.getFontColor(ColorType.DARK), 12, Fonts.MEDIUM);
 
         String icon = setting.isCollapsed() ? LegacyIcon.CHEVRON_RIGHT : LegacyIcon.CHEVRON_DOWN;
-        ctx.nvg().drawText(icon, x + width - 20, y + 11, palette.getFontColor(ColorType.NORMAL), 11, Fonts.LEGACYICON);
+        ctx.nvg().drawText(icon, x + width - 20, y + 11, palette.getFontColor(ColorType.NORMAL), 12, Fonts.LEGACYICON);
 
         float dividerAlpha = 40 + (hoverAnimation.getValue() * 80);
-        UIRenderer.drawDivider(ctx, x + 12, y + height - 3, width - 24, 2, 1, dividerAlpha);
-
+        float dividerWidth = width - (28 + (ctx.nvg().getTextWidth(setting.getName(), 12, Fonts.MEDIUM) + 4F) + (ctx.nvg().getTextWidth(icon, 12, Fonts.LEGACYICON) + 20F));
+        UIRenderer.drawDivider(ctx, x + 14 + (ctx.nvg().getTextWidth(setting.getName(), 12, Fonts.MEDIUM) + 4F), y + 16F, dividerWidth, 2, 1, dividerAlpha);
         super.draw(mouseX, mouseY, partialTicks);
 
     }

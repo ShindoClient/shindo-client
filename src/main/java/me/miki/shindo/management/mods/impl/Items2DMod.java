@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -8,16 +9,13 @@ import me.miki.shindo.management.notification.NotificationType;
 
 public class Items2DMod extends Mod {
 
+    @Getter
     private static Items2DMod instance;
 
     public Items2DMod() {
         super(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER);
 
         instance = this;
-    }
-
-    public static Items2DMod getInstance() {
-        return instance;
     }
 
     @Override

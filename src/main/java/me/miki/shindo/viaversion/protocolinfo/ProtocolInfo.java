@@ -1,10 +1,12 @@
 package me.miki.shindo.viaversion.protocolinfo;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 public class ProtocolInfo {
     private static final String NO_DESC = "No Description Available";
 
@@ -71,19 +73,4 @@ public class ProtocolInfo {
         return null;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getReleaseDate() {
-        return releaseDate;
-    }
-
-    public ProtocolVersion getProtocolVersion() {
-        return protocolVersion;
-    }
 }

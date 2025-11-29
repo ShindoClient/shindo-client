@@ -35,7 +35,7 @@ public class KeystrokesMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
     }
 
     private void drawNanoVG() {
@@ -85,10 +85,10 @@ public class KeystrokesMod extends HUDMod {
         this.restore();
 
         if (!unmarkedSetting) {
-            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindForward.getKeyCode()), 32 + (28 / 2), (28 / 2) - 4, 12, getHudFont(1));
-            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindLeft.getKeyCode()), (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
-            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindBack.getKeyCode()), 32 + (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
-            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindRight.getKeyCode()), 64 + (28 / 2), 32 + (28 / 2) - 4, 12, getHudFont(1));
+            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindForward.getKeyCode()), 32 + (28 / 2F), (28 / 2F) - 4, 12, getHudFont(1));
+            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindLeft.getKeyCode()), (28 / 2F), 32 + (28 / 2F) - 4, 12, getHudFont(1));
+            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindBack.getKeyCode()), 32 + (28 / 2F), 32 + (28 / 2F) - 4, 12, getHudFont(1));
+            this.drawCenteredText(Keyboard.getKeyName(mc.gameSettings.keyBindRight.getKeyCode()), 64 + (28 / 2F), 32 + (28 / 2F) - 4, 12, getHudFont(1));
         }
 
         if (spaceSetting) {

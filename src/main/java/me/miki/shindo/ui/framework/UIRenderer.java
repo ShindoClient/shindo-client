@@ -18,10 +18,10 @@ public final class UIRenderer {
     public static void drawSettingSurface(UIContext ctx, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, float radius, float hoverProgress) {
 
         int overlayAlpha = (int) (18 + (hoverProgress * 26));
-        int fillAlpha = (int) (120 + (hoverProgress * 32));
-        int outlineAlpha = (int) (hoverProgress * 120);
+        int fillAlpha = (int) (180 + (hoverProgress * 32));
+        int outlineAlpha = (int) (hoverProgress * 160);
 
-        ctx.nvg().drawRoundedRect(x, y, width, height, radius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), fillAlpha));
+        ctx.nvg().drawRoundedRect(x, y, width, height, radius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), fillAlpha));
         ctx.nvg().drawGradientRoundedRect(x, y, width, height, radius, ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha), ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha));
 
         if (outlineAlpha > 0) {

@@ -2,6 +2,7 @@ package me.miki.shindo.ui.comp.impl.field;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.utils.ColorUtils;
@@ -15,6 +16,8 @@ public class CompMainMenuTextBox extends CompTextBoxBase {
 
     private final TimerUtils timer = new TimerUtils();
     private final SimpleAnimation animation = new SimpleAnimation();
+
+
     @Setter
     @Getter
     private Color backgroundColor, fontColor;
@@ -23,7 +26,7 @@ public class CompMainMenuTextBox extends CompTextBoxBase {
 
 
     @Setter
-    private boolean passwordMode = false; // ✅ Adicionado
+    private boolean passwordMode = false;
 
     public CompMainMenuTextBox(float x, float y, float width, float height) {
         super(x, y, width, height);
@@ -45,7 +48,7 @@ public class CompMainMenuTextBox extends CompTextBoxBase {
         float height = this.getHeight();
         int selectionEnd = this.getSelectionEnd();
         int cursorPosition = this.getCursorPosition();
-        String rawText = this.getText(); // ✅ Texto real
+        String rawText = this.getText();
         String drawText = passwordMode ? repeat(rawText.length()) : rawText;
         boolean focused = this.isFocused();
 
@@ -73,20 +76,6 @@ public class CompMainMenuTextBox extends CompTextBoxBase {
             addX = this.getWidth() - nvg.getTextWidth(reversedText.substring(outTextSize - selectionEnd), halfHeight, Fonts.REGULAR) - halfHeight - 5;
         }
 
-        animation.setAnimation(!focused && rawText.isEmpty() ? 1.0F : 0.0F, 16);
-
-        if (icon != null && title != null) {
-
-            nvg.drawText(icon, this.getX() + 5, this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2), fontColor, halfHeight, Fonts.LEGACYICON);
-
-            if (rawText.isEmpty()) {
-                nvg.save();
-                nvg.translate((animation.getValue() * 8) - 8, 0);
-                nvg.drawText(title, this.getX() + 16, this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2) + 1, ColorUtils.applyAlpha(fontColor, (int) (animation.getValue() * 255)), halfHeight, Fonts.REGULAR);
-                nvg.restore();
-            }
-        }
-
         nvg.drawRoundedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 4, backgroundColor);
 
         nvg.save();
@@ -104,6 +93,20 @@ public class CompMainMenuTextBox extends CompTextBoxBase {
 
             if (selectionWidth != 0) {
                 nvg.drawRect(this.getX() + offset + addX - 1, this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2), selectionWidth, nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR), new Color(0, 135, 247));
+            }
+        }
+
+        animation.setAnimation(!focused && rawText.isEmpty() ? 1.0F : 0.0F, 16);
+
+        if (icon != null && title != null) {
+
+            nvg.drawText(icon, this.getX() + 5, this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2), fontColor, halfHeight, Fonts.LEGACYICON);
+
+            if (rawText.isEmpty()) {
+                nvg.save();
+                nvg.translate((animation.getValue() * 8) - 8, 0);
+                nvg.drawText(title, this.getX() + 16, this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2) + 1, ColorUtils.applyAlpha(fontColor, (int) (animation.getValue() * 255)), halfHeight, Fonts.REGULAR);
+                nvg.restore();
             }
         }
 

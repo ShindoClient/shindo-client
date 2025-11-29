@@ -20,6 +20,7 @@ import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground;
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground;
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer;
 import me.miki.shindo.utils.ColorUtils;
+import me.miki.shindo.utils.SkinUtils;
 import me.miki.shindo.utils.Sound;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
@@ -28,6 +29,7 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
@@ -114,7 +116,6 @@ public class GuiShindoMainMenu extends GuiScreen {
 
             if (!isFirstLogin) {
                 drawButtons(mouseX, mouseY, sr, nvg);
-                drawIdentity(mouseX, mouseY, nvg);
             }
         });
 
@@ -189,23 +190,6 @@ public class GuiShindoMainMenu extends GuiScreen {
         nvg.drawRoundedRect(sr.getScaledWidth() - (28 * 4), 6, 22, 22, 4, controlColor);
         nvg.drawCenteredText(LegacyIcon.SKIN, sr.getScaledWidth() - (26 * 4) + 3.5F, 9.5F, new Color(255 - (int) (skinFocusAnimation.getValue() * 200), 255, 255), 15, Fonts.LEGACYICON);
 
-    }
-
-    private void drawIdentity(int mouseX, int mouseY, NanoVGManager nvg) {
-        String username = mc.getSession().getUsername();
-        if (username == null || username.trim().isEmpty()) {
-            return;
-        }
-
-        float textWidth = nvg.getTextWidth(username, 9.5F, Fonts.REGULAR);
-        float cardWidth = Math.max(90F, textWidth + 32F);
-        boolean hover = MouseUtils.isInside(mouseX, mouseY, 6, 6, cardWidth, 20);
-        Color controlColor = getControlFillColor();
-        Color fill = ColorUtils.applyAlpha(controlColor, hover ? Math.min(255, controlColor.getAlpha() + 10) : controlColor.getAlpha());
-
-        nvg.drawRoundedRect(6, 6, cardWidth, 20, 4, fill);
-        nvg.drawPlayerHead(new ResourceLocation("textures/entity/steve.png"), 9, 9, 14, 14, 2);
-        nvg.drawText(username, 26, 13, new Color(255, 255, 255), 9.5F, Fonts.REGULAR);
     }
 
     private void drawSplashScreen(ScaledResolution sr, NanoVGManager nvg) {

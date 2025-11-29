@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
@@ -26,19 +27,19 @@ public class MechvibesMod extends Mod {
 
     private final HashMap<Integer, SoundKey> keyMap = new HashMap<Integer, SoundKey>();
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.KEYBOARD, category = "Keyboard")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.KEYBOARD)
     private boolean keyboardEnabled = true;
 
-    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE, category = "Keyboard")
+    @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private KeyType keyType = KeyType.NK_CREAM;
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.KEYBOARD_VOLUME, category = "Keyboard", min = 0, max = 1, step = 0.05, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.KEYBOARD_VOLUME, min = 0, max = 1, step = 0.05, current = 0.5)
     private double keyboardVolume = 0.5;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MOUSE, category = "Mouse")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MOUSE)
     private boolean mouseEnabled = true;
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MOUSE_VOLUME, category = "Mouse", min = 0, max = 1, step = 0.05, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MOUSE_VOLUME, min = 0, max = 1, step = 0.05, current = 0.5)
     private double mouseVolume = 0.5;
     private float tempKeyboardVolume;
     private String tempKeyboardMode;
@@ -187,6 +188,7 @@ public class MechvibesMod extends Mod {
                 mouseLeftSound.loadClip(new ResourceLocation("shindo/mechvibes/mouse.wav"));
                 mouseRightSound.loadClip(new ResourceLocation("shindo/mechvibes/mouse.wav"));
             } catch (Exception e) {
+                ShindoLogger.error("An error occurred while loading mouse sounds", e);
             }
             mouseLeftSound.setVolume((float) mouseVolume);
             mouseRightSound.setVolume((float) mouseVolume);

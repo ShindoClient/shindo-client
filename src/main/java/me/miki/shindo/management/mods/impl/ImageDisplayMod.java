@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl;
 
 import me.miki.shindo.Shindo;
+import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
@@ -39,7 +40,7 @@ public class ImageDisplayMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
     }
 
     private void drawNanoVG() {
@@ -49,6 +50,7 @@ public class ImageDisplayMod extends HUDMod {
             try {
                 image = ImageIO.read(imageFile);
             } catch (IOException e) {
+                ShindoLogger.error("Error reading image file: " + imageFile.getAbsolutePath(), e);
             }
         }
 

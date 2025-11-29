@@ -12,16 +12,22 @@ public class SoundModifierMod extends Mod {
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NOTE, min = 0, max = 100, current = 100, step = 1)
     private int noteSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.TNT, min = 0, max = 100, current = 100, step = 1)
     private int tntSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.PORTAL, min = 0, max = 100, current = 100, step = 1)
     private int portalSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.STEP, min = 0, max = 100, current = 100, step = 1)
     private int stepSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.MOBS, min = 0, max = 100, current = 100, step = 1)
     private int mobsSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.RECORDS, min = 0, max = 100, current = 100, step = 1)
     private int recordsSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.FIREWORKS, min = 0, max = 100, current = 100, step = 1)
     private int fireworksSetting = 100;
 

@@ -1,14 +1,21 @@
 package me.miki.shindo.management.nanovg.font;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.util.ResourceLocation;
 
 import java.nio.ByteBuffer;
 
+@Getter
 public class Font {
 
     private final String name;
     private final ResourceLocation resourceLocation;
+
+    @Setter
     private boolean loaded;
+
+    @Setter
     private ByteBuffer buffer;
 
     public Font(String name, ResourceLocation resourceLocation) {
@@ -18,27 +25,4 @@ public class Font {
         this.buffer = null;
     }
 
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
-    }
-
-    public ByteBuffer getBuffer() {
-        return buffer;
-    }
-
-    public void setBuffer(ByteBuffer buffer) {
-        this.buffer = buffer;
-    }
-
-    public ResourceLocation getResourceLocation() {
-        return resourceLocation;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

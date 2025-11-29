@@ -139,9 +139,6 @@ public class MoBendsMod extends Mod {
             WaveyCapesMod.getInstance().setToggled(false);
         }
 
-        if (FemaleGenderMod.getInstance().isToggled()) {
-            FemaleGenderMod.getInstance().setToggled(false);
-        }
 
         if (!loaded) {
             AnimatedEntity.register();

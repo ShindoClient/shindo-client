@@ -18,14 +18,19 @@ public class RearviewMod extends HUDMod {
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 10, max = 500, current = 190, step = 1)
     private int rearviewWidthSetting = 190;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT, min = 10, max = 500, current = 100, step = 1)
     private int rearviewHeightSetting = 100;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.FPS, min = 1, max = 120, current = 60, step = 1)
     private int fpsSetting = 60;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.FOV, min = 30, max = 120, current = 70, step = 1)
     private int fovSetting = 70;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOCK_CAMERA)
     private boolean lockCameraSetting = true;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0F, max = 1.0F, current = 1.0F)
     private double alphaSetting = 1.0F;
 

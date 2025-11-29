@@ -55,7 +55,7 @@ public class TargetInfoMod extends HUDMod {
         }
 
         if (name != null && head != null) {
-            screenAnimation.wrap(() -> drawNanoVG(), this.getX(), this.getY(), this.getWidth(), this.getHeight(), 2 - introAnimation.getValueFloat(), introAnimation.getValueFloat());
+            screenAnimation.wrap(this::drawNanoVG, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 2 - introAnimation.getValueFloat(), introAnimation.getValueFloat());
         }
     }
 

@@ -17,8 +17,10 @@ public class TabEditorMod extends Mod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private boolean backgroundSetting = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HEAD)
     private boolean headSetting = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PING_NUMBER)
     private boolean pingSetting = true;
 

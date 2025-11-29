@@ -33,7 +33,6 @@ public class ModManager {
         registerMod(new CalendarMod());
         registerMod(new ChatMod());
         registerMod(new ChatTranslateMod());
-        //registerMod(new ChunkAnimatorMod());
         registerMod(new ChunkBordersMod());
         registerMod(new ClearGlassMod());
         registerMod(new ClearWaterMod());
@@ -51,10 +50,8 @@ public class ModManager {
         registerMod(new DamageTintMod());
         registerMod(new DayCounterMod());
         registerMod(new DiscordRPCMod());
-        registerMod(new EarsMod());
         registerMod(new EntityCullingMod());
         registerMod(new FarCameraMod());
-        registerMod(new FemaleGenderMod());
         registerMod(new FovModifierMod());
         registerMod(new FPSBoostMod());
         registerMod(new FPSDisplayMod());

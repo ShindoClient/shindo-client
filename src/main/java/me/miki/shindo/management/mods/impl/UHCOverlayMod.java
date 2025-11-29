@@ -17,12 +17,16 @@ public class UHCOverlayMod extends Mod {
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GOLD_INGOT_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
     private double goldIngotScaleSetting = 1.5F;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GOLD_NUGGET_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
     private double goldNuggetScaleSetting = 1.5F;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GOLD_ORE_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
     private double goldOreScaleSetting = 1.5F;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GOLD_APPLE_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
     private double goldAppleScaleSetting = 1.5F;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SKULL_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
     private double skullScaleSetting = 1.5F;
 

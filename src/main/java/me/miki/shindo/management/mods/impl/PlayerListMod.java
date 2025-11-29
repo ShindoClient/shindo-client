@@ -27,7 +27,7 @@ public class PlayerListMod extends HUDMod {
 
         NanoVGManager nvg = Shindo.getInstance().getNanoVGManager();
 
-        nvg.setupAndDraw(() -> drawNanoVG());
+        nvg.setupAndDraw(this::drawNanoVG);
     }
 
     private void drawNanoVG() {

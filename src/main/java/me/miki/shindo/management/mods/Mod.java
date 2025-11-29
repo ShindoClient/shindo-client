@@ -1,15 +1,10 @@
 package me.miki.shindo.management.mods;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.annotation.Author;
-import me.miki.shindo.management.annotation.Description;
-import me.miki.shindo.management.annotation.Name;
-import me.miki.shindo.management.annotation.NotNull;
-import me.miki.shindo.management.annotation.Since;
-import me.miki.shindo.management.annotation.Version;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.notification.NotificationType;
 import me.miki.shindo.management.settings.config.ConfigOwner;
@@ -17,30 +12,30 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
-@Name("Mod")
-@Description("Base class for every Shindo client module.")
-@Author({"MikiDevAHM"})
 public class Mod implements ConfigOwner {
 
     private final TranslateText nameTranslate;
+
     private final TranslateText descriptionTranslate;
 
     @Getter
-    @NotNull
+    @NonNull
     private final SimpleAnimation animation = new SimpleAnimation();
 
     @Getter
-    @NotNull
+    @NonNull
     private final SimpleAnimation hoverAnimation = new SimpleAnimation();
 
     @Getter
-    @NotNull
+    @NonNull
     private final SimpleAnimation settingsHoverAnimation = new SimpleAnimation();
 
-    @NotNull
+    @NonNull
     public Minecraft mc = Minecraft.getMinecraft();
-    @NotNull
+
+    @NonNull
     public FontRenderer fr = mc.fontRendererObj;
+
     @Getter
     private boolean toggled;
 
@@ -92,6 +87,7 @@ public class Mod implements ConfigOwner {
     }
 
     public void setup() {
+
     }
 
     public void onEnable() {

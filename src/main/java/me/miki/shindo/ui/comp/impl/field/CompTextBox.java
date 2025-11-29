@@ -16,6 +16,8 @@ public class CompTextBox extends CompTextBoxBase {
 
     private final TimerUtils timer = new TimerUtils();
     private final SimpleAnimation animation = new SimpleAnimation();
+
+
     @Setter
     @Getter
     private String defaultText = null;

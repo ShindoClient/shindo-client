@@ -13,13 +13,13 @@ public class FPSLimiterMod extends Mod {
 
     private static FPSLimiterMod instance;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LIMIT_MAX_FPS, category = "Gameplay")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LIMIT_MAX_FPS)
     private boolean limitMaxFpsSetting = true;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX_FPS, category = "Gameplay", min = 240, max = 1440, step = 1, current = 480)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX_FPS, min = 240, max = 1440, step = 1, current = 480)
     private int maxFpsSetting = 480;
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LIMIT_GUI_FPS, category = "Menus")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LIMIT_GUI_FPS)
     private boolean limitGuiFps = true;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.GUI_FPS, category = "Menus", min = 1, max = 240, step = 1, current = 30)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.GUI_FPS, min = 1, max = 240, step = 1, current = 30)
     private int guiFpsSetting = 30;
 
     public FPSLimiterMod() {

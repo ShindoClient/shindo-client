@@ -16,10 +16,10 @@ public class MemoryUsageMod extends SimpleHUDMod {
 
     private final SimpleAnimation animation = new SimpleAnimation();
 
-    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN, category = "Display")
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private Design design = Design.SIMPLE;
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
     public MemoryUsageMod() {
@@ -43,8 +43,8 @@ public class MemoryUsageMod extends SimpleHUDMod {
         animation.setAnimation(((this.getUsingMemory() / 100F) * 360), 16);
 
         this.drawBackground(54, 60);
-        this.drawCenteredText("Memory", 54 / 2, 6, 9, getHudFont(1));
-        this.drawCenteredText(this.getUsingMemory() + "%", 54 / 2, 32, 9, getHudFont(1));
+        this.drawCenteredText("Memory", 54 / 2F, 6, 9, getHudFont(1));
+        this.drawCenteredText(this.getUsingMemory() + "%", 54 / 2F, 32, 9, getHudFont(1));
 
         this.drawArc(27, 35.5F, 16.5F, -90, 360, 1.6F, this.getFontColor(120));
         this.drawArc(27, 35.5F, 16.5F, -90, animation.getValue() - 90, 1.6F, this.getFontColor());
@@ -56,9 +56,7 @@ public class MemoryUsageMod extends SimpleHUDMod {
     @Override
     public String getText() {
 
-        String mem = "Mem: " + getUsingMemory() + "%";
-
-        return mem;
+        return "Mem: " + getUsingMemory() + "%";
     }
 
     @Override

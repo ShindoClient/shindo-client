@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 
 public class RawInputMod extends Mod {
 
+    @Getter
     private static RawInputMod instance;
 
     private final ArrayList<Mouse> mouseList = new ArrayList<Mouse>();
@@ -24,10 +26,6 @@ public class RawInputMod extends Mod {
         super(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER);
 
         instance = this;
-    }
-
-    public static RawInputMod getInstance() {
-        return instance;
     }
 
     @Override

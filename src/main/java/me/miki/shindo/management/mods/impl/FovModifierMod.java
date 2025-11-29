@@ -17,13 +17,13 @@ import java.util.Collection;
 
 public class FovModifierMod extends Mod {
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRINTING, category = "Modifiers", min = -5, max = 5, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRINTING, min = -5, max = 5, current = 1)
     private double sprintingSetting = 1;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.BOW, category = "Modifiers", min = -5, max = 5, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BOW, min = -5, max = 5, current = 1)
     private double bowSetting = 1;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, category = "Modifiers", min = -5, max = 5, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = -5, max = 5, current = 1)
     private double speedSetting = 1;
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SLOWNESS, category = "Modifiers", min = -5, max = 5, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SLOWNESS, min = -5, max = 5, current = 1)
     private double slownessSetting = 1;
 
     public FovModifierMod() {

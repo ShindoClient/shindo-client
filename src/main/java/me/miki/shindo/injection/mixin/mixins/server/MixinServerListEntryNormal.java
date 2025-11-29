@@ -32,12 +32,15 @@ public abstract class MixinServerListEntryNormal implements GuiListExtended.IGui
     @Shadow
     @Final
     private static ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
+
     @Shadow
     @Final
     private static ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
+
     @Shadow
     @Final
     private static ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
+
     @Shadow
     @Final
     private ServerData server;
@@ -45,16 +48,21 @@ public abstract class MixinServerListEntryNormal implements GuiListExtended.IGui
     @Shadow
     @Final
     private Minecraft mc;
+
     @Shadow
     @Final
     private GuiMultiplayer owner;
+
     @Shadow
     @Final
     private ResourceLocation serverIcon;
+
     @Shadow
     private String field_148299_g;
+
     @Shadow
     private DynamicTexture field_148305_h;
+
     @Shadow
     private long field_148298_f;
 

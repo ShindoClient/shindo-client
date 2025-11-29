@@ -29,10 +29,13 @@ public class ScoreboardMod extends HUDMod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private boolean showBackground = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NUMBER)
     private boolean showNumbers = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHADOW)
     private boolean drawShadow = false;
+
     private ScoreObjective objective;
     private boolean isFirstLoad;
 

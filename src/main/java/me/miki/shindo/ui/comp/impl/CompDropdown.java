@@ -29,6 +29,8 @@ public class CompDropdown extends Comp {
     @Getter
     private float width;
     private boolean open;
+    @Setter
+    private boolean openUp;
 
     public CompDropdown(float x, float y, float width, ComboSetting setting) {
         super(x, y);
@@ -84,8 +86,8 @@ public class CompDropdown extends Comp {
 
         if (open && getOptionCount() > 0) {
             float listX = x;
-            float listY = y + controlHeight + 4F;
             float listHeight = dropdownHeight;
+            float listY = openUp ? y - listHeight - 4F : y + controlHeight + 4F;
 
             nvg.drawRoundedRect(listX, listY, width, listHeight, 5F,
                     ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 240));
@@ -119,10 +121,9 @@ public class CompDropdown extends Comp {
 
         float controlHeight = CONTROL_HEIGHT;
         float listX = getX();
-        float listY = getY() + controlHeight + 4F;
-        float listWidth = width;
         float listHeight = getDropdownHeight();
-
+        float listY = openUp ? getY() - listHeight - 4F : getY() + controlHeight + 4F;
+        float listWidth = width;
         if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), width, controlHeight)) {
             open = !open;
             return;
@@ -147,7 +148,8 @@ public class CompDropdown extends Comp {
         }
 
         float optionX = getX() + 2F;
-        float optionY = getY() + CONTROL_HEIGHT + 4F + LIST_PADDING;
+        float listHeight = getDropdownHeight();
+        float optionY = (openUp ? getY() - listHeight - 4F : getY() + CONTROL_HEIGHT + 4F) + LIST_PADDING;
 
         for (Option option : options) {
             if (MouseUtils.isInside(mouseX, mouseY, optionX, optionY, width - 4F, OPTION_HEIGHT - 2F)) {

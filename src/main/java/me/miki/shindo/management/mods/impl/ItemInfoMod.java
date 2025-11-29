@@ -29,36 +29,37 @@ public class ItemInfoMod extends Mod {
     @SuppressWarnings({"unchecked", "rawtypes", "serial"})
     private final Map ENCHANTMENT_SHORT_NAME = new HashMap() {
         {
-            this.put(Integer.valueOf(0), "P");
-            this.put(Integer.valueOf(1), "FP");
-            this.put(Integer.valueOf(2), "FF");
-            this.put(Integer.valueOf(3), "BP");
-            this.put(Integer.valueOf(4), "PP");
-            this.put(Integer.valueOf(5), "R");
-            this.put(Integer.valueOf(6), "AA");
-            this.put(Integer.valueOf(7), "T");
-            this.put(Integer.valueOf(8), "DS");
-            this.put(Integer.valueOf(9), "FW");
-            this.put(Integer.valueOf(16), "SH");
-            this.put(Integer.valueOf(17), "SM");
-            this.put(Integer.valueOf(18), "BoA");
-            this.put(Integer.valueOf(19), "KB");
-            this.put(Integer.valueOf(20), "FA");
-            this.put(Integer.valueOf(21), "L");
-            this.put(Integer.valueOf(32), "EFF");
-            this.put(Integer.valueOf(33), "ST");
-            this.put(Integer.valueOf(34), "UNB");
-            this.put(Integer.valueOf(35), "F");
-            this.put(Integer.valueOf(48), "POW");
-            this.put(Integer.valueOf(49), "PUN");
-            this.put(Integer.valueOf(50), "FLA");
-            this.put(Integer.valueOf(51), "INF");
-            this.put(Integer.valueOf(61), "LoS");
-            this.put(Integer.valueOf(62), "LU");
-            this.put(Integer.valueOf(70), "MEN");
+            this.put(0, "P");
+            this.put(1, "FP");
+            this.put(2, "FF");
+            this.put(3, "BP");
+            this.put(4, "PP");
+            this.put(5, "R");
+            this.put(6, "AA");
+            this.put(7, "T");
+            this.put(8, "DS");
+            this.put(9, "FW");
+            this.put(16, "SH");
+            this.put(17, "SM");
+            this.put(18, "BoA");
+            this.put(19, "KB");
+            this.put(20, "FA");
+            this.put(21, "L");
+            this.put(32, "EFF");
+            this.put(33, "ST");
+            this.put(34, "UNB");
+            this.put(35, "F");
+            this.put(48, "POW");
+            this.put(49, "PUN");
+            this.put(50, "FLA");
+            this.put(51, "INF");
+            this.put(61, "LoS");
+            this.put(62, "LU");
+            this.put(70, "MEN");
         }
     };
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.POTION_COLOR, category = "Display")
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.POTION_COLOR)
     private boolean potionColorSetting;
 
     public ItemInfoMod() {
@@ -88,7 +89,7 @@ public class ItemInfoMod extends Mod {
                 addY = 55;
             }
 
-            fr.drawStringWithShadow(s1, (sr.getScaledWidth() / 2) - (mc.fontRendererObj.getStringWidth(s1) / 2), sr.getScaledHeight() - addY - 1, event.getColor());
+            fr.drawStringWithShadow(s1, (sr.getScaledWidth() / 2F) - (mc.fontRendererObj.getStringWidth(s1) / 2F), sr.getScaledHeight() - addY - 1, event.getColor());
         }
     }
 
@@ -100,10 +101,9 @@ public class ItemInfoMod extends Mod {
             return "";
         } else {
             StringBuilder potionBuilder = new StringBuilder();
-            Iterator<?> iterator = effects.iterator();
 
-            while (iterator.hasNext()) {
-                PotionEffect entry = (PotionEffect) iterator.next();
+            for (Object effect : effects) {
+                PotionEffect entry = (PotionEffect) effect;
                 int duration = entry.getDuration() / 20;
 
                 if (potionColorSetting) {
@@ -142,7 +142,7 @@ public class ItemInfoMod extends Mod {
                 potionBuilder.append(entry.getAmplifier() + 1);
                 potionBuilder.append(" ");
                 potionBuilder.append("(");
-                potionBuilder.append(duration / 60 + String.format(":%02d", new Object[]{Integer.valueOf(duration % 60)}));
+                potionBuilder.append(duration / 60).append(String.format(":%02d", duration % 60));
                 potionBuilder.append(") ");
             }
 
@@ -154,10 +154,9 @@ public class ItemInfoMod extends Mod {
     private String getEnchantmentString(ItemStack heldItemStack) {
         StringBuilder enchantBuilder = new StringBuilder();
         Map en = EnchantmentHelper.getEnchantments(heldItemStack);
-        Iterator iterator = en.entrySet().iterator();
 
-        while (iterator.hasNext()) {
-            Entry entry = (Entry) iterator.next();
+        for (Object o : en.entrySet()) {
+            Entry entry = (Entry) o;
 
             enchantBuilder.append((String) this.ENCHANTMENT_SHORT_NAME.get(entry.getKey()));
             enchantBuilder.append(" ");

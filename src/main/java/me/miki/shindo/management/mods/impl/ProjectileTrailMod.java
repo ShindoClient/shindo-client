@@ -20,9 +20,10 @@ import java.util.Random;
 
 public class ProjectileTrailMod extends Mod {
 
-    private final ArrayList<Object> throwables = new ArrayList<>();
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private ProjectileTrailType type = ProjectileTrailType.HEARTS;
+
+    private final ArrayList<Object> throwables = new ArrayList<>();
     private int ticks;
 
     public ProjectileTrailMod() {
@@ -36,11 +37,8 @@ public class ProjectileTrailMod extends Mod {
         ticks = ticks >= 20 ? 0 : ticks + 2;
 
         updateThrowables();
-        Iterator<Entity> iterator = mc.theWorld.getLoadedEntityList().iterator();
 
-        while (iterator.hasNext()) {
-            Entity entity = iterator.next();
-
+        for (Entity entity : mc.theWorld.getLoadedEntityList()) {
             if (entity != null && (isValidEntity(entity) || throwables.contains(entity)) && entity.getDistanceToEntity(mc.thePlayer) > 3.0F) {
                 spawnParticle(currentType, entity.getPositionVector());
             }

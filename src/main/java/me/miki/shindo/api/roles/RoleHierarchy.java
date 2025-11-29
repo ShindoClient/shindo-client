@@ -1,34 +1,31 @@
 package me.miki.shindo.api.roles;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
 
+/**
+ * Utilitários para trabalhar com hierarquia de {@link Role}.
+ *
+ * A hierarquia em si é definida dentro da própria enum ({@link Role#getPriority()}).
+ * Esta classe provê helpers de alto nível para coleções de roles.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RoleHierarchy {
-    private static final Map<Role, Integer> RANK = new EnumMap<>(Role.class);
-
-    static {
-        RANK.put(Role.MEMBER, 1);
-        RANK.put(Role.GOLD, 2);
-        RANK.put(Role.DIAMOND, 3);
-        RANK.put(Role.STAFF, 4);
-    }
-
-    private RoleHierarchy() {
-    }
 
     public static int rank(Role r) {
-        return RANK.getOrDefault(r, 0);
+        return r != null ? r.getPriority() : 0;
     }
 
     public static boolean atLeast(Role have, Role required) {
-        return rank(have) >= rank(required);
+        return Role.atLeast(have, required);
     }
 
     public static Role highest(Collection<Role> roles) {
         Role best = Role.MEMBER;
         if (roles == null || roles.isEmpty()) return best;
-        for (Role r : roles) if (rank(r) > rank(best)) best = r;
+        for (Role r : roles) best = Role.max(best, r);
         return best;
     }
 

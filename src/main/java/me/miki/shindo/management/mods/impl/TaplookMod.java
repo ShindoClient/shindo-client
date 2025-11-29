@@ -14,8 +14,10 @@ public class TaplookMod extends Mod {
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.PERSPECTIVE)
     private Perspective perspective = Perspective.FRONT;
+
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_P)
     private int keybindSetting = Keyboard.KEY_P;
+
     private boolean active;
     private int prevPerspective;
 

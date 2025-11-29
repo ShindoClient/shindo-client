@@ -18,10 +18,10 @@ import java.awt.*;
 
 public class TargetIndicatorMod extends Mod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private boolean customColorSetting;
 
-    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, category = "Display")
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
     private Color colorSetting = Color.RED;
 
     public TargetIndicatorMod() {

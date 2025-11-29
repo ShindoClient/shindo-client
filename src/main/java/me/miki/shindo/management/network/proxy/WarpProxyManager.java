@@ -7,7 +7,8 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.ShindoAPI;
-import me.miki.shindo.api.ws.integration.ShindoApiWsBootstrap;
+import me.miki.shindo.api.websocket.ShindoWebsocket;
+import me.miki.shindo.api.websocket.message.MessageType;
 import me.miki.shindo.logger.ShindoLogger;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -439,7 +440,7 @@ public class WarpProxyManager {
             if (api == null) {
                 return;
             }
-            ShindoApiWsBootstrap ws = api.getWs();
+            ShindoWebsocket ws = api.getWs();
             if (ws == null) {
                 return;
             }
@@ -458,7 +459,7 @@ public class WarpProxyManager {
             payload.addProperty("warpMode", diagnostics.getWarpMode());
             payload.addProperty("warpLatency", diagnostics.getLastHealthLatencyMs());
             payload.addProperty("sessionStartedAt", diagnostics.getSessionEstablishedAt());
-            ws.send("warp.status", payload);
+            ws.send(MessageType.WARP_STATUS, payload);
         } catch (Exception ignored) {
         }
     }

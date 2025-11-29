@@ -25,9 +25,10 @@ import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class TNTTimerMod extends SimpleHUDMod {
 
-    private final DecimalFormat timeFormatter = new DecimalFormat("0.00");
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private DisplayMode displayMode = DisplayMode.TAG;
+
+    private final DecimalFormat timeFormatter = new DecimalFormat("0.00");
     private EntityTNTPrimed currentTNT;
     private float partialTicks;
 

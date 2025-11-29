@@ -68,8 +68,8 @@ public class WaypointMod extends Mod {
                 int rectWidth = width + 10;
                 int rectHeight = height + 6;
 
-                RenderUtils.drawRect(-rectWidth / 2, -rectHeight / 2, rectWidth, rectHeight, ColorUtils.getColorByInt(Integer.MIN_VALUE));
-                RenderUtils.drawOutline(-rectWidth / 2, -rectHeight / 2, rectWidth, rectHeight, 2.5F, wy.getColor());
+                RenderUtils.drawRect(-rectWidth / 2F, -rectHeight / 2F, rectWidth, rectHeight, ColorUtils.getColorByInt(Integer.MIN_VALUE));
+                RenderUtils.drawOutline(-rectWidth / 2F, -rectHeight / 2F, rectWidth, rectHeight, 2.5F, wy.getColor());
 
                 fr.drawString(tagName, -width / 2, -height / 2 + 2, Color.WHITE.getRGB());
 

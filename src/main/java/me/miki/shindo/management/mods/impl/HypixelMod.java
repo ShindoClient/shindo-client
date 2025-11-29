@@ -36,16 +36,19 @@ public class HypixelMod extends Mod {
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GG)
     private boolean autoggSetting = false;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_GG_DELAY, min = 0, max = 5, current = 3, step = 1)
     private int autoggDelaySetting = 3;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GL)
     private boolean autoglSetting = false;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_GL_DELAY, min = 0, max = 5, current = 1, step = 1)
     private int autoglDelaySetting = 1;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_PLAY)
     private boolean autoPlaySetting = false;
+
     @Property(type = PropertyType.NUMBER, translate = TranslateText.AUTO_PLAY_DELAY, min = 0, max = 5, current = 3, step = 1)
     private int autoPlayDelaySetting = 3;
 

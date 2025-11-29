@@ -20,10 +20,10 @@ import java.util.Locale;
 
 public class ClockMod extends SimpleHUDMod {
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
-    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN, category = "Display")
+    @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private Design design = Design.SIMPLE;
 
     private final DateFormat df = new SimpleDateFormat("HH:mm a", Locale.US);

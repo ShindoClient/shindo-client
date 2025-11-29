@@ -4,7 +4,6 @@ import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventShader;
 import me.miki.shindo.management.event.impl.EventUpdateDisplay;
-import me.miki.shindo.management.annotation.Range;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;

@@ -15,6 +15,7 @@ public class WeatherChangerMod extends Mod {
     @Getter
     private static WeatherChangerMod instance;
 
+    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.WEATHER)
     private Weather weather = Weather.CLEAR;
 
@@ -28,10 +29,6 @@ public class WeatherChangerMod extends Mod {
         super(TranslateText.WEATHER_CHANGER, TranslateText.WEATHER_CHANGER_DESCRIPTION, ModCategory.WORLD);
 
         instance = this;
-    }
-
-    public Weather getWeather() {
-        return weather;
     }
 
     public NumberSetting getRainStrength() {

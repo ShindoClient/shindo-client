@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventKey;
@@ -15,10 +16,15 @@ import org.lwjgl.input.Keyboard;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+
+import java.util.Objects;
+
 public class InternalSettingsMod extends Mod {
 
+    @Getter
     private static InternalSettingsMod instance;
 
+    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
     private HudTheme hudTheme = HudTheme.NORMAL;
 
@@ -37,24 +43,21 @@ public class InternalSettingsMod extends Mod {
     @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_CAPE, text = "None")
     private String capeNameSetting = "None";
 
-    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_WING, text = "None")
-    private String wingNameSetting = "None";
-
-    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_BANDANNA, text = "None")
-    private String bandannaNameSetting = "None";
-
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CLICK_EFFECT)
     private boolean clickEffectsSetting = true;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_SOUNDS)
     private boolean soundsUISetting = true;
 
+    @Getter
     @Property(type = PropertyType.COMBO, name = "Settings Layout")
     private SettingsLayout settingsLayout = SettingsLayout.SINGLE_COLUMN;
 
+    @Getter
     @Property(type = PropertyType.COMBO, name = "Module Layout")
     private ModuleLayout moduleLayout = ModuleLayout.SINGLE_COLUMN;
 
+    @Getter
     @Property(type = PropertyType.COMBO, name = "Screenshot Display")
     private ScreenshotDisplayMode screenshotDisplayMode = ScreenshotDisplayMode.FILMSTRIP;
 
@@ -62,10 +65,6 @@ public class InternalSettingsMod extends Mod {
         super(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER);
 
         instance = this;
-    }
-
-    public static InternalSettingsMod getInstance() {
-        return instance;
     }
 
     @Override
@@ -129,12 +128,10 @@ public class InternalSettingsMod extends Mod {
     }
 
     public int getModuleGridColumns() {
-        switch (moduleLayout) {
-            case TWO_COLUMNS:
-                return 2;
-            default:
-                return 1;
+        if (Objects.requireNonNull(moduleLayout) == ModuleLayout.TWO_COLUMNS) {
+            return 2;
         }
+        return 1;
     }
 
     public void setModuleGridColumns(int columns) {
@@ -144,10 +141,6 @@ public class InternalSettingsMod extends Mod {
         if (combo != null && target.ordinal() < combo.getOptions().size()) {
             combo.setOption(combo.getOptions().get(target.ordinal()));
         }
-    }
-
-    public ScreenshotDisplayMode getScreenshotDisplayMode() {
-        return screenshotDisplayMode;
     }
 
     public void setScreenshotDisplayMode(ScreenshotDisplayMode mode) {
@@ -164,18 +157,6 @@ public class InternalSettingsMod extends Mod {
 
     public ComboSetting getModThemeSetting() {
         return SettingRegistry.getComboSetting(this, "hudTheme");
-    }
-
-    public HudTheme getHudTheme() {
-        return hudTheme;
-    }
-
-    public SettingsLayout getSettingsLayout() {
-        return settingsLayout;
-    }
-
-    public ModuleLayout getModuleLayout() {
-        return moduleLayout;
     }
 
     public BooleanSetting getBlurSetting() {
@@ -196,22 +177,6 @@ public class InternalSettingsMod extends Mod {
 
     public void setCapeConfigName(String a) {
         capeNameSetting = a;
-    }
-
-    public String getWingConfigName() {
-        return wingNameSetting;
-    }
-
-    public void setWingConfigName(String a) {
-        wingNameSetting = a;
-    }
-
-    public String getBandannaConfigName() {
-        return bandannaNameSetting;
-    }
-
-    public void setBandannaConfigName(String a) {
-        bandannaNameSetting = a;
     }
 
     public enum HudTheme implements PropertyEnum {

@@ -17,7 +17,7 @@ public class CoordsMod extends SimpleHUDMod {
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private Design design = Design.SIMPLE;
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
     public CoordsMod() {

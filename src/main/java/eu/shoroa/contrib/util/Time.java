@@ -1,11 +1,10 @@
 package eu.shoroa.contrib.util;
 
-public strictfp class Time {
-    private static float delta;
+import lombok.Getter;
 
-    public static float getDelta() {
-        return delta;
-    }
+public strictfp class Time {
+    @Getter
+    private static float delta;
 
     public static void setDelta(float delta) {
         Time.delta = delta;

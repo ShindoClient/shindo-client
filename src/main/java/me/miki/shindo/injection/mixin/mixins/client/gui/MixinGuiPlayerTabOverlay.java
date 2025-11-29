@@ -3,7 +3,7 @@ package me.miki.shindo.injection.mixin.mixins.client.gui;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
-import me.miki.shindo.api.ws.presence.PresenceTracker;
+import me.miki.shindo.api.websocket.presence.PresenceTracker;
 import me.miki.shindo.management.mods.impl.TabEditorMod;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;

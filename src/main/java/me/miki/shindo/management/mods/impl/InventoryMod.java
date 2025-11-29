@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
@@ -11,16 +12,22 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class InventoryMod extends Mod {
 
+    @Getter
     private static InventoryMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     private boolean animationSetting;
+
+    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.ANIMATION_TYPE)
     private AnimationType animationType = AnimationType.NORMAL;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private boolean backgroundSetting = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PREVENT_POTION_SHIFT)
     private boolean preventPotionShiftSetting = true;
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PARTICLE)
     private boolean particleSetting;
 
@@ -28,30 +35,6 @@ public class InventoryMod extends Mod {
         super(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER);
 
         instance = this;
-    }
-
-    public static InventoryMod getInstance() {
-        return instance;
-    }
-
-    public boolean isAnimationEnabled() {
-        return animationSetting;
-    }
-
-    public AnimationType getAnimationType() {
-        return animationType;
-    }
-
-    public boolean isBackgroundEnabled() {
-        return backgroundSetting;
-    }
-
-    public boolean isPreventPotionShiftEnabled() {
-        return preventPotionShiftSetting;
-    }
-
-    public boolean isParticleEnabled() {
-        return particleSetting;
     }
 
     public BooleanSetting getAnimationSetting() {

@@ -1,7 +1,5 @@
 package me.miki.shindo.injection.mixin.mixins.client.renderer.entity;
 
-import eu.shoroa.contrib.cosmetic.CosmeticLayer;
-import eu.shoroa.contrib.cosmetic.CosmeticManager;
 import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
 import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventRenderPlayer;
@@ -46,11 +44,6 @@ public abstract class MixinRenderPlayer extends RendererLivingEntity<AbstractCli
         headLayer = new HeadLayerFeatureRenderer((RenderPlayer) (Object) this);
         bodyLayer = new BodyLayerFeatureRenderer((RenderPlayer) (Object) this);
         addLayer(new CustomCapeRenderLayer((RenderPlayer) (Object) this, getMainModel()));
-        CosmeticManager.getInstance().setRenderPlayer((RenderPlayer) (Object) this);
-        addLayer(new CosmeticLayer());
-
-        //Shindo.getInstance().getCosmeticManager().addLayersAndInit((RenderPlayer)(Object)this);
-        //Shindo.getInstance().getCosmeticManager().getCosmetics().forEach((c) -> addLayer(c.layer));
     }
 
     @Inject(method = "setModelVisibilities", at = @At("HEAD"))

@@ -1,6 +1,5 @@
 package me.miki.shindo;
 
-import eu.shoroa.contrib.cosmetic.CosmeticManager;
 import lombok.Getter;
 import lombok.Setter;
 import me.miki.shindo.injection.mixin.ShindoTweaker;
@@ -18,6 +17,7 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.music.MusicManager;
 import me.miki.shindo.management.music.RomanizationManager;
 import me.miki.shindo.management.nanovg.NanoVGManager;
+import me.miki.shindo.management.layout.UILayoutManager;
 import me.miki.shindo.management.notification.NotificationManager;
 import me.miki.shindo.management.profile.ProfileManager;
 import me.miki.shindo.management.quickplay.QuickPlayManager;
@@ -45,11 +45,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 
 public class Shindo {
+    private final Minecraft mc = Minecraft.getMinecraft();
 
     @Getter
     private static final Shindo instance = new Shindo();
-
-    private final Minecraft mc = Minecraft.getMinecraft();
 
     @Getter
     private final String name;
@@ -110,6 +109,9 @@ public class Shindo {
     private SecurityFeatureManager securityFeatureManager;
 
     @Getter
+    private UILayoutManager uiLayoutManager;
+
+    @Getter
     private MusicManager musicManager;
 
     @Getter
@@ -141,7 +143,7 @@ public class Shindo {
 
     @Getter
     private BlacklistManager blacklistManager;
-
+    
     @Getter
     private RestrictedMod restrictedMod;
 
@@ -156,6 +158,7 @@ public class Shindo {
 
     @Getter
     private ShindoAPI shindoAPI;
+
     public Shindo() {
         name = "Shindo";
         version = "5.1.10";
@@ -168,14 +171,17 @@ public class Shindo {
         try {
             OptifineUtils.disableFastRender();
             this.removeOptifineZoom();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            ShindoLogger.error("Optifine Load Error", e);
         }
         blacklistManager = new BlacklistManager();
         restrictedMod = new RestrictedMod();
         try {
             restrictedMod.shouldCheck = !System.getProperty("me.miki.shindo.blacklistchecks", "true").equalsIgnoreCase("false");
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            ShindoLogger.error("Restriction System load Error", e);
         }
+
         fileManager = new FileManager();
         languageManager = new LanguageManager();
         eventManager = new EventManager();
@@ -183,7 +189,6 @@ public class Shindo {
         modManager = new ModManager();
         addonManager = new AddonManager();
 
-        CosmeticManager.getInstance().init();
         modManager.init();
         addonManager.init();
 
@@ -192,6 +197,7 @@ public class Shindo {
 
         capeManager = new CapeManager();
         colorManager = new ColorManager();
+        uiLayoutManager = new UILayoutManager();
         profileManager = new ProfileManager();
         musicManager = new MusicManager(fileManager);
         romanizationManager = new RomanizationManager();
@@ -226,6 +232,7 @@ public class Shindo {
 
     public void stop() {
         ShindoLogger.info("Stopping Shindo");
+
         profileManager.save();
         shindoAPI.stop();
 
@@ -260,5 +267,4 @@ public class Shindo {
     public boolean getUpdateNeeded() {
         return updateNeeded;
     }
-
 }

@@ -1,11 +1,14 @@
 package me.miki.shindo.management.mods.impl;
 
+import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 
+@Getter
 public class Skin3DMod extends Mod {
 
+    @Getter
     private static Skin3DMod instance;
 
     private final float baseVoxelSize = 1.15F;
@@ -20,10 +23,6 @@ public class Skin3DMod extends Mod {
         instance = this;
     }
 
-    public static Skin3DMod getInstance() {
-        return instance;
-    }
-
     @Override
     public void onEnable() {
         super.onEnable();
@@ -33,19 +32,4 @@ public class Skin3DMod extends Mod {
         }
     }
 
-    public float getBaseVoxelSize() {
-        return baseVoxelSize;
-    }
-
-    public float getBodyVoxelWidthSize() {
-        return bodyVoxelWidthSize;
-    }
-
-    public float getHeadVoxelSize() {
-        return headVoxelSize;
-    }
-
-    public int getRenderDistanceLOD() {
-        return renderDistanceLOD;
-    }
 }

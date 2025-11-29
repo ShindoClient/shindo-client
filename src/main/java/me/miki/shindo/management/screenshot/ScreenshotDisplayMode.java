@@ -23,4 +23,8 @@ public enum ScreenshotDisplayMode implements PropertyEnum {
     public String getDescription() {
         return description.getText();
     }
+
+    public TranslateText getTranslateDescription() {
+        return description;
+    }
 }

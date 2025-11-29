@@ -18,9 +18,9 @@ public class CPSDisplayMod extends SimpleHUDMod {
     private final ArrayList<Long> leftPresses = new ArrayList<Long>();
     private final ArrayList<Long> rightPresses = new ArrayList<Long>();
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.RIGHT_CLICK, category = "Behavior")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.RIGHT_CLICK)
     private boolean rightClickSetting = true;
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON, category = "Display")
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
 
     public CPSDisplayMod() {

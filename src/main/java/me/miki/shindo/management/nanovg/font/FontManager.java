@@ -9,6 +9,9 @@ import java.nio.ByteBuffer;
 public class FontManager {
 
     public void init(long nvg) {
+        loadFont(nvg, Fonts.GLICONIC);
+        loadFont(nvg, Fonts.ICON_FILLED);
+        loadFont(nvg, Fonts.ICON_OUTLINE);
         loadFont(nvg, Fonts.UNIFONT);
         loadFont(nvg, Fonts.FALLBACK);
         loadFont(nvg, Fonts.REGULAR);
@@ -16,12 +19,11 @@ public class FontManager {
         loadFont(nvg, Fonts.SEMIBOLD);
         loadFont(nvg, Fonts.LEGACYICON);
         loadFont(nvg, Fonts.MOJANGLES);
-        loadFont(nvg, Fonts.MINECRAFTER);
     }
 
     private void loadFont(long nvg, Font font) {
 
-        if (font.isLoaded()) {
+        if(font.isLoaded()) {
             return;
         }
 
@@ -35,17 +37,25 @@ public class FontManager {
             ShindoLogger.error("Failed to load font", e);
         }
 
-        if (loaded == -1) {
+        if(loaded == -1) {
             throw new RuntimeException("Failed to init font " + font.getName());
-        } else {
+        }else {
             font.setLoaded(true);
-            if (font == Fonts.MOJANGLES && Fonts.UNIFONT.isLoaded()) {
+            if(font == Fonts.MOJANGLES && Fonts.UNIFONT.isLoaded()){
                 NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.UNIFONT.getName());
                 NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.REGULAR.getName());
                 NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.FALLBACK.getName());
-            } else if (Fonts.FALLBACK.isLoaded() && font != Fonts.FALLBACK) {
+            } else if(Fonts.FALLBACK.isLoaded()  && font != Fonts.FALLBACK){
                 NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.FALLBACK.getName());
                 NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.UNIFONT.getName());
+            }
+
+            if (font == Fonts.ICON_OUTLINE && Fonts.GLICONIC.isLoaded()){
+                NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.GLICONIC.getName());
+            }
+
+            if (font == Fonts.ICON_FILLED && Fonts.GLICONIC.isLoaded()){
+                NanoVG.nvgAddFallbackFont(nvg, font.getName(), Fonts.GLICONIC.getName());
             }
 
         }

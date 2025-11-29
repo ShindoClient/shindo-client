@@ -1,8 +1,8 @@
 package me.miki.shindo.management.settings;
 
 import lombok.Getter;
+import lombok.NonNull;
 import me.miki.shindo.Shindo;
-import me.miki.shindo.management.annotation.NotNull;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -18,7 +18,7 @@ public class Setting {
     private static final Pattern KEY_SANITIZE = Pattern.compile("[^a-z0-9]+");
 
     @Getter
-    @NotNull
+    @NonNull
     private final ConfigOwner parent;
     private final TranslateText nameTranslate;
     private final String displayName;

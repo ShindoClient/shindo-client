@@ -10,10 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,6 +20,8 @@ import java.util.List;
 
 @Mixin(ServerList.class)
 public abstract class MixinServerList implements IMixinServerList {
+
+    @Unique
     private static final Logger logger = LogManager.getLogger("Shindo - ServerList");
 
     @Shadow
@@ -36,7 +35,7 @@ public abstract class MixinServerList implements IMixinServerList {
 
     @Inject(method = "loadServerList", at = {@At(value = "INVOKE", target = "Ljava/util/List;clear()V", shift = At.Shift.AFTER, ordinal = 0)})
     private void loadFeaturedServers(CallbackInfo ci) {
-        this.addServerData(new ServerDataHook("Skytiel", "abc.com"));
+        //this.addServerData(new ServerDataHook("Server", "abc.com"));
     }
 
     /**
