@@ -69,7 +69,7 @@ public class ChatMod extends Mod {
         String text = component.getUnformattedText().toLowerCase();
         text = text.replaceFirst("<.+>", "");
         if (text.contains(name)) {
-            Sound.play("shindo/audio/ping.wav", false);
+            Sound.play("shindo/audio/pling.wav", false);
         }
     }
 

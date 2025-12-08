@@ -3,6 +3,7 @@ package me.miki.shindo.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +123,85 @@ public class JsonUtils {
         }
 
         return null;
+    }
+
+    public static boolean[][] parseBooleanGrid(JsonElement element) {
+        if (element == null || !element.isJsonArray()) {
+            return null;
+        }
+        JsonArray rows = element.getAsJsonArray();
+        boolean[][] grid = new boolean[rows.size()][];
+        for (int i = 0; i < rows.size(); i++) {
+            JsonElement rowElement = rows.get(i);
+            if (!rowElement.isJsonArray()) {
+                grid[i] = new boolean[0];
+                continue;
+            }
+            JsonArray cols = rowElement.getAsJsonArray();
+            grid[i] = new boolean[cols.size()];
+            for (int j = 0; j < cols.size(); j++) {
+                grid[i][j] = cols.get(j).isJsonPrimitive() && cols.get(j).getAsJsonPrimitive().isBoolean()
+                        && cols.get(j).getAsBoolean();
+            }
+        }
+        return grid;
+    }
+
+    public static int[][] parseIntGrid(JsonElement element) {
+        if (element == null || !element.isJsonArray()) {
+            return null;
+        }
+        JsonArray rows = element.getAsJsonArray();
+        int[][] grid = new int[rows.size()][];
+        for (int i = 0; i < rows.size(); i++) {
+            JsonElement rowElement = rows.get(i);
+            if (!rowElement.isJsonArray()) {
+                grid[i] = new int[0];
+                continue;
+            }
+            JsonArray cols = rowElement.getAsJsonArray();
+            grid[i] = new int[cols.size()];
+            for (int j = 0; j < cols.size(); j++) {
+                grid[i][j] = cols.get(j).isJsonPrimitive() && cols.get(j).getAsJsonPrimitive().isNumber()
+                        ? cols.get(j).getAsInt()
+                        : 0;
+            }
+        }
+        return grid;
+    }
+
+    public static JsonArray toBooleanGrid(boolean[][] grid) {
+        JsonArray rows = new JsonArray();
+        if (grid == null) {
+            return rows;
+        }
+        for (boolean[] row : grid) {
+            JsonArray cols = new JsonArray();
+            if (row != null) {
+                for (boolean value : row) {
+                    cols.add(new JsonPrimitive(value));
+                }
+            }
+            rows.add(cols);
+        }
+        return rows;
+    }
+
+    public static JsonArray toIntGrid(int[][] grid) {
+        JsonArray rows = new JsonArray();
+        if (grid == null) {
+            return rows;
+        }
+        for (int[] row : grid) {
+            JsonArray cols = new JsonArray();
+            if (row != null) {
+                for (int value : row) {
+                    cols.add(new JsonPrimitive(value));
+                }
+            }
+            rows.add(cols);
+        }
+        return rows;
     }
 
     private static String[] tokenizeKey(String key) {

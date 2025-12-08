@@ -161,7 +161,7 @@ public class HomeCategory extends Category {
         float headSize = 32F;
         float headX = playerCardX + 8;
         float headY = playerCardY + 8;
-        String playerName = mc.getSession() != null ? mc.getSession().getUsername() : "Player";
+        String playerName = mc.getSession() != null ? mc.getSession().getUsername() : TranslateText.PLAYER.getText();
         ResourceLocation playerHead = mc.thePlayer != null ? mc.thePlayer.getLocationSkin() : new ResourceLocation("textures/entity/steve.png");
 
         nvg.drawPlayerHead(playerHead, headX, headY, headSize, headSize, 4F);
@@ -184,7 +184,7 @@ public class HomeCategory extends Category {
 
                 // Nome da música
                 String trackName = currentTrack.getName();
-                String artistName = currentTrack.getArtists() != null && currentTrack.getArtists().length > 0 ? currentTrack.getArtists()[0].getName() : "Unknown";
+                String artistName = currentTrack.getArtists() != null && currentTrack.getArtists().length > 0 ? currentTrack.getArtists()[0].getName() : TranslateText.UNKNOWN.getText();
                 float trackNameX = iconX + iconSize + 4;
                 float trackNameWidth = playerCardWidth - 8;
                 nvg.drawText(nvg.getLimitText(trackName, 9F, Fonts.MEDIUM, trackNameWidth), trackNameX, iconY, palette.getFontColor(ColorType.DARK), 9F, Fonts.MEDIUM);
@@ -230,8 +230,8 @@ public class HomeCategory extends Category {
             }
         } else {
             // Spotify não linkado
-            nvg.drawText("Spotify not linked", headX, spotifyY, ColorUtils.applyAlpha(new Color(255, 180, 90), 220), 8F, Fonts.REGULAR);
-            nvg.drawTextBox("Link your Spotify account in the Spotify category to control music here.", headX, spotifyY + 12, playerCardWidth - 16, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180), 7F, Fonts.REGULAR);
+                nvg.drawText(TranslateText.SPOTIFY_NOT_LINKED.getText(), headX, spotifyY, ColorUtils.applyAlpha(new Color(255, 180, 90), 220), 8F, Fonts.REGULAR);
+                nvg.drawTextBox(TranslateText.SPOTIFY_LINK_DESCRIPTION.getText(), headX, spotifyY + 12, playerCardWidth - 16, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180), 7F, Fonts.REGULAR);
         }
 
         // Discord
@@ -251,8 +251,8 @@ public class HomeCategory extends Category {
         if (discStat.getMemberCount() != -1) {
             nvg.drawRoundedRect(discordStartX + 10, discordStartY + 66, 6, 6, 3, onlineColour);
             nvg.drawRoundedGlow(discordStartX + 10, discordStartY + 66, 6, 6, 3, onlineColour, 7);
-            nvg.drawTextGlowing(discStat.getMemberCount() + " Members", discordStartX + 20, discordStartY + 62, onlineColour, 4, 8, Fonts.REGULAR);
-            nvg.drawTextGlowing(discStat.getMemberOnline() + " Online", discordStartX + 20, discordStartY + 70, onlineColour, 4, 8, Fonts.REGULAR);
+            nvg.drawTextGlowing(discStat.getMemberCount() + " " + TranslateText.MEMBERS.getText(), discordStartX + 20, discordStartY + 62, onlineColour, 4, 8, Fonts.REGULAR);
+            nvg.drawTextGlowing(discStat.getMemberOnline() + " " + TranslateText.ONLINE.getText(), discordStartX + 20, discordStartY + 70, onlineColour, 4, 8, Fonts.REGULAR);
         }
         // join button
         nvg.drawRoundedRect(discordStartX + discordWidth - 60, discordStartY + 60, 52, 18, 9, new Color(114, 137, 214));
@@ -275,7 +275,7 @@ public class HomeCategory extends Category {
             try {
                 Desktop.getDesktop().browse(new URL("https://shindoclient.com/discord").toURI());
             } catch (Exception e) {
-                ShindoLogger.error("An error occurred while opening the Discord Server Link.", e);
+                ShindoLogger.error(TranslateText.DISCORD_LINK_ERROR.getText(), e);
             }
         }
 

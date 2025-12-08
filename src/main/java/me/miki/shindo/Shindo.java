@@ -31,7 +31,7 @@ import me.miki.shindo.management.screenshot.ScreenshotManager;
 import me.miki.shindo.management.security.SecurityFeatureManager;
 import me.miki.shindo.management.shader.ShaderManager;
 import me.miki.shindo.management.skin.SkinManager;
-import me.miki.shindo.management.network.ConnectionTweakerManager;
+import me.miki.shindo.management.network.NetworkManager;
 import me.miki.shindo.management.network.proxy.WarpProxyManager;
 import me.miki.shindo.management.waypoint.WaypointManager;
 import me.miki.shindo.ui.ClickEffects;
@@ -45,6 +45,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 
 public class Shindo {
+
     private final Minecraft mc = Minecraft.getMinecraft();
 
     @Getter
@@ -133,7 +134,7 @@ public class Shindo {
     private WarpProxyManager warpProxyManager;
 
     @Getter
-    private ConnectionTweakerManager connectionTweakerManager;
+    private NetworkManager connectionTweakerManager;
 
     @Getter
     private Update update;
@@ -193,7 +194,7 @@ public class Shindo {
         addonManager.init();
 
         warpProxyManager = new WarpProxyManager();
-        connectionTweakerManager = new ConnectionTweakerManager();
+        connectionTweakerManager = new NetworkManager();
 
         capeManager = new CapeManager();
         colorManager = new ColorManager();

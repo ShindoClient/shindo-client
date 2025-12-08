@@ -17,7 +17,7 @@ import me.miki.shindo.management.mods.ModManager;
 import me.miki.shindo.management.profile.mainmenu.BackgroundManager;
 import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.management.settings.impl.*;
-import me.miki.shindo.management.network.ConnectionTweakerManager;
+import me.miki.shindo.management.network.NetworkManager;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.JsonUtils;
 import me.miki.shindo.utils.file.FileUtils;
@@ -163,7 +163,7 @@ public class ProfileManager {
         ModManager modManager = instance.getModManager();
         ColorManager colorManager = instance.getColorManager();
         FileManager fileManager = instance.getFileManager();
-        ConnectionTweakerManager tweakerManager = instance.getConnectionTweakerManager();
+        NetworkManager tweakerManager = instance.getConnectionTweakerManager();
 
         if (file == null) {
             return;
@@ -298,6 +298,19 @@ public class ProfileManager {
                                         }
                                         cgSetting.setCells(cells);
                                     }
+
+                                    JsonArray colorOuter = sJsonObject.getAsJsonArray(s.getNameKey() + "_colors");
+                                    if (colorOuter != null) {
+                                        int[][] colors = new int[colorOuter.size()][];
+                                        for (int i = 0; i < colorOuter.size(); i++) {
+                                            JsonArray colorInner = colorOuter.get(i).getAsJsonArray();
+                                            colors[i] = new int[colorInner.size()];
+                                            for (int j = 0; j < colorInner.size(); j++) {
+                                                colors[i][j] = colorInner.get(j).getAsInt();
+                                            }
+                                        }
+                                        cgSetting.setColorGrid(colors);
+                                    }
                                 }
                             }
                         }
@@ -404,7 +417,7 @@ public class ProfileManager {
         Shindo instance = Shindo.getInstance();
         ModManager modManager = instance.getModManager();
         ColorManager colorManager = instance.getColorManager();
-        ConnectionTweakerManager tweakerManager = instance.getConnectionTweakerManager();
+        NetworkManager tweakerManager = instance.getConnectionTweakerManager();
 
         JsonObject jsonObject = new JsonObject();
         JsonObject appJsonObject = new JsonObject();
@@ -512,7 +525,6 @@ public class ProfileManager {
                         CellGridSetting cgSetting = (CellGridSetting) s;
 
                         JsonArray outerArray = new JsonArray();
-
                         boolean[][] cells = cgSetting.getCells();
 
                         for (boolean[] row : cells) {
@@ -524,6 +536,21 @@ public class ProfileManager {
                         }
 
                         sJsonObject.add(s.getNameKey(), outerArray);
+
+                        int[][] colorGrid = cgSetting.getColorGrid();
+                        if (colorGrid != null) {
+                            JsonArray colorOuter = new JsonArray();
+                            for (int[] row : colorGrid) {
+                                JsonArray colorInner = new JsonArray();
+                                if (row != null) {
+                                    for (int rgb : row) {
+                                        colorInner.add(rgb);
+                                    }
+                                }
+                                colorOuter.add(colorInner);
+                            }
+                            sJsonObject.add(s.getNameKey() + "_colors", colorOuter);
+                        }
                     }
                 }
 

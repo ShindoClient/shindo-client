@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class LanguageManager {
 
@@ -19,7 +20,7 @@ public class LanguageManager {
 
     private void loadMap(HashMap<String, String> map, String language) {
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(LanguageManager.class.getClassLoader().getResourceAsStream("assets/minecraft/shindo/language/" + language + ".properties"), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(LanguageManager.class.getClassLoader().getResourceAsStream("assets/minecraft/shindo/language/" + language + ".properties")), StandardCharsets.UTF_8))) {
 
             String s;
 

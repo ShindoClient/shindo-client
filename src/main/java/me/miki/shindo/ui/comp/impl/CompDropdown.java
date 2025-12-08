@@ -44,6 +44,10 @@ public class CompDropdown extends Comp {
         this(0F, 0F, width, setting);
     }
 
+    public float getControlHeight() {
+        return CONTROL_HEIGHT;
+    }
+
     public boolean isOpen() {
         return open;
     }
@@ -124,6 +128,7 @@ public class CompDropdown extends Comp {
         float listHeight = getDropdownHeight();
         float listY = openUp ? getY() - listHeight - 4F : getY() + controlHeight + 4F;
         float listWidth = width;
+
         if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), width, controlHeight)) {
             open = !open;
             return;

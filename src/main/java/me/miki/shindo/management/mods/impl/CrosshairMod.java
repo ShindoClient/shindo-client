@@ -9,24 +9,25 @@ import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.mods.impl.crosshair.LayoutManager;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
+import me.miki.shindo.management.settings.impl.CellGridSetting;
+import me.miki.shindo.management.settings.impl.CellGridSettingConsumer;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
 
-public class CrosshairMod extends Mod {
+public class CrosshairMod extends Mod implements CellGridSettingConsumer {
 
     public static final LayoutManager layoutManager = new LayoutManager();
-
-    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
-    private Color crosshairColor = Color.RED;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_THIRD_PERSON_VIEW)
     private boolean hideInThirdPerson;
 
     @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN)
-    private boolean[][] crosshairLayout = layoutManager.getLayout(0);
+    private boolean[][] crosshairLayout = layoutManager.getDefaultLayout();
+
+    private CellGridSetting cellGridSetting;
 
     public CrosshairMod() {
         super(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER);
@@ -42,7 +43,7 @@ public class CrosshairMod extends Mod {
         }
 
         if (!hideInThirdPerson || mc.gameSettings.thirdPersonView == 0) {
-            boolean[][] grid = crosshairLayout;
+            boolean[][] grid = cellGridSetting != null ? cellGridSetting.getCells() : crosshairLayout;
             if (grid == null) {
                 return;
             }
@@ -57,9 +58,8 @@ public class CrosshairMod extends Mod {
                 int cols = Math.min(cells.length, 11);
                 for (int col = 0; col < cols; col++) {
                     if (cells[col] && toggled) {
-                        RenderUtils.drawRect(sr.getScaledWidth() / 2F - 5 + col,
-                                sr.getScaledHeight() / 2F - 5 + row,
-                                1, 1, crosshairColor);
+                        Color color = cellGridSetting != null ? cellGridSetting.getCellColorOrDefault(row, col, Color.WHITE) : Color.WHITE;
+                        RenderUtils.drawRect(sr.getScaledWidth() / 2F - 5 + col, sr.getScaledHeight() / 2F - 5 + row, 1, 1, color);
                     }
                 }
             }
@@ -69,5 +69,10 @@ public class CrosshairMod extends Mod {
     @EventTarget
     public void onRender2D(EventRenderCrosshair event) {
         event.setCancelled(true);
+    }
+
+    @Override
+    public void onCellGridAvailable(CellGridSetting setting) {
+        this.cellGridSetting = setting;
     }
 }

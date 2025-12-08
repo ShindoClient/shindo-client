@@ -10,6 +10,7 @@ import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.CategorySetting;
 import me.miki.shindo.management.settings.impl.CellGridSetting;
+import me.miki.shindo.management.settings.impl.CellGridSettingConsumer;
 import me.miki.shindo.management.settings.impl.ColorSetting;
 import me.miki.shindo.management.settings.impl.ComboSetting;
 import me.miki.shindo.management.settings.impl.ImageSetting;
@@ -923,18 +924,21 @@ public final class SettingRegistry {
 
         void initialize() {
             apply(getCells());
+            notifyConsumer();
         }
 
         @Override
         public void setCells(boolean[][] cells) {
             super.setCells(copyGrid(cells));
             apply(getCells());
+            notifyConsumer();
         }
 
         @Override
         public void reset() {
             super.reset();
             apply(getCells());
+            notifyConsumer();
         }
 
         private void apply(boolean[][] cells) {
@@ -942,6 +946,12 @@ public final class SettingRegistry {
                 binding.field.set(binding.target, copyGrid(cells));
             } catch (IllegalAccessException e) {
                 binding.handleException(e);
+            }
+        }
+
+        private void notifyConsumer() {
+            if (binding.target instanceof CellGridSettingConsumer) {
+                ((CellGridSettingConsumer) binding.target).onCellGridAvailable(this);
             }
         }
     }

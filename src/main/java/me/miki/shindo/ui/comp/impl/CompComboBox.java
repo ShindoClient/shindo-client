@@ -21,7 +21,7 @@ public class CompComboBox extends Comp {
     private final ComboSetting setting;
 
     @Getter
-    private final float width;
+    private float width;
 
     private int changeDirection;
 
@@ -31,7 +31,7 @@ public class CompComboBox extends Comp {
         this.setting = setting;
         this.changeDirection = 1;
         this.changeAnimation.setValue(1);
-        super.setWidth(width);
+        setWidth(width);
         super.setHeight(16F);
     }
 
@@ -41,8 +41,13 @@ public class CompComboBox extends Comp {
         this.setting = setting;
         this.changeDirection = 1;
         this.changeAnimation.setValue(1);
-        super.setWidth(width);
+        setWidth(width);
         super.setHeight(16F);
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+        super.setWidth(width);
     }
 
     @Override

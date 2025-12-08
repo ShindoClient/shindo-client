@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.LegacyIcon;
+import me.miki.shindo.management.nanovg.font.Icons;
 import me.miki.shindo.management.settings.impl.CategorySetting;
 import me.miki.shindo.ui.comp.Comp;
 import me.miki.shindo.ui.framework.UIContext;
@@ -29,7 +29,7 @@ public class CompCategory extends Comp {
         super(0, 0);
         this.setting = setting;
         setWidth(width);
-        setHeight(UIStyle.SETTING_TEXT_MARGIN + 18F);
+        setHeight(UIStyle.SETTING_TEXT_MARGIN + 10F);
     }
 
     @Override
@@ -47,24 +47,30 @@ public class CompCategory extends Comp {
         toggleAnimation.setAnimation(setting.isCollapsed() ? 0.0F : 1.0F, 12);
         hoverAnimation.setAnimation(hovered ? 1.0F : 0.0F, 12);
 
-        Color baseColor = palette.getBackgroundColor(ColorType.DARK);
-        ctx.nvg().drawRoundedRect(x, y, width, height, UIStyle.CATEGORY_CORNER_RADIUS, baseColor);
+        float accentPulse = Math.max(hoverAnimation.getValue(), 0.25F + (toggleAnimation.getValue() * 0.25F));
+        Color baseOverlay = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), (int) (hoverAnimation.getValue() * 40));
+        ctx.nvg().drawRoundedRect(x, y, width, height, UIStyle.CATEGORY_CORNER_RADIUS, baseOverlay);
 
-        float pulse = Math.max(hoverAnimation.getValue(), 0.25F + (toggleAnimation.getValue() * 0.25F));
-        Color highlightStart = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (pulse * 90));
-        Color highlightEnd = ColorUtils.applyAlpha(accentColor.getColor2(), (int) (pulse * 90));
-        ctx.nvg().drawGradientRoundedRect(x, y, width, height, UIStyle.CATEGORY_CORNER_RADIUS, highlightStart, highlightEnd);
+        float iconSize = 11F;
+        String icon = setting.isCollapsed() ? Icons.CHEVRON_RIGHT_16 : Icons.CHEVRON_DOWN_16;
+        float iconHeight = ctx.nvg().getTextHeight(icon, iconSize, Fonts.ICON_OUTLINE);
+        float iconX = x + 4F;
+        float iconY = y + (height / 2F) - (iconHeight / 2F);
+        Color iconColor = ColorUtils.interpolateColor(palette.getFontColor(ColorType.NORMAL),
+                ColorUtils.applyAlpha(accentColor.getColor1(), 240), accentPulse * 0.35F);
+        ctx.nvg().drawText(icon, iconX, iconY, iconColor, iconSize, Fonts.ICON_OUTLINE);
 
-        ctx.nvg().drawRoundedRect(x, y, width, height, UIStyle.CATEGORY_CORNER_RADIUS, ColorUtils.applyAlpha(baseColor, 180));
+        float titleSize = 11F;
+        float titleX = iconX + 14F;
+        float titleHeight = ctx.nvg().getTextHeight(setting.getName(), titleSize, Fonts.MEDIUM);
+        float titleY = y + (height / 2F) - (titleHeight / 2F);
+        Color titleColor = ColorUtils.interpolateColor(palette.getFontColor(ColorType.DARK),
+                ColorUtils.applyAlpha(accentColor.getColor2(), 230), accentPulse * 0.25F);
+        ctx.nvg().drawText(setting.getName(), titleX, titleY, titleColor, titleSize, Fonts.MEDIUM);
 
-        ctx.nvg().drawText(setting.getName(), x + 14, y + 11, palette.getFontColor(ColorType.DARK), 12, Fonts.MEDIUM);
-
-        String icon = setting.isCollapsed() ? LegacyIcon.CHEVRON_RIGHT : LegacyIcon.CHEVRON_DOWN;
-        ctx.nvg().drawText(icon, x + width - 20, y + 11, palette.getFontColor(ColorType.NORMAL), 12, Fonts.LEGACYICON);
-
-        float dividerAlpha = 40 + (hoverAnimation.getValue() * 80);
-        float dividerWidth = width - (28 + (ctx.nvg().getTextWidth(setting.getName(), 12, Fonts.MEDIUM) + 4F) + (ctx.nvg().getTextWidth(icon, 12, Fonts.LEGACYICON) + 20F));
-        UIRenderer.drawDivider(ctx, x + 14 + (ctx.nvg().getTextWidth(setting.getName(), 12, Fonts.MEDIUM) + 4F), y + 16F, dividerWidth, 2, 1, dividerAlpha);
+        float underlineAlpha = 55 + (accentPulse * 85F);
+        UIRenderer.drawDivider(ctx, x, y + height - 2F, width, 2F, 1.5F,
+                Math.min(underlineAlpha, 140));
         super.draw(mouseX, mouseY, partialTicks);
 
     }

@@ -6,13 +6,23 @@ import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
+import me.miki.shindo.management.nanovg.font.Font;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.settings.Setting;
 import me.miki.shindo.management.settings.impl.CategorySetting;
 import me.miki.shindo.management.settings.metadata.SettingMetadata;
 import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.comp.impl.*;
 import me.miki.shindo.ui.comp.factory.SettingComponentFactory;
+import me.miki.shindo.ui.comp.impl.CompCellGrid;
+import me.miki.shindo.ui.comp.impl.CompColorPicker;
+import me.miki.shindo.ui.comp.impl.CompComboBox;
+import me.miki.shindo.ui.comp.impl.CompImageSelect;
+import me.miki.shindo.ui.comp.impl.CompKeybind;
+import me.miki.shindo.ui.comp.impl.CompModTextBox;
+import me.miki.shindo.ui.comp.impl.CompSlider;
+import me.miki.shindo.ui.comp.impl.CompSoundSelect;
+import me.miki.shindo.ui.comp.impl.CompToggleButton;
+import me.miki.shindo.ui.comp.impl.CompCategory;
 import me.miki.shindo.ui.framework.UIContext;
 import me.miki.shindo.ui.framework.UIRenderer;
 import me.miki.shindo.ui.framework.UIStyle;
@@ -21,6 +31,7 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;
 import me.miki.shindo.utils.mouse.Scroll;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +45,25 @@ public class SettingsPanel {
     }
 
     private static final float OUTER_MARGIN = 10F;
+    private static final float CATEGORY_GAP = 14F;
+    private static final float CATEGORY_HEADER_HEIGHT = UIStyle.SETTING_TEXT_MARGIN + 10F;
+    private static final float CATEGORY_HEADER_SPACING = 6F;
+    private static final float CATEGORY_CARD_RADIUS = 12F;
+    private static final float CARD_PADDING_X = 16F;
+    private static final float CARD_PADDING_Y = 12F;
     private static final float ROW_GAP = 8F;
-    private static final float CATEGORY_HEIGHT = UIStyle.SETTING_TEXT_MARGIN + 18F;
-    private static final float COLUMN_GAP = 10F;
-    private static final float MIN_ROW_HEIGHT = 32F;
+    private static final float COLUMN_GAP = 12F;
+    private static final float MIN_ROW_HEIGHT = 34F;
+    private static final float MIN_CARD_HEIGHT = 36F;
+    private static final float TITLE_FONT_SIZE = 9.0F;
+    private static final float DESCRIPTION_FONT_SIZE = 7.6F;
+    private static final float INDICATOR_WIDTH = 3.5F;
+    private static final float TOOLTIP_MAX_WIDTH = 320F;
+    private static final float COMPONENT_VERTICAL_PADDING = 12F;
+    private static final float TEXT_GAP = 16F;
 
     private final List<Entry> entries = new ArrayList<>();
-    private final List<PositionedEntry> positionedEntries = new ArrayList<>();
+    private final List<CategoryLayout> categoryLayouts = new ArrayList<>();
     private final Map<Setting, EntryState> entryStates = new HashMap<>();
 
     @Getter
@@ -48,7 +71,7 @@ public class SettingsPanel {
 
     public void clear() {
         entries.clear();
-        positionedEntries.clear();
+        categoryLayouts.clear();
         entryStates.clear();
     }
 
@@ -63,6 +86,7 @@ public class SettingsPanel {
             if (setting instanceof CategorySetting) {
                 currentCategory = (CategorySetting) setting;
                 CompCategory compCategory = new CompCategory(0, currentCategory);
+                compCategory.setHeight(CATEGORY_HEADER_HEIGHT);
                 entries.add(new Entry(setting, compCategory, currentCategory));
                 getState(setting);
                 continue;
@@ -81,78 +105,73 @@ public class SettingsPanel {
 
         updateLayout(contentX, contentY, contentWidth, scroll.getValue());
 
-        if (!positionedEntries.isEmpty()) {
-            PositionedEntry last = positionedEntries.get(positionedEntries.size() - 1);
-            float bottom = last.y + last.height;
-            float contentHeight = bottom - (contentY + scroll.getValue());
+        UIContext ctx = UIContext.get();
+        AccentColor accentColor = ctx.accent();
+
+        TooltipData tooltip = null;
+        float contentBottom = contentY + scroll.getValue();
+
+        for (CategoryLayout layout : categoryLayouts) {
+            contentBottom = Math.max(contentBottom, layout.getBottom());
+
+            if (layout.getHeader() != null) {
+                CompCategory category = layout.getHeader();
+                category.setWidth(layout.getHeaderWidth());
+                category.setX(layout.getHeaderX());
+                category.setY(layout.getHeaderY());
+                category.draw(mouseX, mouseY, partialTicks);
+            }
+
+            if (layout.isCollapsed()) {
+                continue;
+            }
+
+            drawCategoryCard(nvg, palette, layout);
+
+            List<PositionedEntry> positionedEntries = layout.getEntries();
+            for (int i = 0; i < positionedEntries.size(); i++) {
+                PositionedEntry positioned = positionedEntries.get(i);
+                Entry entry = positioned.entry;
+                EntryState state = getState(entry.setting);
+
+                boolean hovered = MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height);
+                state.hoverAnimation.setAnimation(hovered ? 1F : 0F, 18);
+                float hoverProgress = state.hoverAnimation.getValue();
+
+                layoutComponent(entry.comp, positioned);
+
+                float indicatorHeight = Math.max(14F, positioned.height - 6F);
+                float indicatorY = positioned.y + (positioned.height - indicatorHeight) / 2F;
+                Color indicatorColor = ColorUtils.applyAlpha(accentColor.getColor1(), (int) (hoverProgress * 120));
+                nvg.drawRoundedRect(positioned.x, indicatorY, INDICATOR_WIDTH, indicatorHeight, 2F, indicatorColor);
+
+                float textX = positioned.x + INDICATOR_WIDTH + 7F;
+                float textY = positioned.y + 6F;
+                float textWidth = resolveTextWidth(entry, positioned, textX);
+
+                TooltipData rowTooltip = drawLabels(nvg, palette, entry, textX, textY, textWidth, hoverProgress, mouseX, mouseY);
+                if (tooltip == null && rowTooltip != null) {
+                    tooltip = rowTooltip;
+                }
+
+                entry.comp.draw(mouseX, mouseY, partialTicks);
+
+                if (i < positionedEntries.size() - 1) {
+                    float dividerAlpha = 24F + (hoverProgress * 30F);
+                    UIRenderer.drawDivider(ctx, positioned.x + INDICATOR_WIDTH + 4F, positioned.y + positioned.height - 2F, positioned.width - INDICATOR_WIDTH - 8F, 1.5F, 1F, dividerAlpha);
+                }
+            }
+        }
+
+        if (!categoryLayouts.isEmpty()) {
+            float contentHeight = contentBottom - (contentY + scroll.getValue());
             scroll.setMaxScroll(Math.max(0, contentHeight - viewportHeight));
         } else {
             scroll.setMaxScroll(0);
         }
 
-        UIContext ctx = UIContext.get();
-        AccentColor accentColor = ctx.accent();
-
-        for (PositionedEntry positioned : positionedEntries) {
-            Entry entry = positioned.entry;
-            if (positioned.isCategory) {
-                CompCategory category = (CompCategory) entry.comp;
-                category.setWidth(positioned.width);
-                category.setX(positioned.x);
-                category.setY(positioned.y);
-                category.draw(mouseX, mouseY, partialTicks);
-                continue;
-            }
-
-            EntryState state = getState(entry.setting);
-
-            if (entry.category != null && entry.category.isCollapsed()) {
-                continue;
-            }
-
-            boolean hovered = MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height);
-            state.hoverAnimation.setAnimation(hovered ? 1F : 0F, 18);
-            float hoverProgress = state.hoverAnimation.getValue();
-
-            float backgroundRadius = UIStyle.SETTING_CORNER_RADIUS;
-            float backgroundX = positioned.x;
-            float backgroundY = positioned.y;
-            float backgroundWidth = positioned.width;
-            float backgroundHeight = positioned.height;
-
-            UIRenderer.drawSettingSurface(ctx, palette, accentColor, backgroundX, backgroundY, backgroundWidth, backgroundHeight, backgroundRadius, hoverProgress);
-
-            layoutComponent(entry.comp, positioned);
-
-            float textX = backgroundX + UIStyle.SETTING_TEXT_MARGIN;
-            float textY = backgroundY + 9;
-            boolean sliderCompact = entry.comp instanceof CompSlider && positioned.width < 320F;
-            float textColumnWidth;
-            if (sliderCompact || entry.comp instanceof CompColorPicker || entry.comp instanceof CompCellGrid) {
-                textColumnWidth = backgroundWidth - 28F;
-            } else {
-                float baseWidth = backgroundWidth - 110F;
-                float controlLeft = entry.comp.getX();
-                float available = controlLeft - textX - 18F;
-                if (available > 0) {
-                    textColumnWidth = Math.min(baseWidth, available);
-                } else {
-                    textColumnWidth = baseWidth;
-                }
-                textColumnWidth = Math.max(120F, Math.min(textColumnWidth, backgroundWidth - 28F));
-            }
-
-            float titleSize = 10.5F;
-            String title = nvg.getLimitText(entry.setting.getName(), titleSize, Fonts.MEDIUM, textColumnWidth);
-            nvg.drawText(title, textX, textY, palette.getFontColor(ColorType.DARK), titleSize, Fonts.MEDIUM);
-            SettingMetadata metadata = entry.setting.getMetadata();
-            if (metadata != null && !metadata.getDescription().isEmpty()) {
-                float descriptionSize = 8.4F;
-                String description = nvg.getLimitText(metadata.getDescription(), descriptionSize, Fonts.REGULAR, textColumnWidth);
-                nvg.drawText(description, textX, textY + 12, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 185), descriptionSize, Fonts.REGULAR);
-            }
-
-            entry.comp.draw(mouseX, mouseY, partialTicks);
+        if (tooltip != null) {
+            drawTooltip(nvg, palette, tooltip, mouseX, mouseY, contentX, contentY, contentWidth, viewportHeight);
         }
     }
 
@@ -160,31 +179,30 @@ public class SettingsPanel {
 
         updateLayout(contentX, contentY, contentWidth, scroll.getValue());
 
-        for (PositionedEntry positioned : positionedEntries) {
-            Entry entry = positioned.entry;
+        for (CategoryLayout layout : categoryLayouts) {
 
-            if (positioned.y + positioned.height < contentY || positioned.y > contentY + viewportHeight) {
+            if (layout.getHeader() != null && MouseUtils.isInside(mouseX, mouseY, layout.getHeaderX(), layout.getHeaderY(), layout.getHeaderWidth(), layout.getHeaderHeight())) {
+                layout.getHeader().mouseClicked(mouseX, mouseY, mouseButton);
+                return true;
+            }
+
+            if (layout.isCollapsed()) {
                 continue;
             }
 
-            if (positioned.isCategory) {
-                CompCategory category = (CompCategory) entry.comp;
-                if (MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height)) {
-                    category.mouseClicked(mouseX, mouseY, mouseButton);
-                    return true;
+            for (PositionedEntry positioned : layout.getEntries()) {
+                if (positioned.height <= 0) {
+                    continue;
                 }
-                continue;
+                if (positioned.y + positioned.height < contentY || positioned.y > contentY + viewportHeight) {
+                    continue;
+                }
+                if (!MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height)) {
+                    continue;
+                }
+                positioned.entry.comp.mouseClicked(mouseX, mouseY, mouseButton);
+                return true;
             }
-
-            if (entry.category != null && entry.category.isCollapsed()) {
-                continue;
-            }
-
-            if (!MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height)) {
-                continue;
-            }
-
-            entry.comp.mouseClicked(mouseX, mouseY, mouseButton);
         }
         return false;
     }
@@ -210,92 +228,144 @@ public class SettingsPanel {
     }
 
     private void updateLayout(float contentX, float contentY, float contentWidth, float scrollOffset) {
-        positionedEntries.clear();
+        categoryLayouts.clear();
 
         float innerX = contentX + OUTER_MARGIN;
         float innerWidth = Math.max(0, contentWidth - (OUTER_MARGIN * 2));
         float yCursor = contentY + scrollOffset;
 
-        CategorySetting currentCategory = null;
-        List<RowEntry> pendingRow = new ArrayList<>(2);
+        float singleWidth = innerWidth;
+        float doubleWidth = (innerWidth - COLUMN_GAP) / 2F;
 
-        for (Entry entry : entries) {
-            if (entry.setting instanceof CategorySetting) {
+        List<CategoryBlock> blocks = buildBlocks();
+        List<CategoryBlock> pendingRow = new ArrayList<>(2);
+
+        for (CategoryBlock block : blocks) {
+            if (layoutMode == LayoutMode.DOUBLE_COLUMN && block.spansFullWidth()) {
                 if (!pendingRow.isEmpty()) {
-                    yCursor += placeDoubleColumnRow(innerX, innerWidth, yCursor, pendingRow) + ROW_GAP;
+                    yCursor = placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow);
                     pendingRow.clear();
                 }
-
-                currentCategory = (CategorySetting) entry.setting;
-                float height = CATEGORY_HEIGHT;
-                positionedEntries.add(new PositionedEntry(entry, innerX, yCursor, innerWidth, height, true));
-                yCursor += height + ROW_GAP;
+                CategoryLayout layout = layoutCategory(block, innerX, yCursor, singleWidth);
+                categoryLayouts.add(layout);
+                yCursor = layout.getBottom() + CATEGORY_GAP;
                 continue;
             }
 
-            EntryState state = getState(entry.setting);
-
-            if (currentCategory != null && currentCategory.isCollapsed()) {
-                state.heightAnimation.setAnimation(0F, 20);
-                continue;
-            }
-
-            float targetHeight = calculateTargetHeight(entry.comp);
-            if (!state.initialized) {
-                state.heightAnimation.setValue(targetHeight);
-                state.initialized = true;
-            }
-            state.heightAnimation.setAnimation(targetHeight, 20);
-            float rowHeight = Math.max(MIN_ROW_HEIGHT, state.heightAnimation.getValue());
-
-            if (layoutMode == LayoutMode.SINGLE_COLUMN) {
-                if (!pendingRow.isEmpty()) {
-                    yCursor += placeDoubleColumnRow(innerX, innerWidth, yCursor, pendingRow) + ROW_GAP;
-                    pendingRow.clear();
-                }
-                positionedEntries.add(new PositionedEntry(entry, innerX, yCursor, innerWidth, rowHeight, false));
-                yCursor += rowHeight + ROW_GAP;
-                continue;
-            }
-
-            // DOUBLE COLUMN
-            pendingRow.add(new RowEntry(entry, rowHeight));
-
-            if (pendingRow.size() == 2) {
-                yCursor += placeDoubleColumnRow(innerX, innerWidth, yCursor, pendingRow) + ROW_GAP;
+            pendingRow.add(block);
+            if (layoutMode == LayoutMode.SINGLE_COLUMN || pendingRow.size() == 2) {
+                yCursor = placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow);
                 pendingRow.clear();
             }
         }
 
         if (!pendingRow.isEmpty()) {
-            yCursor += placeDoubleColumnRow(innerX, innerWidth, yCursor, pendingRow);
-            pendingRow.clear();
+            yCursor = placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow);
         }
     }
 
-    private float placeDoubleColumnRow(float innerX, float innerWidth, float yCursor, List<RowEntry> rowEntries) {
-        if (rowEntries.isEmpty()) {
-            return 0F;
+    private float placeRow(float innerX, float yCursor, float singleWidth, float doubleWidth, List<CategoryBlock> row) {
+        float rowHeight = 0F;
+        for (int i = 0; i < row.size(); i++) {
+            float width = layoutMode == LayoutMode.DOUBLE_COLUMN ? doubleWidth : singleWidth;
+            float x = innerX;
+            if (layoutMode == LayoutMode.DOUBLE_COLUMN && i == 1) {
+                x += doubleWidth + COLUMN_GAP;
+            }
+
+            CategoryLayout layout = layoutCategory(row.get(i), x, yCursor, width);
+            categoryLayouts.add(layout);
+            rowHeight = Math.max(rowHeight, layout.getTotalHeight());
+        }
+        return yCursor + rowHeight + CATEGORY_GAP;
+    }
+
+    private CategoryLayout layoutCategory(CategoryBlock block, float x, float y, float width) {
+        CategoryLayout layout = new CategoryLayout(block);
+
+        float headerHeight = block.hasHeader() ? CATEGORY_HEADER_HEIGHT : 0F;
+        float headerSpacing = block.hasHeader() ? CATEGORY_HEADER_SPACING : 0F;
+        float cardX = x;
+        float cardY = y + headerHeight + headerSpacing;
+        float cardWidth = width;
+        float contentX = cardX + CARD_PADDING_X;
+        float contentY = cardY + CARD_PADDING_Y;
+        float contentWidth = Math.max(0F, cardWidth - (CARD_PADDING_X * 2F));
+
+        List<PositionedEntry> positionedEntries = new ArrayList<>();
+
+        if (block.isCollapsed()) {
+            for (Entry entry : block.settings) {
+                EntryState state = getState(entry.setting);
+                float targetHeight = calculateTargetHeight(entry.comp);
+                if (!state.initialized) {
+                    state.heightAnimation.setValue(targetHeight);
+                    state.initialized = true;
+                }
+                state.heightAnimation.setAnimation(0F, 18);
+            }
+            layout.setCard(cardX, cardY, cardWidth, 0F);
+            layout.setHeader(block.header, x, y, width, headerHeight);
+            layout.setEntries(positionedEntries);
+            return layout;
         }
 
-        float columnWidth = (innerWidth - COLUMN_GAP) / 2F;
+        float rowCursor = contentY;
+        for (Entry entry : block.settings) {
+            EntryState state = getState(entry.setting);
+            float targetHeight = calculateTargetHeight(entry.comp);
+            if (!state.initialized) {
+                state.heightAnimation.setValue(targetHeight);
+                state.initialized = true;
+            }
 
-        if (rowEntries.size() == 1) {
-            RowEntry only = rowEntries.get(0);
-            positionedEntries.add(new PositionedEntry(only.entry, innerX, yCursor, innerWidth, only.height, false));
-            return only.height;
+            state.heightAnimation.setAnimation(targetHeight, 20);
+            float rowHeight = Math.max(MIN_ROW_HEIGHT, state.heightAnimation.getValue());
+
+            PositionedEntry positionedEntry = new PositionedEntry(entry, contentX, rowCursor, contentWidth, rowHeight);
+            positionedEntries.add(positionedEntry);
+            rowCursor += rowHeight + ROW_GAP;
         }
 
-        RowEntry left = rowEntries.get(0);
-        RowEntry right = rowEntries.get(1);
-        positionedEntries.add(new PositionedEntry(left.entry, innerX, yCursor, columnWidth, left.height, false));
-        positionedEntries.add(new PositionedEntry(right.entry, innerX + columnWidth + COLUMN_GAP, yCursor, columnWidth, right.height, false));
+        if (!positionedEntries.isEmpty()) {
+            rowCursor -= ROW_GAP;
+        }
 
-        return Math.max(left.height, right.height);
+        float contentHeight = Math.max(0F, rowCursor - contentY);
+        float cardHeight = Math.max(MIN_CARD_HEIGHT, contentHeight + (CARD_PADDING_Y * 2F));
+
+        layout.setCard(cardX, cardY, cardWidth, cardHeight);
+        layout.setHeader(block.header, x, y, width, headerHeight);
+        layout.setEntries(positionedEntries);
+
+        return layout;
+    }
+
+    private List<CategoryBlock> buildBlocks() {
+        List<CategoryBlock> blocks = new ArrayList<>();
+        CategoryBlock current = new CategoryBlock(null, null);
+
+        for (Entry entry : entries) {
+            if (entry.setting instanceof CategorySetting) {
+                if (current.hasContent()) {
+                    blocks.add(current);
+                }
+                CategorySetting category = (CategorySetting) entry.setting;
+                current = new CategoryBlock(category, (CompCategory) entry.comp);
+                continue;
+            }
+            current.settings.add(entry);
+        }
+
+        if (current.hasContent()) {
+            blocks.add(current);
+        }
+
+        return blocks;
     }
 
     private float calculateTargetHeight(Comp comp) {
-        float base = 40F;
+        float base = 38F;
 
         if (comp instanceof CompSlider) {
             base = 50F;
@@ -307,11 +377,17 @@ public class SettingsPanel {
         if (comp instanceof CompColorPicker) {
             CompColorPicker picker = (CompColorPicker) comp;
             if (picker.isOpen()) {
-                base += picker.isShowAlpha() ? 112F : 92F;
+                float scale = picker.getScale() <= 0F ? 1.0F : picker.getScale();
+                float openHeight = (26F + (picker.isShowAlpha() ? 118F : 100F)) * scale;
+                base = Math.max(base, COMPONENT_VERTICAL_PADDING + openHeight + 14F);
+            } else {
+                float scale = picker.getScale() <= 0F ? 1.0F : picker.getScale();
+                float closedHeight = (30F * scale) + COMPONENT_VERTICAL_PADDING;
+                base = Math.max(base, closedHeight);
             }
         }
         if (comp instanceof CompCellGrid) {
-            base = Math.max(base, 200F);
+            base = Math.max(base, 340F);
         }
         return base;
     }
@@ -327,7 +403,7 @@ public class SettingsPanel {
         float height = positioned.height;
         float right = x + width;
 
-        float componentPadding = UIStyle.COMPONENT_VERTICAL_PADDING;
+        float componentPadding = COMPONENT_VERTICAL_PADDING;
         float componentY = y + componentPadding;
 
         if (comp instanceof CompToggleButton) {
@@ -340,11 +416,11 @@ public class SettingsPanel {
 
         if (comp instanceof CompSlider) {
             CompSlider slider = (CompSlider) comp;
-            boolean compact = width < 320F;
+            boolean compact = width < 300F;
             if (compact) {
                 slider.setWidth(Math.max(0F, width - (componentPadding * 2)));
                 slider.setX(x + componentPadding);
-                slider.setY(componentY + 16F);
+                slider.setY(componentY + 14F);
             } else {
                 slider.setWidth(Math.max(110F, width - 200F));
                 slider.setX((float) (right - slider.getWidth() - componentPadding));
@@ -355,14 +431,16 @@ public class SettingsPanel {
 
         if (comp instanceof CompComboBox) {
             CompComboBox comboBox = (CompComboBox) comp;
-            boolean compact = width < 320F;
+            boolean compact = width < 300F;
             if (compact) {
-                comboBox.setWidth(Math.max(0F, width - (componentPadding * 2)));
+                float comboWidth = Math.max(0F, width - (componentPadding * 2) - 6F);
+                comboBox.setWidth(comboWidth);
                 comboBox.setX(x + componentPadding);
-                comboBox.setY(componentY + 16F);
+                comboBox.setY(componentY + 14F);
             } else {
-                comboBox.setWidth(Math.max(110F, width - 200F));
-                comboBox.setX((float) (right - comboBox.getWidth() - componentPadding));
+                float comboWidth = Math.max(110F, Math.min(width - 48F, width - 180F));
+                comboBox.setWidth(comboWidth);
+                comboBox.setX(Math.max(x + componentPadding, (float) (right - comboWidth - componentPadding)));
                 comboBox.setY(componentY);
             }
             return;
@@ -402,8 +480,6 @@ public class SettingsPanel {
             CompColorPicker picker = (CompColorPicker) comp;
             float scale = Math.max(0.6F, Math.min(1.0F, width / 180F));
             picker.setScale(scale);
-            // Quando aberto, precisa de: 100*scale (HSB) + 12*scale (hue) + margem = ~118*scale
-            // Posiciona para garantir que não saia da borda
             float pickerWidth = 118F * scale;
             float pickerX = Math.max(x + componentPadding, right - pickerWidth - componentPadding);
             picker.setX(pickerX);
@@ -419,6 +495,206 @@ public class SettingsPanel {
             grid.setY(componentY + 6F);
             return;
         }
+    }
+
+    private float resolveTextWidth(Entry entry, PositionedEntry positioned, float textX) {
+        float available = positioned.width - (textX - positioned.x);
+
+        if (entry.comp instanceof CompSlider || entry.comp instanceof CompComboBox) {
+            float controlLeft = entry.comp.getX();
+            float spacing = TEXT_GAP;
+            float controlSpace = controlLeft - textX - spacing;
+            float baseWidth = Math.max(90F, positioned.width - 120F);
+            float resolved = controlSpace > 0 ? Math.min(baseWidth, controlSpace) : baseWidth;
+            return Math.max(80F, Math.min(resolved, positioned.width - 32F));
+        }
+
+        if (entry.comp instanceof CompToggleButton) {
+            CompToggleButton toggle = (CompToggleButton) entry.comp;
+            float controlLeft = toggle.getX();
+            float spacing = TEXT_GAP;
+            float controlSpace = controlLeft - textX - spacing;
+            float baseWidth = Math.max(90F, positioned.width - 140F);
+            float resolved = controlSpace > 0 ? Math.min(baseWidth, controlSpace) : baseWidth;
+            return Math.max(80F, resolved);
+        }
+
+        if (entry.comp instanceof CompColorPicker || entry.comp instanceof CompCellGrid) {
+            return Math.max(120F, positioned.width - 28F);
+        }
+
+        return Math.max(110F, available - 12F);
+    }
+
+    private TooltipData drawLabels(NanoVGManager nvg, ColorPalette palette, Entry entry, float textX, float textY, float textWidth, float hoverProgress, int mouseX, int mouseY) {
+        Setting setting = entry.setting;
+        SettingMetadata metadata = setting.getMetadata();
+
+        String titleFull = setting.getName();
+        TruncatedText titleLimited = limitText(nvg, titleFull, TITLE_FONT_SIZE, Fonts.MEDIUM, textWidth);
+        String title = titleLimited.getText();
+        boolean titleTruncated = titleLimited.isTruncated();
+
+        Color titleColor = ColorUtils.interpolateColor(palette.getFontColor(ColorType.DARK),
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 230), hoverProgress * 0.3F);
+        nvg.drawText(title, textX, textY, titleColor, TITLE_FONT_SIZE, Fonts.MEDIUM);
+
+        float nextLineY = textY + TITLE_FONT_SIZE + 3F;
+        boolean descriptionTruncated = false;
+        String descriptionFull = null;
+        boolean hasDescription = false;
+
+        if (metadata != null && metadata.getDescription() != null && !metadata.getDescription().isEmpty()) {
+            descriptionFull = metadata.getDescription();
+            hasDescription = true;
+            TruncatedText limitedDesc = limitText(nvg, descriptionFull, DESCRIPTION_FONT_SIZE, Fonts.REGULAR, textWidth);
+            descriptionTruncated = limitedDesc.isTruncated();
+            String description = limitedDesc.getText();
+            Color descColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200 + (int) (hoverProgress * 30F));
+            nvg.drawText(description, textX, nextLineY, descColor, DESCRIPTION_FONT_SIZE, Fonts.REGULAR);
+        }
+
+        float labelHeight = (metadata != null && metadata.getDescription() != null && !metadata.getDescription().isEmpty())
+                ? (nextLineY - textY) + DESCRIPTION_FONT_SIZE
+                : TITLE_FONT_SIZE;
+
+        boolean hoveringText = MouseUtils.isInside(mouseX, mouseY, textX, textY - 2F, Math.max(textWidth, 60F), Math.max(labelHeight + 4F, 18F));
+        if (!hoveringText) {
+            return null;
+        }
+
+        if (!titleTruncated && !descriptionTruncated && !hasDescription) {
+            return null;
+        }
+
+        TooltipData tooltipData = new TooltipData();
+        if (titleTruncated) {
+            tooltipData.addLine(new TooltipLine(titleFull, TITLE_FONT_SIZE, Fonts.MEDIUM,
+                    palette.getFontColor(ColorType.DARK)));
+        }
+        if (hasDescription && descriptionFull != null) {
+            tooltipData.addLine(new TooltipLine(descriptionFull, DESCRIPTION_FONT_SIZE, Fonts.REGULAR,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 230)));
+        }
+        return tooltipData;
+    }
+
+    private void drawCategoryCard(NanoVGManager nvg, ColorPalette palette, CategoryLayout layout) {
+        nvg.drawContainer(layout.getCardX(), layout.getCardY(), layout.getCardWidth(), layout.getCardHeight(), CATEGORY_CARD_RADIUS, palette);
+    }
+
+    private void drawTooltip(NanoVGManager nvg, ColorPalette palette, TooltipData tooltip, int mouseX, int mouseY, float contentX, float contentY, float contentWidth, float viewportHeight) {
+        List<TooltipLine> wrappedLines = new ArrayList<>();
+        for (TooltipLine line : tooltip.getLines()) {
+            wrappedLines.addAll(wrapLine(nvg, line));
+        }
+
+        if (wrappedLines.isEmpty()) {
+            return;
+        }
+
+        float padding = 8F;
+        float lineSpacing = 3F;
+        float width = 0F;
+        float height = padding * 2F;
+
+        for (int i = 0; i < wrappedLines.size(); i++) {
+            TooltipLine line = wrappedLines.get(i);
+            float lineWidth = nvg.getTextWidth(line.getText(), line.getSize(), line.getFont());
+            width = Math.max(width, lineWidth);
+            height += line.getSize();
+            if (i < wrappedLines.size() - 1) {
+                height += lineSpacing;
+            }
+        }
+        width += padding * 2F;
+
+        float tooltipX = mouseX + 12F;
+        float tooltipY = mouseY + 12F;
+        float maxX = contentX + contentWidth - 6F;
+        float maxY = contentY + viewportHeight - 6F;
+
+        if (tooltipX + width > maxX) {
+            tooltipX = maxX - width;
+        }
+        if (tooltipY + height > maxY) {
+            tooltipY = maxY - height;
+        }
+
+        tooltipX = Math.max(contentX + 6F, tooltipX);
+        tooltipY = Math.max(contentY + 6F, tooltipY);
+
+        Color background = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 235);
+        Color outline = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 90);
+        nvg.drawRoundedRect(tooltipX, tooltipY, width, height, 6F, background);
+        nvg.drawOutlineRoundedRect(tooltipX, tooltipY, width, height, 6F, 1F, outline);
+
+        float textY = tooltipY + padding;
+        for (TooltipLine line : wrappedLines) {
+            nvg.drawText(line.getText(), tooltipX + padding, textY, line.getColor(), line.getSize(), line.getFont());
+            textY += line.getSize() + lineSpacing;
+        }
+    }
+
+    private List<TooltipLine> wrapLine(NanoVGManager nvg, TooltipLine line) {
+        List<TooltipLine> wrapped = new ArrayList<>();
+        if (line.getText() == null || line.getText().isEmpty()) {
+            return wrapped;
+        }
+
+        String[] words = line.getText().split(" ");
+        StringBuilder current = new StringBuilder();
+        for (String word : words) {
+            String candidate = current.length() == 0 ? word : current + " " + word;
+            if (nvg.getTextWidth(candidate, line.getSize(), line.getFont()) <= TOOLTIP_MAX_WIDTH || current.length() == 0) {
+                current = new StringBuilder(candidate);
+            } else {
+                wrapped.add(new TooltipLine(current.toString(), line.getSize(), line.getFont(), line.getColor()));
+                current = new StringBuilder(word);
+            }
+        }
+        if (current.length() > 0) {
+            wrapped.add(new TooltipLine(current.toString(), line.getSize(), line.getFont(), line.getColor()));
+        }
+
+        List<TooltipLine> adjusted = new ArrayList<>();
+        for (TooltipLine tooltipLine : wrapped) {
+            String text = tooltipLine.getText();
+            while (nvg.getTextWidth(text, tooltipLine.getSize(), tooltipLine.getFont()) > TOOLTIP_MAX_WIDTH && text.length() > 1) {
+                int end = text.length() - 1;
+                while (end > 1 && nvg.getTextWidth(text.substring(0, end), tooltipLine.getSize(), tooltipLine.getFont()) > TOOLTIP_MAX_WIDTH) {
+                    end--;
+                }
+                adjusted.add(new TooltipLine(text.substring(0, end), tooltipLine.getSize(), tooltipLine.getFont(), tooltipLine.getColor()));
+                text = text.substring(end);
+            }
+            if (!text.isEmpty()) {
+                adjusted.add(new TooltipLine(text, tooltipLine.getSize(), tooltipLine.getFont(), tooltipLine.getColor()));
+            }
+        }
+
+        return adjusted;
+    }
+
+    private TruncatedText limitText(NanoVGManager nvg, String input, float size, Font font, float maxWidth) {
+        if (input == null) {
+            return new TruncatedText("", false);
+        }
+        String text = input;
+        float fullWidth = nvg.getTextWidth(text, size, font);
+        if (fullWidth <= maxWidth) {
+            return new TruncatedText(text, false);
+        }
+
+        String ellipsis = "...";
+        float ellipsisWidth = nvg.getTextWidth(ellipsis, size, font);
+        while (!text.isEmpty() && nvg.getTextWidth(text, size, font) + ellipsisWidth > maxWidth) {
+            text = text.substring(0, text.length() - 1);
+        }
+        if (text.isEmpty()) {
+            text = "";
+        }
+        return new TruncatedText(text + ellipsis, true);
     }
 
     private static class Entry {
@@ -440,7 +716,6 @@ public class SettingsPanel {
         final float y;
         final float width;
         final float height;
-        final boolean isCategory;
     }
 
     private EntryState getState(Setting setting) {
@@ -453,9 +728,109 @@ public class SettingsPanel {
         boolean initialized = false;
     }
 
+    private static class CategoryBlock {
+        final CategorySetting category;
+        final CompCategory header;
+        final List<Entry> settings = new ArrayList<>();
+
+        CategoryBlock(CategorySetting category, CompCategory header) {
+            this.category = category;
+            this.header = header;
+        }
+
+        boolean hasHeader() {
+            return category != null && header != null;
+        }
+
+        boolean spansFullWidth() {
+            return !hasHeader();
+        }
+
+        boolean isCollapsed() {
+            return category != null && category.isCollapsed();
+        }
+
+        boolean hasContent() {
+            return hasHeader() || !settings.isEmpty();
+        }
+    }
+
     @Data
-    private static class RowEntry {
-        final Entry entry;
-        final float height;
+    private static class CategoryLayout {
+        private final CategoryBlock block;
+        private CompCategory header;
+        private float headerX;
+        private float headerY;
+        private float headerWidth;
+        private float headerHeight;
+
+        private float cardX;
+        private float cardY;
+        private float cardWidth;
+        private float cardHeight;
+
+        private List<PositionedEntry> entries = new ArrayList<>();
+
+        boolean isCollapsed() {
+            return block.isCollapsed();
+        }
+
+        float getTotalHeight() {
+            float total = 0F;
+            if (block.hasHeader()) {
+                total += headerHeight;
+            }
+            if (!isCollapsed()) {
+                if (block.hasHeader()) {
+                    total += CATEGORY_HEADER_SPACING;
+                }
+                total += cardHeight;
+            }
+            return total;
+        }
+
+        float getBottom() {
+            return (block.hasHeader() ? headerY : cardY) + getTotalHeight();
+        }
+
+        void setHeader(CompCategory header, float x, float y, float width, float height) {
+            this.header = header;
+            this.headerX = x;
+            this.headerY = y;
+            this.headerWidth = width;
+            this.headerHeight = height;
+        }
+
+        void setCard(float x, float y, float width, float height) {
+            this.cardX = x;
+            this.cardY = y;
+            this.cardWidth = width;
+            this.cardHeight = height;
+        }
+    }
+
+    @Data
+    private static class TooltipLine {
+        private final String text;
+        private final float size;
+        private final Font font;
+        private final Color color;
+    }
+
+    @Data
+    private static class TooltipData {
+        private final List<TooltipLine> lines = new ArrayList<>();
+
+        void addLine(TooltipLine line) {
+            if (line != null) {
+                lines.add(line);
+            }
+        }
+    }
+
+    @Data
+    private static class TruncatedText {
+        private final String text;
+        private final boolean truncated;
     }
 }

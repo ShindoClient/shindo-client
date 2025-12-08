@@ -4,6 +4,7 @@ import eu.shoroa.contrib.render.ShBlur;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
+import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventRenderNotification;
 import me.miki.shindo.management.mods.HUDMod;
@@ -89,7 +90,7 @@ public class GuiEditHUD extends GuiScreen {
             nvg.drawRect(0, halfScreenHeight, sr.getScaledWidth(), 0.5F, palette.getBackgroundColor(ColorType.DARK));
             nvg.drawRect(halfScreenWidth, 0, 0.5F, sr.getScaledHeight(), palette.getBackgroundColor(ColorType.DARK));
             // todo add more splashers
-            nvg.drawCenteredText("You can resize elements by scrolling over them. Use shift for more control.", sr.getScaledWidth() / 2F, sr.getScaledHeight() - 15, new Color(255, 255, 255, 200), 8F, Fonts.REGULAR);
+            nvg.drawCenteredText(TranslateText.HUD_RESIZE_HINT.getText(), sr.getScaledWidth() / 2F, sr.getScaledHeight() - 15, new Color(255, 255, 255, 200), 8F, Fonts.REGULAR);
 
             for (HUDMod m : mods) {
 

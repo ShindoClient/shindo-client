@@ -105,7 +105,7 @@ public class LayoutScene extends SettingScene {
             return;
         }
 
-        float leftWidth = Math.min(120F, Math.max(100F, baseWidth * 0.18F));
+        float leftWidth = 140F;
         float leftX = baseX + PANEL_PADDING;
         float leftY = baseY + PANEL_PADDING;
         float leftHeight = baseHeight - (PANEL_PADDING * 2F);
@@ -166,16 +166,42 @@ public class LayoutScene extends SettingScene {
         float headerWidth = width - 24F;
 
         nvg.drawText(areaTitle, headerX, headerY, palette.getFontColor(ColorType.DARK), 13.5F, Fonts.MEDIUM);
-        nvg.drawText(nvg.getLimitText(areaDesc, 9F, Fonts.REGULAR, headerWidth),
-                headerX, headerY + 16F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9F, Fonts.REGULAR);
+        float descY = headerY + 16F;
+        String[] words = areaDesc.split(" ");
+        StringBuilder line1 = new StringBuilder();
+        StringBuilder line2 = new StringBuilder();
+        for (String word : words) {
+            String candidate = (line1.length() == 0 ? word : line1 + " " + word);
+            if (nvg.getTextWidth(candidate, 9F, Fonts.REGULAR) <= headerWidth) {
+                line1 = new StringBuilder(candidate);
+            } else {
+                if (line2.length() > 0) {
+                    candidate = line2 + " " + word;
+                    if (nvg.getTextWidth(candidate, 9F, Fonts.REGULAR) <= headerWidth) {
+                        line2 = new StringBuilder(candidate);
+                    }
+                } else {
+                    line2 = new StringBuilder(word);
+                }
+            }
+        }
+        if (line1.length() == 0 && line2.length() == 0) {
+            line1 = new StringBuilder(areaDesc);
+        }
+
+        nvg.drawText(line1.toString(), headerX, descY, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9F, Fonts.REGULAR);
+        if (line2.length() > 0) {
+            nvg.drawText(line2.toString(), headerX, descY + 10F,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200), 9F, Fonts.REGULAR);
+        }
 
         float dropdownWidth = width - 24F;
         float dropdownX = x + 12F;
-        float dropdownY = y + height - typeDropdown.getHeight() - 10F;
-        typeDropdown.setX(dropdownX);
-        typeDropdown.setY(dropdownY);
-        typeDropdown.setWidth(dropdownWidth);
-        typeDropdown.draw(mouseX, mouseY, partialTicks);
+        float dropdownY = y + height - areaDropdown.getControlHeight() - 10F;
+        areaDropdown.setX(dropdownX);
+        areaDropdown.setY(dropdownY);
+        areaDropdown.setWidth(dropdownWidth);
+        areaDropdown.draw(mouseX, mouseY, partialTicks);
     }
 
     private void drawPreviewPanel(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, int mouseX, int mouseY, float partialTicks) {
@@ -187,7 +213,7 @@ public class LayoutScene extends SettingScene {
         float previewX = x + 14F;
         float previewY = y + 14F;
         float previewWidth = width - 28F;
-        float previewHeight = Math.max(0F, height - (previewY - y) - areaDropdown.getHeight() - 12F);
+        float previewHeight = Math.max(0F, height - (previewY - y) - typeDropdown.getControlHeight() - 12F);
 
         nvg.save();
         nvg.intersectScissor(x, y, width, height);
@@ -204,44 +230,57 @@ public class LayoutScene extends SettingScene {
 
         float dropdownWidth = Math.min(220F, previewWidth);
         float dropdownX = previewX;
-        float dropdownY = y + height - areaDropdown.getHeight() - 10F;
-        areaDropdown.setX(dropdownX);
-        areaDropdown.setY(dropdownY);
-        areaDropdown.setWidth(dropdownWidth);
-        areaDropdown.draw(mouseX, mouseY, partialTicks);
+        float dropdownY = y + height - typeDropdown.getControlHeight() - 10F;
+        typeDropdown.setX(dropdownX);
+        typeDropdown.setY(dropdownY);
+        typeDropdown.setWidth(dropdownWidth);
+        typeDropdown.draw(mouseX, mouseY, partialTicks);
     }
 
     private void drawLayoutPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, SettingsPanel.LayoutMode layoutMode) {
         Color base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170);
         Color cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210);
         Color detailColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220);
+        Color accentColor = ColorUtils.applyAlpha(accent.getColor1(), 200);
 
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base);
 
         int columns = layoutMode == SettingsPanel.LayoutMode.SINGLE_COLUMN ? 1 : 2;
-        int rows = 3;
-        float padding = 18F;
-        float columnGap = 12F;
-        float rowGap = 12F;
-        float cardHeight = 34F;
+        int rows = 2;
+        float padding = 8F;
+        float columnGap = 8F;
+        float rowGap = 8F;
+        float headerHeight = 6F;
+        float headerSpacing = 4F;
+        float cardHeight = 36F;
         float columnWidth = (width - (padding * 2F) - ((columns - 1) * columnGap)) / columns;
-        columnWidth = Math.max(72F, columnWidth);
+        columnWidth = Math.max(60F, columnWidth);
 
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
                 float cardX = x + padding + column * (columnWidth + columnGap);
-                float cardY = y + padding + row * (cardHeight + rowGap);
-                nvg.drawRoundedRect(cardX, cardY, columnWidth, cardHeight, 8F, cardColor);
+                float headerY = y + padding + row * (cardHeight + headerHeight + headerSpacing + rowGap);
+                float cardY = headerY + headerHeight + headerSpacing;
 
-                float headerWidth = columnWidth - 16F;
-                nvg.drawRoundedRect(cardX + 8F, cardY + 7F, headerWidth, 6F, 3F, detailColor);
-                nvg.drawRoundedRect(cardX + 8F, cardY + 18F, headerWidth * 0.7F, 4F, 2F, detailColor);
+                nvg.drawRoundedRect(cardX, headerY, 8F, headerHeight, 2F, accentColor);
+                nvg.drawRoundedRect(cardX + 10F, headerY, columnWidth - 10F, headerHeight, 3F, detailColor);
+
+                nvg.drawRoundedRect(cardX, cardY, columnWidth, cardHeight, 8F, cardColor);
+                nvg.drawRoundedRect(cardX + 1F, cardY + 1F, columnWidth - 2F, cardHeight - 2F, 7F, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210));
+
+                float contentX = cardX + 10F;
+                float contentY = cardY + 8F;
+                float contentWidth = columnWidth - 20F;
+                float lineHeight = 5F;
+                float innerGap = 7F;
+
+                for (int i = 0; i < 2; i++) {
+                    float lineY = contentY + i * (lineHeight + innerGap);
+                    nvg.drawRoundedRect(contentX, lineY, 6F, lineHeight, 2F, accentColor);
+                    nvg.drawRoundedRect(contentX + 10F, lineY, contentWidth - 16F, lineHeight, 2F, detailColor);
+                }
             }
         }
-
-        float footerWidth = width - (padding * 2F);
-        nvg.drawGradientRoundedRect(x + padding, y + height - padding - 6F, footerWidth, 6F, 3F,
-                ColorUtils.applyAlpha(accent.getColor1(), 160), ColorUtils.applyAlpha(accent.getColor2(), 160));
     }
 
     private void drawModulePreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, int columns) {
@@ -253,10 +292,10 @@ public class LayoutScene extends SettingScene {
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base);
 
         int rows = 3;
-        float padding = 16F;
-        float columnGap = 14F;
-        float rowGap = 12F;
-        float cardHeight = 32F;
+        float padding = 8F;
+        float columnGap = 8F;
+        float rowGap = 8F;
+        float cardHeight = 28F;
         float columnWidth = (width - (padding * 2F) - ((columns - 1) * columnGap)) / columns;
         columnWidth = Math.max(60F, columnWidth);
 
@@ -272,8 +311,7 @@ public class LayoutScene extends SettingScene {
         }
     }
 
-    private void drawScreenshotPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width,
-                                       float height, ScreenshotDisplayMode mode) {
+    private void drawScreenshotPreview(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float width, float height, ScreenshotDisplayMode mode) {
         Color background = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 140);
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, background);
 

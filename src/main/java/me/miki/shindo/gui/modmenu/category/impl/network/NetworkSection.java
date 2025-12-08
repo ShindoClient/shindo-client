@@ -2,14 +2,14 @@ package me.miki.shindo.gui.modmenu.category.impl.network;
 
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
-import me.miki.shindo.management.nanovg.font.LegacyIcon;
+import me.miki.shindo.management.nanovg.font.Icons;
 
 /**
  * Sections available inside the {@link me.miki.shindo.gui.modmenu.category.impl.NetworkCategory}.
  */
 public enum NetworkSection {
-    TWEAKER(TranslateText.NETWORK_CATEGORY_OVERVIEW, LegacyIcon.NET),
-    PROXY(TranslateText.NETWORK_PROXY_WARP, LegacyIcon.GLOBE);
+    TWEAKER(TranslateText.NETWORK_CATEGORY_OVERVIEW, Icons.NETWORK_CHECK_20),
+    PROXY(TranslateText.NETWORK_PROXY_WARP, Icons.CLOUD_20);
 
     private final TranslateText label;
     @Getter

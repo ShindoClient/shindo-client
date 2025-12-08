@@ -265,6 +265,37 @@ public class NanoVGManager {
         NanoVG.nvgStroke(nvg);
     }
 
+    public void drawRadialRoundedRect(float x, float y, float width, float height, float radius, Color centerColor, Color edgeColor) {
+
+        NVGPaint paint = NVGPaint.create();
+
+        float cx = x + width / 2f;   // centro X do gradiente
+        float cy = y + height / 2f;  // centro Y do gradiente
+
+        float inner = 4f;            // raio inicial (luz)
+        float outer = Math.max(width, height); // raio final (borda)
+
+        NVGColor c1 = getColor(centerColor);
+        NVGColor c2 = getColor(edgeColor);
+
+        NanoVG.nvgBeginPath(nvg);
+        NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius);
+
+        NanoVG.nvgFillPaint(nvg,
+                NanoVG.nvgRadialGradient(
+                        nvg,
+                        cx, cy,
+                        inner,
+                        outer,
+                        c1, c2,
+                        paint
+                )
+        );
+
+        NanoVG.nvgFill(nvg);
+    }
+
+
     public void drawArrow(float x, float y, float size, float angle, Color color) {
 
         save();

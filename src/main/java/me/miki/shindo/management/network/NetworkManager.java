@@ -34,19 +34,24 @@ import java.util.Locale;
  * properties that can be surfaced inside the mod menu. The manager is responsible for synchronising runtime channel
  * settings with the values defined by the user as well as persisting those values between sessions.
  */
-public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryProvider {
+public class NetworkManager implements ConfigOwner, SettingCategoryProvider {
 
     private static final boolean DEFAULT_TCP_NODELAY = false;
     private static final boolean DEFAULT_AUTO_FLUSH = false;
     private static final boolean DEFAULT_NATIVE_TRANSPORT = true;
     private static final int DEFAULT_WRITE_BUFFER_KB = 256;
+    private static final int MIN_DYNAMIC_INTERVAL_MS = 10;
 
     private static final int MIN_WRITE_BUFFER_KB = 128;
     private static final int MAX_WRITE_BUFFER_KB = 4096;
+    private static final int PING_HISTORY = 30;
+    private static final long PING_POLL_MS = 500L;
+    private static final int DEFAULT_RESPONSIVENESS = 6;
 
     private final Minecraft mc = Minecraft.getMinecraft();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final File configFile;
+    private final int[] pingSamples = new int[PING_HISTORY];
 
     @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_OPTIMIZER_TOGGLE, category = "overview")
@@ -97,8 +102,20 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
     private int flushPacketThreshold = 4;
 
     @Getter
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_DYNAMIC_FLUSH, category = "flow")
+    private boolean dynamicFlushEnabled = true;
+
+    @Getter
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_JITTER_SENSITIVITY, category = "flow", min = 1, max = 20, step = 1, current = 6)
+    private int jitterSensitivity = 6;
+
+    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_PROXY_WARP, category = "routing")
     private boolean warpProxyEnabled = false;
+
+    @Getter
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_RESPONSIVENESS, category = "profile", min = 1, max = 10, step = 1, current = DEFAULT_RESPONSIVENESS)
+    private int responsivenessLevel = DEFAULT_RESPONSIVENESS;
 
     private Channel activeChannel;
     private Boolean cachedOptimizerEnabled;
@@ -114,15 +131,21 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
     private Integer cachedFlushInterval;
     private Integer cachedFlushThreshold;
     private Boolean cachedWarpProxyEnabled;
+    private Boolean cachedDynamicEnabled;
+    private Integer cachedJitterSensitivity;
+    private Integer cachedResponsiveness;
 
     private boolean configDirty;
     private long lastFlushTimestamp;
     private int pendingPackets;
     private long lastConfigSave;
+    private long lastPingPoll;
+    private int pingIndex;
+    private int pingCount;
 
     private SavedState savedState;
 
-    public ConnectionTweakerManager() {
+    public NetworkManager() {
         Shindo instance = Shindo.getInstance();
         this.configFile = new File(instance.getFileManager().getShindoDir(), "connection-tweaker.json");
         loadConfig();
@@ -155,6 +178,12 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         snapshot.stabilityFocus = calculateStabilityFocus(snapshot.latencyFocus);
         snapshot.throughputFocus = calculateThroughputFocus(snapshot.latencyFocus, snapshot.stabilityFocus);
         snapshot.recommendedBufferKb = computeRecommendedBuffer();
+        snapshot.dynamicFlush = dynamicFlushEnabled;
+        snapshot.dynamicIntervalMs = resolveDynamicInterval();
+        snapshot.dynamicThreshold = resolveDynamicThreshold();
+        snapshot.averagePingMs = averagePing();
+        snapshot.jitterMs = jitterPing();
+        snapshot.responsivenessLevel = responsivenessLevel;
         WarpProxyManager warpProxyManager = Shindo.getInstance().getWarpProxyManager();
         if (warpProxyManager != null) {
             WarpProxyManager.WarpDiagnostics diagnostics = warpProxyManager.getDiagnostics();
@@ -192,6 +221,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         object.addProperty("flushIntervalMs", flushIntervalMs);
         object.addProperty("flushPacketThreshold", flushPacketThreshold);
         object.addProperty("warpProxyEnabled", warpProxyEnabled);
+        object.addProperty("dynamicFlushEnabled", dynamicFlushEnabled);
+        object.addProperty("jitterSensitivity", jitterSensitivity);
+        object.addProperty("responsivenessLevel", responsivenessLevel);
         return object;
     }
 
@@ -213,6 +245,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         flushIntervalMs = Math.max(10, Math.min(120, JsonUtils.getIntProperty(object, "flushIntervalMs", flushIntervalMs)));
         flushPacketThreshold = Math.max(1, Math.min(12, JsonUtils.getIntProperty(object, "flushPacketThreshold", flushPacketThreshold)));
         warpProxyEnabled = JsonUtils.getBooleanProperty(object, "warpProxyEnabled", warpProxyEnabled);
+        dynamicFlushEnabled = JsonUtils.getBooleanProperty(object, "dynamicFlushEnabled", dynamicFlushEnabled);
+        jitterSensitivity = Math.max(1, Math.min(20, JsonUtils.getIntProperty(object, "jitterSensitivity", jitterSensitivity)));
+        responsivenessLevel = Math.max(1, Math.min(10, JsonUtils.getIntProperty(object, "responsivenessLevel", responsivenessLevel)));
 
         invalidateCaches();
         markDirty();
@@ -282,10 +317,13 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             return;
         }
 
+        int targetInterval = resolveDynamicInterval();
+        int targetThreshold = resolveDynamicThreshold();
+
         pendingPackets++;
         long now = System.currentTimeMillis();
-        boolean intervalExceeded = now - lastFlushTimestamp >= Math.max(10, flushIntervalMs);
-        boolean thresholdExceeded = pendingPackets >= Math.max(1, flushPacketThreshold);
+        boolean intervalExceeded = now - lastFlushTimestamp >= targetInterval;
+        boolean thresholdExceeded = pendingPackets >= targetThreshold;
 
         if (intervalExceeded || thresholdExceeded || isPriorityPacket(packet)) {
             flushChannel(channel);
@@ -304,6 +342,7 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
 
     @EventTarget
     public void onUpdate(EventUpdate event) {
+        pollPing();
         refreshRuntime();
         if (configDirty && System.currentTimeMillis() - lastConfigSave > 750L) {
             saveConfig();
@@ -319,6 +358,18 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
     public void setAutoFlushEnabled(boolean enabled) {
         this.autoFlushEnabled = enabled;
         cachedAutoFlush = null;
+        markDirty();
+    }
+
+    public void setWarpProxyEnabled(boolean enabled) {
+        this.warpProxyEnabled = enabled;
+        cachedWarpProxyEnabled = null;
+        markDirty();
+    }
+
+    public void setOptimizerEnabled(boolean enabled) {
+        this.optimizerEnabled = enabled;
+        cachedOptimizerEnabled = null;
         markDirty();
     }
 
@@ -341,6 +392,63 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         markDirty();
     }
 
+    public void setNetworkMedium(LinkMedium medium) {
+        if (medium == null) {
+            return;
+        }
+        this.networkMedium = medium;
+        cachedMedium = null;
+        markDirty();
+    }
+
+    public void setAggressiveProfile(boolean aggressive) {
+        this.aggressiveProfile = aggressive;
+        cachedAggressive = null;
+        markDirty();
+    }
+
+    public void setAdaptiveBuffering(boolean enabled) {
+        this.adaptiveBuffering = enabled;
+        cachedAdaptive = null;
+        markDirty();
+    }
+
+    public void setBurstFlushSmoothing(boolean enabled) {
+        this.burstFlushSmoothing = enabled;
+        cachedBurstSmoothing = null;
+        markDirty();
+    }
+
+    public void setFlushIntervalMs(int value) {
+        this.flushIntervalMs = Math.max(10, Math.min(120, value));
+        cachedFlushInterval = null;
+        markDirty();
+    }
+
+    public void setFlushPacketThreshold(int value) {
+        this.flushPacketThreshold = Math.max(1, Math.min(12, value));
+        cachedFlushThreshold = null;
+        markDirty();
+    }
+
+    public void setResponsivenessLevel(int level) {
+        this.responsivenessLevel = Math.max(1, Math.min(10, level));
+        cachedResponsiveness = null;
+        markDirty();
+    }
+
+    public void setDynamicFlushEnabled(boolean enabled) {
+        this.dynamicFlushEnabled = enabled;
+        cachedDynamicEnabled = null;
+        markDirty();
+    }
+
+    public void setJitterSensitivity(int value) {
+        this.jitterSensitivity = Math.max(1, Math.min(20, value));
+        cachedJitterSensitivity = null;
+        markDirty();
+    }
+
     private void refreshRuntime() {
         boolean changed = false;
 
@@ -351,7 +459,6 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
                 savedState = captureState();
                 applyDisabledDefaults();
             } else {
-                restoreState(savedState);
                 savedState = null;
             }
         }
@@ -371,6 +478,7 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             changed |= applyWriteBufferIfNeeded();
             changed |= applyPreferNativeIfNeeded();
             changed |= applyFlushSettingsIfNeeded();
+            changed |= applyDynamicSettingsIfNeeded();
             if (changed) {
                 markDirty();
             }
@@ -384,6 +492,10 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         }
         if (cachedLinkCapacity == null || cachedLinkCapacity != linkCapacityMbps) {
             cachedLinkCapacity = linkCapacityMbps;
+            profileChanged = true;
+        }
+        if (cachedResponsiveness == null || cachedResponsiveness != responsivenessLevel) {
+            cachedResponsiveness = responsivenessLevel;
             profileChanged = true;
         }
         if (cachedAggressive == null || cachedAggressive != aggressiveProfile) {
@@ -405,6 +517,7 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         changed |= applyWriteBufferIfNeeded();
         changed |= applyPreferNativeIfNeeded();
         changed |= applyFlushSettingsIfNeeded();
+        changed |= applyDynamicSettingsIfNeeded();
 
         if (changed) {
             markDirty();
@@ -477,6 +590,21 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         return changed;
     }
 
+    private boolean applyDynamicSettingsIfNeeded() {
+        boolean changed = false;
+        if (cachedDynamicEnabled == null || cachedDynamicEnabled != dynamicFlushEnabled) {
+            cachedDynamicEnabled = dynamicFlushEnabled;
+            changed = true;
+        }
+        int targetSensitivity = Math.max(1, Math.min(20, jitterSensitivity));
+        if (cachedJitterSensitivity == null || !cachedJitterSensitivity.equals(targetSensitivity)) {
+            jitterSensitivity = targetSensitivity;
+            cachedJitterSensitivity = targetSensitivity;
+            changed = true;
+        }
+        return changed;
+    }
+
     private void applyAdaptiveProfile() {
         writeBufferKb = computeRecommendedBuffer();
         cachedWriteBuffer = null;
@@ -485,7 +613,7 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             tcpNoDelayEnabled = true;
             autoFlushEnabled = true;
             burstFlushSmoothing = true;
-            flushIntervalMs = Math.max(15, baseFlushInterval() - 10);
+            flushIntervalMs = Math.max(15, baseFlushInterval() - 8 - responsivenessBoost());
             flushPacketThreshold = Math.max(2, baseFlushThreshold() - 1);
         } else {
             flushIntervalMs = baseFlushInterval();
@@ -507,6 +635,8 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         burstFlushSmoothing = false;
         flushIntervalMs = 50;
         flushPacketThreshold = 6;
+        dynamicFlushEnabled = false;
+        jitterSensitivity = 6;
         cachedTcpNoDelay = null;
         cachedAutoFlush = null;
         cachedPreferNative = null;
@@ -515,6 +645,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         cachedFlushInterval = null;
         cachedFlushThreshold = null;
         cachedWarpProxyEnabled = null;
+        cachedDynamicEnabled = null;
+        cachedJitterSensitivity = null;
+        cachedResponsiveness = null;
     }
 
     private SavedState captureState() {
@@ -530,6 +663,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         state.burstSmoothing = burstFlushSmoothing;
         state.flushInterval = flushIntervalMs;
         state.flushThreshold = flushPacketThreshold;
+        state.dynamicEnabled = dynamicFlushEnabled;
+        state.jitterSensitivity = jitterSensitivity;
+        state.responsiveness = responsivenessLevel;
         return state;
     }
 
@@ -556,6 +692,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         burstFlushSmoothing = state.burstSmoothing;
         flushIntervalMs = state.flushInterval;
         flushPacketThreshold = state.flushThreshold;
+        dynamicFlushEnabled = state.dynamicEnabled;
+        jitterSensitivity = state.jitterSensitivity;
+        responsivenessLevel = state.responsiveness;
 
         cachedMedium = null;
         cachedLinkCapacity = null;
@@ -569,6 +708,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         cachedFlushInterval = null;
         cachedFlushThreshold = null;
         cachedWarpProxyEnabled = null;
+        cachedDynamicEnabled = null;
+        cachedJitterSensitivity = null;
+        cachedResponsiveness = null;
     }
 
     private void applyBufferConfiguration(Channel channel) {
@@ -608,6 +750,8 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         cachedBurstSmoothing = null;
         cachedFlushInterval = null;
         cachedFlushThreshold = null;
+        cachedDynamicEnabled = null;
+        cachedJitterSensitivity = null;
     }
 
     private boolean resolveTcpNoDelay() {
@@ -645,6 +789,83 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
                 || simpleName.contains("login");
     }
 
+    private void pollPing() {
+        if (mc.thePlayer == null || mc.getNetHandler() == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastPingPoll < PING_POLL_MS) {
+            return;
+        }
+        lastPingPoll = now;
+        try {
+            net.minecraft.client.network.NetworkPlayerInfo info = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
+            if (info == null) {
+                return;
+            }
+            int ping = Math.max(1, info.getResponseTime());
+            pingSamples[pingIndex] = ping;
+            pingIndex = (pingIndex + 1) % PING_HISTORY;
+            if (pingCount < PING_HISTORY) {
+                pingCount++;
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private int resolveDynamicInterval() {
+        int base = Math.max(MIN_DYNAMIC_INTERVAL_MS, flushIntervalMs);
+        if (!dynamicFlushEnabled || pingCount == 0) {
+            return base;
+        }
+        int average = averagePing();
+        int jitter = jitterPing();
+        int jitterImpact = Math.min(12, (jitter * jitterSensitivity) / 20);
+        int latencyImpact = average > 180 ? Math.min(10, (average - 180) / 25) : 0;
+        int adjusted = Math.max(MIN_DYNAMIC_INTERVAL_MS, base - jitterImpact - latencyImpact);
+        return adjusted;
+    }
+
+    private int resolveDynamicThreshold() {
+        int base = Math.max(1, flushPacketThreshold);
+        if (!dynamicFlushEnabled || pingCount == 0) {
+            return base;
+        }
+        int jitter = jitterPing();
+        if (jitter > 40) {
+            return Math.max(1, base - 2);
+        }
+        if (jitter > 20) {
+            return Math.max(1, base - 1);
+        }
+        return base;
+    }
+
+    private int averagePing() {
+        if (pingCount == 0) {
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < pingCount; i++) {
+            sum += pingSamples[i];
+        }
+        return sum / pingCount;
+    }
+
+    private int jitterPing() {
+        if (pingCount < 2) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < pingCount; i++) {
+            int v = pingSamples[i];
+            min = Math.min(min, v);
+            max = Math.max(max, v);
+        }
+        return Math.max(0, max - min);
+    }
+
     private int computeRecommendedBuffer() {
         int base;
         switch (networkMedium) {
@@ -667,15 +888,16 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         if (aggressiveProfile) {
             recommended += 128;
         }
+        recommended += responsivenessBoost() * 12;
         return normalizeWriteBuffer(recommended);
     }
 
     private int baseFlushInterval() {
         switch (networkMedium) {
             case WIRED:
-                return aggressiveProfile ? 28 : 38;
+                return aggressiveProfile ? 26 : 36;
             case WIRELESS:
-                return aggressiveProfile ? 34 : 46;
+                return aggressiveProfile ? 32 : 44;
             case MOBILE:
                 return aggressiveProfile ? 38 : 52;
             default:
@@ -694,6 +916,10 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             default:
                 return 4;
         }
+    }
+
+    private int responsivenessBoost() {
+        return Math.max(0, responsivenessLevel - DEFAULT_RESPONSIVENESS);
     }
 
     private float calculateLatencyFocus() {
@@ -774,6 +1000,8 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             flushIntervalMs = Math.max(10, Math.min(120, JsonUtils.getIntProperty(object, "flushIntervalMs", flushIntervalMs)));
             flushPacketThreshold = Math.max(1, Math.min(12, JsonUtils.getIntProperty(object, "flushPacketThreshold", flushPacketThreshold)));
             warpProxyEnabled = JsonUtils.getBooleanProperty(object, "warpProxyEnabled", warpProxyEnabled);
+            dynamicFlushEnabled = JsonUtils.getBooleanProperty(object, "dynamicFlushEnabled", dynamicFlushEnabled);
+            jitterSensitivity = Math.max(1, Math.min(20, JsonUtils.getIntProperty(object, "jitterSensitivity", jitterSensitivity)));
         } catch (IOException exception) {
             ShindoLogger.error("Failed to load connection tweaker configuration", exception);
         }
@@ -799,6 +1027,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
             object.addProperty("flushIntervalMs", flushIntervalMs);
             object.addProperty("flushPacketThreshold", flushPacketThreshold);
             object.addProperty("warpProxyEnabled", warpProxyEnabled);
+            object.addProperty("dynamicFlushEnabled", dynamicFlushEnabled);
+            object.addProperty("jitterSensitivity", jitterSensitivity);
+            object.addProperty("responsivenessLevel", responsivenessLevel);
 
             try (FileWriter writer = new FileWriter(configFile)) {
                 gson.toJson(object, writer);
@@ -856,6 +1087,9 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         private boolean burstSmoothing;
         private int flushInterval;
         private int flushThreshold;
+        private boolean dynamicEnabled;
+        private int jitterSensitivity;
+        private int responsiveness;
     }
 
     @Getter
@@ -872,6 +1106,12 @@ public class ConnectionTweakerManager implements ConfigOwner, SettingCategoryPro
         private boolean burstSmoothing;
         private int flushIntervalMs;
         private int flushThreshold;
+        private boolean dynamicFlush;
+        private int dynamicIntervalMs;
+        private int dynamicThreshold;
+        private int averagePingMs;
+        private int jitterMs;
+        private int responsivenessLevel;
         private float latencyFocus;
         private float stabilityFocus;
         private float throughputFocus;
