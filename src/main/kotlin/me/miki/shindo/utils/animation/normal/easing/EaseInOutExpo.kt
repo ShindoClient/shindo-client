@@ -13,7 +13,7 @@ class EaseInOutExpo(ms: Int, endPoint: Double) : Animation(ms, endPoint) {
         if (x == 0.0) {
             return 0.0
         }
-        if (x == duration) {
+        if (x.toInt() == duration) {
             return 1.0
         }
 

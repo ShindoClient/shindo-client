@@ -27,7 +27,7 @@ class EaseElasticAnimation : Animation {
     }
 
     override fun getEquation(x: Double): Double {
-        val x1 = (x / duration).pow(smooth)
+        val x1 = (x / duration).pow(smooth.toDouble())
         val elasticity = easeAmount * 0.1f
         return 2.0.pow(-10 * if (reallyElastic) sqrt(x1) else x1) * sin((x1 - elasticity / 4) * (2 * Math.PI / elasticity)) + 1
     }

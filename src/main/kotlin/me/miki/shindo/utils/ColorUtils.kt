@@ -134,9 +134,9 @@ object ColorUtils {
         val b = color.blue
         val a = color.alpha
 
-        val newR = min( 255.0, r + ((255 - r) * clamped)).toInt()
-        val newG = min(255.0, g + ((255 - g) * clamped)).toInt()
-        val newB = min(255.0, b + ((255 - b) * clamped)).toInt()
+        val newR = min(255f, r + ((255 - r) * clamped)).toInt()
+        val newG = min(255f, g + ((255 - g) * clamped)).toInt()
+        val newB = min(255f, b + ((255 - b) * clamped)).toInt()
 
         return Color(newR, newG, newB, a)
     }
@@ -149,9 +149,9 @@ object ColorUtils {
         val b = color.blue
         val a = color.alpha
 
-        val newR = max(0.0, r - (r * clamped)).toInt()
-        val newG = max(0.0, g - (g * clamped)).toInt()
-        val newB = max(0.0, b - (b * clamped)).toInt()
+        val newR = max(0f, r - (r * clamped)).toInt()
+        val newG = max(0f, g - (g * clamped)).toInt()
+        val newB = max(0f, b - (b * clamped)).toInt()
 
         return Color(newR, newG, newB, a)
     }
