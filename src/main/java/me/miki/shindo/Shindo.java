@@ -45,7 +45,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 
 public class Shindo {
-
     private final Minecraft mc = Minecraft.getMinecraft();
 
     @Getter

@@ -10,7 +10,7 @@ import me.miki.shindo.management.mods.impl.crosshair.LayoutManager.CellGridPrese
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.Icons;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.impl.CellGridSetting;
 import me.miki.shindo.ui.comp.Comp;
 import me.miki.shindo.ui.framework.UIContext;
@@ -377,10 +377,10 @@ public class CompCellGrid extends Comp {
                     editBounds = new Bounds(cardBounds.x + cardBounds.width - (iconSize * 2F) - 8F, iconY, iconSize, iconSize);
                     deleteBounds = new Bounds(cardBounds.x + cardBounds.width - iconSize - 4F, iconY, iconSize, iconSize);
 
-                    nvg.drawText(Icons.EDIT_20, editBounds.x, editBounds.y,
-                            palette.getFontColor(ColorType.DARK), 11F, Fonts.ICON_OUTLINE);
-                    nvg.drawText(Icons.DELETE_20, deleteBounds.x, deleteBounds.y,
-                            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220), 11F, Fonts.ICON_OUTLINE);
+                    nvg.drawText(LegacyIcon.PENCIL, editBounds.x, editBounds.y,
+                            palette.getFontColor(ColorType.DARK), 11F, Fonts.LEGACYICON);
+                    nvg.drawText(LegacyIcon.TRASH, deleteBounds.x, deleteBounds.y,
+                            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220), 11F, Fonts.LEGACYICON);
                 }
 
                 presetCards.add(new PresetCard(preset, cardBounds, deleteBounds, editBounds, false));
@@ -393,10 +393,10 @@ public class CompCellGrid extends Comp {
                 nvg.drawOutlineRoundedRect(cardBounds.x, cardBounds.y, cardBounds.width, cardBounds.height, 6F, 1.2F,
                         ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 140));
 
-                nvg.drawText(Icons.ADD_CIRCLE_24,
+                nvg.drawText(LegacyIcon.PLUS,
                         cardBounds.x + (cardBounds.width / 2F) - 6F,
                         cardBounds.y + (cardBounds.height / 2F) - 7F,
-                        palette.getFontColor(ColorType.DARK), 14F, Fonts.ICON_OUTLINE);
+                        palette.getFontColor(ColorType.DARK), 14F, Fonts.LEGACYICON);
                 presetCards.add(new PresetCard(null, cardBounds, null, null, true));
                 addCardPlaced = true;
             }

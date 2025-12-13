@@ -14,7 +14,6 @@ import me.miki.shindo.management.color.palette.ColorType;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.Icons;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.network.NetworkDiagnostics;
 import me.miki.shindo.management.network.NetworkDiagnostics.LatencyResult;
@@ -97,9 +96,6 @@ public class NetworkCategory extends Category {
     private CompSlider jitterSlider;
     private boolean runningSpeedTest;
     private boolean runningLatency;
-    private SpeedResult lastSpeedResult;
-    private List<LatencyResult> lastLatencyResults = new ArrayList<>();
-    private long lastDiagTimestamp;
     private boolean settingsOpen;
     private float optimizerButtonX;
     private float optimizerButtonY;
@@ -115,7 +111,7 @@ public class NetworkCategory extends Category {
     private float warpButtonH;
 
     public NetworkCategory(GuiModMenu parent) {
-        super(parent, TranslateText.NETWORK, Icons.NETWORK_CHECK_20, false, true);
+        super(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true);
     }
 
     @Override
@@ -229,7 +225,6 @@ public class NetworkCategory extends Category {
         cursorY = drawHero(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2F, mouseX, mouseY) + CARD_GAP;
         cursorY = drawFocusChart(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2F) + CARD_GAP;
         cursorY = drawMetricsCards(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2F) + CARD_GAP;
-        cursorY = drawDiagnostics(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2F, mouseX, mouseY) + CARD_GAP;
         cursorY = drawAdvancedSettings(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2F, mouseX, mouseY) + CARD_GAP;
     }
 
@@ -256,7 +251,7 @@ public class NetworkCategory extends Category {
                 ? (warpHovered ? ColorUtils.applyAlpha(accent.getColor1(), 220) : ColorUtils.applyAlpha(accent.getColor1(), 180))
                 : (warpHovered ? palette.getBackgroundColor(ColorType.NORMAL) : palette.getBackgroundColor(ColorType.MID));
         nvg.drawRoundedRect(warpButtonX, warpButtonY, warpButtonW, warpButtonH, 8F, warpBg);
-        nvg.drawText(Icons.CLOUD_20, warpButtonX + 10F, warpButtonY + 6F, palette.getFontColor(ColorType.DARK), 12F, Fonts.ICON_OUTLINE);
+        nvg.drawText(LegacyIcon.CLOUD, warpButtonX + 10F, warpButtonY + 6F, palette.getFontColor(ColorType.DARK), 12F, Fonts.LEGACYICON);
         String warpLabel = warpEnabled ? "Disable WARP" : "Enable WARP";
         nvg.drawText(warpLabel, warpButtonX + 30F, warpButtonY + 8F, palette.getFontColor(ColorType.DARK), 11F, Fonts.MEDIUM);
     }
@@ -272,12 +267,12 @@ public class NetworkCategory extends Category {
         nvg.drawText(TranslateText.NETWORK_OPTIMIZER_SUMMARY.getText(), x + 18F, titleY + 18F, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 10F, Fonts.REGULAR);
 
         // Sliders
-        float sliderY = titleY + 40F;
+        float sliderY = titleY + 55F;
         if (capacitySetting != null && capacitySlider != null) {
             nvg.drawText(TranslateText.NETWORK_LINK_CAPACITY.getText(), x + 18F, sliderY - 10F, palette.getFontColor(ColorType.NORMAL), 9.5F, Fonts.MEDIUM);
             capacitySetting.setValue(manager.getLinkCapacityMbps());
             capacitySlider.setX(x + 18F);
-            capacitySlider.setY(sliderY );
+            capacitySlider.setY(sliderY);
             capacitySlider.setWidth(w - 36F);
             capacitySlider.draw(mouseX, mouseY, 0);
             sliderY += 34F;
@@ -362,7 +357,7 @@ public class NetworkCategory extends Category {
             nvg.drawText(labels[i].getText(), barX, fy - 2F, palette.getFontColor(ColorType.NORMAL), 9.5F, Fonts.REGULAR);
             nvg.drawRoundedRect(barX, fy + 8F, barW, barH, 6F, palette.getBackgroundColor(ColorType.MID));
             nvg.drawRoundedRect(barX, fy + 8F, barW * focuses[i], barH, 6F, ColorUtils.applyAlpha(accent.getColor1(), 220));
-            nvg.drawText(df.format(focuses[i] * 100) + "%", barX + barW - 40F, fy + 7F, palette.getFontColor(ColorType.DARK), 9F, Fonts.MEDIUM);
+            nvg.drawText(df.format(focuses[i] * 100) + "%", barX + barW - 40F, fy + 10F, palette.getFontColor(ColorType.DARK), 9F, Fonts.MEDIUM);
         }
         return y + h;
     }
@@ -370,8 +365,8 @@ public class NetworkCategory extends Category {
     private float drawMetricsCards(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float w) {
         float cardH = 82F;
         float halfW = (w - CARD_GAP) / 2F;
-        drawMetricCard(nvg, palette, accent, x, y, halfW, cardH, Icons.GAUGE_20, "Before", baselineSnapshot);
-        drawMetricCard(nvg, palette, accent, x + halfW + CARD_GAP, y, halfW, cardH, Icons.ARROW_TRENDING_20, "After", snapshot);
+        drawMetricCard(nvg, palette, accent, x, y, halfW, cardH, LegacyIcon.TIMER, "Before", baselineSnapshot);
+        drawMetricCard(nvg, palette, accent, x + halfW + CARD_GAP, y, halfW, cardH, LegacyIcon.ARROW_UP, "After", snapshot);
         return y + cardH;
     }
 
@@ -389,40 +384,13 @@ public class NetworkCategory extends Category {
                 x + 14F, y + 64F, palette.getFontColor(ColorType.NORMAL), 9F, Fonts.REGULAR);
     }
 
-    private float drawDiagnostics(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float w, int mouseX, int mouseY) {
-        float cardH = 160F;
-        nvg.drawRoundedRect(x, y, w, cardH, CARD_RADIUS, palette.getBackgroundColor(ColorType.DARK));
-        nvg.drawText("Diagnostics", x + 16F, y + 16F, palette.getFontColor(ColorType.DARK), 13F, Fonts.SEMIBOLD);
-        float btnY = y + 40F;
-        float btnW = 140F;
-        drawButton(nvg, palette, accent, x + 16F, btnY, btnW, BUTTON_HEIGHT, runningSpeedTest ? "Running..." : "Speedtest", Icons.GLOBE_20, !runningSpeedTest, mouseX, mouseY, this::runSpeedTest);
-        drawButton(nvg, palette, accent, x + 16F + btnW + 10F, btnY, btnW, BUTTON_HEIGHT, runningLatency ? "Pinging..." : "Latency", Icons.ACCESS_TIME_24, !runningLatency, mouseX, mouseY, this::runLatencyTest);
-
-        float resultY = btnY + BUTTON_HEIGHT + 12F;
-        if (lastSpeedResult != null) {
-            String s = lastSpeedResult.error == null
-                    ? df.format(lastSpeedResult.downloadMbps) + " Mbps (" + (lastSpeedResult.bytesRead / 1024) + " KB)"
-                    : "Error: " + lastSpeedResult.error;
-            nvg.drawText("Speed: " + s, x + 16F, resultY, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
-            resultY += LINE_HEIGHT;
-        }
-        if (!lastLatencyResults.isEmpty()) {
-            for (LatencyResult lr : lastLatencyResults) {
-                String s = lr.pingMs >= 0 ? lr.pingMs + " ms" : "fail";
-                nvg.drawText(lr.host + ": " + s, x + 16F, resultY, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.REGULAR);
-                resultY += 14F;
-            }
-        }
-        return y + cardH;
-    }
-
     private void drawButton(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float w, float h, String label, String icon, boolean enabled, int mouseX, int mouseY, Runnable action) {
         boolean hovered = MouseUtils.isInside(mouseX, mouseY, x, y, w, h);
         Color bg = enabled
                 ? (hovered ? ColorUtils.applyAlpha(accent.getColor1(), 220) : ColorUtils.applyAlpha(accent.getColor1(), 180))
                 : palette.getBackgroundColor(ColorType.MID);
         nvg.drawRoundedRect(x, y, w, h, 8F, bg);
-        nvg.drawText(icon, x + 10F, y + h / 2F - 7F, palette.getFontColor(ColorType.DARK), 12F, Fonts.LEGACYICON);
+        nvg.drawText(icon, x + 10F, y + h / 2F - 7F, palette.getFontColor(ColorType.DARK), 12F, Fonts.ICON_FILLED);
         nvg.drawText(label, x + 30F, y + h / 2F - 5F, palette.getFontColor(ColorType.DARK), 11F, Fonts.MEDIUM);
         if (enabled && hovered && action != null && Mouse.isButtonDown(0)) {
             action.run();
@@ -613,27 +581,6 @@ public class NetworkCategory extends Category {
         scroll.resetAll();
     }
 
-    private void runSpeedTest() {
-        if (runningSpeedTest) return;
-        runningSpeedTest = true;
-        lastDiagTimestamp = System.currentTimeMillis();
-        NetworkDiagnostics.runSpeedTest("https://speed.cloudflare.com/__down?bytes=1048576", 1_000_000, result -> {
-            lastSpeedResult = result;
-            runningSpeedTest = false;
-        });
-    }
-
-    private void runLatencyTest() {
-        if (runningLatency) return;
-        runningLatency = true;
-        lastDiagTimestamp = System.currentTimeMillis();
-        List<String> hosts = Arrays.asList("google.com", "1.1.1.1", "8.8.8.8");
-        NetworkDiagnostics.runLatencyTest(hosts, 800, results -> {
-            lastLatencyResults = results;
-            runningLatency = false;
-        });
-    }
-
     private void drawSettingsPanel(NanoVGManager nvg, ColorPalette palette, AccentColor accent, int mouseX, int mouseY, float partialTicks) {
         if (settingsAnimation == null) {
             return;
@@ -662,7 +609,7 @@ public class NetworkCategory extends Category {
         if (closeHovered) {
             nvg.drawRoundedRect(closeX - 4F, closeY - 4F, closeSize + 8F, closeSize + 8F, 6F, ColorUtils.applyAlpha(accent.getColor1(), 80));
         }
-        nvg.drawText(Icons.DISMISS_20, closeX, closeY, palette.getFontColor(ColorType.DARK), 12F, Fonts.ICON_OUTLINE);
+        nvg.drawText(LegacyIcon.CLOSE, closeX, closeY, palette.getFontColor(ColorType.DARK), 12F, Fonts.LEGACYICON);
 
         nvg.save();
         nvg.scissor(layout.x + 6F, layout.contentY - 6F, layout.width - 12F, layout.viewportHeight + 12F);
@@ -798,7 +745,7 @@ public class NetworkCategory extends Category {
     }
 
     private float drawAdvancedSettings(NanoVGManager nvg, ColorPalette palette, AccentColor accent, float x, float y, float w, int mouseX, int mouseY) {
-        float cardH = 120F;
+        float cardH = 140F;
         nvg.drawRoundedRect(x, y, w, cardH, CARD_RADIUS, palette.getBackgroundColor(ColorType.DARK));
         nvg.drawText("Advanced Tuning", x + 16F, y + 16F, palette.getFontColor(ColorType.DARK), 12F, Fonts.SEMIBOLD);
 
@@ -806,27 +753,27 @@ public class NetworkCategory extends Category {
         float rowX = x + 16F;
         if (dynamicSetting != null && dynamicToggle != null) {
             dynamicSetting.setToggled(manager.isDynamicFlushEnabled());
-            dynamicToggle.setX(rowX);
+            dynamicToggle.setX(rowX + w - 60);
             dynamicToggle.setY(rowY);
             dynamicToggle.draw(mouseX, mouseY, 0);
-            nvg.drawText(TranslateText.NETWORK_DYNAMIC_FLUSH.getText(), rowX + 110F, rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
+            nvg.drawText(TranslateText.NETWORK_DYNAMIC_FLUSH.getText(), rowX , rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
             rowY += 24F;
         }
         if (burstSetting != null && burstToggle != null) {
             burstSetting.setToggled(manager.isBurstFlushSmoothing());
-            burstToggle.setX(rowX);
+            burstToggle.setX(rowX + w - 60);
             burstToggle.setY(rowY);
             burstToggle.draw(mouseX, mouseY, 0);
-            nvg.drawText(TranslateText.NETWORK_BURST_SMOOTHING.getText(), rowX + 110F, rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
+            nvg.drawText(TranslateText.NETWORK_BURST_SMOOTHING.getText(), rowX, rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
             rowY += 24F;
         }
         if (autoFlushSetting != null && autoFlushToggle != null) {
             autoFlushSetting.setToggled(manager.isAutoFlushEnabled());
-            autoFlushToggle.setX(rowX);
+            autoFlushToggle.setX(rowX + w - 60);
             autoFlushToggle.setY(rowY);
             autoFlushToggle.draw(mouseX, mouseY, 0);
-            nvg.drawText(TranslateText.NETWORK_AUTO_FLUSH.getText(), rowX + 110F, rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
-            rowY += 24F;
+            nvg.drawText(TranslateText.NETWORK_AUTO_FLUSH.getText(), rowX, rowY + 2F, palette.getFontColor(ColorType.NORMAL), 10F, Fonts.MEDIUM);
+            rowY += 34F;
         }
         if (jitterSetting != null && jitterSlider != null) {
             jitterSetting.setValue(manager.getJitterSensitivity());

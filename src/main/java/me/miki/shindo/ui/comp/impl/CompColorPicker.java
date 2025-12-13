@@ -5,7 +5,6 @@ import lombok.Setter;
 import me.miki.shindo.management.settings.impl.ColorSetting;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.ui.comp.Comp;
-import me.miki.shindo.ui.framework.UIContext;
 import me.miki.shindo.utils.MathUtils;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 import me.miki.shindo.utils.mouse.MouseUtils;

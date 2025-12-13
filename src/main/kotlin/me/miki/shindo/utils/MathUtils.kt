@@ -1,0 +1,83 @@
+package me.miki.shindo.utils
+
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.math.min
+
+object MathUtils {
+
+    @JvmStatic
+    fun isOdd(number: Int): Boolean = number % 2 != 0
+
+    @JvmStatic
+    fun clamp(value: Float): Float = when {
+        value < 0.0f -> 0.0f
+        value > 1.0f -> 1.0f
+        else -> value
+    }
+
+    @JvmStatic
+    fun clamp(number: Float, min: Float, max: Float): Float = if (number < min) min else min(number, max)
+
+    @JvmStatic
+    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+        return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    @JvmStatic
+    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toFloat()
+    }
+
+    @JvmStatic
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toInt()
+    }
+
+    @JvmStatic
+    fun isInRange(value: Float, min: Float, max: Float): Boolean = value > min && value < max
+
+    @JvmStatic
+    fun sin(value: Double): Float = kotlin.math.sin(value).toFloat()
+
+    @JvmStatic
+    fun cos(value: Double): Float = kotlin.math.cos(value).toFloat()
+
+    @JvmStatic
+    fun lerp(f: Float, g: Float, h: Float): Float = g + f * (h - g)
+
+    @JvmStatic
+    fun lerp(d: Double, e: Double, f: Double): Double = e + d * (f - e)
+
+    @JvmStatic
+    fun fastInvSqrt(f: Float): Float {
+        var value = f
+        val g = 0.5f * value
+        var i = java.lang.Float.floatToIntBits(value)
+        i = 1597463007 - (i shr 1)
+        value = java.lang.Float.intBitsToFloat(i)
+        value *= 1.5f - g * value * value
+        return value
+    }
+
+    @JvmStatic
+    fun fastInvCubeRoot(f: Float): Float {
+        var i = java.lang.Float.floatToIntBits(f)
+        i = 1419967116 - i / 3
+        var g = java.lang.Float.intBitsToFloat(i)
+        g = 0.6666667f * g + 1.0f / 3.0f * g * g * f
+        g = 0.6666667f * g + 1.0f / 3.0f * g * g * f
+        return g
+    }
+
+    @JvmStatic
+    fun roundToPlace(value: Double, places: Int): Double {
+        require(places >= 0) { "places must be non-negative" }
+        var bd = BigDecimal(value)
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toDouble()
+    }
+
+    @JvmStatic
+    fun abs(value: Double): Double = if (value >= 0.0f) value else -value
+}
