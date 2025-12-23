@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventUpdate;
@@ -14,7 +15,6 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class ClearGlassMod extends Mod {
 
-    @Getter
     private static ClearGlassMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NORMAL)
@@ -26,7 +26,7 @@ public class ClearGlassMod extends Mod {
     private boolean prevNormal, prevStained;
 
     public ClearGlassMod() {
-        super(TranslateText.CLEAR_GLASS, TranslateText.CLEAR_GLASS_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CLEAR_GLASS, TranslateText.CLEAR_GLASS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CLEAR_GLASS);
 
         instance = this;
     }
@@ -59,6 +59,10 @@ public class ClearGlassMod extends Mod {
         mc.renderGlobal.loadRenderers();
     }
 
+    public static ClearGlassMod getInstance() {
+        return instance;
+    }
+
     public BooleanSetting getNormalSetting() {
         return SettingRegistry.getBooleanSetting(this, "normalSetting");
     }
@@ -67,3 +71,7 @@ public class ClearGlassMod extends Mod {
         return SettingRegistry.getBooleanSetting(this, "stainedSetting");
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventFovUpdate;
 import me.miki.shindo.management.language.TranslateText;
@@ -18,7 +19,7 @@ public class BowZoomMod extends Mod {
     private int factorSetting = 5;
 
     public BowZoomMod() {
-        super(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_BOW_ZOOM);
     }
 
     @EventTarget
@@ -40,3 +41,7 @@ public class BowZoomMod extends Mod {
         mc.renderGlobal.setDisplayListEntitiesDirty();
     }
 }
+
+
+
+

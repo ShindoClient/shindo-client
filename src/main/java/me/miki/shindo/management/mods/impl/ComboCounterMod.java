@@ -20,7 +20,7 @@ public class ComboCounterMod extends SimpleHUDMod {
     private int combo, possibleTarget;
 
     public ComboCounterMod() {
-        super(TranslateText.COMBO_COUNTER, TranslateText.COMBO_COUNTER_DESCRIPTION);
+        super(TranslateText.COMBO_COUNTER, TranslateText.COMBO_COUNTER_DESCRIPTION, LegacyIcon.MOD_COMBO_COUNTER);
     }
 
     @EventTarget
@@ -65,3 +65,5 @@ public class ComboCounterMod extends SimpleHUDMod {
         return iconSetting ? LegacyIcon.BAR_CHERT : null;
     }
 }
+
+

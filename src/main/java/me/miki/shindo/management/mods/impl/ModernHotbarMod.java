@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -22,6 +23,8 @@ import java.awt.*;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+import org.jetbrains.annotations.Nullable;
+
 public class ModernHotbarMod extends HUDMod {
 
     private final SimpleAnimation animation = new SimpleAnimation(0.0F);
@@ -38,7 +41,7 @@ public class ModernHotbarMod extends HUDMod {
     private float barX, barY, barWidth, barHeight, selX;
 
     public ModernHotbarMod() {
-        super(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION);
+        super(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, LegacyIcon.MOD_MODERN_HOTBAR);
 
         this.setDraggable(false);
     }
@@ -209,6 +212,18 @@ public class ModernHotbarMod extends HUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
+        @Override
+        @Nullable
+        public String getNameKey() {
+            return PropertyEnum.super.getNameKey();
+        }
+
+        @Override
+        @Nullable
+        public String getDisplayName() {
+            return PropertyEnum.super.getDisplayName();
+        }
     }
 
     private enum PickupAnimation implements PropertyEnum {
@@ -226,5 +241,10 @@ public class ModernHotbarMod extends HUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

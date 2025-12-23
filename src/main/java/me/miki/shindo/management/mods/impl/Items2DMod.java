@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.language.TranslateText;
@@ -9,11 +10,10 @@ import me.miki.shindo.management.notification.NotificationType;
 
 public class Items2DMod extends Mod {
 
-    @Getter
     private static Items2DMod instance;
 
     public Items2DMod() {
-        super(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEMS2_D);
 
         instance = this;
     }
@@ -27,4 +27,12 @@ public class Items2DMod extends Mod {
             Shindo.getInstance().getNotificationManager().post(TranslateText.ITEM_PHYSICS.getText(), "Disabled due to incompatibility", NotificationType.WARNING);
         }
     }
+
+    public static Items2DMod getInstance() {
+        return instance;
+    }
 }
+
+
+
+

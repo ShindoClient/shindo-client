@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.injection.interfaces.IMixinRenderManager;
@@ -25,7 +26,7 @@ public class JumpCircleMod extends Mod {
     private boolean jumping;
 
     public JumpCircleMod() {
-        super(TranslateText.JUMP_CIRCLE, TranslateText.JUMP_CIRCLE_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.JUMP_CIRCLE, TranslateText.JUMP_CIRCLE_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_JUMP_CIRCLE);
     }
 
     private static double createAnimation(double value) {
@@ -116,3 +117,6 @@ public class JumpCircleMod extends Mod {
         }
     }
 }
+
+
+

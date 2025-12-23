@@ -27,7 +27,7 @@ public class TargetInfoMod extends HUDMod {
     private ResourceLocation head;
 
     public TargetInfoMod() {
-        super(TranslateText.TARGET_INFO, TranslateText.TARGET_INFO_DESCRIPTION, "targethud", true);
+        super(TranslateText.TARGET_INFO, TranslateText.TARGET_INFO_DESCRIPTION, LegacyIcon.MOD_TARGET_INFO, "targethud", true);
     }
 
     @Override
@@ -87,3 +87,6 @@ public class TargetInfoMod extends HUDMod {
         this.setHeight(46);
     }
 }
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventUpdate;
 import me.miki.shindo.management.language.TranslateText;
@@ -27,7 +28,7 @@ public class ProjectileTrailMod extends Mod {
     private int ticks;
 
     public ProjectileTrailMod() {
-        super(TranslateText.PROJECTILE_TRAIL, TranslateText.PROJECTILE_TRAIL_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.PROJECTILE_TRAIL, TranslateText.PROJECTILE_TRAIL_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_PROJECTILE_TRAIL);
     }
 
     @EventTarget
@@ -99,3 +100,7 @@ public class ProjectileTrailMod extends Mod {
         }
     }
 }
+
+
+
+

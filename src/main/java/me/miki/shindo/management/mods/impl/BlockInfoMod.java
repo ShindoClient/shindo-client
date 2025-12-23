@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
@@ -28,7 +29,7 @@ public class BlockInfoMod extends HUDMod {
     private Block block;
 
     public BlockInfoMod() {
-        super(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, "waila");
+        super(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, LegacyIcon.MOD_BLOCK_INFO, "waila");
     }
 
     @Override
@@ -88,3 +89,7 @@ public class BlockInfoMod extends HUDMod {
         }
     }
 }
+
+
+
+

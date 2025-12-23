@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Data;
 import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
@@ -16,11 +17,11 @@ import me.miki.shindo.management.settings.config.PropertyEnum;
 import net.minecraft.entity.Entity;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 public class FreelookMod extends Mod {
 
-    @Getter
     private static FreelookMod instance;
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_YAW)
     private boolean invertYawSetting;
@@ -30,7 +31,7 @@ public class FreelookMod extends Mod {
     private Mode modeSetting = Mode.KEYDOWN;
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_V)
     private int keybindSetting = Keyboard.KEY_V;
-    @Getter
+
     private boolean active;
     private float yaw;
     private float pitch;
@@ -38,7 +39,7 @@ public class FreelookMod extends Mod {
     private boolean toggled;
 
     public FreelookMod() {
-        super(TranslateText.FREELOOK, TranslateText.FREELOOK_DESCRIPTION, ModCategory.PLAYER, "perspectivemod", true);
+        super(TranslateText.FREELOOK, TranslateText.FREELOOK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_FREELOOK, "perspectivemod", true);
 
         instance = this;
     }
@@ -112,6 +113,14 @@ public class FreelookMod extends Mod {
         }
     }
 
+    public static FreelookMod getInstance() {
+        return instance;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     private void start() {
         if (!active) {
             active = true;
@@ -163,5 +172,10 @@ public class FreelookMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

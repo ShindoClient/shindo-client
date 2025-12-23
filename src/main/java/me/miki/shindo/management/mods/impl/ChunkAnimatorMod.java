@@ -6,6 +6,7 @@ import me.miki.shindo.management.event.impl.EventRenderChunkPosition;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 
@@ -22,7 +23,7 @@ public class ChunkAnimatorMod extends Mod {
     private int duration = 1;
 
     public ChunkAnimatorMod() {
-        super(TranslateText.CHUNK_ANIMATOR, TranslateText.CHUNK_ANIMATOR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CHUNK_ANIMATOR, TranslateText.CHUNK_ANIMATOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CHUNK_ANIMATOR);
     }
 
     @EventTarget

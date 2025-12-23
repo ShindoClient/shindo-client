@@ -7,10 +7,13 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
 
-@Getter
 public class CustomCape extends Cape {
 
     private final File sample;
+
+    public File getSample() {
+        return sample;
+    }
 
     public CustomCape(String name, File sample, ResourceLocation cape, CapeCategory category, Role requiredRole) {
         super(name, cape, category, requiredRole);

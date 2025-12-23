@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -7,20 +8,27 @@ import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientSpooferMod extends Mod {
 
-    @Getter
     private static ClientSpooferMod instance;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private SpoofType spoofType = SpoofType.VANILLA;
 
     public ClientSpooferMod() {
-        super(TranslateText.CLIENT_SPOOFER, TranslateText.CLIENT_SPOOFER_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.CLIENT_SPOOFER, TranslateText.CLIENT_SPOOFER_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_CLIENT_SPOOFER);
 
         instance = this;
+    }
+
+    public static ClientSpooferMod getInstance() {
+        return instance;
+    }
+
+    public SpoofType getSpoofType() {
+        return spoofType;
     }
 
     public enum SpoofType implements PropertyEnum {
@@ -37,5 +45,10 @@ public class ClientSpooferMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

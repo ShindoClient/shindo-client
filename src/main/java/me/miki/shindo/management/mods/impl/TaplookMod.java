@@ -1,10 +1,12 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventTick;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import me.miki.shindo.management.settings.config.Property;
@@ -22,7 +24,7 @@ public class TaplookMod extends Mod {
     private int prevPerspective;
 
     public TaplookMod() {
-        super(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_TAPLOOK);
     }
 
     @EventTarget
@@ -66,5 +68,10 @@ public class TaplookMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

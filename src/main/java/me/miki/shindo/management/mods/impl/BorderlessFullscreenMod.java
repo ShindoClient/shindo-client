@@ -8,6 +8,7 @@ import me.miki.shindo.management.event.impl.EventToggleFullscreen;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -19,7 +20,7 @@ public class BorderlessFullscreenMod extends Mod {
     private long fullscreenTime = -1;
 
     public BorderlessFullscreenMod() {
-        super(TranslateText.BORDERLESS_FULSCREEN, TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.BORDERLESS_FULSCREEN, TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_BORDERLESS_FULLSCREEN);
     }
 
     @EventTarget

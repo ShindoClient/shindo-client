@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import com.mojang.util.UUIDTypeAdapter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventLocationSkin;
@@ -11,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 public class SkinProtectMod extends Mod {
 
     public SkinProtectMod() {
-        super(TranslateText.SKIN_PROTECT, TranslateText.SKIN_PROTECT_DESCRIPTION, ModCategory.PLAYER, "nickhider");
+        super(TranslateText.SKIN_PROTECT, TranslateText.SKIN_PROTECT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_SKIN_PROTECT, "nickhider");
     }
 
     @EventTarget
@@ -26,3 +27,7 @@ public class SkinProtectMod extends Mod {
         }
     }
 }
+
+
+
+

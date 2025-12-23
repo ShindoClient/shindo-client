@@ -5,6 +5,7 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonType;
 import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
@@ -18,7 +19,7 @@ public class RPOAddon extends Addon {
     private ConfigHandler config;
 
     public RPOAddon() {
-        super("Resource Pack Organizer", "Organizes the resourcepack Screen", "null", AddonType.RENDER);
+        super("Resource Pack Organizer", "Organizes the resourcepack Screen", LegacyIcon.ADDON_RPO, AddonType.RENDER);
 
         instance = this;
     }
@@ -47,3 +48,4 @@ public class RPOAddon extends Addon {
 
 
 }
+

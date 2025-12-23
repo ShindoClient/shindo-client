@@ -1,8 +1,5 @@
 package me.miki.shindo.management.language;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public enum TranslateText {
     NONE("text.none"),
     NETWORK_OPTIMIZER_TOGGLE("text.network.optimizer_toggle"),
@@ -561,6 +558,9 @@ public enum TranslateText {
     PRICING_PLANS("text.pricingplans"),
     PRICING_PLANS_DESCRIPTION("text.pricingplans.description"),
     PROFILE("text.profile"),
+    PROFILE_LOADED("text.profile.loaded"),
+    PROFILE_FAILED("text.profile.failed"),
+    PROFILE_NOTIFICATION_TITLE("text.profile.notification.title"),
     PROJECTILE_TRAIL("text.projectiletrail.name"),
     PROJECTILE_TRAIL_DESCRIPTION("text.projectiletrail.description"),
     PURCHASE("text.purchase"),
@@ -618,14 +618,36 @@ public enum TranslateText {
     SETTINGS_LAYOUT_DOUBLE_TITLE("text.settings.layout.double.title"),
     SETTINGS_LAYOUT_MODULE_DOUBLE_DESCRIPTION("text.settings.layout.module.double.description"),
     SETTINGS_LAYOUT_MODULE_DOUBLE_TITLE("text.settings.layout.module.double.title"),
+    SETTINGS_LAYOUT_MODULE_ICON_DESCRIPTION("text.settings.layout.module.icon.description"),
+    SETTINGS_LAYOUT_MODULE_ICON_TITLE("text.settings.layout.module.icon.title"),
     SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION("text.settings.layout.module.single.description"),
     SETTINGS_LAYOUT_MODULE_SINGLE_TITLE("text.settings.layout.module.single.title"),
+    SETTINGS_LAYOUT_ADDON_ICON_DESCRIPTION("text.settings.layout.addon.icon.description"),
+    SETTINGS_LAYOUT_ADDON_ICON_TITLE("text.settings.layout.addon.icon.title"),
+    SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION("text.settings.layout.addon.standard.description"),
+    SETTINGS_LAYOUT_ADDON_STANDARD_TITLE("text.settings.layout.addon.standard.title"),
     SETTINGS_LAYOUT_SECTION_LAYOUT("text.settings.layout.section.layout"),
+    SETTINGS_LAYOUT_SECTION_ADDON("text.settings.layout.section.addon"),
     SETTINGS_LAYOUT_SECTION_MODULE("text.settings.layout.section.module"),
     SETTINGS_LAYOUT_SECTION_SCREENSHOT("text.settings.layout.section.screenshot"),
+    SETTINGS_LAYOUT_SECTION_NOTIFICATION("text.settings.layout.section.notification"),
     SETTINGS_LAYOUT_SINGLE_DESCRIPTION("text.settings.layout.single.description"),
     SETTINGS_LAYOUT_SINGLE_TITLE("text.settings.layout.single.title"),
     SETTINGS_LAYOUT_TITLE("text.settings.layout.title"),
+    SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION("text.settings.layout.notification.description"),
+    SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_DESCRIPTION("text.settings.layout.notification.top_left.description"),
+    SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_TITLE("text.settings.layout.notification.top_left.title"),
+    SETTINGS_LAYOUT_NOTIFICATION_TOP_RIGHT_DESCRIPTION("text.settings.layout.notification.top_right.description"),
+    SETTINGS_LAYOUT_NOTIFICATION_TOP_RIGHT_TITLE("text.settings.layout.notification.top_right.title"),
+    SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_LEFT_DESCRIPTION("text.settings.layout.notification.bottom_left.description"),
+    SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_LEFT_TITLE("text.settings.layout.notification.bottom_left.title"),
+    SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_RIGHT_DESCRIPTION("text.settings.layout.notification.bottom_right.description"),
+    SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_RIGHT_TITLE("text.settings.layout.notification.bottom_right.title"),
+    NOTIFICATION_POSITION("text.notification.position"),
+    NOTIFICATION_POSITION_TOP_LEFT("text.notification.position.top_left"),
+    NOTIFICATION_POSITION_TOP_RIGHT("text.notification.position.top_right"),
+    NOTIFICATION_POSITION_BOTTOM_LEFT("text.notification.position.bottom_left"),
+    NOTIFICATION_POSITION_BOTTOM_RIGHT("text.notification.position.bottom_right"),
     SHADER("text.shader"),
     SHADOW("text.shadow"),
     SHARPNESS("text.sharpness"),
@@ -794,9 +816,7 @@ public enum TranslateText {
 
 
 
-    @Getter
     private final String key;
-    @Setter
     private String text;
 
     TranslateText(String key) {
@@ -805,6 +825,14 @@ public enum TranslateText {
 
     public String getText() {
         return text == null ? "null" : text;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
 }

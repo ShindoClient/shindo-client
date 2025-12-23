@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventKey;
 import me.miki.shindo.management.language.TranslateText;
@@ -30,7 +31,7 @@ public class AutoTextMod extends Mod {
     private String text3Setting = "";
 
     public AutoTextMod() {
-        super(TranslateText.AUTO_TEXT, TranslateText.AUTO_TEXT_DESCRIPTION, ModCategory.PLAYER, "messagetexthotkeymacro");
+        super(TranslateText.AUTO_TEXT, TranslateText.AUTO_TEXT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_AUTO_TEXT, "messagetexthotkeymacro");
     }
 
     @EventTarget
@@ -49,3 +50,7 @@ public class AutoTextMod extends Mod {
         }
     }
 }
+
+
+
+

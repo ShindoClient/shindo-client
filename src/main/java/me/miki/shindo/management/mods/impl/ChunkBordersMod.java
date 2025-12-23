@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender3D;
 import me.miki.shindo.management.language.TranslateText;
@@ -17,7 +18,7 @@ import java.awt.*;
 public class ChunkBordersMod extends Mod {
 
     public ChunkBordersMod() {
-        super(TranslateText.CHUNK_BORDERS, TranslateText.CHUNK_BORDERS_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CHUNK_BORDERS, TranslateText.CHUNK_BORDERS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CHUNK_BORDERS);
     }
 
     @EventTarget
@@ -105,3 +106,7 @@ public class ChunkBordersMod extends Mod {
         GL11.glDisable(3042);
     }
 }
+
+
+
+

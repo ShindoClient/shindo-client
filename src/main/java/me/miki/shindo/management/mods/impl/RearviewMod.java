@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.*;
@@ -35,7 +36,7 @@ public class RearviewMod extends HUDMod {
     private double alphaSetting = 1.0F;
 
     public RearviewMod() {
-        super(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, "", true);
+        super(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, LegacyIcon.MOD_REARVIEW, "", true);
     }
 
     @EventTarget
@@ -99,3 +100,7 @@ public class RearviewMod extends HUDMod {
         }
     }
 }
+
+
+
+

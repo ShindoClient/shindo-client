@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -12,7 +13,6 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class UHCOverlayMod extends Mod {
 
-    @Getter
     private static UHCOverlayMod instance;
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GOLD_INGOT_SCALE, min = 1.0F, max = 5.0F, current = 1.5F)
@@ -31,7 +31,7 @@ public class UHCOverlayMod extends Mod {
     private double skullScaleSetting = 1.5F;
 
     public UHCOverlayMod() {
-        super(TranslateText.UHC_OVERLAY, TranslateText.UHC_OVERLAY_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.UHC_OVERLAY, TranslateText.UHC_OVERLAY_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_UHC_OVERLAY);
 
         instance = this;
     }
@@ -52,7 +52,15 @@ public class UHCOverlayMod extends Mod {
         return SettingRegistry.getNumberSetting(this, "goldAppleScaleSetting");
     }
 
+    public static UHCOverlayMod getInstance() {
+        return instance;
+    }
+
     public NumberSetting getSkullScaleSetting() {
         return SettingRegistry.getNumberSetting(this, "skullScaleSetting");
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
@@ -9,7 +10,6 @@ import me.miki.shindo.management.mods.ModCategory;
 
 public class AsyncScreenshotMod extends Mod {
 
-    @Getter
     private static AsyncScreenshotMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MESSAGE)
@@ -19,9 +19,13 @@ public class AsyncScreenshotMod extends Mod {
     private boolean clipboardEnabled = false;
 
     public AsyncScreenshotMod() {
-        super(TranslateText.ASYNC_SCREENSHOT, TranslateText.ASYNC_SCREENSHOT_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.ASYNC_SCREENSHOT, TranslateText.ASYNC_SCREENSHOT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_ASYNC_SCREENSHOT);
 
         instance = this;
+    }
+
+    public static AsyncScreenshotMod getInstance() {
+        return instance;
     }
 
     public boolean isMessageEnabled() {
@@ -32,3 +36,7 @@ public class AsyncScreenshotMod extends Mod {
         return clipboardEnabled;
     }
 }
+
+
+
+

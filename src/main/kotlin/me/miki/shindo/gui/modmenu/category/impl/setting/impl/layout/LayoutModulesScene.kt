@@ -1,0 +1,85 @@
+package me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout
+
+import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
+import me.miki.shindo.management.color.AccentColor
+import me.miki.shindo.management.color.palette.ColorPalette
+import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.layout.UILayoutManager
+import me.miki.shindo.management.mods.impl.InternalSettingsMod
+import me.miki.shindo.management.nanovg.NanoVGManager
+import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.utils.ColorUtils
+import kotlin.math.max
+import kotlin.math.min
+
+class LayoutModulesScene(parent: SettingsCategory) :
+    LayoutAreaScene(
+        parent,
+        UILayoutManager.Layouts.MODULES,
+        TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
+        TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION,
+        LegacyIcon.LIST
+    ) {
+
+    override val previewMaxHeight: Float = 152f
+
+    override fun drawPreview(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
+    ) {
+        val layout = InternalSettingsMod.getInstance().moduleLayout
+        val columns = InternalSettingsMod.getInstance().moduleGridColumns
+        val clampedColumns = max(1, min(columns, 2))
+
+        val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170)
+        val cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
+        val pillColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 230)
+
+        nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base)
+
+        if (layout == InternalSettingsMod.ModuleLayout.ICON_CARDS) {
+            val columnsIcon = 3
+            val rows = 2
+            val padding = 8f
+            val columnGap = 8f
+            val rowGap = 8f
+            val cardSize = max(42f, (width - (padding * 2f) - ((columnsIcon - 1) * columnGap)) / columnsIcon)
+
+            for (row in 0 until rows) {
+                for (column in 0 until columnsIcon) {
+                    val cardX = x + padding + column * (cardSize + columnGap)
+                    val cardY = y + padding + row * (cardSize + rowGap)
+                    nvg.drawRoundedRect(cardX, cardY, cardSize, cardSize, 8f, cardColor)
+                    nvg.drawRoundedRect(cardX + 8f, cardY + 10f, cardSize - 16f, 6f, 3f, pillColor)
+                    nvg.drawRoundedRect(cardX + 10f, cardY + 22f, cardSize - 20f, 5f, 2f, pillColor)
+                    nvg.drawRoundedRect(cardX + cardSize - 22f, cardY + 8f, 14f, 14f, 6f, ColorUtils.applyAlpha(accent.color1, 200))
+                }
+            }
+            return
+        }
+
+        val rows = 3
+        val padding = 8f
+        val columnGap = 8f
+        val rowGap = 8f
+        val cardHeight = 28f
+        var columnWidth = (width - (padding * 2f) - ((clampedColumns - 1) * columnGap)) / clampedColumns
+        columnWidth = max(60f, columnWidth)
+
+        for (row in 0 until rows) {
+            for (column in 0 until clampedColumns) {
+                val cardX = x + padding + column * (columnWidth + columnGap)
+                val cardY = y + padding + row * (cardHeight + rowGap)
+                nvg.drawRoundedRect(cardX, cardY, columnWidth, cardHeight, 6f, cardColor)
+                nvg.drawRoundedRect(cardX + 9f, cardY + 11f, columnWidth - 34f, 6f, 3f, pillColor)
+                nvg.drawRoundedRect(cardX + columnWidth - 20f, cardY + 10f, 12f, 12f, 6f, ColorUtils.applyAlpha(accent.color1, 200))
+            }
+        }
+    }
+}

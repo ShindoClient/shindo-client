@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
@@ -18,7 +19,6 @@ import net.minecraft.util.IChatComponent;
 
 public class ChatMod extends Mod {
 
-    @Getter
     private static ChatMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH, category = "Animation")
@@ -45,11 +45,9 @@ public class ChatMod extends Mod {
     @Property(type = PropertyType.BOOLEAN, name = "Mention Ping", category = "Alerts")
     private boolean mentionPingSetting;
 
-    @Property(type = PropertyType.BOOLEAN, name = "Right Click Copy", category = "Interaction", current = 1)
-    private boolean rightClickCopySetting = true;
 
     public ChatMod() {
-        super(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, "betterchatting");
+        super(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_CHAT, "betterchatting");
 
         instance = this;
     }
@@ -73,6 +71,9 @@ public class ChatMod extends Mod {
         }
     }
 
+    public static ChatMod getInstance() {
+        return instance;
+    }
 
     public BooleanSetting getSmoothSetting() {
         return SettingRegistry.getBooleanSetting(this, "smoothSetting");
@@ -106,7 +107,8 @@ public class ChatMod extends Mod {
         return SettingRegistry.getBooleanSetting(this, "mentionPingSetting");
     }
 
-    public BooleanSetting getRightClickCopySetting() {
-        return SettingRegistry.getBooleanSetting(this, "rightClickCopySetting");
-    }
 }
+
+
+
+

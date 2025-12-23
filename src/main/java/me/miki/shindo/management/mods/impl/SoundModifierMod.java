@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventPlaySound;
 import me.miki.shindo.management.language.TranslateText;
@@ -32,7 +33,7 @@ public class SoundModifierMod extends Mod {
     private int fireworksSetting = 100;
 
     public SoundModifierMod() {
-        super(TranslateText.SOUND_MODIFIER, TranslateText.SOUND_MODIFIER_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.SOUND_MODIFIER, TranslateText.SOUND_MODIFIER_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_SOUND_MODIFIER);
     }
 
     @EventTarget
@@ -67,3 +68,7 @@ public class SoundModifierMod extends Mod {
         }
     }
 }
+
+
+
+

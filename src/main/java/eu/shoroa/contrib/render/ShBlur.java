@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 public class ShBlur {
-    @Getter
+
     private static final ShBlur instance = new ShBlur();
     private final Minecraft mc = Minecraft.getMinecraft();
     private final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
@@ -185,5 +185,9 @@ public class ShBlur {
         NanoVG.nvgClosePath(ctx);
 
         paint.free();
+    }
+
+    public static ShBlur getInstance() {
+        return instance;
     }
 }

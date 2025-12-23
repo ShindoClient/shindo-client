@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.injection.interfaces.IMixinRenderManager;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderTick;
@@ -48,7 +49,7 @@ public class EntityCullingMod extends Mod {
     private int destroyTimer;
 
     public EntityCullingMod() {
-        super(TranslateText.ENTITY_CULLING, TranslateText.ENTITY_CULLING_DESCRIPTIONN, ModCategory.OTHER);
+        super(TranslateText.ENTITY_CULLING, TranslateText.ENTITY_CULLING_DESCRIPTIONN, ModCategory.OTHER, LegacyIcon.MOD_ENTITY_CULLING);
     }
 
     public static void drawSelectionBoundingBox(AxisAlignedBB b) {
@@ -276,3 +277,7 @@ public class EntityCullingMod extends Mod {
     }
 
 }
+
+
+
+

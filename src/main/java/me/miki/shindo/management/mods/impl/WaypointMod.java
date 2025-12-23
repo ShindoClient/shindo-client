@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiWaypoint;
 import me.miki.shindo.injection.interfaces.IMixinRenderManager;
@@ -27,7 +28,7 @@ public class WaypointMod extends Mod {
     private int keybindSetting = Keyboard.KEY_B;
 
     public WaypointMod() {
-        super(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD);
+        super(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD, LegacyIcon.MOD_WAYPOINT);
     }
 
     @EventTarget
@@ -96,3 +97,7 @@ public class WaypointMod extends Mod {
         return Math.sqrt(x * x + y * y + z * z);
     }
 }
+
+
+
+

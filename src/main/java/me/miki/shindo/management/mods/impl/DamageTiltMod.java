@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
@@ -9,7 +10,7 @@ public class DamageTiltMod extends Mod {
     private static DamageTiltMod instance;
 
     public DamageTiltMod() {
-        super(TranslateText.DAMAGE_TILT, TranslateText.DAMAGE_TILT_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.DAMAGE_TILT, TranslateText.DAMAGE_TILT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_DAMAGE_TILT);
 
         instance = this;
     }
@@ -18,3 +19,7 @@ public class DamageTiltMod extends Mod {
         return instance;
     }
 }
+
+
+
+

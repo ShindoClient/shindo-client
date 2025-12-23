@@ -272,7 +272,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Inject(method = "updateDisplay", at = @At("HEAD"))
     public void onUpdateDisplay(CallbackInfo ci) {
-        if (Shindo.getInstance().getEventManager() != null) {
+        if (Shindo.getInstance().hasStarted()) {
             new EventUpdateDisplay().call();
         }
     }
@@ -284,7 +284,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Inject(method = "updateFramebufferSize", at = @At("HEAD"))
     private void onUpdateFramebufferSize(CallbackInfo ci) {
-        if (Shindo.getInstance().getEventManager() != null) {
+        if (Shindo.getInstance().hasStarted()) {
             new EventUpdateFramebufferSize().call();
         }
     }

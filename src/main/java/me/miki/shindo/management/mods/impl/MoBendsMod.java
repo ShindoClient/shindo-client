@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import lombok.Setter;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
@@ -32,7 +33,6 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class MoBendsMod extends Mod {
 
-    @Getter
     private static MoBendsMod instance;
     private final boolean loaded;
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
@@ -40,12 +40,11 @@ public class MoBendsMod extends Mod {
     @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
     private Color colorSetting = Color.RED;
     public List<UUID> currentlyRenderedEntities = new ArrayList<UUID>();
-    @Getter
-    @Setter
+
     private boolean renderingGuiScreen;
 
     public MoBendsMod() {
-        super(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_MO_BENDS);
 
         instance = this;
         loaded = false;
@@ -145,6 +144,18 @@ public class MoBendsMod extends Mod {
         }
     }
 
+    public static MoBendsMod getInstance() {
+        return instance;
+    }
+
+    public boolean isRenderingGuiScreen() {
+        return renderingGuiScreen;
+    }
+
+    public void setRenderingGuiScreen(boolean renderingGuiScreen) {
+        this.renderingGuiScreen = renderingGuiScreen;
+    }
+
     public ColorSetting getColorSetting() {
         return SettingRegistry.getColorSetting(this, "colorSetting");
     }
@@ -154,3 +165,7 @@ public class MoBendsMod extends Mod {
     }
 
 }
+
+
+
+

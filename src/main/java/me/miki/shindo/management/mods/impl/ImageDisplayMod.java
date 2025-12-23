@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
@@ -32,7 +33,7 @@ public class ImageDisplayMod extends HUDMod {
     private File prevImage;
 
     public ImageDisplayMod() {
-        super(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION);
+        super(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY);
     }
 
     @EventTarget
@@ -83,3 +84,7 @@ public class ImageDisplayMod extends HUDMod {
         }
     }
 }
+
+
+
+

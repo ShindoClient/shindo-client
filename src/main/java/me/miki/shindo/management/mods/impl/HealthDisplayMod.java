@@ -14,7 +14,7 @@ public class HealthDisplayMod extends SimpleHUDMod {
     private boolean iconEnabled = true;
 
     public HealthDisplayMod() {
-        super(TranslateText.HEALTH_DISPLAY, TranslateText.HEALTH_DISPLAY_DESCRIPTION);
+        super(TranslateText.HEALTH_DISPLAY, TranslateText.HEALTH_DISPLAY_DESCRIPTION, LegacyIcon.MOD_HEALTH_DISPLAY);
     }
 
     @EventTarget
@@ -32,3 +32,5 @@ public class HealthDisplayMod extends SimpleHUDMod {
         return iconEnabled ? LegacyIcon.HEART : null;
     }
 }
+
+

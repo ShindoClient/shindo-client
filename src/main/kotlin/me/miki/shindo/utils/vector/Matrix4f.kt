@@ -153,7 +153,7 @@ class Matrix4f {
         this.m33 *= matrix4f.m33
     }
 
-    private fun set(i: Int, j: Int, f: Float) {
+    private fun setInternal(i: Int, j: Int, f: Float) {
         when (i) {
             0 -> when (j) {
                 0 -> this.m00 = f
@@ -413,7 +413,7 @@ class Matrix4f {
     }
 
     fun set(j: Int, k: Int, f: Float) {
-        set(j % 4, k % 4, f)
+        setInternal(j % 4, k % 4, f)
     }
 
     fun determinant(): Float {

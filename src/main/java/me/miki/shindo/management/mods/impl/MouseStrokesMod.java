@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventPlayerHeadRotation;
@@ -15,7 +16,7 @@ public class MouseStrokesMod extends HUDMod {
     private float mouseX, mouseY, lastMouseX, lastMouseY;
 
     public MouseStrokesMod() {
-        super(TranslateText.MOUSE_STROKES, TranslateText.MOUSE_STROKES_DESCRIPTION);
+        super(TranslateText.MOUSE_STROKES, TranslateText.MOUSE_STROKES_DESCRIPTION, LegacyIcon.MOD_MOUSE_STROKES);
     }
 
     @EventTarget
@@ -51,3 +52,7 @@ public class MouseStrokesMod extends HUDMod {
         mouseY *= 0.75F;
     }
 }
+
+
+
+

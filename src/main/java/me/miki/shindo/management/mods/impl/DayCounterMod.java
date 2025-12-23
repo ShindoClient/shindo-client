@@ -14,7 +14,7 @@ public class DayCounterMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public DayCounterMod() {
-        super(TranslateText.DAY_COUNTER, TranslateText.DAY_COUNTER_DESCRIPTION);
+        super(TranslateText.DAY_COUNTER, TranslateText.DAY_COUNTER_DESCRIPTION, LegacyIcon.MOD_DAY_COUNTER);
     }
 
     @EventTarget
@@ -35,3 +35,5 @@ public class DayCounterMod extends SimpleHUDMod {
         return iconSetting ? LegacyIcon.SUNRISE : null;
     }
 }
+
+

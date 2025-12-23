@@ -15,7 +15,7 @@ public class FPSDisplayMod extends SimpleHUDMod {
     private boolean iconEnabled = true;
 
     public FPSDisplayMod() {
-        super(TranslateText.FPS_DISPLAY, TranslateText.FPS_DISPLAY_DESCRIPTION);
+        super(TranslateText.FPS_DISPLAY, TranslateText.FPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_FPS_DISPLAY);
     }
 
     @EventTarget
@@ -33,3 +33,5 @@ public class FPSDisplayMod extends SimpleHUDMod {
         return iconEnabled ? LegacyIcon.MONITOR : null;
     }
 }
+
+

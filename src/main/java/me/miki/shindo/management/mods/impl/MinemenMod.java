@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.language.TranslateText;
@@ -15,7 +16,7 @@ public class MinemenMod extends Mod {
     private boolean autoPlaySetting = false;
 
     public MinemenMod() {
-        super(TranslateText.MINEMEN, TranslateText.MINEMEN_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.MINEMEN, TranslateText.MINEMEN_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MINEMEN);
     }
 
     @EventTarget
@@ -32,3 +33,7 @@ public class MinemenMod extends Mod {
         }
     }
 }
+
+
+
+

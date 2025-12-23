@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -19,7 +20,7 @@ public class PlayerListMod extends HUDMod {
     private float maxName;
 
     public PlayerListMod() {
-        super(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION);
+        super(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST);
     }
 
     @EventTarget
@@ -69,3 +70,7 @@ public class PlayerListMod extends HUDMod {
         this.setHeight((index * 15) + 26);
     }
 }
+
+
+
+

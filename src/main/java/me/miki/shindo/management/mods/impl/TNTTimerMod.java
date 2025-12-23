@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventRenderTNT;
@@ -15,6 +16,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -33,7 +35,7 @@ public class TNTTimerMod extends SimpleHUDMod {
     private float partialTicks;
 
     public TNTTimerMod() {
-        super(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION);
+        super(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION, LegacyIcon.MOD_TNT_TIMER);
     }
 
     @EventTarget
@@ -148,5 +150,9 @@ public class TNTTimerMod extends SimpleHUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+

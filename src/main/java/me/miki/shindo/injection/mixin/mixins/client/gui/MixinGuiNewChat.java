@@ -227,26 +227,6 @@ public abstract class MixinGuiNewChat extends Gui {
         return instance.getChatLineID();
     }
 
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void client$copyOnRightClick(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
-        ChatMod mod = ChatMod.getInstance();
-        if (mouseButton != 1 || !mod.isToggled() || !mod.getRightClickCopySetting().isToggled()) {
-            return;
-        }
-        IChatComponent component = this.getChatComponent(mouseX, mouseY);
-        if (component == null) {
-            return;
-        }
-        String text = component.getUnformattedText().trim();
-        if (text.isEmpty()) {
-            return;
-        }
-        GuiScreen.setClipboardString(text);
-        if (mc.thePlayer != null) {
-            mc.thePlayer.playSound("random.click", 0.7F, 1.0F);
-        }
-        ci.cancel();
-    }
 
     @Unique
     private boolean client$shouldHighlightLine(ChatLine chatLine) {

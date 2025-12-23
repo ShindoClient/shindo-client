@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -12,14 +13,13 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class ItemPhysicsMod extends Mod {
 
-    @Getter
     private static ItemPhysicsMod instance;
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = 0.5, max = 4, current = 1)
     private double speedSetting = 1;
 
     public ItemPhysicsMod() {
-        super(TranslateText.ITEM_PHYSICS, TranslateText.ITEM_PHYSICS_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.ITEM_PHYSICS, TranslateText.ITEM_PHYSICS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEM_PHYSICS);
 
         instance = this;
     }
@@ -33,7 +33,15 @@ public class ItemPhysicsMod extends Mod {
         }
     }
 
+    public static ItemPhysicsMod getInstance() {
+        return instance;
+    }
+
     public NumberSetting getSpeedSetting() {
         return SettingRegistry.getNumberSetting(this, "speedSetting");
     }
 }
+
+
+
+

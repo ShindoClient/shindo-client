@@ -15,7 +15,7 @@ public class PingDisplayMod extends SimpleHUDMod {
     private boolean iconEnabled = true;
 
     public PingDisplayMod() {
-        super(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION);
+        super(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PING_DISPLAY);
     }
 
     @EventTarget
@@ -33,3 +33,5 @@ public class PingDisplayMod extends SimpleHUDMod {
         return iconEnabled ? LegacyIcon.BAR_CHERT : null;
     }
 }
+
+

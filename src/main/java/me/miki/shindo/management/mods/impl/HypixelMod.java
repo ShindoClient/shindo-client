@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
@@ -31,7 +32,6 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class HypixelMod extends Mod {
 
-    @Getter
     private static HypixelMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GG)
@@ -63,7 +63,7 @@ public class HypixelMod extends Mod {
     private HypixelGameMode currentMode;
 
     public HypixelMod() {
-        super(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, "hytill");
+        super(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_HYPIXEL, "hytill");
 
         instance = this;
     }
@@ -252,6 +252,10 @@ public class HypixelMod extends Mod {
         }
     }
 
+    public static HypixelMod getInstance() {
+        return instance;
+    }
+
     private void sendNextGame() {
         if (autoPlaySetting) {
             Multithreading.schedule(() -> {
@@ -260,3 +264,6 @@ public class HypixelMod extends Mod {
         }
     }
 }
+
+
+

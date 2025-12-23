@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.Property;
@@ -12,7 +13,6 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class AnimationsMod extends Mod {
 
-    @Getter
     private static AnimationsMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BLOCK_HIT)
@@ -46,13 +46,17 @@ public class AnimationsMod extends Mod {
     private boolean rodSetting = true;
 
     public AnimationsMod() {
-        super(TranslateText.OLD_ANIMATION, TranslateText.OLD_ANIMATION_DESCRIPTION, ModCategory.RENDER, "oldoam1.7smoothsneak");
+        super(TranslateText.OLD_ANIMATION, TranslateText.OLD_ANIMATION_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ANIMATIONS, "oldoam1.7smoothsneak");
 
         instance = this;
     }
 
     public float getSmoothSneakSpeedSetting() {
         return (float) smoothSneakSpeedSetting;
+    }
+
+    public static AnimationsMod getInstance() {
+        return instance;
     }
 
     public BooleanSetting getBlockHitSetting() {
@@ -95,3 +99,7 @@ public class AnimationsMod extends Mod {
         return SettingRegistry.getBooleanSetting(this, "rodSetting");
     }
 }
+
+
+
+

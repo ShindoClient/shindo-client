@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventLoadWorld;
 import me.miki.shindo.management.event.impl.EventMotionUpdate;
@@ -17,6 +18,7 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 public class KillEffectsMod extends Mod {
 
@@ -33,7 +35,7 @@ public class KillEffectsMod extends Mod {
     private int entityID;
 
     public KillEffectsMod() {
-        super(TranslateText.KILL_EFFECTS, TranslateText.KILL_EFFECTS_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.KILL_EFFECTS, TranslateText.KILL_EFFECTS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_KILL_EFFECTS);
     }
 
     @EventTarget
@@ -114,5 +116,10 @@ public class KillEffectsMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

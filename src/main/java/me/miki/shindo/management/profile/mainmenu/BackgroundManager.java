@@ -32,8 +32,6 @@ public class BackgroundManager {
 
     private final CopyOnWriteArrayList<CustomBackground> removeBackgrounds = new CopyOnWriteArrayList<CustomBackground>();
 
-    @Setter
-    @Getter
     private Background currentBackground;
 
     public BackgroundManager() {
@@ -185,4 +183,11 @@ public class BackgroundManager {
         save();
     }
 
+    public Background getCurrentBackground() {
+        return currentBackground;
+    }
+
+    public void setCurrentBackground(Background currentBackground) {
+        this.currentBackground = currentBackground;
+    }
 }

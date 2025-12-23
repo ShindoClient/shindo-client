@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 
 public class RawInputMod extends Mod {
 
-    @Getter
     private static RawInputMod instance;
 
     private final ArrayList<Mouse> mouseList = new ArrayList<Mouse>();
@@ -23,7 +23,7 @@ public class RawInputMod extends Mod {
     private volatile boolean running;
 
     public RawInputMod() {
-        super(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT);
 
         instance = this;
     }
@@ -64,6 +64,10 @@ public class RawInputMod extends Mod {
     public void onDisable() {
         super.onDisable();
         running = false;
+    }
+
+    public static RawInputMod getInstance() {
+        return instance;
     }
 
     public MouseThread getThread() {
@@ -113,3 +117,7 @@ public class RawInputMod extends Mod {
         }
     }
 }
+
+
+
+

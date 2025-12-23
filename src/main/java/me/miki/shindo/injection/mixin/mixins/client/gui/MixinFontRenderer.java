@@ -19,7 +19,7 @@ public abstract class MixinFontRenderer {
     @ModifyVariable(method = "renderString", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private String renderString(String text) {
 
-        if (text == null || Shindo.getInstance().getEventManager() == null) {
+        if (text == null || !Shindo.getInstance().hasStarted()) {
             return text;
         }
 
@@ -32,7 +32,7 @@ public abstract class MixinFontRenderer {
     @ModifyVariable(method = "getStringWidth", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private String getStringWidth(String text) {
 
-        if (text == null || Shindo.getInstance().getEventManager() == null) {
+        if (text == null || !Shindo.getInstance().hasStarted()) {
             return text;
         }
 

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventRenderCrosshair;
@@ -30,7 +31,7 @@ public class CrosshairMod extends Mod implements CellGridSettingConsumer {
     private CellGridSetting cellGridSetting;
 
     public CrosshairMod() {
-        super(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CROSSHAIR);
     }
 
     @EventTarget
@@ -76,3 +77,7 @@ public class CrosshairMod extends Mod implements CellGridSettingConsumer {
         this.cellGridSetting = setting;
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -24,7 +25,7 @@ public class ReachCirclesMod extends Mod {
     private int lineWidthSetting = 2;
 
     public ReachCirclesMod() {
-        super(TranslateText.REACH_CIRCLES, TranslateText.REACH_CIRCLES_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.REACH_CIRCLES, TranslateText.REACH_CIRCLES_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_REACH_CIRCLES);
     }
 
     @EventTarget
@@ -77,3 +78,7 @@ public class ReachCirclesMod extends Mod {
         GL11.glPopMatrix();
     }
 }
+
+
+
+

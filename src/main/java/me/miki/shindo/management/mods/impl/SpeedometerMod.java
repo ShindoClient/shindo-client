@@ -31,7 +31,7 @@ public class SpeedometerMod extends SimpleHUDMod {
     private long lastUpdate;
 
     public SpeedometerMod() {
-        super(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION);
+        super(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION, LegacyIcon.MOD_SPEEDOMETER);
     }
 
     @EventTarget
@@ -105,3 +105,5 @@ public class SpeedometerMod extends SimpleHUDMod {
         speeds[speedCount - 1] = speed;
     }
 }
+
+

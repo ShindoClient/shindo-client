@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
-import lombok.Getter;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventReceivePacket;
 import me.miki.shindo.management.language.TranslateText;
@@ -16,17 +16,18 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ChatTranslateMod extends Mod {
 
-    @Getter
     private static ChatTranslateMod instance;
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.LANGUAGE)
     private Language languageSetting = Language.JAPANESE;
 
     public ChatTranslateMod() {
-        super(TranslateText.CHAT_TRANSLATE, TranslateText.CHAT_TRANSLATE_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.CHAT_TRANSLATE, TranslateText.CHAT_TRANSLATE_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_CHAT_TRANSLATE);
 
         instance = this;
     }
@@ -51,6 +52,10 @@ public class ChatTranslateMod extends Mod {
         }
     }
 
+    public static ChatTranslateMod getInstance() {
+        return instance;
+    }
+
     public Language getLanguage() {
         return languageSetting;
     }
@@ -67,9 +72,15 @@ public class ChatTranslateMod extends Mod {
             this.translate = translate;
         }
 
+        @NotNull
         @Override
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

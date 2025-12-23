@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.event.impl.EventTick;
@@ -25,7 +26,7 @@ public class ToggleSprintMod extends SimpleHUDMod {
     private State state;
 
     public ToggleSprintMod() {
-        super(TranslateText.TOGGLE_SPRINT, TranslateText.TOGGLE_SPRINT_DESCRIPTION);
+        super(TranslateText.TOGGLE_SPRINT, TranslateText.TOGGLE_SPRINT_DESCRIPTION, LegacyIcon.MOD_TOGGLE_SPRINT);
     }
 
     @Override
@@ -105,3 +106,6 @@ public class ToggleSprintMod extends SimpleHUDMod {
         }
     }
 }
+
+
+

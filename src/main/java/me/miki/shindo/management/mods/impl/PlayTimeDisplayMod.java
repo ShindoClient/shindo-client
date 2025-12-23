@@ -15,7 +15,7 @@ public class PlayTimeDisplayMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public PlayTimeDisplayMod() {
-        super(TranslateText.PLAY_TIME_DISPLAY, TranslateText.PLAY_TIME_DISPLAY_DESCRIPTION);
+        super(TranslateText.PLAY_TIME_DISPLAY, TranslateText.PLAY_TIME_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PLAY_TIME_DISPLAY);
     }
 
     @EventTarget
@@ -39,3 +39,5 @@ public class PlayTimeDisplayMod extends SimpleHUDMod {
         return iconSetting ? LegacyIcon.CLOCK : null;
     }
 }
+
+

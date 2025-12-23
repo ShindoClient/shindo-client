@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -14,7 +15,7 @@ import net.minecraft.item.ItemStack;
 public class ArmorStatusMod extends SimpleHUDMod {
 
     public ArmorStatusMod() {
-        super(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION);
+        super(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, LegacyIcon.MOD_ARMOR_STATUS);
     }
 
     @EventTarget
@@ -67,3 +68,6 @@ public class ArmorStatusMod extends SimpleHUDMod {
         GlStateManager.popMatrix();
     }
 }
+
+
+

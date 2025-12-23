@@ -13,7 +13,7 @@ public class MixinTextureMap {
 
     @Inject(method = "loadTextureAtlas", at = @At("RETURN"))
     public void preLoadTextureAtlas(CallbackInfo ci) {
-        if (Shindo.getInstance().getEventManager() != null) {
+        if (Shindo.getInstance().hasStarted()) {
             new EventSwitchTexture().call();
         }
     }

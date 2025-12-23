@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventTick;
@@ -14,6 +15,7 @@ import me.miki.shindo.utils.Multithreading;
 import me.miki.shindo.utils.RandomUtils;
 import me.miki.shindo.utils.Sound;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -48,7 +50,7 @@ public class MechvibesMod extends Mod {
     private boolean loaded;
 
     public MechvibesMod() {
-        super(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MECHVIBES);
     }
 
     @Override
@@ -221,5 +223,10 @@ public class MechvibesMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

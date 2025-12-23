@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -23,7 +24,7 @@ public class KeystrokesMod extends HUDMod {
     private final SimpleAnimation[] animations = new SimpleAnimation[5];
 
     public KeystrokesMod() {
-        super(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION);
+        super(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION, LegacyIcon.MOD_KEYSTROKES);
 
         for (int i = 0; i < 5; i++) {
             animations[i] = new SimpleAnimation();
@@ -115,3 +116,7 @@ public class KeystrokesMod extends HUDMod {
         else this.drawRect(addX, addY, width, height, color);
     }
 }
+
+
+
+

@@ -1,6 +1,6 @@
 package me.miki.shindo.utils.vector
 
-class Vector2(var x: Float, var y: Float) {
+class Vector2(@JvmField var x: Float, @JvmField var y: Float) {
 
     fun clone(): Vector2 = Vector2(x, y)
 

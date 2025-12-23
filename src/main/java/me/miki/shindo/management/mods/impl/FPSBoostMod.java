@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventUpdate;
@@ -27,7 +28,7 @@ public class FPSBoostMod extends Mod {
     private boolean removeBotSetting = false;
 
     public FPSBoostMod() {
-        super(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_FPS_BOOST);
 
         instance = this;
     }
@@ -52,3 +53,7 @@ public class FPSBoostMod extends Mod {
         return SettingRegistry.getNumberSetting(this, "delaySetting");
     }
 }
+
+
+
+

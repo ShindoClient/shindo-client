@@ -7,24 +7,21 @@ abstract class Animation {
     var duration: Int
         protected set
 
-
     var endPoint: Double
         protected set
 
-    var direction: Direction
-        protected set
-
+    var direction: Direction = Direction.FORWARDS
+        private set
 
     constructor(ms: Int, endPoint: Double) {
         this.duration = ms
         this.endPoint = endPoint
-        this.direction = Direction.FORWARDS
     }
 
     constructor(ms: Int, endPoint: Double, direction: Direction) {
         this.duration = ms
         this.endPoint = endPoint
-        this.direction = direction
+        setDirection(direction)
     }
 
     val timer = TimerUtils()
@@ -47,8 +44,7 @@ abstract class Animation {
     }
 
     fun changeDirection() {
-        direction = direction.opposite()
-        setDirection(direction)
+        setDirection(direction.opposite())
     }
 
     protected open fun correctOutput(): Boolean {
@@ -78,16 +74,17 @@ abstract class Animation {
         }
     }
 
-    fun getValueFloat(): Float = getValue().toFloat()
-
-    fun getValueInt(): Int = getValue().toInt()
-
-    protected abstract fun getEquation(x: Double): Double
-
     fun setDirection(direction: Direction) {
         if (this.direction != direction) {
             this.direction = direction
             timer.lastMs = System.currentTimeMillis() - (duration - timer.elapsedTime.coerceAtMost(duration.toLong()))
         }
     }
+
+    fun getValueFloat(): Float = getValue().toFloat()
+
+    fun getValueInt(): Int = getValue().toInt()
+
+    protected abstract fun getEquation(x: Double): Double
+
 }

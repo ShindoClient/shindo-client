@@ -3,7 +3,7 @@ package me.miki.shindo.utils.vector
 import me.miki.shindo.utils.MathUtils
 import net.minecraft.util.MathHelper
 
-class Vector3f(var x: Float = 0.0f, var y: Float = 0.0f, var z: Float = 0.0f) {
+class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @JvmField var z: Float = 0.0f) {
 
     constructor(vector4f: Vector4f) : this(vector4f.x(), vector4f.y(), vector4f.z())
 

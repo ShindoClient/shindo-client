@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
@@ -28,7 +29,7 @@ public class PotionStatusMod extends HUDMod {
     private Collection<PotionEffect> potions;
 
     public PotionStatusMod() {
-        super(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION);
+        super(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, LegacyIcon.MOD_POTION_STATUS);
     }
 
     @EventTarget
@@ -145,3 +146,7 @@ public class PotionStatusMod extends HUDMod {
         this.setHeight((ySize * 2) + 2);
     }
 }
+
+
+
+

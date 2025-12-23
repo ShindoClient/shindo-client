@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl;
 
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -10,16 +11,14 @@ import me.miki.shindo.viaversion.ViaLoadingBase;
 import me.miki.shindo.viaversion.ViaShindo;
 import me.miki.shindo.viaversion.protocolinfo.ProtocolInfo;
 
-@Getter
 public class ViaVersionMod extends Mod {
 
-    @Getter
     private static ViaVersionMod instance;
 
     private boolean loaded;
 
     public ViaVersionMod() {
-        super(TranslateText.VIA_VERSION, TranslateText.VIA_VERSION_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.VIA_VERSION, TranslateText.VIA_VERSION_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_VIA_VERSION);
 
         instance = this;
         loaded = false;
@@ -49,4 +48,15 @@ public class ViaVersionMod extends Mod {
         }
     }
 
+    public static ViaVersionMod getInstance() {
+        return instance;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
 }
+
+
+
+

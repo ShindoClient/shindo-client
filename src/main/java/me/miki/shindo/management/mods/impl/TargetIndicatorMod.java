@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -25,7 +26,7 @@ public class TargetIndicatorMod extends Mod {
     private Color colorSetting = Color.RED;
 
     public TargetIndicatorMod() {
-        super(TranslateText.TARGET_INDICATOR, TranslateText.TARGET_INDICATOR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.TARGET_INDICATOR, TranslateText.TARGET_INDICATOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_TARGET_INDICATOR);
     }
 
     @EventTarget
@@ -39,3 +40,7 @@ public class TargetIndicatorMod extends Mod {
         }
     }
 }
+
+
+
+

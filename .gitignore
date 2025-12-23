@@ -16,7 +16,6 @@ run/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-implement
 ### Eclipse ###
 .apt_generated
 .classpath
@@ -45,5 +44,5 @@ bin/
 ### OTHER ###
 
 AGENTS.md
-Code-Snippets.md
+docs/
 implement/

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.libs.spotify.model_objects.specification.ArtistSimplified;
@@ -18,6 +19,7 @@ import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.TextSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -32,7 +34,6 @@ import me.miki.shindo.management.settings.config.PropertyType;
 public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfoCallback {
     private static final ResourceLocation PLACEHOLDER_IMAGE = new ResourceLocation("shindo/music.png");
     private static final long LYRICS_SCROLL_DURATION = 500L;
-    @Getter
     private static MusicInfoMod instance;
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private boolean iconSetting = true;
@@ -42,7 +43,6 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
     private boolean romanizeJapaneseSetting = false;
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ENABLE_HOTKEYS)
     private boolean enableHotkeysSetting = true;
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private Design design = Design.SIMPLE;
     @Property(type = PropertyType.TEXT, translate = TranslateText.LYRICS_API_URL, text = "https://spotify.mopigames.gay/")
@@ -58,7 +58,7 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
     private int cachedHeight = 85;
 
     public MusicInfoMod() {
-        super(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION);
+        super(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION, LegacyIcon.MOD_MUSIC_INFO);
         instance = this;
     }
 
@@ -374,6 +374,14 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
         }
     }
 
+    public Design getDesign() {
+        return design;
+    }
+
+    public static MusicInfoMod getInstance() {
+        return instance;
+    }
+
     public BooleanSetting getShowLyricsSetting() {
         return SettingRegistry.getBooleanSetting(this, "showLyricsSetting");
     }
@@ -404,5 +412,9 @@ public class MusicInfoMod extends SimpleHUDMod implements MusicManager.TrackInfo
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+

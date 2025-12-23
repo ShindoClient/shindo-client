@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -68,7 +69,7 @@ public class BlockOverlayMod extends Mod {
     protected TimerUtils timer = new TimerUtils();
 
     public BlockOverlayMod() {
-        super(TranslateText.BLOCK_OVERLAY, TranslateText.BLOCK_OVERLAY_DESCRIPTION, ModCategory.RENDER, "blockoutline");
+        super(TranslateText.BLOCK_OVERLAY, TranslateText.BLOCK_OVERLAY_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_BLOCK_OVERLAY, "blockoutline");
     }
 
     @EventTarget
@@ -210,3 +211,7 @@ public class BlockOverlayMod extends Mod {
                 bb.maxZ - mc.getRenderManager().viewerPosZ);
     }
 }
+
+
+
+

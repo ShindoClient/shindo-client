@@ -112,11 +112,11 @@ object RenderUtils {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x, y + height, 0.0).tex(u * f, (v + vHeight.toFloat()) * f1).endVertex()
-        worldrenderer.pos(x + width, y + height, 0.0).tex((u + uWidth.toFloat()) * f, (v + vHeight.toFloat()) * f1)
+        worldrenderer.pos(x, y + height, 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble()).endVertex()
+        worldrenderer.pos(x + width, y + height, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
             .endVertex()
-        worldrenderer.pos(x + width, y, 0.0).tex((u + uWidth.toFloat()) * f, v * f1).endVertex()
-        worldrenderer.pos(x, y, 0.0).tex(u * f, v * f1).endVertex()
+        worldrenderer.pos(x + width, y, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble()).endVertex()
+        worldrenderer.pos(x, y, 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
 
@@ -183,12 +183,12 @@ object RenderUtils {
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
         worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0)
-            .tex(textureX.toFloat() * f, (textureY + height).toFloat() * f1).endVertex()
+            .tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
         worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
-            .tex((textureX + width).toFloat() * f, (textureY + height).toFloat() * f1).endVertex()
+            .tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
         worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0)
-            .tex((textureX + width).toFloat() * f, textureY.toFloat() * f1).endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(textureX.toFloat() * f, textureY.toFloat() * f1)
+            .tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
+        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble())
             .endVertex()
         tessellator.draw()
     }
@@ -223,12 +223,12 @@ object RenderUtils {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(u * f, (v + height.toFloat()) * f1).endVertex()
+        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
         worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
-            .tex((u + width.toFloat()) * f, (v + height.toFloat()) * f1).endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex((u + width.toFloat()) * f, v * f1)
+            .tex(((u + width.toFloat()) * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
+        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + width.toFloat()) * f).toDouble(), (v * f1).toDouble())
             .endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(u * f, v * f1).endVertex()
+        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
 

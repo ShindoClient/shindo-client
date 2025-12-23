@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.gui.GuiQuickPlay;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventKey;
@@ -16,7 +17,7 @@ public class HypixelQuickPlayMod extends Mod {
     private int keybindSetting = Keyboard.KEY_N;
 
     public HypixelQuickPlayMod() {
-        super(TranslateText.HYPIXEL_QUICK_PLAY, TranslateText.HYPIXEL_QUICK_PLAY_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.HYPIXEL_QUICK_PLAY, TranslateText.HYPIXEL_QUICK_PLAY_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_HYPIXEL_QUICK_PLAY);
     }
 
     @EventTarget
@@ -27,3 +28,7 @@ public class HypixelQuickPlayMod extends Mod {
         }
     }
 }
+
+
+
+

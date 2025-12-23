@@ -14,7 +14,7 @@ public class PlayerCounterMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public PlayerCounterMod() {
-        super(TranslateText.PLAYER_COUNTER, TranslateText.PLAYER_COUNTER_DESCRIPTION);
+        super(TranslateText.PLAYER_COUNTER, TranslateText.PLAYER_COUNTER_DESCRIPTION, LegacyIcon.MOD_PLAYER_COUNTER);
     }
 
     @EventTarget
@@ -32,3 +32,5 @@ public class PlayerCounterMod extends SimpleHUDMod {
         return iconSetting ? LegacyIcon.USERS : null;
     }
 }
+
+

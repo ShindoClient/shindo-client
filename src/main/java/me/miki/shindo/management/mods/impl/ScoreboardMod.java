@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import me.miki.shindo.Shindo;
@@ -40,7 +41,7 @@ public class ScoreboardMod extends HUDMod {
     private boolean isFirstLoad;
 
     public ScoreboardMod() {
-        super(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION);
+        super(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, LegacyIcon.MOD_SCOREBOARD);
     }
 
     @EventTarget
@@ -136,3 +137,7 @@ public class ScoreboardMod extends HUDMod {
         objective = event.getObjective();
     }
 }
+
+
+
+

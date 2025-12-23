@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.event.EventTarget;
@@ -32,7 +33,7 @@ public class QuickSwitchMod extends Mod {
     private int bowKey = Keyboard.KEY_NONE;
 
     public QuickSwitchMod() {
-        super(TranslateText.QUICK_SWITCH, TranslateText.QUICK_SWITCH_DESCRIPTION, ModCategory.PLAYER, "itemhotkey", true);
+        super(TranslateText.QUICK_SWITCH, TranslateText.QUICK_SWITCH_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_QUICK_SWITCH, "itemhotkey", true);
     }
 
     @EventTarget
@@ -67,3 +68,7 @@ public class QuickSwitchMod extends Mod {
         mc.thePlayer.inventory.currentItem = slot;
     }
 }
+
+
+
+

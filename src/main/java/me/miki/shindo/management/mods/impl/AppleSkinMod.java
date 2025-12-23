@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.injection.interfaces.IMixinGuiIngame;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderPlayerStats;
@@ -30,7 +31,7 @@ public class AppleSkinMod extends Mod {
     private byte alphaDir = 1;
 
     public AppleSkinMod() {
-        super(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_APPLE_SKIN);
     }
 
     @EventTarget
@@ -258,3 +259,7 @@ public class AppleSkinMod extends Mod {
         public int x, y;
     }
 }
+
+
+
+

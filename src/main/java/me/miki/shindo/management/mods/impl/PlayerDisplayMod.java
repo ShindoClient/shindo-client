@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
@@ -18,7 +19,7 @@ public class PlayerDisplayMod extends HUDMod {
     private int yawOffsetSetting = 0;
 
     public PlayerDisplayMod() {
-        super(TranslateText.PLAYER_DISPLAY, TranslateText.PLAYER_DISPLAY_DESCRIPTION, "paperdoll");
+        super(TranslateText.PLAYER_DISPLAY, TranslateText.PLAYER_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PLAYER_DISPLAY, "paperdoll");
     }
 
     @EventTarget
@@ -54,3 +55,7 @@ public class PlayerDisplayMod extends HUDMod {
         this.setHeight(60);
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
 import me.miki.shindo.management.language.TranslateText;
@@ -14,7 +15,7 @@ import net.minecraft.entity.boss.BossStatus;
 public class BossHealthMod extends HUDMod {
 
     public BossHealthMod() {
-        super(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION);
+        super(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION, LegacyIcon.MOD_BOSS_HEALTH);
     }
 
     @EventTarget
@@ -51,3 +52,7 @@ public class BossHealthMod extends HUDMod {
         this.setHeight(20);
     }
 }
+
+
+
+

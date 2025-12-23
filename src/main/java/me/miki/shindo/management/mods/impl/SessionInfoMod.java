@@ -23,7 +23,7 @@ public class SessionInfoMod extends HUDMod {
     private long startTime;
 
     public SessionInfoMod() {
-        super(TranslateText.SESSION_INFO, TranslateText.SESSION_INFO_DESCRIPTION, "stats");
+        super(TranslateText.SESSION_INFO, TranslateText.SESSION_INFO_DESCRIPTION, LegacyIcon.MOD_SESSION_INFO, "stats");
     }
 
     @EventTarget
@@ -92,3 +92,6 @@ public class SessionInfoMod extends HUDMod {
         startTime = System.currentTimeMillis();
     }
 }
+
+
+

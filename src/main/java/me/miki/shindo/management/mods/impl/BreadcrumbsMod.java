@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.settings.config.Property;
@@ -35,7 +36,7 @@ public class BreadcrumbsMod extends Mod {
     private double timeoutTicks = 15;
 
     public BreadcrumbsMod() {
-        super(TranslateText.BREADCRUMBS, TranslateText.BREADCRUMBS_DESCRIPTION, ModCategory.RENDER, "playertrails");
+        super(TranslateText.BREADCRUMBS, TranslateText.BREADCRUMBS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_BREADCRUMBS, "playertrails");
     }
 
     @EventTarget
@@ -61,3 +62,7 @@ public class BreadcrumbsMod extends Mod {
         }
     }
 }
+
+
+
+

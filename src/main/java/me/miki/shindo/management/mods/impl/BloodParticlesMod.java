@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventAttackEntity;
 import me.miki.shindo.management.event.impl.EventUpdate;
@@ -26,7 +27,7 @@ public class BloodParticlesMod extends Mod {
     private EntityLivingBase target;
 
     public BloodParticlesMod() {
-        super(TranslateText.BLOOD_PARTICLES, TranslateText.BLOOD_PARTICLES_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.BLOOD_PARTICLES, TranslateText.BLOOD_PARTICLES_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_BLOOD_PARTICLES);
     }
 
     @EventTarget
@@ -56,3 +57,7 @@ public class BloodParticlesMod extends Mod {
         }
     }
 }
+
+
+
+

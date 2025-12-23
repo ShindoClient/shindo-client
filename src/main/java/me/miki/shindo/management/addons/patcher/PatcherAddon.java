@@ -3,6 +3,8 @@ package me.miki.shindo.management.addons.patcher;
 import lombok.Getter;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonType;
+import me.miki.shindo.management.language.TranslateText;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
@@ -10,10 +12,11 @@ import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.ComboSetting;
 import me.miki.shindo.management.settings.impl.NumberSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PatcherAddon extends Addon {
 
-    @Getter
     private static PatcherAddon instance;
 
     @Property(type = PropertyType.BOOLEAN, name = "Parallax Fix", category = "Bug Fixes")
@@ -92,7 +95,7 @@ public class PatcherAddon extends Addon {
     private double containerOacitySetting = 1D;
 
     public PatcherAddon() {
-        super("Patcher", "Minecraft QoL Mod", "null", AddonType.QOL);
+        super("Patcher", "Minecraft QoL Mod", LegacyIcon.ADDON_PATCHER, AddonType.QOL);
         instance = this;
     }
 
@@ -200,6 +203,10 @@ public class PatcherAddon extends Addon {
         return SettingRegistry.getNumberSetting(this, "containerOacitySetting");
     }
 
+    public static PatcherAddon getInstance() {
+        return instance;
+    }
+
     public enum KeyboardLayout implements PropertyEnum {
         QWERTY("QWERTY"),
         BE_AZERTY("BE AZERTY"),
@@ -212,9 +219,11 @@ public class PatcherAddon extends Addon {
             this.display = display;
         }
 
+        @NotNull
         @Override
         public String getDisplayName() {
             return display;
         }
     }
 }
+

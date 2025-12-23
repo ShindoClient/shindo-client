@@ -23,7 +23,7 @@ object JsonUtils {
     fun hasProperty(jsonObject: JsonObject, key: String): Boolean = getProperty(jsonObject, key) != null
 
     @JvmStatic
-    fun getStringProperty(jsonObject: JsonObject, key: String, defaultValue: String): String {
+    fun getStringProperty(jsonObject: JsonObject, key: String, defaultValue: String?): String? {
         val value = getProperty(jsonObject, key)
         if (value == null || !value.isJsonPrimitive || !value.asJsonPrimitive.isString) {
             return defaultValue
@@ -93,7 +93,9 @@ object JsonUtils {
         var parent: JsonObject = jsonObject
 
         for (i in tokens.indices) {
-            val child = parent.get(tokens[i].replace("\\.".toRegex(), ","))
+            // Tokens can contain escaped commas (\,) that need to be restored.
+            val keyToken = tokens[i].replace("\\\\,".toRegex(), ",")
+            val child = parent.get(keyToken)
             if (i + 1 == tokens.size) {
                 return child
             }

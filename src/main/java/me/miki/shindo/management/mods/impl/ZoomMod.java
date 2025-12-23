@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventScrollMouse;
 import me.miki.shindo.management.event.impl.EventTick;
@@ -40,7 +41,7 @@ public class ZoomMod extends Mod {
     private float currentFactor = 1;
 
     public ZoomMod() {
-        super(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_ZOOM);
     }
 
     @EventTarget
@@ -97,3 +98,7 @@ public class ZoomMod extends Mod {
         currentFactor = factor;
     }
 }
+
+
+
+

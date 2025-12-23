@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventLoadWorld;
@@ -36,7 +37,7 @@ public class MinimapMod extends HUDMod {
     private ChunkAtlas chunkAtlas;
 
     public MinimapMod() {
-        super(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION);
+        super(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION, LegacyIcon.MOD_MINIMAP);
     }
 
     @Override
@@ -134,3 +135,7 @@ public class MinimapMod extends HUDMod {
         chunkAtlas.clear();
     }
 }
+
+
+
+

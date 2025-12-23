@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventHurtCamera;
 import me.miki.shindo.management.language.TranslateText;
@@ -14,7 +15,7 @@ public class MinimalDamageShakeMod extends Mod {
     private int intensitySetting = 0;
 
     public MinimalDamageShakeMod() {
-        super(TranslateText.MINIMAL_DAMAGE_SHAKE, TranslateText.MINIMAL_DAMAGE_SHAKE_DESCRIPTION, ModCategory.RENDER, "nohurtcam");
+        super(TranslateText.MINIMAL_DAMAGE_SHAKE, TranslateText.MINIMAL_DAMAGE_SHAKE_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_MINIMAL_DAMAGE_SHAKE, "nohurtcam");
     }
 
     @EventTarget
@@ -22,3 +23,7 @@ public class MinimalDamageShakeMod extends Mod {
         event.setIntensity(intensitySetting / 100F);
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventCameraRotation;
 import me.miki.shindo.management.language.TranslateText;
@@ -14,7 +15,7 @@ public class FarCameraMod extends Mod {
     private int rangeSetting = 15;
 
     public FarCameraMod() {
-        super(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_FAR_CAMERA);
     }
 
     @EventTarget
@@ -22,3 +23,7 @@ public class FarCameraMod extends Mod {
         event.setThirdPersonDistance(rangeSetting);
     }
 }
+
+
+
+

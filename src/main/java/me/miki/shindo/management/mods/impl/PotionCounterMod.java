@@ -16,7 +16,7 @@ public class PotionCounterMod extends SimpleHUDMod {
     private boolean showIcon = true;
 
     public PotionCounterMod() {
-        super(TranslateText.POTION_COUNTER, TranslateText.POTION_COUNTER_DESCRIPTION);
+        super(TranslateText.POTION_COUNTER, TranslateText.POTION_COUNTER_DESCRIPTION, LegacyIcon.MOD_POTION_COUNTER);
     }
 
     @EventTarget
@@ -37,3 +37,5 @@ public class PotionCounterMod extends SimpleHUDMod {
         return showIcon ? LegacyIcon.ARCHIVE : null;
     }
 }
+
+

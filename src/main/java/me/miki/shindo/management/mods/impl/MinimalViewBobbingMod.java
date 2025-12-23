@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
@@ -9,7 +10,7 @@ public class MinimalViewBobbingMod extends Mod {
     private static MinimalViewBobbingMod instance;
 
     public MinimalViewBobbingMod() {
-        super(TranslateText.MINIMAL_VIEW_BOBBING, TranslateText.MINIMAL_VIEW_BOBBING_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.MINIMAL_VIEW_BOBBING, TranslateText.MINIMAL_VIEW_BOBBING_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_MINIMAL_VIEW_BOBBING);
 
         instance = this;
     }
@@ -18,3 +19,7 @@ public class MinimalViewBobbingMod extends Mod {
         return instance;
     }
 }
+
+
+
+

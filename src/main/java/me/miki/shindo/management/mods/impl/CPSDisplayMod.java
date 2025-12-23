@@ -24,7 +24,7 @@ public class CPSDisplayMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public CPSDisplayMod() {
-        super(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION);
+        super(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_CPS_DISPLAY);
     }
 
     @EventTarget
@@ -63,3 +63,5 @@ public class CPSDisplayMod extends SimpleHUDMod {
         return iconSetting ? LegacyIcon.MOUSE_POINTER : null;
     }
 }
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
@@ -23,7 +24,7 @@ public class FPSLimiterMod extends Mod {
     private int guiFpsSetting = 30;
 
     public FPSLimiterMod() {
-        super(TranslateText.FPS_LIMITER, TranslateText.FPS_LIMITER_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.FPS_LIMITER, TranslateText.FPS_LIMITER_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_FPS_LIMITER);
 
         instance = this;
     }
@@ -48,3 +49,7 @@ public class FPSLimiterMod extends Mod {
         return SettingRegistry.getBooleanSetting(this, "limitMaxFpsSetting");
     }
 }
+
+
+
+

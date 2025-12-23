@@ -22,17 +22,18 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.io.File
 import java.util.HashMap
+import kotlin.math.cos
+import kotlin.math.sin
 
 class NanoVGManager {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val colorCache: HashMap<Int, NVGColor> = HashMap()
-    private val nvg: Long
+    private val nvg: Long = NanoVGGL2.nvgCreate(NanoVGGL2.NVG_ANTIALIAS)
     private val fontManager: FontManager
     val assetManager: AssetManager
 
     init {
-        nvg = NanoVGGL2.nvgCreate(NanoVGGL2.NVG_ANTIALIAS)
         if (nvg == 0L) {
             ShindoLogger.error("Failed to create NanoVG context")
             mc.shutdown()
@@ -60,10 +61,6 @@ class NanoVGManager {
         GL11.glPopAttrib()
     }
 
-    fun beginFrame() {
-        beginFrame(true)
-    }
-
     @JvmOverloads
     fun beginFrame(scale: Boolean = true) {
         val sr = ScaledResolution(mc)
@@ -78,10 +75,6 @@ class NanoVGManager {
         GL11.glDisable(GL11.GL_ALPHA_TEST)
         NanoVG.nvgEndFrame(nvg)
         GL11.glPopAttrib()
-    }
-
-    fun setupAndDraw(task: Runnable) {
-        setupAndDraw(task, true)
     }
 
     fun drawAlphaBar(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color) {
@@ -184,7 +177,7 @@ class NanoVGManager {
         val bg = NVGPaint.create()
 
         val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
-        val max = Math.max(width, height)
+        val max = width.coerceAtLeast(height)
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRect(nvg, x, y, width, height)
@@ -215,7 +208,7 @@ class NanoVGManager {
         val bg = NVGPaint.create()
 
         val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
-        val max = Math.max(width, height)
+        val max = width.coerceAtLeast(height)
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
@@ -255,7 +248,7 @@ class NanoVGManager {
         val bg = NVGPaint.create()
 
         val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
-        val max = Math.max(width, height)
+        val max = width.coerceAtLeast(height)
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
@@ -290,7 +283,7 @@ class NanoVGManager {
         val cy = y + height / 2f
 
         val inner = 4f
-        val outer = Math.max(width, height)
+        val outer = width.coerceAtLeast(height)
 
         val c1 = getColor(centerColor)
         val c2 = getColor(edgeColor)
@@ -320,8 +313,8 @@ class NanoVGManager {
 
         NanoVG.nvgBeginPath(nvg)
 
-        val offsetX = (size * Math.cos(Math.toRadians(angle.toDouble()))).toFloat()
-        val offsetY = (size * Math.sin(Math.toRadians(angle.toDouble()))).toFloat()
+        val offsetX = (size * cos(Math.toRadians(angle.toDouble()))).toFloat()
+        val offsetY = (size * sin(Math.toRadians(angle.toDouble()))).toFloat()
 
         val diffX = x + offsetX / 2
         val diffY = y + offsetY / 2
@@ -431,7 +424,7 @@ class NanoVGManager {
     }
 
     fun drawText(text: String, x: Float, y: Float, color: Color, size: Float, font: Font) {
-        var textY = y + size / 2
+        val textY = y + size / 2
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
@@ -454,16 +447,15 @@ class NanoVGManager {
         while (i < text.length) {
             val c = text[i]
             if (c == 'õ' && i + 1 < text.length) {
-                val code = Character.toLowerCase(text[++i])
-                when {
-                    code in '0'..'f' -> {
+                when (val code = Character.toLowerCase(text[++i])) {
+                    in '0'..'f' -> {
                         currentColor = getColorByCode(code)
                         bold = false
                         italic = false
                     }
-                    code == 'l' -> bold = true
-                    code == 'o' -> italic = true
-                    code == 'r' -> {
+                    'l' -> bold = true
+                    'o' -> italic = true
+                    'r' -> {
                         currentColor = defaultColor
                         bold = false
                         italic = false
@@ -487,7 +479,7 @@ class NanoVGManager {
     }
 
     private fun drawTextGlowingBg(text: String, x: Float, y: Float, color: Color, size: Float, blurRadius: Float, font: Font) {
-        var textY = y + size / 2
+        val textY = y + size / 2
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
@@ -502,7 +494,7 @@ class NanoVGManager {
     }
 
     fun drawTextBox(text: String, x: Float, y: Float, maxWidth: Float, color: Color, size: Float, font: Font) {
-        var textY = y + size / 2
+        val textY = y + size / 2
 
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
@@ -557,7 +549,7 @@ class NanoVGManager {
 
         while (!isInRange) {
             if (getTextWidth(text, fontSize, font) > width) {
-                text = text.substring(0, text.length - 1)
+                text = text.dropLast(1)
                 isRemoved = true
             } else {
                 isInRange = true
@@ -825,7 +817,7 @@ class NanoVGManager {
     }
 
     fun drawScrollbar(baseX: Float, baseY: Float, baseWidth: Float, baseHeight: Float, contentHeight: Float, scrollValue: Float, palette: ColorPalette, accent: AccentColor, minHandleHeight: Float) {
-        val maxScroll = Math.max(0f, contentHeight - baseHeight)
+        val maxScroll = 0f.coerceAtLeast(contentHeight - baseHeight)
         if (maxScroll <= 0f) {
             return
         }
@@ -833,12 +825,12 @@ class NanoVGManager {
         val trackX = baseX + baseWidth - 10f
         val trackY = baseY + 10f
         val trackWidth = 4f
-        val trackHeight = Math.max(0f, baseHeight - 20f)
+        val trackHeight = 0f.coerceAtLeast(baseHeight - 20f)
 
         drawRoundedRect(trackX, trackY, trackWidth, trackHeight, 2f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 130))
 
-        val visibleRatio = Math.min(1f, baseHeight / Math.max(contentHeight, 1f))
-        val handleHeight = Math.max(minHandleHeight, trackHeight * visibleRatio)
+        val visibleRatio = 1f.coerceAtMost(baseHeight / contentHeight.coerceAtLeast(1f))
+        val handleHeight = minHandleHeight.coerceAtLeast(trackHeight * visibleRatio)
         val scrollOffset = -scrollValue
         val handleY = trackY + (trackHeight - handleHeight) * (scrollOffset / maxScroll)
 
@@ -852,7 +844,7 @@ class NanoVGManager {
     }
 
     fun getColor(color: Color?): NVGColor {
-        var safeColor = color ?: Color.RED
+        val safeColor = color ?: Color.RED
         colorCache[safeColor.rgb]?.let { return it }
 
         val nvgColor = NVGColor.create()
@@ -897,5 +889,61 @@ class NanoVGManager {
         } else {
             base
         }
+    }
+
+    fun drawSettingSurface(
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        hoverProgress: Float
+    ) {
+        val overlayAlpha = (18 + hoverProgress * 26).toInt()
+        val fillAlpha = (180 + hoverProgress * 32).toInt()
+        val outlineAlpha = (hoverProgress * 160).toInt()
+
+        drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            radius,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), fillAlpha)
+        )
+        drawGradientRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            radius,
+            ColorUtils.applyAlpha(accent.color1, overlayAlpha),
+            ColorUtils.applyAlpha(accent.color2, overlayAlpha)
+        )
+
+        if (outlineAlpha > 0) {
+            drawOutlineRoundedRect(
+                x,
+                y,
+                width,
+                height,
+                radius,
+                1.0f,
+                ColorUtils.applyAlpha(accent.color2, outlineAlpha)
+            )
+        }
+    }
+
+    fun drawDivider(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        alpha: Float
+    ) {
+        drawRoundedRect(x, y, width, height, radius, Color(255, 255, 255, alpha.toInt()))
     }
 }

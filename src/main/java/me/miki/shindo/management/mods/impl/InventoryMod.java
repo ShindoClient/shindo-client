@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
-import lombok.Getter;
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
@@ -9,16 +9,16 @@ import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.ModCategory;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InventoryMod extends Mod {
 
-    @Getter
     private static InventoryMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     private boolean animationSetting;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.ANIMATION_TYPE)
     private AnimationType animationType = AnimationType.NORMAL;
 
@@ -32,9 +32,17 @@ public class InventoryMod extends Mod {
     private boolean particleSetting;
 
     public InventoryMod() {
-        super(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_INVENTORY);
 
         instance = this;
+    }
+
+    public static InventoryMod getInstance() {
+        return instance;
+    }
+
+    public AnimationType getAnimationType() {
+        return animationType;
     }
 
     public BooleanSetting getAnimationSetting() {
@@ -63,9 +71,15 @@ public class InventoryMod extends Mod {
             this.translate = translate;
         }
 
+        @NotNull
         @Override
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

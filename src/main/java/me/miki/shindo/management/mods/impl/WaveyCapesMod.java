@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -9,23 +10,21 @@ import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.settings.impl.NumberSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
+import org.jetbrains.annotations.Nullable;
+
 public class WaveyCapesMod extends Mod {
 
-    @Getter
     private static WaveyCapesMod instance;
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.GRAVITY, min = 2, max = 30, current = 15)
     private double gravitySetting = 15;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.MOVEMENT)
     private Movement movement = Movement.BASIC;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.STYLE)
     private CapeStyle style = CapeStyle.SMOOTH;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.MODE)
     private CapeMode mode = CapeMode.WAVES;
 
@@ -33,7 +32,7 @@ public class WaveyCapesMod extends Mod {
     private int heightMultiplierSetting = 6;
 
     public WaveyCapesMod() {
-        super(TranslateText.WAVEY_CAPES, TranslateText.WAVEY_CAPES_DESCRIPTION, ModCategory.RENDER, "clothcapesoftfabriccloak");
+        super(TranslateText.WAVEY_CAPES, TranslateText.WAVEY_CAPES_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_WAVEY_CAPES, "clothcapesoftfabriccloak");
 
         instance = this;
     }
@@ -102,4 +101,27 @@ public class WaveyCapesMod extends Mod {
             return translate;
         }
     }
+
+
+    public static WaveyCapesMod getInstance() {
+        return instance;
+    }
+
+    public CapeMode getMode() {
+        return mode;
+    }
+
+    public CapeStyle getStyle() {
+        return style;
+    }
+
+    public Movement getMovement() {
+        return movement;
+    }
+
+
 }
+
+
+
+

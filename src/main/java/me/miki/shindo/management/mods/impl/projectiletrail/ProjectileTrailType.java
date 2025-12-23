@@ -3,6 +3,7 @@ package me.miki.shindo.management.mods.impl.projectiletrail;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import net.minecraft.util.EnumParticleTypes;
+import org.jetbrains.annotations.Nullable;
 
 public enum ProjectileTrailType implements PropertyEnum {
 
@@ -49,5 +50,17 @@ public enum ProjectileTrailType implements PropertyEnum {
     @Override
     public TranslateText getTranslate() {
         return nameTranslate;
+    }
+
+    @Override
+    @Nullable
+    public String getDisplayName() {
+        return PropertyEnum.super.getDisplayName();
+
+    }
+    @Override
+    @Nullable
+    public String getNameKey() {
+        return PropertyEnum.super.getNameKey();
     }
 }

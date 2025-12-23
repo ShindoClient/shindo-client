@@ -18,7 +18,7 @@ class ScreenAlpha {
     private var fb: NVGLUFramebuffer? = null
 
     fun wrap(task: Runnable, alphaProgress: Float) {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
             close()
@@ -45,7 +45,7 @@ class ScreenAlpha {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw({
+        nvg.setupAndDraw(Runnable {
             nvg.setAlpha(alphaProgress.coerceAtMost(1.0f))
 
             val paint = NVGPaint.create()
@@ -57,7 +57,7 @@ class ScreenAlpha {
     }
 
     fun close() {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         fb?.let {
             NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
             fb = null

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -12,7 +13,6 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry;
 
 public class TabEditorMod extends Mod {
 
-    @Getter
     private static TabEditorMod instance;
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
@@ -25,10 +25,15 @@ public class TabEditorMod extends Mod {
     private boolean pingSetting = true;
 
     public TabEditorMod() {
-        super(TranslateText.TAB_EDITOR, TranslateText.TAB_EDITOR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.TAB_EDITOR, TranslateText.TAB_EDITOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_TAB_EDITOR);
 
         instance = this;
     }
+
+    public static TabEditorMod getInstance() {
+        return instance;
+    }
+
 
     public BooleanSetting getBackgroundSetting() {
         return SettingRegistry.getBooleanSetting(this, "backgroundSetting");
@@ -42,3 +47,7 @@ public class TabEditorMod extends Mod {
         return SettingRegistry.getBooleanSetting(this, "pingSetting");
     }
 }
+
+
+
+

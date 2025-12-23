@@ -19,7 +19,9 @@ public class UILayoutManager {
     public enum Layouts {
         SETTINGS(TranslateText.SETTINGS, TranslateText.SETTINGS_LAYOUT_DESCRIPTION, LegacyIcon.SETTINGS),
         MODULES(TranslateText.SETTINGS_LAYOUT_SECTION_MODULE, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION, LegacyIcon.LIST),
-        SCREENSHOTS(TranslateText.SCREENSHOT, TranslateText.SETTINGS_LAYOUT_SECTION_SCREENSHOT, LegacyIcon.CAMERA);
+        ADDONS(TranslateText.SETTINGS_LAYOUT_SECTION_ADDON, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION, LegacyIcon.PLUS_SQUARE),
+        SCREENSHOTS(TranslateText.SCREENSHOT, TranslateText.SETTINGS_LAYOUT_SECTION_SCREENSHOT, LegacyIcon.CAMERA),
+        NOTIFICATIONS(TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION, LegacyIcon.BELL);
 
         private final TranslateText title;
         private final TranslateText description;
@@ -49,8 +51,15 @@ public class UILayoutManager {
         SETTINGS_DOUBLE(Layouts.SETTINGS, TranslateText.SETTINGS_LAYOUT_DOUBLE_TITLE, TranslateText.SETTINGS_LAYOUT_DOUBLE_DESCRIPTION),
         MODULES_SINGLE(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION),
         MODULES_DOUBLE(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_DESCRIPTION),
+        MODULES_ICON(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_ICON_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_ICON_DESCRIPTION),
+        ADDONS_STANDARD(Layouts.ADDONS, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_TITLE, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION),
+        ADDONS_ICON(Layouts.ADDONS, TranslateText.SETTINGS_LAYOUT_ADDON_ICON_TITLE, TranslateText.SETTINGS_LAYOUT_ADDON_ICON_DESCRIPTION),
         SCREEN_FILMSTRIP(Layouts.SCREENSHOTS, ScreenshotDisplayMode.FILMSTRIP.getTranslate(), ScreenshotDisplayMode.FILMSTRIP.getTranslateDescription()),
-        SCREEN_GRID(Layouts.SCREENSHOTS, ScreenshotDisplayMode.GRID.getTranslate(), ScreenshotDisplayMode.GRID.getTranslateDescription());
+        SCREEN_GRID(Layouts.SCREENSHOTS, ScreenshotDisplayMode.GRID.getTranslate(), ScreenshotDisplayMode.GRID.getTranslateDescription()),
+        NOTIFICATION_TOP_LEFT(Layouts.NOTIFICATIONS, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_TITLE, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_DESCRIPTION),
+        NOTIFICATION_TOP_RIGHT(Layouts.NOTIFICATIONS, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_RIGHT_TITLE, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_RIGHT_DESCRIPTION),
+        NOTIFICATION_BOTTOM_LEFT(Layouts.NOTIFICATIONS, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_LEFT_TITLE, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_LEFT_DESCRIPTION),
+        NOTIFICATION_BOTTOM_RIGHT(Layouts.NOTIFICATIONS, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_RIGHT_TITLE, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_BOTTOM_RIGHT_DESCRIPTION);
 
         private final Layouts area;
         private final TranslateText title;
@@ -107,11 +116,21 @@ public class UILayoutManager {
                 () -> mod.getSettingsLayoutMode() == SettingsPanel.LayoutMode.DOUBLE_COLUMN);
 
         bind(LayoutType.MODULES_SINGLE,
-                () -> mod.setModuleGridColumns(1),
-                () -> mod.getModuleGridColumns() <= 1);
+                () -> mod.setModuleLayout(InternalSettingsMod.ModuleLayout.SINGLE_COLUMN),
+                () -> mod.getModuleLayout() == InternalSettingsMod.ModuleLayout.SINGLE_COLUMN);
         bind(LayoutType.MODULES_DOUBLE,
-                () -> mod.setModuleGridColumns(2),
-                () -> mod.getModuleGridColumns() >= 2);
+                () -> mod.setModuleLayout(InternalSettingsMod.ModuleLayout.TWO_COLUMNS),
+                () -> mod.getModuleLayout() == InternalSettingsMod.ModuleLayout.TWO_COLUMNS);
+        bind(LayoutType.MODULES_ICON,
+                () -> mod.setModuleLayout(InternalSettingsMod.ModuleLayout.ICON_CARDS),
+                () -> mod.getModuleLayout() == InternalSettingsMod.ModuleLayout.ICON_CARDS);
+
+        bind(LayoutType.ADDONS_STANDARD,
+                () -> mod.setAddonLayout(InternalSettingsMod.AddonLayout.STANDARD),
+                () -> mod.getAddonLayout() == InternalSettingsMod.AddonLayout.STANDARD);
+        bind(LayoutType.ADDONS_ICON,
+                () -> mod.setAddonLayout(InternalSettingsMod.AddonLayout.ICON_CARDS),
+                () -> mod.getAddonLayout() == InternalSettingsMod.AddonLayout.ICON_CARDS);
 
         bind(LayoutType.SCREEN_FILMSTRIP,
                 () -> mod.setScreenshotDisplayMode(ScreenshotDisplayMode.FILMSTRIP),
@@ -119,6 +138,19 @@ public class UILayoutManager {
         bind(LayoutType.SCREEN_GRID,
                 () -> mod.setScreenshotDisplayMode(ScreenshotDisplayMode.GRID),
                 () -> mod.getScreenshotDisplayMode() == ScreenshotDisplayMode.GRID);
+
+        bind(LayoutType.NOTIFICATION_TOP_LEFT,
+                () -> mod.setNotificationCorner(InternalSettingsMod.NotificationCorner.TOP_LEFT),
+                () -> mod.getNotificationCorner() == InternalSettingsMod.NotificationCorner.TOP_LEFT);
+        bind(LayoutType.NOTIFICATION_TOP_RIGHT,
+                () -> mod.setNotificationCorner(InternalSettingsMod.NotificationCorner.TOP_RIGHT),
+                () -> mod.getNotificationCorner() == InternalSettingsMod.NotificationCorner.TOP_RIGHT);
+        bind(LayoutType.NOTIFICATION_BOTTOM_LEFT,
+                () -> mod.setNotificationCorner(InternalSettingsMod.NotificationCorner.BOTTOM_LEFT),
+                () -> mod.getNotificationCorner() == InternalSettingsMod.NotificationCorner.BOTTOM_LEFT);
+        bind(LayoutType.NOTIFICATION_BOTTOM_RIGHT,
+                () -> mod.setNotificationCorner(InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT),
+                () -> mod.getNotificationCorner() == InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT);
     }
 
     private void bind(LayoutType type, Runnable applier, Supplier<Boolean> selectedSupplier) {

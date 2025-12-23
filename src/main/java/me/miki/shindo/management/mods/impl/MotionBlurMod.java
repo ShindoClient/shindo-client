@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventShader;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.client.shader.ShaderUniform;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import me.miki.shindo.management.settings.config.Property;
@@ -34,7 +36,7 @@ public class MotionBlurMod extends Mod {
     private int prevWidth, prevHeight;
 
     public MotionBlurMod() {
-        super(TranslateText.MOTION_BLUR, TranslateText.MOTION_BLUR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.MOTION_BLUR, TranslateText.MOTION_BLUR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_MOTION_BLUR);
     }
 
     @Override
@@ -132,5 +134,10 @@ public class MotionBlurMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

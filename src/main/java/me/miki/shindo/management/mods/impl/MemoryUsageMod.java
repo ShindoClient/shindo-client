@@ -11,6 +11,7 @@ import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
+import org.jetbrains.annotations.Nullable;
 
 public class MemoryUsageMod extends SimpleHUDMod {
 
@@ -23,7 +24,7 @@ public class MemoryUsageMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public MemoryUsageMod() {
-        super(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION);
+        super(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE);
     }
 
     @EventTarget
@@ -85,5 +86,8 @@ public class MemoryUsageMod extends SimpleHUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+

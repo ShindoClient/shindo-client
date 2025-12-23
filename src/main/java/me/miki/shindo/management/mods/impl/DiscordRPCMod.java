@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.discord.DiscordRPC;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.Mod;
@@ -10,7 +11,7 @@ public class DiscordRPCMod extends Mod {
     private final DiscordRPC discord = new DiscordRPC();
 
     public DiscordRPCMod() {
-        super(TranslateText.DISCORD_RPC, TranslateText.DISCORD_RPC_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.DISCORD_RPC, TranslateText.DISCORD_RPC_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_DISCORD_RPC);
     }
 
     @Override
@@ -27,3 +28,7 @@ public class DiscordRPCMod extends Mod {
         }
     }
 }
+
+
+
+

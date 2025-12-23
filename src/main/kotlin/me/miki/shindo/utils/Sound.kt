@@ -54,19 +54,9 @@ class Sound {
     companion object {
 
         @JvmStatic
-        private fun internalSettings(): InternalSettingsMod? {
-            return try {
-                val method = InternalSettingsMod::class.java.getDeclaredMethod("getInstance")
-                method.invoke(null) as? InternalSettingsMod
-            } catch (_: Exception) {
-                null
-            }
-        }
-
-        @JvmStatic
         fun play(location: String, uiSound: Boolean) {
-            val settings = internalSettings()
-            if (uiSound && settings != null && !settings.soundsUISetting.isToggled) return
+            val settings = InternalSettingsMod.getInstance()
+            if (uiSound && settings != null && !settings.soundsUISetting.isToggled()) return
             val diskPath = Sound::class.java.classLoader.getResource("assets/minecraft/$location") ?: return
 
             try {

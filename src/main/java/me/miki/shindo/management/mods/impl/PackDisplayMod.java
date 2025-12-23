@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.management.event.EventTarget;
@@ -32,7 +33,7 @@ public class PackDisplayMod extends HUDMod {
     private List<ResourcePackRepository.Entry> packs = resourcePackRepository.getRepositoryEntries();
 
     public PackDisplayMod() {
-        super(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION);
+        super(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PACK_DISPLAY);
     }
 
     @Override
@@ -104,3 +105,7 @@ public class PackDisplayMod extends HUDMod {
         return ((IMixinMinecraft) mc).getMcDefaultResourcePack();
     }
 }
+
+
+
+

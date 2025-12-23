@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class PlayerPredicatorMod extends Mod {
     private boolean isActive;
 
     public PlayerPredicatorMod() {
-        super(TranslateText.PLAYER_PREDICATOR, TranslateText.PLAYER_PREDICATOR_DESCRIPTION, ModCategory.WORLD, "", true);
+        super(TranslateText.PLAYER_PREDICATOR, TranslateText.PLAYER_PREDICATOR_DESCRIPTION, ModCategory.WORLD, LegacyIcon.MOD_PLAYER_PREDICATOR, "", true);
     }
 
     @EventTarget
@@ -123,3 +124,7 @@ public class PlayerPredicatorMod extends Mod {
         }
     }
 }
+
+
+
+

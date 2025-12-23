@@ -1,0 +1,47 @@
+package me.miki.shindo.management.mods
+
+import me.miki.shindo.Shindo
+import me.miki.shindo.management.notification.NotificationType
+import me.miki.shindo.utils.ServerUtils
+
+class RestrictedMod {
+
+    var shouldCheck: Boolean = true
+    private var currentServerIP = ""
+    private val blacklistManager = Shindo.getInstance().blacklistManager
+
+    fun checkAllowed(mod: Mod): Boolean {
+        if (shouldCheck) {
+            val servers = blacklistManager.blacklist
+            for (server in servers) {
+                if (currentServerIP.contains(server.serverIp)) {
+                    val blacklistedMods = server.mods
+                    if (blacklistedMods.contains(mod.getNameKey())) {
+                        mod.setAllowed(false)
+                        return false
+                    }
+                }
+            }
+        }
+        mod.setAllowed(true)
+        return true
+    }
+
+    fun joinServer(ip: String) {
+        blacklistManager.check()
+    }
+
+    fun joinWorld() {
+        currentServerIP = ServerUtils.getServerIP()
+        for (mod in Shindo.getInstance().modManager.getMods()) {
+            if (!checkAllowed(mod) && mod.isToggled()) {
+                mod.setToggled(false)
+                Shindo.getInstance().notificationManager.post(
+                    mod.getName(),
+                    "Disabled due to serverside blacklist",
+                    NotificationType.INFO
+                )
+            }
+        }
+    }
+}

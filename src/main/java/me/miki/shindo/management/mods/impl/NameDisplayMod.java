@@ -6,6 +6,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ public class NameDisplayMod extends SimpleHUDMod {
     private Prefix prefix = Prefix.NAME;
 
     public NameDisplayMod() {
-        super(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION);
+        super(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, LegacyIcon.MOD_NAME_DISPLAY);
     }
 
     @Override
@@ -54,5 +55,8 @@ public class NameDisplayMod extends SimpleHUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+

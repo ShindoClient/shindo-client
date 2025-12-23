@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -32,7 +33,6 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyType;
 public class SoundSubtitlesMod extends HUDMod {
 
-    @Getter
     private static SoundSubtitlesMod instance;
 
     private final List<Subtitle> subtitles = Lists.newArrayList();
@@ -44,7 +44,7 @@ public class SoundSubtitlesMod extends HUDMod {
     private final SimpleAnimation backgroundAnimation = new SimpleAnimation(0.0F);
 
     public SoundSubtitlesMod() {
-        super(TranslateText.SOUND_SUBTITLES, TranslateText.SOUND_SUBTITLES_DESCRIPTION);
+        super(TranslateText.SOUND_SUBTITLES, TranslateText.SOUND_SUBTITLES_DESCRIPTION, LegacyIcon.MOD_SOUND_SUBTITLES);
 
         instance = this;
 
@@ -180,6 +180,10 @@ public class SoundSubtitlesMod extends HUDMod {
         this.subtitles.add(new Subtitle(s, new Vec3(soundIn.getXPosF(), soundIn.getYPosF(), soundIn.getZPosF())));
     }
 
+    public static SoundSubtitlesMod getInstance() {
+        return instance;
+    }
+
     private String getSoundName(ResourceLocation location) {
         return soundMap.get(location.getResourcePath());
     }
@@ -198,3 +202,7 @@ public class SoundSubtitlesMod extends HUDMod {
         return stringBuilder.toString();
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderSelectedItem;
 import me.miki.shindo.management.language.TranslateText;
@@ -63,7 +64,7 @@ public class ItemInfoMod extends Mod {
     private boolean potionColorSetting;
 
     public ItemInfoMod() {
-        super(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEM_INFO);
     }
 
     @EventTarget
@@ -167,3 +168,7 @@ public class ItemInfoMod extends Mod {
         return enchantBuilder.toString().trim();
     }
 }
+
+
+
+

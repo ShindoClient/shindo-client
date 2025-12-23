@@ -20,7 +20,7 @@ class ScreenStencil {
 
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float = 1f) {
         val sr = ScaledResolution(mc)
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         val factor = sr.scaleFactor
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
@@ -47,7 +47,7 @@ class ScreenStencil {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw({
+        nvg.setupAndDraw(Runnable {
             val paint = NVGPaint.create()
             NanoVG.nvgGlobalAlpha(nvg.getContext(), alpha)
             NanoVG.nvgBeginPath(nvg.getContext())
@@ -57,8 +57,11 @@ class ScreenStencil {
         }, false)
     }
 
+    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float) =
+        wrap(task, x, y, width, height, radius, 1f)
+
     fun close() {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         fb?.let {
             NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
             fb = null

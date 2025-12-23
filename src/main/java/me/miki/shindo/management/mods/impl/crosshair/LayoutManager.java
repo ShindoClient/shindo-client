@@ -1,9 +1,6 @@
 package me.miki.shindo.management.mods.impl.crosshair;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.utils.JsonUtils;
@@ -164,7 +161,7 @@ public class LayoutManager {
     }
 
     public List<CellGridPreset> getCustomPresets() {
-        return userPresets.stream().collect(Collectors.toList());
+        return new ArrayList<>(userPresets);
     }
 
     public CellGridPreset addCustomPreset(String name, boolean[][] layout, int[][] colors) {
@@ -234,7 +231,7 @@ public class LayoutManager {
             }
 
             try (FileReader reader = new FileReader(presetFile)) {
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 JsonObject json = gson.fromJson(reader, JsonObject.class);
                 if (json == null || !json.has("presets")) {
                     return;
@@ -259,7 +256,7 @@ public class LayoutManager {
 
     public void saveToDisk() {
         try (FileWriter writer = new FileWriter(presetFile)) {
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             JsonObject root = new JsonObject();
             JsonArray presetsArray = new JsonArray();
 
@@ -299,9 +296,7 @@ public class LayoutManager {
             int length = layout[i] != null ? layout[i].length : 0;
             copy[i] = new int[length];
             if (source != null && i < source.length && source[i] != null) {
-                for (int j = 0; j < Math.min(length, source[i].length); j++) {
-                    copy[i][j] = source[i][j];
-                }
+                System.arraycopy(source[i], 0, copy[i], 0, Math.min(length, source[i].length));
             }
             for (int j = 0; j < length; j++) {
                 if (copy[i][j] == 0) {

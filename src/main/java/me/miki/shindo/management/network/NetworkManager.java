@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
-import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
@@ -22,6 +21,8 @@ import me.miki.shindo.management.network.proxy.WarpProxyManager;
 import me.miki.shindo.utils.JsonUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -53,69 +54,117 @@ public class NetworkManager implements ConfigOwner, SettingCategoryProvider {
     private final File configFile;
     private final int[] pingSamples = new int[PING_HISTORY];
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_OPTIMIZER_TOGGLE, category = "overview")
     private boolean optimizerEnabled = true;
 
-    @Getter
     @Property(type = PropertyType.COMBO, translate = TranslateText.NETWORK_MEDIUM, category = "profile")
     private LinkMedium networkMedium = LinkMedium.WIRED;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_LINK_CAPACITY, category = "profile", min = 10, max = 1000, step = 10, current = 200)
     private int linkCapacityMbps = 200;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_AGGRESSIVE, category = "profile")
     private boolean aggressiveProfile = false;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_ADAPTIVE_BUFFERING, category = "profile")
     private boolean adaptiveBuffering = true;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_TCP_NODELAY, category = "transport")
     private boolean tcpNoDelayEnabled = true;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_AUTO_FLUSH, category = "transport")
     private boolean autoFlushEnabled = true;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_NATIVE_TRANSPORT, category = "transport")
     private boolean preferNativeTransport = true;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_WRITE_BUFFER, category = "transport", min = MIN_WRITE_BUFFER_KB, max = MAX_WRITE_BUFFER_KB, step = 32, current = 512)
     private int writeBufferKb = 512;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_BURST_SMOOTHING, category = "flow")
     private boolean burstFlushSmoothing = true;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_INTERVAL, category = "flow", min = 10, max = 120, step = 5, current = 45)
     private int flushIntervalMs = 45;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_THRESHOLD, category = "flow", min = 1, max = 12, step = 1, current = 4)
     private int flushPacketThreshold = 4;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_DYNAMIC_FLUSH, category = "flow")
     private boolean dynamicFlushEnabled = true;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_JITTER_SENSITIVITY, category = "flow", min = 1, max = 20, step = 1, current = 6)
     private int jitterSensitivity = 6;
 
-    @Getter
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_PROXY_WARP, category = "routing")
     private boolean warpProxyEnabled = false;
 
-    @Getter
     @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_RESPONSIVENESS, category = "profile", min = 1, max = 10, step = 1, current = DEFAULT_RESPONSIVENESS)
     private int responsivenessLevel = DEFAULT_RESPONSIVENESS;
+
+    public boolean isOptimizerEnabled() {
+        return optimizerEnabled;
+    }
+
+    public LinkMedium getNetworkMedium() {
+        return networkMedium;
+    }
+
+    public int getLinkCapacityMbps() {
+        return linkCapacityMbps;
+    }
+
+    public boolean isAggressiveProfileEnabled() {
+        return aggressiveProfile;
+    }
+
+    public boolean isAdaptiveBufferingEnabled() {
+        return adaptiveBuffering;
+    }
+
+    public boolean isTcpNoDelayEnabled() {
+        return tcpNoDelayEnabled;
+    }
+
+    public boolean isAutoFlushEnabled() {
+        return autoFlushEnabled;
+    }
+
+    public boolean isPreferNativeTransport() {
+        return preferNativeTransport;
+    }
+
+    public int getWriteBufferKb() {
+        return writeBufferKb;
+    }
+
+    public boolean isBurstFlushSmoothingEnabled() {
+        return burstFlushSmoothing;
+    }
+
+    public int getFlushIntervalMs() {
+        return flushIntervalMs;
+    }
+
+    public int getFlushPacketThreshold() {
+        return flushPacketThreshold;
+    }
+
+    public boolean isDynamicFlushEnabled() {
+        return dynamicFlushEnabled;
+    }
+
+    public int getJitterSensitivity() {
+        return jitterSensitivity;
+    }
+
+    public boolean isWarpProxyEnabled() {
+        return warpProxyEnabled;
+    }
+
+    public int getResponsivenessLevel() {
+        return responsivenessLevel;
+    }
 
     private Channel activeChannel;
     private Boolean cachedOptimizerEnabled;
@@ -1052,9 +1101,17 @@ public class NetworkManager implements ConfigOwner, SettingCategoryProvider {
             this.translate = translate;
         }
 
+
+        @NotNull
         @Override
         public TranslateText getTranslate() {
             return translate;
+        }
+
+        @Override
+        @Nullable
+        public String getNameKey() {
+            return PropertyEnum.super.getNameKey();
         }
 
         @Override
@@ -1092,7 +1149,6 @@ public class NetworkManager implements ConfigOwner, SettingCategoryProvider {
         private int responsiveness;
     }
 
-    @Getter
     public static class ProfileSnapshot {
         private boolean optimizerEnabled;
         private LinkMedium networkMedium;
@@ -1124,5 +1180,27 @@ public class NetworkManager implements ConfigOwner, SettingCategoryProvider {
         private boolean warpCacheHit;
         private String warpError;
 
+        public boolean isOptimizerEnabled() {
+            return optimizerEnabled;
+        }
+
+        public float getLatencyFocus() {
+            return latencyFocus;
+        }
+
+        public float getStabilityFocus() {
+            return stabilityFocus;
+        }
+
+        public float getThroughputFocus() {
+            return throughputFocus;
+        }
     }
+
+    @Override
+    public boolean isCategoryInitiallyCollapsed(@NotNull String categoryKey) {
+        return SettingCategoryProvider.super.isCategoryInitiallyCollapsed(categoryKey);
+    }
+
+
 }

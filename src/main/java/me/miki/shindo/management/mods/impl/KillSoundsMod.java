@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventMotionUpdate;
@@ -31,7 +32,7 @@ public class KillSoundsMod extends Mod {
     private File prevCustomSound;
 
     public KillSoundsMod() {
-        super(TranslateText.KILL_SOUNDS, TranslateText.KILL_SOUNDS_DESCRIPTION, ModCategory.OTHER);
+        super(TranslateText.KILL_SOUNDS, TranslateText.KILL_SOUNDS_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_KILL_SOUNDS);
     }
 
     @EventTarget
@@ -91,3 +92,7 @@ public class KillSoundsMod extends Mod {
         }
     }
 }
+
+
+
+

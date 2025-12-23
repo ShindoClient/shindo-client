@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.BlockAccessor",
+    "accessors.GuiNewChatAccessor",
     "mixins.audio.MixinSoundManager",
     "mixins.block.MixinBlock",
     "mixins.block.MixinBlockCactus",
@@ -31,7 +32,6 @@
     "mixins.client.gui.MixinChatLine",
     "mixins.client.gui.MixinFontRenderer",
     "mixins.client.gui.MixinGuiChat",
-    "mixins.client.gui.MixinGuiButton",
     "mixins.client.gui.MixinGuiChest",
     "mixins.client.gui.MixinGuiContainer",
     "mixins.client.gui.MixinGuiDownloadTerrain",
@@ -40,7 +40,6 @@
     "mixins.client.gui.MixinGuiInventory",
     "mixins.client.gui.MixinGuiLanguage",
     "mixins.client.gui.MixinGuiMultiplayer",
-    "mixins.client.gui.MixinGuiOptionSlider",
     "mixins.client.gui.MixinGuiNewChat",
     "mixins.client.gui.MixinGuiOptions",
     "mixins.client.gui.MixinGuiPlayerTabOverlay",

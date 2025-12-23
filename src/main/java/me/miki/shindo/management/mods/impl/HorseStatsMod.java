@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -16,7 +17,7 @@ public class HorseStatsMod extends HUDMod {
     private final DecimalFormat df = new DecimalFormat("0.0");
 
     public HorseStatsMod() {
-        super(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION);
+        super(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION, LegacyIcon.MOD_HORSE_STATS);
     }
 
     @EventTarget
@@ -60,3 +61,7 @@ public class HorseStatsMod extends HUDMod {
         return df.format(speed);
     }
 }
+
+
+
+

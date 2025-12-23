@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventFireOverlay;
 import me.miki.shindo.management.event.impl.EventRenderPumpkinOverlay;
@@ -18,7 +19,7 @@ public class OverlayEditorMod extends Mod {
     private boolean hideFireSetting = false;
 
     public OverlayEditorMod() {
-        super(TranslateText.OVERLAY_EDITOR, TranslateText.OVERLAY_EDITOR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.OVERLAY_EDITOR, TranslateText.OVERLAY_EDITOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_OVERLAY_EDITOR);
     }
 
     @EventTarget
@@ -31,3 +32,7 @@ public class OverlayEditorMod extends Mod {
         event.setCancelled(hideFireSetting);
     }
 }
+
+
+
+

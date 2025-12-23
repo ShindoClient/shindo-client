@@ -596,7 +596,6 @@ public class WarpProxyManager {
         }
     }
 
-    @Getter
     public static final class WarpDiagnostics {
         private final boolean enabled;
         private final WarpStatus status;
@@ -609,16 +608,7 @@ public class WarpProxyManager {
         private final long lastHealthLatencyMs;
         private final long sessionEstablishedAt;
 
-        private WarpDiagnostics(boolean enabled,
-                                WarpStatus status,
-                                String lastResolver,
-                                long lastLookupDurationMs,
-                                long lastUpdatedAt,
-                                String lastError,
-                                boolean cacheHit,
-                                String warpMode,
-                                long lastHealthLatencyMs,
-                                long sessionEstablishedAt) {
+        private WarpDiagnostics(boolean enabled, WarpStatus status, String lastResolver, long lastLookupDurationMs, long lastUpdatedAt, String lastError, boolean cacheHit, String warpMode, long lastHealthLatencyMs, long sessionEstablishedAt) {
             this.enabled = enabled;
             this.status = status;
             this.lastResolver = lastResolver;
@@ -632,17 +622,49 @@ public class WarpProxyManager {
         }
 
         private static WarpDiagnostics disabled() {
-            return new WarpDiagnostics(false,
-                    WarpStatus.DISABLED,
-                    null,
-                    0L,
-                    0L,
-                    null,
-                    false,
-                    "off",
-                    0L,
-                    0L);
+            return new WarpDiagnostics(false, WarpStatus.DISABLED, null, 0L, 0L, null, false, "off", 0L, 0L);
         }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public WarpStatus getStatus() {
+            return status;
+        }
+
+        public String getLastResolver() {
+            return lastResolver;
+        }
+
+        public long getLastLookupDurationMs() {
+            return lastLookupDurationMs;
+        }
+
+        public long getLastUpdatedAt() {
+            return lastUpdatedAt;
+        }
+
+        public String getLastError() {
+            return lastError;
+        }
+
+        public boolean isCacheHit() {
+            return cacheHit;
+        }
+
+        public String getWarpMode() {
+            return warpMode;
+        }
+
+        public long getLastHealthLatencyMs() {
+            return lastHealthLatencyMs;
+        }
+
+        public long getSessionEstablishedAt() {
+            return sessionEstablishedAt;
+        }
+
     }
 
     public enum WarpStatus {

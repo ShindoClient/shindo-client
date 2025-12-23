@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventWaterOverlay;
 import me.miki.shindo.management.language.TranslateText;
@@ -9,7 +10,7 @@ import me.miki.shindo.management.mods.ModCategory;
 public class ClearWaterMod extends Mod {
 
     public ClearWaterMod() {
-        super(TranslateText.CLEAR_WATER, TranslateText.CLEAR_WATER_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CLEAR_WATER, TranslateText.CLEAR_WATER_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CLEAR_WATER);
     }
 
     @EventTarget
@@ -17,3 +18,7 @@ public class ClearWaterMod extends Mod {
         event.setCancelled(true);
     }
 }
+
+
+
+

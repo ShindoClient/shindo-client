@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventGamma;
 import me.miki.shindo.management.language.TranslateText;
@@ -9,7 +10,7 @@ import me.miki.shindo.management.mods.ModCategory;
 public class FullbrightMod extends Mod {
 
     public FullbrightMod() {
-        super(TranslateText.FULLBRIGHT, TranslateText.FULLBRIGHT_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.FULLBRIGHT, TranslateText.FULLBRIGHT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_FULLBRIGHT);
     }
 
     @EventTarget
@@ -29,3 +30,7 @@ public class FullbrightMod extends Mod {
         mc.renderGlobal.loadRenderers();
     }
 }
+
+
+
+

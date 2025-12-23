@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventKey;
 import me.miki.shindo.management.event.impl.EventUpdate;
@@ -14,7 +15,7 @@ public class ToggleSneakMod extends Mod {
     private boolean toggle;
 
     public ToggleSneakMod() {
-        super(TranslateText.TOGGLE_SNEAK, TranslateText.TOGGLE_SNEAK_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.TOGGLE_SNEAK, TranslateText.TOGGLE_SNEAK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_TOGGLE_SNEAK);
     }
 
     @Override
@@ -49,3 +50,7 @@ public class ToggleSneakMod extends Mod {
         KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), state);
     }
 }
+
+
+
+

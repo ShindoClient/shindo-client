@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -15,7 +16,7 @@ public class GodbridgeAssistMod extends HUDMod {
     private int shiftedTicks = 0;
 
     public GodbridgeAssistMod() {
-        super(TranslateText.GODBRIDGE_ASSIST, TranslateText.GODBRIDGE_ASSIST_DESCRIPTION);
+        super(TranslateText.GODBRIDGE_ASSIST, TranslateText.GODBRIDGE_ASSIST_DESCRIPTION, LegacyIcon.MOD_GODBRIDGE_ASSIST);
     }
 
     @EventTarget
@@ -85,3 +86,7 @@ public class GodbridgeAssistMod extends HUDMod {
         }
     }
 }
+
+
+
+

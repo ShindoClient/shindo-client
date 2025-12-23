@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderDamageTint;
 import me.miki.shindo.management.language.TranslateText;
@@ -25,7 +26,7 @@ public class DamageTintMod extends Mod {
     private double healthSetting = 10;
 
     public DamageTintMod() {
-        super(TranslateText.DAMAGE_TINT, TranslateText.DAMAGE_TINT_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.DAMAGE_TINT, TranslateText.DAMAGE_TINT_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_DAMAGE_TINT);
     }
 
     @EventTarget
@@ -66,3 +67,7 @@ public class DamageTintMod extends Mod {
         GlStateManager.popMatrix();
     }
 }
+
+
+
+

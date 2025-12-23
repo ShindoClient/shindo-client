@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import com.google.gson.JsonSyntaxException;
 import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import me.miki.shindo.management.event.EventTarget;
@@ -35,7 +36,7 @@ public class ColorSaturationMod extends Mod {
     private int prevWidth, prevHeight;
 
     public ColorSaturationMod() {
-        super(TranslateText.COLOR_SATURATION, TranslateText.COLOR_SATURATION_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.COLOR_SATURATION, TranslateText.COLOR_SATURATION_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_COLOR_SATURATION);
     }
 
     @EventTarget
@@ -106,3 +107,7 @@ public class ColorSaturationMod extends Mod {
         group = null;
     }
 }
+
+
+
+

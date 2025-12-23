@@ -16,7 +16,7 @@ public class WeatherDisplayMod extends SimpleHUDMod {
     private boolean iconEnabled = true;
 
     public WeatherDisplayMod() {
-        super(TranslateText.WEATHER_DISPLAY, TranslateText.WEATHER_DISPLAY_DESCRIPTION);
+        super(TranslateText.WEATHER_DISPLAY, TranslateText.WEATHER_DISPLAY_DESCRIPTION, LegacyIcon.MOD_WEATHER_DISPLAY);
     }
 
     @EventTarget
@@ -71,3 +71,5 @@ public class WeatherDisplayMod extends SimpleHUDMod {
         return iconEnabled ? iconFont : null;
     }
 }
+
+

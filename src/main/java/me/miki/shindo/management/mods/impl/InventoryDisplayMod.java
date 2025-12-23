@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender2D;
@@ -13,7 +14,7 @@ import net.minecraft.item.ItemStack;
 public class InventoryDisplayMod extends HUDMod {
 
     public InventoryDisplayMod() {
-        super(TranslateText.INVENTORY_DISPLAY, TranslateText.INVENTORY_DISPLAY_DESCRIPTION);
+        super(TranslateText.INVENTORY_DISPLAY, TranslateText.INVENTORY_DISPLAY_DESCRIPTION, LegacyIcon.MOD_INVENTORY_DISPLAY);
     }
 
     @EventTarget
@@ -70,3 +71,7 @@ public class InventoryDisplayMod extends HUDMod {
         this.setHeight(82);
     }
 }
+
+
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -12,6 +13,8 @@ import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class ArrayListMod extends HUDMod {
 
 
     public ArrayListMod() {
-        super(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_DESCRIPTION);
+        super(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_DESCRIPTION, LegacyIcon.MOD_ARRAY_LIST);
     }
 
     @EventTarget
@@ -87,7 +90,7 @@ public class ArrayListMod extends HUDMod {
             }
         }
 
-        enabledMods.sort((m1, m2) -> (int) this.getTextWidth(m2.getName(), 8.5F, getHudFont(1)) - (int) this.getTextWidth(m1.getName(), 8.5F, getHudFont(1)));
+        enabledMods.sort((m1, m2) -> Integer.parseInt(Float.toString(this.getTextWidth(m2.getName(), 8.5F, getHudFont(1)) - this.getTextWidth(m1.getName(), 8.5F, getHudFont(1)))));
 
         int y = 0;
         int colorIndex = 0;
@@ -122,9 +125,14 @@ public class ArrayListMod extends HUDMod {
             this.translate = translate;
         }
 
+        @NotNull
         @Override
         public TranslateText getTranslate() {
             return translate;
         }
     }
 }
+
+
+
+

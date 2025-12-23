@@ -15,7 +15,7 @@ public class ServerIPDisplayMod extends SimpleHUDMod {
     private boolean showIcon = true;
 
     public ServerIPDisplayMod() {
-        super(TranslateText.SERVER_IP, TranslateText.SERVER_IP_DISPLAY_DESCRIPTION);
+        super(TranslateText.SERVER_IP, TranslateText.SERVER_IP_DISPLAY_DESCRIPTION, LegacyIcon.MOD_SERVER_IP_DISPLAY);
     }
 
     @EventTarget
@@ -33,3 +33,5 @@ public class ServerIPDisplayMod extends SimpleHUDMod {
         return showIcon ? LegacyIcon.SERVER : null;
     }
 }
+
+

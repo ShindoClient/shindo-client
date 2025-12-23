@@ -1,0 +1,26 @@
+package me.miki.shindo.management.notification
+
+import me.miki.shindo.Shindo
+import me.miki.shindo.management.language.TranslateText
+import java.util.concurrent.LinkedBlockingQueue
+
+class NotificationManager {
+
+    private val notifications = LinkedBlockingQueue<Notification>()
+
+    init {
+        Shindo.getInstance().eventManager.register(NotificationHandler(notifications))
+    }
+
+    fun post(title: TranslateText, message: TranslateText, type: NotificationType) {
+        notifications.add(Notification(title, message, type))
+    }
+
+    fun post(title: String, message: String, type: NotificationType) {
+        notifications.add(Notification(title, message, type))
+    }
+
+    fun post(title: TranslateText, message: String, type: NotificationType) {
+        notifications.add(Notification(title, message, type))
+    }
+}

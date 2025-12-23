@@ -12,6 +12,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.utils.buffer.ScreenStencil;
 import net.minecraft.util.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
 
@@ -31,7 +32,7 @@ public class CompassMod extends SimpleHUDMod {
     private int widthSetting = 180;
 
     public CompassMod() {
-        super(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION);
+        super(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION, LegacyIcon.MOD_COMPASS);
     }
 
     @EventTarget
@@ -272,5 +273,8 @@ public class CompassMod extends SimpleHUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+

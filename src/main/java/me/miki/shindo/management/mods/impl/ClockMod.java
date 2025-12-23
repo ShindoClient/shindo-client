@@ -10,6 +10,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NanoVG;
 
@@ -29,7 +30,7 @@ public class ClockMod extends SimpleHUDMod {
     private final DateFormat df = new SimpleDateFormat("HH:mm a", Locale.US);
 
     public ClockMod() {
-        super(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTION);
+        super(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTION, LegacyIcon.MOD_CLOCK);
     }
 
     @EventTarget
@@ -62,10 +63,12 @@ public class ClockMod extends SimpleHUDMod {
             this.translate = translate;
         }
 
+
         @Override
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 
     private void drawNanoVG() {
@@ -170,3 +173,5 @@ public class ClockMod extends SimpleHUDMod {
         this.setHeight(size);
     }
 }
+
+

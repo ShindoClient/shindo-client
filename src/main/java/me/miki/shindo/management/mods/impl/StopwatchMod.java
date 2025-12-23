@@ -28,7 +28,7 @@ public class StopwatchMod extends SimpleHUDMod {
     private float currentTime;
 
     public StopwatchMod() {
-        super(TranslateText.STOPWATCH, TranslateText.STOPWATCH_DESCRIPTION);
+        super(TranslateText.STOPWATCH, TranslateText.STOPWATCH_DESCRIPTION, LegacyIcon.MOD_STOPWATCH);
     }
 
     @EventTarget
@@ -83,3 +83,5 @@ public class StopwatchMod extends SimpleHUDMod {
         currentTime = 0;
     }
 }
+
+

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventAttackEntity;
 import me.miki.shindo.management.language.TranslateText;
@@ -34,7 +35,7 @@ public class ParticleCustomizerMod extends Mod {
     private int criticalsAmountSetting = 2;
 
     public ParticleCustomizerMod() {
-        super(TranslateText.PARTICLE_CUSTOMIZER, TranslateText.PARTICLE_CUSTOMIZER_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.PARTICLE_CUSTOMIZER, TranslateText.PARTICLE_CUSTOMIZER_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_PARTICLE_CUSTOMIZER);
     }
 
     @EventTarget
@@ -67,3 +68,7 @@ public class ParticleCustomizerMod extends Mod {
         }
     }
 }
+
+
+
+

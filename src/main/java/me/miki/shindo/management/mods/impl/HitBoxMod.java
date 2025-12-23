@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderHitbox;
 import me.miki.shindo.management.language.TranslateText;
@@ -40,7 +41,7 @@ public class HitBoxMod extends Mod {
     private int lineWidthSetting = 2;
 
     public HitBoxMod() {
-        super(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_BOX);
     }
 
     @EventTarget
@@ -120,3 +121,7 @@ public class HitBoxMod extends Mod {
         }
     }
 }
+
+
+
+

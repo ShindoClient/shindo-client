@@ -6,7 +6,6 @@ import kotlin.math.atan2
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.toDegrees
 
 class Quaternion(
     private var i: Float,
@@ -135,9 +134,9 @@ class Quaternion(
     fun toXYZDegrees(): Vector3f {
         val vector3f = toXYZ()
         return Vector3f(
-            toDegrees(vector3f.x().toDouble()).toFloat(),
-            toDegrees(vector3f.y().toDouble()).toFloat(),
-            toDegrees(vector3f.z().toDouble()).toFloat()
+            Math.toDegrees(vector3f.x().toDouble()).toFloat(),
+            Math.toDegrees(vector3f.y().toDouble()).toFloat(),
+            Math.toDegrees(vector3f.z().toDouble()).toFloat()
         )
     }
 
@@ -163,9 +162,9 @@ class Quaternion(
     fun toYXZDegrees(): Vector3f {
         val vector3f = toYXZ()
         return Vector3f(
-            toDegrees(vector3f.x().toDouble()).toFloat(),
-            toDegrees(vector3f.y().toDouble()).toFloat(),
-            toDegrees(vector3f.z().toDouble()).toFloat()
+            Math.toDegrees(vector3f.x().toDouble()).toFloat(),
+            Math.toDegrees(vector3f.y().toDouble()).toFloat(),
+            Math.toDegrees(vector3f.z().toDouble()).toFloat()
         )
     }
 

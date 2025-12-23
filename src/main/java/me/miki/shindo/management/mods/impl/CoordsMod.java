@@ -12,6 +12,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import org.jetbrains.annotations.Nullable;
 
 public class CoordsMod extends SimpleHUDMod {
 
@@ -21,7 +22,7 @@ public class CoordsMod extends SimpleHUDMod {
     private boolean iconSetting = true;
 
     public CoordsMod() {
-        super(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, "coordinates");
+        super(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, LegacyIcon.MOD_COORDS, "coordinates");
     }
 
     @EventTarget
@@ -83,5 +84,8 @@ public class CoordsMod extends SimpleHUDMod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+

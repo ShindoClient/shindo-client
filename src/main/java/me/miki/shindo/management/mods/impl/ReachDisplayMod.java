@@ -23,7 +23,7 @@ public class ReachDisplayMod extends SimpleHUDMod {
     private long hitTime = -1;
 
     public ReachDisplayMod() {
-        super(TranslateText.REACH_DISPLAY, TranslateText.REACH_DISPLAY_DESCRIPTION);
+        super(TranslateText.REACH_DISPLAY, TranslateText.REACH_DISPLAY_DESCRIPTION, LegacyIcon.MOD_REACH_DISPLAY);
     }
 
     @EventTarget
@@ -58,3 +58,5 @@ public class ReachDisplayMod extends SimpleHUDMod {
         return iconEnabled ? LegacyIcon.ACTIVITY : null;
     }
 }
+
+

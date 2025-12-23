@@ -36,6 +36,7 @@ sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs += ["-Xjvm-default=compatibility"]
 }
 
 minecraft {
@@ -125,8 +126,8 @@ jar {
         configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
     } {
         exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-        exclude 'META-INF/**'            // amplia exclusões de META-INF (inclui signatures e stuff)
+        exclude 'META-INF/**'            // amplia exclusäes de META-INF (inclui signatures e stuff)
         exclude 'META-INF/versions/**'   // <--- multi-release (Java 9+)
-        exclude 'module-info.class'      // <--- módulo Java 9
+        exclude 'module-info.class'      // <--- m¢dulo Java 9
     }
 }

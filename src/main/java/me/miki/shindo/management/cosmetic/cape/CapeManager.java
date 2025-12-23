@@ -25,12 +25,20 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-@Getter
 public class CapeManager {
 
     private final ArrayList<Cape> capes = new ArrayList<Cape>();
 
     private Cape currentCape;
+
+
+    public ArrayList<Cape> getCapes() {
+        return capes;
+    }
+
+    public Cape getCurrentCape() {
+        return currentCape;
+    }
 
     public CapeManager() {
 

@@ -22,7 +22,7 @@ class ScreenAnimation {
 
     fun wrap(glRender: Runnable?, task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float, stencil: Boolean) {
         val sr = ScaledResolution(mc)
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         val factor = sr.scaleFactor
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
@@ -51,7 +51,7 @@ class ScreenAnimation {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw({
+        nvg.setupAndDraw(Runnable {
             nvg.setAlpha(alphaProgress.coerceAtMost(1.0f))
             nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
 
@@ -92,7 +92,7 @@ class ScreenAnimation {
     }
 
     fun close() {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         fb?.let {
             NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
             fb = null

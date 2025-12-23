@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.language.TranslateText;
@@ -12,6 +13,8 @@ import java.awt.*;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
 import me.miki.shindo.management.settings.config.PropertyType;
+import org.jetbrains.annotations.Nullable;
+
 public class GlintColorMod extends Mod {
 
     private static GlintColorMod instance;
@@ -23,7 +26,7 @@ public class GlintColorMod extends Mod {
     private Color colorSetting = Color.RED;
 
     public GlintColorMod() {
-        super(TranslateText.GLINT_COLOR, TranslateText.GLINT_COLOR_DESCRIPTION, ModCategory.RENDER, "changeru");
+        super(TranslateText.GLINT_COLOR, TranslateText.GLINT_COLOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_GLINT_COLOR, "changeru");
 
         instance = this;
     }
@@ -63,5 +66,10 @@ public class GlintColorMod extends Mod {
         public TranslateText getTranslate() {
             return translate;
         }
+
     }
 }
+
+
+
+

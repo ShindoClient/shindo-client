@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventFovUpdate;
 import me.miki.shindo.management.language.TranslateText;
@@ -27,7 +28,7 @@ public class FovModifierMod extends Mod {
     private double slownessSetting = 1;
 
     public FovModifierMod() {
-        super(TranslateText.FOV_MODIFIER, TranslateText.FOV_MODIFIER_DESCRIPTION, ModCategory.PLAYER);
+        super(TranslateText.FOV_MODIFIER, TranslateText.FOV_MODIFIER_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_FOV_MODIFIER);
     }
 
     @EventTarget
@@ -70,3 +71,7 @@ public class FovModifierMod extends Mod {
         event.setFov(base);
     }
 }
+
+
+
+

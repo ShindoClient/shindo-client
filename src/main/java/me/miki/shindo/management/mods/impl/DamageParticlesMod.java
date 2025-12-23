@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.injection.interfaces.IMixinRenderManager;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventLivingUpdate;
@@ -28,7 +29,7 @@ public class DamageParticlesMod extends Mod {
     private Particle removeParticle;
 
     public DamageParticlesMod() {
-        super(TranslateText.DAMAGE_PARTICLES, TranslateText.DAMAGE_PARTICLES_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.DAMAGE_PARTICLES, TranslateText.DAMAGE_PARTICLES_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_DAMAGE_PARTICLES);
     }
 
     @EventTarget
@@ -79,8 +80,7 @@ public class DamageParticlesMod extends Mod {
 
             LocationUtils location = new LocationUtils(entity);
 
-            location.setY(entity.getEntityBoundingBox().minY
-                    + ((entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY) / 2));
+            location.setY(entity.getEntityBoundingBox().minY + ((entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY) / 2));
 
             location.setX((location.getX() - 0.5) + (new Random(System.currentTimeMillis()).nextInt(5) * 0.1));
             location.setZ((location.getZ() - 0.5) + (new Random(System.currentTimeMillis() + 1).nextInt(5) * 0.1));
@@ -145,7 +145,7 @@ public class DamageParticlesMod extends Mod {
         this.healthMap.clear();
     }
 
-    private class Particle {
+    private static class Particle {
 
         public int ticks;
         public LocationUtils location;
@@ -158,3 +158,7 @@ public class DamageParticlesMod extends Mod {
         }
     }
 }
+
+
+
+

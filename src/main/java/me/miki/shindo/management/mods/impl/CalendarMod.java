@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -15,7 +16,7 @@ public class CalendarMod extends HUDMod {
     private int height;
 
     public CalendarMod() {
-        super(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRIPTION);
+        super(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRIPTION, LegacyIcon.MOD_CALENDAR);
     }
 
     @EventTarget
@@ -118,3 +119,7 @@ public class CalendarMod extends HUDMod {
         return "null";
     }
 }
+
+
+
+

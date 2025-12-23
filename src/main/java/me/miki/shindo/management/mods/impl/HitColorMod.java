@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.AccentColor;
 import me.miki.shindo.management.event.EventTarget;
@@ -22,7 +23,7 @@ public class HitColorMod extends Mod {
     private double alphaSetting = 0.45;
 
     public HitColorMod() {
-        super(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_COLOR);
     }
 
     @EventTarget
@@ -37,3 +38,7 @@ public class HitColorMod extends Mod {
         event.setAlpha((float) alphaSetting);
     }
 }
+
+
+
+

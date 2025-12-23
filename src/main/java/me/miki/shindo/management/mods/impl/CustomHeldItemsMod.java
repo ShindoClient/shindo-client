@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl;
 
+import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRenderItemInFirstPerson;
 import me.miki.shindo.management.language.TranslateText;
@@ -26,7 +27,7 @@ public class CustomHeldItemsMod extends Mod {
     private double zScaleSetting = 1;
 
     public CustomHeldItemsMod() {
-        super(TranslateText.CUSTOM_HELD_ITEMS, TranslateText.CUSTOM_HELD_ITEMS_DESCRIPTION, ModCategory.RENDER);
+        super(TranslateText.CUSTOM_HELD_ITEMS, TranslateText.CUSTOM_HELD_ITEMS_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CUSTOM_HELD_ITEMS);
     }
 
     @EventTarget
@@ -35,3 +36,7 @@ public class CustomHeldItemsMod extends Mod {
         GlStateManager.scale((float) xScaleSetting, (float) yScaleSetting, (float) zScaleSetting);
     }
 }
+
+
+
+
