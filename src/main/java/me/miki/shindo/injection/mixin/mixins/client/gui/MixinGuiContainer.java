@@ -22,6 +22,7 @@ public abstract class MixinGuiContainer extends GuiScreen {
 
     @Unique
     private final ParticleEngine client$particle = new ParticleEngine();
+
     @Shadow
     private int dragSplittingButton;
 

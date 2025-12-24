@@ -29,15 +29,15 @@ object SettingComponentFactory {
     private val registry: MutableMap<Class<out Setting>, (Setting) -> Comp> = LinkedHashMap()
 
     init {
-        register(BooleanSetting::class.java)   { setting -> CompToggleButton(setting as BooleanSetting) }
-        register(NumberSetting::class.java)    { setting -> CompSlider(setting as NumberSetting) }
-        register(ComboSetting::class.java)     { setting -> CompComboBox(140f, setting as ComboSetting) }
-        register(KeybindSetting::class.java)   { setting -> CompKeybind(120f, setting as KeybindSetting) }
-        register(TextSetting::class.java)      { setting -> CompModTextBox(setting as TextSetting) }
-        register(ColorSetting::class.java)     { setting -> CompColorPicker(setting as ColorSetting) }
-        register(ImageSetting::class.java)     { setting -> CompImageSelect(setting as ImageSetting) }
-        register(SoundSetting::class.java)     { setting -> CompSoundSelect(setting as SoundSetting) }
-        register(CellGridSetting::class.java)  { setting -> CompCellGrid(270f, 160f, setting as CellGridSetting) }
+        register(BooleanSetting::class.java  )   { setting -> CompToggleButton(setting as BooleanSetting                           ) }
+        register(NumberSetting::class.java   )   { setting -> CompSlider(setting as NumberSetting                                  ) }
+        register(ComboSetting::class.java    )   { setting -> CompComboBox(140f, setting as ComboSetting                   ) }
+        register(KeybindSetting::class.java  )   { setting -> CompKeybind(120f, setting as KeybindSetting                  ) }
+        register(TextSetting::class.java     )   { setting -> CompModTextBox(setting as TextSetting                                ) }
+        register(ColorSetting::class.java    )   { setting -> CompColorPicker(setting as ColorSetting                              ) }
+        register(ImageSetting::class.java    )   { setting -> CompImageSelect(setting as ImageSetting                              ) }
+        register(SoundSetting::class.java    )   { setting -> CompSoundSelect(setting as SoundSetting                              ) }
+        register(CellGridSetting::class.java )   { setting -> CompCellGrid(270f, 160f, setting as CellGridSetting ) }
     }
 
     @JvmStatic

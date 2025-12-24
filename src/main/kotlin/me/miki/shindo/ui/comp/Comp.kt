@@ -20,10 +20,13 @@ open class Comp(
 
     protected val nvg: NanoVGManager
         get() = Shindo.getInstance().nanoVGManager!!
+
     protected val palette: ColorPalette
         get() = Shindo.getInstance().colorManager.palette
+
     protected val accent: AccentColor
         get() = Shindo.getInstance().colorManager.currentColor
+
     protected val colors: ColorManager
         get() = Shindo.getInstance().colorManager
 

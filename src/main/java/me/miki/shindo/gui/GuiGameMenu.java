@@ -5,6 +5,9 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
+import me.miki.shindo.management.notification.NotificationType;
+import me.miki.shindo.management.addons.resourcify.core.ResourcifyAddon;
+import me.miki.shindo.management.addons.resourcify.model.ResourcifyResourceType;
 import me.miki.shindo.utils.animation.normal.Animation;
 import me.miki.shindo.utils.animation.normal.Direction;
 import me.miki.shindo.utils.animation.normal.easing.EaseLiner;
@@ -26,6 +29,7 @@ public class GuiGameMenu extends GuiScreen {
     private final ScreenAnimation screenAnimation = new ScreenAnimation();
     private Animation introAnimation;
     private int x, y, width, height, centre, scaledWidth, scaledHeight;
+    private float resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize;
 
     @Override
     public void initGui() {
@@ -58,6 +62,12 @@ public class GuiGameMenu extends GuiScreen {
         nvg.drawRect(-5, -5, scaledWidth + 10, scaledHeight + 10, new Color(0, 0, 0, 140));
         nvg.drawText(LegacyIcon.ARROW_LEFT, x, y + 5, new Color(255, 255, 255, 140), 11, Fonts.LEGACYICON);
         nvg.drawCenteredText(I18n.format("menu.game"), centre, y + 5, new Color(255, 255, 255, 200), 13, Fonts.SEMIBOLD);
+
+        resourcifyButtonSize = 18f;
+        resourcifyButtonX = x + width - resourcifyButtonSize - 6f;
+        resourcifyButtonY = y + 4f;
+        nvg.drawRoundedRect(resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize, resourcifyButtonSize, 6f, new Color(255, 255, 255, 80));
+        nvg.drawCenteredText(LegacyIcon.DOWNLOAD, resourcifyButtonX + resourcifyButtonSize / 2f, resourcifyButtonY + resourcifyButtonSize / 2f - 6f, Color.WHITE, 11f, Fonts.LEGACYICON);
 
         float standardPadding = 29.5f;
         float offset = 29.5F;
@@ -96,6 +106,19 @@ public class GuiGameMenu extends GuiScreen {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (!(mouseButton == 0)) {
+            return;
+        }
+        if (MouseUtils.isInside(mouseX, mouseY, resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize, resourcifyButtonSize)) {
+            ResourcifyAddon addon = ResourcifyAddon.getInstance();
+            if (addon != null && addon.isToggled()) {
+                mc.displayGuiScreen(new GuiResourcify(this, ResourcifyResourceType.RESOURCE_PACK));
+            } else {
+                Shindo.getInstance().getNotificationManager().post(
+                        "Resourcify",
+                        "Enable the Resourcify addon first.",
+                        NotificationType.WARNING
+                );
+            }
             return;
         }
         float standardPadding = 29.5f;

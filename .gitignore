@@ -47,3 +47,7 @@ AGENTS.md
 docs/
 implement/
 scripts/
+
+# Shindo private APIs
+/src/main/**/me/miki/shindo/api/roles/
+/src/main/**/me/miki/shindo/api/websocket/

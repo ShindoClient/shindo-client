@@ -2,6 +2,7 @@ package me.miki.shindo.management.addons
 
 import me.miki.shindo.management.addons.patcher.PatcherAddon
 import me.miki.shindo.management.addons.rpo.RPOAddon
+import me.miki.shindo.management.addons.resourcify.core.ResourcifyAddon
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.utils.Sound
@@ -15,6 +16,7 @@ class AddonManager {
     fun init() {
         registerAddon(RPOAddon())
         registerAddon(PatcherAddon())
+        registerAddon(ResourcifyAddon())
     }
 
     fun getAddonByName(name: String): Addon? {
