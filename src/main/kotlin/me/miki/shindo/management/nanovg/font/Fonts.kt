@@ -19,12 +19,14 @@ object Fonts {
     @JvmField
     val LEGACYICON = Font("icon", ResourceLocation(PATH + "Icon.ttf"))
     @JvmField
+    val SHINCONIC = Font("shinconic", ResourceLocation(PATH + "Shinconic.ttf"))
+    @JvmField
     val MOJANGLES = Font("mojangles", ResourceLocation(PATH + "mojangles.ttf"))
     @JvmField
     val UNIFONT = Font("unifont", ResourceLocation(PATH + "unifont/unifont.otf"))
 
     @JvmStatic
     fun getFonts(): ArrayList<Font> {
-        return ArrayList(Arrays.asList(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, MOJANGLES))
+        return ArrayList(Arrays.asList(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
     }
 }

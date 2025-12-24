@@ -8,7 +8,10 @@ public enum Language {
     ENGLISH("en-us", "English (United States)", new ResourceLocation("shindo/flag/us.png")),
     GERMAN("de-de", "Deutsch", new ResourceLocation("shindo/flag/de.png")),
     PORTUGUESE("pt-br", "Português (Brasileiro)", new ResourceLocation("shindo/flag/br.png")),
-    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", new ResourceLocation("shindo/flag/pt.png"));
+    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", new ResourceLocation("shindo/flag/pt.png")),
+    SPANISH("es-es", "Español", new ResourceLocation("shindo/flag/es.png")),
+    JAPANESE("ja-jp", "日本語", new ResourceLocation("shindo/flag/jp.png"));
+
 
     private final SimpleAnimation animation = new SimpleAnimation();
 

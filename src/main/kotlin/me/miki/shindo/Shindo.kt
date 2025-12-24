@@ -44,7 +44,6 @@ import java.util.Arrays
 class Shindo private constructor() {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
-
     val name: String = "Shindo"
     val version: String = "5.1.10"
     val author: String = "MikiDevAHM"

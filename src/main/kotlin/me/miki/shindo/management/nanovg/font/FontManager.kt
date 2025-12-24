@@ -12,6 +12,7 @@ class FontManager {
         loadFont(nvg, Fonts.REGULAR)
         loadFont(nvg, Fonts.MEDIUM)
         loadFont(nvg, Fonts.SEMIBOLD)
+        loadFont(nvg, Fonts.SHINCONIC)
         loadFont(nvg, Fonts.LEGACYICON)
         loadFont(nvg, Fonts.MOJANGLES)
     }
@@ -38,6 +39,10 @@ class FontManager {
             if (font === Fonts.MOJANGLES && Fonts.UNIFONT.isLoaded) {
                 NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.UNIFONT.name)
                 NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.REGULAR.name)
+                NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.FALLBACK.name)
+            } else if (font === Fonts.LEGACYICON && Fonts.SHINCONIC.isLoaded) {
+                NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.SHINCONIC.name)
+                NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.UNIFONT.name)
                 NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.FALLBACK.name)
             } else if (Fonts.FALLBACK.isLoaded && font !== Fonts.FALLBACK) {
                 NanoVG.nvgAddFallbackFont(nvg, font.name, Fonts.FALLBACK.name)

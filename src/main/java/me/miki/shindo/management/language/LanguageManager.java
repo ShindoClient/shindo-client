@@ -26,7 +26,7 @@ public class LanguageManager {
 
             while ((s = reader.readLine()) != null) {
 
-                if (!s.equals("") && !s.startsWith("#")) {
+                if (!s.isEmpty() && !s.startsWith("#")) {
                     String[] args = s.split("=");
 
                     map.put(args[0], args[1]);

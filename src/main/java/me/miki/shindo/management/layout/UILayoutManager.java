@@ -19,7 +19,6 @@ public class UILayoutManager {
     public enum Layouts {
         SETTINGS(TranslateText.SETTINGS, TranslateText.SETTINGS_LAYOUT_DESCRIPTION, LegacyIcon.SETTINGS),
         MODULES(TranslateText.SETTINGS_LAYOUT_SECTION_MODULE, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION, LegacyIcon.LIST),
-        ADDONS(TranslateText.SETTINGS_LAYOUT_SECTION_ADDON, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION, LegacyIcon.PLUS_SQUARE),
         SCREENSHOTS(TranslateText.SCREENSHOT, TranslateText.SETTINGS_LAYOUT_SECTION_SCREENSHOT, LegacyIcon.CAMERA),
         NOTIFICATIONS(TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION, LegacyIcon.BELL);
 
@@ -52,8 +51,6 @@ public class UILayoutManager {
         MODULES_SINGLE(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION),
         MODULES_DOUBLE(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_DOUBLE_DESCRIPTION),
         MODULES_ICON(Layouts.MODULES, TranslateText.SETTINGS_LAYOUT_MODULE_ICON_TITLE, TranslateText.SETTINGS_LAYOUT_MODULE_ICON_DESCRIPTION),
-        ADDONS_STANDARD(Layouts.ADDONS, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_TITLE, TranslateText.SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION),
-        ADDONS_ICON(Layouts.ADDONS, TranslateText.SETTINGS_LAYOUT_ADDON_ICON_TITLE, TranslateText.SETTINGS_LAYOUT_ADDON_ICON_DESCRIPTION),
         SCREEN_FILMSTRIP(Layouts.SCREENSHOTS, ScreenshotDisplayMode.FILMSTRIP.getTranslate(), ScreenshotDisplayMode.FILMSTRIP.getTranslateDescription()),
         SCREEN_GRID(Layouts.SCREENSHOTS, ScreenshotDisplayMode.GRID.getTranslate(), ScreenshotDisplayMode.GRID.getTranslateDescription()),
         NOTIFICATION_TOP_LEFT(Layouts.NOTIFICATIONS, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_TITLE, TranslateText.SETTINGS_LAYOUT_NOTIFICATION_TOP_LEFT_DESCRIPTION),
@@ -121,16 +118,6 @@ public class UILayoutManager {
         bind(LayoutType.MODULES_DOUBLE,
                 () -> mod.setModuleLayout(InternalSettingsMod.ModuleLayout.TWO_COLUMNS),
                 () -> mod.getModuleLayout() == InternalSettingsMod.ModuleLayout.TWO_COLUMNS);
-        bind(LayoutType.MODULES_ICON,
-                () -> mod.setModuleLayout(InternalSettingsMod.ModuleLayout.ICON_CARDS),
-                () -> mod.getModuleLayout() == InternalSettingsMod.ModuleLayout.ICON_CARDS);
-
-        bind(LayoutType.ADDONS_STANDARD,
-                () -> mod.setAddonLayout(InternalSettingsMod.AddonLayout.STANDARD),
-                () -> mod.getAddonLayout() == InternalSettingsMod.AddonLayout.STANDARD);
-        bind(LayoutType.ADDONS_ICON,
-                () -> mod.setAddonLayout(InternalSettingsMod.AddonLayout.ICON_CARDS),
-                () -> mod.getAddonLayout() == InternalSettingsMod.AddonLayout.ICON_CARDS);
 
         bind(LayoutType.SCREEN_FILMSTRIP,
                 () -> mod.setScreenshotDisplayMode(ScreenshotDisplayMode.FILMSTRIP),

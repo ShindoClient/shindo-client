@@ -4,7 +4,6 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAreaScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAddonsScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutModulesScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutNotificationsScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutScreenshotsScene
@@ -34,7 +33,6 @@ class LayoutScene(private val parentCategory: SettingsCategory) :
     init {
         addScene(LayoutSettingsScene(parentCategory))
         addScene(LayoutModulesScene(parentCategory))
-        addScene(LayoutAddonsScene(parentCategory))
         addScene(LayoutScreenshotsScene(parentCategory))
         addScene(LayoutNotificationsScene(parentCategory))
     }

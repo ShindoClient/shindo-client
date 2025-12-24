@@ -18,7 +18,7 @@ class LayoutModulesScene(parent: SettingsCategory) :
         parent,
         UILayoutManager.Layouts.MODULES,
         TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
-        TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION,
+        TranslateText.SETTINGS_LAYOUT_MODULE_DESCRIPTION,
         LegacyIcon.LIST
     ) {
 

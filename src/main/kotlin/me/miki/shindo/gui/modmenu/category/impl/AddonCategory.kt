@@ -79,14 +79,13 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         }
 
         val visibleAddons = collectVisibleAddons(addonManager)
-        val addonLayout = InternalSettingsMod.getInstance().addonLayout
-        val iconLayout = addonLayout == InternalSettingsMod.AddonLayout.ICON_CARDS
+        val iconLayout = false
         val contentStartY = getY() + 52f
         val availableWidth = getWidth() - (CARD_HORIZONTAL_PADDING * 2)
-        val columns = if (iconLayout) 3 else 2
+        val columns = if (iconLayout) 2 else 2
         val cardGap = if (iconLayout) ICON_CARD_GAP else CARD_COLUMN_GAP
         val cardWidth = if (columns <= 1) availableWidth else (availableWidth - cardGap * (columns - 1)) / columns
-        val cardHeight = if (iconLayout) cardWidth else CARD_HEIGHT
+        val cardHeight = if (iconLayout) cardWidth * ICON_CARD_HEIGHT_RATIO else CARD_HEIGHT
         val viewportHeight = getHeight() - (contentStartY - getY()) - 24f
 
         nvg.save()
@@ -119,10 +118,6 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             layout.cardWidth = cardWidth
             layout.cardHeight = cardHeight
             if (iconLayout) {
-                layout.toggleX = cardX
-                layout.toggleY = cardY + scrollValue
-                layout.toggleWidth = cardWidth
-                layout.toggleHeight = cardHeight
             } else {
                 layout.toggleX = cardX + cardWidth - TOGGLE_WIDTH - 18f
                 layout.toggleY = cardY + CARD_HEIGHT - TOGGLE_HEIGHT - 18f + scrollValue
@@ -132,14 +127,16 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             if (hasSettings) {
                 layout.hasSettings = true
                 layout.settingsSize = if (iconLayout) ICON_SETTINGS_SIZE else SETTINGS_BUTTON_SIZE
-                layout.settingsX = cardX + cardWidth - layout.settingsSize - if (iconLayout) ICON_CARD_PADDING else 18f
-                layout.settingsY = cardY + (if (iconLayout) ICON_CARD_PADDING else 12f) + scrollValue
+                if (iconLayout) {
+                } else {
+                    layout.settingsX = cardX + cardWidth - layout.settingsSize - 18f
+                    layout.settingsY = cardY + 12f + scrollValue
+                }
             }
             cardLayouts[addon] = layout
 
             val hovered = !openSetting && layout.contains(mouseX, mouseY)
             if (iconLayout) {
-                drawAddonIconCard(nvg, palette, accentColor, addon, cardX, cardY, cardWidth, cardHeight, hovered, hasSettings, mouseX, mouseY, scrollValue)
             } else {
                 drawAddonCard(nvg, palette, accentColor, addon, cardX, cardY, cardWidth, hovered, hasSettings, mouseX, mouseY)
             }
@@ -214,7 +211,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         }
 
         if (!openSetting && mouseButton == 0) {
-            val iconLayout = InternalSettingsMod.getInstance().addonLayout == InternalSettingsMod.AddonLayout.ICON_CARDS
+            val iconLayout = false
             val visibleAddons = collectVisibleAddons(addonManager)
             for (addon in visibleAddons) {
                 val layout = cardLayouts[addon] ?: continue
@@ -237,9 +234,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                     return
                 }
 
-                if (iconLayout && layout.contains(mouseX, mouseY)) {
-                    addon.toggle()
-                    return
+                if (iconLayout && layout.insideToggle(mouseX, mouseY)) {
                 }
             }
         }
@@ -427,29 +422,40 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         }
 
         val iconBox = ICON_ICON_SIZE
-        val iconX = cardX + (cardWidth - iconBox) / 2f
-        val iconY = cardY + ICON_CARD_PADDING
-        nvg.drawRoundedRect(iconX, iconY, iconBox, iconBox, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
+        val toggleWidth = ICON_TOGGLE_WIDTH
+        val toggleHeight = ICON_TOGGLE_HEIGHT
+        val toggleX = cardX + cardWidth - ICON_CARD_PADDING - toggleWidth
+        val toggleY = cardY + (cardHeight - toggleHeight) / 2f
+        val actionLeftX = if (hasSettings) {
+            toggleX - ICON_TOGGLE_GAP - ICON_SETTINGS_SIZE
+        } else {
+            toggleX
+        }
+        val iconX = actionLeftX - ICON_ICON_GAP - iconBox
+        val iconY = cardY + (cardHeight - iconBox) / 2f - ICON_ICON_OFFSET
 
         if (addon.icon.isNotEmpty()) {
-            nvg.drawCenteredText(addon.icon, iconX + iconBox / 2f, iconY + iconBox / 2f - 8f, palette.getFontColor(ColorType.DARK), 16f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(addon.icon, iconX + iconBox / 2f, iconY + iconBox / 2f - ICON_ICON_FONT_OFFSET, palette.getFontColor(ColorType.DARK), ICON_ICON_FONT_SIZE, Fonts.LEGACYICON)
         }
 
         val textX = cardX + ICON_CARD_PADDING
-        val textWidth = cardWidth - (ICON_CARD_PADDING * 2f)
-        val nameY = iconY + iconBox + 12f
-        val descY = nameY + 12f
+        val textRight = iconX - ICON_TEXT_GAP
+        val textWidth = max(40f, textRight - textX)
+        val titleSize = 10.5f
+        val descSize = 8f
+        val titleY = cardY + ICON_CARD_PADDING + titleSize
+        val descY = titleY + 10f
 
-        val name = nvg.getLimitText(addon.name, 10.5f, Fonts.MEDIUM, textWidth)
-        nvg.drawText(name, textX, nameY, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
+        val name = nvg.getLimitText(addon.name, titleSize, Fonts.MEDIUM, textWidth)
+        nvg.drawText(name, textX, titleY, palette.getFontColor(ColorType.DARK), titleSize, Fonts.MEDIUM)
 
-        val description = nvg.getLimitText(addon.description, 8f, Fonts.REGULAR, textWidth)
-        nvg.drawText(description, textX, descY, palette.getFontColor(ColorType.NORMAL), 8f, Fonts.REGULAR)
+        val description = nvg.getLimitText(addon.description, descSize, Fonts.REGULAR, textWidth)
+        nvg.drawText(description, textX, descY, palette.getFontColor(ColorType.NORMAL), descSize, Fonts.REGULAR)
 
         if (hasSettings) {
             val settingsSize = ICON_SETTINGS_SIZE
-            val settingsX = cardX + cardWidth - settingsSize - ICON_CARD_PADDING
-            val settingsY = cardY + ICON_CARD_PADDING
+            val settingsX = toggleX - ICON_TOGGLE_GAP - settingsSize
+            val settingsY = cardY + (cardHeight - settingsSize) / 2f
             val hoveredSettings = MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollOffset, settingsSize, settingsSize)
             nvg.drawRoundedRect(settingsX, settingsY, settingsSize, settingsSize, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
             nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + settingsSize / 2f - 1f, settingsY + settingsSize / 2f - 6f, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
@@ -457,6 +463,25 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                 nvg.drawGradientOutlineRoundedRect(settingsX, settingsY, settingsSize, settingsSize, 6f, 1.0f, accentColor.color1, accentColor.color2)
             }
         }
+
+        val toggleRadius = toggleHeight / 2f
+        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
+        nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+        if (toggleProgress > 0f) {
+            nvg.drawGradientRoundedRect(
+                toggleX,
+                toggleY,
+                toggleWidth,
+                toggleHeight,
+                toggleRadius,
+                ColorUtils.applyAlpha(accentColor.color1, (toggleProgress * 255).toInt()),
+                ColorUtils.applyAlpha(accentColor.color2, (toggleProgress * 255).toInt())
+            )
+        }
+        val knobSize = toggleHeight - 6f
+        val knobX = toggleX + 3f + toggleProgress * (toggleWidth - knobSize - 6f)
+        val knobY = toggleY + 3f
+        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
     }
 
     private fun drawTypeChips(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, scrollOffset: Float, mouseX: Int, mouseY: Int) {
@@ -553,7 +578,16 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         const val ICON_CARD_GAP = 14f
         const val ICON_CARD_RADIUS = 12f
         const val ICON_CARD_PADDING = 12f
-        const val ICON_ICON_SIZE = 32f
+        const val ICON_ICON_SIZE = 72f
+        const val ICON_ICON_OFFSET = 0f
+        const val ICON_ICON_FONT_SIZE = 26f
+        const val ICON_ICON_FONT_OFFSET = 14f
         const val ICON_SETTINGS_SIZE = 18f
+        const val ICON_TOGGLE_WIDTH = 44f
+        const val ICON_TOGGLE_HEIGHT = 18f
+        const val ICON_TOGGLE_GAP = 6f
+        const val ICON_CARD_HEIGHT_RATIO = 0.576f
+        const val ICON_TEXT_GAP = 12f
+        const val ICON_ICON_GAP = 10f
     }
 }

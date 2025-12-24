@@ -69,10 +69,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         val accentColor: AccentColor = colorManager.currentColor
 
         val scrollValue = scroll.getValue()
-        val moduleLayout = InternalSettingsMod.getInstance().moduleLayout
-        val iconLayout = moduleLayout == InternalSettingsMod.ModuleLayout.ICON_CARDS
-        val moduleColumns = if (iconLayout) 3 else resolveModuleColumns()
-        val cardStyle = if (iconLayout) null else getCardStyle(moduleColumns)
+        val moduleColumns = resolveModuleColumns()
+        val cardStyle = getCardStyle(moduleColumns)
 
         settingAnimation.setDirection(if (openSetting) Direction.BACKWARDS else Direction.FORWARDS)
 
@@ -90,36 +88,45 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         nvg.translate(0f, scrollValue)
 
         val chipBlockOffset = drawCategoryChips(nvg, palette, accentColor, scrollValue, mouseX, mouseY)
-        rebuildModuleCards(modManager, chipBlockOffset, moduleColumns, iconLayout)
+        rebuildModuleCards(modManager, chipBlockOffset, moduleColumns, false)
 
         for (card in moduleCardCache) {
             if (card.y + scrollValue + card.height > 0 && card.y + scrollValue < getHeight()) {
                 val cardY = getY() + card.y
-                if (iconLayout) {
-                    drawIconCard(nvg, palette, accentColor, card, cardY, scrollValue, mouseX, mouseY, modManager)
-                } else {
-                    val style = cardStyle ?: getCardStyle(moduleColumns)
+                    val style = cardStyle
                     val iconX = card.x + style.leftPadding
                     val iconY = cardY + (card.height - style.iconSize) / 2f
 
                     val hasSettings = modManager.getSettingsByMod(card.mod) != null
-                    val settingsX = card.x + card.width - style.settingsSize - style.settingsPadding
+                    val toggleWidth = LIST_TOGGLE_WIDTH
+                    val toggleHeight = LIST_TOGGLE_HEIGHT
+                    val toggleX = card.x + card.width - style.settingsPadding - toggleWidth
+                    val toggleY = cardY + (card.height - toggleHeight) / 2f
+                    val settingsX = toggleX - LIST_TOGGLE_GAP - style.settingsSize
                     val settingsY = cardY + (card.height - style.settingsSize) / 2f
                     card.hasSettings = hasSettings
                     card.settingsX = settingsX
                     card.settingsY = settingsY + scrollValue
                     card.settingsSize = style.settingsSize
+                    card.toggleX = toggleX
+                    card.toggleY = toggleY + scrollValue
+                    card.toggleWidth = toggleWidth
+                    card.toggleHeight = toggleHeight
 
                     val textSpacing = if (moduleColumns == 3) 8f else 10f
                     val textX = iconX + style.iconSize + textSpacing
-                    var textRight = card.x + card.width - style.textRightPadding
+                    val textRight = if (hasSettings) {
+                        settingsX - LIST_TOGGLE_GAP
+                    } else {
+                        toggleX - LIST_TOGGLE_GAP
+                    }
                     if (hasSettings) {
-                        textRight -= style.settingsSize + style.settingsPadding
                     }
                     val textWidth = max(80f, textRight - textX)
 
                     val hovered = MouseUtils.isInside(mouseX, mouseY, card.x, cardY + scrollValue, card.width, card.height) &&
-                        !MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollValue, style.settingsSize, style.settingsSize)
+                        !MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollValue, style.settingsSize, style.settingsSize) &&
+                        !MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY + scrollValue, toggleWidth, toggleHeight)
                     card.mod.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 18.toDouble())
                     val hoverProgress = card.mod.hoverAnimation.value
 
@@ -138,30 +145,29 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                         nvg.drawOutlineRoundedRect(card.x, cardY, card.width, card.height, 8f, 1.0f, ColorUtils.applyAlpha(accentColor.color2, outlineAlpha))
                     }
 
-                    nvg.drawRoundedRect(iconX, iconY, style.iconSize, style.iconSize, 6f, palette.getBackgroundColor(ColorType.NORMAL))
-
                     card.mod.animation.setAnimation(if (card.mod.isToggled()) 1.0f else 0.0f, 16.toDouble())
+                    val toggleProgress = card.mod.animation.value
 
-                    nvg.save()
-                    nvg.scale(iconX, iconY, style.iconSize, style.iconSize, card.mod.animation.value)
-                    nvg.drawGradientRoundedRect(
-                        iconX,
-                        iconY,
-                        style.iconSize,
-                        style.iconSize,
-                        6f,
-                        ColorUtils.applyAlpha(accentColor.color1, (card.mod.animation.value * 255).toInt()),
-                        ColorUtils.applyAlpha(accentColor.color2, (card.mod.animation.value * 255).toInt())
-                    )
-                    nvg.restore()
+                    val icon = card.mod.getMenuIcon()
+                    if (!icon.isNullOrEmpty()) {
+                        nvg.drawCenteredText(
+                            icon,
+                            iconX + style.iconSize / 2f,
+                            iconY + style.iconSize / 2f - LIST_ICON_FONT_OFFSET,
+                            palette.getFontColor(ColorType.DARK),
+                            LIST_ICON_FONT_SIZE,
+                            Fonts.LEGACYICON
+                        )
+                    }
 
                     val modName = nvg.getLimitText(card.mod.getName(), 11.5f, Fonts.MEDIUM, textWidth)
                     nvg.drawText(modName, textX, cardY + 14f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)
 
                     if (card.mod.isRestricted()) {
                         val warning = "Restricted on some servers"
-                        nvg.drawText(nvg.getLimitText(warning, 8f, Fonts.REGULAR, textWidth), textX + 10f, cardY + 36f, Color(255, 180, 90), 8f, Fonts.REGULAR)
-                        nvg.drawText(LegacyIcon.INFO, textX, cardY + card.height - 17f, Color(255, 180, 90), 8.5f, Fonts.LEGACYICON)
+                        val warningY = cardY + card.height - LIST_WARNING_BOTTOM_PADDING
+                        nvg.drawText(LegacyIcon.INFO, textX, warningY - LIST_WARNING_ICON_OFFSET, Color(255, 180, 90), 8.5f, Fonts.LEGACYICON)
+                        nvg.drawText(nvg.getLimitText(warning, 8f, Fonts.REGULAR, textWidth - 10f), textX + 10f, warningY, Color(255, 180, 90), 8f, Fonts.REGULAR)
                     }
 
                     val description = nvg.getLimitText(card.mod.getDescription(), 8.5f, Fonts.REGULAR, textWidth)
@@ -181,7 +187,26 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                             ColorUtils.applyAlpha(accentColor.color2, (settingsHoverAnimation * 255).toInt())
                         )
                     }
-                }
+
+                    val toggleRadius = toggleHeight / 2f
+                    val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
+                    nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+                    if (toggleProgress > 0f) {
+                        nvg.drawGradientRoundedRect(
+                            toggleX,
+                            toggleY,
+                            toggleWidth,
+                            toggleHeight,
+                            toggleRadius,
+                            ColorUtils.applyAlpha(accentColor.color1, (toggleProgress * 255).toInt()),
+                            ColorUtils.applyAlpha(accentColor.color2, (toggleProgress * 255).toInt())
+                        )
+                    }
+                    val knobSize = toggleHeight - 6f
+                    val knobX = toggleX + 3f + toggleProgress * (toggleWidth - knobSize - 6f)
+                    val knobY = toggleY + 3f
+                    nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
+
             }
         }
 
@@ -247,8 +272,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         }
 
         if (!openSetting) {
-            val iconLayout = InternalSettingsMod.getInstance().moduleLayout == InternalSettingsMod.ModuleLayout.ICON_CARDS
-            val cardStyle = if (iconLayout) null else getCardStyle(resolveModuleColumns())
+            val iconLayout = false
+            val cardStyle = getCardStyle(resolveModuleColumns())
 
             for (card in moduleCardCache) {
                 val cardY = getY() + card.y + scroll.getValue()
@@ -270,9 +295,11 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                         continue
                     }
 
-                    if (!iconLayout && cardStyle != null) {
-                        val settingsX = card.x + card.width - cardStyle.settingsSize - cardStyle.settingsPadding
-                        val settingsY = cardY + (card.height - cardStyle.settingsSize) / 2f
+                    if (!iconLayout) {
+                        val settingsX = card.settingsX
+                        val settingsY = card.settingsY
+                        val toggleX = card.toggleX
+                        val toggleY = card.toggleY
 
                         if (MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, cardStyle.settingsSize, cardStyle.settingsSize) && !openSetting) {
                             val settings: ArrayList<Setting>? = modManager.getSettingsByMod(card.mod)
@@ -286,18 +313,12 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                             continue
                         }
 
-                        val toggleX = card.x + cardStyle.leftPadding
-                        val toggleWidth = card.width - (cardStyle.leftPadding + cardStyle.settingsSize + cardStyle.settingsPadding + 10f)
-
-                        if (MouseUtils.isInside(mouseX, mouseY, toggleX, cardY, toggleWidth, card.height)) {
+                        if (MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, card.toggleWidth, card.toggleHeight)) {
                             card.mod.toggle()
                         }
                         continue
                     }
 
-                    if (iconLayout) {
-                        card.mod.toggle()
-                    }
                 }
             }
         }
@@ -389,7 +410,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
 
         val spacingY = if (iconLayout) ICON_CARD_GAP else 14f
         val availableWidth = getWidth() - 30f
-        val normalizedColumns = if (iconLayout) max(2, min(columns, 3)) else max(1, min(columns, 2))
+        val normalizedColumns = if (iconLayout) max(1, min(columns, 2)) else max(1, min(columns, 2))
         val spacingX = if (normalizedColumns > 1) {
             if (iconLayout) ICON_CARD_GAP else 24f
         } else {
@@ -400,7 +421,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         } else {
             (availableWidth - (spacingX * (normalizedColumns - 1))) / normalizedColumns
         }
-        val cardHeight = if (iconLayout) cardWidth else 54f
+        val cardHeight = if (iconLayout) cardWidth * ICON_CARD_HEIGHT_RATIO else LIST_CARD_HEIGHT
 
         var columnIndex = 0
         var rowY = startOffset
@@ -482,94 +503,6 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         return (blockBottom - getY()) + CHIP_GAP
     }
 
-    private fun drawIconCard(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accentColor: AccentColor,
-        card: ModuleCard,
-        cardY: Float,
-        scrollOffset: Float,
-        mouseX: Int,
-        mouseY: Int,
-        modManager: ModManager
-    ) {
-        val cardX = card.x
-        val hasSettings = modManager.getSettingsByMod(card.mod) != null
-
-        val settingsSize = ICON_SETTINGS_SIZE
-        val settingsX = cardX + card.width - settingsSize - ICON_CARD_PADDING
-        val settingsY = cardY + ICON_CARD_PADDING
-        card.hasSettings = hasSettings
-        card.settingsX = settingsX
-        card.settingsY = settingsY + scrollOffset
-        card.settingsSize = settingsSize
-
-        val hovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollOffset, card.width, card.height) &&
-            !(hasSettings && MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollOffset, settingsSize, settingsSize))
-        card.mod.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 18.0)
-
-        card.mod.animation.setAnimation(if (card.mod.isToggled()) 1.0f else 0.0f, 16.0)
-        val toggleProgress = card.mod.animation.value
-
-        val baseAlpha = if (hovered) 235 else 210
-        nvg.drawRoundedRect(cardX, cardY, card.width, card.height, ICON_CARD_RADIUS, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), baseAlpha))
-        if (toggleProgress > 0f) {
-            nvg.drawGradientRoundedRect(
-                cardX,
-                cardY,
-                card.width,
-                card.height,
-                ICON_CARD_RADIUS,
-                ColorUtils.applyAlpha(accentColor.color1, (toggleProgress * 120).toInt()),
-                ColorUtils.applyAlpha(accentColor.color2, (toggleProgress * 120).toInt())
-            )
-        }
-
-        val iconBox = ICON_ICON_SIZE
-        val iconX = cardX + (card.width - iconBox) / 2f
-        val iconY = cardY + ICON_CARD_PADDING
-        nvg.drawRoundedRect(iconX, iconY, iconBox, iconBox, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
-
-        val icon = card.mod.getMenuIcon()
-        if (!icon.isNullOrEmpty()) {
-            nvg.drawCenteredText(icon, iconX + iconBox / 2f, iconY + iconBox / 2f - 8f, palette.getFontColor(ColorType.DARK), 16f, Fonts.LEGACYICON)
-        }
-
-        val textX = cardX + ICON_CARD_PADDING
-        val textWidth = card.width - (ICON_CARD_PADDING * 2f)
-        val nameY = iconY + iconBox + 12f
-        val descY = nameY + 12f
-
-        val name = nvg.getLimitText(card.mod.getName(), 10.5f, Fonts.MEDIUM, textWidth)
-        nvg.drawText(name, textX, nameY, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
-
-        val description = nvg.getLimitText(card.mod.getDescription(), 8f, Fonts.REGULAR, textWidth)
-        nvg.drawText(description, textX, descY, palette.getFontColor(ColorType.NORMAL), 8f, Fonts.REGULAR)
-
-        if (card.mod.isRestricted()) {
-            nvg.drawText(LegacyIcon.ALERT_TRIANGLE, cardX + 8f, cardY + 6f, Color(255, 196, 80), 12f, Fonts.LEGACYICON)
-        }
-
-        if (hasSettings) {
-            val settingsHover = MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY + scrollOffset, settingsSize, settingsSize)
-            card.mod.settingsHoverAnimation.setAnimation(if (settingsHover) 1.0f else 0.0f, 18.toDouble())
-            val settingsHoverAnimation = card.mod.settingsHoverAnimation.value
-
-            nvg.drawRoundedRect(settingsX, settingsY, settingsSize, settingsSize, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
-            nvg.drawCenteredText(LegacyIcon.SETTINGS, settingsX + settingsSize / 2f - 1f, settingsY + settingsSize / 2f - 6f, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
-            nvg.drawGradientOutlineRoundedRect(
-                settingsX,
-                settingsY,
-                settingsSize,
-                settingsSize,
-                6f,
-                1.0f,
-                ColorUtils.applyAlpha(accentColor.color1, (settingsHoverAnimation * 255).toInt()),
-                ColorUtils.applyAlpha(accentColor.color2, (settingsHoverAnimation * 255).toInt())
-            )
-        }
-    }
-
     private fun getCardStyle(columns: Int): CardStyle {
         return when (columns) {
             1 -> CardStyle(28f, 20f, 18f, 14f, 18f)
@@ -584,6 +517,10 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         val y: Float,
         val width: Float,
         val height: Float,
+        var toggleX: Float = 0f,
+        var toggleY: Float = 0f,
+        var toggleWidth: Float = 0f,
+        var toggleHeight: Float = 0f,
         var settingsX: Float = 0f,
         var settingsY: Float = 0f,
         var settingsSize: Float = 0f,
@@ -603,7 +540,25 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         const val ICON_CARD_GAP = 14f
         const val ICON_CARD_RADIUS = 12f
         const val ICON_CARD_PADDING = 12f
-        const val ICON_ICON_SIZE = 32f
+        const val ICON_ICON_SIZE = 72f
+        const val ICON_ICON_OFFSET = 0f
+        const val ICON_ICON_FONT_SIZE = 26f
+        const val ICON_ICON_FONT_OFFSET = 14f
         const val ICON_SETTINGS_SIZE = 18f
+        const val ICON_TOGGLE_WIDTH = 44f
+        const val ICON_TOGGLE_HEIGHT = 18f
+        const val ICON_TOGGLE_GAP = 6f
+        const val ICON_RESTRICT_SIZE = 12f
+        const val ICON_CARD_HEIGHT_RATIO = 0.576f
+        const val ICON_TEXT_GAP = 12f
+        const val ICON_ICON_GAP = 10f
+        const val LIST_CARD_HEIGHT = 51.84f
+        const val LIST_TOGGLE_WIDTH = 44f
+        const val LIST_TOGGLE_HEIGHT = 18f
+        const val LIST_TOGGLE_GAP = 6f
+        const val LIST_ICON_FONT_SIZE = 24f
+        const val LIST_ICON_FONT_OFFSET = 7.5f
+        const val LIST_WARNING_BOTTOM_PADDING = 12f
+        const val LIST_WARNING_ICON_OFFSET = 2f
     }
 }

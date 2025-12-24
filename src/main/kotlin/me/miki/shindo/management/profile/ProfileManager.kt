@@ -190,7 +190,7 @@ class ProfileManager {
                 val addonManager: AddonManager = instance.addonManager
                 var addonsLoaded = 0
                 for (addon in addonManager.addons) {
-                    val addonKey = addon.configId
+                    val addonKey = addon.getConfigId()
                     val addonObject = JsonUtils.getObjectProperty(addonJson, addonKey)
                         ?: JsonUtils.getObjectProperty(addonJson, addon.name)
                         ?: continue
@@ -517,7 +517,7 @@ class ProfileManager {
                 }
             }
 
-            addonJsonObject.add(addon.configId, addonObject)
+            addonJsonObject.add(addon.getConfigId(), addonObject)
         }
 
         jsonObject.add("Addons", addonJsonObject)
