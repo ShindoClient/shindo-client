@@ -1,133 +1,104 @@
-buildscript {
-    ext.kotlin_version = '1.3.72'
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven {
-            name = "forge"
-            url = "https://maven.minecraftforge.net"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = 'sponge'
-            url = 'https://repo.spongepowered.org/maven'
-        }
-        maven {
-            url = 'https://jitpack.io'
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    id "legacy-looming" version "${loom_version}"
+    id 'java'
+    id "org.jetbrains.kotlin.jvm" version "1.9.24"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+
+kotlin {
+    jvmToolchain(8)
+}
+
+tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += "-Xjvm-default=all-compatibility"
+    }
+}
+
+
+loom {
+    runs {
+        client {
+            programArgs("--accessToken", "0", "--version", "1.8.9", "--userProperties", "{}", "--tweakClass", "me.miki.shindo.injection.mixin.ShindoTweaker")
+            setMainClass("net.minecraft.launchwrapper.Launch")
         }
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}"
-    }
 }
 
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-version = "Release"
-group= "me.miki"
-archivesBaseName = "ShindoClient"
-
-sourceCompatibility = targetCompatibility = 1.8
-compileJava.options.encoding = 'UTF-8'
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs += ["-Xjvm-default=compatibility"]
-}
-
-minecraft {
-    version = "1.8.9"
-    tweakClass = "me.miki.shindo.injection.mixin.ShindoTweaker"
-    runDir = "run"
-    mappings = "stable_22"
-    clientJvmArgs = ["-XX:-DisableExplicitGC"]
-    makeObfSourceJar = false
-}
+legacyLooming {}
 
 
 repositories {
-    maven {
-        name "jitpack"
-        url "https://jitpack.io"
-    }
-
-    maven {
-        name "spongepowered"
-        url "https://repo.spongepowered.org/maven/"
-    }
     mavenCentral()
-}
-
-configurations {
-    embed
-    compile.extendsFrom(embed)
+    maven { url 'https://raw.githubusercontent.com/BleachDev/cursed-mappings/main/' }
+    maven { url 'https://repo.spongepowered.org/maven/' }
 }
 
 dependencies {
-    embed('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-        exclude module: 'gson'
-        exclude module: 'commons-io'
-    }
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings(legacy.yarn(project.minecraft_version, project.yarn_build))
 
-    // Shindo
-    embed(files('libs/lwjgl-shindo.jar'))
-    embed(files('libs/lwjgl-shindo-natives.jar'))
+    implementation "net.minecraft:launchwrapper:1.12"
+    implementation "org.ow2.asm:asm-all:5.0.3"
+    implementation "org.spongepowered:mixin:0.7.11-SNAPSHOT"
+    implementation "javax.annotation:javax.annotation-api:1.3.2"
 
-    embed(files('libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar'))
-    embed(files('libs/ViaRewind-2.0.4-SNAPSHOT.jar'))
-    embed(files('libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar'))
-    embed(files("libs/snakeyaml-2.0.jar"))
+    implementation "org.json:json:20240303"
 
-    // Other
-    embed('com.fasterxml.jackson.core:jackson-databind:2.19.2')
-    embed('org.apache.httpcomponents.client5:httpclient5-cache:5.5')
-    embed('com.google.code.gson:gson:2.13.1')
+    implementation files("libs/lwjgl-shindo.jar")
+    implementation files("libs/lwjgl-shindo-natives.jar")
 
-    embed('org.java-websocket:Java-WebSocket:1.6.0')
-    embed('org.projectlombok:lombok:1.18.30')
-    embed('net.lenni0451.commons:httpclient:1.9.0')
-    embed('net.lenni0451.commons:gson:1.9.0')
+    implementation files("libs/ViaBackwards-4.7.0-1.20-pre1-SNAPSHOT.jar")
+    implementation files("libs/ViaRewind-2.0.4-SNAPSHOT.jar")
+    implementation files("libs/ViaVersion-4.7.0-1.20-pre2-SNAPSHOT.jar")
+    implementation files("libs/snakeyaml-2.0.jar")
 
-    embed("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}")
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.19.2"
+    implementation "org.apache.httpcomponents.client5:httpclient5-cache:5.5"
+    implementation "com.google.code.gson:gson:2.13.1"
+    implementation "org.java-websocket:Java-WebSocket:1.6.0"
+    implementation "net.lenni0451.commons:httpclient:1.9.0"
+    implementation "net.lenni0451.commons:gson:1.9.0"
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
-mixin {
-    add sourceSets.main, "mixins.shindo.refmap.json"
-}
 
-processResources {
-    inputs.files "src/main/resources"
-    outputs.dir "build/classes/main"
-    copy {
-        from("src/main/resources")
-        into("build/classes/main")
+tasks.named("runClient") {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
 jar {
-    dependsOn configurations.compile
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
     manifest.attributes(
-            "MixinConfigs": "mixins.shindo.json",
-            "TweakClass": "me.miki.shindo.injection.mixin.ShindoTweaker",
+            "MixinConfigs": 'mixins.shindo.json',
+            "TweakClass": 'me.miki.shindo.injection.mixin.ShindoTweaker',
             "TweakOrder": 0,
             "Manifest-Version": 1.0,
-            "FMLAT": "shindo_at.cfg"
+            'FMLAT': 'shindo_at.cfg'
     )
-
-    from {
-        configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-        exclude 'META-INF/**'            // amplia exclusäes de META-INF (inclui signatures e stuff)
-        exclude 'META-INF/versions/**'   // <--- multi-release (Java 9+)
-        exclude 'module-info.class'      // <--- m¢dulo Java 9
-    }
 }
+

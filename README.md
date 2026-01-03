@@ -7,21 +7,21 @@
 🎮 *A modern and evolving Minecraft client built with love and care.*  
 
 [![Discord](https://img.shields.io/badge/Join%20our%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://shindoclient.com/discord)
-[![License](https://img.shields.io/github/license/ShindoClient/Shindo-Client?style=for-the-badge)](https://github.com/ShindoClient/Shindo-Client/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/ShindoClient/shindo-client?style=for-the-badge)](https://github.com/ShindoClient/shindo-client/blob/master/LICENSE)
 
 </div>
 
 ---
 
 ## 📜 License
-Shindo Client is licensed under **[GPL v3](https://github.com/ShindoClient/Shindo-Client/blob/master/LICENSE)**.  
+Shindo Client is licensed under **[GPL v3](https://github.com/ShindoClient/shindo-client/blob/master/LICENSE)**.  
 Feel free to fork, modify, and contribute – just remember to share under the same license.
 
 ---
 
 ## 🐛 Issues & Support
 📥 **Found a bug?**  
-- Open an [issue on GitHub](https://github.com/ShindoClient/Shindo-Client/issues).  
+- Open an [issue on GitHub](https://github.com/ShindoClient/shindo-client/issues).  
 - Or join our [Discord](https://shindoclient.com/discord) and talk to us directly.
 
 ---
@@ -34,4 +34,8 @@ Clone the repo and run the following commands:
 gradlew setupDecompWorkspace
 gradlew genIntellijRuns
 gradlew build
+```
 
+> **Build notes**
+> - The project uses the bundled `gradlew` (Gradle 9.2.1) with the `legacy-looming` plugin (1.14-SNAPSHOT) over Minecraft 1.8.9, so it behaves as a tweaker/LaunchWrapper client without Fabric runtime libs.
+> - Kotlin sources target JVM 1.8; keep any new compilation or lint tasks consistent with that target and the `ShindoTweaker` bootstrap.

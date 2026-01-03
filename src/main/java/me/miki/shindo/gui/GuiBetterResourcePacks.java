@@ -12,7 +12,6 @@ import net.minecraft.client.resources.ResourcePackRepository.Entry;
 import org.lwjgl.input.Keyboard;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -137,7 +136,7 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     }
 
     @Override
-    public void handleMouseInput() throws IOException {
+    public void handleMouseInput() {
         try {
             super.handleMouseInput();
         } catch (NullPointerException e) {
@@ -157,7 +156,7 @@ public class GuiBetterResourcePacks extends GuiScreenResourcePacks {
     }
 
     @Override
-    protected void keyTyped(char keyChar, int keyCode) throws IOException {
+    protected void keyTyped(char keyChar, int keyCode) {
         super.keyTyped(keyChar, keyCode);
 
         if (searchField.isFocused()) {

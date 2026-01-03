@@ -20,7 +20,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
 
 public class GuiQuickPlay extends GuiScreen {
 
@@ -164,10 +163,7 @@ public class GuiQuickPlay extends GuiScreen {
         int offsetY = 0;
         int index = 1;
 
-        try {
-            super.mouseClicked(mouseX, mouseY, mouseButton);
-        } catch (IOException e) {
-        }
+        super.mouseClicked(mouseX, mouseY, mouseButton);
 
         if (currentQuickPlay == null) {
             for (QuickPlay q : quickPlayManager.getQuickPlays()) {

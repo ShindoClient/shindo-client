@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.mainmenu.impl.*;
 import me.miki.shindo.gui.mainmenu.impl.welcome.*;
-import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.color.ColorManager;
 import me.miki.shindo.management.color.Theme;
 import me.miki.shindo.management.color.palette.ColorPalette;
@@ -34,7 +33,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GuiShindoMainMenu extends GuiScreen {
@@ -240,11 +238,7 @@ public class GuiShindoMainMenu extends GuiScreen {
         }
 
         currentScene.mouseClicked(mouseX, mouseY, mouseButton);
-        try {
-            super.mouseClicked(mouseX, mouseY, mouseButton);
-        } catch (IOException e) {
-            ShindoLogger.error("An error occurred while handling mouse released event", e);
-        }
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
@@ -258,7 +252,7 @@ public class GuiShindoMainMenu extends GuiScreen {
     }
 
     @Override
-    public void handleInput() throws IOException {
+    public void handleInput() {
         super.handleInput();
     }
 

@@ -15,7 +15,8 @@ public class LwjglTransformer implements IClassTransformer {
             ClassNode node = new ClassNode();
             reader.accept(node, ClassReader.EXPAND_FRAMES);
 
-            for (MethodNode method : node.methods) {
+            for (Object methodObj : node.methods) {
+                MethodNode method = (MethodNode) methodObj;
                 if (method.name.equals("configGL")) {
                     InsnList list = new InsnList();
 
