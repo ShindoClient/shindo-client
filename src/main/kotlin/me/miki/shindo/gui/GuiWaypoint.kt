@@ -1,0 +1,223 @@
+package me.miki.shindo.gui
+
+import me.miki.shindo.Shindo
+import me.miki.shindo.management.color.ColorManager
+import me.miki.shindo.management.color.palette.ColorPalette
+import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.nanovg.NanoVGManager
+import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.waypoint.Waypoint
+import me.miki.shindo.management.waypoint.WaypointManager
+import me.miki.shindo.ui.comp.impl.field.CompTextBox
+import me.miki.shindo.utils.animation.normal.Animation
+import me.miki.shindo.utils.animation.normal.Direction
+import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
+import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.utils.mouse.MouseUtils
+import me.miki.shindo.utils.mouse.Scroll
+import me.miki.shindo.utils.render.BlurUtils
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Keyboard
+import java.awt.Color
+import java.util.ArrayList
+
+class GuiWaypoint : GuiScreen() {
+
+    private val scroll = Scroll()
+    private val screenAnimation = ScreenAnimation()
+    private val textBox = CompTextBox()
+    private val colors: ArrayList<Color> = ArrayList()
+    private lateinit var introAnimation: Animation
+    private var x = 0
+    private var y = 0
+    private var width = 0
+    private var height = 0
+    private var removeWaypoint: Waypoint? = null
+    private var currentColor: Color = Color.RED
+
+    init {
+        colors.add(Color.RED)
+        colors.add(Color.GREEN)
+        colors.add(Color.BLUE)
+        colors.add(Color.ORANGE)
+        colors.add(Color.YELLOW)
+        colors.add(Color.MAGENTA)
+        colors.add(Color.PINK)
+        colors.add(Color.GRAY)
+        colors.add(Color.DARK_GRAY)
+    }
+
+    override fun initGui() {
+        val sr = ScaledResolution(mc)
+
+        val addX = 160
+        val addY = 80
+
+        x = (sr.scaledWidth / 2) - addX
+        y = (sr.scaledHeight / 2) - addY
+        width = addX * 2
+        height = addY * 2
+
+        introAnimation = EaseBackIn(320, 1.0f, 2.0f)
+        introAnimation.setDirection(Direction.FORWARDS)
+    }
+
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        BlurUtils.drawBlurScreen(20)
+
+        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, partialTicks) }, x, y, width, height, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+    }
+
+    private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val instance = Shindo.getInstance()
+        val nvg = instance.nanoVGManager
+        val waypointManager: WaypointManager = instance.waypointManager
+        val colorManager: ColorManager = instance.colorManager
+        val palette: ColorPalette = colorManager.palette
+
+        var offsetX = 0
+        var offsetY = 0
+        var index = 0
+
+        scroll.onScroll()
+        scroll.onAnimation()
+
+        if (introAnimation.isDone(Direction.BACKWARDS)) {
+            mc.displayGuiScreen(null)
+        }
+
+        nvg.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f)
+        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
+        nvg.drawRect(x.toFloat(), y + 24f, width.toFloat(), 1f, palette.getBackgroundColor(ColorType.DARK))
+
+        nvg.save()
+        nvg.scissor(x.toFloat(), y + 25f, 190f, height - 25f)
+        nvg.translate(0f, scroll.value)
+
+        for (waypoint in waypointManager.waypoints) {
+            if (waypoint.world == waypointManager.world) {
+                waypoint.trashAnimation.setAnimation(
+                    if (MouseUtils.isInside(mouseX, mouseY, x + 162f, y + 44f + offsetY + scroll.value, 11f, 11f)) 1.0f else 0.0f,
+                    16
+                )
+
+                nvg.drawRoundedRect(x + 10f, y + 35f + offsetY, 170f, 28f, 6f, palette.getBackgroundColor(ColorType.DARK))
+                nvg.drawRoundedRect(x + 16f, y + 40f + offsetY, 18f, 18f, 4f, waypoint.color)
+                nvg.drawText(waypoint.name, x + 40f, y + 45.5f + offsetY, palette.getFontColor(ColorType.DARK), 9.5f, Fonts.REGULAR)
+
+                nvg.drawText(
+                    LegacyIcon.TRASH,
+                    x + 162f,
+                    y + 44f + offsetY,
+                    Color(255, 255 - (waypoint.trashAnimation.value * 255).toInt(), 255 - (waypoint.trashAnimation.value * 255).toInt()),
+                    11f,
+                    Fonts.LEGACYICON
+                )
+
+                offsetY += 38
+                index++
+            }
+        }
+
+        nvg.restore()
+
+        scroll.maxScroll = if (index < 3) 0f else (index - 3) * 66f
+
+        nvg.drawRoundedRect(x + width - 130f, y + 35f, 120f, height - 45f, 6f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawCenteredText("Create a waypoint", x + width - 130f + (120 / 2f), y + 43f, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
+
+        textBox.setDefaultText("Name")
+        textBox.setPosition(x + width - 120, y + 59, 100, 18)
+        textBox.draw(mouseX, mouseY, partialTicks)
+
+        offsetX = 0
+        offsetY = 0
+        index = 0
+
+        for (color in colors) {
+            nvg.drawRoundedRect(x + width - 120f + offsetX, y + 84f + offsetY, 13f, 13f, 2f, color)
+
+            if (currentColor == color) {
+                nvg.drawText(LegacyIcon.CHECK, x + width - 118f + offsetX, y + 86.5f + offsetY, Color.WHITE, 9f, Fonts.LEGACYICON)
+            }
+
+            offsetX += 17
+            index++
+
+            if (index % 6 == 0) {
+                offsetY += 17
+                offsetX = 0
+            }
+        }
+
+        nvg.drawRoundedRect(x + width - 85f, y + height - 34f, 65f, 18f, 6f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawCenteredText("Save", x + width - 85f + (65 / 2f), y + height - 29f, palette.getFontColor(ColorType.DARK), 9f, Fonts.REGULAR)
+
+        if (removeWaypoint != null) {
+            waypointManager.waypoints.remove(removeWaypoint)
+            removeWaypoint = null
+            waypointManager.save()
+        }
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        val instance = Shindo.getInstance()
+        val waypointManager: WaypointManager = instance.waypointManager
+
+        var offsetX = 0
+        var offsetY = 0
+        var index = 0
+
+        for (waypoint in waypointManager.waypoints) {
+            if (waypoint.world == waypointManager.world) {
+                if (MouseUtils.isInside(mouseX, mouseY, x + 160f, y + 41f + offsetY + scroll.value.toInt(), 16f, 16f) && mouseButton == 0) {
+                    removeWaypoint = waypoint
+                }
+
+                offsetY += 38
+                index++
+            }
+        }
+
+        offsetX = 0
+        offsetY = 0
+        index = 0
+
+        for (color in colors) {
+            if (MouseUtils.isInside(mouseX, mouseY, x + width - 120f + offsetX, y + 84f + offsetY, 13f, 13f) && mouseButton == 0) {
+                currentColor = color
+            }
+
+            offsetX += 17
+            index++
+
+            if (index % 6 == 0) {
+                offsetY += 17
+                offsetX = 0
+            }
+        }
+
+        if (MouseUtils.isInside(mouseX, mouseY, x + width - 85f, y + height - 34f, 65f, 18f) && mouseButton == 0 && textBox.text.isNotEmpty()) {
+            waypointManager.addWaypoint(textBox.text, mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, currentColor)
+            textBox.text = ""
+            waypointManager.save()
+        }
+
+        textBox.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            introAnimation.setDirection(Direction.BACKWARDS)
+        }
+
+        textBox.keyTyped(typedChar, keyCode)
+    }
+
+    override fun doesGuiPauseGame(): Boolean {
+        return false
+    }
+}
