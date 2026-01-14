@@ -11,7 +11,7 @@ import me.miki.shindo.management.settings.config.PropertyType
 
 class PlayerListMod :
     HUDMod(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1, max = 100, current = 16, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1.0, max = 10.00, current = 1.06, step = 1.0)
     private val maxSetting = 16
 
     private var index = 0

@@ -26,7 +26,7 @@ class DamageTintMod : Mod(
 
     private val animation1 = SimpleAnimation(0.0f)
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, min = 5, max = 16, step = 1, current = 10)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, min = 5.0, max = 1.06, step = 1.0, current = 10.0)
     private val healthSetting = 10.0
 
     @EventTarget

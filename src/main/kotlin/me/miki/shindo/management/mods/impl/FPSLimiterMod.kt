@@ -24,10 +24,10 @@ class FPSLimiterMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MAX_FPS,
-        min = 240,
-        max = 1440,
-        step = 1,
-        current = 480
+        min = 24.00,
+        max = 144.00,
+        step = 1.0,
+        current = 480.0
     )
     @JvmField
     var maxFpsSetting = 480.0
@@ -36,7 +36,7 @@ class FPSLimiterMod : Mod(
     @JvmField
     var limitGuiFps = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.GUI_FPS, min = 1, max = 240, step = 1, current = 30)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.GUI_FPS, min = 1.0, max = 24.00, step = 1.0, current = 30.0)
     @JvmField
     var guiFpsSetting = 30.0
 
@@ -56,6 +56,8 @@ class FPSLimiterMod : Mod(
     fun getLimitGuiFpsSetting(): BooleanSetting? = getBooleanSetting(this, "limitGuiFps")
 
     fun getGuiFpsSetting(): NumberSetting? = getNumberSetting(this, "guiFpsSetting")
+
+    fun getLimitGuiFps(): BooleanSetting? = getBooleanSetting(this, "limitGuiFps")
 }
 
 

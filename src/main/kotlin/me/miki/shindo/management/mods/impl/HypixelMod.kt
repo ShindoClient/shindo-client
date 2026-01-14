@@ -33,10 +33,10 @@ class HypixelMod :
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.AUTO_GG_DELAY,
-        min = 0,
-        max = 5,
-        current = 3,
-        step = 1
+        min = 0.0,
+        max = 5.0,
+        current = 3.0,
+        step = 1.0
     )
     private val autoggDelaySetting = 3
 
@@ -46,10 +46,10 @@ class HypixelMod :
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.AUTO_GL_DELAY,
-        min = 0,
-        max = 5,
-        current = 1,
-        step = 1
+        min = 0.0,
+        max = 5.0,
+        current = 1.0,
+        step = 1.0
     )
     private val autoglDelaySetting = 1
 
@@ -59,10 +59,10 @@ class HypixelMod :
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.AUTO_PLAY_DELAY,
-        min = 0,
-        max = 5,
-        current = 3,
-        step = 1
+        min = 0.0,
+        max = 5.0,
+        current = 3.0,
+        step = 1.0
     )
     private val autoPlayDelaySetting = 3
 
@@ -155,7 +155,8 @@ class HypixelMod :
             val stack = slotPacket.func_149174_e()
 
             if (stack != null && stack.getItem() == Items.paper &&
-                (HypixelGameMode.Companion.isBedwars(currentMode) || HypixelGameMode.Companion.isTntGames(currentMode))
+                currentMode != null &&
+                (HypixelGameMode.isBedwars(currentMode!!) || HypixelGameMode.isTntGames(currentMode!!))
             ) {
                 sendNextGame()
                 return
@@ -269,7 +270,10 @@ class HypixelMod :
     private fun sendNextGame() {
         if (autoPlaySetting) {
             schedule(Runnable {
-                mc.thePlayer.sendChatMessage(currentMode!!.getCommand())
+                val command = currentMode?.command
+                if (command != null) {
+                    mc.thePlayer.sendChatMessage(command)
+                }
             }, autoPlayDelaySetting.toLong(), TimeUnit.SECONDS)
         }
     }

@@ -24,10 +24,10 @@ import java.io.InputStreamReader
 
 class SoundSubtitlesMod :
     HUDMod(TranslateText.SOUND_SUBTITLES, TranslateText.SOUND_SUBTITLES_DESCRIPTION, LegacyIcon.MOD_SOUND_SUBTITLES) {
-    private val subtitles: MutableList<Subtitle> = Lists.newArrayList<Subtitle?>()
-    private val soundMap = HashMap<String?, String?>()
+    private val subtitles: MutableList<Subtitle> = Lists.newArrayList()
+    private val soundMap = HashMap<String, String>()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1, max = 10, current = 3, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1.0, max = 1.00, current = 3.0, step = 1.0)
     private val maxSetting = 3
 
     private val backgroundAnimation = SimpleAnimation(0.0f)
@@ -56,8 +56,11 @@ class SoundSubtitlesMod :
     }
 
     private fun drawNanoVG() {
-        val Vec3 =
-            Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight().toDouble(), mc.thePlayer.posZ)
+        val Vec3 = Vec3(
+            mc.thePlayer.posX,
+            mc.thePlayer.posY + mc.thePlayer.getEyeHeight().toDouble(),
+            mc.thePlayer.posZ
+        )
         val Vec31 = (Vec3(0.0, 0.0, -1.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
             .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
         val Vec32 = (Vec3(0.0, 1.0, 0.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
@@ -67,14 +70,14 @@ class SoundSubtitlesMod :
         val subtitleWidth = 120
         val subtitleHeight = (if (this.isEditing()) 3 else subtitles.size) * 16
 
-        val removeList = ArrayList<Subtitle?>()
+        val removeList = ArrayList<Subtitle>()
 
         for (subtitle in subtitles) {
-            if (subtitle.getStartTime() + 3000L <= Minecraft.getSystemTime()) {
-                subtitle.setRemove(true)
+            if (subtitle.startTime + 3000L <= Minecraft.getSystemTime()) {
+                subtitle.isRemove = true
             }
 
-            if (subtitle.isRemove() && subtitle.isDone()) {
+            if (subtitle.isRemove && subtitle.isDone) {
                 removeList.add(subtitle)
             }
         }
@@ -84,7 +87,7 @@ class SoundSubtitlesMod :
         backgroundAnimation.setAnimation(subtitleHeight.toFloat(), 20)
 
         if (backgroundAnimation.value > 1) {
-            val fakeSubtitle = ArrayList<Subtitle?>()
+            val fakeSubtitle = ArrayList<Subtitle>()
 
             this.drawBackground(subtitleWidth.toFloat(), backgroundAnimation.value)
 
@@ -101,15 +104,16 @@ class SoundSubtitlesMod :
             }
 
             for (subtitle in (if (this.isEditing()) fakeSubtitle else subtitles)) {
-                val Vec34 = subtitle!!.getLocation().subtract(Vec3).normalize()
+                val subtitleLocation = subtitle.location ?: continue
+                val Vec34 = subtitleLocation.subtract(Vec3).normalize()
                 val d0 = -Vec33.dotProduct(Vec34)
                 val d1 = -Vec31.dotProduct(Vec34)
                 val flag = d1 > 0.5
 
-                subtitle.animation.setAnimation((if (subtitle.isRemove()) 0 else 1).toFloat(), 17)
+                subtitle.animation.setAnimation((if (subtitle.isRemove) 0 else 1).toFloat(), 17)
 
-                if (subtitle.animation.value < 0.1 && subtitle.isRemove()) {
-                    subtitle.setDone(true)
+                if (subtitle.animation.value < 0.1 && subtitle.isRemove) {
+                    subtitle.isDone = true
                 }
 
                 val opacity = if (this.isEditing()) 255 else (subtitle.animation.value * 255).toInt()
@@ -121,7 +125,7 @@ class SoundSubtitlesMod :
                 }
 
                 this.drawCenteredText(
-                    subtitle.getString(),
+                    subtitle.string ?: "",
                     subtitleWidth / 2f,
                     animationOffsetY + 4,
                     9f,
@@ -163,13 +167,13 @@ class SoundSubtitlesMod :
             s = soundIn.getSoundLocation().getResourcePath()
         }
 
-        if (s.isEmpty()) {
+        if (s.isNullOrEmpty()) {
             return
         }
 
         if (!this.subtitles.isEmpty()) {
             for (subtitle in subtitles) {
-                if (subtitle.getString() == s) {
+                if (subtitle.string == s) {
                     subtitle.refresh(
                         Vec3(
                             soundIn.getXPosF().toDouble(),
@@ -191,7 +195,7 @@ class SoundSubtitlesMod :
     }
 
     private fun getSoundName(location: ResourceLocation): String? {
-        return soundMap.get(location.getResourcePath())
+        return soundMap[location.getResourcePath()]
     }
 
     @Throws(IOException::class)

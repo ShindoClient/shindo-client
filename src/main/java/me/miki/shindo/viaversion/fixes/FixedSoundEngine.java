@@ -63,7 +63,7 @@ public class FixedSoundEngine {
                     iblock.getBlock().onBlockPlacedBy(worldIn, pos, iblockstate1, playerIn, stack);
                 }
 
-                if (ViaVersionMod.getInstance().isToggled() && ViaVersionMod.getInstance().isLoaded() && ViaLoadingBase.getInstance().getTargetVersion().getOriginalVersion() != ViaShindo.NATIVE_VERSION) {
+                if (ViaVersionMod.instance.isToggled() && ViaVersionMod.instance.isLoaded() && ViaLoadingBase.getInstance().getTargetVersion().getOriginalVersion() != ViaShindo.NATIVE_VERSION) {
                     mc.theWorld.playSoundAtPos(pos.add(0.5, 0.5, 0.5), iblock.getBlock().stepSound.getPlaceSound(), (iblock.getBlock().stepSound.getVolume() + 1.0F) / 2.0F, iblock.getBlock().stepSound.getFrequency() * 0.8F, false);
                 } else {
                     worldIn.playSoundEffect((float) pos.getX() + 0.5F, (float) pos.getY() + 0.5F, (float) pos.getZ() + 0.5F, iblock.getBlock().stepSound.getPlaceSound(), (iblock.getBlock().stepSound.getVolume() + 1.0F) / 2.0F, iblock.getBlock().stepSound.getFrequency() * 0.8F);

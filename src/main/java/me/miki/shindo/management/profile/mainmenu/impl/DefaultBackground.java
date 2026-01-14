@@ -1,6 +1,5 @@
 package me.miki.shindo.management.profile.mainmenu.impl;
 
-import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import net.minecraft.util.ResourceLocation;
 
@@ -8,7 +7,6 @@ public class DefaultBackground extends Background {
 
     private final TranslateText nameTranslate;
 
-    @Getter
     private final ResourceLocation image;
 
     public DefaultBackground(int id, TranslateText nameTranslate, ResourceLocation image) {
@@ -24,6 +22,10 @@ public class DefaultBackground extends Background {
 
     public String getNameKey() {
         return nameTranslate.getKey();
+    }
+
+    public ResourceLocation getImage() {
+        return image;
     }
 
 }

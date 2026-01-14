@@ -31,7 +31,7 @@ class LayoutSettingsScene(parent: SettingsCategory) :
         width: Float,
         height: Float
     ) {
-        val layoutMode = InternalSettingsMod.getInstance().settingsLayoutMode
+        val layoutMode = InternalSettingsMod.instance.settingsLayoutMode
 
         val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170)
         val cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)

@@ -21,10 +21,10 @@ class PlayerDisplayMod : HUDMod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.YAW_OFFSET,
-        min = -90,
-        max = 120,
-        current = 0,
-        step = 1
+        min = -9.00,
+        max = 12.00,
+        current = 0.0,
+        step = 1.0
     )
     private val yawOffsetSetting = 0
 

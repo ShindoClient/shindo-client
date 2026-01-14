@@ -59,7 +59,7 @@ class GuiShindoMainMenu : GuiScreen() {
 
     init {
         val instance = Shindo.getInstance()
-        val firstLogin = instance.shindoAPI.isFirstLogin
+        val firstLogin = instance.shindoAPI.isFirstLogin()
         ensureDefaultColorScheme(instance, firstLogin)
 
         scenes.add(MainScene(this))
@@ -94,30 +94,30 @@ class GuiShindoMainMenu : GuiScreen() {
 
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val isFirstLogin = instance.shindoAPI.isFirstLogin
+        val isFirstLogin = instance.shindoAPI.isFirstLogin()
 
-        backgroundAnimations[0].setAnimation(Mouse.getX().toFloat(), 16)
-        backgroundAnimations[1].setAnimation(Mouse.getY().toFloat(), 16)
+        backgroundAnimations[0].setAnimation(Mouse.getX().toFloat(), 16.0)
+        backgroundAnimations[1].setAnimation(Mouse.getY().toFloat(), 16.0)
 
-        nvg.setupAndDraw {
+        nvg!!.setupAndDraw(Runnable {
             drawNanoVG(sr, instance, nvg)
 
             if (!isFirstLogin) {
                 drawButtons(mouseX, mouseY, sr, nvg)
             }
-        }
+        })
 
         currentScene?.drawScreen(mouseX, mouseY, partialTicks)
 
         if (fadeBackgroundAnimation == null || (fadeBackgroundAnimation != null && !fadeBackgroundAnimation!!.isDone(Direction.FORWARDS))) {
-            nvg.setupAndDraw { drawSplashScreen(sr, nvg) }
+            nvg.setupAndDraw(Runnable { drawSplashScreen(sr, nvg) })
             if (!soundPlayed) {
                 Sound.play("shindo/audio/start.wav", true)
                 soundPlayed = true
             }
         }
 
-        nvg.setupAndDraw { EventRenderNotification().call() }
+        nvg.setupAndDraw(Runnable { EventRenderNotification().call() })
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -166,7 +166,7 @@ class GuiShindoMainMenu : GuiScreen() {
 
         closeFocusAnimation.setAnimation(
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16
+            16.0
         )
 
         nvg.drawRoundedRect(sr.scaledWidth - 28f, 6f, 22f, 22f, 4f, controlColor)
@@ -239,12 +239,12 @@ class GuiShindoMainMenu : GuiScreen() {
                 fadeBackgroundAnimation!!.reset()
             }
 
-            nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, if (fadeBackgroundAnimation != null) (255 - (fadeBackgroundAnimation!!.value * 255)).toInt() else 255))
+            nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, if (fadeBackgroundAnimation != null) (255 - (fadeBackgroundAnimation!!.getValue() * 255)).toInt() else 255))
             nvg.drawCenteredText(
                 LegacyIcon.SHINDO,
                 sr.scaledWidth / 2f,
                 (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
-                Color(255, 255, 255, (255 - (fadeIconAnimation!!.value * 255)).toInt()),
+                Color(255, 255, 255, (255 - (fadeIconAnimation!!.getValue() * 255)).toInt()),
                 130f,
                 Fonts.LEGACYICON
             )
@@ -254,7 +254,7 @@ class GuiShindoMainMenu : GuiScreen() {
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val sr = ScaledResolution(mc)
 
-        val isFirstLogin = Shindo.getInstance().shindoAPI.isFirstLogin
+        val isFirstLogin = Shindo.getInstance().shindoAPI.isFirstLogin()
 
         if (mouseButton == 0 && !isFirstLogin) {
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.ShindoAPI;
 import me.miki.shindo.api.websocket.ShindoWebsocket;
@@ -59,7 +58,6 @@ public class WarpProxyManager {
     private final AtomicReference<WarpDiagnostics> diagnosticsRef = new AtomicReference<>(WarpDiagnostics.disabled());
     private final AtomicLong lastBroadcastAt = new AtomicLong(0L);
 
-    @Getter
     private volatile boolean enabled;
 
     public WarpProxyManager() {
@@ -89,6 +87,14 @@ public class WarpProxyManager {
             updateDiagnostics(WarpStatus.RESOLVING, null, 0L, false, System.currentTimeMillis(), null);
             worker.execute(this::bootstrapSession);
         }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public boolean getEnabled() {
+        return enabled;
     }
 
     public WarpDiagnostics getDiagnostics() {

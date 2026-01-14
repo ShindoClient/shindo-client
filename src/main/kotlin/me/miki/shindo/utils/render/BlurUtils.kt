@@ -1,7 +1,7 @@
 package me.miki.shindo.utils.render
 
-import me.miki.shindo.injection.interfaces.IMixinMinecraft
-import me.miki.shindo.injection.interfaces.IMixinShaderGroup
+import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.injection.mixin.interfaces.client.shader.IMixinShaderGroup
 import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -74,3 +74,4 @@ object BlurUtils {
         mc.framebuffer.bindFramebuffer(true)
     }
 }
+

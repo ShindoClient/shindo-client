@@ -35,20 +35,20 @@ class ParticleCustomizerMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.SHARPNESS_AMOUNT,
-        min = 1,
-        max = 10,
-        current = 2,
-        step = 1
+        min = 1.0,
+        max = 1.00,
+        current = 2.0,
+        step = 1.0
     )
     private val sharpnessAmountSetting = 2
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.CRITICALS_AMOUNT,
-        min = 1,
-        max = 10,
-        current = 2,
-        step = 1
+        min = 1.0,
+        max = 1.00,
+        current = 2.0,
+        step = 1.0
     )
     private val criticalsAmountSetting = 2
 

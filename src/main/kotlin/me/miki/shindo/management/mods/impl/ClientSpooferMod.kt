@@ -15,6 +15,7 @@ class ClientSpooferMod : Mod(
     LegacyIcon.MOD_CLIENT_SPOOFER
 ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
+    @JvmField
     val spoofType: SpoofType = SpoofType.VANILLA
 
     init {

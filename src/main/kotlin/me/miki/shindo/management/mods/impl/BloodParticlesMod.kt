@@ -22,7 +22,7 @@ class BloodParticlesMod : Mod(
     ModCategory.RENDER,
     LegacyIcon.MOD_BLOOD_PARTICLES
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.AMOUNT, min = 1.0, max = 10.0, current = 2, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.AMOUNT, min = 1.0, max = 10.0, current = 2.0, step = 1.0)
     private val amountSetting = 2
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)

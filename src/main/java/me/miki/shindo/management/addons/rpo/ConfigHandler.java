@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import lombok.Getter;
 import me.miki.shindo.logger.ShindoLogger;
 import net.minecraft.client.Minecraft;
 
@@ -25,7 +24,6 @@ public class ConfigHandler {
 
     private static final String ENABLED_PACKS_KEY = "enabledPacks";
 
-    @Getter
     private final Options options;
     private final File configFile;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -38,6 +36,10 @@ public class ConfigHandler {
 
     public void reload() {
         options.load();
+    }
+
+    public Options getOptions() {
+        return options;
     }
 
     public class Options {

@@ -38,8 +38,8 @@ class MechvibesMod :
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.KEYBOARD_VOLUME,
-        min = 0,
-        max = 1,
+        min = 0.0,
+        max = 1.0,
         step = 0.05,
         current = 0.5
     )
@@ -51,8 +51,8 @@ class MechvibesMod :
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MOUSE_VOLUME,
-        min = 0,
-        max = 1,
+        min = 0.0,
+        max = 1.0,
         step = 0.05,
         current = 0.5
     )
@@ -102,8 +102,8 @@ class MechvibesMod :
 
             for (entry in keyMap.entries) {
                 val key = entry.value
-                if (key.isPressed() && !Keyboard.isKeyDown(entry.key!!)) {
-                    key.setPressed(false)
+                if (key.isPressed && !Keyboard.isKeyDown(entry.key!!)) {
+                    key.isPressed = false
                 }
             }
 
@@ -116,9 +116,9 @@ class MechvibesMod :
                     if (key == null) {
                         continue
                     }
-                    if (!key.isPressed()) {
+                    if (!key.isPressed) {
                         key.play()
-                        key.setPressed(true)
+                        key.isPressed = true
                     }
                 }
             }

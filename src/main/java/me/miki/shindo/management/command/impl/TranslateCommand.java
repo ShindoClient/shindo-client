@@ -21,7 +21,7 @@ public class TranslateCommand extends Command {
     @Override
     public void onCommand(String message) {
 
-        Language language = ChatTranslateMod.getInstance().getLanguage();
+        Language language = ChatTranslateMod.instance.getLanguage();
 
         switch (language) {
             case JAPANESE:

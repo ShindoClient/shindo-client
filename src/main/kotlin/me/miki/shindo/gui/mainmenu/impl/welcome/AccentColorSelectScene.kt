@@ -49,9 +49,9 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
             fadeAnimation!!.reset()
         }
 
-        BlurUtils.drawBlurScreen(14)
+        BlurUtils.drawBlurScreen(14F)
 
-        screenAlpha.wrap({ drawNanoVG() }, fadeAnimation!!.valueFloat)
+        screenAlpha.wrap(Runnable { drawNanoVG() }, fadeAnimation!!.getValueFloat())
 
         if (fadeAnimation!!.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(CheckingDataScene::class.java))
@@ -69,7 +69,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
 
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
-        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
+        nvg!!.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
         nvg.drawCenteredText("Choose a accent color", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
         nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)
 
@@ -81,7 +81,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 28f, width.toFloat(), height - 28f)
-        nvg.translate(0f, scroll.value)
+        nvg.translate(0f, scroll.getValue())
 
         for (color in colorManager.colors) {
             nvg.drawGradientRoundedRect(x + offsetX + 10f, y + offsetY + 40f, 32f, 32f, 6f, color.color1, color.color2)
@@ -100,7 +100,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
             index++
         }
 
-        scroll.maxScroll = Math.max(0f, offsetY - (height - 82f))
+        scroll.maxScroll = 0f.coerceAtLeast(offsetY - (height - 82f))
 
         nvg.restore()
 
@@ -113,7 +113,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         val colorManager: ColorManager = instance.colorManager
 
         var offsetX = 0
-        var offsetY = scroll.value.toInt()
+        var offsetY = scroll.getValue().toInt()
         var index = 1
 
         for (color in colorManager.colors) {
@@ -145,7 +145,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         val width = 71f
         val height = 34f
 
-        nvg.drawGradientRoundedRect(x, y, width, height, 5f, ColorUtils.applyAlpha(accentColor.color1, 220), ColorUtils.applyAlpha(accentColor.color2, 220))
+        nvg!!.drawGradientRoundedRect(x, y, width, height, 5f, ColorUtils.applyAlpha(accentColor.color1, 220), ColorUtils.applyAlpha(accentColor.color2, 220))
 
         nvg.drawText("X: 190", x + 3.9f, y + 3.9f, Color.WHITE, 6.42f, Fonts.REGULAR)
         nvg.drawText("Y: 60", x + 3.9f, y + 10.9f, Color.WHITE, 6.42f, Fonts.REGULAR)

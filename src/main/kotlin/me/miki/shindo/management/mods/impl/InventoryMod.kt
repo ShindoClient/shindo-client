@@ -17,6 +17,7 @@ class InventoryMod :
     var animationSetting = false
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.ANIMATION_TYPE)
+    @JvmField
     val animationType: AnimationType = AnimationType.NORMAL
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)

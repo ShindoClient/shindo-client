@@ -42,9 +42,9 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             fadeAnimation!!.reset()
         }
 
-        BlurUtils.drawBlurScreen(14)
+        BlurUtils.drawBlurScreen(14F)
 
-        screenAlpha.wrap({ drawNanoVG() }, fadeAnimation!!.valueFloat)
+        screenAlpha.wrap(Runnable { drawNanoVG() }, fadeAnimation!!.getValueFloat())
 
         if (fadeAnimation!!.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(AccentColorSelectScene::class.java))
@@ -53,7 +53,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
-        val nvg: NanoVGManager = instance.nanoVGManager
+        val nvg: NanoVGManager = instance.nanoVGManager!!
         val currentColor: AccentColor = instance.colorManager.currentColor
 
         var offsetX = 0
@@ -70,9 +70,9 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 27f, width.toFloat(), height - 27f)
-        nvg.translate(scroll.value, 0f)
+        nvg.translate(scroll.getValue(), 0f)
 
-        for (theme in Theme.values()) {
+        for (theme in Theme.entries) {
             theme.animation.setAnimation(if (currentTheme == theme) 1.0f else 0.0f, 16)
 
             drawModMenuExample(x + offsetX + 14f, y + 42f, theme)
@@ -101,7 +101,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val height = 56f
         var offsetY = 0
 
-        nvg.drawRoundedRect(x, y, width, height, 6f, theme.normalBackgroundColor)
+        nvg!!.drawRoundedRect(x, y, width, height, 6f, theme.normalBackgroundColor)
         nvg.drawRoundedRectVarying(x, y, 12f, height, 6f, 0f, 6f, 0f, theme.darkBackgroundColor)
 
         for (i in 0..2) {
@@ -113,9 +113,9 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        var offsetX = scroll.value
+        var offsetX = scroll.getValue()
 
-        for (theme in Theme.values()) {
+        for (theme in Theme.entries) {
             if (MouseUtils.isInside(mouseX, mouseY, x + offsetX + 14f, y + 42f, 90f, 56f) && mouseButton == 0) {
                 currentTheme = theme
             }

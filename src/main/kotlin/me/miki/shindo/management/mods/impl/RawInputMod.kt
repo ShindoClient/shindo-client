@@ -74,7 +74,7 @@ class RawInputMod :
     inner class MouseThread : Thread() {
         override fun run() {
             while (running) {
-                this.isAvailable = !mouseList.isEmpty()
+                this@RawInputMod.isAvailable = !mouseList.isEmpty()
 
                 for (mouse in mouseList) {
                     if (!mouse.poll()) {

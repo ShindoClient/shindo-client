@@ -2,6 +2,8 @@ package me.miki.shindo
 
 import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.api.chat.ChatManager
+import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.command.CommandManager
@@ -20,6 +22,7 @@ import me.miki.shindo.management.network.NetworkManager
 import me.miki.shindo.management.network.proxy.WarpProxyManager
 import me.miki.shindo.management.notification.NotificationManager
 import me.miki.shindo.management.profile.ProfileManager
+import me.miki.shindo.management.profile.ProfileShareManager
 import me.miki.shindo.management.quickplay.QuickPlayManager
 import me.miki.shindo.management.remote.blacklists.BlacklistManager
 import me.miki.shindo.management.remote.changelog.ChangelogManager
@@ -71,6 +74,12 @@ class Shindo private constructor() {
     lateinit var colorManager: ColorManager
         private set
     lateinit var profileManager: ProfileManager
+        private set
+    lateinit var profileShareManager: ProfileShareManager
+        private set
+    lateinit var chatManager: ChatManager
+        private set
+    lateinit var broadcastManager: BroadcastManager
         private set
     lateinit var commandManager: CommandManager
         private set
@@ -151,6 +160,9 @@ class Shindo private constructor() {
         colorManager = ColorManager()
         uiLayoutManager = UILayoutManager()
         profileManager = ProfileManager()
+        profileShareManager = ProfileShareManager()
+        chatManager = ChatManager()
+        broadcastManager = BroadcastManager()
         musicManager = MusicManager(fileManager)
         romanizationManager = RomanizationManager()
         skinManager = SkinManager()
@@ -171,8 +183,8 @@ class Shindo private constructor() {
 
         eventManager.register(ShindoHandler())
 
-        InternalSettingsMod.getInstance().setToggled(true)
-        InternalSettingsMod.getInstance().applyBorderlessOnStartup()
+        InternalSettingsMod.instance?.setToggled(true)
+        InternalSettingsMod.instance?.applyBorderlessOnStartup()
         clickEffects = ClickEffects()
         shaderManager = ShaderManager().also { it.init() }
         started = true

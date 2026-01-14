@@ -44,9 +44,9 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             fadeAnimation!!.reset()
         }
 
-        BlurUtils.drawBlurScreen(14)
+        BlurUtils.drawBlurScreen(14F)
 
-        screenAlpha.wrap({ drawNanoVG() }, fadeAnimation!!.valueFloat)
+        screenAlpha.wrap(Runnable { drawNanoVG() }, fadeAnimation!!.getValueFloat())
 
         if (fadeAnimation!!.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(ThemeSelectScene::class.java))
@@ -55,7 +55,7 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
-        val nvg: NanoVGManager = instance.nanoVGManager
+        val nvg: NanoVGManager = instance.nanoVGManager!!
         val currentColor: AccentColor = instance.colorManager.currentColor
 
         var offsetX = 0
@@ -72,9 +72,9 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 27f, width.toFloat(), height - 27f)
-        nvg.translate(scroll.value, 0f)
+        nvg.translate(scroll.getValue(), 0f)
 
-        for (lang in Language.values()) {
+        for (lang in Language.entries) {
             nvg.drawRoundedImage(lang.flag, x + offsetX + 14f, y + 42f, 90f, 56f, 4f)
             nvg.drawCenteredText(lang.name, x + offsetX + 14f + (90 / 2f), y + 104f, Color.WHITE, 7f, Fonts.REGULAR)
             if (lang == currentLanguage) {
@@ -93,9 +93,9 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        var offsetX = scroll.value
+        var offsetX = scroll.getValue()
 
-        for (lang in Language.values()) {
+        for (lang in Language.entries) {
             if (MouseUtils.isInside(mouseX, mouseY, x + offsetX + 14f, y + 42f, 90f, 56f) && mouseButton == 0) {
                 currentLanguage = lang
             }

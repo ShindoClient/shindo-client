@@ -11,7 +11,6 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.profile.mainmenu.BackgroundManager
-import me.miki.shindo.management.profile.mainmenu.impl.Background
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
@@ -37,7 +36,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private lateinit var introAnimation: Animation
 
     override fun initScene() {
-        introAnimation = EaseInOutCirc(250, 1.0f)
+        introAnimation = EaseInOutCirc(250, 1.0)
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
@@ -45,13 +44,14 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, sr, instance, nvg) }, 0, 0, sr.scaledWidth, sr.scaledHeight, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+        screenAnimation.wrap(Runnable { drawNanoVG(mouseX, mouseY, sr, instance, nvg) }, 0, 0, sr.scaledWidth, sr.scaledHeight, 2f - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), false)
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
+    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
         val backgroundManager: BackgroundManager = instance.profileManager.backgroundManager
         val palette: ColorPalette = getMenuPalette()
         val panelColor = getPanelColor()
@@ -69,12 +69,12 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         scroll.onScroll()
         scroll.onAnimation()
 
-        nvg.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, panelColor)
+        nvg!!.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, panelColor)
         nvg.drawCenteredText(TranslateText.SELECT_BACKGROUND.text, acX + (acWidth / 2f), acY + 8f, Color.WHITE, 14f, Fonts.SEMIBOLD)
 
         nvg.save()
         nvg.scissor(acX.toFloat(), acY + 25f, acWidth.toFloat(), acHeight - 25f)
-        nvg.translate(0f, scroll.value)
+        nvg.translate(0f, scroll.getValue())
 
         for (bg in backgroundManager.backgrounds) {
             val isSelected = backgroundManager.currentBackground == bg
@@ -88,7 +88,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 nvg.drawRoundedRect(itemX - 1, itemY - 1, itemWidth + 2, itemHeight + 2, 7f, Color(255, 255, 255, 180))
             }
 
-            if (MouseUtils.isInside(mouseX, mouseY, itemX, itemY + scroll.value, itemWidth, itemHeight)) {
+            if (MouseUtils.isInside(mouseX, mouseY, itemX, itemY + scroll.getValue(), itemWidth, itemHeight)) {
                 nvg.drawRoundedRect(itemX - 1, itemY - 1, itemWidth + 2, itemHeight + 2, 7f, Color(255, 255, 255, 100))
             }
 
@@ -103,7 +103,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
             if (bg is CustomBackground) {
                 bg.trashAnimation.setAnimation(
-                    if (MouseUtils.isInside(mouseX, mouseY, acX + 11f + offsetX, acY + 35f + offsetY + scroll.value, 102.5f, 57.5f)) 1.0f else 0.0f,
+                    if (MouseUtils.isInside(mouseX, mouseY, acX + 11f + offsetX, acY + 35f + offsetY + scroll.getValue(), 102.5f, 57.5f)) 1.0f else 0.0f,
                     16
                 )
 
@@ -153,7 +153,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
         val acY = sr.scaledHeight / 2 - (acHeight / 2)
         var offsetX = 0
-        var offsetY = (0 + scroll.value).toInt()
+        var offsetY = (0 + scroll.getValue()).toInt()
         var index = 1
 
         if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat())

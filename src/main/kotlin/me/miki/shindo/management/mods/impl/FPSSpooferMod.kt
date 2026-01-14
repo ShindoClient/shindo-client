@@ -6,6 +6,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
+import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
 class FPSSpooferMod : Mod(
@@ -18,13 +19,11 @@ class FPSSpooferMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MULTIPLIER,
-        min = 1,
-        max = 30,
-        current = 2,
-        step = 1
+        min = 1.0,
+        max = 3.00,
+        step = 1.0
     )
-    val multiplierSetting: Int
-        get() = getNumberSetting(this, "multiplierSetting")
+    private val multiplierSetting = 2.0
 
     init {
         instance = this
@@ -34,6 +33,8 @@ class FPSSpooferMod : Mod(
         @JvmField
         var instance: FPSSpooferMod? = null
     }
+
+    fun getMultiplierSetting(): NumberSetting? = getNumberSetting(this, "multiplierSetting")
 }
 
 

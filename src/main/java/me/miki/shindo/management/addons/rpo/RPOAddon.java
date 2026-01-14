@@ -1,6 +1,5 @@
 package me.miki.shindo.management.addons.rpo;
 
-import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonType;
@@ -14,7 +13,6 @@ import java.util.List;
 
 public class RPOAddon extends Addon {
 
-    @Getter
     private static RPOAddon instance;
     private ConfigHandler config;
 
@@ -22,6 +20,10 @@ public class RPOAddon extends Addon {
         super("Resource Pack Organizer", "Organizes the resourcepack Screen", LegacyIcon.ADDON_RPO, AddonType.RENDER);
 
         instance = this;
+    }
+
+    public static RPOAddon getInstance() {
+        return instance;
     }
 
     public void init() {

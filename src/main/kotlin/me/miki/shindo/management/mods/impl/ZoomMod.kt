@@ -25,20 +25,20 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.ZOOM_SPEED,
-        min = 5,
-        max = 20,
-        step = 1,
-        current = 14
+        min = 5.0,
+        max = 2.00,
+        step = 1.0,
+        current = 14.0
     )
     private val zoomSpeedSetting = 14.0
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.ZOOM_FACTOR,
-        min = 2,
-        max = 15,
-        step = 1,
-        current = 4
+        min = 2.0,
+        max = 1.05,
+        step = 1.0,
+        current = 4.0
     )
     private val factorSetting = 4.0
 

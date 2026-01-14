@@ -256,7 +256,7 @@ open class HUDMod : Mod {
         val nvg = instance.nanoVGManager
         val colorManager: ColorManager = instance.colorManager
         val currentColor: AccentColor = colorManager.currentColor
-        val theme = InternalSettingsMod.getInstance().hudTheme
+        val theme = InternalSettingsMod.instance.hudTheme
 
         val isNormal = theme == InternalSettingsMod.HudTheme.NORMAL
         val isVanilla = theme == InternalSettingsMod.HudTheme.VANILLA
@@ -270,7 +270,7 @@ open class HUDMod : Mod {
         val isRect = theme == InternalSettingsMod.HudTheme.RECT
         val isModern = theme == InternalSettingsMod.HudTheme.MODERN
         val isSimpGrad = theme == InternalSettingsMod.HudTheme.GRADIENT_SIMPLE
-        val isBlur = InternalSettingsMod.getInstance().blurSetting.isToggled()
+        val isBlur = InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true
 
         val lastWidth = width * scale
         val lastHeight = height * scale
@@ -372,7 +372,7 @@ open class HUDMod : Mod {
 
         val nvg = Shindo.getInstance().nanoVGManager
         val lastSize = size * scale
-        val theme = InternalSettingsMod.getInstance().hudTheme
+        val theme = InternalSettingsMod.instance.hudTheme
         val isText = theme == InternalSettingsMod.HudTheme.TEXT
 
         if (isText) {
@@ -415,7 +415,7 @@ open class HUDMod : Mod {
     }
 
     fun getFontColor(alpha: Int): Color {
-        val theme = InternalSettingsMod.getInstance().hudTheme
+        val theme = InternalSettingsMod.instance.hudTheme
         val isDark = theme == InternalSettingsMod.HudTheme.DARK
         val isLight = theme == InternalSettingsMod.HudTheme.LIGHT
 
@@ -455,7 +455,7 @@ open class HUDMod : Mod {
     }
 
     fun getHudFont(`in`: Int): Font {
-        if (InternalSettingsMod.getInstance().mchudFont.isToggled()) {
+        if (InternalSettingsMod.instance.mCHUDFont?.isToggled() == true) {
             return Fonts.MOJANGLES
         }
         return when (`in`) {

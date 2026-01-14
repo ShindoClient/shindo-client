@@ -9,7 +9,8 @@ data class Profile(
     val jsonFile: File?,
     val icon: ProfileIcon?,
     var customIcon: File?,
-    var type: ProfileType = ProfileType.ALL
+    var type: ProfileType = ProfileType.ALL,
+    var shareCode: String? = null
 ) {
     val starAnimation: SimpleAnimation = SimpleAnimation()
     val name: String = jsonFile?.nameWithoutExtension ?: ""

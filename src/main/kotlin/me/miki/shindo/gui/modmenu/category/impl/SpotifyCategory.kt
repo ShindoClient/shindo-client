@@ -39,7 +39,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTIFY, LegacyIcon.SPOTIFY, true, true), MusicManager.TrackInfoCallback {
 
-    private val volumeSlider = CompSlider(InternalSettingsMod.getInstance().volumeSetting)
+    private val volumeSlider = CompSlider(
+        InternalSettingsMod.instance.getVolumeSetting()
+            ?: throw IllegalStateException("Internal volume setting is not registered")
+    )
     private val textBox = CompTextBox()
     private val clientIdTextBox = CompTextBox()
     private val clientSecretTextBox = CompTextBox()

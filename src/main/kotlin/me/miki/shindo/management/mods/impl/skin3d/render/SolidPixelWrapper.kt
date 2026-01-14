@@ -4,24 +4,24 @@ import me.miki.shindo.management.mods.impl.skin3d.SkinDirection
 import me.miki.shindo.management.mods.impl.skin3d.opengl.NativeImage
 
 object SolidPixelWrapper {
-    private val offsets = arrayOf<IntArray?>(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
-    private val hiddenDirN: Array<SkinDirection?> = arrayOf<SkinDirection>(
+    private val offsets = arrayOf(intArrayOf(0, 1), intArrayOf(0, -1), intArrayOf(1, 0), intArrayOf(-1, 0))
+    private val hiddenDirN: Array<SkinDirection> = arrayOf(
         SkinDirection.WEST, SkinDirection.EAST, SkinDirection.UP,
         SkinDirection.DOWN
     )
-    private val hiddenDirS: Array<SkinDirection?> = arrayOf<SkinDirection>(
+    private val hiddenDirS: Array<SkinDirection> = arrayOf(
         SkinDirection.EAST, SkinDirection.WEST, SkinDirection.UP,
         SkinDirection.DOWN
     )
-    private val hiddenDirW: Array<SkinDirection?> = arrayOf<SkinDirection>(
+    private val hiddenDirW: Array<SkinDirection> = arrayOf(
         SkinDirection.SOUTH, SkinDirection.NORTH, SkinDirection.UP,
         SkinDirection.DOWN
     )
-    private val hiddenDirE: Array<SkinDirection?> = arrayOf<SkinDirection>(
+    private val hiddenDirE: Array<SkinDirection> = arrayOf(
         SkinDirection.NORTH, SkinDirection.SOUTH, SkinDirection.UP,
         SkinDirection.DOWN
     )
-    private val hiddenDirUD: Array<SkinDirection?> = arrayOf<SkinDirection>(
+    private val hiddenDirUD: Array<SkinDirection> = arrayOf(
         SkinDirection.EAST, SkinDirection.WEST, SkinDirection.NORTH,
         SkinDirection.SOUTH
     )
@@ -36,7 +36,7 @@ object SolidPixelWrapper {
         topPivot: Boolean,
         rotationOffset: Float
     ): CustomizableModelPart {
-        val cubes: MutableList<CustomizableCube?> = ArrayList<CustomizableCube?>()
+        val cubes: MutableList<CustomizableCube> = ArrayList()
         val pixelSize = 1f
         val staticXOffset = -width / 2f
         val staticYOffset = if (topPivot) +rotationOffset else -height + rotationOffset
@@ -95,7 +95,7 @@ object SolidPixelWrapper {
 
     private fun addPixel(
         natImage: NativeImage,
-        cubes: MutableList<CustomizableCube?>,
+        cubes: MutableList<CustomizableCube>,
         pixelSize: Float,
         onBorder: Boolean,
         u: Int,
@@ -103,14 +103,14 @@ object SolidPixelWrapper {
         x: Float,
         y: Float,
         z: Float,
-        dir: SkinDirection?
+        dir: SkinDirection
     ) {
         if (natImage.getLuminanceOrAlpha(u, v).toInt() != 0) {
-            val hide: MutableSet<SkinDirection?> = HashSet<SkinDirection?>()
+            val hide: MutableSet<SkinDirection> = HashSet()
             if (!onBorder) {
                 for (i in offsets.indices) {
-                    val tU = u + offsets[i]!![1]
-                    val tV = v + offsets[i]!![0]
+                    val tU = u + offsets[i][1]
+                    val tV = v + offsets[i][0]
                     if (tU >= 0 && tU < 64 && tV >= 0 && tV < 64 && natImage.getLuminanceOrAlpha(tU, tV).toInt() != 0) {
                         if (dir == SkinDirection.NORTH) {
                             hide.add(hiddenDirN[i])
@@ -138,7 +138,7 @@ object SolidPixelWrapper {
 
             cubes.addAll(
                 CustomizableCubeListBuilder.Companion.create().texOffs(u - 2, v - 1)
-                    .addBox(x, y, z, pixelSize, hide.toTypedArray<SkinDirection?>()).getCubes()
+                    .addBox(x, y, z, pixelSize, hide.toTypedArray()).cubes
             )
         }
     }

@@ -1,6 +1,7 @@
 package me.miki.shindo.utils.animation.normal
 
 import me.miki.shindo.utils.TimerUtils
+import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 
 abstract class Animation {
 
@@ -52,6 +53,9 @@ abstract class Animation {
     }
 
     fun getValue(): Double {
+        if (!GlobalAnimationSettings.enabled) {
+            return if (direction == Direction.FORWARDS) endPoint else 0.0
+        }
         return if (direction == Direction.FORWARDS) {
             if (isDone()) endPoint
             else getEquation(timer.elapsedTime.toDouble()) * endPoint

@@ -1,6 +1,6 @@
 package me.miki.shindo.utils
 
-import me.miki.shindo.injection.interfaces.IMixinEntityPlayer
+import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
 import me.miki.shindo.management.mods.impl.skin3d.opengl.NativeImage
 import me.miki.shindo.management.mods.impl.skin3d.render.CustomizableModelPart
 import me.miki.shindo.management.mods.impl.skin3d.render.SolidPixelWrapper
@@ -44,7 +44,7 @@ object SkinUtils {
         abstractClientPlayerEntity: AbstractClientPlayer,
         settings: IMixinEntityPlayer,
         thinArms: Boolean,
-        model: ModelPlayer
+        model: ModelPlayer?
     ): Boolean {
         if (!hasCustomSkin(abstractClientPlayerEntity)) {
             return false
@@ -72,3 +72,4 @@ object SkinUtils {
         return true
     }
 }
+

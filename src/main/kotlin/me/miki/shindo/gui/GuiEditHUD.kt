@@ -65,14 +65,14 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen() {
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(null)
         }
-        if (!InternalSettingsMod.getInstance().blurSetting.isToggled()) {
+        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() != true) {
             BlurUtils.drawBlurScreen((min(introAnimation.getValue(), 1.0) * 20).toFloat() + 1f)
         }
 
         nvg.setupAndDraw(Runnable {
             nvg.save()
             NanoVG.nvgGlobalAlpha(nvg.getContext(), introAnimation.getValue().toFloat())
-            if (InternalSettingsMod.getInstance().blurSetting.isToggled()) {
+            if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
                 ShBlur.getInstance().drawBlur {
                     nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.WHITE)
                 }

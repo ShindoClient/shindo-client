@@ -40,16 +40,16 @@ class EntityCullingMod : Mod(
     private val queries: ConcurrentHashMap<UUID?, OcclusionQuery> = ConcurrentHashMap<UUID?, OcclusionQuery>()
     private val SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1, max = 3, current = 2, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1.0, max = 3.0, current = 2.0, step = 1.0)
     private val delaySetting = 2
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.DISTANCE,
-        min = 10,
-        max = 150,
-        current = 45,
-        step = 1
+        min = 1.00,
+        max = 15.00,
+        current = 4.05,
+        step = 1.0
     )
     private val distanceSetting = 45
     private var destroyTimer = 0

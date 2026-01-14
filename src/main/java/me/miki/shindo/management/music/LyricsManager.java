@@ -120,7 +120,7 @@ public class LyricsManager {
         }
 
         try {
-            MusicInfoMod musicInfoMod = MusicInfoMod.getInstance();
+            MusicInfoMod musicInfoMod = MusicInfoMod.instance;
             if (musicInfoMod != null) {
                 String baseUrl = musicInfoMod.getLyricsApiUrlSetting().getText().trim();
                 if (baseUrl == null || baseUrl.isEmpty()) {

@@ -56,7 +56,7 @@ class BlockOverlayMod : Mod(
     @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_ALPHA, min = 0.0, max = 1.0, current = 0.15)
     private val outlineAlphaSetting = 0.15
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_WIDTH, min = 1.0, max = 10.0, current = 4.0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_WIDTH, min = 1.0, max = 1.00, current = 4.0)
     private val outlineWidthSetting = 4.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.DEPTH)

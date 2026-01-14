@@ -32,7 +32,7 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
         val nvg = instance.nanoVGManager
 
-        nvg.setupAndDraw { drawNanoVG(instance, nvg, mouseX, mouseY) }
+        nvg!!.setupAndDraw(Runnable { drawNanoVG(instance, nvg, mouseX, mouseY) })
     }
 
     private fun drawNanoVG(instance: Shindo, nvg: NanoVGManager, mouseX: Int, mouseY: Int) {
@@ -45,13 +45,13 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, sr.scaledHeight / 2f - (nvg.getTextHeight(LegacyIcon.SHINDO, 54f, Fonts.LEGACYICON) / 2) - 60, Color.WHITE, 54f, Fonts.LEGACYICON)
 
-        singlePlayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos, width, height)) 1.0f else 0.0f, 16)
+        singlePlayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos, width, height)) 1.0f else 0.0f, 16.0)
         drawMenuButton(nvg, centerX, yPos, width, height, TranslateText.SINGLEPLAYER.text, singlePlayerAnimation.value)
 
-        multiplayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + spacing, width, height)) 1.0f else 0.0f, 16)
+        multiplayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + spacing, width, height)) 1.0f else 0.0f, 16.0)
         drawMenuButton(nvg, centerX, yPos + spacing, width, height, TranslateText.MULTIPLAYER.text, multiplayerAnimation.value)
 
-        optionsAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + (spacing * 2), width, height)) 1.0f else 0.0f, 16)
+        optionsAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + (spacing * 2), width, height)) 1.0f else 0.0f, 16.0)
         drawMenuButton(nvg, centerX, yPos + (spacing * 2), width, height, TranslateText.SETTINGS.text, optionsAnimation.value)
     }
 

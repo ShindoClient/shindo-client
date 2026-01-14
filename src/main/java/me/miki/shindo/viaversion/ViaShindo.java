@@ -1,6 +1,5 @@
 package me.miki.shindo.viaversion;
 
-import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.file.FileManager;
 import me.miki.shindo.viaversion.gui.AsyncVersionSlider;
@@ -11,10 +10,8 @@ public class ViaShindo {
 
     public final static int NATIVE_VERSION = 47;
 
-    @Getter
     private static ViaShindo instance;
 
-    @Getter
     private AsyncVersionSlider asyncVersionSlider;
 
     public ViaShindo() {
@@ -30,6 +27,14 @@ public class ViaShindo {
 
     public static void create() {
         instance = new ViaShindo();
+    }
+
+    public static ViaShindo getInstance() {
+        return instance;
+    }
+
+    public AsyncVersionSlider getAsyncVersionSlider() {
+        return asyncVersionSlider;
     }
 
     public void initAsyncSlider() {

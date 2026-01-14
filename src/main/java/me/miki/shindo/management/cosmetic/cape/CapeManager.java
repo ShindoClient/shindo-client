@@ -1,6 +1,5 @@
 package me.miki.shindo.management.cosmetic.cape;
 
-import lombok.Getter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
@@ -103,7 +102,7 @@ public class CapeManager {
         //add("Horse", "misc/horse-sample.png", "misc/horse.png", CapeCategory.MISC);
         //add("Trans Arch", "misc/transarch-sample.png", "misc/transarch.png", CapeCategory.MISC);
 
-        currentCape = getCapeByName(InternalSettingsMod.getInstance().getCapeConfigName());
+        currentCape = getCapeByName(InternalSettingsMod.instance.getCapeConfigName());
 
         Minecraft mc = Minecraft.getMinecraft();
         for (File f : Objects.requireNonNull(customCapeDir.listFiles())) {
@@ -180,7 +179,7 @@ public class CapeManager {
 
     public void setCurrentCape(Cape currentCape) {
         this.currentCape = currentCape;
-        InternalSettingsMod.getInstance().setCapeConfigName(currentCape.getName());
+        InternalSettingsMod.instance.setCapeConfigName(currentCape.getName());
     }
 
     public Cape getCapeByName(String name) {

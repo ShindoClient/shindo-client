@@ -34,10 +34,10 @@ class KillEffectsMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MULTIPLIER,
-        min = 1,
-        max = 10,
-        step = 1,
-        current = 1
+        min = 1.0,
+        max = 1.00,
+        step = 1.0,
+        current = 1.0
     )
     private val multiplierSetting = 1
 

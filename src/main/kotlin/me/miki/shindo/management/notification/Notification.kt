@@ -54,7 +54,7 @@ class Notification {
         val margin = 8f
         val height = 29f
 
-        val corner = InternalSettingsMod.getInstance().notificationCorner
+        val corner = InternalSettingsMod.instance.notificationCorner
         val x = when (corner) {
             InternalSettingsMod.NotificationCorner.TOP_LEFT,
             InternalSettingsMod.NotificationCorner.BOTTOM_LEFT -> margin

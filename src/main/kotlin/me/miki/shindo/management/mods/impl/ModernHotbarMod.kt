@@ -24,7 +24,7 @@ import kotlin.math.max
 
 class ModernHotbarMod :
     HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, LegacyIcon.MOD_MODERN_HOTBAR) {
-    private val animation = SimpleAnimation(0.0f)
+    private val selectorAnimation = SimpleAnimation(0.0f)
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private val design = Design.CLIENT
@@ -121,7 +121,7 @@ class ModernHotbarMod :
         val sr = ScaledResolution(mc)
         val currentDesign = design
         val currentColor = getInstance().colorManager.getCurrentColor()
-        val isText = InternalSettingsMod.Companion.getInstance().getHudTheme() == HudTheme.TEXT
+        val isText = InternalSettingsMod.instance.hudTheme == HudTheme.TEXT
 
         if (mc.getRenderViewEntity() is EntityPlayer) {
             if (currentDesign != Design.CHILL) {
@@ -168,8 +168,8 @@ class ModernHotbarMod :
             val i = sr.getScaledWidth() / 2
 
             if (smoothSetting) {
-                animation.setAnimation((i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat(), 18)
-                selX = animation.value
+                selectorAnimation.setAnimation((i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat(), 18)
+                selX = selectorAnimation.value
             } else {
                 selX = (i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat()
             }
@@ -220,13 +220,9 @@ class ModernHotbarMod :
             return translate
         }
 
-        override fun getNameKey(): String? {
-            return super.getNameKey()
-        }
+        override fun getNameKey(): String = super.getNameKey()
 
-        override fun getDisplayName(): String? {
-            return super.getDisplayName()
-        }
+        override fun getDisplayName(): String = super.getDisplayName()
     }
 
     private enum class PickupAnimation(private val translate: TranslateText) : PropertyEnum {

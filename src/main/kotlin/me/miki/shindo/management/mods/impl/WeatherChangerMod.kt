@@ -17,13 +17,14 @@ class WeatherChangerMod : Mod(
     LegacyIcon.MOD_WEATHER_CHANGER
 ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.WEATHER)
+    @JvmField
     val weather: Weather = Weather.CLEAR
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.RAIN_STRENGTH, min = 0, max = 1, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.RAIN_STRENGTH, min = 0.0, max = 1.0, current = 1.0)
     @JvmField
     var rainStrength = 1.0
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.THUNDER_STRENGTH, min = 0, max = 1, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.THUNDER_STRENGTH, min = 0.0, max = 1.0, current = 1.0)
     @JvmField
     var thunderStrength = 1.0
 

@@ -19,7 +19,7 @@ class HitColorMod :
     @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR, color = -0x10000)
     private val colorSetting = Color(255, 0, 0)
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0, max = 1, current = 0.45)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 0.45)
     private val alphaSetting = 0.45
 
     @EventTarget

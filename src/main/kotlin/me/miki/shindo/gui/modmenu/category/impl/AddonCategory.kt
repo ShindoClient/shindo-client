@@ -157,7 +157,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                 settingScroll.onAnimation()
             }
 
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance?.settingsLayoutMode)
 
             val headerX = getX() + 15f
             val headerY = getY() + 15f
@@ -240,7 +240,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance?.settingsLayoutMode)
             if (MouseUtils.isInside(mouseX, mouseY, getX() + 22f, getY() + 20f, 18f, 18f) && mouseButton == 0) {
                 openSetting = false
                 settingsPanel.clear()
@@ -282,14 +282,14 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (currentAddon != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (currentAddon != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.keyTyped(typedChar, keyCode)
         }
 

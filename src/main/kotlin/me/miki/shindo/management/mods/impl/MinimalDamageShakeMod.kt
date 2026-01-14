@@ -19,10 +19,10 @@ class MinimalDamageShakeMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.INTENSITY,
-        min = 0,
-        max = 100,
-        current = 0,
-        step = 1
+        min = 0.0,
+        max = 10.00,
+        current = 0.0,
+        step = 1.0
     )
     private val intensitySetting = 0
 

@@ -1,11 +1,9 @@
 package me.miki.shindo.management.cosmetic.cape;
 
-import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
 
-@Getter
 public enum CapeCategory {
     ALL(TranslateText.ALL.getText()), MINECON("Minecon"), FLAG("Flags"), CARTOON("Cartoon"), CUSTOM("Custom");
 
@@ -15,6 +13,18 @@ public enum CapeCategory {
 
     CapeCategory(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public SimpleAnimation getBackgroundAnimation() {
+        return backgroundAnimation;
+    }
+
+    public ColorAnimation getTextColorAnimation() {
+        return textColorAnimation;
     }
 
 }

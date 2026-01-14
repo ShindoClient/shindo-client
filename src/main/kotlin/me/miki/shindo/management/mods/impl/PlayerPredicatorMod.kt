@@ -1,6 +1,5 @@
 package me.miki.shindo.management.mods.impl
 
-import lombok.AllArgsConstructor
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.network.IMixinS14PacketEntity
 import me.miki.shindo.management.event.EventTarget
@@ -117,12 +116,7 @@ class PlayerPredicatorMod : Mod(
         }
     }
 
-    @AllArgsConstructor
-    private class Position {
-        private var x = 0.0
-        private var y = 0.0
-        private var z = 0.0
-
+    private data class Position(var x: Double, var y: Double, var z: Double) {
         fun squareDistanceTo(x: Double, y: Double, z: Double): Double {
             val d0 = x - this.x
             val d1 = y - this.y

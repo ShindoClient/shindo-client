@@ -22,13 +22,13 @@ class WelcomeMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val sr = ScaledResolution(mc)
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         val hello = "Hello!"
         val welcomeMessage = "Welcome to Shindo Client"
         val setupMessage = "An Custom Version of Soar Client"
         val setupMessage2 = "Time to setup Shindo."
 
-        BlurUtils.drawBlurScreen(14)
+        BlurUtils.drawBlurScreen(14F)
 
         if (fadeAnimation == null && getParent().isDoneBackgroundAnimation()) {
             fadeAnimation = DecelerateAnimation(800, 1.0)
@@ -46,16 +46,16 @@ class WelcomeMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 else -> message
             }
 
-            nvg.setupAndDraw {
+            nvg.setupAndDraw(Runnable {
                 nvg.drawCenteredText(
-                    message,
+                    message!!,
                     sr.scaledWidth / 2f,
-                    (sr.scaledHeight / 2f) - (nvg.getTextHeight(message, 26f, Fonts.REGULAR) / 2),
-                    Color(255, 255, 255, (fadeAnimation!!.valueFloat * 255).toInt()),
+                    (sr.scaledHeight / 2f) - (nvg.getTextHeight(message!!, 26f, Fonts.REGULAR) / 2),
+                    Color(255, 255, 255, (fadeAnimation!!.getValueFloat() * 255).toInt()),
                     26f,
                     Fonts.REGULAR
                 )
-            }
+            })
 
             if (timer.delay(2500) && fadeAnimation!!.direction == Direction.FORWARDS) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)

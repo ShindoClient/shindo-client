@@ -36,7 +36,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) :
         val cardWidth = 96f
         val cardHeight = 28f
         val padding = 14f
-        val selected = InternalSettingsMod.getInstance().notificationCorner
+        val selected = InternalSettingsMod.instance.notificationCorner
 
         val leftX = x + padding
         val rightX = x + width - cardWidth - padding

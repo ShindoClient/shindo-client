@@ -1,5 +1,10 @@
 package me.miki.shindo.management.profile
 
+import arrow.core.Either
+import arrow.core.Option
+import arrow.core.getOrElse
+import arrow.core.orNull
+import arrow.core.toOption
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -9,6 +14,7 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.addons.AddonManager
+import me.miki.shindo.management.addons.rpo.ConfigHandler
 import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.Language
 import me.miki.shindo.management.mods.HUDMod
@@ -244,18 +250,20 @@ class ProfileManager {
         }
     }
 
-    fun save(file: File, serverIp: String?, type: ProfileType?, icon: ProfileIcon?, customIcon: File?) {
+    fun save(file: File, serverIp: String?, type: ProfileType?, icon: ProfileIcon?, customIcon: File?, shareCode: String? = null) {
         ShindoLogger.info("=== SAVING PROFILE ===")
         ShindoLogger.info("File: ${file.absolutePath}")
         ShindoLogger.info("Server: $serverIp, Type: ${type?.id}, Icon: ${icon?.id}")
 
-        val snapshot = buildProfileSnapshot(serverIp, type, icon, customIcon)
+        val resolvedShareCode = shareCode ?: readShareCode(file)
+        val snapshot = buildProfileSnapshot(serverIp, type, icon, customIcon, resolvedShareCode)
         writeProfile(file, snapshot)
 
         activeProfile?.takeIf { it.jsonFile?.canonicalPath == file.canonicalPath }?.let {
             it.serverIp = serverIp ?: ""
             it.type = type ?: ProfileType.ALL
             it.customIcon = customIcon
+            it.shareCode = resolvedShareCode
             ShindoLogger.info("Updated active profile metadata")
         }
     }
@@ -270,7 +278,7 @@ class ProfileManager {
         ShindoLogger.info("Profile: ${target.name}")
         ShindoLogger.info("File: ${file.absolutePath}")
 
-        val snapshot = buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon)
+        val snapshot = buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon, target.shareCode)
         writeProfile(file, snapshot)
     }
 
@@ -352,7 +360,7 @@ class ProfileManager {
             return null
         }
 
-        return try {
+        val result = Either.catch {
             FileReader(file).use { reader ->
                 val root = gson.fromJson(reader, JsonObject::class.java) ?: JsonObject()
                 ShindoLogger.info("Building profile from: ${file.name}")
@@ -367,30 +375,53 @@ class ProfileManager {
 
                 ShindoLogger.info("Profile metadata - Server: '$serverIp', Icon: ${icon.id}, Type: ${type.id}")
 
-                var customIcon: File? = null
-                val customIconName = JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: ""
-                if (customIconName.isNotEmpty() && !customIconName.equals("null", true)) {
-                    val iconDir = instance.fileManager.profileIconDir
-                    val candidate = File(iconDir, customIconName)
-                    if (candidate.exists()) {
-                        customIcon = candidate
-                        ShindoLogger.info("Custom icon found: $customIconName")
-                    } else {
-                        ShindoLogger.warn("Custom icon not found: $customIconName")
-                    }
-                }
+                val customIconName = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
+                    .trim()
+                    .toOption()
+                    .filter { it.isNotEmpty() && !it.equals("null", true) }
 
-                val profile = Profile(id, serverIp, file, icon, customIcon, type)
+                val customIcon = customIconName
+                    .flatMap { name ->
+                        val candidate = File(instance.fileManager.profileIconDir, name)
+                        if (candidate.exists())  Option.fromNullable(candidate) else null.toOption()
+                    }.orNull()
+
+                customIconName.fold(
+                    {},
+                    { name ->
+                        if (customIcon != null) {
+                            ShindoLogger.info("Custom icon found: $name")
+                        } else {
+                            ShindoLogger.warn("Custom icon not found: $name")
+                        }
+                    }
+                )
+
+                val shareCode = (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
+                    .trim()
+                    .toOption()
+                    .filter { it.isNotEmpty() }
+                    .orNull()
+
+                val profile = Profile(id, serverIp, file, icon, customIcon, type, shareCode)
                 ShindoLogger.info("Profile built successfully: ${profile.name}")
                 profile
             }
-        } catch (e: Exception) {
+        }
+
+        return result.getOrElse { e ->
             ShindoLogger.error("Failed to load profile from ${file.name}", e)
             null
         }
     }
 
-    private fun buildProfileSnapshot(serverIp: String?, type: ProfileType?, icon: ProfileIcon?, customIcon: File?): JsonObject {
+    private fun buildProfileSnapshot(
+        serverIp: String?,
+        type: ProfileType?,
+        icon: ProfileIcon?,
+        customIcon: File?,
+        shareCode: String?
+    ): JsonObject {
         val modManager: ModManager = instance.modManager
         val addonManager: AddonManager = instance.addonManager
         val colorManager: ColorManager = instance.colorManager
@@ -409,6 +440,9 @@ class ProfileManager {
         profileData.addProperty("Type", resolvedType.id)
         profileData.addProperty("Server", serverIp ?: "")
         profileData.addProperty("CustomIcon", customIcon?.name ?: "")
+        if (!shareCode.isNullOrBlank()) {
+            profileData.addProperty("ShareCode", shareCode)
+        }
 
         jsonObject.add("Profile Data", profileData)
 
@@ -595,5 +629,75 @@ class ProfileManager {
         } catch (e: Exception) {
             ShindoLogger.error("Failed to save profile", e)
         }
+    }
+
+    fun readProfileJson(file: File?): JsonObject? {
+        if (file == null || !file.exists()) {
+            return null
+        }
+        return try {
+            FileReader(file).use { reader ->
+                gson.fromJson(reader, JsonObject::class.java) ?: JsonObject()
+            }
+        } catch (e: Exception) {
+            ShindoLogger.error("Failed to read profile JSON", e)
+            null
+        }
+    }
+
+    fun updateShareCode(profile: Profile?, code: String) {
+        if (profile?.jsonFile == null) {
+            return
+        }
+        val root = readProfileJson(profile.jsonFile) ?: JsonObject()
+        val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
+        profileData.addProperty("ShareCode", code)
+        root.add("Profile Data", profileData)
+        writeProfile(profile.jsonFile!!, root)
+        profile.shareCode = code
+    }
+
+    fun importProfileFromShare(name: String?, code: String?, json: JsonObject): File? {
+        val baseName = sanitizeProfileName(name ?: "Shared Profile")
+        val target = createUniqueProfileFile(baseName)
+        if (!code.isNullOrBlank()) {
+            val profileData = JsonUtils.getObjectProperty(json, "Profile Data") ?: JsonObject()
+            profileData.addProperty("ShareCode", code)
+            json.add("Profile Data", profileData)
+        }
+        writeProfile(target, json)
+        loadProfiles(false)
+        return target
+    }
+
+    private fun readShareCode(file: File): String? {
+        val root = readProfileJson(file) ?: return null
+        val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: return null
+        val raw = JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: ""
+        return raw.trim().ifEmpty { null }
+    }
+
+    private fun createUniqueProfileFile(baseName: String): File {
+        val profileDir = instance.fileManager.profileDir
+        var sanitized = sanitizeProfileName(baseName)
+        if (sanitized.isEmpty()) {
+            sanitized = "Shared Profile"
+        }
+        var candidate = File(profileDir, "$sanitized.json")
+        var suffix = 1
+        while (candidate.exists()) {
+            candidate = File(profileDir, "$sanitized ($suffix).json")
+            suffix++
+        }
+        return candidate
+    }
+
+    private fun sanitizeProfileName(name: String): String {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) {
+            return "Profile"
+        }
+        val cleaned = trimmed.replace(Regex("[^A-Za-z0-9 _-]"), "")
+        return cleaned.take(48).ifEmpty { "Profile" }
     }
 }

@@ -34,7 +34,7 @@ class GuiFixConnecting : GuiScreen {
         mc = mcIn
         previousGuiScreen = parent
         mcIn.loadWorld(null)
-        mcIn.serverData = serverData
+        mcIn.setServerData(serverData)
         connectServerData(serverData)
     }
 

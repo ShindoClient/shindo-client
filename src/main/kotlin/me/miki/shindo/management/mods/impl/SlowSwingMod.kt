@@ -11,7 +11,7 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSett
 
 class SlowSwingMod :
     Mod(TranslateText.SLOW_SWING, TranslateText.SLOW_SWING_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_SLOW_SWING) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 2, max = 20, current = 14, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 2.0, max = 2.00, current = 1.04, step = 1.0)
     @JvmField
     var delaySetting = 14.0
 

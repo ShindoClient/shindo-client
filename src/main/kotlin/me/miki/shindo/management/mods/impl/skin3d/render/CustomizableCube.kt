@@ -22,7 +22,7 @@ class CustomizableCube(
     mirror: Boolean,
     textureWidth: Float,
     textureHeight: Float,
-    hide: Array<SkinDirection?>
+    hide: Array<SkinDirection?>?
 ) {
     val minX: Float
     val minY: Float
@@ -31,21 +31,21 @@ class CustomizableCube(
     val maxY: Float
     val maxZ: Float
     private val hidden: Array<SkinDirection?>
-    private val polygons: Array<Polygon>
+    private val polygons: Array<Polygon?>
     private var polygonCount = 0
 
     init {
         var x = x
         var y = y
         var z = z
-        this.hidden = hide
+        this.hidden = hide ?: emptyArray()
         this.minX = x
         this.minY = y
         this.minZ = z
         this.maxX = x + sizeX
         this.maxY = y + sizeY
         this.maxZ = z + sizeZ
-        this.polygons = arrayOfNulls<Polygon>(6)
+        this.polygons = arrayOfNulls(6)
 
         var pX = x + sizeX
         var pY = y + sizeY
@@ -181,7 +181,7 @@ class CustomizableCube(
         var polygon: Polygon
 
         for (id in 0..<polygonCount) {
-            polygon = polygons[id]
+            polygon = polygons[id]!!
 
             for (i in 0..3) {
                 val vertex = polygon.vertices[i]

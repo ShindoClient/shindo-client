@@ -8,8 +8,6 @@ import me.miki.shindo.management.event.impl.EventRenderPlayer
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
-import me.miki.shindo.management.mods.Mod.isToggled
-import me.miki.shindo.management.mods.Mod.setToggled
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
@@ -120,8 +118,9 @@ class MoBendsMod :
     public override fun onEnable() {
         super.onEnable()
 
-        if (Skin3DMod.Companion.getInstance().isToggled()) {
-            Skin3DMod.Companion.getInstance().setToggled(false)
+        val skin3D = Skin3DMod.instance
+        if (skin3D != null && skin3D.isToggled()) {
+            skin3D.setToggled(false)
         }
 
 

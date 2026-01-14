@@ -1,0 +1,133 @@
+
+Path                                                                                                                                                              TargetPackage
+----                                                                                                                                                              -------------                         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\accessors\BlockAccessor.java                                     net.Block.block                       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\accessors\GuiNewChatAccessor.java                                net.GuiNewChat.gui                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\audio\MixinSoundManager.java                              net.SoundManager.audio                
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlock.java                                     net.Block.block                       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockCactus.java                               net.BlockCactus.block                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockCrops.java                                net.BlockCrops.block                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockFluidRenderer.java                        net.BlockFluidRenderer.renderer       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockGlass.java                                net.BlockGlass.block                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockNetherWart.java                           net.BlockNetherWart.block             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockPos.java                                  net.BlockPos.util                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockRedstoneTorch.java                        net.BlockRedstoneTorch.block          
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockRendererDispatcher.java                   net.BlockRendererDispatcher.renderer  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinBlockStainedGlass.java                         net.BlockStainedGlass.block           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinPropertyBool.java                              net.PropertyBool.properties           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinPropertyHelper.java                            net.PropertyHelper.properties         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\block\MixinPropertyInteger.java                           net.PropertyInteger.properties        
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinAnvilChunkLoader.java                          net.AnvilChunkLoader.storage          
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinChunk.java                                     net.Chunk.chunk                       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinChunkRenderContainer.java                      net.ChunkRenderContainer.renderer     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinChunkRenderDispatcher.java                     net.ChunkRenderDispatcher.chunk       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinRenderChunk.java                               net.RenderChunk.chunk                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\chunk\MixinVisGraph.java                                  net.VisGraph.chunk                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\entity\MixinAbstractClientPlayer.java              net.AbstractClientPlayer.entity       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\entity\MixinEntityOtherPlayerMP.java               net.EntityOtherPlayerMP.entity        
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\entity\MixinEntityPlayerSP.java                    net.EntityPlayerSP.entity             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinChatLine.java                             net.ChatLine.gui                      
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinFontRenderer.java                         net.FontRenderer.gui                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiChat.java                              net.GuiChat.gui                       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiChest.java                             net.GuiChest.inventory                
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiContainer.java                         net.GuiContainer.inventory            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiDownloadTerrain.java                   net.GuiDownloadTerrain.gui            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiGameOver.java                          net.GuiGameOver.gui                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiIngame.java                            net.GuiIngame.gui                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiInventory.java                         net.GuiInventory.inventory            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiLanguage.java                          net.GuiLanguage.gui                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiMultiplayer.java                                                             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiNewChat.java                                                                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiOptions.java                           net.GuiOptions.gui                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiPlayerTabOverlay.java                  net.GuiPlayerTabOverlay.gui           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiScreen.java                            net.GuiScreen.gui                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiScreenBook.java                        net.GuiScreenBook.gui                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\gui\MixinGuiScreenResourcePacks.java               net.GuiScreenResourcePacks.gui        
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\MixinMinecraft.java                                net.Minecraft.client                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\model\MixinModelBase.java                          net.ModelBase.model                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\model\MixinModelBox.java                           net.ModelBox.model                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\model\MixinModelPlayer.java                        net.ModelPlayer.model                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\model\MixinModelSkeleton.java                      net.ModelSkeleton.model               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\model\MixinModelVillager.java                      net.ModelVillager.model               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\multiplayer\MixinPlayerControllerMP.java           net.PlayerControllerMP.multiplayer    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\particle\MixinEffectRenderer.java                  net.EffectRenderer.particle           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\particle\MixinEntityFX.java                        net.EntityFX.particle                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\block\model\MixinFaceBakery.java          net.FaceBakery.model                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerArmorBase.java     net.LayerArmorBase.layers             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerArrow.java         net.LayerArrow.layers                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerCreeperCharge.java net.LayerCreeperCharge.layers         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerHeldItem.java      net.LayerHeldItem.layers              
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerSpiderEyes.java    net.LayerSpiderEyes.layers            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\layer\MixinLayerWitherAura.java    net.LayerWitherAura.layers            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\MixinArmorStandRenderer.java       net.ArmorStandRenderer.entity         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\MixinRenderItem.java               net.RenderItem.entity                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\entity\MixinRenderPlayer.java             net.RenderPlayer.entity               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinAmbientOcclusionFace.java                                                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinBlockModelRenderer.java              net.BlockModelRenderer.renderer       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinEntityRenderer.java                  net.EntityRenderer.renderer           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinInventoryEffectRenderer.java         net.InventoryEffectRenderer.renderer  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinItemRenderer.java                    net.ItemRenderer.renderer             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRender.java                          net.Render.entity                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRenderEntityItem.java                net.RenderEntityItem.entity           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRendererLivingEntity.java            net.RendererLivingEntity.entity       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRenderGlobal.java                    net.RenderGlobal.renderer             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRenderManager.java                   net.RenderManager.entity              
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinRenderTNTPrimed.java                 net.RenderTNTPrimed.entity            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\MixinWorldRenderer.java                   net.WorldRenderer.renderer            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\renderer\texture\MixinTextureMap.java              net.TextureMap.texture                
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\resources\MixinAbstractResourcePack.java           net.AbstractResourcePack.resources    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\resources\MixinLanguageManager.java                net.LanguageManager.resources         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\resources\MixinResourcePackRepository.java         net.ResourcePackRepository.resources  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\client\settings\MixinGameSettings.java                    net.GameSettings.settings             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\enchantments\MixinEnchantment.java                        net.Enchantment.enchantment           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\ai\attributes\MixinBaseAttribute.java              net.BaseAttribute.attributes          
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\item\MixinEntityXPOrb.java                         net.EntityXPOrb.item                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\MixinEntity.java                                   net.Entity.entity                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\MixinEntityList.java                               net.EntityList.entity                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\MixinEntityLivingBase.java                         net.EntityLivingBase.entity           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\entity\player\MixinEntityPlayer.java                      net.EntityPlayer.player               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\item\MixinEntityItem.java                                 net.EntityItem.item                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\item\MixinItemBlock.java                                  net.ItemBlock.item                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\item\MixinItemFood.java                                   net.ItemFood.item                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\item\MixinItemStack.java                                  net.ItemStack.item                    
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\lwjgl\MixinLinuxKeyboard.java                                                                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\lwjgl\MixinLinuxKeycodes.java                                                                   
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\lwjgl\MixinWindowsDisplay.java                                                                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\nbt\MixinNBTTagCompound.java                              net.NBTTagCompound.nbt                
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\nbt\MixinNBTTagString.java                                net.NBTTagString.nbt                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinC08PacketPlayerBlockPlacement.java           net.C08PacketPlayerBlockPlacement.cli…
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinC17PacketCustomPayload.java                  net.C17PacketCustomPayload.client     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinEntityPacket.java                            net.S14PacketEntity.server            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinLazyLoadBase.java                            net.LazyLoadBase.util                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetHandlerPlayClient.java                    net.NetHandlerPlayClient.network      
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetworkManager.java                          net.NetworkManager.network            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetworkManager5.java                                                               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinPacketThreadUtil.java                                                              
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinS14PacketEntity.java                         net.S14PacketEntity.server            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinS3FPacketCustomPayload.java                  net.S3FPacketCustomPayload.server     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinServerAddress.java                           net.ServerAddress.multiplayer         
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinServerList.java                              net.ServerList.multiplayer            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\optifine\MixinLightMap.java                                                                     
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\optifine\MixinRegionRenderCache.java                      net.RegionRenderCache.renderer        
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\scoreboard\MixinScoreboard.java                           net.Scoreboard.scoreboard             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\server\MixinMinecraftServer.java                          net.MinecraftServer.server            
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\server\MixinServerListEntryNormal.java                                                          
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\server\MixinServerSelectionList.java                      net.ServerSelectionList.gui           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\shader\MixinShaderGroup.java                              net.ShaderGroup.shader                
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\tileentity\MixinTileEntityBannerRenderer.java             net.TileEntityBannerRenderer.tileenti…
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\tileentity\MixinTileEntityRendererDispatcher.java         net.TileEntityRendererDispatcher.tile…
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\tileentity\MixinTileEntitySkullRenderer.java              net.TileEntitySkullRenderer.tileentity
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\util\MixinMouseHelper.java                                net.MouseHelper.util                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\util\MixinNBTTagString.java                               net.NBTTagString.nbt                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\util\MixinScreenshotHelper.java                           net.ScreenShotHelper.util             
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\vertex\MixinVertexBuffer.java                             net.VertexBuffer.vertex               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\vertex\MixinVertexFormat.java                             net.VertexFormat.vertex               
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinChunkCache.java                                net.ChunkCache.world                  
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinNodeProcessor.java                             net.NodeProcessor.pathfinder          
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinWorld.java                                     net.World.world                       
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinWorldChunkManager.java                         net.WorldChunkManager.biome           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinWorldClient.java                               net.WorldClient.multiplayer           
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\world\MixinWorldInfo.java                                 net.WorldInfo.storage                 
+E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\ShindoTweaker.java                                                                                     
+
+

@@ -14,7 +14,7 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation
 
 class MemoryUsageMod :
     SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
-    private val animation = SimpleAnimation()
+    private val circleAnimation = SimpleAnimation()
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private val design = Design.SIMPLE
@@ -34,14 +34,14 @@ class MemoryUsageMod :
     }
 
     private fun drawNanoVG(nvg: NanoVGManager?) {
-        animation.setAnimation(((this.usingMemory / 100f) * 360), 16)
+        circleAnimation.setAnimation(((this.usingMemory / 100f) * 360), 16)
 
         this.drawBackground(54f, 60f)
         this.drawCenteredText("Memory", 54 / 2f, 6f, 9f, getHudFont(1))
         this.drawCenteredText(this.usingMemory.toString() + "%", 54 / 2f, 32f, 9f, getHudFont(1))
 
         this.drawArc(27f, 35.5f, 16.5f, -90f, 360f, 1.6f, this.getFontColor(120))
-        this.drawArc(27f, 35.5f, 16.5f, -90f, animation.value - 90, 1.6f, this.getFontColor())
+        this.drawArc(27f, 35.5f, 16.5f, -90f, circleAnimation.value - 90, 1.6f, this.getFontColor())
 
         this.setWidth(54)
         this.setHeight(60)

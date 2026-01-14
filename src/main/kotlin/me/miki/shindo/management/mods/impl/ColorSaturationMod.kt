@@ -25,16 +25,16 @@ class ColorSaturationMod : Mod(
 ) {
     private val colorsaturation = ResourceLocation("minecraft:shaders/post/colorsaturation.json")
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, min = 0, max = 1, current = 0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, min = 0.0, max = 1.0, current = 0.0)
     private val hueSetting = 0.0
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.BRIGHTNESS, min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BRIGHTNESS, min = 0.0, max = 1.0, current = 0.5)
     private val brightnessSetting = 0.5
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.CONTRAST, min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.CONTRAST, min = 0.0, max = 1.0, current = 0.5)
     private val contrastSetting = 0.5
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SATURATION, min = 0, max = 1, current = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SATURATION, min = 0.0, max = 1.0, current = 0.5)
     private val saturationSetting = 0.5
     private var group: ShaderGroup? = null
     private var prevHue = 0f

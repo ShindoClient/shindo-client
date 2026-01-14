@@ -62,32 +62,7 @@ class ShindoAPI {
 
         val typeSup: Supplier<String> = Supplier {
             try {
-                val mc = Minecraft.getMinecraft()
-                val session = mc.session ?: return@Supplier "LOCAL"
-                val uuid = session.profile.id
-                if (uuid == null) return@Supplier "LOCAL"
-
-                try {
-                    val getSessionType: Method = session.javaClass.getMethod("getSessionType")
-                    val sessionType = getSessionType.invoke(session) as String
-                    if (sessionType != null && (sessionType == "msa" || sessionType.contains("microsoft"))) {
-                        return@Supplier "MICROSOFT"
-                    }
-                } catch (e: Exception) {
-                    ShindoLogger.error("An error occurred while trying to get the session type", e)
-                }
-
-                try {
-                    val getToken: Method = session.javaClass.getMethod("getToken")
-                    val token = getToken.invoke(session) as String
-                    if (!token.isNullOrEmpty()) {
-                        return@Supplier "MICROSOFT"
-                    }
-                } catch (e: Exception) {
-                    ShindoLogger.error("An error occurred while trying to get the token", e)
-                }
-
-                "OFFLINE"
+                resolveAccountType(Minecraft.getMinecraft()).name
             } catch (e: Exception) {
                 "LOCAL"
             }
@@ -118,6 +93,15 @@ class ShindoAPI {
                     )
                 }
             }
+            messageHandler.addObserver { type, payload ->
+                Shindo.getInstance().profileShareManager.handleMessage(type, payload)
+            }
+            messageHandler.addObserver { type, payload ->
+                Shindo.getInstance().chatManager.handleMessage(type, payload)
+            }
+            messageHandler.addObserver { type, payload ->
+                Shindo.getInstance().broadcastManager.handleMessage(type, payload)
+            }
             connect()
         }
     }
@@ -137,6 +121,10 @@ class ShindoAPI {
         return resolveEffectiveUuid(Minecraft.getMinecraft())
     }
 
+    fun getAccountType(): AccountType {
+        return resolveAccountType(Minecraft.getMinecraft())
+    }
+
     private fun safeTrim(value: String?): String = value?.trim() ?: ""
 
     private fun safeUUID(value: String?): UUID? = try {
@@ -148,6 +136,34 @@ class ShindoAPI {
     private fun generateOfflineUuid(name: String?): String {
         val baseName = if (name.isNullOrEmpty()) "Player" else name
         return UUID.nameUUIDFromBytes(("OfflinePlayer:$baseName").toByteArray(StandardCharsets.UTF_8)).toString()
+    }
+
+    private fun resolveAccountType(mc: Minecraft): AccountType {
+        val session = mc.session ?: return AccountType.LOCAL
+        val uuid = session.profile.id
+        if (uuid == null) return AccountType.LOCAL
+
+        try {
+            val getSessionType: Method = session.javaClass.getMethod("getSessionType")
+            val sessionType = getSessionType.invoke(session) as String
+            if (sessionType != null && (sessionType == "msa" || sessionType.contains("microsoft"))) {
+                return AccountType.MICROSOFT
+            }
+        } catch (e: Exception) {
+            ShindoLogger.error("An error occurred while trying to get the session type", e)
+        }
+
+        try {
+            val getToken: Method = session.javaClass.getMethod("getToken")
+            val token = getToken.invoke(session) as String
+            if (!token.isNullOrEmpty()) {
+                return AccountType.MICROSOFT
+            }
+        } catch (e: Exception) {
+            ShindoLogger.error("An error occurred while trying to get the token", e)
+        }
+
+        return AccountType.OFFLINE
     }
 
     private fun resolveEffectiveUuid(mc: Minecraft): UUID {

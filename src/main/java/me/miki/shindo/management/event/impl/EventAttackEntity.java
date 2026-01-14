@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.miki.shindo.management.event.Event;
 import net.minecraft.entity.Entity;
 
-@Getter
 public class EventAttackEntity extends Event {
 
     private final Entity entity;
@@ -13,4 +12,7 @@ public class EventAttackEntity extends Event {
         this.entity = entity;
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
 }

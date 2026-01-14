@@ -23,7 +23,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
     init {
         thinArms = (playerRenderer as IMixinRenderPlayer).hasThinArms()
         bodyLayers.add(
-            BodyLayerFeatureRenderer.Layer(
+            Layer(
                 0,
                 false,
                 EnumPlayerModelParts.LEFT_PANTS_LEG,
@@ -31,7 +31,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 Supplier { playerRenderer.getMainModel().bipedLeftLeg })
         )
         bodyLayers.add(
-            BodyLayerFeatureRenderer.Layer(
+            Layer(
                 1,
                 false,
                 EnumPlayerModelParts.RIGHT_PANTS_LEG,
@@ -39,7 +39,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 Supplier { playerRenderer.getMainModel().bipedRightLeg })
         )
         bodyLayers.add(
-            BodyLayerFeatureRenderer.Layer(
+            Layer(
                 2,
                 false,
                 EnumPlayerModelParts.LEFT_SLEEVE,
@@ -47,7 +47,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 Supplier { playerRenderer.getMainModel().bipedLeftArm })
         )
         bodyLayers.add(
-            BodyLayerFeatureRenderer.Layer(
+            Layer(
                 3,
                 true,
                 EnumPlayerModelParts.RIGHT_SLEEVE,
@@ -55,7 +55,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 Supplier { playerRenderer.getMainModel().bipedRightArm })
         )
         bodyLayers.add(
-            BodyLayerFeatureRenderer.Layer(
+            Layer(
                 4,
                 false,
                 EnumPlayerModelParts.JACKET,
@@ -65,7 +65,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
     }
 
     override fun doRenderLayer(
-        player: AbstractClientPlayer,
+        player: AbstractClientPlayer?,
         paramFloat1: Float,
         paramFloat2: Float,
         paramFloat3: Float,
@@ -74,7 +74,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
         paramFloat6: Float,
         paramFloat7: Float
     ) {
-        if (!player.hasSkin() || player.isInvisible()) {
+        if (player == null || !player.hasSkin() || player.isInvisible()) {
             return
         }
 
@@ -82,8 +82,9 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
             return
         }
 
+        val skinMod = Skin3DMod.getInstance() ?: return
         if (mc.thePlayer.getPositionVector()
-                .squareDistanceTo(player.getPositionVector()) > Skin3DMod.Companion.getInstance().getRenderDistanceLOD()
+                .squareDistanceTo(player.getPositionVector()) > skinMod.getRenderDistanceLOD()
         ) {
             return
         }
@@ -116,9 +117,10 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
             return
         }
 
-        val pixelScaling: Float = Skin3DMod.Companion.getInstance().getBaseVoxelSize()
+        val skinMod = Skin3DMod.getInstance() ?: return
+        val pixelScaling: Float = skinMod.getBaseVoxelSize()
         val heightScaling = 1.035f
-        var widthScaling: Float = Skin3DMod.Companion.getInstance().getBaseVoxelSize()
+        var widthScaling: Float = skinMod.getBaseVoxelSize()
 
         val redTint = abstractClientPlayer.hurtTime > 0 || abstractClientPlayer.deathTime > 0
 
@@ -133,15 +135,15 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 layer.vanillaGetter.get()!!.postRender(0.0625f)
 
                 if (layer.shape == Shape.ARMS) {
-                    layers[layer.layersId]!!.x = 0.998f * 16
+                    layers[layer.layersId]!!.x = 0.998f * 16f
                 } else if (layer.shape == Shape.ARMS_SLIM) {
-                    layers[layer.layersId]!!.x = 0.499f * 16
+                    layers[layer.layersId]!!.x = 0.499f * 16f
                 }
 
                 if (layer.shape == Shape.BODY) {
-                    widthScaling = Skin3DMod.Companion.getInstance().getBodyVoxelWidthSize()
+                    widthScaling = skinMod.getBodyVoxelWidthSize()
                 } else {
-                    widthScaling = Skin3DMod.Companion.getInstance().getBaseVoxelSize()
+                    widthScaling = skinMod.getBaseVoxelSize()
                 }
 
                 if (layer.mirrored) {
@@ -161,11 +163,11 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
         return false
     }
 
-    private enum class Shape(private val yOffsetMagicValue: Float) {
-        HEAD(0), BODY(0.6f), LEGS(-0.2f), ARMS(0.4f), ARMS_SLIM(0.4f)
+    private enum class Shape(val yOffsetMagicValue: Float) {
+        HEAD(0f), BODY(0.6f), LEGS(-0.2f), ARMS(0.4f), ARMS_SLIM(0.4f)
     }
 
-    internal inner class Layer(
+    private data class Layer(
         var layersId: Int,
         var mirrored: Boolean,
         var modelPart: EnumPlayerModelParts?,

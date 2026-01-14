@@ -11,6 +11,7 @@ class FileManager {
     val shindoDir: File
     val externalDir: File
     val cacheDir: File
+    val logsDir: File
 
     val musicDir: File
     val profileDir: File
@@ -26,6 +27,19 @@ class FileManager {
     val capeCacheDir: File
 
     val profileIconDir: File
+    val mainLogFile: File
+    val coreLogFile: File
+    val modsLogFile: File
+    val chatLogFile: File
+    val notificationLogFile: File
+    val websocketLogFile: File
+    val networkLogFile: File
+    val musicLogFile: File
+    val discordLogFile: File
+    val uiLogFile: File
+    val securityLogFile: File
+    val addonsLogFile: File
+    val profileLogFile: File
 
     init {
         val mcDir = Minecraft.getMinecraft().mcDataDir
@@ -34,6 +48,7 @@ class FileManager {
         shindoDir = File(mcDir, "shindo")
         externalDir = File(shindoDir, "external")
         cacheDir = File(shindoDir, "cache")
+        logsDir = File(cacheDir, "logs")
 
         musicDir = File(shindoDir, "music")
         profileDir = File(shindoDir, "profile")
@@ -48,6 +63,19 @@ class FileManager {
         customCapeDir = File(cacheDir, "custom-cape")
         capeCacheDir = File(cacheDir, "cape")
         profileIconDir = File(cacheDir, "profile-icon")
+        mainLogFile = File(logsDir, "client.log")
+        coreLogFile = File(logsDir, "core.log")
+        modsLogFile = File(logsDir, "mods.log")
+        chatLogFile = File(logsDir, "chat-friends.log")
+        notificationLogFile = File(logsDir, "notifications.log")
+        websocketLogFile = File(logsDir, "websocket.log")
+        networkLogFile = File(logsDir, "network.log")
+        musicLogFile = File(logsDir, "music.log")
+        discordLogFile = File(logsDir, "discord.log")
+        uiLogFile = File(logsDir, "ui.log")
+        securityLogFile = File(logsDir, "security.log")
+        addonsLogFile = File(logsDir, "addons.log")
+        profileLogFile = File(logsDir, "profile.log")
 
         try {
             if (!shindoDir.exists()) {
@@ -61,6 +89,7 @@ class FileManager {
 
             createDir(externalDir)
             createDir(cacheDir)
+            createDir(logsDir)
 
             createDir(musicDir)
             createDir(profileDir)
@@ -75,6 +104,19 @@ class FileManager {
             createDir(customCapeDir)
             createDir(capeCacheDir)
             createDir(profileIconDir)
+            createFile(mainLogFile)
+            createFile(coreLogFile)
+            createFile(modsLogFile)
+            createFile(chatLogFile)
+            createFile(notificationLogFile)
+            createFile(websocketLogFile)
+            createFile(networkLogFile)
+            createFile(musicLogFile)
+            createFile(discordLogFile)
+            createFile(uiLogFile)
+            createFile(securityLogFile)
+            createFile(addonsLogFile)
+            createFile(profileLogFile)
 
             createVersionFile()
         } catch (e: Exception) {

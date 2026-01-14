@@ -27,10 +27,10 @@ class ChatMod :
         type = PropertyType.NUMBER,
         translate = TranslateText.SMOOTH_SPEED,
         category = "Animation",
-        min = 1,
-        max = 10,
-        step = 1,
-        current = 4
+        min = 1.0,
+        max = 1.00,
+        step = 1.0,
+        current = 4.0
     )
     @JvmField
     var smoothSpeedSetting = 4.0
@@ -51,7 +51,7 @@ class ChatMod :
     @JvmField
     var compactSetting = false
 
-    @Property(type = PropertyType.BOOLEAN, name = "Highlight Mentions", category = "Display", current = 1)
+    @Property(type = PropertyType.BOOLEAN, name = "Highlight Mentions", category = "Display", current = 1.0)
     @JvmField
     var highlightMentionsSetting = true
 

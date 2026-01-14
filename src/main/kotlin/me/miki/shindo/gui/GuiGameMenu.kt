@@ -14,14 +14,14 @@ import me.miki.shindo.utils.animation.normal.easing.EaseLiner
 import me.miki.shindo.utils.buffer.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
-import net.minecraft.client.gui.GuiAchievements
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiOptions
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiShareToLan
-import net.minecraft.client.gui.GuiStats
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.gui.achievement.GuiAchievements
+import net.minecraft.client.gui.achievement.GuiStats
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
@@ -52,14 +52,15 @@ class GuiGameMenu : GuiScreen() {
         width = 180
         height = 220
 
-        introAnimation = EaseLiner(80, 1.0f)
+        introAnimation = EaseLiner(80, 1.0)
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        BlurUtils.drawBlurScreen(20)
+        BlurUtils.drawBlurScreen(20F)
         val nvg = Shindo.getInstance().nanoVGManager
-        screenAnimation.wrap({ drawNanoVG(nvg) }, x, y, width, height, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+        screenAnimation.wrap(Runnable { drawNanoVG(nvg) }, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), false)
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(null)
             mc.setIngameFocus()
@@ -67,8 +68,8 @@ class GuiGameMenu : GuiScreen() {
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawNanoVG(nvg: NanoVGManager) {
-        nvg.drawRect(-5f, -5f, scaledWidth + 10f, scaledHeight + 10f, Color(0, 0, 0, 140))
+    private fun drawNanoVG(nvg: NanoVGManager?) {
+        nvg!!.drawRect(-5f, -5f, scaledWidth + 10f, scaledHeight + 10f, Color(0, 0, 0, 140))
         nvg.drawText(LegacyIcon.ARROW_LEFT, x.toFloat(), y + 5f, Color(255, 255, 255, 140), 11f, Fonts.LEGACYICON)
         nvg.drawCenteredText(I18n.format("menu.game"), centre.toFloat(), y + 5f, Color(255, 255, 255, 200), 13f, Fonts.SEMIBOLD)
 
@@ -117,7 +118,7 @@ class GuiGameMenu : GuiScreen() {
         }
         if (MouseUtils.isInside(mouseX, mouseY, resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize, resourcifyButtonSize)) {
             val addon = ResourcifyAddon.getInstance()
-            if (addon != null && addon.isToggled) {
+            if (addon != null && addon.isToggled()) {
                 mc.displayGuiScreen(GuiResourcify(this, ResourcifyResourceType.RESOURCE_PACK))
             } else {
                 Shindo.getInstance().notificationManager.post(

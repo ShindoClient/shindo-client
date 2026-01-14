@@ -1,8 +1,10 @@
 package me.miki.shindo.hooks;
 
+import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ItemPhysicsMod;
 import me.miki.shindo.management.mods.impl.Items2DMod;
 import me.miki.shindo.management.mods.impl.UHCOverlayMod;
+import me.miki.shindo.management.settings.impl.NumberSetting;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,8 +28,9 @@ public class RenderEntityItemHook {
         Item item = itemstack.getItem();
         Block block = Block.getBlockFromItem(item);
 
-        ItemPhysicsMod mod = ItemPhysicsMod.getInstance();
-        float speed = mod.getSpeedSetting().getValueFloat();
+        ItemPhysicsMod mod = ItemPhysicsMod.instance;
+        NumberSetting speedSetting = mod.getSpeedSetting();
+        float speed = speedSetting != null ? speedSetting.getValueFloat() : 1.0F;
 
         if (item == null) {
             return 0;
@@ -51,7 +54,7 @@ public class RenderEntityItemHook {
 
             if (!mod.isToggled()) {
                 if (flag || Minecraft.getMinecraft().getRenderManager().options != null) {
-                    if (p_177077_9_.isGui3d() || !Items2DMod.getInstance().isToggled()) {
+                    if (p_177077_9_.isGui3d() || !Items2DMod.instance.isToggled()) {
                         float f3 = (((float) itemIn.getAge() + p_177077_8_) / 20.0F + itemIn.hoverStart) * (180F / (float) Math.PI);
                         GlStateManager.rotate(f3, 0.0F, 1.0F, 0.0F);
                     } else {
@@ -73,12 +76,17 @@ public class RenderEntityItemHook {
                 GlStateManager.rotate(angle, 1F, 1F, 1F);
             }
 
-            UHCOverlayMod uhcMod = UHCOverlayMod.getInstance();
-            float ingotScale = uhcMod.getGoldIngotScaleSetting().getValueFloat();
-            float nuggetScale = uhcMod.getGoldNuggetScaleSetting().getValueFloat();
-            float appleScale = uhcMod.getGoldAppleScaleSetting().getValueFloat();
-            float oreScale = uhcMod.getGoldOreScaleSetting().getValueFloat();
-            float skullScale = uhcMod.getSkullScaleSetting().getValueFloat();
+            UHCOverlayMod uhcMod = UHCOverlayMod.instance;
+            NumberSetting ingotScaleSetting = uhcMod.getGoldIngotScaleSetting();
+            NumberSetting nuggetScaleSetting = uhcMod.getGoldNuggetScaleSetting();
+            NumberSetting appleScaleSetting = uhcMod.getGoldAppleScaleSetting();
+            NumberSetting oreScaleSetting = uhcMod.getGoldOreScaleSetting();
+            NumberSetting skullScaleSetting = uhcMod.getSkullScaleSetting();
+            float ingotScale = ingotScaleSetting != null ? ingotScaleSetting.getValueFloat() : 1.0F;
+            float nuggetScale = nuggetScaleSetting != null ? nuggetScaleSetting.getValueFloat() : 1.0F;
+            float appleScale = appleScaleSetting != null ? appleScaleSetting.getValueFloat() : 1.0F;
+            float oreScale = oreScaleSetting != null ? oreScaleSetting.getValueFloat() : 1.0F;
+            float skullScale = skullScaleSetting != null ? skullScaleSetting.getValueFloat() : 1.0F;
 
             float f6 = -0.0F * (float) (i - 1) * 0.5F;
             float f4 = -0.0F * (float) (i - 1) * 0.5F;

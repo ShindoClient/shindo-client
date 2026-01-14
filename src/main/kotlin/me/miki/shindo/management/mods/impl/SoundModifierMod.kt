@@ -15,38 +15,38 @@ class SoundModifierMod : Mod(
     ModCategory.OTHER,
     LegacyIcon.MOD_SOUND_MODIFIER
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NOTE, min = 0, max = 100, current = 100, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NOTE, min = 0.0, max = 10.00, current = 10.00, step = 1.0)
     private val noteSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.TNT, min = 0, max = 100, current = 100, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.TNT, min = 0.0, max = 10.00, current = 10.00, step = 1.0)
     private val tntSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.PORTAL, min = 0, max = 100, current = 100, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.PORTAL, min = 0.0, max = 10.00, current = 10.00, step = 1.0)
     private val portalSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.STEP, min = 0, max = 100, current = 100, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.STEP, min = 0.0, max = 10.00, current = 10.00, step = 1.0)
     private val stepSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MOBS, min = 0, max = 100, current = 100, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MOBS, min = 0.0, max = 10.00, current = 10.00, step = 1.0)
     private val mobsSetting = 100
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.RECORDS,
-        min = 0,
-        max = 100,
-        current = 100,
-        step = 1
+        min = 0.0,
+        max = 10.00,
+        current = 10.00,
+        step = 1.0
     )
     private val recordsSetting = 100
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.FIREWORKS,
-        min = 0,
-        max = 100,
-        current = 100,
-        step = 1
+        min = 0.0,
+        max = 10.00,
+        current = 10.00,
+        step = 1.0
     )
     private val fireworksSetting = 100
 

@@ -22,13 +22,13 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION, LegacyIcon.MOD_MINIMAP) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 10, max = 180, current = 150, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 1.00, max = 18.00, current = 15.00, step = 1.0)
     private val widthSetting = 150
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT, min = 10, max = 180, current = 70, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT, min = 1.00, max = 18.00, current = 7.00, step = 1.0)
     private val heightSetting = 70
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0f, max = 1f, current = 1f)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
     private val alphaSetting = 1.0
 
     private val stencil = ScreenStencil()
@@ -99,30 +99,30 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         GlStateManager.color(1f, 1f, 1f)
         GlStateManager.enableTexture2D()
         GlStateManager.enableAlpha()
-        GlStateManager.bindTexture(chunkAtlas!!.getTextureHandle())
+        GlStateManager.bindTexture(chunkAtlas!!.textureHandle)
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
 
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
 
-        val chunkWidth = chunkAtlas!!.getSpriteWidth()
-        val chunkHeight = chunkAtlas!!.getSpriteHeight()
+        val chunkWidth = chunkAtlas!!.spriteWidth
+        val chunkHeight = chunkAtlas!!.spriteHeight
 
         for (sprite in chunkAtlas!!) {
-            val minX = chunkAtlas!!.getSpriteX(sprite.getOffset())
-            val minY = chunkAtlas!!.getSpriteY(sprite.getOffset())
+            val minX = chunkAtlas!!.getSpriteX(sprite.offset)
+            val minY = chunkAtlas!!.getSpriteY(sprite.offset)
 
             val maxX = minX + chunkWidth
             val maxY = minY + chunkHeight
 
-            val renderX = (sprite.getChunkX() shl 4) - x
-            val renderY = (sprite.getChunkZ() shl 4) - z
+            val renderX = (sprite.chunkX shl 4) - x
+            val renderY = (sprite.chunkZ shl 4) - z
 
             worldRenderer.pos(renderX, renderY, 0.0).tex(minX, minY).endVertex()
-            worldRenderer.pos(renderX, renderY + 16, 0.0).tex(minX, maxY).endVertex()
-            worldRenderer.pos(renderX + 16, renderY + 16, 0.0).tex(maxX, maxY).endVertex()
-            worldRenderer.pos(renderX + 16, renderY + 0, 0.0).tex(maxX, minY).endVertex()
+            worldRenderer.pos(renderX, renderY + 16.0, 0.0).tex(minX, maxY).endVertex()
+            worldRenderer.pos(renderX + 16.0, renderY + 16.0, 0.0).tex(maxX, maxY).endVertex()
+            worldRenderer.pos(renderX + 16.0, renderY + 0.0, 0.0).tex(maxX, minY).endVertex()
         }
 
         tessellator.draw()

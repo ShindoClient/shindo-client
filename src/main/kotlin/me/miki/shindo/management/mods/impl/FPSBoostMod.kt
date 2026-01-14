@@ -20,7 +20,7 @@ class FPSBoostMod :
     @JvmField
     var chunkDelaySetting = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1, max = 12, current = 5, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1.0, max = 1.02, current = 5.0, step = 1.0)
     @JvmField
     var delaySetting = 5.0
 
@@ -43,14 +43,17 @@ class FPSBoostMod :
     }
 
     companion object {
-        private var instance: FPSBoostMod? = null
+        @JvmField
+        var instance: FPSBoostMod? = null
+
+        @JvmStatic
+        fun getInstance(): FPSBoostMod? = instance
     }
 
     fun getChunkDelaySetting(): BooleanSetting? = getBooleanSetting(this, "chunkDelaySetting")
 
     fun getDelaySetting(): NumberSetting? = getNumberSetting(this, "delaySetting")
 }
-
 
 
 

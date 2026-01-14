@@ -1,6 +1,5 @@
 package me.miki.shindo.management.addons.patcher;
 
-import lombok.Getter;
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonType;
 import me.miki.shindo.management.language.TranslateText;
@@ -226,4 +225,6 @@ public class PatcherAddon extends Addon {
         }
     }
 }
+
+
 

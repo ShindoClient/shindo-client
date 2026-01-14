@@ -226,7 +226,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                 settingScroll.onAnimation()
             }
 
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
 
             val headerX = getX() + 15f
             val headerY = getY() + 15f
@@ -324,7 +324,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             if (MouseUtils.isInside(mouseX, mouseY, getX() + 22f, getY() + 20f, 18f, 18f) && mouseButton == 0) {
                 openSetting = false
                 settingsPanel.clear()
@@ -364,14 +364,14 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (currentMod != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (currentMod != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.getInstance().settingsLayoutMode)
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.keyTyped(typedChar, keyCode)
         }
 
@@ -453,7 +453,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
     }
 
     private fun resolveModuleColumns(): Int {
-        return max(1, min(2, InternalSettingsMod.getInstance().moduleGridColumns))
+        return max(1, min(2, InternalSettingsMod.instance.moduleGridColumns))
     }
 
     private fun drawCategoryChips(

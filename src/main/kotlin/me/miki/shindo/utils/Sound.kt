@@ -55,8 +55,8 @@ class Sound {
 
         @JvmStatic
         fun play(location: String, uiSound: Boolean) {
-            val settings = InternalSettingsMod.getInstance()
-            if (uiSound && settings != null && !settings.soundsUISetting.isToggled()) return
+            val settings = InternalSettingsMod.instance
+            if (uiSound && settings != null && !settings.soundsUISetting) return
             val diskPath = Sound::class.java.classLoader.getResource("assets/minecraft/$location") ?: return
 
             try {

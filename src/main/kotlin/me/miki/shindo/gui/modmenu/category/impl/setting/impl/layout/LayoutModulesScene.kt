@@ -33,8 +33,9 @@ class LayoutModulesScene(parent: SettingsCategory) :
         width: Float,
         height: Float
     ) {
-        val layout = InternalSettingsMod.getInstance().moduleLayout
-        val columns = InternalSettingsMod.getInstance().moduleGridColumns
+        val settingsMod = InternalSettingsMod.instance
+        val layout = settingsMod.getModuleLayout()
+        val columns = settingsMod.moduleGridColumns
         val clampedColumns = max(1, min(columns, 2))
 
         val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170)

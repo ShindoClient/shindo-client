@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel.LayoutMode
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
@@ -19,10 +19,12 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.settings.impl.KeybindSetting
+import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
+import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -34,16 +36,21 @@ import kotlin.math.min
 class InternalSettingsMod :
     Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, LegacyIcon.MOD_INTERNAL_SETTINGS) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
+    @JvmField
     val hudTheme: HudTheme = HudTheme.NORMAL
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_BLUR)
     @JvmField
     var blurSetting = false
 
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
+    @JvmField
+    var animationsSetting = true
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MC_FONT)
     private val mcFontSetting = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.VOLUME, min = 0, max = 1, current = 0.8)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.VOLUME, min = 0.0, max = 1.0, current = 0.8)
     @JvmField
     var volumeSetting = 0.8
 
@@ -120,7 +127,7 @@ class InternalSettingsMod :
     @EventTarget
     fun onKey(event: EventKey) {
         if (event.getKeyCode() == modMenuKeybindSetting) {
-            mc.displayGuiScreen(getInstance().shindoAPI.modMenu)
+            mc.displayGuiScreen(Shindo.getInstance().shindoAPI.modMenu)
         }
 
         // Uncomment to enable the ability to change the theme of the mod menu using the down arrow key
@@ -137,6 +144,7 @@ class InternalSettingsMod :
 
     @EventTarget
     fun onRenderTick(event: EventPreRenderTick?) {
+        GlobalAnimationSettings.enabled = animationsSetting
         if (fullscreenTime != -1L && System.currentTimeMillis() - fullscreenTime >= 100) {
             fullscreenTime = -1
 
@@ -238,6 +246,8 @@ class InternalSettingsMod :
 
     fun getBlurSetting(): BooleanSetting? = getBooleanSetting(this, "blurSetting")
 
+    fun getAnimationsSetting(): BooleanSetting? = getBooleanSetting(this, "animationsSetting")
+
     fun getVolumeSetting(): NumberSetting? = getNumberSetting(this, "volumeSetting")
 
     fun getClickEffectsSetting(): BooleanSetting? = getBooleanSetting(this, "clickEffectsSetting")
@@ -328,28 +338,22 @@ class InternalSettingsMod :
             return translate
         }
 
-        override fun getNameKey(): String? {
-            return super.getNameKey()
-        }
+        override fun getNameKey(): String = super.getNameKey()
 
-        override fun getDisplayName(): String? {
-            return super.getDisplayName()
-        }
+        override fun getDisplayName(): String = super.getDisplayName()
     }
 
     enum class SettingsLayout(displayName: String) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
         COMPACT_GRID("Compact Grid");
 
-        private val displayName: String?
+        private val displayName: String
 
         init {
             this.displayName = displayName
         }
 
-        override fun getDisplayName(): String? {
-            return displayName
-        }
+        override fun getDisplayName(): String = displayName
     }
 
     enum class ModuleLayout(displayName: String) : PropertyEnum {
@@ -357,30 +361,26 @@ class InternalSettingsMod :
         TWO_COLUMNS("Two Columns"),
         ICON_CARDS("Icon Cards");
 
-        private val displayName: String?
+        private val displayName: String
 
         init {
             this.displayName = displayName
         }
 
-        override fun getDisplayName(): String? {
-            return displayName
-        }
+        override fun getDisplayName(): String = displayName
     }
 
     enum class AddonLayout(displayName: String) : PropertyEnum {
         STANDARD("Standard"),
         ICON_CARDS("Icon Cards");
 
-        private val displayName: String?
+        private val displayName: String
 
         init {
             this.displayName = displayName
         }
 
-        override fun getDisplayName(): String? {
-            return displayName
-        }
+        override fun getDisplayName(): String = displayName
     }
 
     enum class NotificationCorner(private val translate: TranslateText) : PropertyEnum {
@@ -395,8 +395,7 @@ class InternalSettingsMod :
     }
 
     companion object {
-        @JvmField
-        var instance: InternalSettingsMod? = null
+        lateinit var instance: InternalSettingsMod
     }
 }
 

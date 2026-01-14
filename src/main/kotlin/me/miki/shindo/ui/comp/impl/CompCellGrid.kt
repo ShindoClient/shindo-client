@@ -395,11 +395,11 @@ class CompCellGrid : Comp {
             val cardY = y + row * (cardHeight + PRESET_GAP)
             val cardBounds = Bounds(cardX, cardY, cardWidth, cardHeight)
 
-            val hasPreset = index < presets.size
+            val preset = if (index < presets.size) presets[index] else null
+            val hasPreset = preset != null
             val isAddCard = !hasPreset && !addCardPlaced
 
-            if (hasPreset) {
-                val preset = presets[index]
+            if (preset != null) {
                 val hovered = cardBounds.contains(mouseX, mouseY)
                 val active = activePresetId != null && activePresetId == preset.id
                 val editing = isEditing(preset)
@@ -487,8 +487,8 @@ class CompCellGrid : Comp {
         size: Float,
         evenBg: Color,
         oddBg: Color) {
-        val layout = preset.layoutCopy
-        val colors = preset.colorCopy
+        val layout = normalizeLayout(preset.layoutCopy) ?: return
+        val colors = normalizeColors(preset.colorCopy, layout)
         val cell = size / GRID_SIZE
         for (row in 0 until GRID_SIZE) {
             for (col in 0 until GRID_SIZE) {
@@ -497,15 +497,15 @@ class CompCellGrid : Comp {
                 val bg = if ((row + col) % 2 == 0) evenBg else oddBg
                 nvg.drawRect(cx, cy, cell, cell, bg)
 
-                val enabled =
-                    row < layout.size && layout[row] != null && col < layout[row].size && layout[row][col]
+                val layoutRow = layout[row]
+                val enabled = col < layoutRow.size && layoutRow[col]
                 if (!enabled) continue
-                val rgb =
-                    if (colors != null && row < colors.size && colors[row] != null && col < colors[row].size) {
-                        colors[row][col]
-                    } else {
-                        Color.WHITE.rgb
-                    }
+                val rgb = if (colors != null) {
+                    val colorRow = if (row < colors.size) colors[row] else null
+                    if (colorRow != null && col < colorRow.size) colorRow[col] else Color.WHITE.rgb
+                } else {
+                    Color.WHITE.rgb
+                }
                 nvg.drawRect(cx, cy, cell, cell, Color(rgb, true))
             }
         }
@@ -538,7 +538,7 @@ class CompCellGrid : Comp {
         val cellSize = metrics.cellSize
         val gridX = metrics.gridX
         val gridY = metrics.gridY
-        val cells = setting.getCells()!!
+        val cells = setting.getCells() ?: return
 
         for (row in 0 until GRID_SIZE) {
             for (col in 0 until GRID_SIZE) {
@@ -663,14 +663,18 @@ class CompCellGrid : Comp {
     }
 
     private fun applyPreset(preset: CellGridPreset) {
-        setting.setCells(preset.layoutCopy)
-        setting.setColorGrid(preset.colorCopy)
+        val layout = normalizeLayout(preset.layoutCopy)
+        val colors = normalizeColors(preset.colorCopy, layout)
+        setting.setCells(layout)
+        setting.setColorGrid(colors)
         activePresetId = preset.id
     }
 
     private fun savePreset() {
         val cellsCopy = setting.getCells()
         val colorsCopy = setting.getColorGrid()
+        val nullableCells = toNullableLayout(cellsCopy)
+        val nullableColors = toNullableColors(colorsCopy)
 
         val presets = CrosshairMod.layoutManager.customPresets
         if (editingPreset == null && presets.size >= LayoutManager.MAX_CUSTOM_PRESETS) {
@@ -683,13 +687,70 @@ class CompCellGrid : Comp {
 
         val saved =
             if (editingPreset != null) {
-                CrosshairMod.layoutManager.addOrUpdatePreset(editingPreset!!.id, cellsCopy, colorsCopy, editingPreset!!.name)
+                CrosshairMod.layoutManager.addOrUpdatePreset(editingPreset!!.id, nullableCells, nullableColors, editingPreset!!.name)
             } else {
-                CrosshairMod.layoutManager.addCustomPreset(null, cellsCopy, colorsCopy)
+                CrosshairMod.layoutManager.addCustomPreset(null, nullableCells, nullableColors)
             }
 
         activePresetId = saved?.id ?: activePresetId
         editingPreset = null
+    }
+
+    private fun normalizeLayout(layout: Array<BooleanArray?>?): Array<BooleanArray>? {
+        if (layout == null) {
+            return null
+        }
+        val result = Array(GRID_SIZE) { BooleanArray(GRID_SIZE) }
+        val rows = min(GRID_SIZE, layout.size)
+        for (row in 0 until rows) {
+            val rowData = layout[row] ?: continue
+            val cols = min(GRID_SIZE, rowData.size)
+            for (col in 0 until cols) {
+                result[row][col] = rowData[col]
+            }
+        }
+        return result
+    }
+
+    private fun normalizeColors(colors: Array<IntArray?>?, layout: Array<BooleanArray>?): Array<IntArray>? {
+        if (layout == null) {
+            return null
+        }
+        val result = Array(layout.size) { IntArray(layout[it].size) { Color.RED.rgb } }
+        if (colors == null) {
+            return result
+        }
+        val rows = min(layout.size, colors.size)
+        for (row in 0 until rows) {
+            val colorRow = colors[row] ?: continue
+            val cols = min(layout[row].size, colorRow.size)
+            for (col in 0 until cols) {
+                result[row][col] = colorRow[col]
+            }
+        }
+        return result
+    }
+
+    private fun toNullableLayout(layout: Array<BooleanArray>?): Array<BooleanArray?>? {
+        if (layout == null) {
+            return null
+        }
+        val result = arrayOfNulls<BooleanArray>(layout.size)
+        for (i in layout.indices) {
+            result[i] = layout[i]
+        }
+        return result
+    }
+
+    private fun toNullableColors(colors: Array<IntArray>?): Array<IntArray?>? {
+        if (colors == null) {
+            return null
+        }
+        val result = arrayOfNulls<IntArray>(colors.size)
+        for (i in colors.indices) {
+            result[i] = colors[i]
+        }
+        return result
     }
 
     private fun clearGrid() {

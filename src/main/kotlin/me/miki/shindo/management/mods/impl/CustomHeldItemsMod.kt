@@ -20,8 +20,8 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.X,
         category = "Offset",
-        min = -1,
-        max = 1,
+        min = -1.0,
+        max = 1.0,
         current = 0.75
     )
     private val xSetting = 0.75
@@ -30,8 +30,8 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.Y,
         category = "Offset",
-        min = -1,
-        max = 1,
+        min = -1.0,
+        max = 1.0,
         current = -0.15
     )
     private val ySetting = -0.15
@@ -40,9 +40,9 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.Z,
         category = "Offset",
-        min = -1,
-        max = 1,
-        current = -1
+        min = -1.0,
+        max = 1.0,
+        current = -1.0
     )
     private val zSetting = -1.0
 
@@ -50,9 +50,9 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.X_SCALE,
         category = "Scale",
-        min = 0,
-        max = 1,
-        current = 1
+        min = 0.0,
+        max = 1.0,
+        current = 1.0
     )
     private val xScaleSetting = 1.0
 
@@ -60,9 +60,9 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.Y_SCALE,
         category = "Scale",
-        min = 0,
-        max = 1,
-        current = 1
+        min = 0.0,
+        max = 1.0,
+        current = 1.0
     )
     private val yScaleSetting = 1.0
 
@@ -70,9 +70,9 @@ class CustomHeldItemsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.Z_SCALE,
         category = "Scale",
-        min = 0,
-        max = 1,
-        current = 1
+        min = 0.0,
+        max = 1.0,
+        current = 1.0
     )
     private val zScaleSetting = 1.0
 

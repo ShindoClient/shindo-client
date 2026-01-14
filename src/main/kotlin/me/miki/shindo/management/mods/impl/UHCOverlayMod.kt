@@ -18,9 +18,9 @@ class UHCOverlayMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.GOLD_INGOT_SCALE,
-        min = 1.0f,
-        max = 5.0f,
-        current = 1.5f
+        min = 1.0,
+        max = 5.0,
+        current = 1.5
     )
     @JvmField
     var goldIngotScaleSetting = 1.5
@@ -28,9 +28,9 @@ class UHCOverlayMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.GOLD_NUGGET_SCALE,
-        min = 1.0f,
-        max = 5.0f,
-        current = 1.5f
+        min = 1.0,
+        max = 5.0,
+        current = 1.5
     )
     @JvmField
     var goldNuggetScaleSetting = 1.5
@@ -38,9 +38,9 @@ class UHCOverlayMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.GOLD_ORE_SCALE,
-        min = 1.0f,
-        max = 5.0f,
-        current = 1.5f
+        min = 1.0,
+        max = 5.0,
+        current = 1.5
     )
     @JvmField
     var goldOreScaleSetting = 1.5
@@ -48,14 +48,14 @@ class UHCOverlayMod : Mod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.GOLD_APPLE_SCALE,
-        min = 1.0f,
-        max = 5.0f,
-        current = 1.5f
+        min = 1.0,
+        max = 5.0,
+        current = 1.5
     )
     @JvmField
     var goldAppleScaleSetting = 1.5
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SKULL_SCALE, min = 1.0f, max = 5.0f, current = 1.5f)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SKULL_SCALE, min = 1.0, max = 5.0, current = 1.5)
     @JvmField
     var skullScaleSetting = 1.5
 

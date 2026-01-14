@@ -103,7 +103,7 @@ public class UILayoutManager {
     }
 
     private void bindDefaults() {
-        InternalSettingsMod mod = InternalSettingsMod.getInstance();
+        InternalSettingsMod mod = InternalSettingsMod.instance;
 
         bind(LayoutType.SETTINGS_SINGLE,
                 () -> mod.setSettingsLayoutMode(SettingsPanel.LayoutMode.SINGLE_COLUMN),

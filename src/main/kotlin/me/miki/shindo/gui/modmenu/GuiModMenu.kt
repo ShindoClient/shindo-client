@@ -5,6 +5,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.gui.modmenu.category.Category
 import me.miki.shindo.gui.modmenu.category.impl.AddonCategory
+import me.miki.shindo.gui.modmenu.category.impl.ChatCategory
 import me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory
 import me.miki.shindo.gui.modmenu.category.impl.HomeCategory
 import me.miki.shindo.gui.modmenu.category.impl.ModuleCategory
@@ -66,6 +67,7 @@ class GuiModMenu : GuiScreen() {
         categories.add(CosmeticsCategory(this))
         categories.add(SpotifyCategory(this))
         categories.add(ProfileCategory(this))
+        categories.add(ChatCategory(this))
         categories.add(ScreenshotCategory(this))
         categories.add(NetworkCategory(this))
         categories.add(SettingsCategory(this))
@@ -112,7 +114,7 @@ class GuiModMenu : GuiScreen() {
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager ?: return
 
-        if (InternalSettingsMod.getInstance().blurSetting.isToggled()) {
+        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
             BlurUtils.drawBlurScreen(min(introAnimation.getValue(), 1.0).toFloat() * 20f + 1f)
         }
         screenAnimation.wrap(Runnable {
@@ -147,7 +149,7 @@ class GuiModMenu : GuiScreen() {
         }
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
 
-        if (InternalSettingsMod.getInstance().blurSetting.isToggled()) {
+        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
             ShBlur.getInstance().drawBlur {
                 nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, palette.getBackgroundColor(ColorType.DARK))
             }

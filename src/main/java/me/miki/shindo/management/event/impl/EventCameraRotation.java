@@ -3,7 +3,6 @@ package me.miki.shindo.management.event.impl;
 import lombok.Getter;
 import me.miki.shindo.management.event.Event;
 
-@Getter
 public class EventCameraRotation extends Event {
 
     private float yaw;
@@ -18,6 +17,22 @@ public class EventCameraRotation extends Event {
         this.thirdPersonDistance = thirdPersonDistance;
     }
 
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public float getRoll() {
+        return roll;
+    }
+
+    public float getThirdPersonDistance() {
+        return thirdPersonDistance;
+    }
+
     public void setYaw(float yaw) {
         this.yaw = yaw;
     }
@@ -25,7 +40,6 @@ public class EventCameraRotation extends Event {
     public void setPitch(float pitch) {
         this.pitch = pitch;
     }
-
     public void setRoll(float roll) {
         this.roll = roll;
     }

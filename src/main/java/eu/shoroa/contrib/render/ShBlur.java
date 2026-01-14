@@ -87,7 +87,7 @@ public class ShBlur {
     }
 
     public void render() {
-        if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
+        if (!InternalSettingsMod.instance.getBlurSetting().isToggled()) return;
         if (Util.getOSType() == Util.EnumOS.OSX) return;
         if (nvgImage == -1) {
             nvgImage = nvgImageFromHandle(framebuffer3.framebufferTexture, mc.displayWidth, mc.displayHeight);
@@ -146,12 +146,12 @@ public class ShBlur {
     }
 
     public void drawBlur(float x, float y, float w, float h, float radius) {
-        if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
+        if (!InternalSettingsMod.instance.getBlurSetting().isToggled()) return;
         if (Util.getOSType() == Util.EnumOS.OSX) return;
         long ctx = Shindo.getInstance().getNanoVGManager().getContext();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        InternalSettingsMod.HudTheme theme = InternalSettingsMod.getInstance().getHudTheme();
+        InternalSettingsMod.HudTheme theme = InternalSettingsMod.instance.hudTheme;
         boolean rectShape = theme == InternalSettingsMod.HudTheme.RECT
                 || theme == InternalSettingsMod.HudTheme.GRADIENT_SIMPLE;
 
@@ -172,7 +172,7 @@ public class ShBlur {
     }
 
     public void drawBlur(Runnable r) {
-        if (!InternalSettingsMod.getInstance().getBlurSetting().isToggled()) return;
+        if (!InternalSettingsMod.instance.getBlurSetting().isToggled()) return;
         if (Util.getOSType() == Util.EnumOS.OSX) return;
         long ctx = Shindo.getInstance().getNanoVGManager().getContext();
         ScaledResolution sr = new ScaledResolution(mc);

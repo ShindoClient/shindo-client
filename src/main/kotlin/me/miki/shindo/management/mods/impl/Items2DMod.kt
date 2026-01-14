@@ -3,12 +3,9 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
-import me.miki.shindo.management.mods.Mod.isToggled
-import me.miki.shindo.management.mods.Mod.setToggled
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.management.settings.impl.BooleanSetting.isToggled
 
 class Items2DMod :
     Mod(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEMS2_D) {
@@ -19,8 +16,9 @@ class Items2DMod :
     public override fun onEnable() {
         super.onEnable()
 
-        if (ItemPhysicsMod.Companion.getInstance().isToggled()) {
-            ItemPhysicsMod.Companion.getInstance().setToggled(false)
+        val itemPhysics = ItemPhysicsMod.instance
+        if (itemPhysics != null && itemPhysics.isToggled()) {
+            itemPhysics.setToggled(false)
             getInstance().notificationManager.post(
                 TranslateText.ITEM_PHYSICS.getText(),
                 "Disabled due to incompatibility",

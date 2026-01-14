@@ -25,7 +25,8 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
             image!!.setRGB(0, 0, width, height, pixelValues, 0, width)
             ImageIO.write(image, "png", screenshot)
 
-            if (AsyncScreenshotMod.Companion.getInstance().isMessageEnabled()) {
+            val asyncMod = AsyncScreenshotMod.instance
+            if (asyncMod != null && asyncMod.isMessageEnabled) {
                 mc.ingameGUI.getChatGUI().printChatMessage(
                     ChatComponentText(EnumChatFormatting.UNDERLINE.toString() + "Saved screenshot" + EnumChatFormatting.RESET + " ")
                         .appendSibling(
@@ -61,7 +62,7 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
                 )
             }
 
-            if (AsyncScreenshotMod.Companion.getInstance().isClipboardEnabled()) {
+            if (asyncMod != null && asyncMod.isClipboardEnabled) {
                 mc.thePlayer.sendChatMessage(".scmd screenshot copy " + screenshot!!.getName())
             }
         } catch (e: Exception) {

@@ -22,7 +22,7 @@ class ChunkAnimatorMod : Mod(
 ) {
     private val chunks: MutableMap<RenderChunk?, Long?> = WeakHashMap<RenderChunk?, Long?>()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DURATION, min = 0, max = 5, current = 1, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.DURATION, min = 0.0, max = 5.0, current = 1.0, step = 1.0)
     private val duration = 1
 
     @EventTarget

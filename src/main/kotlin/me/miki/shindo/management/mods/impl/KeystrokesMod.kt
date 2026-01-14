@@ -152,7 +152,7 @@ class KeystrokesMod :
     }
 
     private fun drawHighlight(addX: Float, addY: Float, width: Float, height: Float, radius: Float, color: Color) {
-        val rect = InternalSettingsMod.Companion.getInstance().getHudTheme() == HudTheme.RECT
+        val rect = InternalSettingsMod.instance.hudTheme == HudTheme.RECT
         if (!rect) this.drawRoundedRect(addX, addY, width, height, radius, color)
         else this.drawRect(addX, addY, width, height, color)
     }

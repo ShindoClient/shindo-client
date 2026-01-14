@@ -32,7 +32,7 @@ class LayoutScreenshotsScene(parent: SettingsCategory) :
         width: Float,
         height: Float
     ) {
-        val mode = InternalSettingsMod.getInstance().screenshotDisplayMode
+        val mode = InternalSettingsMod.instance.screenshotDisplayMode
         val background = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 140)
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, background)
 

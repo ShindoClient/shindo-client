@@ -1,7 +1,5 @@
 package me.miki.shindo.management.profile.mainmenu.impl;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.miki.shindo.management.language.TranslateText;
 import net.minecraft.util.ResourceLocation;
 
@@ -10,12 +8,8 @@ import java.io.File;
 public class ShaderBackground extends Background {
 
     private final TranslateText nameTranslate;
-    @Getter
     private final File shaderFile;
-    @Getter
     private final ResourceLocation shaderResource;
-    @Setter
-    @Getter
     private int shaderId = -1;
 
     public ShaderBackground(int id, TranslateText nameTranslate, File shaderFile) {
@@ -39,6 +33,22 @@ public class ShaderBackground extends Background {
 
     public String getNameKey() {
         return nameTranslate.getKey();
+    }
+
+    public File getShaderFile() {
+        return shaderFile;
+    }
+
+    public ResourceLocation getShaderResource() {
+        return shaderResource;
+    }
+
+    public int getShaderId() {
+        return shaderId;
+    }
+
+    public void setShaderId(int shaderId) {
+        this.shaderId = shaderId;
     }
 
     public boolean isShaderLoaded() {

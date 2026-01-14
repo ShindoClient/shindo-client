@@ -46,8 +46,8 @@ public class SwordTrail {
             alpha = MoBendsGUtil.max(alpha, 1.0f);
             alpha = 1.0f - alpha;
 
-            if (MoBendsMod.getInstance().getCustomColorSetting().isToggled()) {
-                ColorUtils.setColor(MoBendsMod.getInstance().getColorSetting().getColor().getRGB(), alpha);
+            if (MoBendsMod.instance.getCustomColorSetting().isToggled()) {
+                ColorUtils.setColor(MoBendsMod.instance.getColorSetting().getColor().getRGB(), alpha);
             } else {
                 GL11.glColor4f(1, 1, 1, alpha);
             }

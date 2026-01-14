@@ -61,6 +61,16 @@ object MathUtils {
     }
 
     @JvmStatic
+    fun fastInvCubeRoot(f: Double): Double {
+        var i = java.lang.Float.floatToIntBits(f.toFloat())
+        i = 1419967116 - i / 3
+        var g = java.lang.Float.intBitsToFloat(i)
+        g = 0.6666667f * g + 1.0f / 3.0f * g * g * f.toFloat()
+        g = 0.6666667f * g + 1.0f / 3.0f * g * g * f.toFloat()
+        return g.toDouble()
+    }
+
+    @JvmStatic
     fun fastInvCubeRoot(f: Float): Float {
         var i = java.lang.Float.floatToIntBits(f)
         i = 1419967116 - i / 3
@@ -79,5 +89,17 @@ object MathUtils {
     }
 
     @JvmStatic
+    fun roundToPlace(value: Float, places: Int): Float {
+        require(places >= 0) { "places must be non-negative" }
+        var bd = BigDecimal(value.toDouble())
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toFloat()
+    }
+
+    @JvmStatic
     fun abs(value: Double): Double = if (value >= 0.0f) value else -value
+
+    @JvmStatic
+    fun abs(value: Float): Float = if (value >= 0.0f) value else -value
+
 }

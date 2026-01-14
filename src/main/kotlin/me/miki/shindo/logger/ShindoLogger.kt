@@ -1,40 +1,34 @@
 package me.miki.shindo.logger
 
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-
 object ShindoLogger {
 
     @JvmStatic
-    val logger: Logger = LogManager.getLogger("Shindo Client")
-
-    @JvmStatic
     fun info(message: String) {
-        logger.info("[SC/INFO] {}", message)
+        ShindoLogManager.log(LogLevel.INFO, message, LogCategory.AUTO, null)
     }
 
     @JvmStatic
     fun warn(message: String) {
-        logger.warn("[SC/WARN] {}", message)
+        ShindoLogManager.log(LogLevel.WARN, message, LogCategory.AUTO, null)
     }
 
     @JvmStatic
     fun warn(message: String, e: Exception) {
-        logger.warn("[SC/WARN] {}", message, e)
+        ShindoLogManager.log(LogLevel.WARN, message, LogCategory.AUTO, e)
     }
 
     @JvmStatic
     fun error(message: String) {
-        logger.error("[SC/ERROR] {}", message)
+        ShindoLogManager.log(LogLevel.ERROR, message, LogCategory.AUTO, null)
     }
 
     @JvmStatic
     fun error(message: String, e: Exception) {
-        logger.error("[SC/ERROR] {}", message, e)
+        ShindoLogManager.log(LogLevel.ERROR, message, LogCategory.AUTO, e)
     }
 
     @JvmStatic
     fun error(message: String, t: Throwable) {
-        logger.error("[SC/ERROR] {}", message, t)
+        ShindoLogManager.log(LogLevel.ERROR, message, LogCategory.AUTO, t)
     }
 }

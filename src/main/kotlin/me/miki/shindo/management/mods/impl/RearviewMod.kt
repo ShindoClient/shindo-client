@@ -17,29 +17,29 @@ class RearviewMod :
     private val rearviewCamera = RearviewCamera()
     private val timer = TimerUtils()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 10, max = 500, current = 190, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 1.00, max = 50.00, current = 19.00, step = 1.0)
     private val rearviewWidthSetting = 190
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.HEIGHT,
-        min = 10,
-        max = 500,
-        current = 100,
-        step = 1
+        min = 1.00,
+        max = 50.00,
+        current = 10.00,
+        step = 1.0
     )
     private val rearviewHeightSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.FPS, min = 1, max = 120, current = 60, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.FPS, min = 1.0, max = 12.00, current = 6.00, step = 1.0)
     private val fpsSetting = 60
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.FOV, min = 30, max = 120, current = 70, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.FOV, min = 3.00, max = 12.00, current = 7.00, step = 1.0)
     private val fovSetting = 70
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOCK_CAMERA)
     private val lockCameraSetting = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0f, max = 1.0f, current = 1.0f)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
     private val alphaSetting = 1.0
 
     @EventTarget
@@ -74,7 +74,7 @@ class RearviewMod :
             6 * this.getScale()
         )
         nvg.drawRoundedImage(
-            rearviewCamera.getTexture(),
+            rearviewCamera.texture,
             this.getX().toFloat(),
             (this.getY() + height).toFloat(),
             width.toFloat(),
@@ -89,28 +89,28 @@ class RearviewMod :
 
     @EventTarget
     fun onFireOverlay(event: EventFireOverlay) {
-        if (rearviewCamera.isRecording()) {
+        if (rearviewCamera.isRecording) {
             event.setCancelled(true)
         }
     }
 
     @EventTarget
     fun onWaterOverlay(event: EventWaterOverlay) {
-        if (rearviewCamera.isRecording()) {
+        if (rearviewCamera.isRecording) {
             event.setCancelled(true)
         }
     }
 
     @EventTarget
     fun onHurtCamera(event: EventHurtCamera) {
-        if (rearviewCamera.isRecording()) {
+        if (rearviewCamera.isRecording) {
             event.setIntensity(0f)
         }
     }
 
     @EventTarget
     fun onRenderPumpkinOverlay(event: EventRenderPumpkinOverlay) {
-        if (rearviewCamera.isRecording()) {
+        if (rearviewCamera.isRecording) {
             event.setCancelled(true)
         }
     }

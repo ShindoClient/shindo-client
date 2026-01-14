@@ -15,7 +15,6 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.skin.Skin
 import me.miki.shindo.management.skin.SkinManager
-import me.miki.shindo.management.skin.SkinManager.DownloadedSkin
 import me.miki.shindo.management.skin.SkinPreviewRenderer
 import me.miki.shindo.management.skin.SkinType
 import me.miki.shindo.ui.comp.impl.field.CompMainMenuTextBox
@@ -36,6 +35,7 @@ import java.io.IOException
 import java.util.ArrayList
 import java.util.EnumMap
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
@@ -62,7 +62,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private var formBounds: Hitbox? = null
 
     override fun initScene() {
-        introAnimation = EaseInOutCirc(250, 1.0f)
+        introAnimation = EaseInOutCirc(250, 1.0)
         introAnimation.setDirection(Direction.FORWARDS)
         formTransition.value = 0f
         formMode = FormMode.HIDDEN
@@ -74,13 +74,14 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, partialTicks, sr, instance, nvg) }, 0, 0, sr.scaledWidth, sr.scaledHeight, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+        screenAnimation.wrap( Runnable { drawNanoVG(mouseX, mouseY, partialTicks, sr, instance, nvg) }, 0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), 2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), false)
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
+    private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
         val palette: ColorPalette = getMenuPalette()
         val accent: AccentColor = getMenuAccent()
         val skinManager: SkinManager = instance.skinManager
@@ -91,13 +92,13 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val acY = sr.scaledHeight / 2 - (acHeight / 2)
 
         val slideDistance = acWidth + CONTENT_SLIDE_EXTRA
-        formTransition.setAnimation(if (formMode == FormMode.HIDDEN) 0f else 1f, 20)
-        val transition = Math.max(0f, Math.min(1f, formTransition.value))
+        formTransition.setAnimation(if (formMode == FormMode.HIDDEN) 0f else 1f, 20.0)
+        val transition = 0f.coerceAtLeast(1f.coerceAtMost(formTransition.value))
         val contentTranslate = -transition * slideDistance
         val formTranslate = (1f - transition) * slideDistance
-        val logicalMouseX = Math.round(mouseX - acX - contentTranslate)
+        val logicalMouseX = (mouseX - acX - contentTranslate).roundToInt()
         val logicalMouseY = mouseY - acY
-        val formMouseX = Math.round(mouseX - acX - formTranslate)
+        val formMouseX = (mouseX - acX - formTranslate).roundToInt()
         val formMouseY = mouseY - acY
         val formVisible = isFormTransitionActive(transition)
 
@@ -106,7 +107,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
         scroll.onAnimation()
 
-        nvg.save()
+        nvg!!.save()
         nvg.translate(acX.toFloat(), acY.toFloat())
         nvg.drawRoundedRect(0f, 0f, acWidth.toFloat(), acHeight.toFloat(), 10f, getPanelColor())
 
@@ -143,7 +144,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private fun drawFilterChips(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, startX: Float, y: Float) {
         filterChipBounds.clear()
         var x = startX
-        for (filterType in FilterType.values()) {
+        for (filterType in FilterType.entries) {
             val label = if (filterType == FilterType.ALL) tx(TranslateText.SKIN_FILTER_ALL) else tx(TranslateText.SKIN_FILTER_FAVORITES)
             val icon = if (filterType == FilterType.ALL) LegacyIcon.LIST else LegacyIcon.STAR
             val width = CategoryChipRenderer.computeWidth(nvg, label, icon)
@@ -180,7 +181,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         cards.addAll(entries)
 
         val cardWidth = (gridWidth - (CARD_GAP * (CARDS_PER_ROW - 1))) / CARDS_PER_ROW
-        val scrollValue = scroll.value
+        val scrollValue = scroll.getValue()
 
         nvg.save()
         nvg.intersectScissor(gridX, gridY - 8f, gridWidth, gridHeight + 16f)
@@ -325,7 +326,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val drawY = bottomY - height
 
         previewRenderer.renderRemoteSkinPreview(
-            nvg.context,
+            nvg.getContext(),
             uuid,
             drawX,
             drawY,
@@ -348,7 +349,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val inset = 16f
         var currentY = formY + 38f
 
-        formState.nameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22)
+        formState.nameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
         formState.nameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
         formState.nameField.setFontColor(Color.WHITE)
         formState.nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.text)
@@ -360,13 +361,13 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         currentY += CategoryChipRenderer.CHIP_HEIGHT + 18f
 
         if (formState.source == SkinSource.USERNAME) {
-            formState.usernameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22)
+            formState.usernameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
             formState.usernameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
             formState.usernameField.setFontColor(Color.WHITE)
             formState.usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.text)
             formState.usernameField.draw(mouseX, mouseY, 0f)
         } else {
-            formState.uuidField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22)
+            formState.uuidField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
             formState.uuidField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
             formState.uuidField.setFontColor(Color.WHITE)
             formState.uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.text)
@@ -431,14 +432,14 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private fun disposePreviews() {
         val nvg = Shindo.getInstance().nanoVGManager
-        val vg = nvg?.context ?: 0L
+        val vg = nvg?.getContext() ?: 0L
         previewRenderer.clearCache(vg)
     }
 
     private fun drawTypeChips(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, startX: Float, y: Float) {
         typeChipBounds.clear()
         var x = startX
-        for (type in SkinType.values()) {
+        for (type in SkinType.entries) {
             val label = if (type == SkinType.SLIM) tx(TranslateText.SKIN_TYPE_SLIM) else tx(TranslateText.SKIN_TYPE_DEFAULT)
             val width = CategoryChipRenderer.computeWidth(nvg, label, LegacyIcon.USER)
             val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, CategoryChipRenderer.CHIP_HEIGHT)
@@ -788,9 +789,9 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         fun resetForAdd() {
             applyPlaceholders()
-            nameField.text = ""
-            usernameField.text = ""
-            uuidField.text = ""
+            nameField.setText("");
+            usernameField.setText("");
+            uuidField.setText("");
             source = SkinSource.USERNAME
             selectedType = SkinType.DEFAULT
             processing = false
@@ -800,9 +801,9 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         fun resetForEdit(skin: Skin) {
             applyPlaceholders()
-            nameField.text = skin.name
-            usernameField.text = ""
-            uuidField.text = skin.profileUuid ?: ""
+            nameField.setText(skin.name);
+            usernameField.setText("");
+            uuidField.setText(skin.profileUuid ?: "");
             selectedType = skin.type
             source = if (skin.profileUuid == null) SkinSource.USERNAME else SkinSource.UUID
             processing = false
@@ -811,13 +812,13 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         val displayName: String
-            get() = nameField.text.trim()
+            get() = nameField.getText().trim()
 
         val username: String
-            get() = usernameField.text.trim()
+            get() = usernameField.getText().trim()
 
         val uuid: String
-            get() = uuidField.text.trim()
+            get() = uuidField.getText().trim()
 
         private fun applyPlaceholders() {
             nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.text)

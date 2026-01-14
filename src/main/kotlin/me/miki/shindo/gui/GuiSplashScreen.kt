@@ -56,17 +56,17 @@ class GuiSplashScreen {
             GlStateManager.enableAlpha()
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-            nvg.setupAndDraw {
+            nvg.setupAndDraw(Runnable {
                 nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.BLACK)
                 nvg.drawCenteredText(
                     LegacyIcon.SHINDO,
                     sr.scaledWidth / 2f,
                     (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
-                    Color(255, 255, 255, (fadeAnimation!!.value * 255).toInt()),
+                    Color(255, 255, 255, (fadeAnimation!!.getValue() * 255).toInt()),
                     130f,
                     Fonts.LEGACYICON
                 )
-            }
+            })
 
             framebuffer!!.unbindFramebuffer()
             framebuffer!!.framebufferRender(sr.scaledWidth * scaleFactor, sr.scaledHeight * scaleFactor)

@@ -61,6 +61,11 @@ class NanoVGManager {
         GL11.glPopAttrib()
     }
 
+    fun setupAndDraw(task: () -> Unit) {
+        setupAndDraw(Runnable { task() })
+    }
+
+
     @JvmOverloads
     fun beginFrame(scale: Boolean = true) {
         val sr = ScaledResolution(mc)
@@ -947,3 +952,4 @@ class NanoVGManager {
         drawRoundedRect(x, y, width, height, radius, Color(255, 255, 255, alpha.toInt()))
     }
 }
+

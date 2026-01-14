@@ -16,10 +16,10 @@ import javax.imageio.ImageIO
 
 class ImageDisplayMod :
     HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.RADIUS, min = 2, max = 64, current = 6, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.RADIUS, min = 2.0, max = 6.04, current = 6.0, step = 1.0)
     private val radiusSetting = 6
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0f, max = 1.0f, current = 1.0f)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
     private val alphaSetting = 1.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SHADOW)

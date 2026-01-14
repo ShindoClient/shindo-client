@@ -2,6 +2,7 @@ package me.miki.shindo.utils.buffer
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
+import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -24,6 +25,12 @@ class ScreenAnimation {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         val factor = sr.scaleFactor
+
+        if (!GlobalAnimationSettings.enabled) {
+            nvg.setupAndDraw(task)
+            glRender?.run()
+            return
+        }
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
             close()
@@ -69,27 +76,37 @@ class ScreenAnimation {
         }, false)
     }
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float) =
-        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, false)
-
     fun wrap(glRender: Runnable?, task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float) =
         wrap(glRender, task, x, y, width, height, animationProgress, alphaProgress, false)
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float, stencil: Boolean) =
-        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
 
     fun wrap(task: Runnable, animationProgress: Float, alphaProgress: Float) {
         val sr = ScaledResolution(mc)
         wrap(null, task, 0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), animationProgress, alphaProgress, false)
     }
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, progress: Float) =
-        wrap(null, task, x, y, width, height, progress, progress, false)
-
     fun wrap(task: Runnable, progress: Float) {
         val sr = ScaledResolution(mc)
         wrap(null, task, 0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), progress, progress, false)
     }
+
+    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, progress: Float) =
+        wrap(null, task, x, y, width, height, progress, progress, false)
+
+    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float) =
+        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, false)
+
+    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float, stencil: Boolean) =
+        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
+
+    fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, progress: Float) =
+        wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), progress, progress, false)
+
+    fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, animationProgress: Float, alphaProgress: Float) =
+        wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animationProgress, alphaProgress, false)
+
+    fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, animationProgress: Float, alphaProgress: Float, stencil: Boolean) =
+        wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animationProgress, alphaProgress, stencil)
 
     fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return

@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lombok.Getter;
-import lombok.Setter;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.file.FileManager;
@@ -27,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BackgroundManager {
 
-    @Getter
     private final CopyOnWriteArrayList<Background> backgrounds = new CopyOnWriteArrayList<Background>();
 
     private final CopyOnWriteArrayList<CustomBackground> removeBackgrounds = new CopyOnWriteArrayList<CustomBackground>();
@@ -185,6 +182,10 @@ public class BackgroundManager {
 
     public Background getCurrentBackground() {
         return currentBackground;
+    }
+
+    public CopyOnWriteArrayList<Background> getBackgrounds() {
+        return backgrounds;
     }
 
     public void setCurrentBackground(Background currentBackground) {

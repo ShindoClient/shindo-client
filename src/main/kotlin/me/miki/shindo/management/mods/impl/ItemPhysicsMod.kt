@@ -1,10 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
-import me.miki.shindo.management.mods.Mod.isToggled
-import me.miki.shindo.management.mods.Mod.setToggled
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
@@ -18,7 +15,7 @@ class ItemPhysicsMod : Mod(
     ModCategory.RENDER,
     LegacyIcon.MOD_ITEM_PHYSICS
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = 0.5, max = 4, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = 0.5, max = 4.0, current = 1.0)
     @JvmField
     var speedSetting = 1.0
 
@@ -31,8 +28,9 @@ class ItemPhysicsMod : Mod(
     public override fun onEnable() {
         super.onEnable()
 
-        if (Items2DMod.Companion.getInstance().isToggled()) {
-            Items2DMod.Companion.getInstance().setToggled(false)
+        val items2D = Items2DMod.instance
+        if (items2D != null && items2D.isToggled()) {
+            items2D.setToggled(false)
         }
     }
 

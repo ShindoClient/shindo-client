@@ -16,6 +16,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.impl.CompComboBox
 import me.miki.shindo.ui.comp.impl.CompSettingButton
 import me.miki.shindo.ui.comp.impl.CompToggleButton
+import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -49,12 +50,14 @@ class AppearanceScene(parent: SettingsCategory) :
 
     private lateinit var modTheme: CompComboBox
     private lateinit var uiBlur: CompToggleButton
+    private lateinit var clientAnimations: CompToggleButton
 
     private val settingCards = ArrayList<CompSettingButton>()
 
     override fun initGui() {
-        modTheme = CompComboBox(110f, InternalSettingsMod.getInstance().modThemeSetting)
-        uiBlur = CompToggleButton(InternalSettingsMod.getInstance().blurSetting)
+        modTheme = CompComboBox(110f, requireNotNull(InternalSettingsMod.instance.modThemeSetting))
+        uiBlur = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getBlurSetting()))
+        clientAnimations = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getAnimationsSetting()))
 
         settingCards.clear()
 
@@ -69,6 +72,16 @@ class AppearanceScene(parent: SettingsCategory) :
                 .onClick {
                     val setting = uiBlur.getSetting()
                     setting.setToggled(!setting.isToggled())
+                }
+        )
+
+        settingCards.add(
+            CompSettingButton(0f, { TranslateText.ANIMATION.text }, { TranslateText.SMOOTH.text })
+                .trailing(clientAnimations)
+                .onClick {
+                    val setting = clientAnimations.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                    GlobalAnimationSettings.enabled = setting.isToggled()
                 }
         )
 

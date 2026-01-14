@@ -40,13 +40,9 @@ enum class ProjectileTrailType(
         return nameTranslate
     }
 
-    override fun getDisplayName(): String? {
-        return super.getDisplayName()
-    }
+    override fun getDisplayName(): String = super.getDisplayName()
 
-    override fun getNameKey(): String? {
-        return super.getNameKey()
-    }
+    override fun getNameKey(): String = super.getNameKey()
 
     companion object {
         fun getTypeByKey(key: String?): ProjectileTrailType {

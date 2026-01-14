@@ -11,7 +11,7 @@ import me.miki.shindo.management.settings.config.PropertyType
 
 class FarCameraMod :
     Mod(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_FAR_CAMERA) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.RANGE, min = 0, max = 50, current = 15, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.RANGE, min = 0.0, max = 5.00, current = 1.05, step = 1.0)
     private val rangeSetting = 15
 
     @EventTarget

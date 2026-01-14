@@ -1,6 +1,5 @@
 package me.miki.shindo.management.addons;
 
-import lombok.Getter;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.utils.animation.ColorAnimation;
 import me.miki.shindo.utils.animation.simple.SimpleAnimation;
@@ -14,10 +13,8 @@ public enum AddonType {
 
     private final TranslateText nameTranslate;
 
-    @Getter
     private final ColorAnimation textColorAnimation;
 
-    @Getter
     private final SimpleAnimation backgroundAnimation;
 
     AddonType(TranslateText nameTranslate) {
@@ -28,5 +25,13 @@ public enum AddonType {
 
     public String getName() {
         return nameTranslate.getText();
+    }
+
+    public ColorAnimation getTextColorAnimation() {
+        return textColorAnimation;
+    }
+
+    public SimpleAnimation getBackgroundAnimation() {
+        return backgroundAnimation;
     }
 }

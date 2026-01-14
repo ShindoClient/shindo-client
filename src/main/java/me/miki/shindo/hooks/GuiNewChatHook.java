@@ -1,6 +1,6 @@
 package me.miki.shindo.hooks;
 
-import me.miki.shindo.injection.interfaces.IMixinChatLine;
+import me.miki.shindo.injection.mixin.interfaces.client.gui.IMixinChatLine;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;

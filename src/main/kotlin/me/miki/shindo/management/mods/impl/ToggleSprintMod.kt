@@ -23,7 +23,7 @@ class ToggleSprintMod :
     private var startTime: Long = 0
     private var wasDown = false
 
-    private var state: State? = null
+    private var state: State = State.WALK
 
     public override fun setup() {
         state = State.WALK
@@ -86,17 +86,14 @@ class ToggleSprintMod :
             return "Walking"
         }
 
-        return prefix + " (" + state.name + ")"
+        return prefix + " (" + state.displayName + ")"
     }
 
-    private enum class State(name: String) {
-        WALK("Walking"), VANILLA("Vanilla"), HELD("Key Held"), TOGGLED("Toggled");
-
-        private val name: String?
-
-        init {
-            this.name = name
-        }
+    private enum class State(val displayName: String) {
+        WALK("Walking"),
+        VANILLA("Vanilla"),
+        HELD("Key Held"),
+        TOGGLED("Toggled")
     }
 }
 

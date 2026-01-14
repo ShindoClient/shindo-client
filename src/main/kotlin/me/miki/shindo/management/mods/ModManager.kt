@@ -125,7 +125,6 @@ class ModManager {
         registerMod(ToggleSprintMod())
         registerMod(UHCOverlayMod())
         registerMod(ViaVersionMod())
-        registerMod(WaveyCapesMod())
         registerMod(WaypointMod())
         registerMod(WeatherChangerMod())
         registerMod(WeatherDisplayMod())
@@ -199,7 +198,7 @@ class ModManager {
         for (mod in mods) {
             mod.setToggled(false)
         }
-        InternalSettingsMod.getInstance().setToggled(true)
+        InternalSettingsMod.instance.setToggled(true)
     }
 
     fun playToggleSound(toggled: Boolean) {

@@ -1,0 +1,47 @@
+package me.miki.shindo.injection.mixin.minecraft.lwjgl;
+
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+@Mixin(targets = "org.lwjgl.opengl.LinuxKeyboard")
+public class MixinLinuxKeyboard {
+
+    @Shadow
+    @Final
+    private int numlock_mask, modeswitch_mask, caps_lock_mask, shift_lock_mask;
+
+    @Shadow
+    private static native boolean isKeypadKeysym(long keysym);
+
+    @Shadow
+    private static native long getKeySym(long eventp, int group, int index);
+
+    @Shadow
+    private static native long toUpper(long keysym);
+
+    /**
+     * @author EldoDebug
+     * @reason Fixes the keycode mapping for the Linux keyboard.
+     */
+    @Overwrite(remap = false)
+    private int getKeycode(long eventp, int eventState) {
+
+        boolean shift = (eventState & (1 | shift_lock_mask)) != 0;
+        int group = (eventState & modeswitch_mask) != 0 ? 1 : 0;
+        long keysym;
+
+        if ((eventState & numlock_mask) != 0 && isKeypadKeysym(keysym = getKeySym(eventp, group, 1))) {
+            if (shift)
+                keysym = getKeySym(eventp, group, 0);
+        } else {
+            keysym = getKeySym(eventp, group, 0);
+            if (shift ^ ((eventState & caps_lock_mask) != 0))
+                keysym = toUpper(keysym);
+        }
+
+        return MixinLinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
+    }
+
+}

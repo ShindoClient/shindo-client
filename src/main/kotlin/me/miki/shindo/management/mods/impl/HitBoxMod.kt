@@ -26,7 +26,7 @@ class HitBoxMod :
     @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
     private val colorSetting = Color(255, 255, 255)
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0, max = 1.0, current = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
     private val alphaSetting = 1.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BOUNDING_BOX)
@@ -38,7 +38,7 @@ class HitBoxMod :
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOOK_VECTOR)
     private val lookVectorSetting = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1, max = 5, current = 2, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1.0, max = 5.0, current = 2.0, step = 1.0)
     private val lineWidthSetting = 2
 
     @EventTarget

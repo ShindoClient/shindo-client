@@ -2,7 +2,7 @@ package me.miki.shindo.management.addons.rpo.repository;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import me.miki.shindo.injection.interfaces.IMixinMinecraft;
+import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.ResourcePackRepository;

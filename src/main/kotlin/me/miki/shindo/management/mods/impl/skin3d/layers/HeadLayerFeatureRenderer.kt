@@ -1,7 +1,6 @@
 package me.miki.shindo.management.mods.impl.skin3d.layers
 
 import com.google.common.collect.Sets
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer
 import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
 import me.miki.shindo.management.mods.impl.Skin3DMod
@@ -24,7 +23,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
     }
 
     override fun doRenderLayer(
-        player: AbstractClientPlayer,
+        player: AbstractClientPlayer?,
         paramFloat1: Float,
         paramFloat2: Float,
         paramFloat3: Float,
@@ -33,13 +32,14 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         paramFloat6: Float,
         paramFloat7: Float
     ) {
-        if (!player.hasSkin() || player.isInvisible()) {
+        if (player == null || !player.hasSkin() || player.isInvisible()) {
             return
         }
 
+        val skinMod = Skin3DMod.getInstance() ?: return
+        val renderDistance = skinMod.getRenderDistanceLOD()
         if (mc.thePlayer.getPositionVector()
-                .squareDistanceTo(player.getPositionVector()) > Skin3DMod.Companion.getInstance()
-                .getRenderDistanceLOD() * Skin3DMod.Companion.getInstance().getRenderDistanceLOD()
+                .squareDistanceTo(player.getPositionVector()) > renderDistance * renderDistance
         ) {
             return
         }
@@ -78,7 +78,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
             return
         }
 
-        val voxelSize: Float = Skin3DMod.Companion.getInstance().getHeadVoxelSize()
+        val voxelSize: Float = Skin3DMod.getInstance()?.getHeadVoxelSize() ?: return
 
         GlStateManager.pushMatrix()
 

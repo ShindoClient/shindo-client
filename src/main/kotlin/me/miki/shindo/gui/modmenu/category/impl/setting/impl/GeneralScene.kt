@@ -26,11 +26,28 @@ class GeneralScene(parent: SettingsCategory) :
     private val settingCards = ArrayList<CompSettingButton>()
 
     override fun initGui() {
-        modMenuKeybind = CompKeybind(75f, InternalSettingsMod.getInstance().modMenuKeybindSetting)
-        clickEffectSetting = CompToggleButton(InternalSettingsMod.getInstance().clickEffectsSetting)
-        soundsUISetting = CompToggleButton(InternalSettingsMod.getInstance().soundsUISetting)
-        mcFontSetting = CompToggleButton(InternalSettingsMod.getInstance().mchudFont)
-        borderlessSetting = CompToggleButton(InternalSettingsMod.getInstance().borderlessFullscreenSetting)
+        val settingsMod = InternalSettingsMod.instance
+        modMenuKeybind = CompKeybind(
+            75f,
+            settingsMod.getModMenuKeybindSetting()
+                ?: throw IllegalStateException("Mod menu keybind setting missing")
+        )
+        clickEffectSetting = CompToggleButton(
+            settingsMod.getClickEffectsSetting()
+                ?: throw IllegalStateException("Click effect setting missing")
+        )
+        soundsUISetting = CompToggleButton(
+            settingsMod.getSoundsUISetting()
+                ?: throw IllegalStateException("UI sounds setting missing")
+        )
+        mcFontSetting = CompToggleButton(
+            settingsMod.mCHUDFont
+                ?: throw IllegalStateException("MC font setting missing")
+        )
+        borderlessSetting = CompToggleButton(
+            settingsMod.getBorderlessFullscreenSetting()
+                ?: throw IllegalStateException("Borderless fullscreen setting missing")
+        )
         contentScroll.resetAll()
 
         settingCards.clear()

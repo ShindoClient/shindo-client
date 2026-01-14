@@ -1,6 +1,5 @@
 package me.miki.shindo.management.cosmetic.cape.impl;
 
-import lombok.Getter;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.management.cosmetic.cape.CapeCategory;
 import net.minecraft.util.ResourceLocation;

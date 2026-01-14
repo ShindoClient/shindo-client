@@ -68,7 +68,7 @@ class ScreenshotCategory(parent: GuiModMenu) : Category(parent, TranslateText.SC
         val colorManager = instance.colorManager
         val palette = colorManager.palette
         val accentColor = colorManager.currentColor
-        val displayMode = InternalSettingsMod.getInstance().screenshotDisplayMode
+        val displayMode = InternalSettingsMod.instance.screenshotDisplayMode
 
         screenshotManager.loadScreenshots()
         ensureSelection(screenshotManager)
@@ -98,7 +98,7 @@ class ScreenshotCategory(parent: GuiModMenu) : Category(parent, TranslateText.SC
             return
         }
 
-        val displayMode = InternalSettingsMod.getInstance().screenshotDisplayMode
+        val displayMode = InternalSettingsMod.instance.screenshotDisplayMode
 
         if (currentScreenshot != null && trashBounds.contains(mouseX, mouseY) && mouseButton == 0) {
             deleteCurrentScreenshot(screenshotManager)

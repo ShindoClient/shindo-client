@@ -22,6 +22,7 @@ import me.miki.shindo.management.profile.ProfileIcon
 import me.miki.shindo.management.profile.ProfileManager
 import me.miki.shindo.management.profile.ProfileType
 import me.miki.shindo.ui.comp.impl.field.CompTextBox
+import me.miki.shindo.utils.IOUtils
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.SearchUtils
@@ -40,6 +41,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
     private val nameBox = CompTextBox()
     private val serverIpBox = CompTextBox()
+    private val importCodeBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
     private var currentType = ProfileType.ALL
     private var profileAnimation: Animation = SmoothStepAnimation(260, 1.0)
@@ -48,6 +50,10 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     private var useCustomIcon = false
     private var selectedCustomIcon: File? = null
     private var gridStartY = 0f
+    private var importButtonX = 0f
+    private var importButtonY = 0f
+    private var importButtonW = 0f
+    private var importButtonH = 0f
 
     override fun initGui() {
         currentType = ProfileType.ALL
@@ -84,6 +90,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         if (profileAnimation.isDone(Direction.FORWARDS)) {
             nameBox.setText("")
             serverIpBox.setText("")
+            importCodeBox.setText("")
             setCanClose(true)
         }
 
@@ -280,6 +287,20 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         serverIpBox.setDefaultText(TranslateText.SERVER_IP.text)
         serverIpBox.draw(mouseX, mouseY, partialTicks)
 
+        val importFieldY = fieldStartY + 62f
+        val importFieldWidth = panelWidth - 48f - 90f
+        nvg.drawText(TranslateText.PROFILE_IMPORT_CODE.text, panelX + 24f, importFieldY, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        importCodeBox.setPosition(panelX + 24f, importFieldY + 20f, importFieldWidth, 20f)
+        importCodeBox.setDefaultText(TranslateText.PROFILE_IMPORT_CODE.text)
+        importCodeBox.draw(mouseX, mouseY, partialTicks)
+
+        importButtonW = 80f
+        importButtonH = 20f
+        importButtonX = panelX + panelWidth - importButtonW - 30f
+        importButtonY = importFieldY + 20f
+        nvg.drawRoundedRect(importButtonX, importButtonY, importButtonW, importButtonH, 8f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawCenteredText(TranslateText.PROFILE_IMPORT.text, importButtonX + importButtonW / 2f, importButtonY + importButtonH / 2f - 4f, palette.getFontColor(ColorType.DARK), 10f, Fonts.REGULAR)
+
         val createButtonWidth = 80f
         val createButtonHeight = 20f
         val createButtonX = panelX + panelWidth - createButtonWidth - 30f
@@ -336,6 +357,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
             nameBox.mouseClicked(mouseX, mouseY, mouseButton)
             serverIpBox.mouseClicked(mouseX, mouseY, mouseButton)
+            importCodeBox.mouseClicked(mouseX, mouseY, mouseButton)
 
             val createButtonWidth = 80f
             val createButtonHeight = 20f
@@ -354,6 +376,49 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     useCustomIcon = false
                     selectedCustomIcon = null
                     currentIcon = ProfileIcon.COMMAND
+                }
+            }
+
+            if (MouseUtils.isInside(mouseX, mouseY, importButtonX, importButtonY, importButtonW, importButtonH) && mouseButton == 0) {
+                val code = importCodeBox.getText().trim().uppercase()
+                if (code.isNotEmpty()) {
+                    if (code.length != 12) {
+                        instance.notificationManager.post(
+                            TranslateText.PROFILE_NOTIFICATION_TITLE,
+                            TranslateText.PROFILE_IMPORT_FAILED.text,
+                            NotificationType.ERROR
+                        )
+                        return
+                    }
+                    val shareManager = instance.profileShareManager
+                    shareManager.requestFetch(code) { result ->
+                        when (result) {
+                            is me.miki.shindo.management.profile.ProfileShareManager.FetchResult.Success -> {
+                                val file = profileManager.importProfileFromShare(result.name, result.code ?: code, result.json)
+                                if (file != null) {
+                                    instance.notificationManager.post(
+                                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                                        TranslateText.PROFILE_IMPORT_SUCCESS.text,
+                                        NotificationType.SUCCESS
+                                    )
+                                    importCodeBox.setText("")
+                                } else {
+                                    instance.notificationManager.post(
+                                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                                        TranslateText.PROFILE_IMPORT_FAILED.text,
+                                        NotificationType.ERROR
+                                    )
+                                }
+                            }
+                            is me.miki.shindo.management.profile.ProfileShareManager.FetchResult.Error -> {
+                                instance.notificationManager.post(
+                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
+                                    TranslateText.PROFILE_IMPORT_FAILED.text,
+                                    NotificationType.ERROR
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -411,6 +476,10 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     }
 
                     if (!isDefault && MouseUtils.isInside(mouseX, mouseY, iconX - 0.5f, deleteY + 3f, iconSize, iconSize)) {
+                        val shareCode = profile.shareCode
+                        if (!shareCode.isNullOrBlank()) {
+                            instance.profileShareManager.requestUnshare(shareCode)
+                        }
                         profileManager.delete(profile)
                         profileManager.loadProfiles(false)
                         return
@@ -435,6 +504,31 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         }
                     }
                 }
+
+                if (mouseButton == 1 && profile.id != 999) {
+                    val shareManager = instance.profileShareManager
+                    shareManager.requestShare(profile) { result ->
+                        when (result) {
+                            is me.miki.shindo.management.profile.ProfileShareManager.ShareResult.Success -> {
+                                profileManager.updateShareCode(profile, result.code)
+                                IOUtils.copyStringToClipboard(result.code)
+                                instance.notificationManager.post(
+                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
+                                    TranslateText.PROFILE_SHARE_SUCCESS.text + ": " + result.code,
+                                    NotificationType.SUCCESS
+                                )
+                            }
+                            is me.miki.shindo.management.profile.ProfileShareManager.ShareResult.Error -> {
+                                instance.notificationManager.post(
+                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
+                                    TranslateText.PROFILE_SHARE_FAILED.text,
+                                    NotificationType.ERROR
+                                )
+                            }
+                        }
+                    }
+                    return
+                }
             }
         }
 
@@ -449,6 +543,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         if (openProfile) {
             nameBox.keyTyped(typedChar, keyCode)
             serverIpBox.keyTyped(typedChar, keyCode)
+            importCodeBox.keyTyped(typedChar, keyCode)
 
             if (keyCode == Keyboard.KEY_ESCAPE) {
                 openProfile = false

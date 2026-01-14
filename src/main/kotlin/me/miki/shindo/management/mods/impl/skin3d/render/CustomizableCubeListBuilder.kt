@@ -4,7 +4,7 @@ import com.google.common.collect.Lists
 import me.miki.shindo.management.mods.impl.skin3d.SkinDirection
 
 class CustomizableCubeListBuilder {
-    val cubes: MutableList<CustomizableCube?> = Lists.newArrayList<CustomizableCube?>()
+    val cubes: MutableList<CustomizableCube> = Lists.newArrayList()
     private var xTexOffs = 0
     private var yTexOffs = 0
     private var mirror = false

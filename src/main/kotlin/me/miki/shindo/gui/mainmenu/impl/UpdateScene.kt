@@ -20,7 +20,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
 
-        nvg.setupAndDraw { drawNanoVG(mouseX, mouseY, sr, instance, nvg) }
+        nvg!!.setupAndDraw (Runnable{ drawNanoVG(mouseX, mouseY, sr, instance, nvg) })
     }
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
@@ -36,7 +36,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawCenteredText("Update Available", acX + (acWidth / 2f), acY + 12f, Color.WHITE, 14f, Fonts.MEDIUM)
         nvg.drawCenteredText("Would you like to update?", acX + (acWidth / 2f), acY + 30f, Color.WHITE, 9f, Fonts.REGULAR)
         nvg.drawCenteredText(instance.version + " -> " + update.versionString, acX + (acWidth / 2f), acY + 48f, Color.WHITE, 9f, Fonts.REGULAR)
-        nvg.drawCenteredText(instance.verIdentifier + " -> " + update.buildID, acX + (acWidth / 2f), acY + 60f, Color.WHITE, 5f, Fonts.REGULAR)
+        nvg.drawCenteredText(instance.verIdentifier.toString() + " -> " + update.buildID, acX + (acWidth / 2f), acY + 60f, Color.WHITE, 5f, Fonts.REGULAR)
         nvg.drawRoundedRect(acX + acWidth / 2f - 90f, acY + acHeight - 64f, 180f, 20f, 4.5f, controlColor)
         nvg.drawCenteredText("Go to update", acX + acWidth / 2f, acY + acHeight - 54f - (nvg.getTextHeight("Go to update", 9.5f, Fonts.REGULAR) / 2), Color.WHITE, 9.5f, Fonts.REGULAR)
         nvg.drawRoundedRect(acX + acWidth / 2f - 90f, acY + acHeight - 32f, 180f, 20f, 4.5f, controlColor)

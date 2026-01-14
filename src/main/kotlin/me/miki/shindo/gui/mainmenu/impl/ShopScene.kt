@@ -32,7 +32,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     }
 
     override fun initScene() {
-        introAnimation = EaseInOutCirc(250, 1.0f)
+        introAnimation = EaseInOutCirc(250, 1.0)
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
@@ -41,13 +41,14 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
 
-        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, sr, instance, nvg) }, 0, 0, sr.scaledWidth, sr.scaledHeight, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, sr, instance, nvg) }, 0F, 0F, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), 2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), false)
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
+    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
         val acWidth = 220
         val acHeight = 190
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
@@ -58,7 +59,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
 
-        nvg.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, getBackgroundColor())
+        nvg!!.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, getBackgroundColor())
         nvg.drawCenteredText(TranslateText.PRICING_PLANS.text, acX + (acWidth / 2f), acY + 12f, Color.WHITE, 14f, Fonts.MEDIUM)
         nvg.drawCenteredText(TranslateText.PRICING_PLANS_DESCRIPTION.text, acX + (acWidth / 2f), acY + 30f, Color.WHITE, 9f, Fonts.REGULAR)
         nvg.drawRoundedRect(acX + 20f, acY + 50f, 82f, 128f, 6f, panelColor)

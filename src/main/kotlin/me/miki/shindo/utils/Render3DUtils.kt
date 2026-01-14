@@ -1,7 +1,7 @@
 package me.miki.shindo.utils
 
-import me.miki.shindo.injection.interfaces.IMixinMinecraft
-import me.miki.shindo.injection.interfaces.IMixinRenderManager
+import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -313,3 +313,4 @@ object Render3DUtils {
         GL11.glColor3d(255.0, 255.0, 255.0)
     }
 }
+

@@ -18,19 +18,15 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
+import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getTextSetting
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
-import java.lang.String
 import java.util.*
 import java.util.function.Consumer
-import kotlin.Float
-import kotlin.Int
-import kotlin.Long
-import kotlin.also
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -58,8 +54,7 @@ class MusicInfoMod :
         translate = TranslateText.LYRICS_API_URL,
         text = "https://spotify.mopigames.gay/"
     )
-    val lyricsApiUrlSetting: String
-        get() = getTextSetting(this, "lyricsApiUrlSetting")
+    private var lyricsApiUrlSetting: String = "https://spotify.mopigames.gay/"
     private val visibleLyrics = 5
     private val addX = 0f
     private val back = false
@@ -140,17 +135,16 @@ class MusicInfoMod :
     }
 
     private fun updateDynamicHeight() {
-        val lyricsManager: LyricsManager?
-        val lyrics: LyricsResponse?
         val musicManager = getInstance().musicManager
         var baseHeight = 85
         if (musicManager == null || !musicManager.isPlaying() || musicManager.getCurrentTrack() == null) {
             baseHeight = 75
-        } else if (this.showLyricsSetting && musicManager.getLyricsManager() != null && ((musicManager.getLyricsManager()
-                .also { lyricsManager = it }).getCurrentLyrics()
-                .also { lyrics = it }) != null && !lyrics!!.isError() && !lyrics.getLines().isEmpty()
-        ) {
+        } else {
+            val lyricsManager = musicManager.getLyricsManager()
+            val lyrics = lyricsManager?.getCurrentLyrics()
+            if (this.showLyricsSetting && lyrics != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
             baseHeight = 110 + this.visibleLyrics * 12
+            }
         }
         this.cachedHeight = baseHeight
         this.setHeight(baseHeight)
@@ -180,16 +174,15 @@ class MusicInfoMod :
     }
 
     private fun drawAdvancedNanoVG() {
-        val lyricsManager: LyricsManager?
-        val lyrics: LyricsResponse?
         val musicManager = getInstance().musicManager
         var hasLyrics = false
         val baseHeight = this.cachedHeight
-        if (this.showLyricsSetting && musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null && musicManager.getLyricsManager() != null && ((musicManager.getLyricsManager()
-                .also { lyricsManager = it }).getCurrentLyrics().also { lyrics = it }) != null && !lyrics!!.getLines()
-                .isEmpty()
-        ) {
-            hasLyrics = true
+        if (this.showLyricsSetting && musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
+            val lyricsManager = musicManager.getLyricsManager()
+            val lyrics = lyricsManager?.getCurrentLyrics()
+            if (lyrics != null && !lyrics.getLines().isEmpty()) {
+                hasLyrics = true
+            }
         }
         this.drawBackground(155.0f, baseHeight.toFloat())
         if (musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
@@ -216,11 +209,9 @@ class MusicInfoMod :
                 Color(255, 255, 255, 80)
             )
             val trackName = currentTrack.getName()
-            val artistNames = String.join(
-                ", ",
-                *Arrays.stream<ArtistSimplified?>(currentTrack.getArtists())
-                    .map<kotlin.String?> { obj: ArtistSimplified? -> obj!!.getName() }
-                    .toArray<kotlin.String?> { _Dummy_.__Array__() })
+            val artistNames = currentTrack.getArtists()
+                .filterNotNull()
+                .joinToString(", ") { it.getName() }
             val trackNameLines = this.breakTextIntoLines(trackName, 95.0f)
             var trackNameY = 25.0f
             for (line in trackNameLines) {
@@ -446,6 +437,10 @@ class MusicInfoMod :
 
     fun getEnableHotkeysSetting(): BooleanSetting? {
         return getBooleanSetting(this, "enableHotkeysSetting")
+    }
+
+    fun getLyricsApiUrlSetting(): TextSetting? {
+        return getTextSetting(this, "lyricsApiUrlSetting")
     }
 
     enum class Design(private val translate: TranslateText) : PropertyEnum {

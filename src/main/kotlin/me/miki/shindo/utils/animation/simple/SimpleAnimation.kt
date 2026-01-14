@@ -1,6 +1,7 @@
 package me.miki.shindo.utils.animation.simple
 
 import me.miki.shindo.utils.animation.simple.AnimationUtils.calculateCompensation
+import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 import kotlin.math.abs
 import kotlin.system.*
 
@@ -17,6 +18,11 @@ class SimpleAnimation {
     }
 
     fun setAnimation(value: Float, speed: Double) {
+        if (!GlobalAnimationSettings.enabled) {
+            this.value = value
+            this.lastMS = System.currentTimeMillis()
+            return
+        }
         val currentMS = System.currentTimeMillis()
         val delta = currentMS - this.lastMS
         this.lastMS = currentMS
@@ -33,5 +39,13 @@ class SimpleAnimation {
         }
 
         this.value = calculateCompensation(value, this.value, deltaValue, delta).toFloat()
+    }
+
+    fun setAnimation(value: Float, speed: Int) {
+        setAnimation(value, speed.toDouble())
+    }
+
+    fun setAnimation(value: Float) {
+        setAnimation(value, 16)
     }
 }

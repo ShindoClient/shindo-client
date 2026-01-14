@@ -44,7 +44,7 @@ class GuiQuickPlay : GuiScreen() {
         width = addX * 2
         height = addY * 2
 
-        introAnimation = EaseBackIn(320, 1.0f, 2.0f)
+        introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation.setDirection(Direction.FORWARDS)
         sceneChangeAnimation = SmoothStepAnimation(260, 1.0)
         sceneChangeAnimation.setValue(1.0)
@@ -53,13 +53,14 @@ class GuiQuickPlay : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvg = Shindo.getInstance().nanoVGManager
 
-        BlurUtils.drawBlurScreen(20)
+        BlurUtils.drawBlurScreen(20F)
 
-        screenAnimation.wrap({
-            nvg.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f)
-        }, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f))
+        screenAnimation.wrap(Runnable {
+            nvg!!.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f)
+        }, 2 - introAnimation.getValueFloat(), introAnimation.getValueFloat().coerceAtMost(1f))
 
-        screenAnimation.wrap({ drawNanoVG() }, x, y, width, height, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), true)
+        screenAnimation.wrap({ drawNanoVG() }, x, y, width, height, 2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), true)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -82,11 +83,11 @@ class GuiQuickPlay : GuiScreen() {
             currentQuickPlay = null
         }
 
-        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg!!.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
         nvg.drawCenteredText("Choose a " + if (currentQuickPlay != null) "Mode" else "Game", x + (width / 2f), y + 10f, palette.getFontColor(ColorType.DARK), 15f, Fonts.MEDIUM)
 
         nvg.save()
-        nvg.translate(-(600 - (sceneChangeAnimation.value * 600)).toFloat(), 0f)
+        nvg.translate(-(600 - (sceneChangeAnimation.getValue() * 600)).toFloat(), 0f)
 
         for (q in quickPlayManager.quickPlays) {
             nvg.drawRoundedRect(x + 15f + offsetX, y + 42f + offsetY, 110f, 42f, 6f, palette.getBackgroundColor(ColorType.DARK))
@@ -107,7 +108,7 @@ class GuiQuickPlay : GuiScreen() {
         nvg.restore()
 
         nvg.save()
-        nvg.translate((sceneChangeAnimation.value * 600).toFloat(), 0f)
+        nvg.translate((sceneChangeAnimation.getValue() * 600).toFloat(), 0f)
 
         val selected = currentQuickPlay
         if (selected != null) {
@@ -121,7 +122,7 @@ class GuiQuickPlay : GuiScreen() {
             scroll.onAnimation()
 
             nvg.scissor(x.toFloat(), y + 29f, width.toFloat(), height.toFloat())
-            nvg.translate(0f, scroll.value)
+            nvg.translate(0f, scroll.getValue())
 
             nvg.drawRoundedImage(selected.icon, x + (width / 2f) - (46 / 2f), y + 40f, 46f, 46f, 6f)
             nvg.drawCenteredText(selected.name, x + (width / 2f), y + 94f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
@@ -178,7 +179,7 @@ class GuiQuickPlay : GuiScreen() {
         } else {
             index = 1
             offsetX = 0
-            offsetY = (0 + scroll.value).toInt()
+            offsetY = (0 + scroll.getValue()).toInt()
 
             val selected = currentQuickPlay
             if (selected != null) {

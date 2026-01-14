@@ -23,7 +23,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 50, max = 450, step = 1, current = 180)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 5.00, max = 45.00, step = 1.0, current = 180.0)
     private val widthSetting = 180
 
     @EventTarget

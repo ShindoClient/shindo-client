@@ -19,8 +19,8 @@ import java.util.function.IntPredicate
 import java.util.stream.IntStream
 import kotlin.math.sqrt
 
-class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile?> {
-    private val chunkCoords: Array<ChunkCoordIntPair>
+class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
+    private val chunkCoords: Array<ChunkCoordIntPair?>
     private val reusableChunks: BitSet
     val chunkRadius: Int
     private val chunkSpanL2: Int
@@ -147,11 +147,11 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile?> {
         this.recolorChunk(x, z + 1)
     }
 
-    override fun iterator(): MutableIterator<ChunkTile?> {
+    override fun iterator(): MutableIterator<ChunkTile> {
         return IntStream.range(0, this.chunkCoords.size)
             .filter(IntPredicate { offs: Int -> this.chunkCoords[offs] != null })
-            .mapToObj<ChunkTile?>(IntFunction { offs: Int ->
-                val coords = this.chunkCoords[offs]
+            .mapToObj<ChunkTile>(IntFunction { offs: Int ->
+                val coords = this.chunkCoords[offs]!!
                 ChunkTile(coords.chunkXPos, coords.chunkZPos, offs)
             }).iterator()
     }

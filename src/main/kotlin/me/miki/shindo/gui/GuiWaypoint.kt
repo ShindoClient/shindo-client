@@ -60,14 +60,15 @@ class GuiWaypoint : GuiScreen() {
         width = addX * 2
         height = addY * 2
 
-        introAnimation = EaseBackIn(320, 1.0f, 2.0f)
+        introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        BlurUtils.drawBlurScreen(20)
+        BlurUtils.drawBlurScreen(20F)
 
-        screenAnimation.wrap({ drawNanoVG(mouseX, mouseY, partialTicks) }, x, y, width, height, 2 - introAnimation.valueFloat, Math.min(introAnimation.valueFloat, 1f), false)
+        screenAnimation.wrap(Runnable { drawNanoVG(mouseX, mouseY, partialTicks) }, x, y, width, height, 2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f), false)
     }
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -88,19 +89,19 @@ class GuiWaypoint : GuiScreen() {
             mc.displayGuiScreen(null)
         }
 
-        nvg.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f)
+        nvg!!.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f)
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f, palette.getBackgroundColor(ColorType.NORMAL))
         nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
         nvg.drawRect(x.toFloat(), y + 24f, width.toFloat(), 1f, palette.getBackgroundColor(ColorType.DARK))
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 25f, 190f, height - 25f)
-        nvg.translate(0f, scroll.value)
+        nvg.translate(0f, scroll.getValue())
 
         for (waypoint in waypointManager.waypoints) {
             if (waypoint.world == waypointManager.world) {
                 waypoint.trashAnimation.setAnimation(
-                    if (MouseUtils.isInside(mouseX, mouseY, x + 162f, y + 44f + offsetY + scroll.value, 11f, 11f)) 1.0f else 0.0f,
+                    if (MouseUtils.isInside(mouseX, mouseY, x + 162f, y + 44f + offsetY + scroll.getValue(), 11f, 11f)) 1.0f else 0.0f,
                     16
                 )
 
@@ -130,7 +131,7 @@ class GuiWaypoint : GuiScreen() {
         nvg.drawCenteredText("Create a waypoint", x + width - 130f + (120 / 2f), y + 43f, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
 
         textBox.setDefaultText("Name")
-        textBox.setPosition(x + width - 120, y + 59, 100, 18)
+        textBox.setPosition(x + width - 120f, y + 59f, 100f, 18f)
         textBox.draw(mouseX, mouseY, partialTicks)
 
         offsetX = 0
@@ -173,7 +174,7 @@ class GuiWaypoint : GuiScreen() {
 
         for (waypoint in waypointManager.waypoints) {
             if (waypoint.world == waypointManager.world) {
-                if (MouseUtils.isInside(mouseX, mouseY, x + 160f, y + 41f + offsetY + scroll.value.toInt(), 16f, 16f) && mouseButton == 0) {
+                if (MouseUtils.isInside(mouseX, mouseY, x + 160f, y + 41f + offsetY + scroll.getValue().toInt(), 16f, 16f) && mouseButton == 0) {
                     removeWaypoint = waypoint
                 }
 
@@ -200,9 +201,9 @@ class GuiWaypoint : GuiScreen() {
             }
         }
 
-        if (MouseUtils.isInside(mouseX, mouseY, x + width - 85f, y + height - 34f, 65f, 18f) && mouseButton == 0 && textBox.text.isNotEmpty()) {
-            waypointManager.addWaypoint(textBox.text, mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, currentColor)
-            textBox.text = ""
+        if (MouseUtils.isInside(mouseX, mouseY, x + width - 85f, y + height - 34f, 65f, 18f) && mouseButton == 0 && textBox.getText().isNotEmpty()) {
+            waypointManager.addWaypoint(textBox.getText(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, currentColor)
+            textBox.setText("")
             waypointManager.save()
         }
 

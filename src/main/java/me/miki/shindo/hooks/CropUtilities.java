@@ -1,6 +1,6 @@
 package me.miki.shindo.hooks;
 
-import me.miki.shindo.injection.mixin.accessors.BlockAccessor;
+import me.miki.shindo.injection.mixin.accessors.block.BlockAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.AxisAlignedBB;
@@ -71,3 +71,4 @@ public class CropUtilities {
     }
     //#endif
 }
+

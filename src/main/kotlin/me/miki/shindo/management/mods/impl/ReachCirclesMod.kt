@@ -23,7 +23,7 @@ class ReachCirclesMod : Mod(
     ModCategory.PLAYER,
     LegacyIcon.MOD_REACH_CIRCLES
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1, max = 5, current = 2, step = 1)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1.0, max = 5.0, current = 2.0, step = 1.0)
     private val lineWidthSetting = 2
 
     @EventTarget
