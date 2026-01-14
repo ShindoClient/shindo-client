@@ -1,0 +1,56 @@
+package me.miki.shindo.management.mods.impl
+
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventKey
+import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.mods.Mod
+import me.miki.shindo.management.mods.ModCategory
+import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.settings.config.Property
+import me.miki.shindo.management.settings.config.PropertyType
+import org.lwjgl.input.Keyboard
+
+class AutoTextMod : Mod(
+    TranslateText.AUTO_TEXT,
+    TranslateText.AUTO_TEXT_DESCRIPTION,
+    ModCategory.PLAYER,
+    LegacyIcon.MOD_AUTO_TEXT,
+    "messagetexthotkeymacro"
+) {
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.TEXT_1_KEY, keyCode = Keyboard.KEY_NONE)
+    private val text1KeybindSetting = Keyboard.KEY_NONE
+
+    @Property(type = PropertyType.TEXT, translate = TranslateText.TEXT_1, text = "")
+    private val text1Setting = ""
+
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.TEXT_2_KEY, keyCode = Keyboard.KEY_NONE)
+    private val text2KeybindSetting = Keyboard.KEY_NONE
+
+    @Property(type = PropertyType.TEXT, translate = TranslateText.TEXT_2, text = "")
+    private val text2Setting = ""
+
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.TEXT_3_KEY, keyCode = Keyboard.KEY_NONE)
+    private val text3KeybindSetting = Keyboard.KEY_NONE
+
+    @Property(type = PropertyType.TEXT, translate = TranslateText.TEXT_3, text = "")
+    private val text3Setting = ""
+
+    @EventTarget
+    fun onKey(event: EventKey) {
+        if (event.getKeyCode() == text1KeybindSetting) {
+            mc.thePlayer.sendChatMessage(text1Setting)
+        }
+
+        if (event.getKeyCode() == text2KeybindSetting) {
+            mc.thePlayer.sendChatMessage(text2Setting)
+        }
+
+        if (event.getKeyCode() == text3KeybindSetting) {
+            mc.thePlayer.sendChatMessage(text3Setting)
+        }
+    }
+}
+
+
+
+

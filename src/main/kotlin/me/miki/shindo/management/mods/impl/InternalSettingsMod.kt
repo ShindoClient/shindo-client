@@ -1,0 +1,405 @@
+package me.miki.shindo.management.mods.impl
+
+import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel.LayoutMode
+import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventKey
+import me.miki.shindo.management.event.impl.EventPreRenderTick
+import me.miki.shindo.management.event.impl.EventToggleFullscreen
+import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.mods.Mod
+import me.miki.shindo.management.mods.ModCategory
+import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.screenshot.ScreenshotDisplayMode
+import me.miki.shindo.management.settings.config.Property
+import me.miki.shindo.management.settings.config.PropertyEnum
+import me.miki.shindo.management.settings.config.PropertyType
+import me.miki.shindo.management.settings.impl.BooleanSetting
+import me.miki.shindo.management.settings.impl.ComboSetting
+import me.miki.shindo.management.settings.impl.KeybindSetting
+import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
+import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetting
+import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
+import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
+import org.lwjgl.LWJGLException
+import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.DisplayMode
+import java.util.*
+import kotlin.math.max
+import kotlin.math.min
+
+class InternalSettingsMod :
+    Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, LegacyIcon.MOD_INTERNAL_SETTINGS) {
+    @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
+    val hudTheme: HudTheme = HudTheme.NORMAL
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_BLUR)
+    @JvmField
+    var blurSetting = false
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.MC_FONT)
+    private val mcFontSetting = false
+
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.VOLUME, min = 0, max = 1, current = 0.8)
+    @JvmField
+    var volumeSetting = 0.8
+
+    @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_RSHIFT)
+    private val modMenuKeybindSetting = Keyboard.KEY_RSHIFT
+
+    @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_CAPE, text = "None")
+    var capeConfigName: String? = "None"
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CLICK_EFFECT)
+    @JvmField
+    var clickEffectsSetting = false
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.UI_SOUNDS)
+    @JvmField
+    var soundsUISetting = false
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BORDERLESS_FULSCREEN)
+    private val borderlessFullscreenSetting = false
+
+    @Property(type = PropertyType.COMBO, name = "Settings Layout")
+    val settingsLayout: SettingsLayout = SettingsLayout.SINGLE_COLUMN
+
+    @Property(type = PropertyType.COMBO, name = "Module Layout")
+    private val moduleLayout = ModuleLayout.SINGLE_COLUMN
+
+    @Property(type = PropertyType.COMBO, name = "Addon Layout")
+    var addonLayout: AddonLayout = AddonLayout.STANDARD
+        set(layout) {
+            val target = if (layout == null) AddonLayout.STANDARD else layout
+            val combo = this.addonLayoutSetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions().get(target.ordinal))
+            }
+        }
+
+    @Property(type = PropertyType.COMBO, name = "Screenshot Display")
+    var screenshotDisplayMode: ScreenshotDisplayMode = ScreenshotDisplayMode.FILMSTRIP
+        set(mode) {
+            val target = if (mode == null) ScreenshotDisplayMode.FILMSTRIP else mode
+            val combo = this.screenshotDisplaySetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions().get(target.ordinal))
+            }
+        }
+
+    @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
+    var notificationCorner: NotificationCorner = NotificationCorner.BOTTOM_RIGHT
+        set(corner) {
+            val target = if (corner == null) NotificationCorner.BOTTOM_RIGHT else corner
+            val combo = this.notificationCornerSetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions().get(target.ordinal))
+            }
+        }
+
+    private var prevX = 0
+    private var prevY = 0
+    private var prevWidth = 0
+    private var prevHeight = 0
+    private var fullscreenTime: Long = -1
+    private var lastBorderlessState = false
+    private var borderlessInitialized = false
+
+    init {
+        instance = this
+    }
+
+    public override fun setup() {
+        this.setHide(true)
+        this.setToggled(true)
+    }
+
+    @EventTarget
+    fun onKey(event: EventKey) {
+        if (event.getKeyCode() == modMenuKeybindSetting) {
+            mc.displayGuiScreen(getInstance().shindoAPI.modMenu)
+        }
+
+        // Uncomment to enable the ability to change the theme of the mod menu using the down arrow key
+        if (event.getKeyCode() == Keyboard.KEY_DOWN) {
+            val combo = this.modThemeSetting
+            if (combo != null) {
+                val max = combo.getOptions().size
+                var modeIndex = combo.getOptions().indexOf(combo.getOption())
+                modeIndex = if (modeIndex > 0) modeIndex - 1 else max - 1
+                combo.setOption(combo.getOptions().get(modeIndex))
+            }
+        }
+    }
+
+    @EventTarget
+    fun onRenderTick(event: EventPreRenderTick?) {
+        if (fullscreenTime != -1L && System.currentTimeMillis() - fullscreenTime >= 100) {
+            fullscreenTime = -1
+
+            if (mc.inGameHasFocus) {
+                mc.mouseHelper.grabMouseCursor()
+            }
+        }
+
+        if (borderlessInitialized && borderlessFullscreenSetting != lastBorderlessState) {
+            applyBorderlessSetting(borderlessFullscreenSetting, false)
+        }
+    }
+
+    @EventTarget
+    fun onFullscreenToggle(event: EventToggleFullscreen) {
+        if (!borderlessFullscreenSetting) {
+            return
+        }
+        event.setApplyState(false)
+        setBorderlessFullscreen(event.getState())
+    }
+
+    fun getModuleLayout(): ModuleLayout {
+        return moduleLayout
+    }
+
+    val settingsLayoutSetting: ComboSetting?
+        get() = getComboSetting(this, "settingsLayout")
+
+    val moduleLayoutSetting: ComboSetting?
+        get() = getComboSetting(this, "moduleLayout")
+
+    val addonLayoutSetting: ComboSetting?
+        get() = getComboSetting(this, "addonLayout")
+
+    val screenshotDisplaySetting: ComboSetting?
+        get() = getComboSetting(this, "screenshotDisplayMode")
+
+    val notificationCornerSetting: ComboSetting?
+        get() = getComboSetting(this, "notificationCorner")
+
+    var settingsLayoutMode: LayoutMode?
+        get() = if (settingsLayout == SettingsLayout.COMPACT_GRID)
+            LayoutMode.DOUBLE_COLUMN
+        else
+            LayoutMode.SINGLE_COLUMN
+        set(mode) {
+            val target =
+                if (mode == LayoutMode.DOUBLE_COLUMN)
+                    SettingsLayout.COMPACT_GRID
+                else
+                    SettingsLayout.SINGLE_COLUMN
+            val combo = this.settingsLayoutSetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions().get(target.ordinal))
+            }
+        }
+
+    var moduleGridColumns: Int
+        get() {
+            if (Objects.requireNonNull<ModuleLayout?>(moduleLayout) == ModuleLayout.TWO_COLUMNS) {
+                return 2
+            }
+            if (moduleLayout == ModuleLayout.ICON_CARDS) {
+                return 3
+            }
+            return 1
+        }
+        set(columns) {
+            val normalized = max(1, min(columns, 2))
+            val target = if (normalized == 2) ModuleLayout.TWO_COLUMNS else ModuleLayout.SINGLE_COLUMN
+            val combo = this.moduleLayoutSetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions().get(target.ordinal))
+            }
+        }
+
+    fun setModuleLayout(layout: ModuleLayout?) {
+        val target = if (layout == null) ModuleLayout.SINGLE_COLUMN else layout
+        val combo = this.moduleLayoutSetting
+        if (combo != null && target.ordinal < combo.getOptions().size) {
+            combo.setOption(combo.getOptions().get(target.ordinal))
+        }
+    }
+
+    val modThemeSetting: ComboSetting?
+        get() = getComboSetting(this, "hudTheme")
+
+    fun getModMenuKeybindSetting(): KeybindSetting? {
+        return getKeybindSetting(this, "modMenuKeybindSetting")
+    }
+
+    val mCHUDFont: BooleanSetting?
+        get() = getBooleanSetting(this, "mcFontSetting")
+
+    fun getBorderlessFullscreenSetting(): BooleanSetting? {
+        return getBooleanSetting(this, "borderlessFullscreenSetting")
+    }
+
+    fun getBlurSetting(): BooleanSetting? = getBooleanSetting(this, "blurSetting")
+
+    fun getVolumeSetting(): NumberSetting? = getNumberSetting(this, "volumeSetting")
+
+    fun getClickEffectsSetting(): BooleanSetting? = getBooleanSetting(this, "clickEffectsSetting")
+
+    fun getSoundsUISetting(): BooleanSetting? = getBooleanSetting(this, "soundsUISetting")
+
+    fun applyBorderlessOnStartup() {
+        borderlessInitialized = true
+        lastBorderlessState = borderlessFullscreenSetting
+        applyBorderlessSetting(borderlessFullscreenSetting, true)
+    }
+
+    private fun applyBorderlessSetting(state: Boolean, force: Boolean) {
+        if (!force && state == lastBorderlessState) {
+            return
+        }
+
+        lastBorderlessState = state
+        borderlessInitialized = true
+
+        if (!mc.isFullScreen()) {
+            return
+        }
+
+        if (state) {
+            setBorderlessFullscreen(true)
+        } else {
+            setBorderlessFullscreen(false)
+            mc.toggleFullscreen()
+            mc.toggleFullscreen()
+        }
+    }
+
+    private fun setBorderlessFullscreen(state: Boolean) {
+        try {
+            System.setProperty("org.lwjgl.opengl.Window.undecorated", state.toString())
+            Display.setFullscreen(false)
+            Display.setResizable(!state)
+
+            if (state) {
+                prevX = Display.getX()
+                prevY = Display.getY()
+                prevWidth = mc.displayWidth
+                prevHeight = mc.displayHeight
+                Display.setDisplayMode(
+                    DisplayMode(
+                        Display.getDesktopDisplayMode().getWidth(),
+                        Display.getDesktopDisplayMode().getHeight()
+                    )
+                )
+                Display.setLocation(0, 0)
+                (mc as IMixinMinecraft).resizeWindow(
+                    Display.getDesktopDisplayMode().getWidth(),
+                    Display.getDesktopDisplayMode().getHeight()
+                )
+            } else {
+                Display.setDisplayMode(DisplayMode(prevWidth, prevHeight))
+                Display.setLocation(prevX, prevY)
+                (mc as IMixinMinecraft).resizeWindow(prevWidth, prevHeight)
+
+                if (mc.inGameHasFocus) {
+                    mc.mouseHelper.ungrabMouseCursor()
+                    fullscreenTime = System.currentTimeMillis()
+                }
+            }
+        } catch (error: LWJGLException) {
+            ShindoLogger.error("Could not toggle borderless fullscreen", error)
+        }
+    }
+
+
+    enum class HudTheme(private val translate: TranslateText) : PropertyEnum {
+        NORMAL(TranslateText.NORMAL),
+        GLOW(TranslateText.GLOW),
+        OUTLINE(TranslateText.OUTLINE),
+        VANILLA(TranslateText.VANILLA),
+        OUTLINE_GLOW(TranslateText.OUTLINE_GLOW),
+        VANILLA_GLOW(TranslateText.VANILLA_GLOW),
+        SHADOW(TranslateText.SHADOW),
+        DARK(TranslateText.DARK),
+        LIGHT(TranslateText.LIGHT),
+        RECT(TranslateText.RECT),
+        MODERN(TranslateText.MODERN),
+        TEXT(TranslateText.TEXT),
+        GRADIENT_SIMPLE(TranslateText.GRADIENT_SIMPLE);
+
+        override fun getTranslate(): TranslateText {
+            return translate
+        }
+
+        override fun getNameKey(): String? {
+            return super.getNameKey()
+        }
+
+        override fun getDisplayName(): String? {
+            return super.getDisplayName()
+        }
+    }
+
+    enum class SettingsLayout(displayName: String) : PropertyEnum {
+        SINGLE_COLUMN("Single Column"),
+        COMPACT_GRID("Compact Grid");
+
+        private val displayName: String?
+
+        init {
+            this.displayName = displayName
+        }
+
+        override fun getDisplayName(): String? {
+            return displayName
+        }
+    }
+
+    enum class ModuleLayout(displayName: String) : PropertyEnum {
+        SINGLE_COLUMN("Single Column"),
+        TWO_COLUMNS("Two Columns"),
+        ICON_CARDS("Icon Cards");
+
+        private val displayName: String?
+
+        init {
+            this.displayName = displayName
+        }
+
+        override fun getDisplayName(): String? {
+            return displayName
+        }
+    }
+
+    enum class AddonLayout(displayName: String) : PropertyEnum {
+        STANDARD("Standard"),
+        ICON_CARDS("Icon Cards");
+
+        private val displayName: String?
+
+        init {
+            this.displayName = displayName
+        }
+
+        override fun getDisplayName(): String? {
+            return displayName
+        }
+    }
+
+    enum class NotificationCorner(private val translate: TranslateText) : PropertyEnum {
+        TOP_LEFT(TranslateText.NOTIFICATION_POSITION_TOP_LEFT),
+        TOP_RIGHT(TranslateText.NOTIFICATION_POSITION_TOP_RIGHT),
+        BOTTOM_LEFT(TranslateText.NOTIFICATION_POSITION_BOTTOM_LEFT),
+        BOTTOM_RIGHT(TranslateText.NOTIFICATION_POSITION_BOTTOM_RIGHT);
+
+        override fun getTranslate(): TranslateText {
+            return translate
+        }
+    }
+
+    companion object {
+        @JvmField
+        var instance: InternalSettingsMod? = null
+    }
+}
+
+
+
+

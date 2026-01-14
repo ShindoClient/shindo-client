@@ -1,0 +1,66 @@
+package me.miki.shindo.management.mods.impl
+
+import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventRender2D
+import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.mods.HUDMod
+import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.settings.config.Property
+import me.miki.shindo.management.settings.config.PropertyType
+
+class PlayerListMod :
+    HUDMod(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST) {
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1, max = 100, current = 16, step = 1)
+    private val maxSetting = 16
+
+    private var index = 0
+    private var maxName = 0f
+
+    @EventTarget
+    fun onRender2D(event: EventRender2D?) {
+        val nvg = getInstance().nanoVGManager
+
+        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
+    }
+
+    private fun drawNanoVG() {
+        var prevIndex = 0
+        var offsetY = 23
+
+        this.drawBackground(maxName, (index * 15) + 24.5f)
+        this.drawText("Player List", 5.5f, 6f, 10.5f, getHudFont(1))
+        this.drawRect(0f, 18f, maxName, 1f)
+
+        for (playerInfo in mc.getNetHandler().getPlayerInfoMap()) {
+            if (playerInfo != null && playerInfo.getGameProfile() != null) {
+                val name = playerInfo.getGameProfile().getName()
+
+                if (this.getTextWidth(name, 9f, getHudFont(2))!! + 26 > maxName) {
+                    maxName = this.getTextWidth(name, 9f, getHudFont(2))!! + 26
+                }
+
+                this.drawPlayerHead(playerInfo.getLocationSkin(), 5.5f, offsetY.toFloat(), 12f, 12f, 2.5f)
+                this.drawText(name, 20f, offsetY + 2.5f, 9f, getHudFont(1))
+
+                if (prevIndex > maxSetting) {
+                    prevIndex++
+                    index = prevIndex
+                    break
+                }
+
+                prevIndex++
+                offsetY += 15
+            }
+        }
+
+        index = prevIndex
+
+        this.setWidth(maxName.toInt())
+        this.setHeight((index * 15) + 26)
+    }
+}
+
+
+
+
