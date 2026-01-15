@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu
+﻿package me.miki.shindo.gui.modmenu
 
 import eu.shoroa.contrib.render.ShBlur
 import me.miki.shindo.Shindo
@@ -23,8 +23,8 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.impl.CompIconButton
-import me.miki.shindo.ui.comp.impl.field.CompSearchBox
+import me.miki.shindo.ui.comp.buttons.CompIconButton
+import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.utils.animation.normal.Animation
 import me.miki.shindo.utils.animation.normal.Direction

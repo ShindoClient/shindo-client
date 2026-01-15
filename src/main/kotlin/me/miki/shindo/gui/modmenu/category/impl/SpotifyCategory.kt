@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl
+﻿package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
@@ -18,8 +18,8 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.ui.comp.impl.CompSlider
-import me.miki.shindo.ui.comp.impl.field.CompTextBox
+import me.miki.shindo.ui.comp.inputs.CompSlider
+import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.Minecraft

@@ -39,14 +39,3 @@ gradlew build
 > **Build notes**
 > - The project uses the bundled `gradlew` (Gradle 9.2.1) with the `legacy-looming` plugin (1.14-SNAPSHOT) over Minecraft 1.8.9, so it behaves as a tweaker/LaunchWrapper client without Fabric runtime libs.
 > - Kotlin sources target JVM 1.8; keep any new compilation or lint tasks consistent with that target and the `ShindoTweaker` bootstrap.
-
-## TODOs e fluxo de documentação temporária
-
-Erros de compilação ou ajustes de migração do Kotlin devem ser registrados em `docs/TODOs/TODO-KOTLIN-MODS-BUGFIX.md`. Esse arquivo funciona como o backlog autoritativo dos problemas ainda pendentes, incluindo o contexto de onde surgiram (p.ex. os últimos ajustes em `HypixelMod`/`HUDMod` que existiam como Java antes da conversão) e as etapas necessárias para validá-los. Mantenha o histórico completo no TODO mesmo depois de resolver um item, e preserve o diretório `docs/TODOs/` sem removê-lo.
-
-Como a DSL de mods foi descontinuada, todo novo código deve seguir a estrutura Kotlin/Java atual (veja `src/main/kotlin`/`src/main/java`) e usar os arquivos históricos da branch anterior (`git show HEAD^:src/main/java/...`) para validar comportamentos legados quando necessário.
-
-Nota sobre eventos: @EventTarget injeta o metodo no call() do evento, e o primeiro parametro pode ser o evento. Nem todo evento precisa do argumento para funcionar, entao o parametro vent pode ficar sem uso e isso e esperado.
-
-## Animation Engine v2
-Novo engine de animacoes em docs/animation-engine.md. A partir de agora, use o engine novo para qualquer animacao. O sistema legado (Animation, SimpleAnimation, ScreenAnimation) sera removido em breve; as partes pendentes estao em docs/TODOs/TODO-ANIMATION-MIGRATION.md.

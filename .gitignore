@@ -41,12 +41,16 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### OTHER ###
 
+# Shindo private APIs
+/src/main/kotlin/me/miki/shindo/api/
+
+# Shindo private Stuff
+/src/main/kotlin/me/miki/shindo/ui/comp/README.md
 AGENTS.md
 docs/
 implement/
 scripts/
+.txt
 
-# Shindo private APIs
-/src/main/kotlin/me/miki/shindo/api/
+

@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.mainmenu.impl
+﻿package me.miki.shindo.gui.mainmenu.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
@@ -17,7 +17,7 @@ import me.miki.shindo.management.skin.Skin
 import me.miki.shindo.management.skin.SkinManager
 import me.miki.shindo.management.skin.SkinPreviewRenderer
 import me.miki.shindo.management.skin.SkinType
-import me.miki.shindo.ui.comp.impl.field.CompMainMenuTextBox
+import me.miki.shindo.ui.comp.inputs.CompMainMenuTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.animation.normal.Animation

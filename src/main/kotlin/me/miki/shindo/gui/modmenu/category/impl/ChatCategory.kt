@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl
+﻿package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.api.chat.ChatFriend
@@ -13,7 +13,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.impl.field.CompTextBox
+import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.PlayerHeadUtils
 import me.miki.shindo.utils.mouse.MouseUtils

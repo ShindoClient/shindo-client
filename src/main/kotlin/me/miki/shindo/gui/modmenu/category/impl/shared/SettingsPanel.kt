@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl.shared
+﻿package me.miki.shindo.gui.modmenu.category.impl.shared
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.AccentColor
@@ -12,16 +12,16 @@ import me.miki.shindo.management.settings.impl.CategorySetting
 import me.miki.shindo.management.settings.metadata.SettingMetadata
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.factory.SettingComponentFactory
-import me.miki.shindo.ui.comp.impl.CompCellGrid
-import me.miki.shindo.ui.comp.impl.CompColorPicker
-import me.miki.shindo.ui.comp.impl.CompComboBox
-import me.miki.shindo.ui.comp.impl.CompImageSelect
-import me.miki.shindo.ui.comp.impl.CompKeybind
-import me.miki.shindo.ui.comp.impl.CompModTextBox
-import me.miki.shindo.ui.comp.impl.CompSlider
-import me.miki.shindo.ui.comp.impl.CompSoundSelect
-import me.miki.shindo.ui.comp.impl.CompToggleButton
-import me.miki.shindo.ui.comp.impl.CompCategory
+import me.miki.shindo.ui.comp.inputs.CompCellGrid
+import me.miki.shindo.ui.comp.inputs.CompColorPicker
+import me.miki.shindo.ui.comp.inputs.CompComboBox
+import me.miki.shindo.ui.comp.inputs.CompImageSelect
+import me.miki.shindo.ui.comp.inputs.CompKeybind
+import me.miki.shindo.ui.comp.inputs.CompModTextBox
+import me.miki.shindo.ui.comp.inputs.CompSlider
+import me.miki.shindo.ui.comp.inputs.CompSoundSelect
+import me.miki.shindo.ui.comp.buttons.CompToggleButton
+import me.miki.shindo.ui.comp.buttons.CompCategory
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.animation.simple.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils

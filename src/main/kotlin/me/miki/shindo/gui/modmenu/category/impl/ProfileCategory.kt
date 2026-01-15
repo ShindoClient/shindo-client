@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl
+﻿package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
@@ -21,7 +21,7 @@ import me.miki.shindo.management.profile.Profile
 import me.miki.shindo.management.profile.ProfileIcon
 import me.miki.shindo.management.profile.ProfileManager
 import me.miki.shindo.management.profile.ProfileType
-import me.miki.shindo.ui.comp.impl.field.CompTextBox
+import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.IOUtils
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.Multithreading

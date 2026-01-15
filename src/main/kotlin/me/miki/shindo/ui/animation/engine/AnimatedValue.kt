@@ -1,5 +1,6 @@
 package me.miki.shindo.ui.animation.engine
 
+import me.miki.shindo.ui.animation.engine.easing.EasingFunction
 import kotlin.math.min
 
 abstract class AnimatedValue<T>(
@@ -49,6 +50,14 @@ abstract class AnimatedValue<T>(
 
         controller?.add(this)
         return this
+    }
+
+    /**
+     * Anima para um valor usando uma EasingFunction diretamente.
+     * Útil para usar easings customizados do sistema antigo.
+     */
+    fun animateTo(target: T, durationMs: Long = 250, easingFunction: EasingFunction): AnimatedValue<T> {
+        return animateTo(target, durationMs, Easing.from(easingFunction))
     }
 
     override fun update(deltaMs: Long) {

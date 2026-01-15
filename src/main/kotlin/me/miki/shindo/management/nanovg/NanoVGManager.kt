@@ -951,5 +951,298 @@ class NanoVGManager {
     ) {
         drawRoundedRect(x, y, width, height, radius, Color(255, 255, 255, alpha.toInt()))
     }
+
+    // ========== Métodos Úteis para UI ==========
+
+    /**
+     * Desenha uma linha entre dois pontos.
+     * @param x1 Coordenada X do ponto inicial
+     * @param y1 Coordenada Y do ponto inicial
+     * @param x2 Coordenada X do ponto final
+     * @param y2 Coordenada Y do ponto final
+     * @param strokeWidth Largura da linha
+     * @param color Cor da linha
+     */
+    fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, strokeWidth: Float, color: Color) {
+        val nvgColor = getColor(color)
+        NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgMoveTo(nvg, x1, y1)
+        NanoVG.nvgLineTo(nvg, x2, y2)
+        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
+        NanoVG.nvgStrokeColor(nvg, nvgColor)
+        NanoVG.nvgStroke(nvg)
+    }
+
+    /**
+     * Desenha uma linha com gradiente entre dois pontos.
+     * @param x1 Coordenada X do ponto inicial
+     * @param y1 Coordenada Y do ponto inicial
+     * @param x2 Coordenada X do ponto final
+     * @param y2 Coordenada Y do ponto final
+     * @param strokeWidth Largura da linha
+     * @param color1 Cor inicial do gradiente
+     * @param color2 Cor final do gradiente
+     */
+    fun drawGradientLine(x1: Float, y1: Float, x2: Float, y2: Float, strokeWidth: Float, color1: Color, color2: Color) {
+        val bg = NVGPaint.create()
+        val nvgColor1 = getColor(color1)
+        val nvgColor2 = getColor(color2)
+
+        NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgMoveTo(nvg, x1, y1)
+        NanoVG.nvgLineTo(nvg, x2, y2)
+        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
+        NanoVG.nvgStrokePaint(nvg, NanoVG.nvgLinearGradient(nvg, x1, y1, x2, y2, nvgColor1, nvgColor2, bg))
+        NanoVG.nvgStroke(nvg)
+    }
+
+    /**
+     * Desenha um polígono regular (triângulo, quadrado, pentágono, etc).
+     * @param centerX Coordenada X do centro
+     * @param centerY Coordenada Y do centro
+     * @param radius Raio do polígono
+     * @param sides Número de lados (3 = triângulo, 4 = quadrado, etc)
+     * @param rotation Rotação em graus
+     * @param color Cor de preenchimento
+     */
+    fun drawPolygon(centerX: Float, centerY: Float, radius: Float, sides: Int, rotation: Float, color: Color) {
+        val nvgColor = getColor(color)
+        val angleStep = 360f / sides
+
+        NanoVG.nvgBeginPath(nvg)
+        for (i in 0 until sides) {
+            val angle = Math.toRadians((rotation + i * angleStep).toDouble()).toFloat()
+            val x = centerX + radius * cos(angle)
+            val y = centerY + radius * sin(angle)
+            if (i == 0) {
+                NanoVG.nvgMoveTo(nvg, x, y)
+            } else {
+                NanoVG.nvgLineTo(nvg, x, y)
+            }
+        }
+        NanoVG.nvgClosePath(nvg)
+        NanoVG.nvgFillColor(nvg, nvgColor)
+        NanoVG.nvgFill(nvg)
+    }
+
+    /**
+     * Desenha um polígono com contorno.
+     */
+    fun drawPolygonOutline(
+        centerX: Float,
+        centerY: Float,
+        radius: Float,
+        sides: Int,
+        rotation: Float,
+        strokeWidth: Float,
+        color: Color
+    ) {
+        val nvgColor = getColor(color)
+        val angleStep = 360f / sides
+
+        NanoVG.nvgBeginPath(nvg)
+        for (i in 0 until sides) {
+            val angle = Math.toRadians((rotation + i * angleStep).toDouble()).toFloat()
+            val x = centerX + radius * cos(angle)
+            val y = centerY + radius * sin(angle)
+            if (i == 0) {
+                NanoVG.nvgMoveTo(nvg, x, y)
+            } else {
+                NanoVG.nvgLineTo(nvg, x, y)
+            }
+        }
+        NanoVG.nvgClosePath(nvg)
+        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
+        NanoVG.nvgStrokeColor(nvg, nvgColor)
+        NanoVG.nvgStroke(nvg)
+    }
+
+    /**
+     * Desenha um retângulo com bordas arredondadas apenas em alguns cantos.
+     * @param corners Flags para quais cantos arredondar (bitmask: 1=topLeft, 2=topRight, 4=bottomRight, 8=bottomLeft)
+     */
+    fun drawRoundedRectSelective(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        corners: Int,
+        color: Color
+    ) {
+        val nvgColor = getColor(color)
+        val topLeft = (corners and 1) != 0
+        val topRight = (corners and 2) != 0
+        val bottomRight = (corners and 4) != 0
+        val bottomLeft = (corners and 8) != 0
+
+        NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgRoundedRectVarying(
+            nvg,
+            x,
+            y,
+            width,
+            height,
+            if (topLeft) radius else 0f,
+            if (topRight) radius else 0f,
+            if (bottomRight) radius else 0f,
+            if (bottomLeft) radius else 0f
+        )
+        NanoVG.nvgFillColor(nvg, nvgColor)
+        NanoVG.nvgFill(nvg)
+    }
+
+    /**
+     * Desenha um retângulo com borda interna (inset border).
+     */
+    fun drawInsetBorder(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        borderWidth: Float,
+        color: Color
+    ) {
+        val nvgColor = getColor(color)
+        // Borda interna usando dois retângulos
+        drawRoundedRect(x, y, width, height, radius, color)
+        drawRoundedRect(
+            x + borderWidth,
+            y + borderWidth,
+            width - borderWidth * 2,
+            height - borderWidth * 2,
+            (radius - borderWidth).coerceAtLeast(0f),
+            Color(0, 0, 0, 0)
+        )
+    }
+
+    /**
+     * Desenha um retângulo com efeito de brilho (glow).
+     * @param strength Intensidade do brilho (1-10)
+     */
+    fun drawGlowRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        color: Color,
+        strength: Int = 5
+    ) {
+        var alpha = 10
+        var f = strength.toFloat()
+        while (f > 0f) {
+            drawRoundedRect(
+                x - f / 2,
+                y - f / 2,
+                width + f,
+                height + f,
+                radius + f / 2,
+                ColorUtils.applyAlpha(color, alpha)
+            )
+            alpha += 5
+            f -= 0.5f
+        }
+    }
+
+    /**
+     * Desenha texto com múltiplas linhas automaticamente quebradas.
+     * @param text Texto a ser desenhado
+     * @param x Posição X
+     * @param y Posição Y
+     * @param maxWidth Largura máxima antes de quebrar linha
+     * @param lineHeight Espaçamento entre linhas
+     * @param color Cor do texto
+     * @param size Tamanho da fonte
+     * @param font Fonte a ser usada
+     */
+    fun drawMultilineText(
+        text: String,
+        x: Float,
+        y: Float,
+        maxWidth: Float,
+        lineHeight: Float,
+        color: Color,
+        size: Float,
+        font: Font
+    ) {
+        val lines = text.split("\n")
+        var currentY = y
+        for (line in lines) {
+            drawTextBox(line, x, currentY, maxWidth, color, size, font)
+            currentY += lineHeight
+        }
+    }
+
+    /**
+     * Desenha um ícone centralizado em uma área.
+     * @param icon Código do ícone (usando LegacyIcon)
+     * @param x Posição X do centro
+     * @param y Posição Y do centro
+     * @param size Tamanho do ícone
+     * @param color Cor do ícone
+     */
+    fun drawCenteredIcon(icon: String, x: Float, y: Float, size: Float, color: Color) {
+        val iconFont = Fonts.LEGACYICON
+        val iconWidth = getTextWidth(icon, size, iconFont)
+        val iconHeight = getTextHeight(icon, size, iconFont)
+        drawText(icon, x - iconWidth / 2, y - iconHeight / 2, color, size, iconFont)
+    }
+
+    /**
+     * Desenha um retângulo com padrão de listras (stripes).
+     * @param stripeWidth Largura de cada listra
+     * @param angle Ângulo das listras em graus
+     */
+    fun drawStripedRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        stripeWidth: Float,
+        angle: Float,
+        color1: Color,
+        color2: Color
+    ) {
+        save()
+        translate(x + width / 2, y + height / 2)
+        rotate(0f, 0f, 0f, 0f, Math.toRadians(angle.toDouble()).toFloat())
+        translate(-(x + width / 2), -(y + height / 2))
+
+        val diagonal = kotlin.math.sqrt((width * width + height * height).toDouble()).toFloat()
+        var currentX = x - diagonal
+        while (currentX < x + width + diagonal) {
+            drawRect(currentX, y, stripeWidth, height, color1)
+            currentX += stripeWidth * 2
+        }
+
+        currentX = x - diagonal + stripeWidth
+        while (currentX < x + width + diagonal) {
+            drawRect(currentX, y, stripeWidth, height, color2)
+            currentX += stripeWidth * 2
+        }
+
+        restore()
+    }
+
+    /**
+     * Desenha um retângulo com efeito de vidro (glassmorphism).
+     * @param blurAmount Quantidade de blur (0-1)
+     */
+    fun drawGlassRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        color: Color,
+        blurAmount: Float = 0.3f
+    ) {
+        val glassColor = ColorUtils.applyAlpha(color, (255 * (1f - blurAmount)).toInt())
+        drawRoundedRect(x, y, width, height, radius, glassColor)
+        // Adiciona borda sutil
+        drawOutlineRoundedRect(x, y, width, height, radius, 1f, ColorUtils.applyAlpha(Color.WHITE, 50))
+    }
 }
 

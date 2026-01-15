@@ -5,99 +5,150 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.nanovg.NanoVGManager
+import me.miki.shindo.ui.comp.base.IBounded
+import me.miki.shindo.ui.comp.base.IContainer
+import me.miki.shindo.ui.comp.base.IComponent
 import me.miki.shindo.utils.mouse.MouseUtils
 
+/**
+ * Classe base para todos os componentes da UI.
+ * Implementa as interfaces fundamentais e fornece funcionalidades comuns.
+ * 
+ * Esta classe é otimizada para performance com:
+ * - Cache de instâncias do Shindo
+ * - Lazy initialization de children
+ * - Early return em métodos quando não visível
+ */
 open class Comp(
-    private var x: Float,
-    private var y: Float
-) {
+    x: Float = 0f,
+    y: Float = 0f
+) : IComponent, IBounded, IContainer {
 
-    private var width: Float = 0f
-    private var height: Float = 0f
-    private var isVisible: Boolean = true
+    private var _x: Float = x
+    private var _y: Float = y
+    private var _width: Float = 0f
+    private var _height: Float = 0f
+    private var _visible: Boolean = true
 
     private val children: MutableList<Comp> = mutableListOf()
+    
+    // Cache de instâncias do Shindo para evitar múltiplas chamadas
+    private var _nvg: NanoVGManager? = null
+    private var _palette: ColorPalette? = null
+    private var _accent: AccentColor? = null
+    private var _colors: ColorManager? = null
 
     protected val nvg: NanoVGManager
-        get() = Shindo.getInstance().nanoVGManager!!
+        get() = _nvg ?: Shindo.getInstance().nanoVGManager!!.also { _nvg = it }
 
     protected val palette: ColorPalette
-        get() = Shindo.getInstance().colorManager.palette
+        get() = _palette ?: Shindo.getInstance().colorManager.palette.also { _palette = it }
 
     protected val accent: AccentColor
-        get() = Shindo.getInstance().colorManager.currentColor
+        get() = _accent ?: Shindo.getInstance().colorManager.currentColor.also { _accent = it }
 
     protected val colors: ColorManager
-        get() = Shindo.getInstance().colorManager
+        get() = _colors ?: Shindo.getInstance().colorManager.also { _colors = it }
 
-    open fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!isVisible) return
+    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (!_visible) return
         drawChildren(mouseX, mouseY, partialTicks)
     }
 
-    open fun update(partialTicks: Float) {}
+    override fun update(partialTicks: Float) {
+        if (!_visible) return
+        updateChildren(partialTicks)
+    }
 
-    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!isVisible) return
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (!_visible) return
         forEachChild { it.mouseClicked(mouseX, mouseY, mouseButton) }
     }
 
-    open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!isVisible) return
+    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (!_visible) return
         forEachChild { it.mouseReleased(mouseX, mouseY, mouseButton) }
     }
 
-    open fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (!isVisible) return
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (!_visible) return
         forEachChild { it.keyTyped(typedChar, keyCode) }
     }
 
     protected open fun drawChildren(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (children.isEmpty()) return
         forEachChild { it.draw(mouseX, mouseY, partialTicks) }
     }
 
-    fun addChild(comp: Comp?) {
-        if (comp != null && !children.contains(comp)) {
-            children.add(comp)
+    protected open fun updateChildren(partialTicks: Float) {
+        if (children.isEmpty()) return
+        forEachChild { it.update(partialTicks) }
+    }
+
+    // IBounded implementation
+    override fun getX(): Float = _x
+    override fun getY(): Float = _y
+    override fun getWidth(): Float = _width
+    override fun getHeight(): Float = _height
+
+    override fun setX(x: Float) { this._x = x }
+    override fun setY(y: Float) { this._y = y }
+    override fun setWidth(width: Float) { this._width = width }
+    override fun setHeight(height: Float) { this._height = height }
+
+    override fun setBounds(x: Float, y: Float, width: Float, height: Float) {
+        this._x = x
+        this._y = y
+        this._width = width
+        this._height = height
+    }
+
+    // IComponent implementation
+    override fun isVisible(): Boolean = _visible
+    override fun setVisible(visible: Boolean) { this._visible = visible }
+
+    // IContainer implementation
+    override fun addChild(component: IComponent?) {
+        if (component is Comp && !children.contains(component)) {
+            children.add(component)
         }
     }
 
-    fun removeChild(comp: Comp) {
-        children.remove(comp)
+    override fun removeChild(component: IComponent) {
+        if (component is Comp) {
+            children.remove(component)
+        }
     }
 
-    fun clearChildren() {
+    override fun clearChildren() {
         children.clear()
     }
 
-    fun children(): List<Comp> = children.toList()
+    override fun getChildren(): List<IComponent> = children.toList()
 
-    fun hasChildren(): Boolean = children.isNotEmpty()
+    override fun hasChildren(): Boolean = children.isNotEmpty()
 
-
-    open fun getX(): Float = x
-    open fun getY(): Float = y
-    open fun getWidth(): Float = width
-    open fun getHeight(): Float = height
-    open fun isVisible(): Boolean = isVisible
-
-    open fun setX(x: Float) { this.x = x }
-    open fun setY(y: Float) { this.y = y }
-    open fun setWidth(width: Float) { this.width = width }
-    open fun setHeight(height: Float) { this.height = height }
-    open fun setVisible(isVisible: Boolean) { this.isVisible = isVisible }
-
-    fun setBounds(x: Float, y: Float, width: Float, height: Float) {
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-    }
-
+    /**
+     * Verifica se o componente está sendo hovered.
+     */
     fun isHovered(mouseX: Int, mouseY: Int): Boolean =
-        MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
+        MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
 
+    /**
+     * Método auxiliar para iterar sobre os filhos de forma otimizada.
+     */
     private inline fun forEachChild(action: (Comp) -> Unit) {
-        children.forEach(action)
+        val size = children.size
+        var i = 0
+        while (i < size) {
+            action(children[i])
+            i++
+        }
     }
+
+    /**
+     * Retorna uma lista imutável dos filhos (compatibilidade com código legado).
+     */
+    @Deprecated("Use getChildren() instead", ReplaceWith("getChildren()"))
+    fun children(): List<Comp> = children.toList()
 }

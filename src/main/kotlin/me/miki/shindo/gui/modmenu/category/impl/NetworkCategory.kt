@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl
+﻿package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
@@ -26,9 +26,9 @@ import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.impl.combo.Option
 import me.miki.shindo.management.settings.metadata.SettingRegistry
-import me.miki.shindo.ui.comp.impl.CompDropdown
-import me.miki.shindo.ui.comp.impl.CompSlider
-import me.miki.shindo.ui.comp.impl.CompToggleButton
+import me.miki.shindo.ui.comp.inputs.CompDropdown
+import me.miki.shindo.ui.comp.inputs.CompSlider
+import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.animation.normal.Animation
 import me.miki.shindo.utils.animation.normal.Direction

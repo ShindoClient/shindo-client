@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl.setting.impl
+﻿package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
@@ -11,9 +11,9 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
-import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.util.ResourceLocation
 import kotlin.math.ceil
 import kotlin.math.max
@@ -22,14 +22,14 @@ import kotlin.math.min
 class LanguageScene(parent: SettingsCategory) :
     SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
 
-    private val languageScroll = Scroll()
+    private lateinit var container: CompScrollableContainer
     private val languageCards = ArrayList<LanguageCard>()
 
     private var columns = 0
     private var cardHeight = 0f
 
     override fun initGui() {
-        languageScroll.resetAll()
+        container = CompScrollableContainer()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -47,13 +47,8 @@ class LanguageScene(parent: SettingsCategory) :
         if (baseHeight <= 0f || baseWidth <= 0f) {
             return
         }
-        val containerRadius = 12f
 
-        languageCards.clear()
-
-        nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7)
-        nvg.drawRoundedRect(baseX, baseY, baseWidth, baseHeight, containerRadius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
-        nvg.drawRoundedRect(baseX + 1f, baseY + 1f, baseWidth - 2f, baseHeight - 2f, containerRadius - 1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
+        container.setBounds(baseX, baseY, baseWidth, baseHeight)
 
         val viewportX = baseX + OUTER_PADDING
         val viewportY = baseY + OUTER_PADDING
@@ -66,36 +61,31 @@ class LanguageScene(parent: SettingsCategory) :
         cardHeight = max(66f, min(86f, viewportHeight / estimatedRows))
 
         val totalContentHeight = calculateTotalContentHeight(Language.values().size)
-        languageScroll.maxScroll = max(0f, totalContentHeight - viewportHeight)
-        if (MouseUtils.isInside(mouseX, mouseY, viewportX, viewportY, viewportWidth, viewportHeight)) {
-            languageScroll.onScroll()
-        }
-        languageScroll.onAnimation()
-        val scrollValue = languageScroll.getValue()
+        container.setContentHeight(totalContentHeight)
 
-        nvg.save()
-        nvg.scissor(viewportX, viewportY, viewportWidth, viewportHeight)
+        languageCards.clear()
 
-        for ((index, language) in Language.values().withIndex()) {
-            val row = index / columns
-            val column = index % columns
+        // Renderiza os cards dentro do container
+        container.drawScrollableContent = { mouseX, mouseY, partialTicks, scrollValue ->
+            for ((index, language) in Language.values().withIndex()) {
+                val row = index / columns
+                val column = index % columns
 
-            val cardX = viewportX + column * (cardWidth + ROW_GAP)
-            val cardY = viewportY + row * (cardHeight + ROW_GAP) + scrollValue
+                val cardX = viewportX + column * (cardWidth + ROW_GAP)
+                val cardY = viewportY + row * (cardHeight + ROW_GAP) + scrollValue
 
-            val cardHovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight)
-            val selected = language == languageManager.currentLanguage
+                val cardHovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight)
+                val selected = language == languageManager.currentLanguage
 
-            language.animation.setAnimation(if (selected) 1.0f else 0.0f, 16.0)
+                language.animation.setAnimation(if (selected) 1.0f else 0.0f, 16.0)
 
-            drawLanguageCard(nvg, palette, accentColor, language, cardX, cardY, cardWidth, cardHeight, cardHovered, selected)
+                drawLanguageCard(nvg, palette, accentColor, language, cardX, cardY, cardWidth, cardHeight, cardHovered, selected)
 
-            languageCards.add(LanguageCard(language, cardX, cardY, cardWidth, cardHeight))
+                languageCards.add(LanguageCard(language, cardX, cardY, cardWidth, cardHeight))
+            }
         }
 
-        nvg.restore()
-
-        nvg.drawScrollbar(viewportX + 20, viewportY, viewportWidth, viewportHeight, totalContentHeight, scrollValue, palette, accentColor, 24f)
+        container.draw(mouseX, mouseY, partialTicks)
     }
 
     private fun calculateTotalContentHeight(languageCount: Int): Float {
@@ -184,7 +174,7 @@ class LanguageScene(parent: SettingsCategory) :
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        languageScroll.onKey(keyCode)
+        container.keyTyped(typedChar, keyCode)
     }
 
     private data class LanguageCard(val language: Language, val x: Float, val y: Float, val width: Float, val height: Float)

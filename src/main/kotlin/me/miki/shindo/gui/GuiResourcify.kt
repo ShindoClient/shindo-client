@@ -1,4 +1,4 @@
-package me.miki.shindo.gui
+﻿package me.miki.shindo.gui
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.addons.resourcify.cache.ResourcifyIconCache
@@ -16,7 +16,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.ui.comp.impl.field.CompSearchBox
+import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.mouse.MouseUtils

@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout
+﻿package me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
@@ -12,7 +12,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.settings.impl.combo.Option
-import me.miki.shindo.ui.comp.impl.CompDropdown
+import me.miki.shindo.ui.comp.inputs.CompDropdown
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 import kotlin.math.max
