@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.world;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.TimeChangerMod;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
 import net.minecraft.world.storage.WorldInfo;

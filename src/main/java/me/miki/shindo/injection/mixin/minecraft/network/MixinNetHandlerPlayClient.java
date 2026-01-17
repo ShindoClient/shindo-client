@@ -5,7 +5,6 @@ import me.miki.shindo.hooks.ResourcePackValidationHook;
 import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.event.impl.EventDamageEntity;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ClientSpooferMod;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;

@@ -9,7 +9,7 @@ import java.awt.Color
  * Separador visual horizontal ou vertical.
  * Útil para dividir seções de UI.
  */
-class CompSeparator(
+open class CompSeparator(
     x: Float = 0f,
     y: Float = 0f,
     length: Float = 100f,

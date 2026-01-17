@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.InventoryMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.client.gui.inventory.GuiContainer;

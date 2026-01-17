@@ -2,7 +2,6 @@ package me.miki.shindo.management.screenshot;
 
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.settings.config.PropertyEnum;
-import org.jetbrains.annotations.Nullable;
 
 public enum ScreenshotDisplayMode implements PropertyEnum {
     GRID(TranslateText.SCREENSHOT_MODE_GRID, TranslateText.SCREENSHOT_MODE_GRID_DESCRIPTION),

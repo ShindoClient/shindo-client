@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Registra, inicializa e coordena todos os módulos.
  */
 class NetworkModuleManager {
-    private val modules: MutableMap<String, NetworkModule> = ConcurrentHashMap()
+    val modules: MutableMap<String, NetworkModule> = ConcurrentHashMap()
     private var initialized = false
 
     /**

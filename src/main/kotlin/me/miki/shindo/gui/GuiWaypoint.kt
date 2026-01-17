@@ -23,7 +23,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.ArrayList
 
-class GuiWaypoint : GuiScreen() {
+class GuiWaypoint : GuiScreen(), IShindoScreen {
 
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()

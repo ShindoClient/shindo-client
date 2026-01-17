@@ -2,7 +2,6 @@ package me.miki.shindo.management.addons.patcher;
 
 import me.miki.shindo.management.addons.Addon;
 import me.miki.shindo.management.addons.AddonType;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.settings.config.Property;
 import me.miki.shindo.management.settings.config.PropertyEnum;
@@ -12,7 +11,6 @@ import me.miki.shindo.management.settings.impl.ComboSetting;
 import me.miki.shindo.management.settings.impl.NumberSetting;
 import me.miki.shindo.management.settings.metadata.SettingRegistry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class PatcherAddon extends Addon {
 

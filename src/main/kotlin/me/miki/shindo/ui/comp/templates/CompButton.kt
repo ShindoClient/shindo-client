@@ -1,6 +1,7 @@
 package me.miki.shindo.ui.comp.templates
 
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.comp.templates.CompInteractive
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.animation.simple.SimpleAnimation
@@ -103,13 +104,15 @@ open class CompButton(
                 ColorType.NORMAL,
                 if (isEnabled()) 255 else 150
             )
+            // drawText já adiciona size/2 para centralizar verticalmente, então precisamos subtrair isso
+            val textY = getY() + getHeight() / 2f - fontSize / 2f
             nvgInstance.drawCenteredText(
                 it,
                 getX() + getWidth() / 2f,
-                getY() + getHeight() / 2f,
+                textY,
                 finalTextColor,
                 fontSize,
-                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+                Fonts.REGULAR
             )
         }
     }

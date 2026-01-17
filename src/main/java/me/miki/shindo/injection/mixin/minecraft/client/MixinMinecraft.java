@@ -1,18 +1,17 @@
 package me.miki.shindo.injection.mixin.minecraft.client;
 
-import eu.shoroa.contrib.render.ShBlur;
+import eu.shoroa.contrib.render.Blur;
 import eu.shoroa.contrib.util.Time;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiBetterResourcePacks;
 import me.miki.shindo.gui.GuiGameMenu;
 import me.miki.shindo.gui.GuiSplashScreen;
-import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft;
+import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.NumberSetting;
@@ -626,7 +625,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Inject(method = "startGame", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/GuiIngame;<init>(Lnet/minecraft/client/Minecraft;)V"))
     public void splashGuiIngame(CallbackInfo callback) {
-        ShBlur.getInstance().init();
+        Blur.init();
         updateDisplay();
     }
 
@@ -637,7 +636,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Inject(method = "resize", at = @At("TAIL"))
     public void inject$resize(int width, int height, CallbackInfo ci) {
-        ShBlur.getInstance().resize();
+        Blur.resize();
     }
 
     @Override

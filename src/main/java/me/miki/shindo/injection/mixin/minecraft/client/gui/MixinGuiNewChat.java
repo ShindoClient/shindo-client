@@ -2,7 +2,6 @@ package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.miki.shindo.hooks.GuiNewChatHook;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ChatMod;
 import me.miki.shindo.management.mods.impl.ChatTranslateMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;

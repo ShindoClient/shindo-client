@@ -24,7 +24,7 @@ import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicInteger
 
-class GuiFixConnecting : GuiScreen {
+class GuiFixConnecting : GuiScreen, IShindoScreen {
 
     private val previousGuiScreen: GuiScreen
     private var networkManager: NetworkManager? = null
@@ -212,7 +212,7 @@ class GuiFixConnecting : GuiScreen {
     @Throws(UnknownHostException::class)
     private fun resolveAddress(host: String, port: Int): InetAddress {
         val warpProxyManager = Shindo.getInstance().warpProxyManager
-        if (warpProxyManager != null && warpProxyManager.isEnabled) {
+        if (warpProxyManager != null && warpProxyManager.isEnabled()) {
             try {
                 val endpoint: InetSocketAddress? = warpProxyManager.resolveEndpoint(host, port)
                 if (endpoint != null && endpoint.address != null) {

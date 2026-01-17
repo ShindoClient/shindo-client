@@ -27,7 +27,7 @@ abstract class CompInteractive(
         this.enabled = enabled
     }
 
-    fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
+    open fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
         return enabled && MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
     }
 

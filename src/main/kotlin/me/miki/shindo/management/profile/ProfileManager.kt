@@ -25,11 +25,14 @@ import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.impl.*
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.JsonUtils
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
 import java.awt.Color
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ProfileManager {
@@ -99,20 +102,48 @@ class ProfileManager {
             ShindoLogger.info("Found ${files?.size ?: 0} files in profile directory")
 
             val defaultCanonicalPath = defaultFile.canonicalPath
-
-            files?.forEach { file ->
-                if (file.canonicalPath == defaultCanonicalPath) return@forEach
-                if (!"json".equals(FileUtils.getExtension(file), ignoreCase = true)) {
-                    ShindoLogger.info("Skipping non-json file: ${file.name}")
-                    return@forEach
+            
+            // Filtra arquivos JSON válidos
+            val profileFiles = files?.filter { file ->
+                file.canonicalPath != defaultCanonicalPath &&
+                "json".equals(FileUtils.getExtension(file), ignoreCase = true)
+            } ?: emptyList()
+            
+            // Carrega perfis em paralelo
+            val profileFutures = profileFiles.mapIndexed { index, file ->
+                val profileId = id + index
+                TaskExecutor.runAsync(ThreadPoolType.IO) {
+                    try {
+                        ShindoLogger.info("Loading profile (parallel): ${file.name}")
+                        // Lê o JSON em paralelo
+                        FileReader(file).use { reader ->
+                            gson.fromJson(reader, JsonObject::class.java) ?: JsonObject()
+                        }
+                    } catch (e: Exception) {
+                        ShindoLogger.error("Failed to read profile file: ${file.name}", e)
+                        null
+                    }
+                }.thenApply { json ->
+                    // Processa o JSON no thread principal para garantir thread-safety
+                    if (json != null) {
+                        buildProfileFromJson(json, file, profileId)
+                    } else {
+                        null
+                    }
                 }
-
-                ShindoLogger.info("Loading profile: ${file.name}")
-                buildProfileFromFile(file, id++)?.let {
-                    profiles.add(it)
-                    ShindoLogger.info("Profile added: ${it.name}")
-                } ?: run {
-                    ShindoLogger.error("Failed to build profile from: ${file.name}")
+            }
+            
+            // Aguarda todos os perfis e adiciona à lista
+            profileFutures.forEach { future ->
+                try {
+                    future.get()?.let {
+                        profiles.add(it)
+                        ShindoLogger.info("Profile added: ${it.name}")
+                    } ?: run {
+                        ShindoLogger.error("Failed to build profile")
+                    }
+                } catch (e: Exception) {
+                    ShindoLogger.error("Failed to load profile", e)
                 }
             }
         } catch (e: Exception) {
@@ -363,49 +394,7 @@ class ProfileManager {
         val result = Either.catch {
             FileReader(file).use { reader ->
                 val root = gson.fromJson(reader, JsonObject::class.java) ?: JsonObject()
-                ShindoLogger.info("Building profile from: ${file.name}")
-                ShindoLogger.info("Root keys: ${root.keySet()}")
-
-                val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
-                ShindoLogger.info("Profile Data keys: ${profileData.keySet()}")
-
-                val serverIp = JsonUtils.getStringProperty(profileData, "Server", "") ?: ""
-                val icon = ProfileIcon.getIconById(JsonUtils.getIntProperty(profileData, "Icon", ProfileIcon.GRASS.id))
-                val type = ProfileType.getTypeById(JsonUtils.getIntProperty(profileData, "Type", ProfileType.ALL.id))
-
-                ShindoLogger.info("Profile metadata - Server: '$serverIp', Icon: ${icon.id}, Type: ${type.id}")
-
-                val customIconName = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
-                    .trim()
-                    .toOption()
-                    .filter { it.isNotEmpty() && !it.equals("null", true) }
-
-                val customIcon = customIconName
-                    .flatMap { name ->
-                        val candidate = File(instance.fileManager.profileIconDir, name)
-                        if (candidate.exists())  Option.fromNullable(candidate) else null.toOption()
-                    }.orNull()
-
-                customIconName.fold(
-                    {},
-                    { name ->
-                        if (customIcon != null) {
-                            ShindoLogger.info("Custom icon found: $name")
-                        } else {
-                            ShindoLogger.warn("Custom icon not found: $name")
-                        }
-                    }
-                )
-
-                val shareCode = (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
-                    .trim()
-                    .toOption()
-                    .filter { it.isNotEmpty() }
-                    .orNull()
-
-                val profile = Profile(id, serverIp, file, icon, customIcon, type, shareCode)
-                ShindoLogger.info("Profile built successfully: ${profile.name}")
-                profile
+                buildProfileFromJson(root, file, id)
             }
         }
 
@@ -413,6 +402,52 @@ class ProfileManager {
             ShindoLogger.error("Failed to load profile from ${file.name}", e)
             null
         }
+    }
+    
+    private fun buildProfileFromJson(root: JsonObject, file: File, id: Int): Profile? {
+        ShindoLogger.info("Building profile from: ${file.name}")
+        ShindoLogger.info("Root keys: ${root.keySet()}")
+
+        val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
+        ShindoLogger.info("Profile Data keys: ${profileData.keySet()}")
+
+        val serverIp = JsonUtils.getStringProperty(profileData, "Server", "") ?: ""
+        val icon = ProfileIcon.getIconById(JsonUtils.getIntProperty(profileData, "Icon", ProfileIcon.GRASS.id))
+        val type = ProfileType.getTypeById(JsonUtils.getIntProperty(profileData, "Type", ProfileType.ALL.id))
+
+        ShindoLogger.info("Profile metadata - Server: '$serverIp', Icon: ${icon.id}, Type: ${type.id}")
+
+        val customIconName = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
+            .trim()
+            .toOption()
+            .filter { it.isNotEmpty() && !it.equals("null", true) }
+
+        val customIcon = customIconName
+            .flatMap { name ->
+                val candidate = File(instance.fileManager.profileIconDir, name)
+                if (candidate.exists())  Option.fromNullable(candidate) else null.toOption()
+            }.orNull()
+
+        customIconName.fold(
+            {},
+            { name ->
+                if (customIcon != null) {
+                    ShindoLogger.info("Custom icon found: $name")
+                } else {
+                    ShindoLogger.warn("Custom icon not found: $name")
+                }
+            }
+        )
+
+        val shareCode = (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
+            .trim()
+            .toOption()
+            .filter { it.isNotEmpty() }
+            .orNull()
+
+        val profile = Profile(id, serverIp, file, icon, customIcon, type, shareCode)
+        ShindoLogger.info("Profile built successfully: ${profile.name}")
+        return profile
     }
 
     private fun buildProfileSnapshot(

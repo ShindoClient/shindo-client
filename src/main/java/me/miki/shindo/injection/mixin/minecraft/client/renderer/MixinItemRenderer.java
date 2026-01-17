@@ -3,7 +3,6 @@ package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 import me.miki.shindo.management.event.impl.EventFireOverlay;
 import me.miki.shindo.management.event.impl.EventRenderItemInFirstPerson;
 import me.miki.shindo.management.event.impl.EventWaterOverlay;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.AnimationsMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.client.Minecraft;

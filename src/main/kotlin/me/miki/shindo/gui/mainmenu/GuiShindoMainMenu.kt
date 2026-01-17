@@ -1,6 +1,7 @@
 package me.miki.shindo.gui.mainmenu
 
 import me.miki.shindo.Shindo
+import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.gui.mainmenu.impl.BackgroundScene
 import me.miki.shindo.gui.mainmenu.impl.MainScene
 import me.miki.shindo.gui.mainmenu.impl.ShopScene
@@ -38,7 +39,7 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.util.ArrayList
 
-class GuiShindoMainMenu : GuiScreen() {
+class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     private val scenes: ArrayList<MainMenuScene> = ArrayList()
 

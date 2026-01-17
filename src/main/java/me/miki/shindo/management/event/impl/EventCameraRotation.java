@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl;
 
-import lombok.Getter;
 import me.miki.shindo.management.event.Event;
 
 public class EventCameraRotation extends Event {

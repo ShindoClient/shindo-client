@@ -1,11 +1,10 @@
 package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
-import eu.shoroa.contrib.render.ShBlur;
+import eu.shoroa.contrib.render.Blur;
 import me.miki.shindo.gui.GuiEditHUD;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
 import me.miki.shindo.injection.mixin.interfaces.client.gui.IMixinGuiIngame;
 import me.miki.shindo.management.event.impl.*;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.AnimationsMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.client.Minecraft;
@@ -84,7 +83,7 @@ public abstract class MixinGuiIngame implements IMixinGuiIngame {
 
     @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", shift = At.Shift.BEFORE, ordinal = 2))
     public void postRenderGameOverlay(float partialTicks, CallbackInfo ci) {
-        ShBlur.getInstance().render();
+        Blur.render();
 
         new EventRenderDamageTint(partialTicks).call();
 

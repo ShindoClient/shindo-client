@@ -5,7 +5,6 @@ import com.viaversion.viaversion.connection.UserConnectionImpl;
 import com.viaversion.viaversion.protocol.ProtocolPipelineImpl;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ViaVersionMod;
 import me.miki.shindo.viaversion.MCPVLBPipeline;
 import me.miki.shindo.viaversion.ViaLoadingBase;

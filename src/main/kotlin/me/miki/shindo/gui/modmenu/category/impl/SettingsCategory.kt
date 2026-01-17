@@ -8,6 +8,7 @@ import me.miki.shindo.gui.modmenu.category.impl.setting.impl.AppearanceScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.GeneralScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.LanguageScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.LayoutScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.PerformanceScene
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
@@ -33,6 +34,7 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
         scenes.add(LanguageScene(this))
         scenes.add(GeneralScene(this))
         scenes.add(LayoutScene(this))
+        scenes.add(PerformanceScene(this))
     }
 
     override fun initGui() {

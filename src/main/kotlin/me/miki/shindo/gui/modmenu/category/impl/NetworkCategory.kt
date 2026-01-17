@@ -12,12 +12,13 @@ import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.network.NetworkManager
-import me.miki.shindo.management.network.NetworkManager.LinkMedium
 import me.miki.shindo.management.network.NetworkManager.ProfileSnapshot
+import me.miki.shindo.management.network.model.LinkMedium
 import me.miki.shindo.management.network.proxy.WarpProxyManager
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.impl.BooleanSetting
@@ -28,7 +29,6 @@ import me.miki.shindo.management.settings.impl.combo.Option
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.ui.comp.inputs.CompDropdown
 import me.miki.shindo.ui.comp.inputs.CompSlider
-import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.animation.normal.Animation
 import me.miki.shindo.utils.animation.normal.Direction
@@ -38,6 +38,7 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import java.awt.Color
 import java.text.DecimalFormat
 import java.util.ArrayList
 import java.util.Arrays
@@ -70,9 +71,11 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
     private var dynamicSetting: BooleanSetting? = null
     private var burstSetting: BooleanSetting? = null
     private var autoFlushSetting: BooleanSetting? = null
-    private var dynamicToggle: CompToggleButton? = null
-    private var burstToggle: CompToggleButton? = null
-    private var autoFlushToggle: CompToggleButton? = null
+    private val dynamicAnimation = SimpleAnimation()
+    private val burstAnimation = SimpleAnimation()
+    private val autoFlushAnimation = SimpleAnimation()
+    private val warpAnimation = SimpleAnimation()
+    private val optimizerAnimation = SimpleAnimation()
     private var jitterSetting: NumberSetting? = null
     private var jitterSlider: CompSlider? = null
     private var runningSpeedTest = false
@@ -121,6 +124,20 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val localManager = manager ?: return
         snapshot = localManager.profileSnapshot
+        
+        // Update animations
+        if (dynamicSetting != null) {
+            dynamicAnimation.setAnimation(if (localManager.isDynamicFlushEnabled()) 1.0f else 0.0f, 16.0)
+        }
+        if (burstSetting != null) {
+            burstAnimation.setAnimation(if (localManager.isBurstFlushSmoothingEnabled()) 1.0f else 0.0f, 16.0)
+        }
+        if (autoFlushSetting != null) {
+            autoFlushAnimation.setAnimation(if (localManager.isAutoFlushEnabled()) 1.0f else 0.0f, 16.0)
+        }
+        warpAnimation.setAnimation(if (localManager.isWarpProxyEnabled()) 1.0f else 0.0f, 16.0)
+        // A animação do optimizer será atualizada no drawHero para garantir que use o snapshot mais recente
+        
         val nvg = Shindo.getInstance().nanoVGManager!!
         val cm = Shindo.getInstance().colorManager
         val palette = cm.palette
@@ -161,8 +178,11 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         nvg.restore()
         nvg.restore()
 
+
         if (overlayActive) {
+            nvg.save()
             drawSettingsPanel(nvg, palette, accent, mouseX, mouseY, partialTicks)
+            nvg.restore()
         }
     }
     private fun drawTabs(
@@ -209,7 +229,7 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         mouseY: Int
     ) {
         var cursorY = baseY + CONTENT_PADDING
-        heroGlow.setAnimation(if (snapshot?.isOptimizerEnabled == true) 1f else 0.5f, 20.0)
+        heroGlow.setAnimation(if (snapshot?.isOptimizerEnabled() == true) 1f else 0.5f, 20.0)
 
         cursorY = drawHero(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2f, mouseX, mouseY) + CARD_GAP
         cursorY = drawFocusChart(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2f) + CARD_GAP
@@ -235,24 +255,39 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         nvg.drawText(TranslateText.NETWORK_SETTINGS_HINT.text, cardX + 16f, cardY + 36f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9.5f, Fonts.REGULAR)
         if (manager != null) {
             val warp = Shindo.getInstance().warpProxyManager
-            val status = warp?.diagnostics?.status?.name ?: "UNKNOWN"
+            val status = warp?.getDiagnostics()?.status?.name ?: "UNKNOWN"
             nvg.drawText(status, cardX + 16f, cardY + 54f, accent.color1, 11f, Fonts.MEDIUM)
         }
-        val warpEnabled = manager?.isWarpProxyEnabled == true
-        warpButtonW = 150f
-        warpButtonH = BUTTON_HEIGHT
+        val warpEnabled = manager?.isWarpProxyEnabled() == true
+        warpAnimation.setAnimation(if (warpEnabled) 1.0f else 0.0f, 16.0)
+        
+        val toggleWidth = 58f
+        val toggleHeight = 26f
+        warpButtonW = toggleWidth
+        warpButtonH = toggleHeight
         warpButtonX = cardX + cardW - warpButtonW - 16f
         warpButtonY = cardY + 60f
-        val warpHovered = MouseUtils.isInside(mouseX, mouseY, warpButtonX, warpButtonY, warpButtonW, warpButtonH)
-        val warpBg = if (warpEnabled) {
-            if (warpHovered) ColorUtils.applyAlpha(accent.color1, 220) else ColorUtils.applyAlpha(accent.color1, 180)
-        } else {
-            if (warpHovered) palette.getBackgroundColor(ColorType.NORMAL) else palette.getBackgroundColor(ColorType.MID)
+        val toggleRadius = toggleHeight / 2f
+        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+        
+        nvg.drawRoundedRect(warpButtonX, warpButtonY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+        
+        if (warpAnimation.value > 0f) {
+            nvg.drawGradientRoundedRect(
+                warpButtonX,
+                warpButtonY,
+                toggleWidth,
+                toggleHeight,
+                toggleRadius,
+                ColorUtils.applyAlpha(accent.color1, (warpAnimation.value * 255).toInt()),
+                ColorUtils.applyAlpha(accent.color2, (warpAnimation.value * 255).toInt())
+            )
         }
-        nvg.drawRoundedRect(warpButtonX, warpButtonY, warpButtonW, warpButtonH, 8f, warpBg)
-        nvg.drawText(LegacyIcon.DNS, warpButtonX + 10f, warpButtonY + 6f, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
-        val warpLabel = if (warpEnabled) "Disable WARP" else "Enable WARP"
-        nvg.drawText(warpLabel, warpButtonX + 30f, warpButtonY + 8f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        
+        val knobSize = toggleHeight - 8f
+        val knobX = warpButtonX + 4f + warpAnimation.value * (toggleWidth - knobSize - 8f)
+        val knobY = warpButtonY + 4f
+        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
     }
 
     private fun drawHero(
@@ -277,7 +312,7 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         var sliderY = titleY + 55f
         if (capacitySetting != null && capacitySlider != null) {
             nvg.drawText(TranslateText.NETWORK_LINK_CAPACITY.text, x + 18f, sliderY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
-            capacitySetting?.setValue(manager?.linkCapacityMbps?.toDouble() ?: 0.0)
+            capacitySetting?.setValue(manager?.getLinkCapacityMbps()?.toDouble() ?: 0.0)
             capacitySlider?.setX(x + 18f)
             capacitySlider?.setY(sliderY)
             capacitySlider?.setWidth(w - 36f)
@@ -287,7 +322,7 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         }
         if (responsivenessSetting != null && responsivenessSlider != null) {
             nvg.drawText(TranslateText.NETWORK_RESPONSIVENESS.text, x + 18f, sliderY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
-            responsivenessSetting?.setValue(manager?.responsivenessLevel?.toDouble() ?: 0.0)
+            responsivenessSetting?.setValue(manager?.getResponsivenessLevel()?.toDouble() ?: 0.0)
             responsivenessSlider?.setX(x + 18f)
             responsivenessSlider?.setY(sliderY)
             responsivenessSlider?.setWidth(w - 36f)
@@ -296,25 +331,46 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
             manager?.setResponsivenessLevel(responsivenessSetting?.getValueInt() ?: 0)
         }
 
-        val toggleW = 120f
-        val toggleX = x + w - toggleW - 18f
+        val toggleWidth = 58f
+        val toggleHeight = 26f
+        val toggleX = x + w - toggleWidth - 18f
         val buttonsY = sliderY + 10f
-        val maxButtonsY = y + HERO_HEIGHT - BUTTON_HEIGHT - 10f
+        val maxButtonsY = y + HERO_HEIGHT - toggleHeight - 10f
         val toggleY = kotlin.math.min(buttonsY, maxButtonsY)
-        val on = snapshot?.isOptimizerEnabled == true
-        val toggleHovered = MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleW, BUTTON_HEIGHT)
-        val toggleBg = if (on) {
-            if (toggleHovered) ColorUtils.applyAlpha(accent.color1, 220) else ColorUtils.applyAlpha(accent.color1, 200)
-        } else {
-            if (toggleHovered) palette.getBackgroundColor(ColorType.NORMAL) else palette.getBackgroundColor(ColorType.MID)
+        
+        // Atualiza o snapshot antes de verificar o estado para garantir que está sincronizado
+        val currentSnapshot = manager?.profileSnapshot
+        val on = currentSnapshot?.isOptimizerEnabled() == true
+        
+        // Atualiza a animação baseada no estado atual
+        optimizerAnimation.setAnimation(if (on) 1.0f else 0.0f, 16.0)
+        
+        val toggleRadius = toggleHeight / 2f
+        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+        
+        nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+        
+        if (optimizerAnimation.value > 0f) {
+            nvg.drawGradientRoundedRect(
+                toggleX,
+                toggleY,
+                toggleWidth,
+                toggleHeight,
+                toggleRadius,
+                ColorUtils.applyAlpha(accent.color1, (optimizerAnimation.value * 255).toInt()),
+                ColorUtils.applyAlpha(accent.color2, (optimizerAnimation.value * 255).toInt())
+            )
         }
-        nvg.drawRoundedRect(toggleX, toggleY, toggleW, BUTTON_HEIGHT, 8f, toggleBg)
-        nvg.drawText(LegacyIcon.POWER, toggleX + 10f, toggleY + 6f, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
-        nvg.drawText(if (on) "ON" else "OFF", toggleX + 32f, toggleY + 8f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        
+        val knobSize = toggleHeight - 8f
+        val knobX = toggleX + 4f + optimizerAnimation.value * (toggleWidth - knobSize - 8f)
+        val knobY = toggleY + 4f
+        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
+        
         optimizerButtonX = toggleX
         optimizerButtonY = toggleY
-        optimizerButtonW = toggleW
-        optimizerButtonH = BUTTON_HEIGHT
+        optimizerButtonW = toggleWidth
+        optimizerButtonH = toggleHeight
 
         settingsButtonW = 120f
         settingsButtonH = BUTTON_HEIGHT
@@ -343,7 +399,6 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
     private fun drawFocusChart(nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, x: Float, y: Float, w: Float): Float {
         val h = CHART_HEIGHT
         nvg.drawRoundedRect(x, y, w, h, CARD_RADIUS, palette.getBackgroundColor(ColorType.DARK))
-        nvg.drawText(TranslateText.NETWORK_SETTINGS_HINT.text, x + 16f, y + 16f, palette.getFontColor(ColorType.DARK), 11f, Fonts.SEMIBOLD)
 
         val barX = x + 16f
         val barY = y + 36f
@@ -421,12 +476,9 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         if (activeSection == NetworkSection.TWEAKER) {
             if (mediumDropdown != null) {
                 mediumDropdown?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                val selected = if (mediumSetting != null && mediumSetting?.getOption() != null) {
-                    LinkMedium.fromKey(mediumSetting?.getOption()?.nameKey)
-                } else {
-                    null
-                }
-                if (selected != null) {
+                val option = mediumSetting?.getOption()
+                if (option != null) {
+                    val selected = LinkMedium.fromKey(option.nameKey)
                     localManager.setNetworkMedium(selected)
                 }
             }
@@ -442,37 +494,73 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
                 dropdownOpen = !dropdownOpen
             }
             if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, optimizerButtonX, optimizerButtonY, optimizerButtonW, optimizerButtonH)) {
-                val newState = snapshot == null || snapshot?.isOptimizerEnabled != true
+                val currentState = localManager.isOptimizerEnabled()
+                val newState = !currentState
                 localManager.setOptimizerEnabled(newState)
+                // Atualiza o snapshot imediatamente para refletir a mudança
+                snapshot = localManager.profileSnapshot
+                // Força a animação a atualizar imediatamente
+                optimizerAnimation.setAnimation(if (newState) 1.0f else 0.0f, 16.0)
             }
             if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, settingsButtonX, settingsButtonY, settingsButtonW, settingsButtonH)) {
                 openSettingsPanel()
                 return
             }
-            if (dynamicToggle != null) {
-                dynamicToggle?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setDynamicFlushEnabled(dynamicSetting?.isToggled() ?: false)
+            // Handle toggles in Advanced Settings
+            val baseX = getX().toFloat() + CONTENT_PADDING
+            val baseY = getY().toFloat() + CONTENT_PADDING
+            val cardWidth = getWidth().toFloat() - CONTENT_PADDING * 2f
+            val heroHeight = HERO_HEIGHT
+            val chartHeight = CHART_HEIGHT
+            val cardH = 140f
+            val advancedSettingsY = baseY + heroHeight + CARD_GAP + chartHeight + CARD_GAP
+            val toggleWidth = 58f
+            val toggleHeight = 26f
+            var rowY = advancedSettingsY + 36f
+            val rowX = baseX + 16f
+            
+            if (dynamicSetting != null && mouseButton == 0) {
+                val toggleX = rowX + cardWidth - toggleWidth - 16f
+                val toggleY = rowY
+                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
+                    val newState = !(dynamicSetting?.isToggled() ?: false)
+                    dynamicSetting?.setToggled(newState)
+                    localManager.setDynamicFlushEnabled(newState)
+                }
             }
-            if (burstToggle != null) {
-                burstToggle?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setBurstFlushSmoothing(burstSetting?.isToggled() ?: false)
+            rowY += 24f
+            if (burstSetting != null && mouseButton == 0) {
+                val toggleX = rowX + cardWidth - toggleWidth - 16f
+                val toggleY = rowY
+                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
+                    val newState = !(burstSetting?.isToggled() ?: false)
+                    burstSetting?.setToggled(newState)
+                    localManager.setBurstFlushSmoothing(newState)
+                }
             }
-            if (autoFlushToggle != null) {
-                autoFlushToggle?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setAutoFlushEnabled(autoFlushSetting?.isToggled() ?: false)
+            rowY += 24f
+            if (autoFlushSetting != null && mouseButton == 0) {
+                val toggleX = rowX + cardWidth - toggleWidth - 16f
+                val toggleY = rowY
+                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
+                    val newState = !(autoFlushSetting?.isToggled() ?: false)
+                    autoFlushSetting?.setToggled(newState)
+                    localManager.setAutoFlushEnabled(newState)
+                }
             }
             if (jitterSlider != null) {
                 jitterSlider?.mouseClicked(mouseX, contentMouseY, mouseButton)
                 localManager.setJitterSensitivity((jitterSetting?.getValue() ?: 0.0).toInt())
             }
         } else if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, warpButtonX, warpButtonY, warpButtonW, warpButtonH)) {
-            localManager.setWarpProxyEnabled(!localManager.isWarpProxyEnabled)
+            localManager.setWarpProxyEnabled(!localManager.isWarpProxyEnabled())
         }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
         if (settingsOpen) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingsScroll)
             return
         }
@@ -483,36 +571,42 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         mediumDropdown?.mouseReleased(mouseX, contentMouseY, mouseButton)
         capacitySlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
         responsivenessSlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        dynamicToggle?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        burstToggle?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        autoFlushToggle?.mouseReleased(mouseX, contentMouseY, mouseButton)
         jitterSlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
         if (settingsOpen) {
+            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
             settingsPanel.keyTyped(typedChar, keyCode)
-            if (keyCode == Keyboard.KEY_ESCAPE) {
-                closeSettingsPanel()
-            }
             return
         }
+
+        if (settingsOpen && keyCode == Keyboard.KEY_ESCAPE) {
+            settingsOpen = false
+            settingsPanel.clear()
+            return
+        }
+
         if (settingsAnimating) {
             return
         }
-        if (keyCode == Keyboard.KEY_ESCAPE) {
-            dropdownOpen = false
+
+        if (!settingsOpen) {
+            scroll.onKey(keyCode)
+            if (keyCode == Keyboard.KEY_ESCAPE) {
+                dropdownOpen = false
+            }
         }
-        scroll.onKey(keyCode)
     }
 
     private fun handleSettingsClick(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         val layout = getSettingsLayout()
         val offsetX = if (settingsAnimation != null) (settingsAnimation?.getValue() ?: 0.0).toFloat() * 600f else 0f
-        val closeSize = 16f
-        val closeX = layout.x + layout.width - closeSize - 12f
-        val closeY = layout.y + 12f
+        val closeSize = 13f
+        val closeX = layout.x + 10
+        val closeY = layout.y + 8
+
         if (mouseButton == 0 && MouseUtils.isInside(mouseX, mouseY, closeX - 4f + offsetX, closeY - 4f, closeSize + 8f, closeSize + 8f)) {
             closeSettingsPanel()
             return true
@@ -521,6 +615,11 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
             settingsPanel.mouseClicked(mouseX, mouseY, mouseButton, layout.contentX, layout.contentY, layout.contentWidth, layout.viewportHeight, settingsScroll)
             return true
         }
+
+        if (MouseUtils.isInside(mouseX, mouseY, layout.x + layout.width - 24, layout.y + 7.5f, 13F, 13f) && mouseButton == 0) {
+            settingsPanel.resetSettings()
+        }
+
         if (mouseButton == 0) {
             closeSettingsPanel()
             return true
@@ -571,28 +670,19 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         }
         settingsScroll.onAnimation()
 
-        nvg.save()
         nvg.translate(offsetX, 0f)
         nvg.drawShadow(layout.x, layout.y, layout.width, layout.height, 12f, 7)
         nvg.drawRoundedRect(layout.x, layout.y, layout.width, layout.height, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
         nvg.drawRoundedRect(layout.x + 1f, layout.y + 1f, layout.width - 2f, layout.height - 2f, 11f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
 
-        nvg.drawText(TranslateText.NETWORK.text, layout.x + 16f, layout.y + 16f, palette.getFontColor(ColorType.DARK), 13f, Fonts.SEMIBOLD)
-        nvg.drawText(TranslateText.NETWORK_SETTINGS_HINT.text, layout.x + 16f, layout.y + 32f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9f, Fonts.REGULAR)
+        nvg.drawText(LegacyIcon.CHEVRON_LEFT, layout.x + 10, layout.y + 8, palette.getFontColor(ColorType.DARK), 13f, Fonts.LEGACYICON)
+        nvg.drawText(TranslateText.NETWORK.text, layout.x + 27f, layout.y + 9f, palette.getFontColor(ColorType.DARK), 13f, Fonts.SEMIBOLD)
+        nvg.drawText(LegacyIcon.REFRESH, layout.x + layout.width - 24, layout.y + 7.5f, palette.getFontColor(ColorType.DARK), 13f, Fonts.LEGACYICON)
 
-        val closeSize = 16f
-        val closeX = layout.x + layout.width - closeSize - 12f
-        val closeY = layout.y + 12f
-        val closeHovered = MouseUtils.isInside(mouseX, mouseY, closeX - 4f + offsetX, closeY - 4f, closeSize + 8f, closeSize + 8f)
-        if (closeHovered) {
-            nvg.drawRoundedRect(closeX - 4f, closeY - 4f, closeSize + 8f, closeSize + 8f, 6f, ColorUtils.applyAlpha(accent.color1, 80))
-        }
-        nvg.drawText(LegacyIcon.X, closeX, closeY, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
 
         nvg.save()
         nvg.scissor(layout.x + 6f, layout.contentY - 6f, layout.width - 12f, layout.viewportHeight + 12f)
         settingsPanel.draw(mouseX, mouseY, partialTicks, layout.contentX, layout.contentY, layout.contentWidth, layout.viewportHeight, nvg, palette, settingsScroll)
-        nvg.restore()
         nvg.restore()
     }
 
@@ -687,20 +777,22 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
         mediumSetting = ComboSetting(TranslateText.NETWORK_MEDIUM, localManager, LinkMedium.WIRED.getTranslate(), mediums)
         mediumDropdown = CompDropdown(200f, mediumSetting!!)
 
-        capacitySetting = NumberSetting(TranslateText.NETWORK_LINK_CAPACITY, localManager, localManager.linkCapacityMbps.toDouble(), 10.0, 1000.0, true)
+        capacitySetting = NumberSetting(TranslateText.NETWORK_LINK_CAPACITY, localManager, localManager.getLinkCapacityMbps().toDouble(), 10.0, 1000.0, true)
         capacitySlider = CompSlider(capacitySetting!!)
 
-        responsivenessSetting = NumberSetting(TranslateText.NETWORK_RESPONSIVENESS, localManager, localManager.responsivenessLevel.toDouble(), 1.0, 10.0, true)
+        responsivenessSetting = NumberSetting(TranslateText.NETWORK_RESPONSIVENESS, localManager, localManager.getResponsivenessLevel().toDouble(), 1.0, 10.0, true)
         responsivenessSlider = CompSlider(responsivenessSetting!!)
 
-        dynamicSetting = BooleanSetting(TranslateText.NETWORK_DYNAMIC_FLUSH, localManager, localManager.isDynamicFlushEnabled)
-        burstSetting = BooleanSetting(TranslateText.NETWORK_BURST_SMOOTHING, localManager, localManager.isBurstFlushSmoothingEnabled)
-        autoFlushSetting = BooleanSetting(TranslateText.NETWORK_AUTO_FLUSH, localManager, localManager.isAutoFlushEnabled)
-        dynamicToggle = CompToggleButton(dynamicSetting!!)
-        burstToggle = CompToggleButton(burstSetting!!)
-        autoFlushToggle = CompToggleButton(autoFlushSetting!!)
+        dynamicSetting = BooleanSetting(TranslateText.NETWORK_DYNAMIC_FLUSH, localManager, localManager.isDynamicFlushEnabled())
+        burstSetting = BooleanSetting(TranslateText.NETWORK_BURST_SMOOTHING, localManager, localManager.isBurstFlushSmoothingEnabled())
+        autoFlushSetting = BooleanSetting(TranslateText.NETWORK_AUTO_FLUSH, localManager, localManager.isAutoFlushEnabled())
+        dynamicAnimation.value = if (localManager.isDynamicFlushEnabled()) 1.0f else 0.0f
+        burstAnimation.value = if (localManager.isBurstFlushSmoothingEnabled()) 1.0f else 0.0f
+        autoFlushAnimation.value = if (localManager.isAutoFlushEnabled()) 1.0f else 0.0f
+        warpAnimation.value = if (localManager.isWarpProxyEnabled()) 1.0f else 0.0f
+        optimizerAnimation.value = if (localManager.profileSnapshot?.isOptimizerEnabled() == true) 1.0f else 0.0f
 
-        jitterSetting = NumberSetting(TranslateText.NETWORK_JITTER_SENSITIVITY, localManager, localManager.jitterSensitivity.toDouble(), 1.0, 20.0, true)
+        jitterSetting = NumberSetting(TranslateText.NETWORK_JITTER_SENSITIVITY, localManager, localManager.getJitterSensitivity().toDouble(), 1.0, 20.0, true)
         jitterSlider = CompSlider(jitterSetting!!)
         jitterSlider?.setShowValue(true)
     }
@@ -721,32 +813,105 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
 
         var rowY = y + 36f
         val rowX = x + 16f
-        if (dynamicSetting != null && dynamicToggle != null) {
-            dynamicSetting?.setToggled(manager?.isDynamicFlushEnabled ?: false)
-            dynamicToggle?.setX(rowX + w - 60)
-            dynamicToggle?.setY(rowY)
-            dynamicToggle?.draw(mouseX, mouseY, 0f)
+        val toggleWidth = 58f
+        val toggleHeight = 26f
+        val toggleRadius = toggleHeight / 2f
+        
+        if (dynamicSetting != null) {
+            val enabled = manager?.isDynamicFlushEnabled() ?: false
+            dynamicSetting?.setToggled(enabled)
+            dynamicAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
+            
+            val toggleX = rowX + w - toggleWidth - 16f
+            val toggleY = rowY
+            
+            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+            
+            if (dynamicAnimation.value > 0f) {
+                nvg.drawGradientRoundedRect(
+                    toggleX,
+                    toggleY,
+                    toggleWidth,
+                    toggleHeight,
+                    toggleRadius,
+                    ColorUtils.applyAlpha(accent.color1, (dynamicAnimation.value * 255).toInt()),
+                    ColorUtils.applyAlpha(accent.color2, (dynamicAnimation.value * 255).toInt())
+                )
+            }
+            
+            val knobSize = toggleHeight - 8f
+            val knobX = toggleX + 4f + dynamicAnimation.value * (toggleWidth - knobSize - 8f)
+            val knobY = toggleY + 4f
+            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
+            
             nvg.drawText(TranslateText.NETWORK_DYNAMIC_FLUSH.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
             rowY += 24f
         }
-        if (burstSetting != null && burstToggle != null) {
-            burstSetting?.setToggled(manager?.isBurstFlushSmoothingEnabled ?: false)
-            burstToggle?.setX(rowX + w - 60)
-            burstToggle?.setY(rowY)
-            burstToggle?.draw(mouseX, mouseY, 0f)
+        if (burstSetting != null) {
+            val enabled = manager?.isBurstFlushSmoothingEnabled() ?: false
+            burstSetting?.setToggled(enabled)
+            burstAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
+            
+            val toggleX = rowX + w - toggleWidth - 16f
+            val toggleY = rowY
+            
+            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+            
+            if (burstAnimation.value > 0f) {
+                nvg.drawGradientRoundedRect(
+                    toggleX,
+                    toggleY,
+                    toggleWidth,
+                    toggleHeight,
+                    toggleRadius,
+                    ColorUtils.applyAlpha(accent.color1, (burstAnimation.value * 255).toInt()),
+                    ColorUtils.applyAlpha(accent.color2, (burstAnimation.value * 255).toInt())
+                )
+            }
+            
+            val knobSize = toggleHeight - 8f
+            val knobX = toggleX + 4f + burstAnimation.value * (toggleWidth - knobSize - 8f)
+            val knobY = toggleY + 4f
+            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
+            
             nvg.drawText(TranslateText.NETWORK_BURST_SMOOTHING.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
             rowY += 24f
         }
-        if (autoFlushSetting != null && autoFlushToggle != null) {
-            autoFlushSetting?.setToggled(manager?.isAutoFlushEnabled ?: false)
-            autoFlushToggle?.setX(rowX + w - 60)
-            autoFlushToggle?.setY(rowY)
-            autoFlushToggle?.draw(mouseX, mouseY, 0f)
+        if (autoFlushSetting != null) {
+            val enabled = manager?.isAutoFlushEnabled() ?: false
+            autoFlushSetting?.setToggled(enabled)
+            autoFlushAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
+            
+            val toggleX = rowX + w - toggleWidth - 16f
+            val toggleY = rowY
+            
+            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
+            
+            if (autoFlushAnimation.value > 0f) {
+                nvg.drawGradientRoundedRect(
+                    toggleX,
+                    toggleY,
+                    toggleWidth,
+                    toggleHeight,
+                    toggleRadius,
+                    ColorUtils.applyAlpha(accent.color1, (autoFlushAnimation.value * 255).toInt()),
+                    ColorUtils.applyAlpha(accent.color2, (autoFlushAnimation.value * 255).toInt())
+                )
+            }
+            
+            val knobSize = toggleHeight - 8f
+            val knobX = toggleX + 4f + autoFlushAnimation.value * (toggleWidth - knobSize - 8f)
+            val knobY = toggleY + 4f
+            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
+            
             nvg.drawText(TranslateText.NETWORK_AUTO_FLUSH.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
             rowY += 34f
         }
         if (jitterSetting != null && jitterSlider != null) {
-            jitterSetting?.setValue(manager?.jitterSensitivity?.toDouble() ?: 0.0)
+            jitterSetting?.setValue(manager?.getJitterSensitivity()?.toDouble() ?: 0.0)
             nvg.drawText(TranslateText.NETWORK_JITTER_SENSITIVITY.text, rowX, rowY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
             jitterSlider?.setX(rowX)
             jitterSlider?.setY(rowY)

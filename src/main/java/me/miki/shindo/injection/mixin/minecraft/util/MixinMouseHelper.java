@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.util;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.RawInputMod;
 import net.minecraft.util.MouseHelper;
 import org.lwjgl.input.Mouse;

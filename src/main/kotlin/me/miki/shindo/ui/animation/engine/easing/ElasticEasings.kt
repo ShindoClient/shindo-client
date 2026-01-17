@@ -28,7 +28,7 @@ object ElasticEasings {
             val x1 = t.pow(smooth)
             val elastic = elasticity * 0.1f
             val base = if (reallyElastic) sqrt(x1) else x1
-            val result = (-2.0.pow(-10f * base).toFloat()) * sin((base - elastic / 4f) * (2f * PI.toFloat() / elastic)) + 1f
+            val result = (-2.0.pow((-10.0 * base.toDouble()))).toFloat() * sin((base - elastic / 4f) * (2f * PI.toFloat() / elastic)) + 1f
             result.coerceIn(0f, 1f)
         }
     }
@@ -47,7 +47,7 @@ object ElasticEasings {
             val x1 = t.pow(smooth)
             val elastic = elasticity * 0.1f
             val base = if (reallyElastic) sqrt(x1) else x1
-            val result = 2.0.pow(-10f * base).toFloat() * sin((base - elastic / 4f) * (2f * PI.toFloat() / elastic)) + 1f
+            val result = 2.0.pow((-10.0 * base.toDouble())).toFloat() * sin((base - elastic / 4f) * (2f * PI.toFloat() / elastic)) + 1f
             result.coerceIn(0f, 1f)
         }
     }

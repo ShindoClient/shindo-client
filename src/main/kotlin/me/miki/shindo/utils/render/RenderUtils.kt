@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 object RenderUtils {
 
@@ -52,8 +54,8 @@ object RenderUtils {
 
         for (i in 0..360) {
             GL11.glVertex2d(
-                x + Math.sin(i * Math.PI / 180.0) * radius,
-                y + Math.cos(i * Math.PI / 180.0) * radius
+                x + sin(i * Math.PI / 180.0) * radius,
+                y + cos(i * Math.PI / 180.0) * radius
             )
         }
 

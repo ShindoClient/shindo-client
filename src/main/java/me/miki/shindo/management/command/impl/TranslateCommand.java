@@ -2,7 +2,6 @@ package me.miki.shindo.management.command.impl;
 
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.command.Command;
-import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.ChatTranslateMod;
 import me.miki.shindo.management.mods.impl.ChatTranslateMod.Language;
 import me.miki.shindo.utils.Multithreading;

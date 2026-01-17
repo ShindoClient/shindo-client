@@ -18,8 +18,8 @@ enum class LinkMedium(
     @NotNull
     override fun getTranslate(): TranslateText = translate
 
-    @Nullable
-    override fun getNameKey(): String? = PropertyEnum.super.getNameKey()
+    @NotNull
+    override fun getNameKey(): String = name
 
     override fun getDisplayName(): String = translate.text
 

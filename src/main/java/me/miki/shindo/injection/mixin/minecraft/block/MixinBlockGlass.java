@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.block;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ClearGlassMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.block.Block;

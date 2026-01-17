@@ -1,6 +1,5 @@
 package me.miki.shindo.hooks;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ItemPhysicsMod;
 import me.miki.shindo.management.mods.impl.Items2DMod;
 import me.miki.shindo.management.mods.impl.UHCOverlayMod;

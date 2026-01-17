@@ -39,10 +39,12 @@ class CompActionButton(
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), getRadius(), bgColor)
 
         getText()?.let {
+            // drawText já adiciona size/2 para centralizar verticalmente, então precisamos subtrair isso
+            val textY = getY() + getHeight() / 2f - getFontSize() / 2f
             nvgInstance.drawCenteredText(
                 it,
                 getX() + getWidth() / 2f,
-                getY() + getHeight() / 2f,
+                textY,
                 getTextColor() ?: Color.WHITE,
                 getFontSize(),
                 Fonts.REGULAR

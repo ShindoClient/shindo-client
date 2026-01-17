@@ -1,29 +1,34 @@
-#version 140
+#version 120
 
-uniform sampler2D texture;
-uniform vec2 texelSize, direction;
-uniform int radius = 25;
-uniform float kernels[128];
-uniform bool ignoreAlpha = false;
+uniform sampler2D uTex;
+uniform vec2 uResolution;
+uniform float uRadius;
+
 varying vec4 texCoord;
 
+vec4 sampleClamped(sampler2D tex, vec2 uv) {
+    vec2 clampedUV = clamp(uv, 0.001, 0.999);
+    return texture2D(tex, clampedUV);
+}
+
 void main() {
-    vec4 color = vec4(0.0);
-    float weightSum = kernels[0];
+    vec2 uv = texCoord.xy;
+    vec2 texelSize = uRadius / uResolution;
 
-    color += texture2D(texture, texCoord.xy) * kernels[0];
-    for (int i = 1; i <= radius; i++) {
-        vec2 offset = i * texelSize * direction;
-        vec2 coordPlus = clamp(texCoord.xy + offset, vec2(0.0), vec2(1.0));
-        vec2 coordMinus = clamp(texCoord.xy - offset, vec2(0.0), vec2(1.0));
-        float weight = kernels[i];
+    vec4 color = sampleClamped(uTex, uv) * 4.0;
 
-        color += texture2D(texture, coordPlus) * weight;
-        color += texture2D(texture, coordMinus) * weight;
-        weightSum += 2.0 * weight;
-    }
-    color /= weightSum;
+    color += sampleClamped(uTex, uv - texelSize);
+    color += sampleClamped(uTex, uv + texelSize);
+    color += sampleClamped(uTex, uv + vec2(texelSize.x, -texelSize.y));
+    color += sampleClamped(uTex, uv - vec2(texelSize.x, -texelSize.y));
 
-    if (ignoreAlpha) color.a = 1.0;
+    color += sampleClamped(uTex, uv + vec2(-texelSize.x, 0.0)) * 2.0;
+    color += sampleClamped(uTex, uv + vec2( texelSize.x, 0.0)) * 2.0;
+    color += sampleClamped(uTex, uv + vec2(0.0, -texelSize.y)) * 2.0;
+    color += sampleClamped(uTex, uv + vec2(0.0,  texelSize.y)) * 2.0;
+
+    color = color / 16.0;
+    color.a = 1.0;
+
     gl_FragColor = color;
 }

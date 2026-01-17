@@ -18,10 +18,10 @@ object MainMenuFrameTemplate : FrameTemplate {
             override fun setupFrame() {
                 val sr = ScaledResolution(Minecraft.getMinecraft())
                 // Frame ocupa a maior parte da tela, mas não fullscreen
-                width = (sr.scaledWidth * 0.85f).coerceAtMost(900f)
-                height = (sr.scaledHeight * 0.85f).coerceAtMost(700f)
-                x = (sr.scaledWidth - width) / 2f
-                y = (sr.scaledHeight - height) / 2f
+                val w = (sr.scaledWidth * 0.85f).coerceAtMost(900f)
+                val h = (sr.scaledHeight * 0.85f).coerceAtMost(700f)
+                setSize(w, h)
+                setPosition((sr.scaledWidth - w) / 2f, (sr.scaledHeight - h) / 2f)
             }
         }.apply {
             init()
@@ -48,10 +48,10 @@ object WelcomeFrameTemplate : FrameTemplate {
             
             override fun setupFrame() {
                 val sr = ScaledResolution(Minecraft.getMinecraft())
-                width = 600f
-                height = 400f
-                x = (sr.scaledWidth - width) / 2f
-                y = (sr.scaledHeight - height) / 2f
+                val w = 600f
+                val h = 400f
+                setSize(w, h)
+                setPosition((sr.scaledWidth - w) / 2f, (sr.scaledHeight - h) / 2f)
             }
         }.apply {
             init()
@@ -76,10 +76,10 @@ object ConfigFrameTemplate : FrameTemplate {
             
             override fun setupFrame() {
                 val sr = ScaledResolution(Minecraft.getMinecraft())
-                width = 700f
-                height = 550f
-                x = (sr.scaledWidth - width) / 2f
-                y = (sr.scaledHeight - height) / 2f
+                val w = 700f
+                val h = 550f
+                setSize(w, h)
+                setPosition((sr.scaledWidth - w) / 2f, (sr.scaledHeight - h) / 2f)
             }
         }.apply {
             init()

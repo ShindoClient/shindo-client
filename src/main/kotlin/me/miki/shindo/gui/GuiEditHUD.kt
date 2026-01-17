@@ -1,6 +1,6 @@
 package me.miki.shindo.gui
 
-import eu.shoroa.contrib.render.ShBlur
+import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
@@ -28,7 +28,7 @@ import java.util.Collections
 import kotlin.math.max
 import kotlin.math.min
 
-class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen() {
+class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen {
 
     private val mods: ArrayList<HUDMod> = ArrayList(Shindo.getInstance().modManager.getHudMods())
     private var localMouseX = -1
@@ -73,7 +73,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen() {
             nvg.save()
             NanoVG.nvgGlobalAlpha(nvg.getContext(), introAnimation.getValue().toFloat())
             if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
-                ShBlur.getInstance().drawBlur {
+                Blur.drawBlur {
                     nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.WHITE)
                 }
             }

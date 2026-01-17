@@ -1,10 +1,15 @@
 package me.miki.shindo.utils
 
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.TaskPriority
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import java.io.BufferedInputStream
 import java.io.File
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
@@ -21,6 +26,8 @@ class Sound {
     private var _clip: Clip? = null
 
     fun loadClip(location: ResourceLocation) {
+        // loadClip precisa ser síncrono para manter compatibilidade
+        // A otimização está apenas no Sound.play() que é usado para sons de UI
         _clip = AudioSystem.getClip().apply {
             open(
                 AudioSystem.getAudioInputStream(
@@ -60,22 +67,100 @@ class Sound {
             val diskPath = Sound::class.java.classLoader.getResource("assets/minecraft/$location") ?: return
 
             try {
-                val clip = AudioSystem.getClip()
-                val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(diskPath)
-                clip.open(audioInputStream)
-                clip.start()
+                if (settings?.soundOptimizationSetting == true) {
+                    // Carrega o AudioInputStream em paralelo
+                    val future = SoundCache.getOrLoadAudioStream(location) { loc ->
+                        AudioSystem.getAudioInputStream(
+                            Sound::class.java.classLoader.getResource("assets/minecraft/$loc")
+                                ?: throw IllegalStateException("Resource not found: $loc")
+                        )
+                    }
+                    
+                    // Cria o Clip no thread principal após carregar
+                    future.thenAccept { audioInputStream ->
+                        TaskExecutor.runOnMainThread {
+                            try {
+                                val clip = AudioSystem.getClip()
+                                clip.open(audioInputStream)
+                                clip.start()
 
-                clip.addLineListener { event ->
-                    if (event.type == LineEvent.Type.STOP) {
-                        clip.close()
-                        try {
-                            audioInputStream.close()
-                        } catch (_: Exception) {
+                                clip.addLineListener { event ->
+                                    if (event.type == LineEvent.Type.STOP) {
+                                        clip.close()
+                                        try {
+                                            audioInputStream.close()
+                                        } catch (_: Exception) {
+                                        }
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                // Fallback para carregamento síncrono
+                                try {
+                                    val clip = AudioSystem.getClip()
+                                    val fallbackStream = AudioSystem.getAudioInputStream(diskPath)
+                                    clip.open(fallbackStream)
+                                    clip.start()
+
+                                    clip.addLineListener { event ->
+                                        if (event.type == LineEvent.Type.STOP) {
+                                            clip.close()
+                                            try {
+                                                fallbackStream.close()
+                                            } catch (_: Exception) {
+                                            }
+                                        }
+                                    }
+                                } catch (_: Exception) {
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Comportamento original quando otimização está desabilitada
+                    val clip = AudioSystem.getClip()
+                    val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(diskPath)
+                    clip.open(audioInputStream)
+                    clip.start()
+
+                    clip.addLineListener { event ->
+                        if (event.type == LineEvent.Type.STOP) {
+                            clip.close()
+                            try {
+                                audioInputStream.close()
+                            } catch (_: Exception) {
+                            }
                         }
                     }
                 }
             } catch (_: Exception) {
             }
         }
+    }
+}
+
+/**
+ * Cache para AudioInputStream de sons, permitindo carregamento paralelo.
+ */
+private object SoundCache {
+    private val cache = ConcurrentHashMap<String, CompletableFuture<AudioInputStream>>()
+
+    /**
+     * Obtém ou carrega um AudioInputStream de forma assíncrona.
+     * Se já estiver carregando, retorna o Future existente.
+     */
+    fun <T> getOrLoadAudioStream(key: T, loader: (T) -> AudioInputStream): CompletableFuture<AudioInputStream> {
+        val cacheKey = key.toString()
+        return cache.computeIfAbsent(cacheKey) {
+            TaskExecutor.runAsync(ThreadPoolType.IO, TaskPriority.NORMAL) {
+                loader(key)
+            }
+        }
+    }
+
+    /**
+     * Limpa o cache (útil para liberar memória).
+     */
+    fun clear() {
+        cache.clear()
     }
 }

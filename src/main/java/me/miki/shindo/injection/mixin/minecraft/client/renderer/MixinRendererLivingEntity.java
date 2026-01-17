@@ -5,7 +5,6 @@ import me.miki.shindo.api.roles.RoleVisuals;
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventHitOverlay;
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.management.mods.impl.NametagMod;
 import me.miki.shindo.management.mods.impl.Skin3DMod;

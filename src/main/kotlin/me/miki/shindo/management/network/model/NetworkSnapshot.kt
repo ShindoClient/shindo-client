@@ -69,13 +69,13 @@ data class WarpInfo(
             }
             
             return WarpInfo(
-                enabled = diagnostics.isEnabled() && configEnabled,
-                status = diagnostics.getStatus(),
-                resolver = diagnostics.getLastResolver(),
-                lookupMs = diagnostics.getLastLookupDurationMs(),
-                lastUpdatedAt = diagnostics.getLastUpdatedAt(),
-                cacheHit = diagnostics.isCacheHit(),
-                error = diagnostics.getLastError()
+                enabled = diagnostics.enabled && configEnabled,
+                status = diagnostics.status,
+                resolver = diagnostics.lastResolver,
+                lookupMs = diagnostics.lastLookupDurationMs,
+                lastUpdatedAt = diagnostics.lastUpdatedAt,
+                cacheHit = diagnostics.cacheHit,
+                error = diagnostics.lastError
             )
         }
     }

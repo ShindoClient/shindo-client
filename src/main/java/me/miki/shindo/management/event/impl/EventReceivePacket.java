@@ -1,7 +1,5 @@
 package me.miki.shindo.management.event.impl;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.miki.shindo.management.event.Event;
 import net.minecraft.network.Packet;
 

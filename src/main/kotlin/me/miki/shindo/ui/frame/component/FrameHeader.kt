@@ -28,15 +28,7 @@ class FrameHeader(
     private var closeButtonSize: Float = 20f
     private var closeButtonPadding: Float = 6f
     
-    // Cache
-    private var _nvg: NanoVGManager? = null
-    private var _palette: me.miki.shindo.management.color.palette.ColorPalette? = null
-    
-    private val nvg: NanoVGManager
-        get() = _nvg ?: Shindo.getInstance().nanoVGManager!!.also { _nvg = it }
-    
-    private val palette: me.miki.shindo.management.color.palette.ColorPalette
-        get() = _palette ?: Shindo.getInstance().colorManager.palette.also { _palette = it }
+    // Usa os métodos protegidos do Comp
     
     init {
         setWidth(width)
@@ -70,8 +62,8 @@ class FrameHeader(
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return
         
-        val nvgInstance = nvg
-        val paletteColors = palette
+        val nvgInstance = super.nvg
+        val paletteColors = super.palette
         
         // Desenha fundo do header
         val headerBg = ColorUtils.applyAlpha(

@@ -29,8 +29,33 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void keyTyped(char typedChar, int keyCode);
 
+    @Inject(method = "drawScreen", at = @At("HEAD"))
+    public void preDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        GuiScreen screen = (GuiScreen) (Object) this;
+        
+        // Configura o NanoVG para renderização de componentes do Minecraft
+        if (me.miki.shindo.ui.minecraft.MinecraftUIFramework.shouldApplyStyle(screen)) {
+            me.miki.shindo.management.nanovg.NanoVGManager nvg = Shindo.getInstance().nanoVGManager;
+            if (nvg != null) {
+                nvg.beginFrame(true);
+            }
+            
+            // Renderiza fundo e layout da tela com estilo do Shindo Client
+            // Isso inclui suporte automático para telas do OptiFine
+            me.miki.shindo.ui.minecraft.screen.MinecraftScreenRegistry.renderScreen(screen, mouseX, mouseY, partialTicks);
+        }
+    }
+
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void postDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        // Finaliza o frame do NanoVG se foi iniciado
+        if (me.miki.shindo.ui.minecraft.MinecraftUIFramework.shouldApplyStyle((GuiScreen) (Object) this)) {
+            me.miki.shindo.management.nanovg.NanoVGManager nvg = Shindo.getInstance().nanoVGManager;
+            if (nvg != null) {
+                nvg.endFrame();
+            }
+        }
+        
         if (InternalSettingsMod.instance.getClickEffectsSetting().isToggled()) {
             Shindo.getInstance().getClickEffects().drawClickEffects();
         }
@@ -44,6 +69,7 @@ public abstract class MixinGuiScreen {
         }
         Sound.play("shindo/audio/click.wav", true);
     }
+
 
     /**
      * @author EldoDebug

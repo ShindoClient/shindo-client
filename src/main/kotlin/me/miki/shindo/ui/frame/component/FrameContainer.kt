@@ -1,7 +1,9 @@
 package me.miki.shindo.ui.frame.component
 
 import me.miki.shindo.Shindo
+import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
 
@@ -19,11 +21,7 @@ class FrameContainer(
     private var padding: Float = 14f
     private var scrollable: Boolean = false
     
-    // Cache
-    private var _palette: me.miki.shindo.management.color.palette.ColorPalette? = null
-    
-    private val palette: me.miki.shindo.management.color.palette.ColorPalette
-        get() = _palette ?: Shindo.getInstance().colorManager.palette.also { _palette = it }
+    // Usa os métodos protegidos do Comp
     
     init {
         setWidth(width)
@@ -46,28 +44,80 @@ class FrameContainer(
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return
         
-        val nvgInstance = nvg
-        val paletteColors = palette
+        val nvgInstance = super.nvg
+        val paletteColors = super.palette
         
-        // Aplica scissor para clipar conteúdo
+        // Salva o estado atual do contexto (incluindo translate, scissor, etc)
         nvgInstance.save()
+        
+        // Aplica scissor para clipar conteúdo (em coordenadas absolutas)
         nvgInstance.scissor(getX(), getY(), getWidth(), getHeight())
         
         // Desenha fundo do container (opcional, pode ser transparente)
         // drawContainerBackground(nvgInstance, paletteColors)
         
         // Renderiza componentes filhos
+        // Nota: translate pode ser usado dentro deste bloco e será respeitado pelo scissor
         super.draw(mouseX, mouseY, partialTicks)
         
+        // Restaura o estado do contexto (remove translate, scissor, etc)
         nvgInstance.restore()
+    }
+    
+    /**
+     * Método auxiliar para desenhar conteúdo com translate e scissor.
+     * Garante que o scissor seja aplicado corretamente mesmo com translate.
+     * 
+     * Uso:
+     * ```kotlin
+     * container.drawWithTranslate(0f, scrollValue) { nvg ->
+     *     // Desenha conteúdo aqui
+     *     nvg.drawText("Hello", 10f, 10f, ...)
+     * }
+     * ```
+     */
+    fun drawWithTranslate(translateX: Float, translateY: Float, block: (NanoVGManager) -> Unit) {
+        if (!isVisible()) return
+        
+        val nvgInstance = super.nvg
+        nvgInstance.save()
+        
+        // Aplica scissor primeiro (em coordenadas absolutas)
+        nvgInstance.scissor(getX(), getY(), getWidth(), getHeight())
+        
+        // Depois aplica translate
+        nvgInstance.translate(translateX, translateY)
+        
+        // Executa o bloco de desenho com acesso ao nvg
+        block(nvgInstance)
+        
+        // Restaura tudo
+        nvgInstance.restore()
+    }
+    
+    /**
+     * Método auxiliar para desenhar conteúdo com translate, scissor e animação.
+     * Útil para criar seções animadas dentro do frame.
+     * 
+     * Uso:
+     * ```kotlin
+     * val animation = SimpleAnimation()
+     * animation.setAnimation(1f, 20.0)
+     * container.drawWithAnimation(0f, animation.value) { nvg ->
+     *     // Desenha conteúdo animado aqui
+     * }
+     * ```
+     */
+    fun drawWithAnimation(translateX: Float, translateY: Float, block: (NanoVGManager) -> Unit) {
+        drawWithTranslate(translateX, translateY, block)
     }
     
     /**
      * Desenha fundo do container (opcional).
      */
     private fun drawContainerBackground(
-        nvg: me.miki.shindo.management.nanovg.NanoVGManager,
-        palette: me.miki.shindo.management.color.palette.ColorPalette
+        nvg: NanoVGManager,
+        palette: ColorPalette
     ) {
         val bgColor = ColorUtils.applyAlpha(
             palette.getBackgroundColor(ColorType.DARK),

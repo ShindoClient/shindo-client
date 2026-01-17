@@ -20,7 +20,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 
-class GuiQuickPlay : GuiScreen() {
+class GuiQuickPlay : GuiScreen(), IShindoScreen {
 
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()

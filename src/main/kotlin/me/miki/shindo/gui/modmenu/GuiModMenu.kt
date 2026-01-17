@@ -1,6 +1,6 @@
 ﻿package me.miki.shindo.gui.modmenu
 
-import eu.shoroa.contrib.render.ShBlur
+import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.gui.modmenu.category.Category
@@ -34,6 +34,7 @@ import me.miki.shindo.utils.buffer.ScreenAnimation
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
+import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -42,7 +43,7 @@ import java.awt.Color
 import java.io.IOException
 import kotlin.math.min
 
-class GuiModMenu : GuiScreen() {
+class GuiModMenu : GuiScreen(), IShindoScreen {
 
     private val categories = ArrayList<Category>()
     private val moveAnimation = SimpleAnimation()
@@ -150,7 +151,7 @@ class GuiModMenu : GuiScreen() {
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
 
         if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
-            ShBlur.getInstance().drawBlur {
+            Blur.drawBlur {
                 nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, palette.getBackgroundColor(ColorType.DARK))
             }
             val colsidebar = palette.getBackgroundColor(ColorType.DARK)

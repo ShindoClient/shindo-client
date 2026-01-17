@@ -27,7 +27,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiGameMenu : GuiScreen() {
+class GuiGameMenu : GuiScreen(), IShindoScreen {
 
     private val screenAnimation = ScreenAnimation()
     private lateinit var introAnimation: Animation

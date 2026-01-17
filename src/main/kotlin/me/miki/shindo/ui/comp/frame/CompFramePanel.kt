@@ -14,7 +14,11 @@ class CompFramePanel(
     width: Float = 200f,
     height: Float = 100f,
     radius: Float = 8f
-) : CompPanel(x, y, width, height, radius) {
+) : CompPanel(x, y, width, height) {
+    
+    init {
+        setRadius(radius)
+    }
     
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return

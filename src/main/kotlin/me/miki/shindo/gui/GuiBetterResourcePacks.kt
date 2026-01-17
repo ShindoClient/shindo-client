@@ -24,7 +24,7 @@ import java.io.File
 import java.util.Collections
 import java.util.Comparator
 
-class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen) {
+class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen), IShindoScreen {
     private var searchField: GuiTextField? = null
     private lateinit var guiPacksAvailable: GuiResourcePackAvailable
     private lateinit var guiPacksSelected: GuiResourcePackSelected

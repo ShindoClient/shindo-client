@@ -35,10 +35,7 @@ class MainMenuSceneFrameAdapter(
     private val frame: Frame = template.createFrame(scene.getParent(), title)
     
     init {
-        // Garante que o frame está inicializado
-        if (!::frame.isInitialized) {
-            frame.init()
-        }
+        // Frame já é inicializado pelo template
     }
     
     /**

@@ -8,7 +8,8 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.comp.selectors.CompAccentColorSelectorWelcome
 import me.miki.shindo.ui.comp.buttons.CompActionButton
-import me.miki.shindo.ui.comp.templates.CompPanel
+import me.miki.shindo.ui.frame.adapter.MainMenuSceneFrameAdapter
+import me.miki.shindo.ui.frame.template.WelcomeFrameTemplate
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.animation.normal.Animation
 import me.miki.shindo.utils.animation.normal.Direction
@@ -22,22 +23,19 @@ import java.awt.Color
 class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private val screenAlpha = ScreenAlpha()
-    private var x = 0
-    private var y = 0
-    private var width = 0
-    private var height = 0
     private var fadeAnimation: Animation? = null
     private lateinit var colorSelector: CompAccentColorSelectorWelcome
     private lateinit var nextButton: CompActionButton
-    private lateinit var panel: CompPanel
+    
+    // Frame adapter
+    private val frameAdapter = MainMenuSceneFrameAdapter(
+        this,
+        WelcomeFrameTemplate,
+        "Choose a accent color"
+    )
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val sr = ScaledResolution(mc)
-
-        width = 280
-        height = 172
-        x = sr.scaledWidth / 2 - (width / 2)
-        y = sr.scaledHeight / 2 - (height / 2)
 
         if (fadeAnimation == null) {
             fadeAnimation = DecelerateAnimation(800, 1.0)
@@ -61,18 +59,26 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         val nvg = instance.nanoVGManager!!
         val colorManager = instance.colorManager
         val currentColor = colorManager.currentColor
+        val frame = frameAdapter.getFrame()
+        
+        // Ajusta tamanho do frame para acomodar o preview sem sobrepor o seletor
+        // Aumentamos a largura para dar mais espaço e a altura para centralizar o preview
+        frame.setSize(360f, 200f)
+        val sr = ScaledResolution(mc)
+        frame.setPosition(
+            (sr.scaledWidth - 360f) / 2f,
+            (sr.scaledHeight - 200f) / 2f
+        )
 
         // Inicializa componentes se necessário
-        if (!::panel.isInitialized) {
-            panel = CompPanel(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
-                .setRadius(8f)
-                .setBackgroundColor(getPanelColor())
-                .setShadowEnabled(false)
+        if (!::colorSelector.isInitialized) {
+            val contentArea = frameAdapter.getContainer().getContentArea()
             
             colorSelector = CompAccentColorSelectorWelcome(
-                0f, 0f,
-                (width - 118f).toFloat(), // Largura menos espaço para preview
-                (height - 82f).toFloat(), // Altura menos header e botão
+                contentArea.x,
+                contentArea.y + 13f,
+                (frame.getWidth() - 130f), // Largura menos espaço para preview (96f + 20f margem + 14f padding)
+                (frame.getHeight() - 82f), // Altura menos botão (sem header)
                 colorManager.colors
             ).apply {
                 setSelectedColor(currentColor)
@@ -80,40 +86,62 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
                     instance.colorManager.currentColor = accent
                 }
             }
+            frameAdapter.attachToFrame(colorSelector)
             
-            nextButton = CompActionButton("Next", x + width - 108f, y + height - 26f, 96f, 20f)
+            nextButton = CompActionButton(
+                "Next",
+                frame.getX() + frame.getWidth() - 108f,
+                frame.getY() + frame.getHeight() - 26f,
+                96f,
+                20f
+            )
             nextButton.onClick = {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
             }
+            frameAdapter.attachToFrame(nextButton)
         }
 
         // Atualiza posições
-        panel.setBounds(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
-        colorSelector.setBounds(x.toFloat() + 10f, y.toFloat() + 40f, (width - 118f).toFloat(), (height - 82f).toFloat())
-        nextButton.setBounds(x + width - 108f, y + height - 26f, 96f, 20f)
+        val contentArea = frameAdapter.getContainer().getContentArea()
+        colorSelector.setBounds(
+            contentArea.x,
+            contentArea.y + 13f,
+            (frame.getWidth() - 130f), // Largura menos espaço para preview (96f + 20f margem + 14f padding)
+            (frame.getHeight() - 82f) // Altura menos botão (sem header)
+        )
+        nextButton.setBounds(
+            frame.getX() + frame.getWidth() - 108f,
+            frame.getY() + frame.getHeight() - 26f,
+            96f,
+            20f
+        )
         colorSelector.setSelectedColor(currentColor)
 
-        // Desenha título
-        nvg.drawCenteredText("Choose a accent color", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
-        nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)
+        // Desenha o frame (header e container)
+        frameAdapter.draw(mouseX, mouseY, partialTicks)
 
-        // Preview do HUD
-        nvg.drawRoundedImage(ResourceLocation("shindo/backgrounds/example-vertical.png"), x + width - 108f, y + 40f, 96f, 96f, 6f)
-        drawExampleHud(x + width - 96f, y + 70.5f, currentColor)
-
-        // Desenha componentes
-        panel.draw(mouseX, mouseY, partialTicks)
-        colorSelector.draw(mouseX, mouseY, partialTicks)
-        nextButton.draw(mouseX, mouseY, partialTicks)
+        // Preview do HUD (customizado, desenha sobre o frame)
+        // Posiciona o preview à direita, centralizado verticalmente com a altura do frame
+        val previewSize = 96f
+        val previewX = frame.getX() + frame.getWidth() - previewSize - 20f // 20f de margem da direita
+        val previewY = frame.getY() + (frame.getHeight() - previewSize) / 2f // Centralizado verticalmente
+        nvg.drawRoundedImage(
+            ResourceLocation("shindo/backgrounds/example-vertical.png"),
+            previewX,
+            previewY,
+            previewSize,
+            previewSize,
+            6f
+        )
+        drawExampleHud(
+            frame.getX() + frame.getWidth() - previewSize - 8f, // Centralizado horizontalmente no preview
+            previewY + 30.5f, // Mantém a posição relativa do HUD dentro do preview
+            currentColor
+        )
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (::colorSelector.isInitialized) {
-            colorSelector.mouseClicked(mouseX, mouseY, mouseButton)
-        }
-        if (::nextButton.isInitialized) {
-            nextButton.mouseClicked(mouseX, mouseY, mouseButton)
-        }
+        frameAdapter.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     private fun drawExampleHud(x: Float, y: Float, accentColor: AccentColor) {
@@ -122,7 +150,11 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         val width = 71f
         val height = 34f
 
-        nvg!!.drawGradientRoundedRect(x, y, width, height, 5f, ColorUtils.applyAlpha(accentColor.color1, 220), ColorUtils.applyAlpha(accentColor.color2, 220))
+        nvg!!.drawGradientRoundedRect(
+            x, y, width, height, 5f,
+            ColorUtils.applyAlpha(accentColor.color1, 220),
+            ColorUtils.applyAlpha(accentColor.color2, 220)
+        )
 
         nvg.drawText("X: 190", x + 3.9f, y + 3.9f, Color.WHITE, 6.42f, Fonts.REGULAR)
         nvg.drawText("Y: 60", x + 3.9f, y + 10.9f, Color.WHITE, 6.42f, Fonts.REGULAR)

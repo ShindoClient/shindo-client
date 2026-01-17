@@ -14,7 +14,7 @@ object ExponentialEasings {
     val EASE_IN_EXPO: EasingFunction = { t ->
         if (t <= 0f) 0f
         else if (t >= 1f) 1f
-        else 2.0.pow(10f * (t - 1f)).toFloat()
+        else 2.0.pow((10.0 * (t - 1.0))).toFloat()
     }
 
     /**
@@ -23,7 +23,7 @@ object ExponentialEasings {
     val EASE_OUT_EXPO: EasingFunction = { t ->
         if (t <= 0f) 0f
         else if (t >= 1f) 1f
-        else 1f - 2.0.pow(-10f * t).toFloat()
+        else 1f - 2.0.pow((-10.0 * t.toDouble())).toFloat()
     }
 
     /**
@@ -35,9 +35,9 @@ object ExponentialEasings {
         else {
             val t2 = t * 2f
             if (t2 < 1f) {
-                0.5f * 2.0.pow(10f * (t2 - 1f)).toFloat()
+                0.5f * 2.0.pow((10.0 * (t2 - 1.0))).toFloat()
             } else {
-                0.5f * (2f - 2.0.pow(-10f * (t2 - 1f)).toFloat())
+                0.5f * (2f - 2.0.pow((-10.0 * (t2 - 1.0))).toFloat())
             }
         }
     }

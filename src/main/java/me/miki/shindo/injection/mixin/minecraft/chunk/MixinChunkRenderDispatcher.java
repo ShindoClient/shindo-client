@@ -1,10 +1,7 @@
 package me.miki.shindo.injection.mixin.minecraft.chunk;
 
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.FPSBoostMod;
-import me.miki.shindo.management.settings.impl.BooleanSetting;
-import me.miki.shindo.management.settings.impl.NumberSetting;
 import net.minecraft.client.renderer.chunk.ChunkCompileTaskGenerator;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;

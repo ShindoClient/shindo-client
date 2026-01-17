@@ -1,8 +1,3 @@
-/*
- * Nanovg Blur
- * © Shoroa 2025, All Rights Reserved
- */
-
 package eu.shoroa.contrib.shader;
 
 import eu.shoroa.contrib.shader.uniform.*;
@@ -16,12 +11,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public final class UIShader {
-    private final String vSrc;
-    private final String fSrc;
     private int pid, vid, fid;
+    private String vSrc, fSrc;
     private VBO vbo;
 
     public UIShader(String vSrc, String fSrc) {
@@ -65,21 +60,20 @@ public final class UIShader {
         return id;
     }
 
-    private String readStream(InputStream is) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder builder = new StringBuilder();
-        String line;
-
-        try {
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append("\n");
+    private ByteBuffer readStream(InputStream is) throws IOException {
+        // Java 8 doesn't have InputStream.readAllBytes(), so read into a ByteArrayOutputStream
+        try (InputStream in = is; java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream()) {
+            byte[] buf = new byte[8192];
+            int read;
+            while ((read = in.read(buf, 0, buf.length)) != -1) {
+                baos.write(buf, 0, read);
             }
-        } catch (
-                IOException e) {
-            e.printStackTrace();
+            byte[] bytes = baos.toByteArray();
+            ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+            buffer.put(bytes);
+            buffer.flip();
+            return buffer;
         }
-
-        return builder.toString();
     }
 
     public void attach() {

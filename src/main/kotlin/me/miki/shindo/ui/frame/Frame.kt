@@ -26,17 +26,18 @@ abstract class Frame(
 ) {
     protected val mc: Minecraft = Minecraft.getMinecraft()
     
-    // Componentes principais
-    protected lateinit var header: FrameHeader
-    protected lateinit var container: FrameContainer
+    // Componentes principais (privados para evitar conflito com getters)
+    private lateinit var _header: FrameHeader
+    private lateinit var _container: FrameContainer
     
-    // Estado
-    protected var x: Float = 0f
-    protected var y: Float = 0f
-    protected var width: Float = 400f
-    protected var height: Float = 300f
-    protected var visible: Boolean = true
-    protected var closable: Boolean = true
+    // Estado (privadas para evitar conflito com getters)
+    private var _x: Float = 0f
+    private var _y: Float = 0f
+    private var _width: Float = 400f
+    private var _height: Float = 300f
+    private var _visible: Boolean = true
+    private var _closable: Boolean = true
+    private var _usingHeader: Boolean = false // Por padrão, não usa header
     
     // Cache de instâncias
     private var _nvg: NanoVGManager? = null
@@ -53,7 +54,9 @@ abstract class Frame(
      */
     open fun init() {
         setupFrame()
-        initHeader()
+        if (_usingHeader) {
+            initHeader()
+        }
         initContainer()
         onFrameInitialized()
     }
@@ -65,21 +68,21 @@ abstract class Frame(
     protected open fun setupFrame() {
         val sr = ScaledResolution(mc)
         // Centraliza por padrão
-        x = (sr.scaledWidth - width) / 2f
-        y = (sr.scaledHeight - height) / 2f
+        _x = (sr.scaledWidth - _width) / 2f
+        _y = (sr.scaledHeight - _height) / 2f
     }
     
     /**
      * Inicializa o header do frame.
      */
     private fun initHeader() {
-        header = FrameHeader(
-            x = x,
-            y = y,
-            width = width,
+        _header = FrameHeader(
+            x = getX(),
+            y = getY(),
+            width = getWidth(),
             title = getTitle()
         ).apply {
-            setClosable(closable)
+            setClosable(isClosable())
             setOnClose { onClose() }
             onHeaderInitialized(this)
         }
@@ -89,12 +92,12 @@ abstract class Frame(
      * Inicializa o container do frame.
      */
     private fun initContainer() {
-        val headerHeight = header.getHeight()
-        container = FrameContainer(
-            x = x,
-            y = y + headerHeight,
-            width = width,
-            height = height - headerHeight
+        val headerHeight = if (_usingHeader && ::_header.isInitialized) _header.getHeight() else 0f
+        _container = FrameContainer(
+            x = getX(),
+            y = getY() + headerHeight,
+            width = getWidth(),
+            height = getHeight() - headerHeight
         ).apply {
             onContainerInitialized(this)
         }
@@ -104,7 +107,7 @@ abstract class Frame(
      * Renderiza o frame.
      */
     open fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!visible) return
+        if (!isVisible()) return
         
         val nvgInstance = nvg
         val paletteColors = palette
@@ -112,11 +115,13 @@ abstract class Frame(
         // Desenha fundo do frame
         drawFrameBackground(nvgInstance, paletteColors)
         
-        // Desenha header
-        header.draw(mouseX, mouseY, partialTicks)
+        // Desenha header (se estiver sendo usado)
+        if (_usingHeader && ::_header.isInitialized) {
+            _header.draw(mouseX, mouseY, partialTicks)
+        }
         
         // Desenha container
-        container.draw(mouseX, mouseY, partialTicks)
+        _container.draw(mouseX, mouseY, partialTicks)
         
         // Desenha conteúdo customizado
         drawContent(mouseX, mouseY, partialTicks)
@@ -130,8 +135,8 @@ abstract class Frame(
             palette.getBackgroundColor(ColorType.DARK),
             245
         )
-        nvg.drawShadow(x, y, width, height, 12f, 8)
-        nvg.drawRoundedRect(x, y, width, height, 12f, bgColor)
+        nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), 12f, 8)
+        nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 12f, bgColor)
     }
     
     /**
@@ -141,13 +146,36 @@ abstract class Frame(
     protected open fun drawContent(mouseX: Int, mouseY: Int, partialTicks: Float) {}
     
     /**
+     * Método auxiliar para desenhar conteúdo com translate dentro do container.
+     * Garante que o translate funcione corretamente com o scissor do container.
+     * 
+     * Uso:
+     * ```kotlin
+     * frame.drawInContainer(0f, scrollValue) { nvg ->
+     *     nvg.drawText("Hello", 10f, 10f, ...)
+     * }
+     * ```
+     */
+    fun drawInContainer(translateX: Float, translateY: Float, block: (NanoVGManager) -> Unit) {
+        _container.drawWithTranslate(translateX, translateY, block)
+    }
+    
+    /**
+     * Obtém o contexto NanoVG para uso direto (útil para translate/scissor customizados).
+     * Use com cuidado e sempre salve/restaure o estado quando necessário.
+     */
+    fun getNanoVG(): NanoVGManager = nvg
+    
+    /**
      * Processa cliques do mouse.
      */
     open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!visible) return
+        if (!isVisible()) return
         
-        header.mouseClicked(mouseX, mouseY, mouseButton)
-        container.mouseClicked(mouseX, mouseY, mouseButton)
+        if (_usingHeader && ::_header.isInitialized) {
+            _header.mouseClicked(mouseX, mouseY, mouseButton)
+        }
+        _container.mouseClicked(mouseX, mouseY, mouseButton)
         onMouseClicked(mouseX, mouseY, mouseButton)
     }
     
@@ -155,10 +183,12 @@ abstract class Frame(
      * Processa soltura do mouse.
      */
     open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!visible) return
+        if (!isVisible()) return
         
-        header.mouseReleased(mouseX, mouseY, mouseButton)
-        container.mouseReleased(mouseX, mouseY, mouseButton)
+        if (_usingHeader && ::_header.isInitialized) {
+            _header.mouseReleased(mouseX, mouseY, mouseButton)
+        }
+        _container.mouseReleased(mouseX, mouseY, mouseButton)
         onMouseReleased(mouseX, mouseY, mouseButton)
     }
     
@@ -166,13 +196,13 @@ abstract class Frame(
      * Processa teclas digitadas.
      */
     open fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (!visible) return
+        if (!isVisible()) return
         
-        container.keyTyped(typedChar, keyCode)
+        _container.keyTyped(typedChar, keyCode)
         onKeyTyped(typedChar, keyCode)
         
         // ESC fecha o frame se for closable
-        if (keyCode == 1 && closable) { // ESC key
+        if (keyCode == 1 && isClosable()) { // ESC key
             onClose()
         }
     }
@@ -181,7 +211,7 @@ abstract class Frame(
      * Atualiza o frame.
      */
     open fun update(partialTicks: Float) {
-        if (!visible) return
+        if (!isVisible()) return
         onUpdate(partialTicks)
     }
     
@@ -190,36 +220,36 @@ abstract class Frame(
      * Método principal para adicionar componentes de forma prática.
      */
     fun attachToFrame(component: Comp) {
-        container.addChild(component)
+        _container.addChild(component)
     }
     
     /**
      * Anexa múltiplos componentes ao container.
      */
     fun attachToFrame(vararg components: Comp) {
-        components.forEach { container.addChild(it) }
+        components.forEach { _container.addChild(it) }
     }
     
     /**
      * Remove um componente do container.
      */
     fun detachFromFrame(component: Comp) {
-        container.removeChild(component)
+        _container.removeChild(component)
     }
     
     /**
      * Limpa todos os componentes do container.
      */
     fun clearFrame() {
-        container.clearChildren()
+        _container.clearChildren()
     }
     
     /**
      * Define a posição do frame.
      */
     fun setPosition(x: Float, y: Float) {
-        this.x = x
-        this.y = y
+        _x = x
+        _y = y
         updatePositions()
     }
     
@@ -227,43 +257,55 @@ abstract class Frame(
      * Define o tamanho do frame.
      */
     fun setSize(width: Float, height: Float) {
-        this.width = width
-        this.height = height
+        _width = width
+        _height = height
         updatePositions()
     }
     
     /**
      * Define se o frame é visível.
      */
-    fun setVisible(visible: Boolean) {
-        this.visible = visible
+    fun setVisible(value: Boolean) {
+        _visible = value
     }
     
     /**
      * Define se o frame pode ser fechado.
      */
-    fun setClosable(closable: Boolean) {
-        this.closable = closable
-        if (::header.isInitialized) {
-            header.setClosable(closable)
+    fun setClosable(value: Boolean) {
+        _closable = value
+        if (_usingHeader && ::_header.isInitialized) {
+            _header.setClosable(value)
         }
     }
+    
+    /**
+     * Define se o frame deve usar header.
+     */
+    fun setUsingHeader(value: Boolean) {
+        _usingHeader = value
+    }
+    
+    /**
+     * Verifica se o frame está usando header.
+     */
+    fun isUsingHeader(): Boolean = _usingHeader
     
     /**
      * Atualiza posições dos componentes quando o frame é movido/redimensionado.
      */
     private fun updatePositions() {
-        if (::header.isInitialized) {
-            header.setX(x)
-            header.setY(y)
-            header.setWidth(width)
+        if (_usingHeader && ::_header.isInitialized) {
+            _header.setX(getX())
+            _header.setY(getY())
+            _header.setWidth(getWidth())
         }
-        if (::container.isInitialized) {
-            val headerHeight = if (::header.isInitialized) header.getHeight() else 0f
-            container.setX(x)
-            container.setY(y + headerHeight)
-            container.setWidth(width)
-            container.setHeight(height - headerHeight)
+        if (::_container.isInitialized) {
+            val headerHeight = if (_usingHeader && ::_header.isInitialized) _header.getHeight() else 0f
+            _container.setX(getX())
+            _container.setY(getY() + headerHeight)
+            _container.setWidth(getWidth())
+            _container.setHeight(getHeight() - headerHeight)
         }
     }
     
@@ -275,14 +317,20 @@ abstract class Frame(
     }
     
     // Getters
-    fun getX(): Float = x
-    fun getY(): Float = y
-    fun getWidth(): Float = width
-    fun getHeight(): Float = height
-    fun isVisible(): Boolean = visible
-    fun isClosable(): Boolean = closable
-    fun getHeader(): FrameHeader = header
-    fun getContainer(): FrameContainer = container
+    fun getX(): Float = _x
+    fun getY(): Float = _y
+    fun getWidth(): Float = _width
+    fun getHeight(): Float = _height
+    fun isVisible(): Boolean = _visible
+    fun isClosable(): Boolean = _closable
+
+    fun getHeader(): FrameHeader? = if (_usingHeader && ::_header.isInitialized) _header else null
+    fun getContainer(): FrameContainer = _container
+    
+    /**
+     * Obtém a altura do header (0 se não estiver sendo usado).
+     */
+    fun getHeaderHeight(): Float = if (_usingHeader && ::_header.isInitialized) _header.getHeight() else 0f
     
     // Métodos abstratos/hooks
     /**
@@ -311,7 +359,7 @@ abstract class Frame(
      * Chamado quando o frame é fechado.
      */
     protected open fun onClose() {
-        visible = false
+        _visible = false
         parent?.let { mc.displayGuiScreen(it) }
     }
     

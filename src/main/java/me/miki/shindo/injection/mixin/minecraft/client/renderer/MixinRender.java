@@ -3,7 +3,6 @@ package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.api.websocket.presence.PresenceTracker;
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;

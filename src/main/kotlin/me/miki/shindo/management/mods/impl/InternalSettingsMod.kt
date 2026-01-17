@@ -43,6 +43,10 @@ class InternalSettingsMod :
     @JvmField
     var blurSetting = false
 
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.BLUR_STRENGTH, min = 10.0, max = 20.0, current = 1.0)
+    @JvmField
+    var blurStrengthSetting  = false
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     @JvmField
     var animationsSetting = true
@@ -70,6 +74,27 @@ class InternalSettingsMod :
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BORDERLESS_FULSCREEN)
     private val borderlessFullscreenSetting = false
+
+    // Performance Settings
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION)
+    @JvmField
+    var textureOptimizationSetting = true
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_CHUNK_OPTIMIZATION)
+    @JvmField
+    var chunkOptimizationSetting = true
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_LOG_OPTIMIZATION)
+    @JvmField
+    var logOptimizationSetting = true
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_SOUND_OPTIMIZATION)
+    @JvmField
+    var soundOptimizationSetting = true
+
+    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_NETWORK_OPTIMIZATION)
+    @JvmField
+    var networkOptimizationSetting = false
 
     @Property(type = PropertyType.COMBO, name = "Settings Layout")
     val settingsLayout: SettingsLayout = SettingsLayout.SINGLE_COLUMN
@@ -246,6 +271,8 @@ class InternalSettingsMod :
 
     fun getBlurSetting(): BooleanSetting? = getBooleanSetting(this, "blurSetting")
 
+    fun getBlurStrengthSetting(): NumberSetting? = getNumberSetting(this, "blurStrengthSetting")
+
     fun getAnimationsSetting(): BooleanSetting? = getBooleanSetting(this, "animationsSetting")
 
     fun getVolumeSetting(): NumberSetting? = getNumberSetting(this, "volumeSetting")
@@ -253,6 +280,13 @@ class InternalSettingsMod :
     fun getClickEffectsSetting(): BooleanSetting? = getBooleanSetting(this, "clickEffectsSetting")
 
     fun getSoundsUISetting(): BooleanSetting? = getBooleanSetting(this, "soundsUISetting")
+
+    fun getTextureOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "textureOptimizationSetting")
+    fun getChunkOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "chunkOptimizationSetting")
+    fun getLogOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "logOptimizationSetting")
+    fun getSoundOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "soundOptimizationSetting")
+
+    fun getNetworkOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "networkOptimizationSetting")
 
     fun applyBorderlessOnStartup() {
         borderlessInitialized = true

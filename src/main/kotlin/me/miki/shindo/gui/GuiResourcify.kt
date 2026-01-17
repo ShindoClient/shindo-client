@@ -33,7 +33,7 @@ import kotlin.math.min
 class GuiResourcify(
     private val parent: GuiScreen,
     private val startType: ResourcifyResourceType
-) : GuiScreen() {
+) : GuiScreen(), IShindoScreen {
 
     private val searchBox = CompSearchBox()
     private val scroll = Scroll()

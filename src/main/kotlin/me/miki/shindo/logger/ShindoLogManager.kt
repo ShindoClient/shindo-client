@@ -2,6 +2,8 @@ package me.miki.shindo.logger
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.file.FileManager
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.io.PrintWriter
@@ -52,10 +54,14 @@ object ShindoLogManager {
         if (file == null) {
             return
         }
-        lock.withLock {
-            try {
-                file.appendText(message + "\n", Charsets.UTF_8)
-            } catch (ignored: Exception) {
+        // Escreve logs em paralelo para não bloquear o thread principal
+        TaskExecutor.runAsync(ThreadPoolType.IO) {
+            lock.withLock {
+                try {
+                    file.appendText(message + "\n", Charsets.UTF_8)
+                } catch (ignored: Exception) {
+                    // Ignora erros de escrita de log para não causar loops
+                }
             }
         }
     }

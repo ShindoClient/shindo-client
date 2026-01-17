@@ -81,9 +81,6 @@ dependencies {
     implementation "net.lenni0451.commons:httpclient:1.9.0"
     implementation "net.lenni0451.commons:gson:1.9.0"
     implementation "io.arrow-kt:arrow-core:1.2.4"
-
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 

@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.network;
 
-import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.ViaVersionMod;
 import me.miki.shindo.viaversion.ViaLoadingBase;
 import me.miki.shindo.viaversion.protocolinfo.ProtocolInfo;

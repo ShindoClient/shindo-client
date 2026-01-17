@@ -49,8 +49,7 @@ object SmallFrameTemplate : FrameTemplate {
             
             override fun setupFrame() {
                 super.setupFrame()
-                width = 320f
-                height = 180f
+                setSize(320f, 180f)
             }
         }.apply {
             init()
@@ -73,8 +72,7 @@ object MediumFrameTemplate : FrameTemplate {
             
             override fun setupFrame() {
                 super.setupFrame()
-                width = 500f
-                height = 400f
+                setSize(500f, 400f)
             }
         }.apply {
             init()
@@ -100,8 +98,10 @@ object LargeFrameTemplate : FrameTemplate {
                 val sr = net.minecraft.client.gui.ScaledResolution(
                     net.minecraft.client.Minecraft.getMinecraft()
                 )
-                width = (sr.scaledWidth * 0.8f).coerceAtMost(800f)
-                height = (sr.scaledHeight * 0.8f).coerceAtMost(600f)
+                setSize(
+                    (sr.scaledWidth * 0.8f).coerceAtMost(800f),
+                    (sr.scaledHeight * 0.8f).coerceAtMost(600f)
+                )
             }
         }.apply {
             init()
@@ -127,10 +127,8 @@ object FullscreenFrameTemplate : FrameTemplate {
                 val sr = net.minecraft.client.gui.ScaledResolution(
                     net.minecraft.client.Minecraft.getMinecraft()
                 )
-                x = 0f
-                y = 0f
-                width = sr.scaledWidth.toFloat()
-                height = sr.scaledHeight.toFloat()
+                setPosition(0f, 0f)
+                setSize(sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat())
             }
         }.apply {
             init()

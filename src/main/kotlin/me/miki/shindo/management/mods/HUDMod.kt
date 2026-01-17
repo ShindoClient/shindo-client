@@ -1,13 +1,12 @@
 package me.miki.shindo.management.mods
 
-import eu.shoroa.contrib.render.ShBlur
+import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.utils.ColorUtils
@@ -278,7 +277,7 @@ open class HUDMod : Mod {
         val y = this.y + (addY * scale)
 
         if (isBlur) {
-            ShBlur.getInstance().drawBlur(x, y, lastWidth, lastHeight, radius)
+            Blur.drawBlur(x, y, lastWidth, lastHeight, radius)
         }
 
         if (isNormal || isVanilla || isShadow || isDark || isLight || isModern) {

@@ -11,6 +11,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.selectors.CompAccentColorSelector
 import me.miki.shindo.ui.comp.inputs.CompComboBox
+import me.miki.shindo.ui.comp.inputs.CompSlider
 import me.miki.shindo.ui.comp.buttons.CompSettingButton
 import me.miki.shindo.ui.comp.selectors.CompThemeSelector
 import me.miki.shindo.ui.comp.buttons.CompToggleButton
@@ -25,18 +26,20 @@ class AppearanceScene(parent: SettingsCategory) :
     SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
 
     private val contentScroll = Scroll()
-    
+
+
     private lateinit var themeSelector: CompThemeSelector
     private lateinit var accentColorSelector: CompAccentColorSelector
     private lateinit var themeTitle: CompLabel
     private lateinit var accentTitle: CompLabel
-    
+
     private lateinit var modTheme: CompComboBox
     private lateinit var uiBlur: CompToggleButton
+    private lateinit var blurStrength: CompSlider
     private lateinit var clientAnimations: CompToggleButton
 
     private val settingCards = ArrayList<CompSettingButton>()
-    
+
     private var themeSectionY = 0f
     private var accentSectionY = 0f
     private var cardY = 0f
@@ -46,9 +49,10 @@ class AppearanceScene(parent: SettingsCategory) :
     override fun initGui() {
         val instance = Shindo.getInstance()
         val colorManager = instance.colorManager
-        
+
         modTheme = CompComboBox(110f, requireNotNull(InternalSettingsMod.instance.modThemeSetting))
         uiBlur = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getBlurSetting()))
+        blurStrength = CompSlider(0f, 0f, requireNotNull(InternalSettingsMod.instance.getBlurStrengthSetting()), 75f)
         clientAnimations = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getAnimationsSetting()))
 
         // Inicializa seletores
@@ -58,7 +62,7 @@ class AppearanceScene(parent: SettingsCategory) :
                 colorManager.theme = theme
             }
         }
-        
+
         accentColorSelector = CompAccentColorSelector(
             accentColors = colorManager.colors
         ).apply {
@@ -71,7 +75,7 @@ class AppearanceScene(parent: SettingsCategory) :
         // Títulos das seções
         themeTitle = CompLabel(0f, 0f, TranslateText.THEME.text)
             .setFontSize(12.5f)
-        
+
         accentTitle = CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.text)
             .setFontSize(12.5f)
 
@@ -88,6 +92,17 @@ class AppearanceScene(parent: SettingsCategory) :
                 .onClickAction {
                     val setting = uiBlur.getSetting()
                     setting.setToggled(!setting.isToggled())
+                }
+        )
+
+        settingCards.add(
+            CompSettingButton(0f, { TranslateText.BLUR_STRENGTH.text }, { TranslateText.SMOOTH.text})
+                .trailing(blurStrength)
+                .onClickAction {
+                    if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
+                        val setting = blurStrength.getSetting()
+                        setting.setValue(setting.getValue())
+                    }
                 }
         )
 
@@ -127,8 +142,22 @@ class AppearanceScene(parent: SettingsCategory) :
 
         val containerRadius = 12f
         nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7)
-        nvg.drawRoundedRect(baseX, baseY, baseWidth, baseHeight, containerRadius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
-        nvg.drawRoundedRect(baseX + 1f, baseY + 1f, baseWidth - 2f, baseHeight - 2f, containerRadius - 1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
+        nvg.drawRoundedRect(
+            baseX,
+            baseY,
+            baseWidth,
+            baseHeight,
+            containerRadius,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+        )
+        nvg.drawRoundedRect(
+            baseX + 1f,
+            baseY + 1f,
+            baseWidth - 2f,
+            baseHeight - 2f,
+            containerRadius - 1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+        )
 
         val top = baseY + OUTER_PADDING
         val themeHeight = 122f
@@ -141,12 +170,26 @@ class AppearanceScene(parent: SettingsCategory) :
         cardWidth = sectionWidth
 
         val contentHeight = OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f +
-            ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING
+                ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING
         contentScroll.maxScroll = max(0f, contentHeight - baseHeight)
 
         if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight) &&
-            !MouseUtils.isInside(mouseX, mouseY, baseX + OUTER_PADDING, themeSectionY + contentScroll.getValue(), sectionWidth, themeHeight) &&
-            !MouseUtils.isInside(mouseX, mouseY, baseX + OUTER_PADDING, accentSectionY + contentScroll.getValue(), sectionWidth, accentHeight)
+            !MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                baseX + OUTER_PADDING,
+                themeSectionY + contentScroll.getValue(),
+                sectionWidth,
+                themeHeight
+            ) &&
+            !MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                baseX + OUTER_PADDING,
+                accentSectionY + contentScroll.getValue(),
+                sectionWidth,
+                accentHeight
+            )
         ) {
             contentScroll.onScroll()
         }
@@ -181,11 +224,21 @@ class AppearanceScene(parent: SettingsCategory) :
 
         // Cards de configuração
         drawControlCards(mouseX, mouseY, partialTicks, controlsScreenY)
-        
+
         nvg.resetScissor()
         nvg.restore()
 
-        nvg.drawScrollbar(baseX, baseY, baseWidth, baseHeight, contentHeight, verticalScroll, palette, currentAccent, 30f)
+        nvg.drawScrollbar(
+            baseX,
+            baseY,
+            baseWidth,
+            baseHeight,
+            contentHeight,
+            verticalScroll,
+            palette,
+            currentAccent,
+            30f
+        )
     }
 
 

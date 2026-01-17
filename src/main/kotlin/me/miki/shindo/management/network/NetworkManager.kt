@@ -49,7 +49,7 @@ class NetworkManager : ConfigOwner, SettingCategoryProvider {
     @Property(type = PropertyType.COMBO, translate = TranslateText.NETWORK_MEDIUM, category = "profile")
     private var networkMedium: LinkMedium = LinkMedium.WIRED
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_LINK_CAPACITY, category = "profile", min = 10, max = 1000, step = 10, current = 200)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_LINK_CAPACITY, category = "profile", min = 10.0, max = 1000.0, step = 10.0, current = 200.0)
     private var linkCapacityMbps: Int = 200
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_AGGRESSIVE, category = "profile")
@@ -67,28 +67,28 @@ class NetworkManager : ConfigOwner, SettingCategoryProvider {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_NATIVE_TRANSPORT, category = "transport")
     private var preferNativeTransport: Boolean = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_WRITE_BUFFER, category = "transport", min = 128, max = 4096, step = 32, current = 512)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_WRITE_BUFFER, category = "transport", min = 128.0, max = 4096.0, step = 32.0, current = 512.0)
     private var writeBufferKb: Int = 512
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_BURST_SMOOTHING, category = "flow")
     private var burstFlushSmoothing: Boolean = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_INTERVAL, category = "flow", min = 10, max = 120, step = 5, current = 45)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_INTERVAL, category = "flow", min = 10.0, max = 120.0, step = 5.0, current = 45.0)
     private var flushIntervalMs: Int = 45
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_THRESHOLD, category = "flow", min = 1, max = 12, step = 1, current = 4)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_FLUSH_THRESHOLD, category = "flow", min = 1.0, max = 12.0, step = 1.0, current = 4.0)
     private var flushPacketThreshold: Int = 4
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_DYNAMIC_FLUSH, category = "flow")
     private var dynamicFlushEnabled: Boolean = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_JITTER_SENSITIVITY, category = "flow", min = 1, max = 20, step = 1, current = 6)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_JITTER_SENSITIVITY, category = "flow", min = 1.0, max = 20.0, step = 1.0, current = 6.0)
     private var jitterSensitivity: Int = 6
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NETWORK_PROXY_WARP, category = "routing")
     private var warpProxyEnabled: Boolean = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_RESPONSIVENESS, category = "profile", min = 1, max = 10, step = 1, current = 6)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.NETWORK_RESPONSIVENESS, category = "profile", min = 1.0, max = 10.0, step = 1.0, current = 6.0)
     private var responsivenessLevel: Int = 6
 
     // Estado interno
@@ -289,9 +289,7 @@ class NetworkManager : ConfigOwner, SettingCategoryProvider {
     override fun getDisplayName(): String = TranslateText.NETWORK_OPTIMIZER_TOGGLE.text
 
     // Implementação de SettingCategoryProvider
-    override fun resolveCategoryLabel(categoryKey: String?): TranslateText {
-        if (categoryKey == null) return TranslateText.NONE
-        
+    override fun resolveCategoryLabel(categoryKey: String): TranslateText? {
         return when (categoryKey.lowercase(Locale.ROOT)) {
             "overview" -> TranslateText.NETWORK_CATEGORY_OVERVIEW
             "profile" -> TranslateText.NETWORK_CATEGORY_PROFILE
@@ -511,9 +509,7 @@ class NetworkManager : ConfigOwner, SettingCategoryProvider {
         var warpError: String? = null
 
         fun isOptimizerEnabled(): Boolean = optimizerEnabled
-        fun getLatencyFocus(): Float = latencyFocus
-        fun getStabilityFocus(): Float = stabilityFocus
-        fun getThroughputFocus(): Float = throughputFocus
+        // Removidos getters duplicados - usar propriedades diretamente
     }
 
     /**

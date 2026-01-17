@@ -1,15 +1,15 @@
 package me.miki.shindo.management.layout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
 import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel;
 import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.nanovg.font.LegacyIcon;
 import me.miki.shindo.management.screenshot.ScreenshotDisplayMode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Centraliza os layouts e aplica o tipo selecionado por area.
