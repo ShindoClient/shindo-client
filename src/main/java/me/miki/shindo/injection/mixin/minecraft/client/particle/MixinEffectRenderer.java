@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.particle;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.client.particle.EffectRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,14 +17,13 @@ public class MixinEffectRenderer {
             }, at = @At("HEAD"), cancellable = true
     )
     private void removeBlockBreakingParticles(CallbackInfo ci) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableBlockBreakParticlesSetting().isToggled()) {
-            ci.cancel();
-        }
+        // PatcherAddon removed - block break particles always enabled
     }
 
     @ModifyConstant(method = "addEffect", constant = @Constant(intValue = 4000))
     private int changeMaxParticleLimit(int original) {
-        return PatcherAddon.getInstance().isToggled() ? PatcherAddon.getInstance().getMaxParticleLimitSetting().getValueInt() : original;
+        // PatcherAddon removed - using default particle limit
+        return original;
     }
 
 }

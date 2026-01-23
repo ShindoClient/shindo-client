@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.resources;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.AbstractResourcePack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,9 +20,7 @@ public abstract class MixinAbstractResourcePack {
 
     @Inject(method = "getPackImage", at = @At("HEAD"), cancellable = true)
     private void patcher$downscalePackImage(CallbackInfoReturnable<BufferedImage> cir) throws IOException {
-        if (!PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDownscalePackImagesSetting().isToggled())
-            return;
-
+        // PatcherAddon removed - downscale disabled, using original image
         BufferedImage image = TextureUtil.readBufferedImage(this.getInputStreamByName("pack.png"));
         if (image == null) {
             cir.setReturnValue(null);

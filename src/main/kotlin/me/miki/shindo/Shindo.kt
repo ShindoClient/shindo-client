@@ -4,6 +4,7 @@ import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.api.chat.ChatManager
 import me.miki.shindo.api.broadcast.BroadcastManager
+import me.miki.shindo.libs.hypixel.HypixelApiKeyManager
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.command.CommandManager
@@ -169,6 +170,9 @@ class Shindo private constructor() {
 
         shindoAPI = ShindoAPI()
         shindoAPI.init()
+        
+        // Inicializa API do Hypixel
+        HypixelApiKeyManager.initialize()
 
         commandManager = CommandManager()
         screenshotManager = ScreenshotManager()

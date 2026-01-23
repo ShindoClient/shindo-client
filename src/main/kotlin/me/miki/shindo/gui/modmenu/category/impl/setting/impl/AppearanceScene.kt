@@ -27,7 +27,6 @@ class AppearanceScene(parent: SettingsCategory) :
 
     private val contentScroll = Scroll()
 
-
     private lateinit var themeSelector: CompThemeSelector
     private lateinit var accentColorSelector: CompAccentColorSelector
     private lateinit var themeTitle: CompLabel

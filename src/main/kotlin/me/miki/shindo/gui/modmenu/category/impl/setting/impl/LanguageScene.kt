@@ -57,17 +57,17 @@ class LanguageScene(parent: SettingsCategory) :
 
         columns = if (viewportWidth > 420f) 2 else 1
         val cardWidth = (viewportWidth - (ROW_GAP * (columns - 1))) / columns
-        val estimatedRows = max(1f, Language.values().size / columns.toFloat())
+        val estimatedRows = max(1f, Language.entries.size / columns.toFloat())
         cardHeight = max(66f, min(86f, viewportHeight / estimatedRows))
 
-        val totalContentHeight = calculateTotalContentHeight(Language.values().size)
+        val totalContentHeight = calculateTotalContentHeight(Language.entries.size)
         container.setContentHeight(totalContentHeight)
 
         languageCards.clear()
 
         // Renderiza os cards dentro do container
         container.drawScrollableContent = { mouseX, mouseY, partialTicks, scrollValue ->
-            for ((index, language) in Language.values().withIndex()) {
+            for ((index, language) in Language.entries.withIndex()) {
                 val row = index / columns
                 val column = index % columns
 
@@ -90,7 +90,7 @@ class LanguageScene(parent: SettingsCategory) :
 
     private fun calculateTotalContentHeight(languageCount: Int): Float {
         val rows = ceil(languageCount / columns.toFloat()).toInt()
-        return rows * cardHeight + max(0f, rows - 1f) * ROW_GAP
+        return (rows * cardHeight + max(0f, rows - 1f) * ROW_GAP) + OUTER_PADDING * 2f
     }
 
     private fun drawLanguageCard(
@@ -126,9 +126,9 @@ class LanguageScene(parent: SettingsCategory) :
         var textWidth = width - (textX - x) - 20f
         textWidth = max(120f, textWidth)
 
-        val languageName = nvg.getLimitText(language.name, 11f, Fonts.MEDIUM, textWidth)
-        nvg.drawText(languageName, textX, y + 20f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        nvg.drawText(language.id.toUpperCase(), textX, y + 34f, palette.getFontColor(ColorType.NORMAL), 8.5f, Fonts.REGULAR)
+        val languageName = nvg.getLimitText(language.name, 12f, Fonts.MEDIUM, textWidth)
+        nvg.drawText(languageName, textX, y + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
+        nvg.drawText(language.id.uppercase(), textX, y + 34f, palette.getFontColor(ColorType.NORMAL), 7.5f, Fonts.REGULAR)
 
         if (selected) {
             nvg.drawText(

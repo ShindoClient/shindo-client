@@ -131,7 +131,7 @@ open class Comp(
     /**
      * Verifica se o componente está sendo hovered.
      */
-    fun isHovered(mouseX: Int, mouseY: Int): Boolean =
+    open fun isHovered(mouseX: Int, mouseY: Int): Boolean =
         MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
 
     /**

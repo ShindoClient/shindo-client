@@ -1,6 +1,5 @@
 package me.miki.shindo.hooks;
 
-import me.miki.shindo.injection.mixin.accessors.block.BlockAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.AxisAlignedBB;
@@ -45,22 +44,19 @@ public class CropUtilities {
     public static void updateCropsMaxY(World world, BlockPos pos, Block block) {
         final IBlockState blockState = world.getBlockState(pos);
         final Integer ageValue = blockState.getValue(BlockCrops.AGE);
-        BlockAccessor accessor = (BlockAccessor) block;
-        accessor.setMaxY(
+        block.maxY =
                 blockState.getBlock() instanceof BlockPotato || blockState.getBlock() instanceof BlockCarrot
                         ? CARROT_POTATO_BOX[ageValue].maxY
                         : WHEAT_BOX[ageValue].maxY
-        );
+        ;
     }
 
     public static void updateWartMaxY(World world, BlockPos pos, Block block) {
-        ((BlockAccessor) block).setMaxY(
-                NETHER_WART_BOX[world.getBlockState(pos).getValue(BlockNetherWart.AGE)].maxY
-        );
+        block.maxY = NETHER_WART_BOX[world.getBlockState(pos).getValue(BlockNetherWart.AGE)].maxY;
     }
 
     public static void updateCactusBox(Block block) {
-        ((BlockAccessor) block).invokerSetBlockBounds(
+        block.setBlockBounds(
                 (float) CACTUS_BOX.minX,
                 (float) CACTUS_BOX.minY,
                 (float) CACTUS_BOX.minZ,

@@ -7,17 +7,24 @@ import me.miki.shindo.utils.animation.simple.SimpleAnimation
 
 open class Addon(
     val name: String,
-    val description: String,
+    private val descriptionText: String,
+    val descriptionTranslate: me.miki.shindo.management.language.TranslateText? = null,
     val icon: String,
     val type: AddonType
 ) : ConfigOwner {
 
     val animation = SimpleAnimation()
+    val hoverAnimation = SimpleAnimation()
+    val settingsHoverAnimation = SimpleAnimation()
 
     private var toggled = false
 
     init {
         setup()
+    }
+
+    fun getDescription(): String {
+        return descriptionTranslate?.text ?: descriptionText
     }
 
     open fun setup() {
@@ -53,7 +60,7 @@ open class Addon(
     }
 
     override fun getConfigId(): String {
-        return name.toLowerCase().replace(' ', '_')
+        return name.lowercase().replace(' ', '_')
     }
 
     override fun getDisplayName(): String {

@@ -10,6 +10,7 @@ import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException
 import org.apache.logging.log4j.LogManager
 import java.io.IOException
 import java.util.HashMap
+import java.util.Locale
 import java.util.UUID
 
 abstract class Pipe(
@@ -34,7 +35,7 @@ abstract class Pipe(
         ): Pipe {
             val order = if (preferredOrder.isEmpty()) arrayOf(DiscordBuild.ANY) else preferredOrder
             var pipe: Pipe? = null
-            val open = arrayOfNulls<Pipe>(DiscordBuild.values().size)
+            val open = arrayOfNulls<Pipe>(DiscordBuild.entries.size)
 
             for (i in 0 until 10) {
                 try {
@@ -62,14 +63,14 @@ abstract class Pipe(
                     }
 
                     pipe.build = DiscordBuild.from(apiEndpoint)
-                    LOGGER.debug("Found a valid client (${pipe.build?.name}) with packet: $p")
+                    LOGGER.debug("Found a valid client ({}) with packet: {}", pipe.build?.name, p)
 
                     if (pipe.build == order[0] || DiscordBuild.ANY == order[0]) {
                         LOGGER.info("Found preferred client: ${pipe.build?.name}")
                         break
                     }
 
-                    val activePipe = pipe!!
+                    val activePipe = pipe
                     val activeBuild = activePipe.build!!
                     open[activeBuild.ordinal] = activePipe
                     open[DiscordBuild.ANY.ordinal] = activePipe
@@ -92,14 +93,14 @@ abstract class Pipe(
                         if (cb == DiscordBuild.ANY) {
                             for (k in open.indices) {
                                 if (open[k] == pipe) {
-                                    pipe!!.build = DiscordBuild.values()[k]
+                                    pipe.build = DiscordBuild.entries.toTypedArray()[k]
                                     open[k] = null
                                 }
                             }
                         } else {
                             pipe!!.build = cb
                         }
-                        LOGGER.info("Found preferred client: ${pipe!!.build?.name}")
+                        LOGGER.info("Found preferred client: ${pipe.build?.name}")
                         break
                     }
                 }
@@ -128,7 +129,7 @@ abstract class Pipe(
             callbacks: HashMap<String, Callback>,
             location: String
         ): Pipe {
-            val osName = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT)
+            val osName = System.getProperty("os.name").uppercase(Locale.ROOT)
             return if (osName.contains("win")) {
                 WindowsPipe(ipcClient, callbacks, location)
             } else {
@@ -165,7 +166,7 @@ abstract class Pipe(
             LOGGER.debug("Sent packet: {}", p)
             getListener()?.onPacketSent(ipcClient, p)
         } catch (ex: IOException) {
-            LOGGER.error("Encountered an IOException while sending a packet and disconnected!")
+            LOGGER.error("Encountered an IOException while sending a packet and disconnected!", ex)
             statusInternal = PipeStatus.DISCONNECTED
         }
     }

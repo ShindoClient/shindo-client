@@ -35,10 +35,12 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     @Inject(method = "initGui", at = @At("TAIL"))
     public void preInitGui(CallbackInfo ci) {
-        if (ViaVersionMod.instance.isToggled()) {
+        if (ViaVersionMod.instance != null && ViaVersionMod.instance.isToggled()) {
             this.buttonList.add(ViaShindo.getInstance().getAsyncVersionSlider());
         }
     }
+    
+    
 
     /**
      * @author EldoDebug

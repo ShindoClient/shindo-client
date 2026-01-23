@@ -44,27 +44,6 @@ class LayoutModulesScene(parent: SettingsCategory) :
 
         nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base)
 
-        if (layout == InternalSettingsMod.ModuleLayout.ICON_CARDS) {
-            val columnsIcon = 3
-            val rows = 2
-            val padding = 8f
-            val columnGap = 8f
-            val rowGap = 8f
-            val cardSize = max(42f, (width - (padding * 2f) - ((columnsIcon - 1) * columnGap)) / columnsIcon)
-
-            for (row in 0 until rows) {
-                for (column in 0 until columnsIcon) {
-                    val cardX = x + padding + column * (cardSize + columnGap)
-                    val cardY = y + padding + row * (cardSize + rowGap)
-                    nvg.drawRoundedRect(cardX, cardY, cardSize, cardSize, 8f, cardColor)
-                    nvg.drawRoundedRect(cardX + 8f, cardY + 10f, cardSize - 16f, 6f, 3f, pillColor)
-                    nvg.drawRoundedRect(cardX + 10f, cardY + 22f, cardSize - 20f, 5f, 2f, pillColor)
-                    nvg.drawRoundedRect(cardX + cardSize - 22f, cardY + 8f, 14f, 14f, 6f, ColorUtils.applyAlpha(accent.color1, 200))
-                }
-            }
-            return
-        }
-
         val rows = 3
         val padding = 8f
         val columnGap = 8f

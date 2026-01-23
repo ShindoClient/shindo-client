@@ -2,6 +2,7 @@ package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
+import me.miki.shindo.ui.frame.FrameManager;
 import me.miki.shindo.utils.Sound;
 import me.miki.shindo.utils.helper.ResolutionHelper;
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 
+/**
+ * Mixin para GuiScreen que adiciona comportamentos utilitários (efeitos de clique
+ * e correções de input), sem integrar o sistema MinecraftUIFramework.
+ */
 @Mixin(GuiScreen.class)
 public abstract class MixinGuiScreen {
 
@@ -29,31 +34,17 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void keyTyped(char typedChar, int keyCode);
 
-    @Inject(method = "drawScreen", at = @At("HEAD"))
-    public void preDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        GuiScreen screen = (GuiScreen) (Object) this;
-        
-        // Configura o NanoVG para renderização de componentes do Minecraft
-        if (me.miki.shindo.ui.minecraft.MinecraftUIFramework.shouldApplyStyle(screen)) {
-            me.miki.shindo.management.nanovg.NanoVGManager nvg = Shindo.getInstance().nanoVGManager;
-            if (nvg != null) {
-                nvg.beginFrame(true);
-            }
-            
-            // Renderiza fundo e layout da tela com estilo do Shindo Client
-            // Isso inclui suporte automático para telas do OptiFine
-            me.miki.shindo.ui.minecraft.screen.MinecraftScreenRegistry.renderScreen(screen, mouseX, mouseY, partialTicks);
-        }
-    }
-
+    /**
+     * Renderiza efeitos de clique após a tela ser desenhada.
+     */
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void postDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        // Finaliza o frame do NanoVG se foi iniciado
-        if (me.miki.shindo.ui.minecraft.MinecraftUIFramework.shouldApplyStyle((GuiScreen) (Object) this)) {
-            me.miki.shindo.management.nanovg.NanoVGManager nvg = Shindo.getInstance().nanoVGManager;
-            if (nvg != null) {
-                nvg.endFrame();
-            }
+        // Renderiza frames do FrameManager (exceto para telas que usam ScreenAnimation,
+        // que devem renderizar os frames manualmente após o ScreenAnimation.wrap())
+        // Verificamos se a tela atual é GuiGameMenu para evitar renderização duplicada
+        String screenClass = this.getClass().getName();
+        if (!screenClass.contains("GuiGameMenu")) {
+            FrameManager.drawFrames(mouseX, mouseY, partialTicks);
         }
         
         if (InternalSettingsMod.instance.getClickEffectsSetting().isToggled()) {
@@ -61,15 +52,24 @@ public abstract class MixinGuiScreen {
         }
     }
 
-
-    @Inject(method = "mouseClicked", at = @At("HEAD"))
+    /**
+     * Intercepta mouseClicked para adicionar efeitos de clique e som.
+     */
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void preMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        // Processa cliques nos frames primeiro
+        if (FrameManager.hasActiveFrames()) {
+            FrameManager.handleMouseClicked(mouseX, mouseY, mouseButton);
+            // Cancela o clique na tela base se há frames ativos (frames têm prioridade)
+            ci.cancel();
+            return;
+        }
+        
         if (InternalSettingsMod.instance.getClickEffectsSetting().isToggled()) {
             Shindo.getInstance().getClickEffects().addClickEffect(mouseX, mouseY);
         }
         Sound.play("shindo/audio/click.wav", true);
     }
-
 
     /**
      * @author EldoDebug
@@ -80,10 +80,28 @@ public abstract class MixinGuiScreen {
         char c = Keyboard.getEventCharacter();
 
         if ((Keyboard.getEventKey() == 0 && c >= ' ') || Keyboard.getEventKeyState()) {
-            this.keyTyped(c, Keyboard.getEventKey());
+            // Processa teclas nos frames primeiro
+            if (FrameManager.hasActiveFrames()) {
+                FrameManager.handleKeyTyped(c, Keyboard.getEventKey());
+            } else {
+                this.keyTyped(c, Keyboard.getEventKey());
+            }
         }
 
         mc.dispatchKeypresses();
+    }
+    
+    /**
+     * Intercepta mouseReleased para processar nos frames.
+     */
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    public void preMouseReleased(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        // Processa soltura do mouse nos frames primeiro
+        if (FrameManager.hasActiveFrames()) {
+            FrameManager.handleMouseReleased(mouseX, mouseY, mouseButton);
+            // Cancela o evento na tela base se há frames ativos
+            ci.cancel();
+        }
     }
 
     @Inject(method = "handleInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleKeyboardInput()V"), cancellable = true)
@@ -94,4 +112,3 @@ public abstract class MixinGuiScreen {
         }
     }
 }
-

@@ -1,5 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.entity;
 
+import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +13,20 @@ public class MixinEntityOtherPlayerMP {
     @Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityOtherPlayerMP;updateArmSwingProgress()V", shift = At.Shift.AFTER), cancellable = true)
     private void removeUselessAnimations(CallbackInfo ci) {
         ci.cancel();
+    }
+    
+    @Inject(method = "setPositionAndRotation", at = @At("HEAD"))
+    private void onSetPositionAndRotation(double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
+        if (this instanceof IMixinEntityPlayer) {
+            ((IMixinEntityPlayer) this).getPlayerDataSamples().setPositionAndRotation(x, y, z, yaw, pitch);
+        }
+    }
+    
+    @Inject(method = "setRotationYawHead", at = @At("HEAD"))
+    private void onSetRotationYawHead(float yawHead, CallbackInfo ci) {
+        if (this instanceof IMixinEntityPlayer) {
+            ((IMixinEntityPlayer) this).getPlayerDataSamples().setRotationYawHead(yawHead);
+        }
     }
 }
 

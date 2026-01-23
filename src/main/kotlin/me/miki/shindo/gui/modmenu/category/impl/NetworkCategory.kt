@@ -725,13 +725,13 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
             }
             val key = setting.getNameKey()
             if (key != null) {
-                val keyLower = key.toLowerCase()
+                val keyLower = key.lowercase()
                 var hide = false
                 for (hidden in hiddenKeys) {
                     if (hidden == null) {
                         continue
                     }
-                    val hiddenLower = hidden.toLowerCase()
+                    val hiddenLower = hidden.lowercase()
                     if (keyLower == hiddenLower || keyLower.endsWith(":$hiddenLower")) {
                         hide = true
                         break
@@ -745,11 +745,8 @@ class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWO
                 val categoryKey = setting.getNameKey()
                 var hideCategory = false
                 for (hc in hiddenCategories) {
-                    if (categoryKey == null || hc == null) {
-                        continue
-                    }
-                    val catLower = categoryKey.toLowerCase()
-                    val hcLower = hc.toLowerCase()
+                    val catLower = categoryKey.lowercase()
+                    val hcLower = hc.lowercase()
                     if (catLower == hcLower || catLower.endsWith(":$hcLower")) {
                         hideCategory = true
                         break

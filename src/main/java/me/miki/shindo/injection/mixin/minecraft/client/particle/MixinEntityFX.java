@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.particle;
 
 import me.miki.shindo.injection.mixin.interfaces.client.particle.IMixinEntityFX;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.client.particle.EntityFX;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,7 +25,8 @@ public class MixinEntityFX implements IMixinEntityFX {
 
     @Redirect(method = "renderParticle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/EntityFX;getBrightnessForRender(F)I"))
     private int staticParticleColor(EntityFX entityFX, float partialTicks) {
-        return PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getStaticParticleColorSetting().isToggled() ? 15728880 : entityFX.getBrightnessForRender(partialTicks);
+        // PatcherAddon removed - using default brightness
+        return entityFX.getBrightnessForRender(partialTicks);
     }
 }
 

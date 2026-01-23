@@ -47,7 +47,7 @@ class PacketProcessor(
         }
         
         if (enableLogging) {
-            ShindoLogger.debug("Processing packet: ${packet.javaClass.simpleName} as $packetType")
+            me.miki.shindo.logger.ShindoLogger.info("Processing packet: ${packet.javaClass.simpleName} as $packetType")
         }
         
         return when (packetType) {
@@ -102,7 +102,8 @@ class PacketProcessor(
         startTime: Long
     ): CompletableFuture<Void> {
         // Processa em paralelo no pool de rede
-        val future = TaskExecutor.runAsync(
+        val future = CompletableFuture<Void>()
+        TaskExecutor.runAsync(
             ThreadPoolType.NETWORK,
             TaskPriority.NORMAL
         ) {
@@ -111,12 +112,13 @@ class PacketProcessor(
                 val duration = System.nanoTime() - startTime
                 metricsBuilder?.incrementParallel()
                 metricsBuilder?.addParallelTime(duration)
+                future.complete(null)
             } catch (e: Exception) {
                 metricsBuilder?.incrementParallelError()
                 if (enableLogging) {
-                    ShindoLogger.error("Error processing packet in parallel: ${packet.javaClass.simpleName}", e)
+                    me.miki.shindo.logger.ShindoLogger.error("Error processing packet in parallel: ${packet.javaClass.simpleName}", e)
                 }
-                throw RuntimeException("Error processing packet in parallel", e)
+                future.completeExceptionally(e)
             }
         }
         

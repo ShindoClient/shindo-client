@@ -2,7 +2,7 @@ package me.miki.shindo.utils
 
 object OSUtils {
 
-    private val osName = System.getProperty("os.name").toLowerCase()
+    private val osName = System.getProperty("os.name").lowercase()
 
     @JvmField
     val windows: Boolean = osName.contains("windows")

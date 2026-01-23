@@ -35,7 +35,3 @@ gradlew setupDecompWorkspace
 gradlew genIntellijRuns
 gradlew build
 ```
-
-> **Build notes**
-> - The project uses the bundled `gradlew` (Gradle 9.2.1) with the `legacy-looming` plugin (1.14-SNAPSHOT) over Minecraft 1.8.9, so it behaves as a tweaker/LaunchWrapper client without Fabric runtime libs.
-> - Kotlin sources target JVM 1.8; keep any new compilation or lint tasks consistent with that target and the `ShindoTweaker` bootstrap.

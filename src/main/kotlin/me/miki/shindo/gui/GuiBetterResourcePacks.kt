@@ -102,7 +102,7 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
                     for (entry in selected) {
                         mc.gameSettings.resourcePacks.add(entry.resourcePackName)
                     }
-                    RPOAddon.getInstance().get().options.updateEnabledPacks()
+                    RPOAddon.instance.get().options.updateEnabledPacks()
                     mc.gameSettings.saveOptions()
                     mc.refreshResources()
                 }

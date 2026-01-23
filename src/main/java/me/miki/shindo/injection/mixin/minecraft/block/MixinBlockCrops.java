@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.block;
 
 import me.miki.shindo.hooks.CropUtilities;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.utils.ServerUtils;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.client.Minecraft;
@@ -20,16 +19,12 @@ public class MixinBlockCrops extends MixinBlock {
     //#if MC==10809
     @Override
     public void getSelectedBoundingBox(World worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled() && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
-            CropUtilities.updateCropsMaxY(worldIn, pos, worldIn.getBlockState(pos).getBlock());
-        }
+        // PatcherAddon removed - future hitboxes disabled
     }
 
     @Override
     public void collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end, CallbackInfoReturnable<MovingObjectPosition> cir) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getFutureHitboxesSetting().isToggled() && (ServerUtils.isHypixel() || Minecraft.getMinecraft().isIntegratedServerRunning())) {
-            CropUtilities.updateCropsMaxY(worldIn, pos, worldIn.getBlockState(pos).getBlock());
-        }
+        // PatcherAddon removed - future hitboxes disabled
     }
     //#endif
 }

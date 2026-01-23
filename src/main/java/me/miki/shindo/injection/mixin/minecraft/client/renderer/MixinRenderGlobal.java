@@ -2,7 +2,6 @@ package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderGlobal;
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.chunk.IMixinVisGraph;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.utils.EnumFacings;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -37,9 +35,8 @@ public abstract class MixinRenderGlobal implements IMixinRenderGlobal {
 
     @ModifyVariable(method = "getVisibleFacings", at = @At("STORE"), ordinal = 0)
     private VisGraph onVisGraphCreated(VisGraph visgraph) {
-        PatcherAddon addon = PatcherAddon.getInstance();
-        boolean enableFix = addon != null && addon.isToggled() && addon.getCullingFixSetting().isToggled();
-        ((IMixinVisGraph) visgraph).setLimitScan(enableFix);
+        // PatcherAddon removed - culling fix disabled
+        ((IMixinVisGraph) visgraph).setLimitScan(false);
         return visgraph;
     }
 
@@ -78,8 +75,8 @@ public abstract class MixinRenderGlobal implements IMixinRenderGlobal {
 
     @Unique
     private boolean patcher$customSkyFixEnabled() {
-        PatcherAddon addon = PatcherAddon.getInstance();
-        return addon != null && addon.isToggled() && addon.getCustomSkyFixSetting().isToggled();
+        // PatcherAddon removed - custom sky fix disabled
+        return false;
     }
 
     @Unique
@@ -103,8 +100,9 @@ public abstract class MixinRenderGlobal implements IMixinRenderGlobal {
         return renderDistanceChunks;
     }
 
-    @Accessor("vboEnabled")
-    protected abstract boolean patcher$isVboEnabled();
+    protected boolean patcher$isVboEnabled() {
+        return ((RenderGlobal) (Object) this).vboEnabled;
+    }
 
     @Unique
     private static Field patcher$renderDistanceField;

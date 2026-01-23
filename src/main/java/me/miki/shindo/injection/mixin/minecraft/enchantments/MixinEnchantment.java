@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.enchantments;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.utils.RomanNumeralUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.StatCollector;
@@ -17,11 +16,6 @@ public abstract class MixinEnchantment {
 
     @Inject(method = "getTranslatedName", at = @At("HEAD"), cancellable = true)
     private void patcher$modifyRomanNumerals(int level, CallbackInfoReturnable<String> cir) {
-        String translation = StatCollector.translateToLocal(this.getName()) + " ";
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getNumericalEnchantsSetting().isToggled()) {
-            cir.setReturnValue(translation + level);
-        } else if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getBetterRomanNumeralsSetting().isToggled()) {
-            cir.setReturnValue(translation + RomanNumeralUtil.toRoman(level));
-        }
+        // PatcherAddon removed - using default enchantment names
     }
 }

@@ -57,7 +57,7 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
     private var y = 0
     private var menuWidth = 0
     private var menuHeight = 0
-    private lateinit var currentCategory: Category
+    private var currentCategory: Category
     private var toEditHUD = false
     private var canClose = false
 
@@ -68,9 +68,9 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         categories.add(CosmeticsCategory(this))
         categories.add(SpotifyCategory(this))
         categories.add(ProfileCategory(this))
-        categories.add(ChatCategory(this))
+        //categories.add(ChatCategory(this))
         categories.add(ScreenshotCategory(this))
-        categories.add(NetworkCategory(this))
+        //categories.add(NetworkCategory(this))
         categories.add(SettingsCategory(this))
 
         currentCategory = getCategoryByClass(HomeCategory::class.java)
@@ -115,7 +115,7 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager ?: return
 
-        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
+        if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
             BlurUtils.drawBlurScreen(min(introAnimation.getValue(), 1.0).toFloat() * 20f + 1f)
         }
         screenAnimation.wrap(Runnable {
@@ -150,7 +150,7 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         }
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
 
-        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
+        if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
             Blur.drawBlur {
                 nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, palette.getBackgroundColor(ColorType.DARK))
             }

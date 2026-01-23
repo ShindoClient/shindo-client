@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.entity;
 
 import com.mojang.authlib.GameProfile;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.event.impl.EventMotionUpdate;
 import me.miki.shindo.management.event.impl.EventSendChat;
 import me.miki.shindo.management.event.impl.EventUpdate;
@@ -51,11 +50,7 @@ public class MixinEntityPlayerSP extends AbstractClientPlayer {
 
     @Override
     public void removePotionEffectClient(int potionId) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getNauseaEffectSetting().isToggled() && potionId == Potion.confusion.id) {
-            this.timeInPortal = 0.0f;
-            this.prevTimeInPortal = 0.0f;
-        }
-
+        // PatcherAddon removed - nausea effect fix disabled
         super.removePotionEffectClient(potionId);
     }
     //#endif

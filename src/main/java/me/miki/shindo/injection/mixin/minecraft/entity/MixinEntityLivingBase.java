@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.entity;
 
 import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.event.impl.EventLivingUpdate;
 import me.miki.shindo.management.mods.impl.SlowSwingMod;
 import me.miki.shindo.management.settings.impl.NumberSetting;
@@ -70,9 +69,7 @@ public abstract class MixinEntityLivingBase extends Entity implements IMixinEnti
     @SuppressWarnings({"ConstantConditions"})
     @Inject(method = "updatePotionEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnParticle(Lnet/minecraft/util/EnumParticleTypes;DDDDDD[I)V"), cancellable = true)
     private void patcher$cleanView(CallbackInfo ci) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getCleanViewSetting().isToggled() && (Object) this == Minecraft.getMinecraft().thePlayer) {
-            ci.cancel();
-        }
+        // PatcherAddon removed - clean view disabled
     }
 }
 

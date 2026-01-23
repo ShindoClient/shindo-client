@@ -5,12 +5,15 @@ import net.minecraft.util.ResourceLocation;
 
 public enum Language {
 
-    ENGLISH("en-us", "English (United States)", new ResourceLocation("shindo/flag/us.png")),
-    GERMAN("de-de", "Deutsch", new ResourceLocation("shindo/flag/de.png")),
-    PORTUGUESE("pt-br", "Português (Brasileiro)", new ResourceLocation("shindo/flag/br.png")),
-    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", new ResourceLocation("shindo/flag/pt.png")),
-    SPANISH("es-es", "Español", new ResourceLocation("shindo/flag/es.png")),
-    JAPANESE("ja-jp", "日本語", new ResourceLocation("shindo/flag/jp.png"));
+    ENGLISH             ( "en-us", "English (United States)" , new ResourceLocation("shindo/flag/us.png") ),
+    ITALIAN             ( "it-it", "Italiano"                , new ResourceLocation("shindo/flag/it.png") ),
+    SPANISH             ( "es-es", "Español"                 , new ResourceLocation("shindo/flag/es.png") ),
+    GERMAN              ( "de-de", "Deutsch"                 , new ResourceLocation("shindo/flag/de.png") ),
+    FRENCH              ( "fr-fr", "Français"                , new ResourceLocation("shindo/flag/fr.png") ),
+    DANISH              ( "da-da", "Dansk"                   , new ResourceLocation("shindo/flag/da.png") ),
+    JAPANESE            ( "ja-jp", "日本語"                   , new ResourceLocation("shindo/flag/jp.png") ),
+    PORTUGUESE          ( "pt-br", "Português (Brasileiro)"  , new ResourceLocation("shindo/flag/br.png") ),
+    PORTUGUESE_PORTUGAL ( "pt-pt", "Português (Portugal)"    , new ResourceLocation("shindo/flag/pt.png") );
 
 
     private final SimpleAnimation animation = new SimpleAnimation();

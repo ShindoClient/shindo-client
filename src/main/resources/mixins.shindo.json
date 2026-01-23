@@ -3,8 +3,6 @@
   "refmap": "mixins.shindo.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "accessors.block.BlockAccessor",
-    "accessors.client.gui.GuiNewChatAccessor",
     "minecraft.audio.MixinSoundManager",
     "minecraft.block.MixinBlock",
     "minecraft.block.MixinBlockCactus",
@@ -31,9 +29,7 @@
     "minecraft.client.entity.MixinEntityPlayerSP",
     "minecraft.client.gui.MixinChatLine",
     "minecraft.client.gui.MixinFontRenderer",
-    "minecraft.client.gui.MixinGuiChat",
     "minecraft.client.gui.MixinGuiChest",
-    "minecraft.client.gui.MixinGuiContainer",
     "minecraft.client.gui.MixinGuiDownloadTerrain",
     "minecraft.client.gui.MixinGuiGameOver",
     "minecraft.client.gui.MixinGuiIngame",
@@ -41,20 +37,10 @@
     "minecraft.client.gui.MixinGuiLanguage",
     "minecraft.client.gui.MixinGuiMultiplayer",
     "minecraft.client.gui.MixinGuiNewChat",
-    "minecraft.client.gui.MixinGuiOptions",
     "minecraft.client.gui.MixinGuiPlayerTabOverlay",
     "minecraft.client.gui.MixinGuiScreen",
     "minecraft.client.gui.MixinGuiScreenBook",
-    "minecraft.client.gui.MixinGuiButton",
-    "minecraft.client.gui.MixinGuiTextField",
-    "minecraft.client.gui.MixinGuiLabel",
-    "minecraft.client.gui.MixinGuiListExtended",
-    "minecraft.client.gui.MixinGuiResourcePackAvailable",
-    "minecraft.client.gui.MixinGuiResourcePackSelected",
-    "minecraft.client.gui.MixinServerSelectionList",
     "minecraft.client.gui.MixinGuiScreenResourcePacks",
-    "minecraft.client.gui.MixinGuiVideoSettings",
-    "minecraft.client.gui.MixinGuiControls",
     "minecraft.client.model.MixinModelBase",
     "minecraft.client.model.MixinModelBox",
     "minecraft.client.model.MixinModelPlayer",
@@ -141,6 +127,6 @@
     "minecraft.world.MixinWorldClient",
     "minecraft.world.MixinWorldInfo"
   ]
-  }
+}
 
 

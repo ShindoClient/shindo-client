@@ -11,7 +11,7 @@ import java.awt.Color
  * Container scrollável vertical com estilo padrão do client.
  * Usado em várias scenes do mod menu.
  */
-class CompScrollableContainer(
+open class CompScrollableContainer(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,

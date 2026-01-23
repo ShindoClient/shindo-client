@@ -1,8 +1,6 @@
 package me.miki.shindo.gui
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.addons.resourcify.core.ResourcifyAddon
-import me.miki.shindo.management.addons.resourcify.model.ResourcifyResourceType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
@@ -38,9 +36,7 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
     private var centre = 0
     private var scaledWidth = 0
     private var scaledHeight = 0
-    private var resourcifyButtonX = 0f
-    private var resourcifyButtonY = 0f
-    private var resourcifyButtonSize = 0f
+
 
     override fun initGui() {
         val sr = ScaledResolution(mc)
@@ -72,12 +68,6 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
         nvg!!.drawRect(-5f, -5f, scaledWidth + 10f, scaledHeight + 10f, Color(0, 0, 0, 140))
         nvg.drawText(LegacyIcon.ARROW_LEFT, x.toFloat(), y + 5f, Color(255, 255, 255, 140), 11f, Fonts.LEGACYICON)
         nvg.drawCenteredText(I18n.format("menu.game"), centre.toFloat(), y + 5f, Color(255, 255, 255, 200), 13f, Fonts.SEMIBOLD)
-
-        resourcifyButtonSize = 18f
-        resourcifyButtonX = x + width - resourcifyButtonSize - 6f
-        resourcifyButtonY = y + 4f
-        nvg.drawRoundedRect(resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize, resourcifyButtonSize, 6f, Color(255, 255, 255, 80))
-        nvg.drawCenteredText(LegacyIcon.DOWNLOAD, resourcifyButtonX + resourcifyButtonSize / 2f, resourcifyButtonY + resourcifyButtonSize / 2f - 6f, Color.WHITE, 11f, Fonts.LEGACYICON)
 
         val standardPadding = 29.5f
         var offset = 29.5f
@@ -114,19 +104,6 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton != 0) {
-            return
-        }
-        if (MouseUtils.isInside(mouseX, mouseY, resourcifyButtonX, resourcifyButtonY, resourcifyButtonSize, resourcifyButtonSize)) {
-            val addon = ResourcifyAddon.getInstance()
-            if (addon != null && addon.isToggled()) {
-                mc.displayGuiScreen(GuiResourcify(this, ResourcifyResourceType.RESOURCE_PACK))
-            } else {
-                Shindo.getInstance().notificationManager.post(
-                    "Resourcify",
-                    "Enable the Resourcify addon first.",
-                    NotificationType.WARNING
-                )
-            }
             return
         }
         val standardPadding = 29.5f

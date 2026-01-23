@@ -9,7 +9,6 @@ import me.miki.shindo.gui.GuiSplashScreen;
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft;
 import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
@@ -42,7 +41,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -380,6 +378,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         if (guiScreenIn instanceof GuiMainMenu) {
             displayGuiScreen(Shindo.getInstance().getShindoAPI().getMainMenu());
         }
+
     }
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"), cancellable = true)
@@ -485,10 +484,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;loadEntityShader(Lnet/minecraft/entity/Entity;)V"))
     private void keepShadersOnPerspectiveChange(EntityRenderer entityRenderer, Entity entityIn) {
-        PatcherAddon addon = PatcherAddon.getInstance();
-        if (addon == null || !addon.isToggled() || !addon.getKeepShadersOnPerspectiveChangeSetting().isToggled()) {
-            entityRenderer.loadEntityShader(entityIn);
-        }
+        // PatcherAddon removed - always load shader
+        entityRenderer.loadEntityShader(entityIn);
     }
 
     @Override
@@ -523,8 +520,9 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
 
     @Override
-    @Accessor
-    public abstract boolean isRunning();
+    public boolean isRunning() {
+        return ((Minecraft) (Object) this).running;
+    }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/resources/SkinManager;<init>(Lnet/minecraft/client/renderer/texture/TextureManager;Ljava/io/File;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)V"))

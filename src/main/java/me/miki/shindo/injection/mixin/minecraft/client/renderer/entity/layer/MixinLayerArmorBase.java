@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer.entity.layer;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.mods.impl.AnimationsMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
@@ -24,8 +23,7 @@ public class MixinLayerArmorBase {
 
     @Inject(method = "renderGlint", at = @At("HEAD"), cancellable = true)
     private void disableEnchantGlint(CallbackInfo ci) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled())
-            ci.cancel();
+        // PatcherAddon removed - enchant glint always enabled
     }
 }
 

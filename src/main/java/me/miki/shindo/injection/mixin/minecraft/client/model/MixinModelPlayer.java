@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.model;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,11 +18,7 @@ public class MixinModelPlayer extends ModelBiped {
 
     @ModifyConstant(method = "<init>", constant = @Constant(floatValue = 2.5F))
     private float fixAlexArmHeight(float original) {
-        PatcherAddon addon = PatcherAddon.getInstance();
-        if (addon != null) {
-            if (addon.isToggled() && addon.getFixedAlexArmsSetting().isToggled()) return 2.0F;
-        }
-
+        // PatcherAddon removed - using original value
         return original;
     }
 

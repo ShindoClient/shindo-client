@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer.entity;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import me.miki.shindo.management.mods.Mod;
 import me.miki.shindo.management.mods.impl.GlintColorMod;
 import me.miki.shindo.management.mods.impl.ShinyPotsMod;
@@ -38,10 +37,7 @@ public abstract class MixinRenderItem {
      */
     @Overwrite
     private void renderEffect(IBakedModel model) {
-
-
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getDisableEnchantGlintSetting().isToggled())
-            return;
+        // PatcherAddon removed - enchant glint always enabled
         int color = -8372020;
 
         Mod glintMod = GlintColorMod.instance;

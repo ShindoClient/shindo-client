@@ -102,15 +102,6 @@ class InternalSettingsMod :
     @Property(type = PropertyType.COMBO, name = "Module Layout")
     private val moduleLayout = ModuleLayout.SINGLE_COLUMN
 
-    @Property(type = PropertyType.COMBO, name = "Addon Layout")
-    var addonLayout: AddonLayout = AddonLayout.STANDARD
-        set(layout) {
-            val target = if (layout == null) AddonLayout.STANDARD else layout
-            val combo = this.addonLayoutSetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions().get(target.ordinal))
-            }
-        }
 
     @Property(type = PropertyType.COMBO, name = "Screenshot Display")
     var screenshotDisplayMode: ScreenshotDisplayMode = ScreenshotDisplayMode.FILMSTRIP
@@ -120,6 +111,7 @@ class InternalSettingsMod :
             if (combo != null && target.ordinal < combo.getOptions().size) {
                 combo.setOption(combo.getOptions().get(target.ordinal))
             }
+            field = mode
         }
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
@@ -130,6 +122,7 @@ class InternalSettingsMod :
             if (combo != null && target.ordinal < combo.getOptions().size) {
                 combo.setOption(combo.getOptions().get(target.ordinal))
             }
+            field = corner
         }
 
     private var prevX = 0
@@ -144,19 +137,19 @@ class InternalSettingsMod :
         instance = this
     }
 
-    public override fun setup() {
+    override fun setup() {
         this.setHide(true)
         this.setToggled(true)
     }
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == modMenuKeybindSetting) {
+        if (event.keyCode == modMenuKeybindSetting) {
             mc.displayGuiScreen(Shindo.getInstance().shindoAPI.modMenu)
         }
 
         // Uncomment to enable the ability to change the theme of the mod menu using the down arrow key
-        if (event.getKeyCode() == Keyboard.KEY_DOWN) {
+        if (event.keyCode == Keyboard.KEY_DOWN) {
             val combo = this.modThemeSetting
             if (combo != null) {
                 val max = combo.getOptions().size
@@ -188,8 +181,8 @@ class InternalSettingsMod :
         if (!borderlessFullscreenSetting) {
             return
         }
-        event.setApplyState(false)
-        setBorderlessFullscreen(event.getState())
+        event.isApplyState = false
+        setBorderlessFullscreen(event.state)
     }
 
     fun getModuleLayout(): ModuleLayout {
@@ -201,9 +194,6 @@ class InternalSettingsMod :
 
     val moduleLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "moduleLayout")
-
-    val addonLayoutSetting: ComboSetting?
-        get() = getComboSetting(this, "addonLayout")
 
     val screenshotDisplaySetting: ComboSetting?
         get() = getComboSetting(this, "screenshotDisplayMode")
@@ -232,9 +222,6 @@ class InternalSettingsMod :
         get() {
             if (Objects.requireNonNull<ModuleLayout?>(moduleLayout) == ModuleLayout.TWO_COLUMNS) {
                 return 2
-            }
-            if (moduleLayout == ModuleLayout.ICON_CARDS) {
-                return 3
             }
             return 1
         }
@@ -302,7 +289,7 @@ class InternalSettingsMod :
         lastBorderlessState = state
         borderlessInitialized = true
 
-        if (!mc.isFullScreen()) {
+        if (!mc.isFullScreen) {
             return
         }
 
@@ -328,14 +315,14 @@ class InternalSettingsMod :
                 prevHeight = mc.displayHeight
                 Display.setDisplayMode(
                     DisplayMode(
-                        Display.getDesktopDisplayMode().getWidth(),
-                        Display.getDesktopDisplayMode().getHeight()
+                        Display.getDesktopDisplayMode().width,
+                        Display.getDesktopDisplayMode().height
                     )
                 )
                 Display.setLocation(0, 0)
                 (mc as IMixinMinecraft).resizeWindow(
-                    Display.getDesktopDisplayMode().getWidth(),
-                    Display.getDesktopDisplayMode().getHeight()
+                    Display.getDesktopDisplayMode().width,
+                    Display.getDesktopDisplayMode().height
                 )
             } else {
                 Display.setDisplayMode(DisplayMode(prevWidth, prevHeight))
@@ -372,9 +359,6 @@ class InternalSettingsMod :
             return translate
         }
 
-        override fun getNameKey(): String = super.getNameKey()
-
-        override fun getDisplayName(): String = super.getDisplayName()
     }
 
     enum class SettingsLayout(displayName: String) : PropertyEnum {
@@ -392,21 +376,7 @@ class InternalSettingsMod :
 
     enum class ModuleLayout(displayName: String) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
-        TWO_COLUMNS("Two Columns"),
-        ICON_CARDS("Icon Cards");
-
-        private val displayName: String
-
-        init {
-            this.displayName = displayName
-        }
-
-        override fun getDisplayName(): String = displayName
-    }
-
-    enum class AddonLayout(displayName: String) : PropertyEnum {
-        STANDARD("Standard"),
-        ICON_CARDS("Icon Cards");
+        TWO_COLUMNS("Two Columns");
 
         private val displayName: String
 

@@ -263,6 +263,5 @@ object LegacyIcon {
 
     // ADDONS
     const val ADDON_RPO: String = "\uE076"
-    const val ADDON_PATCHER: String = "\uE077"
 }
 

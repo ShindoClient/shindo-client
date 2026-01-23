@@ -1,5 +1,6 @@
 package me.miki.shindo.ui.frame
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.ui.frame.template.FrameTemplate
 import net.minecraft.client.gui.GuiScreen
 import java.util.concurrent.CopyOnWriteArrayList
@@ -47,21 +48,28 @@ object FrameManager {
     fun closeAllFrames() {
         activeFrames.clear()
     }
-    
+
     /**
      * Renderiza todos os frames ativos.
      */
+    @JvmStatic
     fun drawFrames(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        activeFrames.forEach { frame ->
-            if (frame.isVisible()) {
-                frame.draw(mouseX, mouseY, partialTicks)
+        if (activeFrames.isEmpty()) return
+
+        val nvg = Shindo.getInstance().nanoVGManager!!
+        nvg.setupAndDraw {
+            activeFrames.forEach { frame ->
+                if (frame.isVisible()) {
+                    frame.draw(mouseX, mouseY, partialTicks)
+                }
             }
         }
     }
-    
+
     /**
      * Processa cliques do mouse em todos os frames.
      */
+    @JvmStatic
     fun handleMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         // Processa do último para o primeiro (frames no topo primeiro)
         activeFrames.reversed().forEach { frame ->
@@ -70,10 +78,11 @@ object FrameManager {
             }
         }
     }
-    
+
     /**
      * Processa soltura do mouse em todos os frames.
      */
+    @JvmStatic
     fun handleMouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         activeFrames.reversed().forEach { frame ->
             if (frame.isVisible()) {
@@ -81,10 +90,11 @@ object FrameManager {
             }
         }
     }
-    
+
     /**
      * Processa teclas digitadas em todos os frames.
      */
+    @JvmStatic
     fun handleKeyTyped(typedChar: Char, keyCode: Int) {
         // Processa apenas o frame no topo
         activeFrames.lastOrNull()?.let { frame ->
@@ -114,10 +124,11 @@ object FrameManager {
      * Retorna o frame no topo (último aberto).
      */
     fun getTopFrame(): Frame? = activeFrames.lastOrNull()
-    
+
     /**
      * Verifica se há frames abertos.
      */
+    @JvmStatic
     fun hasActiveFrames(): Boolean = activeFrames.isNotEmpty()
     
     /**

@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.block;
 
 import com.google.common.collect.Sets;
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -29,9 +28,7 @@ public class MixinBlockRendererDispatcher {
 
     @Inject(method = "renderBlock", at = @At("HEAD"), cancellable = true)
     private void patcher$cancelFoliage(IBlockState state, BlockPos pos, IBlockAccess blockAccess, WorldRenderer worldRendererIn, CallbackInfoReturnable<Boolean> cir) {
-        if (PatcherAddon.getInstance().isToggled() && PatcherAddon.getInstance().getRemoveGroundFoliageSetting().isToggled() && patcher$foliageBlocks.contains(state.getBlock())) {
-            cir.setReturnValue(false);
-        }
+        // PatcherAddon removed - ground foliage always rendered
     }
 }
 

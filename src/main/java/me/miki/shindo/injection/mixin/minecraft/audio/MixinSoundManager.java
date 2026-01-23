@@ -1,11 +1,8 @@
 package me.miki.shindo.injection.mixin.minecraft.audio;
 
 import me.miki.shindo.management.mods.impl.SoundSubtitlesMod;
-import me.miki.shindo.utils.concurrent.TaskExecutor;
-import me.miki.shindo.utils.concurrent.ThreadPoolType;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundManager;
-import net.minecraft.client.resources.IResourceManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,8 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import paulscode.sound.SoundSystem;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Otimiza o carregamento de sons usando multithreading.

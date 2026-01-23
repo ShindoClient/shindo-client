@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
-import me.miki.shindo.management.addons.patcher.PatcherAddon;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,10 +17,7 @@ public abstract class MixinGuiScreenBook extends GuiScreen {
 
     @Inject(method = "drawScreen", at = @At("HEAD"))
     private void shindo$drawBookBackground(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        PatcherAddon addon = PatcherAddon.getInstance();
-        if (addon != null && addon.isToggled() && addon.getBookBackgroundSetting().isToggled()) {
-            this.drawWorldBackground(1);
-        }
+        // PatcherAddon removed - book background disabled
     }
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreenBook;handleComponentHover(Lnet/minecraft/util/IChatComponent;II)V", shift = At.Shift.AFTER), cancellable = true)

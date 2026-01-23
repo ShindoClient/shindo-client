@@ -1,0 +1,8 @@
+accessWidener v1 named
+
+# Expor campos/métodos usados anteriormente via mixin accessors
+accessible field net/minecraft/block/Block maxY D
+accessible method net/minecraft/block/Block setBlockBounds (FFFFFF)V
+
+accessible field net/minecraft/client/Minecraft running Z
+accessible field net/minecraft/client/renderer/RenderGlobal vboEnabled Z

@@ -1,10 +1,12 @@
 package me.miki.shindo.injection.mixin.minecraft.world;
 
+import me.miki.shindo.management.event.impl.EventEntityJoinWorld;
 import me.miki.shindo.management.event.impl.EventLeaveServer;
 import me.miki.shindo.management.event.impl.EventPlaySound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldClient.class)
 public class MixinWorldClient {
@@ -44,6 +47,13 @@ public class MixinWorldClient {
             } else {
                 mc.getSoundHandler().playSound(positionedsoundrecord);
             }
+        }
+    }
+
+    @Inject(method = "addEntityToWorld", at = @At("RETURN"))
+    public void onAddEntityToWorld(int entityId, Entity entityToSpawn, CallbackInfo ci) {
+        if (entityToSpawn != null) {
+            new EventEntityJoinWorld(entityToSpawn).call();
         }
     }
 }
