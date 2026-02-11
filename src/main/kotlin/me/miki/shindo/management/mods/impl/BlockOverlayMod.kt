@@ -12,7 +12,7 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.setColor
 import me.miki.shindo.utils.Render3DUtils.drawFillBox
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderGlobal
@@ -25,7 +25,7 @@ import net.minecraft.world.WorldSettings
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class BlockOverlayMod : Mod(
+open class BlockOverlayMod : Mod(
     TranslateText.BLOCK_OVERLAY,
     TranslateText.BLOCK_OVERLAY_DESCRIPTION,
     ModCategory.RENDER,
@@ -56,7 +56,7 @@ class BlockOverlayMod : Mod(
     @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_ALPHA, min = 0.0, max = 1.0, current = 0.15)
     private val outlineAlphaSetting = 0.15
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_WIDTH, min = 1.0, max = 1.00, current = 4.0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.OUTLINE_WIDTH, min = 1.0, max = 10.0, current = 4.0)
     private val outlineWidthSetting = 4.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.DEPTH)
@@ -71,15 +71,15 @@ class BlockOverlayMod : Mod(
     @Property(type = PropertyType.COLOR, translate = TranslateText.OUTLINE_COLOR)
     private val outlineColorSetting: Color = Color.RED
 
-    protected var currentBB: AxisAlignedBB? = null
-    protected var slideBB: AxisAlignedBB? = null
+    private var currentBB: AxisAlignedBB? = null
+    private var slideBB: AxisAlignedBB? = null
     protected var timer: TimerUtils = TimerUtils()
 
     @EventTarget
     fun onBlockHighlightRender(event: EventBlockHighlightRender) {
-        val currentColor = getInstance().colorManager.currentColor
+        val currentColor = getInstance().colorManager.getCurrentColor()
 
-        event.isCancelled = true
+        event.setCancelled(true)
 
         if (!canRender(event.objectMouseOver)) {
             return
@@ -140,7 +140,7 @@ class BlockOverlayMod : Mod(
 
                     if (fillSetting) {
                         setColor(
-                            if (customColorSetting) fillColorSetting.rgb else currentColor.interpolateColor
+                            if (customColorSetting) fillColorSetting.rgb else currentColor.getInterpolateColor()
                                 .rgb, fillAlphaSetting.toFloat()
                         )
                         drawFillBox(interpolateAxis(renderBB))
@@ -148,7 +148,7 @@ class BlockOverlayMod : Mod(
 
                     if (outlineSetting) {
                         setColor(
-                            if (customColorSetting) outlineColorSetting.rgb else currentColor.interpolateColor
+                            if (customColorSetting) outlineColorSetting.rgb else currentColor.getInterpolateColor()
                                 .rgb, outlineAlphaSetting.toFloat()
                         )
                         GL11.glLineWidth(outlineWidthSetting.toFloat())
@@ -161,7 +161,7 @@ class BlockOverlayMod : Mod(
 
                 if (fillSetting) {
                     setColor(
-                        if (customColorSetting) fillColorSetting.rgb else currentColor.interpolateColor
+                        if (customColorSetting) fillColorSetting.rgb else currentColor.getInterpolateColor()
                             .rgb, fillAlphaSetting.toFloat()
                     )
                     drawFillBox(selectedBox)
@@ -169,7 +169,7 @@ class BlockOverlayMod : Mod(
 
                 if (outlineSetting) {
                     setColor(
-                        if (customColorSetting) outlineColorSetting.rgb else currentColor.interpolateColor
+                        if (customColorSetting) outlineColorSetting.rgb else currentColor.getInterpolateColor()
                             .rgb, outlineAlphaSetting.toFloat()
                     )
                     GL11.glLineWidth(outlineWidthSetting.toFloat())
@@ -201,10 +201,10 @@ class BlockOverlayMod : Mod(
                 val selectedBlock = mc.objectMouseOver.blockPos
                 val block = mc.theWorld.getBlockState(selectedBlock).block
 
-                if (mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR) {
-                    result = block.hasTileEntity() && mc.theWorld.getTileEntity(selectedBlock) is IInventory
+                result = if (mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR) {
+                    block.hasTileEntity() && mc.theWorld.getTileEntity(selectedBlock) is IInventory
                 } else {
-                    result = itemstack != null && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block))
+                    itemstack != null && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block))
                 }
             }
         }
@@ -214,7 +214,7 @@ class BlockOverlayMod : Mod(
         return result
     }
 
-    fun interpolateAxis(bb: AxisAlignedBB): AxisAlignedBB {
+    private fun interpolateAxis(bb: AxisAlignedBB): AxisAlignedBB {
         return AxisAlignedBB(
             bb.minX - mc.renderManager.viewerPosX,
             bb.minY - mc.renderManager.viewerPosY,

@@ -17,7 +17,7 @@ import java.util.Map;
 public abstract class MixinLanguageManager {
 
     @Shadow
-    private Map<String, Language> languageMap = Maps.newHashMap();
+    private final Map<String, Language> languageMap = Maps.newHashMap();
 
 
     @Inject(method = "parseLanguageMetadata", at = @At("RETURN"))

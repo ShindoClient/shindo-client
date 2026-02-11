@@ -11,7 +11,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.Sound
+import me.miki.shindo.management.sound.Sound
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import java.io.File
@@ -46,7 +46,7 @@ class KillSoundsMod : Mod(
                         customSound.loadClip(soundFile)
                     } catch (e: Exception) {
                         ShindoLogger.error(
-                            "An error occurred while loading the custom sound file: " + soundFile.getAbsolutePath(),
+                            "An error occurred while loading the custom sound file: " + soundFile.absolutePath,
                             e
                         )
                     }
@@ -87,18 +87,19 @@ class KillSoundsMod : Mod(
         }
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         try {
             oofSound.loadClip(ResourceLocation("shindo/audio/oof.wav"))
         } catch (e: Exception) {
             ShindoLogger.error(
-                "An error occurred while loading the custom sound file: " + soundFile!!.getAbsolutePath(),
+                "An error occurred while loading the custom sound file: " + soundFile!!.absolutePath,
                 e
             )
         }
     }
 }
+
 
 
 

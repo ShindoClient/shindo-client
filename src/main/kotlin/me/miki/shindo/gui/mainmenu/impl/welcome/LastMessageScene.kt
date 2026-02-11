@@ -6,11 +6,12 @@ import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.gui.mainmenu.impl.MainScene
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.utils.Sound
+import me.miki.shindo.management.sound.Sound
+import me.miki.shindo.management.sound.Sounds
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.DecelerateAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.DecelerateAnimation
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
@@ -55,7 +56,7 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 else -> message
             }
             if (!soundPlayed) {
-                Sound.play("shindo/audio/success.wav", true)
+                Sound.play(Sounds.SHINDO_AUDIO_SUCCESS, true)
                 soundPlayed = true
             }
             nvg.setupAndDraw(Runnable {
@@ -86,3 +87,6 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 }
+
+
+

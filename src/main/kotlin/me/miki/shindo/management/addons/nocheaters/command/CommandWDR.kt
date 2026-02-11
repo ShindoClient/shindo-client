@@ -7,28 +7,13 @@ import me.miki.shindo.management.addons.nocheaters.warning.WarningMessages
 import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import net.minecraft.client.Minecraft
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.command.ICommand
 import net.minecraft.command.ICommandSender
-import net.minecraft.scoreboard.Team
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
 import java.util.*
 
-/**
- * Comando /wdr (WatchDog Report)
- * 
- * Funcionalidades:
- * - Reporta jogadores com cheats específicos
- * - Adiciona à lista de reportados
- * - Envia comando /wdr para o servidor
- * 
- * Extensível para:
- * - Validação de cheats
- * - Sugestões automáticas
- * - Integração com APIs
- */
 class CommandWDR : ICommand {
 
     override fun getCommandName(): String = "wdr"
@@ -38,11 +23,11 @@ class CommandWDR : ICommand {
     override fun getCommandAliases(): List<String> = listOf("watchdogreport")
 
     private val mc = Minecraft.getMinecraft()
-    
+
     private fun sendChatMessage(component: net.minecraft.util.IChatComponent) {
         mc.ingameGUI?.chatGUI?.addToSentMessages(component.toString())
     }
-    
+
     override fun processCommand(sender: ICommandSender, args: Array<String>) {
         if (args.isEmpty()) {
             sendChatMessage(ChatComponentText("${EnumChatFormatting.RED}Usage: ${getCommandUsage(sender)}"))
@@ -56,11 +41,9 @@ class CommandWDR : ICommand {
             args.drop(1).toList()
         }
 
-        // Envia comando para o servidor
         val command = "/wdr $playername ${cheats.joinToString(" ")}"
         mc.thePlayer?.sendChatMessage(command)
 
-        // Adiciona à lista local
         addPlayerToReportList(playername, cheats)
     }
 
@@ -72,15 +55,15 @@ class CommandWDR : ICommand {
         pos: BlockPos?
     ): List<String> {
         if (args.size == 1) {
-            // Sugere jogadores online
+
             val netHandler = mc.netHandler ?: return emptyList()
-            return netHandler.getPlayerInfoMap()
+            return netHandler.playerInfoMap
                 .map { it.gameProfile.name }
                 .filter { it.startsWith(args[0], ignoreCase = true) }
                 .sorted()
         }
         if (args.size > 1) {
-            // Sugere cheats comuns
+
             val validCheats = listOf(
                 "killaura", "ka", "aimbot", "reach", "autoclicker", "ac",
                 "fly", "speed", "nofall", "scaffold", "blink", "noslow",
@@ -94,16 +77,15 @@ class CommandWDR : ICommand {
     override fun isUsernameIndex(args: Array<String>, index: Int): Boolean = index == 0
 
     override fun compareTo(other: ICommand?): Int {
-        return getCommandName().compareTo(other?.getCommandName() ?: "")
+        return getCommandName().compareTo(other?.commandName ?: "")
     }
 
     private fun addPlayerToReportList(playername: String, cheats: List<String>) {
         val netHandler = mc.netHandler
 
-        // Tenta encontrar jogador online primeiro
         var foundOnline = false
         if (netHandler != null) {
-            for (netInfo in netHandler.getPlayerInfoMap()) {
+            for (netInfo in netHandler.playerInfoMap) {
                 if (netInfo.gameProfile.name.equals(playername, ignoreCase = true)) {
                     val uuid = netInfo.gameProfile.id
                     val team = netInfo.playerTeam
@@ -114,7 +96,6 @@ class CommandWDR : ICommand {
             }
         }
 
-        // Se não encontrou online, busca UUID via API (async)
         if (!foundOnline) {
             Multithreading.runAsync {
                 try {
@@ -128,7 +109,7 @@ class CommandWDR : ICommand {
                         )
                     }
                 } catch (e: me.miki.shindo.libs.hypixel.exceptions.MojangApiException) {
-                    // Se não encontrou na API, adiciona apenas por nickname
+
                     TaskExecutor.runOnMainThread {
                         addPlayerToReportList(null, playername, null, cheats)
                     }
@@ -152,7 +133,7 @@ class CommandWDR : ICommand {
         cheats: List<String>
     ) {
         val wdr = WdrData.getWDR(uuid, playername)
-        val isNew = wdr == null
+        wdr == null
 
         if (wdr == null) {
             WdrData.put(uuid, playername, WDR(cheats))
@@ -162,12 +143,13 @@ class CommandWDR : ICommand {
 
         NoCheatersAddon.instance.data.saveReportedPlayers()
 
-        // Mostra mensagem de confirmação
         val isNicked = uuid == null || uuid.version() != 4
-        val message = ChatComponentText("${WarningMessages.getTagNoCheaters()}${EnumChatFormatting.GREEN}You reported " +
-                (if (isNicked) "${EnumChatFormatting.GREEN}the${EnumChatFormatting.DARK_PURPLE} nicked player " else "") +
-                "${EnumChatFormatting.RED}${formattedName ?: playername}${EnumChatFormatting.GREEN} and will receive warnings about this player in-game" +
-                (if (isNicked) " for the next 24 hours." else "."))
+        val message = ChatComponentText(
+            "${WarningMessages.getTagNoCheaters()}${EnumChatFormatting.GREEN}You reported " +
+                    (if (isNicked) "${EnumChatFormatting.GREEN}the${EnumChatFormatting.DARK_PURPLE} nicked player " else "") +
+                    "${EnumChatFormatting.RED}${formattedName ?: playername}${EnumChatFormatting.GREEN} and will receive warnings about this player in-game" +
+                    (if (isNicked) " for the next 24 hours." else ".")
+        )
 
         sendChatMessage(message)
     }

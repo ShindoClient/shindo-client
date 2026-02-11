@@ -5,6 +5,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.util.Locale
 import java.util.zip.ZipInputStream
 
 object FileExtractor {
@@ -65,7 +66,7 @@ object FileExtractor {
 
     @JvmStatic
     fun extract(file: File, dest: File) {
-        val name = file.name.lowercase()
+        val name = file.name.toLowerCase(Locale.ROOT)
         try {
             when {
                 name.endsWith(".zip") -> unzip(file, dest)
@@ -77,3 +78,5 @@ object FileExtractor {
         }
     }
 }
+
+

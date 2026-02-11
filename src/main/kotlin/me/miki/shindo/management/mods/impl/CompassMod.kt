@@ -9,7 +9,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.buffer.ScreenStencil
+import me.miki.shindo.ui.animation.screen.ScreenStencil
 import net.minecraft.util.MathHelper
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color
@@ -23,7 +23,14 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 5.00, max = 45.00, step = 1.0, current = 180.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.WIDTH,
+        min = 50.0,
+        max = 450.0,
+        step = 1.0,
+        current = 180.0
+    )
     private val widthSetting = 180
 
     @EventTarget
@@ -235,7 +242,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         NanoVG.nvgFill(vg)
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         val s = "Direction: "
         var rotation = ((mc.thePlayer.rotationYawHead - 90) % 360).toDouble()
 
@@ -266,7 +273,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         return s + "Error"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.COMPASS else null
     }
 

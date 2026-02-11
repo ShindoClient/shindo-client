@@ -8,11 +8,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GuiDownloadTerrain.class)
 public class MixinGuiDownloadTerrain extends GuiScreen {
-
-    /**
-     * @author EldoDebug
-     * @reason Clear the Button List + Implement the EventLoadWorld
-     */
     @Overwrite
     public void initGui() {
         this.buttonList.clear();

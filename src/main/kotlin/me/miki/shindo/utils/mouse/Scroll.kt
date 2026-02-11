@@ -1,6 +1,6 @@
 package me.miki.shindo.utils.mouse
 
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import kotlin.math.max

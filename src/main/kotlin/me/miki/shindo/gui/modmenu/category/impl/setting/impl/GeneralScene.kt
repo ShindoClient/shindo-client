@@ -1,19 +1,21 @@
-﻿package me.miki.shindo.gui.modmenu.category.impl.setting.impl
+package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
-import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.ui.comp.inputs.CompKeybind
-import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.ui.comp.buttons.CompSettingButton
 import me.miki.shindo.ui.comp.buttons.CompToggleButton
-import me.miki.shindo.utils.mouse.MouseUtils
+import me.miki.shindo.ui.comp.inputs.CompKeybind
+import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 
 class GeneralScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.GENERAL, TranslateText.GENERAL_DESCRIPTION, me.miki.shindo.management.nanovg.font.LegacyIcon.LIST) {
+        SettingScene(
+                parent,
+                TranslateText.GENERAL,
+                TranslateText.GENERAL_DESCRIPTION,
+                me.miki.shindo.management.nanovg.font.LegacyIcon.LIST
+        ) {
 
     private lateinit var container: CompScrollableContainer
     private lateinit var modMenuKeybind: CompKeybind
@@ -26,66 +28,71 @@ class GeneralScene(parent: SettingsCategory) :
     override fun initGui() {
         val settingsMod = InternalSettingsMod.instance
         modMenuKeybind = CompKeybind(
-            75f,
-            settingsMod.getModMenuKeybindSetting()
-                ?: throw IllegalStateException("Mod menu keybind setting missing")
+                75f,
+                settingsMod.getModMenuKeybindSetting()
+                        ?: throw IllegalStateException("Mod menu keybind setting missing")
         )
         clickEffectSetting = CompToggleButton(
-            settingsMod.getClickEffectsSetting()
-                ?: throw IllegalStateException("Click effect setting missing")
+                settingsMod.getClickEffectsSetting()
+                        ?: throw IllegalStateException("Click effect setting missing")
         )
         soundsUISetting = CompToggleButton(
-            settingsMod.getSoundsUISetting()
-                ?: throw IllegalStateException("UI sounds setting missing")
+                settingsMod.getSoundsUISetting()
+                        ?: throw IllegalStateException("UI sounds setting missing")
         )
         mcFontSetting = CompToggleButton(
-            settingsMod.mCHUDFont
-                ?: throw IllegalStateException("MC font setting missing")
+                settingsMod.mCHUDFont
+                        ?: throw IllegalStateException("MC font setting missing")
         )
         borderlessSetting = CompToggleButton(
-            settingsMod.getBorderlessFullscreenSetting()
-                ?: throw IllegalStateException("Borderless fullscreen setting missing")
+                settingsMod.getBorderlessFullscreenSetting()
+                        ?: throw IllegalStateException("Borderless fullscreen setting missing")
         )
 
-        // Inicializa container scrollável
-        container = CompScrollableContainer()
+        container = CompScrollableContainer().setScrollbarGutter(14f)
 
         settingCards.clear()
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.OPEN_MOD_MENU.text }, { TranslateText.OPEN_MOD_MENU_DESCRIPTION.text })
-                .trailing(modMenuKeybind)
+                CompSettingButton(
+                        0f,
+                        { TranslateText.OPEN_MOD_MENU.getText() },
+                        { TranslateText.OPEN_MOD_MENU_DESCRIPTION.getText() })
+                        .trailing(modMenuKeybind)
         )
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.CLICK_EFFECT.text }, { TranslateText.CLICK_EFFECT_DESCRIPTION.text })
-                .trailing(clickEffectSetting)
-                .onClick {
-                    val setting = clickEffectSetting.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                }
+                CompSettingButton(0f, { TranslateText.CLICK_EFFECT.getText() }, { TranslateText.CLICK_EFFECT_DESCRIPTION.getText() })
+                        .trailing(clickEffectSetting)
+                        .onClickAction {
+                            val setting = clickEffectSetting.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                        }
         )
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.UI_SOUNDS.text }, { TranslateText.UI_SOUNDS_DESCRIPTION.text })
-                .trailing(soundsUISetting)
-                .onClick {
-                    val setting = soundsUISetting.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                }
+                CompSettingButton(0f, { TranslateText.UI_SOUNDS.getText() }, { TranslateText.UI_SOUNDS_DESCRIPTION.getText() })
+                        .trailing(soundsUISetting)
+                        .onClickAction {
+                            val setting = soundsUISetting.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                        }
         )
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.MC_FONT.text }, { TranslateText.MC_FONT_DESCRIPTION.text })
-                .trailing(mcFontSetting)
-                .onClick {
-                    val setting = mcFontSetting.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                }
+                CompSettingButton(0f, { TranslateText.MC_FONT.getText() }, { TranslateText.MC_FONT_DESCRIPTION.getText() })
+                        .trailing(mcFontSetting)
+                        .onClickAction {
+                            val setting = mcFontSetting.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                        }
         )
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.BORDERLESS_FULSCREEN.text }, { TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION.text })
-                .trailing(borderlessSetting)
-                .onClick {
-                    val setting = borderlessSetting.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                }
+                CompSettingButton(
+                        0f,
+                        { TranslateText.BORDERLESS_FULSCREEN.getText() },
+                        { TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION.getText() })
+                        .trailing(borderlessSetting)
+                        .onClickAction {
+                            val setting = borderlessSetting.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                        }
         )
     }
 
@@ -107,26 +114,21 @@ class GeneralScene(parent: SettingsCategory) :
         val cardCount = settingCards.size
         val totalContentHeight = padding * 2f + cardCount * cardHeight + kotlin.math.max(0, cardCount - 1) * cardSpacing
 
-        container.setContentHeight(totalContentHeight)
-
-        // Renderiza os cards dentro do container
-        container.drawScrollableContent = { mouseX, mouseY, partialTicks, scrollValue ->
-            var currentY = baseY + padding + scrollValue
-            val cardWidth = baseWidth - 28f
+        container.renderWithViewport(mouseX, mouseY, partialTicks, totalContentHeight) { mouseXInner, mouseYInner, partialInner, scrollValue, viewport ->
+            var currentY = viewport.y + padding + scrollValue
+            val cardWidth = viewport.width - 10f
 
             for (card in settingCards) {
-                card.setBounds(baseX + 14f, currentY, cardWidth, cardHeight)
-                card.draw(mouseX, mouseY, partialTicks)
+                card.setBounds(viewport.x + 5f, currentY, cardWidth, cardHeight)
+                card.draw(mouseXInner, mouseYInner, partialInner)
                 currentY += cardHeight + cardSpacing
             }
         }
-
-        container.draw(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         container.mouseClicked(mouseX, mouseY, mouseButton)
-        
+
         for (card in settingCards) {
             card.mouseClicked(mouseX, mouseY, mouseButton)
         }
@@ -134,7 +136,7 @@ class GeneralScene(parent: SettingsCategory) :
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         container.mouseReleased(mouseX, mouseY, mouseButton)
-        
+
         for (card in settingCards) {
             card.mouseReleased(mouseX, mouseY, mouseButton)
         }
@@ -142,7 +144,7 @@ class GeneralScene(parent: SettingsCategory) :
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         container.keyTyped(typedChar, keyCode)
-        
+
         if (modMenuKeybind.isBinding) {
             modMenuKeybind.keyTyped(typedChar, keyCode)
         }

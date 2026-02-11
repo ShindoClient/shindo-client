@@ -14,19 +14,13 @@ public class MixinEntityOtherPlayerMP {
     private void removeUselessAnimations(CallbackInfo ci) {
         ci.cancel();
     }
-    
-    @Inject(method = "setPositionAndRotation", at = @At("HEAD"))
-    private void onSetPositionAndRotation(double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
+
+    @Inject(method = "setPositionAndRotation2", at = @At("HEAD"))
+    private void onSetPositionAndRotation(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_, CallbackInfo ci) {
         if (this instanceof IMixinEntityPlayer) {
             ((IMixinEntityPlayer) this).getPlayerDataSamples().setPositionAndRotation(x, y, z, yaw, pitch);
         }
     }
-    
-    @Inject(method = "setRotationYawHead", at = @At("HEAD"))
-    private void onSetRotationYawHead(float yawHead, CallbackInfo ci) {
-        if (this instanceof IMixinEntityPlayer) {
-            ((IMixinEntityPlayer) this).getPlayerDataSamples().setRotationYawHead(yawHead);
-        }
-    }
+
 }
 

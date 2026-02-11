@@ -50,18 +50,18 @@ class DamageParticlesMod : Mod(
 
     @EventTarget
     fun onLivingUpdate(event: EventLivingUpdate) {
-        val entity = event.getEntity()
+        val entity = event.entity
 
         if (entity === this.mc.thePlayer) {
             return
         }
 
         if (!healthMap.containsKey(entity)) {
-            healthMap.put(entity, entity.getHealth())
+            healthMap.put(entity, entity.health)
         }
 
         val before: Float = healthMap.get(entity)!!
-        val after = entity.getHealth()
+        val after = entity.health
 
         if (before != after) {
             val text: String?
@@ -74,7 +74,7 @@ class DamageParticlesMod : Mod(
 
             val location = LocationUtils(entity)
 
-            location.setY(entity.getEntityBoundingBox().minY + ((entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY) / 2))
+            location.setY(entity.entityBoundingBox.minY + ((entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2))
 
             location.setX((location.x - 0.5) + (Random(System.currentTimeMillis()).nextInt(5) * 0.1))
             location.setZ((location.z - 0.5) + (Random(System.currentTimeMillis() + 1).nextInt(5) * 0.1))
@@ -82,16 +82,16 @@ class DamageParticlesMod : Mod(
             particles.add(Particle(location, text))
 
             healthMap.remove(entity)
-            healthMap.put(entity, entity.getHealth())
+            healthMap.put(entity, entity.health)
         }
     }
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
         for (particle in this.particles) {
-            val x = particle.location.x - (mc.getRenderManager() as IMixinRenderManager).getRenderPosX()
-            val y = particle.location.y - (mc.getRenderManager() as IMixinRenderManager).getRenderPosY()
-            val z = particle.location.z - (mc.getRenderManager() as IMixinRenderManager).getRenderPosZ()
+            val x = particle.location.x - (mc.renderManager as IMixinRenderManager).getRenderPosX()
+            val y = particle.location.y - (mc.renderManager as IMixinRenderManager).getRenderPosY()
+            val z = particle.location.z - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
 
             GlStateManager.pushMatrix()
 
@@ -99,9 +99,9 @@ class DamageParticlesMod : Mod(
             GlStateManager.doPolygonOffset(1.0f, -1500000.0f)
 
             GlStateManager.translate(x.toFloat(), y.toFloat(), z.toFloat())
-            GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
+            GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
             val var10001 = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
-            GlStateManager.rotate(mc.getRenderManager().playerViewX, var10001, 0.0f, 0.0f)
+            GlStateManager.rotate(mc.renderManager.playerViewX, var10001, 0.0f, 0.0f)
             val scale = 0.03
             GlStateManager.scale(-scale, -scale, scale)
 

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.addons
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.utils.animation.ColorAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.ColorAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 
 enum class AddonType(
     private val nameTranslate: TranslateText
@@ -15,6 +15,6 @@ enum class AddonType(
     val textColorAnimation: ColorAnimation = ColorAnimation()
     val backgroundAnimation: SimpleAnimation = SimpleAnimation()
 
-    fun getName(): String = nameTranslate.text
+    fun getName(): String = nameTranslate.getText()
 }
 

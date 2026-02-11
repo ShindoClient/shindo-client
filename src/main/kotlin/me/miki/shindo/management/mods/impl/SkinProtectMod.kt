@@ -18,8 +18,8 @@ class SkinProtectMod : Mod(
 ) {
     @EventTarget
     fun onLocationSkin(event: EventLocationSkin) {
-        val uuid = UUIDTypeAdapter.fromUUID(event.getPlayerInfo().getGameProfile().getId())
-        val pUuid = UUIDTypeAdapter.fromUUID(mc.thePlayer.getGameProfile().getId())
+        val uuid = UUIDTypeAdapter.fromUUID(event.getPlayerInfo().gameProfile.id)
+        val pUuid = UUIDTypeAdapter.fromUUID(mc.thePlayer.gameProfile.id)
 
         if (uuid == pUuid) {
             event.setCancelled(true)

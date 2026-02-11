@@ -10,6 +10,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import org.spongepowered.asm.mixin.Mixin;
 
+import java.util.Objects;
+
 @Mixin(BlockStainedGlass.class)
 public class MixinBlockStainedGlass extends Block {
 
@@ -21,7 +23,7 @@ public class MixinBlockStainedGlass extends Block {
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
 
         ClearGlassMod clearGlass = ClearGlassMod.instance;
-        BooleanSetting stainedSetting = clearGlass.getStainedSetting();
+        BooleanSetting stainedSetting = Objects.requireNonNull(clearGlass).getStainedSetting();
 
         return (!clearGlass.isToggled() || (clearGlass.isToggled() && (stainedSetting == null || !stainedSetting.isToggled()))
                 && super.shouldSideBeRendered(worldIn, pos, side));

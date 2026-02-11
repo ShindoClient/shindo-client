@@ -76,12 +76,12 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
         }
 
         enabledMods.sortWith(Comparator { m1: Mod?, m2: Mod? ->
-                    (getTextWidth(
-                        m2!!.getName(),
-                        8.5f,
-                        getHudFont(1)
-                    )!! - getTextWidth(m1!!.getName(), 8.5f, getHudFont(1))!!).toString().toInt()
-                })
+            (getTextWidth(
+                m2!!.getName(),
+                8.5f,
+                getHudFont(1)
+            )!! - getTextWidth(m1!!.getName(), 8.5f, getHudFont(1))!!).toString().toInt()
+        })
 
         var y = 0
         var colorIndex = 0

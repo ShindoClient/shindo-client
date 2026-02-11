@@ -18,13 +18,13 @@ class ToggleSneakMod : Mod(
 ) {
     private var toggle = false
 
-    public override fun setup() {
+    override fun setup() {
         toggle = false
     }
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == mc.gameSettings.keyBindSneak.getKeyCode()) {
+        if (event.keyCode == mc.gameSettings.keyBindSneak.keyCode) {
             toggle = !toggle
         }
     }
@@ -38,14 +38,14 @@ class ToggleSneakMod : Mod(
         }
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
         toggle = false
         setSneak(false)
     }
 
     private fun setSneak(state: Boolean) {
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), state)
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.keyCode, state)
     }
 }
 

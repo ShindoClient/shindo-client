@@ -19,10 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat extends Gui {
 
+    @Unique
+    private static final int client$MENTION_COLOR = 0x00F8D77C;
     @Shadow
     @Final
     private Minecraft mc;
@@ -46,8 +49,6 @@ public abstract class MixinGuiNewChat extends Gui {
     private ChatLine client$drawingChatLine = null;
     @Unique
     private boolean client$highlightCurrentLine;
-    @Unique
-    private static final int client$MENTION_COLOR = 0x00F8D77C;
 
     @Shadow
     public abstract int getLineCount();
@@ -63,7 +64,7 @@ public abstract class MixinGuiNewChat extends Gui {
 
     @Unique
     private void client$updatePercentage(long diff) {
-        NumberSetting smoothSpeedSetting = ChatMod.instance.getSmoothSpeedSetting();
+        NumberSetting smoothSpeedSetting = Objects.requireNonNull(ChatMod.instance).getSmoothSpeedSetting();
         if (client$percentComplete < 1 && smoothSpeedSetting != null) {
             client$percentComplete += (smoothSpeedSetting.getValueFloat() / 1000) * (float) diff;
         }
@@ -80,7 +81,7 @@ public abstract class MixinGuiNewChat extends Gui {
     private int redirectText(FontRenderer instance, String text, float x, float y, int color) {
 
         ChatMod mod = ChatMod.instance;
-        BooleanSetting smoothSetting = mod.getSmoothSetting();
+        BooleanSetting smoothSetting = Objects.requireNonNull(mod).getSmoothSetting();
         BooleanSetting highlightMentionsSetting = mod.getHighlightMentionsSetting();
         BooleanSetting headSetting = mod.getHeadSetting();
         boolean toggle = mod.isToggled() && smoothSetting != null && smoothSetting.isToggled();
@@ -105,16 +106,11 @@ public abstract class MixinGuiNewChat extends Gui {
 
         return instance.drawStringWithShadow(text, x, y, lastOpacity);
     }
-
-    /**
-     * @author EldoDebug
-     * @reason ChatMod Modifications
-     */
     @Overwrite
     public void printChatMessage(IChatComponent component) {
 
         ChatMod mod = ChatMod.instance;
-        BooleanSetting compactSetting = mod.getCompactSetting();
+        BooleanSetting compactSetting = Objects.requireNonNull(mod).getCompactSetting();
 
         if (mod.isToggled() && compactSetting != null && compactSetting.isToggled()) {
 
@@ -142,11 +138,11 @@ public abstract class MixinGuiNewChat extends Gui {
         printChatMessageWithOptionalDeletion(component, 0);
     }
 
-    @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
+    @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", remap = false))
     public int getSize(List<?> instance) {
 
         ChatMod mod = ChatMod.instance;
-        BooleanSetting infinitySetting = mod.getInfinitySetting();
+        BooleanSetting infinitySetting = Objects.requireNonNull(mod).getInfinitySetting();
 
         if (mod.isToggled() && infinitySetting != null && infinitySetting.isToggled()) {
             return 0;
@@ -155,7 +151,7 @@ public abstract class MixinGuiNewChat extends Gui {
         return instance.size();
     }
 
-    @Inject(method = "drawChat", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawChat", at = @At("HEAD"))
     private void modifyChatRendering(CallbackInfo ci) {
         long current = System.currentTimeMillis();
         long diff = current - client$prevMillis;
@@ -169,14 +165,14 @@ public abstract class MixinGuiNewChat extends Gui {
     private void translate(CallbackInfo ci) {
 
         ChatMod mod = ChatMod.instance;
-        BooleanSetting smoothSetting = mod.getSmoothSetting();
+        BooleanSetting smoothSetting = Objects.requireNonNull(mod).getSmoothSetting();
         float y = 0;
 
         if (mod.isToggled() && smoothSetting != null && smoothSetting.isToggled() && !this.isScrolled) {
             y += (9 - 9 * client$animationPercent) * this.getChatScale();
         }
 
-        if (ChatTranslateMod.instance.isToggled() && mc.currentScreen instanceof GuiChat) {
+        if (Objects.requireNonNull(ChatTranslateMod.instance).isToggled() && mc.currentScreen instanceof GuiChat) {
             y = y - 8;
         }
 
@@ -187,7 +183,7 @@ public abstract class MixinGuiNewChat extends Gui {
     private void transparentBackground(int left, int top, int right, int bottom, int color) {
 
         ChatMod mod = ChatMod.instance;
-        BooleanSetting backgroundSetting = mod.getBackgroundSetting();
+        BooleanSetting backgroundSetting = Objects.requireNonNull(mod).getBackgroundSetting();
 
         if (!mod.isToggled() || (mod.isToggled() && (backgroundSetting == null || backgroundSetting.isToggled()))) {
             drawRect(left, top, right, bottom, color);
@@ -214,7 +210,7 @@ public abstract class MixinGuiNewChat extends Gui {
     @ModifyVariable(method = "getChatComponent", at = @At(value = "STORE", ordinal = 0), ordinal = 4)
     private int modifyY(int original) {
 
-        if (ChatTranslateMod.instance.isToggled() && mc.currentScreen instanceof GuiChat) {
+        if (Objects.requireNonNull(ChatTranslateMod.instance).isToggled() && mc.currentScreen instanceof GuiChat) {
             return original - 8;
         }
 
@@ -230,7 +226,7 @@ public abstract class MixinGuiNewChat extends Gui {
     }
 
     @Redirect(method = "deleteChatLine", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ChatLine;getChatLineID()I"))
-    private int adeleteChatLine(ChatLine instance) {
+    private int deleteChatLine(ChatLine instance) {
         if (instance == null) {
             return -1;
         }
@@ -241,7 +237,7 @@ public abstract class MixinGuiNewChat extends Gui {
     @Unique
     private boolean client$shouldHighlightLine(ChatLine chatLine) {
         ChatMod mod = ChatMod.instance;
-        BooleanSetting highlightMentionsSetting = mod.getHighlightMentionsSetting();
+        BooleanSetting highlightMentionsSetting = Objects.requireNonNull(mod).getHighlightMentionsSetting();
         if (!mod.isToggled() || highlightMentionsSetting == null || !highlightMentionsSetting.isToggled()) {
             return false;
         }

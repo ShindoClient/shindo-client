@@ -1,20 +1,24 @@
 package me.miki.shindo
 
+import com.google.gson.JsonObject
 import me.miki.shindo.api.roles.RoleManager
 import me.miki.shindo.api.websocket.AccountType
 import me.miki.shindo.api.websocket.ShindoWebsocket
 import me.miki.shindo.api.websocket.WsIdentity
+import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.file.FileManager
 import net.minecraft.client.Minecraft
+import net.minecraft.util.Session
 import java.io.File
 import java.lang.reflect.Method
 import java.net.URI
 import java.nio.charset.StandardCharsets
-import java.util.UUID
+import java.util.*
+import java.util.function.BiConsumer
 import java.util.function.Supplier
 
 class ShindoAPI {
@@ -22,7 +26,7 @@ class ShindoAPI {
     val roleManager = RoleManager()
     val presence = PresenceTracker()
 
-    val firstLoginFile: File
+    private val firstLoginFile: File
     var launchTime: Long = 0
         private set
     lateinit var modMenu: GuiModMenu
@@ -71,8 +75,8 @@ class ShindoAPI {
         ws = ShindoWebsocket(URI.create("wss://ws.shindoclient.com/websocket"), true, presence).apply {
             roleManager = this@ShindoAPI.roleManager
             provider = object : ShindoWebsocket.IdentityProvider {
-                override fun player(): WsIdentity? {
-                    var rawUuid = safeTrim(uuidSup.get())
+                override fun player(): WsIdentity {
+                    val rawUuid = safeTrim(uuidSup.get())
                     var rawName = safeTrim(nameSup.get())
                     if (rawName.isEmpty()) rawName = "Player"
 
@@ -93,15 +97,15 @@ class ShindoAPI {
                     )
                 }
             }
-            messageHandler.addObserver { type, payload ->
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().profileShareManager.handleMessage(type, payload)
-            }
-            messageHandler.addObserver { type, payload ->
+            })
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().chatManager.handleMessage(type, payload)
-            }
-            messageHandler.addObserver { type, payload ->
+            })
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().broadcastManager.handleMessage(type, payload)
-            }
+            })
             connect()
         }
     }
@@ -140,13 +144,11 @@ class ShindoAPI {
 
     private fun resolveAccountType(mc: Minecraft): AccountType {
         val session = mc.session ?: return AccountType.LOCAL
-        val uuid = session.profile.id
-        if (uuid == null) return AccountType.LOCAL
+        val uuid = session.profile.id ?: return AccountType.LOCAL
 
         try {
-            val getSessionType: Method = session.javaClass.getMethod("getSessionType")
-            val sessionType = getSessionType.invoke(session) as String
-            if (sessionType != null && (sessionType == "msa" || sessionType.contains("microsoft"))) {
+            val sessionType = session.sessionType
+            if (sessionType != null && (sessionType.equals(Session.Type.MOJANG) || sessionType.equals(Session.Type.LEGACY))) {
                 return AccountType.MICROSOFT
             }
         } catch (e: Exception) {
@@ -154,9 +156,8 @@ class ShindoAPI {
         }
 
         try {
-            val getToken: Method = session.javaClass.getMethod("getToken")
-            val token = getToken.invoke(session) as String
-            if (!token.isNullOrEmpty()) {
+            val token = session.token
+            if (token.isNotEmpty()) {
                 return AccountType.MICROSOFT
             }
         } catch (e: Exception) {

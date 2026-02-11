@@ -7,11 +7,11 @@ import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.TargetUtils.target
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
-import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import net.minecraft.util.ResourceLocation
 import kotlin.math.min
 
@@ -27,12 +27,12 @@ class TargetInfoMod : HUDMod(
     private val screenAnimation = ScreenAnimation()
     private var introAnimation: Animation? = null
 
-    private var name: String? = null
+    private var targetName: String? = null
     private var health = 0f
     private var armor = 0f
     private var head: ResourceLocation? = null
 
-    public override fun setup() {
+    override fun setup() {
         introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation!!.setDirection(Direction.BACKWARDS)
     }
@@ -48,13 +48,13 @@ class TargetInfoMod : HUDMod(
         introAnimation!!.setDirection(if (target == null) Direction.BACKWARDS else Direction.FORWARDS)
 
         if (target != null) {
-            name = target.getName()
-            health = min(target.getHealth(), 20f)
-            armor = min(target.getTotalArmorValue(), 20).toFloat()
-            head = target.getLocationSkin()
+            targetName = target.name
+            health = min(target.health, 20f)
+            armor = min(target.totalArmorValue, 20).toFloat()
+            head = target.locationSkin
         }
 
-        if (name != null && head != null) {
+        if (targetName != null && head != null) {
             screenAnimation.wrap(
                 Runnable { this.drawNanoVG() },
                 this.getX(),
@@ -68,7 +68,7 @@ class TargetInfoMod : HUDMod(
     }
 
     private fun drawNanoVG() {
-        val nameWidth: Float = this.getTextWidth(name!!, 10.2f, getHudFont(2))!!
+        val nameWidth: Float = this.getTextWidth(targetName!!, 10.2f, getHudFont(2))!!
         var width = 140
 
         if (nameWidth + 48f > width) {
@@ -80,7 +80,7 @@ class TargetInfoMod : HUDMod(
 
         this.drawBackground(width.toFloat(), 46f)
         this.drawPlayerHead(head!!, 5f, 5f, 36f, 36f, 6f)
-        this.drawText(name!!, 45.5f, 8f, 10.2f, getHudFont(2))
+        this.drawText(targetName!!, 45.5f, 8f, 10.2f, getHudFont(2))
 
         this.drawText(LegacyIcon.HEART_FILL, 52f, 26.5f, 9f, Fonts.LEGACYICON)
         this.drawArc(56.5f, 30.5f, 9f, -90f, -90f + 360, 1.6f, this.getFontColor(120))

@@ -1,20 +1,7 @@
 package me.miki.shindo.management.addons.nocheaters.data
 
-import java.util.*
+import java.util.Locale
 
-/**
- * WDR (WatchDog Report) - Representa um reporte de cheats de um jogador
- * 
- * Armazena:
- * - Lista de cheats reportados
- * - Timestamp do reporte
- * - Ícones de severidade (vermelho/amarelo)
- * 
- * Extensível para:
- * - Adicionar mais metadados (servidor, contexto, etc.)
- * - Sistema de confiança/verificação
- * - Histórico de reportes
- */
 class WDR(
     cheats: List<String>,
     timestamp: Long = System.currentTimeMillis()
@@ -30,10 +17,6 @@ class WDR(
     }
 
     constructor(cheat: String) : this(listOf(cheat))
-
-    /**
-     * Adiciona um cheat à lista
-     */
     fun addCheat(cheat: String): Boolean {
         if (!cheatsList.contains(cheat)) {
             if (cheat.endsWith("[H]")) {
@@ -47,10 +30,6 @@ class WDR(
         timestamp = System.currentTimeMillis()
         return false
     }
-
-    /**
-     * Adiciona múltiplos cheats
-     */
     fun addCheats(cheats: List<String>) {
         if (cheatsList.isEmpty() || cheats.size != 1 || cheats[0] != "cheating") {
             cheatsList.removeAll(cheats)
@@ -59,14 +38,9 @@ class WDR(
         updateIcon()
         timestamp = System.currentTimeMillis()
     }
-
-    /**
-     * Atualiza os ícones baseado na severidade dos cheats
-     */
     private fun updateIcon() {
         if (redIcon) return
 
-        // Verifica cheats vermelhos (mais graves)
         for (cheat in cheatsList) {
             if (isRedCheat(cheat)) {
                 redIcon = true
@@ -75,7 +49,6 @@ class WDR(
             }
         }
 
-        // Verifica cheats amarelos (menos graves)
         for (cheat in cheatsList) {
             if (!isNoIconCheat(cheat)) {
                 redIcon = false
@@ -92,25 +65,13 @@ class WDR(
     fun hasYellowIcon(): Boolean = yellowIcon
     fun getTimestamp(): Long = timestamp
     fun getCheats(): List<String> = cheatsList.toList()
-
-    /**
-     * Verifica se tem cheats válidos
-     */
     fun hasValidCheats(): Boolean {
         val validCheats = getValidCheatsList()
         return cheatsList.any { validCheats.contains(it) }
     }
-
-    /**
-     * Converte cheats para string
-     */
     fun cheatsToString(): String {
         return cheatsList.joinToString(" ") { " $it" }
     }
-
-    /**
-     * Obtém cheats formatados para exibição (extensível)
-     */
     fun getFormattedCheats(): net.minecraft.util.IChatComponent {
         val imsg = net.minecraft.util.ChatComponentText("")
         for (cheat in cheatsList) {
@@ -125,7 +86,7 @@ class WDR(
     }
 
     private fun isRedCheat(cheat: String): Boolean {
-        val lowerCheat = cheat.lowercase()
+        val lowerCheat = cheat.toLowerCase(Locale.ROOT)
         val redCheats = listOf("killaura", "ka", "aimbot", "reach", "fly", "scaffold")
         return redCheats.any { lowerCheat.startsWith(it) }
     }
@@ -135,9 +96,6 @@ class WDR(
     }
 
     companion object {
-        /**
-         * Lista de cheats válidos (pode ser expandida)
-         */
         private fun getValidCheatsList(): List<String> {
             return listOf(
                 "killaura", "ka", "aimbot", "reach", "autoclicker", "ac",
@@ -145,23 +103,17 @@ class WDR(
                 "antikb", "velocity", "bhop", "timer", "cheating"
             )
         }
-
-        /**
-         * Cheats que devem mostrar ícone vermelho (mais graves)
-         */
         private fun isRedCheat(cheat: String): Boolean {
-            val lowerCheat = cheat.lowercase()
+            val lowerCheat = cheat.toLowerCase(Locale.ROOT)
             val redCheats = listOf("killaura", "ka", "aimbot", "reach", "fly", "scaffold")
             return redCheats.any { lowerCheat.startsWith(it) }
         }
-
-        /**
-         * Cheats que não devem mostrar ícone
-         */
         private fun isNoIconCheat(cheat: String): Boolean {
-            val lowerCheat = cheat.lowercase()
+            val lowerCheat = cheat.toLowerCase(Locale.ROOT)
             val noIconCheats = listOf("ignored", "unverified")
             return noIconCheats.any { lowerCheat.startsWith(it) }
         }
     }
 }
+
+

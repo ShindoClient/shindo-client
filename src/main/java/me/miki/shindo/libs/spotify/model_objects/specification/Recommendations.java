@@ -5,11 +5,6 @@ import com.google.gson.JsonObject;
 import me.miki.shindo.libs.spotify.model_objects.AbstractModelObject;
 
 import java.util.Arrays;
-
-/**
- * Retrieve information about <a href="https://developer.spotify.com/web-api/object-model/#recommendations-object">
- * Recommendation objects</a> by building instances from this class.
- */
 @JsonDeserialize(builder = Recommendations.Builder.class)
 public class Recommendations extends AbstractModelObject {
     private final RecommendationsSeed[] seeds;
@@ -21,21 +16,9 @@ public class Recommendations extends AbstractModelObject {
         this.seeds = builder.seeds;
         this.tracks = builder.tracks;
     }
-
-    /**
-     * Get the recommendation seeds from the recommendations object.
-     *
-     * @return An array of recommendation seed objects.
-     */
     public RecommendationsSeed[] getSeeds() {
         return seeds;
     }
-
-    /**
-     * Get the tracks from the recommendations object.
-     *
-     * @return An array of track object ordered according to the parameters supplied.
-     */
     public Track[] getTracks() {
         return tracks;
     }
@@ -49,31 +32,13 @@ public class Recommendations extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link Recommendations} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private RecommendationsSeed[] seeds;
         private Track[] tracks;
-
-        /**
-         * The recommendation seeds setter.
-         *
-         * @param seeds An array of recommendation seed objects.
-         * @return A {@link Recommendations.Builder}.
-         */
         public Builder setSeeds(RecommendationsSeed... seeds) {
             this.seeds = seeds;
             return this;
         }
-
-        /**
-         * The recommended tracks setter.
-         *
-         * @param tracks An array of track objects.
-         * @return A {@link Recommendations.Builder}.
-         */
         public Builder setTracks(Track... tracks) {
             this.tracks = tracks;
             return this;
@@ -84,10 +49,6 @@ public class Recommendations extends AbstractModelObject {
             return new Recommendations(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link Recommendations} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<Recommendations> {
         public Recommendations createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

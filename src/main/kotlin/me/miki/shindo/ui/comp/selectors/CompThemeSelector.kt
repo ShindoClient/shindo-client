@@ -1,29 +1,23 @@
-﻿package me.miki.shindo.ui.comp.selectors
+package me.miki.shindo.ui.comp.selectors
 
-import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.templates.CompPanel
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
-
-/**
- * Componente para seleção de temas com scroll horizontal.
- * Exibe cards com preview de cada tema e permite seleção.
- */
 class CompThemeSelector(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 0f,
-    height: Float = 122f
-) : CompPanel(x, y, width, height) {
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 0f,
+        height: Float = 122f
+) : CompSurfaceTemplate(x, y, width, height) {
 
     private val themes: List<Theme> = Theme.values().toList()
     private val scroll = Scroll()
@@ -38,7 +32,8 @@ class CompThemeSelector(
         setWidth(width)
         setHeight(height)
         setRadius(10f)
-        setBackgroundColor(null) // Será definido no draw
+        setSurfaceVariant(CompSurfaceVariant.CARD)
+        setBackgroundColor(null)
     }
 
     fun getSelectedTheme(): Theme? = selectedTheme
@@ -51,24 +46,26 @@ class CompThemeSelector(
         return this
     }
 
-    override fun getBackgroundColor(paletteColors: me.miki.shindo.management.color.palette.ColorPalette, accentColors: me.miki.shindo.management.color.AccentColor): Color? {
+    override fun getBackgroundColor(
+            paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
+            accentColors: me.miki.shindo.management.color.AccentColor
+    ): Color {
         return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 170)
     }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
-        val paletteColors = palette
+        palette
         val accentColors = accent
 
-        // Desenha overlay de gradiente
         nvgInstance.drawGradientRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            getRadius(),
-            ColorUtils.applyAlpha(accentColors.color1, 35),
-            ColorUtils.applyAlpha(accentColors.color2, 35)
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                getRadius(),
+                ColorUtils.applyAlpha(accentColors.getColor1(), 35),
+                ColorUtils.applyAlpha(accentColors.getColor2(), 35)
         )
 
         val innerX = getX() + innerPadding
@@ -96,32 +93,53 @@ class CompThemeSelector(
             val hovered = MouseUtils.isInside(mouseX, mouseY, screenX, innerY, itemWidth, itemHeight)
             val selected = theme == selectedTheme
 
-            theme.animation.setAnimation(if (selected) 1.0f else 0.0f, 18.0)
+            theme.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 18.0)
 
-            val baseColor = ColorUtils.applyAlpha(theme.normalBackgroundColor, if (hovered || selected) 240 else 205)
-            val overlayColor = ColorUtils.applyAlpha(theme.darkBackgroundColor, if (hovered || selected) 220 else 185)
+            val baseColor = ColorUtils.applyAlpha(theme.getNormalBackgroundColor(), if (hovered || selected) 240 else 205)
+            val overlayColor = ColorUtils.applyAlpha(theme.getDarkBackgroundColor(), if (hovered || selected) 220 else 185)
 
             nvgInstance.drawRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor)
             nvgInstance.drawGradientRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor, overlayColor)
 
-            // Preview do tema
-            nvgInstance.drawRoundedRect(screenX + 12f, innerY + 16f, itemWidth - 24f, 12f, 4f, ColorUtils.applyAlpha(theme.darkFontColor, 210))
-            nvgInstance.drawRoundedRect(screenX + 12f, innerY + 34f, itemWidth - 24f, 7f, 3f, ColorUtils.applyAlpha(theme.normalFontColor, 190))
+            nvgInstance.drawRoundedRect(
+                    screenX + 12f,
+                    innerY + 16f,
+                    itemWidth - 24f,
+                    12f,
+                    4f,
+                    ColorUtils.applyAlpha(theme.getDarkFontColor(), 210)
+            )
+            nvgInstance.drawRoundedRect(
+                    screenX + 12f,
+                    innerY + 34f,
+                    itemWidth - 24f,
+                    7f,
+                    3f,
+                    ColorUtils.applyAlpha(theme.getNormalFontColor(), 190)
+            )
 
             val label = nvgInstance.getLimitText(theme.name, 9.5f, Fonts.MEDIUM, itemWidth - 24f)
             nvgInstance.drawText(label, screenX + 12f, innerY + itemHeight - 22f, Color.WHITE, 9.5f, Fonts.MEDIUM)
 
             if (selected) {
                 nvgInstance.drawText(
-                    LegacyIcon.CHECK,
-                    screenX + itemWidth - 18f,
-                    innerY + 12f,
-                    Color(255, 255, 255, min(255, 180 + (theme.animation.value * 60f).toInt())),
-                    12f,
-                    Fonts.LEGACYICON
+                        LegacyIcon.CHECK,
+                        screenX + itemWidth - 18f,
+                        innerY + 12f,
+                        Color(255, 255, 255, min(255, 180 + (theme.getAnimation().value * 60f).toInt())),
+                        12f,
+                        Fonts.LEGACYICON
                 )
             } else if (hovered) {
-                nvgInstance.drawOutlineRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, 2f, ColorUtils.applyAlpha(accentColors.color2, 160))
+                nvgInstance.drawOutlineRoundedRect(
+                        screenX,
+                        innerY,
+                        itemWidth,
+                        itemHeight,
+                        10f,
+                        2f,
+                        ColorUtils.applyAlpha(accentColors.getColor2(), 160)
+                )
             }
 
             cardX += itemWidth + itemSpacing

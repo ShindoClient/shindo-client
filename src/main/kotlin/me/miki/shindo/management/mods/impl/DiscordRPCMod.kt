@@ -14,12 +14,12 @@ class DiscordRPCMod : Mod(
 ) {
     private val discord = DiscordRPC()
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         discord.start()
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
         if (discord.isStarted()) {
             discord.stop()

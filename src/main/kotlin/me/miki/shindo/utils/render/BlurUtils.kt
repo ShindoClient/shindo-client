@@ -57,7 +57,7 @@ object BlurUtils {
         lastScaleHeight = factor3
 
         val mixinShader = shader as IMixinShaderGroup
-        val shaders = mixinShader.listShaders
+        val shaders = mixinShader.getListShaders()
 
         shaders[0].shaderManager.getShaderUniform("BlurXY")
             .set(x * (sr.scaleFactor / 2.0f), (factor3 - height) * (sr.scaleFactor / 2.0f))
@@ -70,7 +70,7 @@ object BlurUtils {
         shaders[0].shaderManager.getShaderUniform("Radius").set(radius)
         shaders[1].shaderManager.getShaderUniform("Radius").set(radius)
 
-        shader.loadShaderGroup((mc as IMixinMinecraft).timer.renderPartialTicks)
+        shader.loadShaderGroup((mc as IMixinMinecraft).getTimer().renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
     }
 }

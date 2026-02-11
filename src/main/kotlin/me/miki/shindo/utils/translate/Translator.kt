@@ -11,7 +11,7 @@ import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.StringJoiner
+import java.util.*
 
 object Translator {
 
@@ -54,7 +54,8 @@ object Translator {
     @JvmStatic
     @Throws(Exception::class)
     fun translate(text: String, from: String, to: String): String {
-        val url = URL("https://api.cognitive.microsofttranslator.com/translate?from=$from&to=$to&api-version=3.0&includeSentenceLength=true")
+        val url =
+            URL("https://api.cognitive.microsofttranslator.com/translate?from=$from&to=$to&api-version=3.0&includeSentenceLength=true")
         val con = url.openConnection() as HttpURLConnection
         con.requestMethod = "POST"
         con.setRequestProperty("Content-Type", "application/json")

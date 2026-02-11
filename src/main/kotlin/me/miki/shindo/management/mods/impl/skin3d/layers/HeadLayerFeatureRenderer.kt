@@ -32,21 +32,21 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         paramFloat6: Float,
         paramFloat7: Float
     ) {
-        if (player == null || !player.hasSkin() || player.isInvisible()) {
+        if (player == null || !player.hasSkin() || player.isInvisible) {
             return
         }
 
         val skinMod = Skin3DMod.getInstance() ?: return
         val renderDistance = skinMod.getRenderDistanceLOD()
-        if (mc.thePlayer.getPositionVector()
-                .squareDistanceTo(player.getPositionVector()) > renderDistance * renderDistance
+        if (mc.thePlayer.positionVector
+                .squareDistanceTo(player.positionVector) > renderDistance * renderDistance
         ) {
             return
         }
 
         val itemStack = player.getEquipmentInSlot(1)
 
-        if (itemStack != null && hideHeadLayers.contains(itemStack.getItem())) {
+        if (itemStack != null && hideHeadLayers.contains(itemStack.item)) {
             return
         }
 
@@ -82,7 +82,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
 
         GlStateManager.pushMatrix()
 
-        if (abstractClientPlayer.isSneaking()) {
+        if (abstractClientPlayer.isSneaking) {
             GlStateManager.translate(0.0f, 0.2f, 0.0f)
         }
 

@@ -59,34 +59,35 @@ class ParticleCustomizerMod : Mod(
         val sMultiplier = sharpnessAmountSetting
         val cMultiplier = criticalsAmountSetting
 
-        if (event.getEntity() !is EntityLivingBase) {
+        if (event.entity !is EntityLivingBase) {
             return
         }
 
         val critical =
-            criticalsSetting && player.fallDistance > 0.0f && !player.onGround && !player.isOnLadder() && !player.isInWater() && !player.isPotionActive(
+            criticalsSetting && player.fallDistance > 0.0f && !player.onGround && !player.isOnLadder && !player.isInWater && !player.isPotionActive(
                 Potion.blindness
             ) && player.ridingEntity == null
         val alwaysSharpness = alwaysSharpnessSetting
         val sharpness = sharpnessSetting && EnchantmentHelper.getModifierForCreature(
-            player.getHeldItem(),
-            (event.getEntity() as EntityLivingBase).getCreatureAttribute()
+            player.heldItem,
+            (event.entity as EntityLivingBase).creatureAttribute
         ) > 0
         val alwaysCriticals = alwaysCriticalsSetting
 
         if (critical || alwaysCriticals) {
-            for (i in 0..<cMultiplier - 1) {
-                mc.effectRenderer.emitParticleAtEntity(event.getEntity(), EnumParticleTypes.CRIT)
+            for (i in 0 until cMultiplier - 1) {
+                mc.effectRenderer.emitParticleAtEntity(event.entity, EnumParticleTypes.CRIT)
             }
         }
 
         if (alwaysSharpness || sharpness) {
-            for (i in 0..<sMultiplier - 1) {
-                mc.effectRenderer.emitParticleAtEntity(event.getEntity(), EnumParticleTypes.CRIT_MAGIC)
+            for (i in 0 until sMultiplier - 1) {
+                mc.effectRenderer.emitParticleAtEntity(event.entity, EnumParticleTypes.CRIT_MAGIC)
             }
         }
     }
 }
+
 
 
 

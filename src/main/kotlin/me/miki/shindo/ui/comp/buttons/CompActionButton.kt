@@ -1,26 +1,23 @@
-﻿package me.miki.shindo.ui.comp.buttons
+package me.miki.shindo.ui.comp.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.ui.comp.style.CompControlVariant
 import me.miki.shindo.ui.comp.templates.CompButton
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
-
-/**
- * Botão de ação padrão usado em várias telas (Next, Continue, etc).
- * Mantém o estilo consistente do client.
- */
 class CompActionButton(
-    text: String,
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 80f,
-    height: Float = 20f
+        text: String,
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 80f,
+        height: Float = 20f
 ) : CompButton(x, y, width, height) {
 
     init {
         setRadius(6f)
         setFontSize(10f)
+        setVariant(CompControlVariant.PRIMARY)
         setText(text)
         setTextColor(Color.WHITE)
     }
@@ -31,7 +28,7 @@ class CompActionButton(
         val accentColors = accent
 
         val bgColor = if (hovered && isEnabled()) {
-            ColorUtils.applyAlpha(accentColors.color1, 200)
+            ColorUtils.applyAlpha(accentColors.getColor1(), 200)
         } else {
             paletteColors.getBackgroundColor(ColorType.NORMAL)
         }
@@ -39,15 +36,14 @@ class CompActionButton(
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), getRadius(), bgColor)
 
         getText()?.let {
-            // drawText já adiciona size/2 para centralizar verticalmente, então precisamos subtrair isso
             val textY = getY() + getHeight() / 2f - getFontSize() / 2f
             nvgInstance.drawCenteredText(
-                it,
-                getX() + getWidth() / 2f,
-                textY,
-                getTextColor() ?: Color.WHITE,
-                getFontSize(),
-                Fonts.REGULAR
+                    it,
+                    getX() + getWidth() / 2f,
+                    textY,
+                    getTextColor() ?: Color.WHITE,
+                    getFontSize(),
+                    Fonts.REGULAR
             )
         }
     }

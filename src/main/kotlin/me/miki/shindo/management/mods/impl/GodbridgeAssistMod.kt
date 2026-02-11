@@ -23,7 +23,7 @@ class GodbridgeAssistMod : HUDMod(
     @EventTarget
     fun onTick(event: EventTick?) {
         if (mc.inGameHasFocus) {
-            if (mc.gameSettings.keyBindSneak.isKeyDown()) {
+            if (mc.gameSettings.keyBindSneak.isKeyDown) {
                 shiftedTicks++
             } else {
                 shiftedTicks = 0
@@ -46,7 +46,7 @@ class GodbridgeAssistMod : HUDMod(
                 return
             }
 
-            if (!mc.gameSettings.keyBindSneak.isKeyDown()) {
+            if (!mc.gameSettings.keyBindSneak.isKeyDown) {
                 return
             }
 
@@ -54,7 +54,7 @@ class GodbridgeAssistMod : HUDMod(
                 return
             }
 
-            if (mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).getItem() !is ItemBlock) {
+            if (mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).item !is ItemBlock) {
                 return
             }
 
@@ -87,8 +87,8 @@ class GodbridgeAssistMod : HUDMod(
             val round = ((abs(abs(mc.thePlayer.rotationYaw.toDouble() % 90.0) - 45.0) / 5) * 360).toInt()
 
             nvg.drawArc(
-                (sr.getScaledWidth() / 2).toFloat(),
-                (sr.getScaledHeight() / 2).toFloat(),
+                (sr.scaledWidth / 2).toFloat(),
+                (sr.scaledHeight / 2).toFloat(),
                 12f,
                 -90f,
                 round.toFloat(),

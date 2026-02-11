@@ -1,19 +1,15 @@
-﻿package me.miki.shindo.ui.comp.display
+package me.miki.shindo.ui.comp.display
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.templates.CompDisplay
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
 
-/**
- * Barra de progresso animada.
- * Útil para mostrar progresso de operações, carregamento, etc.
- */
 class CompProgressBar(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 100f,
-    height: Float = 8f
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 100f,
+        height: Float = 8f
 ) : CompDisplay(x, y) {
 
     private val progressAnimation = SimpleAnimation()
@@ -78,7 +74,7 @@ class CompProgressBar(
         val accentColors = accent
 
         val bgColor = backgroundColor ?: paletteColors.getBackgroundColor(ColorType.NORMAL)
-        val progColor = progressColor ?: accentColors.color1
+        val progColor = progressColor ?: accentColors.getColor1()
 
         val progressRatio = (progress / maxProgress).coerceIn(0f, 1f)
         val animatedProgress = if (animated) {
@@ -90,25 +86,22 @@ class CompProgressBar(
 
         val progressWidth = getWidth() * animatedProgress
 
-        // Fundo
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
 
-        // Progresso
         if (progressWidth > 0f) {
             nvgInstance.drawRoundedRect(getX(), getY(), progressWidth, getHeight(), radius, progColor)
         }
 
-        // Texto
         if (showText) {
             val text = "${(progressRatio * 100).toInt()}%"
             val textColor = this.textColor ?: paletteColors.getFontColor(ColorType.NORMAL)
             nvgInstance.drawCenteredText(
-                text,
-                getX() + getWidth() / 2f,
-                getY() + getHeight() / 2f,
-                textColor,
-                8f,
-                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+                    text,
+                    getX() + getWidth() / 2f,
+                    getY() + getHeight() / 2f,
+                    textColor,
+                    8f,
+                    me.miki.shindo.management.nanovg.font.Fonts.REGULAR
             )
         }
     }

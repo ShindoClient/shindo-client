@@ -31,9 +31,9 @@ class PotionStatusMod :
     @EventTarget
     fun onUpdate(event: EventUpdate?) {
         if (this.isEditing() || mc.thePlayer == null) {
-            potions = Arrays.asList<PotionEffect?>(PotionEffect(1, 0), PotionEffect(10, 0))
+            potions = arrayListOf(PotionEffect(1, 0), PotionEffect(10, 0))
         } else {
-            potions = mc.thePlayer.getActivePotionEffects()
+            potions = mc.thePlayer.activePotionEffects
         }
     }
 
@@ -48,10 +48,10 @@ class PotionStatusMod :
             var offsetY = 16
 
             for (potioneffect in potions!!) {
-                val potion = Potion.potionTypes[potioneffect.getPotionID()]
+                val potion = Potion.potionTypes[potioneffect.potionID]
                 GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-                mc.getTextureManager().bindTexture(ResourceLocation("textures/gui/container/inventory.png"))
-                val index = potion.getStatusIconIndex()
+                mc.textureManager.bindTexture(ResourceLocation("textures/gui/container/inventory.png"))
+                val index = potion.statusIconIndex
                 GlStateManager.enableBlend()
 
                 startScale(this.getX().toFloat(), this.getY().toFloat(), this.getScale())
@@ -103,15 +103,15 @@ class PotionStatusMod :
             this.drawBackground((maxString + 29).toFloat(), ((ySize * potions!!.size) + 2).toFloat())
 
             for (potioneffect in potions!!) {
-                val potion = Potion.potionTypes[potioneffect.getPotionID()]
+                val potion = Potion.potionTypes[potioneffect.potionID]
 
-                var name = I18n.format(potion.getName())
+                var name = I18n.format(potion.name)
 
-                if (potioneffect.getAmplifier() == 1) {
+                if (potioneffect.amplifier == 1) {
                     name = name + " " + I18n.format("enchantment.level.2")
-                } else if (potioneffect.getAmplifier() == 2) {
+                } else if (potioneffect.amplifier == 2) {
                     name = name + " " + I18n.format("enchantment.level.3")
-                } else if (potioneffect.getAmplifier() == 3) {
+                } else if (potioneffect.amplifier == 3) {
                     name = name + " " + I18n.format("enchantment.level.4")
                 }
 

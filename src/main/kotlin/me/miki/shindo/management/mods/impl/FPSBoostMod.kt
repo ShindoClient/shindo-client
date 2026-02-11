@@ -20,7 +20,14 @@ class FPSBoostMod :
     @JvmField
     var chunkDelaySetting = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1.0, max = 1.02, current = 5.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.DELAY,
+        min = 1.0,
+        max = 12.0,
+        current = 5.0,
+        step = 1.0
+    )
     @JvmField
     var delaySetting = 5.0
 

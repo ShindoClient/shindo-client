@@ -54,13 +54,12 @@ object ShindoLogManager {
         if (file == null) {
             return
         }
-        // Escreve logs em paralelo para não bloquear o thread principal
         TaskExecutor.runAsync(ThreadPoolType.IO) {
             lock.withLock {
                 try {
                     file.appendText(message + "\n", Charsets.UTF_8)
                 } catch (ignored: Exception) {
-                    // Ignora erros de escrita de log para não causar loops
+
                 }
             }
         }
@@ -79,7 +78,6 @@ object ShindoLogManager {
             return when {
                 name.startsWith("me.miki.shindo.management.mods.") -> LogCategory.MODS
                 name.startsWith("me.miki.shindo.api.websocket.") -> LogCategory.WEBSOCKET
-                name.startsWith("me.miki.shindo.management.network.") -> LogCategory.NETWORK
                 name.startsWith("me.miki.shindo.management.music.") -> LogCategory.MUSIC
                 name.startsWith("me.miki.shindo.discord.") -> LogCategory.DISCORD
                 name.startsWith("me.miki.shindo.gui.") || name.startsWith("me.miki.shindo.ui.") -> LogCategory.UI
@@ -104,7 +102,6 @@ object ShindoLogManager {
                 LogCategory.WEBSOCKET -> manager.websocketLogFile
                 LogCategory.CHAT -> manager.chatLogFile
                 LogCategory.NOTIFICATIONS -> manager.notificationLogFile
-                LogCategory.NETWORK -> manager.networkLogFile
                 LogCategory.MUSIC -> manager.musicLogFile
                 LogCategory.DISCORD -> manager.discordLogFile
                 LogCategory.UI -> manager.uiLogFile

@@ -1,941 +1,610 @@
-﻿package me.miki.shindo.gui.modmenu.category.impl
+package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.category.impl.network.NetworkSection
-import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer
-import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip
-import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel
 import me.miki.shindo.management.color.AccentColor
-import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.network.NetworkManager
-import me.miki.shindo.management.network.NetworkManager.ProfileSnapshot
-import me.miki.shindo.management.network.model.LinkMedium
-import me.miki.shindo.management.network.proxy.WarpProxyManager
-import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.management.settings.impl.BooleanSetting
-import me.miki.shindo.management.settings.impl.CategorySetting
-import me.miki.shindo.management.settings.impl.ComboSetting
-import me.miki.shindo.management.settings.impl.NumberSetting
-import me.miki.shindo.management.settings.impl.combo.Option
-import me.miki.shindo.management.settings.metadata.SettingRegistry
-import me.miki.shindo.ui.comp.inputs.CompDropdown
-import me.miki.shindo.ui.comp.inputs.CompSlider
+import me.miki.shindo.management.network.proxy.CustomProxy
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
+import me.miki.shindo.ui.comp.inputs.CompTextBox
+import me.miki.shindo.ui.comp.layout.CompAddProxyCard
+import me.miki.shindo.ui.comp.layout.CompProxyCard
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
-import java.awt.Color
-import java.text.DecimalFormat
-import java.util.ArrayList
-import java.util.Arrays
+import kotlin.math.max
 
-class NetworkCategory(parent: GuiModMenu) : Category(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true) {
+private enum class NetworkPage(val label: String) {
+    GENERAL("General"),
+    PROXY("Proxy")
+}
 
-    private val navigationChips = ArrayList<FilterChip>()
-    private val heroGlow = SimpleAnimation()
-    private val df = DecimalFormat("0.0")
-    private val settingsPanel = SettingsPanel()
-    private val settingsScroll = Scroll()
-    private var settingsAnimation: Animation? = null
+private enum class ProxySectionFilter(val label: String) {
+    ALL("All"),
+    PRESET("Preset"),
+    CUSTOM("Custom")
+}
 
-    private var manager: NetworkManager? = null
-    private var snapshot: ProfileSnapshot? = null
-    private var baselineSnapshot: ProfileSnapshot? = null
-    private var activeSection = NetworkSection.TWEAKER
-    private var slideAnimation: Animation? = null
-    private var dropdownOpen = false
-    private var dropdownX = 0f
-    private var dropdownY = 0f
-    private var dropdownW = 0f
-    private var dropdownH = 0f
-    private var mediumSetting: ComboSetting? = null
-    private var mediumDropdown: CompDropdown? = null
-    private var capacitySetting: NumberSetting? = null
-    private var capacitySlider: CompSlider? = null
-    private var responsivenessSetting: NumberSetting? = null
-    private var responsivenessSlider: CompSlider? = null
-    private var dynamicSetting: BooleanSetting? = null
-    private var burstSetting: BooleanSetting? = null
-    private var autoFlushSetting: BooleanSetting? = null
-    private val dynamicAnimation = SimpleAnimation()
-    private val burstAnimation = SimpleAnimation()
-    private val autoFlushAnimation = SimpleAnimation()
-    private val warpAnimation = SimpleAnimation()
-    private val optimizerAnimation = SimpleAnimation()
-    private var jitterSetting: NumberSetting? = null
-    private var jitterSlider: CompSlider? = null
-    private var runningSpeedTest = false
-    private var runningLatency = false
-    private var settingsOpen = false
-    private var optimizerButtonX = 0f
-    private var optimizerButtonY = 0f
-    private var optimizerButtonW = 0f
-    private var optimizerButtonH = 0f
-    private var settingsButtonX = 0f
-    private var settingsButtonY = 0f
-    private var settingsButtonW = 0f
-    private var settingsButtonH = 0f
-    private var warpButtonX = 0f
-    private var warpButtonY = 0f
-    private var warpButtonW = 0f
-    private var warpButtonH = 0f
+class NetworkCategory(parent: GuiModMenu) :
+    Category(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true) {
+
+    private val pageChips = ArrayList<FilterChip>()
+    private val sectionChips = ArrayList<FilterChip>()
+
+    private val proxyScroll = Scroll()
+    private val cloudflareCard = CompProxyCard()
+    private val addProxyCard = CompAddProxyCard()
+    private val proxyCardPool = LinkedHashMap<String, CompProxyCard>()
+    private val visibleProxyCards = ArrayList<CompProxyCard>()
+
+    private val nameBox = CompTextBox()
+    private val primaryDNSBox = CompTextBox()
+    private val secondaryDNSBox = CompTextBox()
+
+    private var currentPage = NetworkPage.GENERAL
+    private var sectionFilter = ProxySectionFilter.ALL
+
+    private var showProxyForm = false
+    private var editingProxyId: String? = null
+    private var formAnimation: Animation = SmoothStepAnimation(PANEL_ANIMATION_MS, 1.0)
+
+    private var contentOffsetX = 0f
+    private var panelOffsetX = PANEL_SLIDE_DISTANCE
+    private var proxyScrollY = 0f
+
+    private var panelX = 0f
+    private var panelY = 0f
+    private var panelWidth = 0f
+    private var panelHeight = 0f
+
+    init {
+        addProxyCard.label = "Add Proxy"
+        addProxyCard.onClick = { openCreateForm() }
+        cloudflareCard.onToggleClick = { toggleCloudflare(Shindo.getInstance().networkManager) }
+    }
 
     override fun initGui() {
-        manager = Shindo.getInstance().connectionTweakerManager
-        snapshot = manager?.profileSnapshot
-        if (baselineSnapshot == null) {
-            baselineSnapshot = snapshot
-        }
-        slideAnimation = SmoothStepAnimation(240, 1.0)
-        settingsAnimation = SmoothStepAnimation(260, 1.0)
-        settingsAnimation?.setValue(1.0)
-        settingsOpen = false
-        settingsPanel.clear()
-        settingsScroll.resetAll()
-        buildControls()
+        resetState()
     }
 
     override fun initCategory() {
-        snapshot = manager?.profileSnapshot
-        settingsOpen = false
-        settingsPanel.clear()
-        settingsScroll.resetAll()
-        if (settingsAnimation == null) {
-            settingsAnimation = SmoothStepAnimation(260, 1.0)
-        }
-        settingsAnimation?.setValue(1.0)
-        buildControls()
+        resetState()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val localManager = manager ?: return
-        snapshot = localManager.profileSnapshot
-        
-        // Update animations
-        if (dynamicSetting != null) {
-            dynamicAnimation.setAnimation(if (localManager.isDynamicFlushEnabled()) 1.0f else 0.0f, 16.0)
-        }
-        if (burstSetting != null) {
-            burstAnimation.setAnimation(if (localManager.isBurstFlushSmoothingEnabled()) 1.0f else 0.0f, 16.0)
-        }
-        if (autoFlushSetting != null) {
-            autoFlushAnimation.setAnimation(if (localManager.isAutoFlushEnabled()) 1.0f else 0.0f, 16.0)
-        }
-        warpAnimation.setAnimation(if (localManager.isWarpProxyEnabled()) 1.0f else 0.0f, 16.0)
-        // A animação do optimizer será atualizada no drawHero para garantir que use o snapshot mais recente
-        
-        val nvg = Shindo.getInstance().nanoVGManager!!
-        val cm = Shindo.getInstance().colorManager
-        val palette = cm.palette
-        val accent = cm.currentColor
+        val instance = Shindo.getInstance()
+        val nvg = instance.nanoVGManager ?: return
+        val palette = instance.colorManager.getPalette()
+        val accent = instance.colorManager.getCurrentColor()
+        val networkManager = instance.networkManager
 
-        val viewportX = getX().toFloat()
-        val viewportY = getY().toFloat()
-        val viewportW = getWidth().toFloat()
-        val viewportH = getHeight().toFloat()
-        val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
-        val overlayActive = settingsOpen || settingsAnimating
-        val slideOffset = if (settingsAnimation != null) (-(600 - (settingsAnimation?.getValue() ?: 0.0) * 600)).toFloat() else 0f
+        updateAnimationState()
 
+        val contentMouseX = (mouseX - contentOffsetX).toInt()
         nvg.save()
-        nvg.scissor(viewportX, viewportY, viewportW, viewportH)
+        nvg.translate(contentOffsetX, 0f)
+        val pageChipBottom = drawPageChips(nvg, palette, accent, contentMouseX, mouseY)
 
-        val scrollY = scroll.getValue()
-        val contentMouseY = (mouseY - scrollY).toInt()
-
-        navigationChips.clear()
-        val tabH = drawTabs(nvg, palette, accent, viewportX, viewportY, viewportW, mouseX, mouseY, scrollY, slideOffset)
-        val contentTop = viewportY + tabH + 12f
-        val contentH = viewportH - (contentTop - viewportY)
-        scroll.maxScroll = kotlin.math.max(0f, computeContentHeight() - contentH)
-        if (!overlayActive && MouseUtils.isInside(mouseX, mouseY, viewportX, viewportY, viewportW, viewportH)) {
-            scroll.onScroll()
-            scroll.onAnimation()
-        }
-
-        nvg.save()
-        nvg.translate(slideOffset, 0f)
-        nvg.translate(0f, scrollY)
-        if (activeSection == NetworkSection.TWEAKER) {
-            drawTweaker(nvg, palette, accent, viewportX, contentTop, viewportW, mouseX, contentMouseY)
-        } else {
-            drawProxy(nvg, palette, accent, viewportX, contentTop, viewportW, mouseX, contentMouseY)
+        when (currentPage) {
+            NetworkPage.GENERAL -> drawGeneralPage(nvg, palette, accent, networkManager, pageChipBottom + SECTION_SPACING)
+            NetworkPage.PROXY -> drawProxyPage(nvg, palette, accent, networkManager, contentMouseX, mouseY, pageChipBottom + SECTION_SPACING)
         }
         nvg.restore()
-        nvg.restore()
 
-
-        if (overlayActive) {
-            nvg.save()
-            drawSettingsPanel(nvg, palette, accent, mouseX, mouseY, partialTicks)
-            nvg.restore()
-        }
-    }
-    private fun drawTabs(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accent: AccentColor,
-        x: Float,
-        y: Float,
-        width: Float,
-        mouseX: Int,
-        mouseY: Int,
-        scrollOffset: Float,
-        slideOffset: Float
-    ): Float {
-        val chipGap = 10f
-        val startX = x + CONTENT_PADDING
-        var currentX = startX
-        val currentY = y + 6f
-        for (section in NetworkSection.values()) {
-            val label = section.getLabel()
-            val icon = section.icon
-            val chipWidth = CategoryChipRenderer.computeWidth(nvg, label, icon)
-            val active = section == activeSection
-            val drawX = currentX + slideOffset
-            val drawY = currentY + scrollOffset
-            val hovered = MouseUtils.isInside(mouseX, mouseY, drawX, drawY, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
-            CategoryChipRenderer.drawChip(nvg, palette, accent, drawX, drawY, chipWidth, label, icon, active, hovered)
-            val chip = FilterChip(Runnable { activateSection(section) })
-            chip.setBounds(drawX, drawY, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
-            navigationChips.add(chip)
-            currentX += chipWidth + chipGap
-        }
-        return currentY + CategoryChipRenderer.CHIP_HEIGHT - y
+        drawProxyForm(nvg, palette, accent, mouseX, mouseY, partialTicks)
     }
 
-    private fun drawTweaker(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accent: AccentColor,
-        baseX: Float,
-        baseY: Float,
-        width: Float,
-        mouseX: Int,
-        mouseY: Int
-    ) {
-        var cursorY = baseY + CONTENT_PADDING
-        heroGlow.setAnimation(if (snapshot?.isOptimizerEnabled() == true) 1f else 0.5f, 20.0)
-
-        cursorY = drawHero(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2f, mouseX, mouseY) + CARD_GAP
-        cursorY = drawFocusChart(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2f) + CARD_GAP
-        cursorY = drawAdvancedSettings(nvg, palette, accent, baseX + CONTENT_PADDING, cursorY, width - CONTENT_PADDING * 2f, mouseX, mouseY) + CARD_GAP
-    }
-
-    private fun drawProxy(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accent: AccentColor,
-        baseX: Float,
-        baseY: Float,
-        width: Float,
-        mouseX: Int,
-        mouseY: Int
-    ) {
-        val cardX = baseX + CONTENT_PADDING
-        val cardW = width - CONTENT_PADDING * 2f
-        val cardY = baseY + CONTENT_PADDING
-        val bg = palette.getBackgroundColor(ColorType.DARK)
-        nvg.drawRoundedRect(cardX, cardY, cardW, 120f, CARD_RADIUS, bg)
-        nvg.drawText(TranslateText.NETWORK_PROXY_WARP.text, cardX + 16f, cardY + 18f, palette.getFontColor(ColorType.DARK), 14f, Fonts.SEMIBOLD)
-        nvg.drawText(TranslateText.NETWORK_SETTINGS_HINT.text, cardX + 16f, cardY + 36f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 9.5f, Fonts.REGULAR)
-        if (manager != null) {
-            val warp = Shindo.getInstance().warpProxyManager
-            val status = warp?.getDiagnostics()?.status?.name ?: "UNKNOWN"
-            nvg.drawText(status, cardX + 16f, cardY + 54f, accent.color1, 11f, Fonts.MEDIUM)
-        }
-        val warpEnabled = manager?.isWarpProxyEnabled() == true
-        warpAnimation.setAnimation(if (warpEnabled) 1.0f else 0.0f, 16.0)
-        
-        val toggleWidth = 58f
-        val toggleHeight = 26f
-        warpButtonW = toggleWidth
-        warpButtonH = toggleHeight
-        warpButtonX = cardX + cardW - warpButtonW - 16f
-        warpButtonY = cardY + 60f
-        val toggleRadius = toggleHeight / 2f
-        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-        
-        nvg.drawRoundedRect(warpButtonX, warpButtonY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-        
-        if (warpAnimation.value > 0f) {
-            nvg.drawGradientRoundedRect(
-                warpButtonX,
-                warpButtonY,
-                toggleWidth,
-                toggleHeight,
-                toggleRadius,
-                ColorUtils.applyAlpha(accent.color1, (warpAnimation.value * 255).toInt()),
-                ColorUtils.applyAlpha(accent.color2, (warpAnimation.value * 255).toInt())
-            )
-        }
-        
-        val knobSize = toggleHeight - 8f
-        val knobX = warpButtonX + 4f + warpAnimation.value * (toggleWidth - knobSize - 8f)
-        val knobY = warpButtonY + 4f
-        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-    }
-
-    private fun drawHero(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accent: AccentColor,
-        x: Float,
-        y: Float,
-        w: Float,
-        mouseX: Int,
-        mouseY: Int
-    ): Float {
-        val base = palette.getBackgroundColor(ColorType.DARK)
-        val glow = ColorUtils.applyAlpha(accent.color1, (heroGlow.value * 90).toInt())
-        nvg.drawRoundedRect(x, y, w, HERO_HEIGHT, CARD_RADIUS, base)
-        nvg.drawGradientRoundedRect(x, y, w, HERO_HEIGHT, CARD_RADIUS, glow, ColorUtils.applyAlpha(accent.color2, 80))
-
-        val titleY = y + 18f
-        nvg.drawText(TranslateText.NETWORK.text, x + 18f, titleY, palette.getFontColor(ColorType.DARK), 16f, Fonts.SEMIBOLD)
-        nvg.drawText(TranslateText.NETWORK_OPTIMIZER_SUMMARY.text, x + 18f, titleY + 18f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210), 10f, Fonts.REGULAR)
-
-        var sliderY = titleY + 55f
-        if (capacitySetting != null && capacitySlider != null) {
-            nvg.drawText(TranslateText.NETWORK_LINK_CAPACITY.text, x + 18f, sliderY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
-            capacitySetting?.setValue(manager?.getLinkCapacityMbps()?.toDouble() ?: 0.0)
-            capacitySlider?.setX(x + 18f)
-            capacitySlider?.setY(sliderY)
-            capacitySlider?.setWidth(w - 36f)
-            capacitySlider?.draw(mouseX, mouseY, 0f)
-            sliderY += 34f
-            manager?.setLinkCapacityMbps(capacitySetting?.getValueInt() ?: 0)
-        }
-        if (responsivenessSetting != null && responsivenessSlider != null) {
-            nvg.drawText(TranslateText.NETWORK_RESPONSIVENESS.text, x + 18f, sliderY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
-            responsivenessSetting?.setValue(manager?.getResponsivenessLevel()?.toDouble() ?: 0.0)
-            responsivenessSlider?.setX(x + 18f)
-            responsivenessSlider?.setY(sliderY)
-            responsivenessSlider?.setWidth(w - 36f)
-            responsivenessSlider?.draw(mouseX, mouseY, 0f)
-            sliderY += 34f
-            manager?.setResponsivenessLevel(responsivenessSetting?.getValueInt() ?: 0)
-        }
-
-        val toggleWidth = 58f
-        val toggleHeight = 26f
-        val toggleX = x + w - toggleWidth - 18f
-        val buttonsY = sliderY + 10f
-        val maxButtonsY = y + HERO_HEIGHT - toggleHeight - 10f
-        val toggleY = kotlin.math.min(buttonsY, maxButtonsY)
-        
-        // Atualiza o snapshot antes de verificar o estado para garantir que está sincronizado
-        val currentSnapshot = manager?.profileSnapshot
-        val on = currentSnapshot?.isOptimizerEnabled() == true
-        
-        // Atualiza a animação baseada no estado atual
-        optimizerAnimation.setAnimation(if (on) 1.0f else 0.0f, 16.0)
-        
-        val toggleRadius = toggleHeight / 2f
-        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-        
-        nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-        
-        if (optimizerAnimation.value > 0f) {
-            nvg.drawGradientRoundedRect(
-                toggleX,
-                toggleY,
-                toggleWidth,
-                toggleHeight,
-                toggleRadius,
-                ColorUtils.applyAlpha(accent.color1, (optimizerAnimation.value * 255).toInt()),
-                ColorUtils.applyAlpha(accent.color2, (optimizerAnimation.value * 255).toInt())
-            )
-        }
-        
-        val knobSize = toggleHeight - 8f
-        val knobX = toggleX + 4f + optimizerAnimation.value * (toggleWidth - knobSize - 8f)
-        val knobY = toggleY + 4f
-        nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-        
-        optimizerButtonX = toggleX
-        optimizerButtonY = toggleY
-        optimizerButtonW = toggleWidth
-        optimizerButtonH = toggleHeight
-
-        settingsButtonW = 120f
-        settingsButtonH = BUTTON_HEIGHT
-        settingsButtonX = toggleX - settingsButtonW - 10f
-        settingsButtonY = toggleY
-        drawButton(nvg, palette, accent, settingsButtonX, settingsButtonY, settingsButtonW, settingsButtonH, TranslateText.SETTINGS.text, LegacyIcon.SETTINGS, true, mouseX, mouseY, null)
-
-        dropdownX = x + 18f
-        dropdownY = settingsButtonY
-        dropdownW = 80f
-        dropdownH = settingsButtonH
-
-        if (mediumSetting != null && mediumDropdown != null) {
-            mediumSetting?.setOption(mediumSetting?.getOption())
-            mediumDropdown?.setX(dropdownX)
-            mediumDropdown?.setY(dropdownY)
-            mediumDropdown?.setWidth(dropdownW)
-            mediumDropdown?.setHeight(dropdownH)
-            mediumDropdown?.setOpenUp(true)
-            mediumDropdown?.draw(mouseX, mouseY, 0f)
-        }
-
-        return y + HERO_HEIGHT
-    }
-
-    private fun drawFocusChart(nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, x: Float, y: Float, w: Float): Float {
-        val h = CHART_HEIGHT
-        nvg.drawRoundedRect(x, y, w, h, CARD_RADIUS, palette.getBackgroundColor(ColorType.DARK))
-
-        val barX = x + 16f
-        val barY = y + 36f
-        val barW = w - 32f
-        val barH = 12f
-        val focuses = floatArrayOf(
-            snapshot?.latencyFocus ?: 0.5f,
-            snapshot?.stabilityFocus ?: 0.5f,
-            snapshot?.throughputFocus ?: 0.5f
-        )
-        val labels = arrayOf(
-            TranslateText.NETWORK_LATENCY_FOCUS,
-            TranslateText.NETWORK_STABILITY_FOCUS,
-            TranslateText.NETWORK_THROUGHPUT_FOCUS
-        )
-        for (i in focuses.indices) {
-            val fy = barY + i * (barH + 14f)
-            nvg.drawText(labels[i].text, barX, fy - 2f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.REGULAR)
-            nvg.drawRoundedRect(barX, fy + 8f, barW, barH, 6f, palette.getBackgroundColor(ColorType.MID))
-            nvg.drawRoundedRect(barX, fy + 8f, barW * focuses[i], barH, 6f, ColorUtils.applyAlpha(accent.color1, 220))
-            nvg.drawText(df.format(focuses[i] * 100) + "%", barX + barW - 40f, fy + 10f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
-        }
-        return y + h
-    }
-
-    private fun drawButton(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accent: AccentColor,
-        x: Float,
-        y: Float,
-        w: Float,
-        h: Float,
-        label: String,
-        icon: String,
-        enabled: Boolean,
-        mouseX: Int,
-        mouseY: Int,
-        action: Runnable?
-    ) {
-        val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, w, h)
-        val bg = if (enabled) {
-            if (hovered) ColorUtils.applyAlpha(accent.color1, 220) else ColorUtils.applyAlpha(accent.color1, 180)
-        } else {
-            palette.getBackgroundColor(ColorType.MID)
-        }
-        nvg.drawRoundedRect(x, y, w, h, 8f, bg)
-        nvg.drawText(icon, x + 10f, y + h / 2f - 7f, palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
-        nvg.drawText(label, x + 30f, y + h / 2f - 5f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        if (enabled && hovered && action != null && Mouse.isButtonDown(0)) {
-            action.run()
-        }
-    }
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val localManager = manager ?: return
-        val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
-        val overlayActive = settingsOpen || settingsAnimating
-        if (overlayActive) {
-            if (handleSettingsClick(mouseX, mouseY, mouseButton)) {
+        if (mouseButton != 0) return
+
+        if (isFormInteractionLocked()) {
+            if (showProxyForm) {
+                handleFormClick(mouseX, mouseY)
+            }
+            return
+        }
+
+        val contentMouseX = (mouseX - contentOffsetX).toInt()
+
+        for (chip in pageChips) {
+            if (chip.contains(contentMouseX, mouseY)) {
+                chip.click()
                 return
             }
         }
 
-        val scrollY = scroll.getValue()
-        val contentMouseY = (mouseY - scrollY).toInt()
+        if (currentPage != NetworkPage.PROXY) return
 
-        if (mouseButton == 0) {
-            for (chip in navigationChips) {
-                if (chip.contains(mouseX, mouseY)) {
-                    chip.click()
-                    return
-                }
-            }
-        }
-        if (activeSection == NetworkSection.TWEAKER) {
-            if (mediumDropdown != null) {
-                mediumDropdown?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                val option = mediumSetting?.getOption()
-                if (option != null) {
-                    val selected = LinkMedium.fromKey(option.nameKey)
-                    localManager.setNetworkMedium(selected)
-                }
-            }
-            if (capacitySlider != null) {
-                capacitySlider?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setLinkCapacityMbps(capacitySetting?.getValueInt() ?: 0)
-            }
-            if (responsivenessSlider != null) {
-                responsivenessSlider?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setResponsivenessLevel(responsivenessSetting?.getValueInt() ?: 0)
-            }
-            if (MouseUtils.isInside(mouseX, contentMouseY, dropdownX, dropdownY, dropdownW, dropdownH)) {
-                dropdownOpen = !dropdownOpen
-            }
-            if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, optimizerButtonX, optimizerButtonY, optimizerButtonW, optimizerButtonH)) {
-                val currentState = localManager.isOptimizerEnabled()
-                val newState = !currentState
-                localManager.setOptimizerEnabled(newState)
-                // Atualiza o snapshot imediatamente para refletir a mudança
-                snapshot = localManager.profileSnapshot
-                // Força a animação a atualizar imediatamente
-                optimizerAnimation.setAnimation(if (newState) 1.0f else 0.0f, 16.0)
-            }
-            if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, settingsButtonX, settingsButtonY, settingsButtonW, settingsButtonH)) {
-                openSettingsPanel()
+        for (chip in sectionChips) {
+            if (chip.contains(contentMouseX, mouseY)) {
+                chip.click()
                 return
             }
-            // Handle toggles in Advanced Settings
-            val baseX = getX().toFloat() + CONTENT_PADDING
-            val baseY = getY().toFloat() + CONTENT_PADDING
-            val cardWidth = getWidth().toFloat() - CONTENT_PADDING * 2f
-            val heroHeight = HERO_HEIGHT
-            val chartHeight = CHART_HEIGHT
-            val cardH = 140f
-            val advancedSettingsY = baseY + heroHeight + CARD_GAP + chartHeight + CARD_GAP
-            val toggleWidth = 58f
-            val toggleHeight = 26f
-            var rowY = advancedSettingsY + 36f
-            val rowX = baseX + 16f
-            
-            if (dynamicSetting != null && mouseButton == 0) {
-                val toggleX = rowX + cardWidth - toggleWidth - 16f
-                val toggleY = rowY
-                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
-                    val newState = !(dynamicSetting?.isToggled() ?: false)
-                    dynamicSetting?.setToggled(newState)
-                    localManager.setDynamicFlushEnabled(newState)
-                }
-            }
-            rowY += 24f
-            if (burstSetting != null && mouseButton == 0) {
-                val toggleX = rowX + cardWidth - toggleWidth - 16f
-                val toggleY = rowY
-                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
-                    val newState = !(burstSetting?.isToggled() ?: false)
-                    burstSetting?.setToggled(newState)
-                    localManager.setBurstFlushSmoothing(newState)
-                }
-            }
-            rowY += 24f
-            if (autoFlushSetting != null && mouseButton == 0) {
-                val toggleX = rowX + cardWidth - toggleWidth - 16f
-                val toggleY = rowY
-                if (MouseUtils.isInside(mouseX, contentMouseY, toggleX, toggleY, toggleWidth, toggleHeight)) {
-                    val newState = !(autoFlushSetting?.isToggled() ?: false)
-                    autoFlushSetting?.setToggled(newState)
-                    localManager.setAutoFlushEnabled(newState)
-                }
-            }
-            if (jitterSlider != null) {
-                jitterSlider?.mouseClicked(mouseX, contentMouseY, mouseButton)
-                localManager.setJitterSensitivity((jitterSetting?.getValue() ?: 0.0).toInt())
-            }
-        } else if (mouseButton == 0 && MouseUtils.isInside(mouseX, contentMouseY, warpButtonX, warpButtonY, warpButtonW, warpButtonH)) {
-            localManager.setWarpProxyEnabled(!localManager.isWarpProxyEnabled())
         }
-    }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
-        if (settingsOpen) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
-            settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingsScroll)
-            return
+        if (sectionFilter != ProxySectionFilter.CUSTOM) {
+            cloudflareCard.mouseClicked(contentMouseX, mouseY, mouseButton)
         }
-        if (settingsAnimating) {
-            return
+
+        if (sectionFilter != ProxySectionFilter.PRESET) {
+            val listMouseY = (mouseY - proxyScrollY).toInt()
+            for (card in visibleProxyCards) {
+                card.mouseClicked(contentMouseX, listMouseY, mouseButton)
+            }
+            addProxyCard.mouseClicked(contentMouseX, listMouseY, mouseButton)
         }
-        val contentMouseY = (mouseY - scroll.getValue()).toInt()
-        mediumDropdown?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        capacitySlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        responsivenessSlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
-        jitterSlider?.mouseReleased(mouseX, contentMouseY, mouseButton)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        val settingsAnimating = settingsAnimation != null && !(settingsAnimation?.isDone(Direction.FORWARDS) ?: false)
-        if (settingsOpen) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
-            settingsPanel.keyTyped(typedChar, keyCode)
-            return
-        }
+        if (!showProxyForm) return
 
-        if (settingsOpen && keyCode == Keyboard.KEY_ESCAPE) {
-            settingsOpen = false
-            settingsPanel.clear()
-            return
-        }
+        nameBox.keyTyped(typedChar, keyCode)
+        primaryDNSBox.keyTyped(typedChar, keyCode)
+        secondaryDNSBox.keyTyped(typedChar, keyCode)
 
-        if (settingsAnimating) {
-            return
-        }
-
-        if (!settingsOpen) {
-            scroll.onKey(keyCode)
-            if (keyCode == Keyboard.KEY_ESCAPE) {
-                dropdownOpen = false
-            }
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            closeForm()
         }
     }
 
-    private fun handleSettingsClick(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
-        val layout = getSettingsLayout()
-        val offsetX = if (settingsAnimation != null) (settingsAnimation?.getValue() ?: 0.0).toFloat() * 600f else 0f
-        val closeSize = 13f
-        val closeX = layout.x + 10
-        val closeY = layout.y + 8
+    private fun drawPageChips(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        mouseX: Int,
+        mouseY: Int
+    ): Float {
+        pageChips.clear()
+        val startX = getX() + CONTENT_PADDING
+        var xCursor = startX
+        val y = getY() + CHIP_TOP_PADDING
 
-        if (mouseButton == 0 && MouseUtils.isInside(mouseX, mouseY, closeX - 4f + offsetX, closeY - 4f, closeSize + 8f, closeSize + 8f)) {
-            closeSettingsPanel()
-            return true
-        }
-        if (MouseUtils.isInside(mouseX, mouseY, layout.x + offsetX, layout.y, layout.width, layout.height)) {
-            settingsPanel.mouseClicked(mouseX, mouseY, mouseButton, layout.contentX, layout.contentY, layout.contentWidth, layout.viewportHeight, settingsScroll)
-            return true
+        for (page in NetworkPage.values()) {
+            val chipWidth = CategoryChipRenderer.computeWidth(nvg, page.label, null)
+            val active = currentPage == page
+            val hovered = !isFormInteractionLocked() && MouseUtils.isInside(
+                mouseX, mouseY, xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT
+            )
+            CategoryChipRenderer.drawChip(
+                nvg, palette, accent, xCursor, y, chipWidth, page.label, null, active, hovered
+            )
+
+            val chip = FilterChip(Runnable {
+                if (currentPage != page) {
+                    currentPage = page
+                    sectionFilter = ProxySectionFilter.ALL
+                    proxyScroll.resetAll()
+                }
+            })
+            chip.setBounds(xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
+            pageChips.add(chip)
+            xCursor += chipWidth + CHIP_GAP
         }
 
-        if (MouseUtils.isInside(mouseX, mouseY, layout.x + layout.width - 24, layout.y + 7.5f, 13F, 13f) && mouseButton == 0) {
-            settingsPanel.resetSettings()
-        }
-
-        if (mouseButton == 0) {
-            closeSettingsPanel()
-            return true
-        }
-        return false
+        return y + CategoryChipRenderer.CHIP_HEIGHT
     }
 
-    private fun openSettingsPanel() {
-        if (manager == null) {
-            return
+    private fun drawProxySectionChips(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        mouseX: Int,
+        mouseY: Int,
+        y: Float
+    ): Float {
+        sectionChips.clear()
+        val startX = getX() + CONTENT_PADDING
+        var xCursor = startX
+
+        for (section in ProxySectionFilter.values()) {
+            val chipWidth = CategoryChipRenderer.computeWidth(nvg, section.label, null)
+            val active = sectionFilter == section
+            val hovered = !isFormInteractionLocked() && MouseUtils.isInside(
+                mouseX, mouseY, xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT
+            )
+            CategoryChipRenderer.drawChip(
+                nvg, palette, accent, xCursor, y, chipWidth, section.label, null, active, hovered
+            )
+
+            val chip = FilterChip(Runnable { sectionFilter = section })
+            chip.setBounds(xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
+            sectionChips.add(chip)
+            xCursor += chipWidth + CHIP_GAP
         }
-        settingsPanel.setLayoutMode(SettingsPanel.LayoutMode.SINGLE_COLUMN)
-        settingsPanel.clear()
-        settingsPanel.buildEntries(getFilteredSettings())
-        settingsScroll.resetAll()
-        settingsOpen = true
-        settingsAnimation?.setDirection(Direction.BACKWARDS)
-        setCanClose(false)
+
+        return y + CategoryChipRenderer.CHIP_HEIGHT
     }
 
-    private fun closeSettingsPanel() {
-        settingsOpen = false
-        settingsPanel.clear()
-        settingsScroll.resetAll()
-        settingsAnimation?.setDirection(Direction.FORWARDS)
-        setCanClose(true)
-    }
+    private fun drawGeneralPage(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        networkManager: NetworkManager,
+        startY: Float
+    ) {
+        val x = getX() + CONTENT_PADDING
+        val width = getWidth() - CONTENT_PADDING * 2f
+        val cardHeight = 76f
 
-    private fun activateSection(section: NetworkSection) {
-        if (section == activeSection) {
-            return
-        }
-        activeSection = section
-        slideAnimation?.setDirection(Direction.FORWARDS)
-        dropdownOpen = false
-        scroll.resetAll()
-    }
-
-    private fun drawSettingsPanel(nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (settingsAnimation == null) {
-            return
-        }
-        settingsAnimation?.setDirection(if (settingsOpen) Direction.BACKWARDS else Direction.FORWARDS)
-        val layout = getSettingsLayout()
-        val offsetX = (settingsAnimation?.getValue() ?: 0.0).toFloat() * 600f
-        if (MouseUtils.isInside(mouseX, mouseY, layout.x + offsetX, layout.y, layout.width, layout.height)) {
-            settingsScroll.onScroll()
-        }
-        settingsScroll.onAnimation()
-
-        nvg.translate(offsetX, 0f)
-        nvg.drawShadow(layout.x, layout.y, layout.width, layout.height, 12f, 7)
-        nvg.drawRoundedRect(layout.x, layout.y, layout.width, layout.height, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
-        nvg.drawRoundedRect(layout.x + 1f, layout.y + 1f, layout.width - 2f, layout.height - 2f, 11f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
-
-        nvg.drawText(LegacyIcon.CHEVRON_LEFT, layout.x + 10, layout.y + 8, palette.getFontColor(ColorType.DARK), 13f, Fonts.LEGACYICON)
-        nvg.drawText(TranslateText.NETWORK.text, layout.x + 27f, layout.y + 9f, palette.getFontColor(ColorType.DARK), 13f, Fonts.SEMIBOLD)
-        nvg.drawText(LegacyIcon.REFRESH, layout.x + layout.width - 24, layout.y + 7.5f, palette.getFontColor(ColorType.DARK), 13f, Fonts.LEGACYICON)
-
-
-        nvg.save()
-        nvg.scissor(layout.x + 6f, layout.contentY - 6f, layout.width - 12f, layout.viewportHeight + 12f)
-        settingsPanel.draw(mouseX, mouseY, partialTicks, layout.contentX, layout.contentY, layout.contentWidth, layout.viewportHeight, nvg, palette, settingsScroll)
-        nvg.restore()
-    }
-
-    private fun getSettingsLayout(): SettingsLayout {
-        val layout = SettingsLayout()
-        layout.x = getX() + 24f
-        layout.y = getY() + 20f
-        layout.width = getWidth() - 48f
-        layout.height = getHeight() - 40f
-        layout.contentX = layout.x + 14f
-        layout.contentY = layout.y + 44f
-        layout.contentWidth = layout.width - 28f
-        layout.viewportHeight = layout.height - 58f
-        return layout
-    }
-    private fun getFilteredSettings(): List<Setting> {
-        val settings = SettingRegistry.getSettings(manager!!)
-        if (settings.isEmpty()) {
-            return settings ?: emptyList()
-        }
-        val hiddenKeys = mutableListOf(
-            TranslateText.NETWORK_OPTIMIZER_TOGGLE.key,
-            TranslateText.NETWORK_MEDIUM.key,
-            TranslateText.NETWORK_LINK_CAPACITY.key,
-            TranslateText.NETWORK_RESPONSIVENESS.key,
-            TranslateText.NETWORK_DYNAMIC_FLUSH.key,
-            TranslateText.NETWORK_BURST_SMOOTHING.key,
-            TranslateText.NETWORK_AUTO_FLUSH.key,
-            TranslateText.NETWORK_JITTER_SENSITIVITY.key,
-            TranslateText.NETWORK_PROXY_WARP.key
+        drawInfoCard(
+            nvg,
+            palette,
+            accent,
+            x,
+            startY,
+            width,
+            cardHeight,
+            "Current DNS",
+            networkManager.getCurrentDNSInfo()
         )
-        val hiddenCategories = mutableListOf("overview", "routing")
-        val filtered = ArrayList<Setting>()
-        for (setting in settings) {
-            if (setting is CategorySetting) {
-                val t = setting.getTranslate()
-                if (t == TranslateText.NETWORK_CATEGORY_OVERVIEW || t == TranslateText.NETWORK_CATEGORY_ROUTING) {
-                    continue
-                }
-            }
-            val key = setting.getNameKey()
-            if (key != null) {
-                val keyLower = key.lowercase()
-                var hide = false
-                for (hidden in hiddenKeys) {
-                    if (hidden == null) {
-                        continue
-                    }
-                    val hiddenLower = hidden.lowercase()
-                    if (keyLower == hiddenLower || keyLower.endsWith(":$hiddenLower")) {
-                        hide = true
-                        break
-                    }
-                }
-                if (hide) {
-                    continue
-                }
-            }
-            if (setting is CategorySetting) {
-                val categoryKey = setting.getNameKey()
-                var hideCategory = false
-                for (hc in hiddenCategories) {
-                    val catLower = categoryKey.lowercase()
-                    val hcLower = hc.lowercase()
-                    if (catLower == hcLower || catLower.endsWith(":$hcLower")) {
-                        hideCategory = true
-                        break
-                    }
-                }
-                if (hideCategory) {
-                    continue
-                }
-            }
-            filtered.add(setting)
-        }
-        return filtered
+        drawInfoCard(
+            nvg,
+            palette,
+            accent,
+            x,
+            startY + cardHeight + CARD_GAP,
+            width,
+            cardHeight,
+            "Proxy Mode",
+            networkManager.getActiveProxyType().name
+        )
     }
 
-    private fun computeContentHeight(): Float {
-        return CONTENT_PADDING * 2 + HERO_HEIGHT + CHART_HEIGHT + 120f + (CARD_GAP * 5)
-    }
-
-    private fun buildControls() {
-        val localManager = manager ?: return
-        val mediums = ArrayList<Option>()
-        for (medium in LinkMedium.values()) {
-            mediums.add(Option(medium.getTranslate()))
-        }
-        mediumSetting = ComboSetting(TranslateText.NETWORK_MEDIUM, localManager, LinkMedium.WIRED.getTranslate(), mediums)
-        mediumDropdown = CompDropdown(200f, mediumSetting!!)
-
-        capacitySetting = NumberSetting(TranslateText.NETWORK_LINK_CAPACITY, localManager, localManager.getLinkCapacityMbps().toDouble(), 10.0, 1000.0, true)
-        capacitySlider = CompSlider(capacitySetting!!)
-
-        responsivenessSetting = NumberSetting(TranslateText.NETWORK_RESPONSIVENESS, localManager, localManager.getResponsivenessLevel().toDouble(), 1.0, 10.0, true)
-        responsivenessSlider = CompSlider(responsivenessSetting!!)
-
-        dynamicSetting = BooleanSetting(TranslateText.NETWORK_DYNAMIC_FLUSH, localManager, localManager.isDynamicFlushEnabled())
-        burstSetting = BooleanSetting(TranslateText.NETWORK_BURST_SMOOTHING, localManager, localManager.isBurstFlushSmoothingEnabled())
-        autoFlushSetting = BooleanSetting(TranslateText.NETWORK_AUTO_FLUSH, localManager, localManager.isAutoFlushEnabled())
-        dynamicAnimation.value = if (localManager.isDynamicFlushEnabled()) 1.0f else 0.0f
-        burstAnimation.value = if (localManager.isBurstFlushSmoothingEnabled()) 1.0f else 0.0f
-        autoFlushAnimation.value = if (localManager.isAutoFlushEnabled()) 1.0f else 0.0f
-        warpAnimation.value = if (localManager.isWarpProxyEnabled()) 1.0f else 0.0f
-        optimizerAnimation.value = if (localManager.profileSnapshot?.isOptimizerEnabled() == true) 1.0f else 0.0f
-
-        jitterSetting = NumberSetting(TranslateText.NETWORK_JITTER_SENSITIVITY, localManager, localManager.getJitterSensitivity().toDouble(), 1.0, 20.0, true)
-        jitterSlider = CompSlider(jitterSetting!!)
-        jitterSlider?.setShowValue(true)
-    }
-
-    private fun drawAdvancedSettings(
+    private fun drawInfoCard(
         nvg: NanoVGManager,
         palette: ColorPalette,
         accent: AccentColor,
         x: Float,
         y: Float,
-        w: Float,
-        mouseX: Int,
-        mouseY: Int
-    ): Float {
-        val cardH = 140f
-        nvg.drawRoundedRect(x, y, w, cardH, CARD_RADIUS, palette.getBackgroundColor(ColorType.DARK))
-        nvg.drawText("Advanced Tuning", x + 16f, y + 16f, palette.getFontColor(ColorType.DARK), 12f, Fonts.SEMIBOLD)
-
-        var rowY = y + 36f
-        val rowX = x + 16f
-        val toggleWidth = 58f
-        val toggleHeight = 26f
-        val toggleRadius = toggleHeight / 2f
-        
-        if (dynamicSetting != null) {
-            val enabled = manager?.isDynamicFlushEnabled() ?: false
-            dynamicSetting?.setToggled(enabled)
-            dynamicAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
-            
-            val toggleX = rowX + w - toggleWidth - 16f
-            val toggleY = rowY
-            
-            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-            
-            if (dynamicAnimation.value > 0f) {
-                nvg.drawGradientRoundedRect(
-                    toggleX,
-                    toggleY,
-                    toggleWidth,
-                    toggleHeight,
-                    toggleRadius,
-                    ColorUtils.applyAlpha(accent.color1, (dynamicAnimation.value * 255).toInt()),
-                    ColorUtils.applyAlpha(accent.color2, (dynamicAnimation.value * 255).toInt())
-                )
-            }
-            
-            val knobSize = toggleHeight - 8f
-            val knobX = toggleX + 4f + dynamicAnimation.value * (toggleWidth - knobSize - 8f)
-            val knobY = toggleY + 4f
-            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-            
-            nvg.drawText(TranslateText.NETWORK_DYNAMIC_FLUSH.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
-            rowY += 24f
-        }
-        if (burstSetting != null) {
-            val enabled = manager?.isBurstFlushSmoothingEnabled() ?: false
-            burstSetting?.setToggled(enabled)
-            burstAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
-            
-            val toggleX = rowX + w - toggleWidth - 16f
-            val toggleY = rowY
-            
-            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-            
-            if (burstAnimation.value > 0f) {
-                nvg.drawGradientRoundedRect(
-                    toggleX,
-                    toggleY,
-                    toggleWidth,
-                    toggleHeight,
-                    toggleRadius,
-                    ColorUtils.applyAlpha(accent.color1, (burstAnimation.value * 255).toInt()),
-                    ColorUtils.applyAlpha(accent.color2, (burstAnimation.value * 255).toInt())
-                )
-            }
-            
-            val knobSize = toggleHeight - 8f
-            val knobX = toggleX + 4f + burstAnimation.value * (toggleWidth - knobSize - 8f)
-            val knobY = toggleY + 4f
-            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-            
-            nvg.drawText(TranslateText.NETWORK_BURST_SMOOTHING.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
-            rowY += 24f
-        }
-        if (autoFlushSetting != null) {
-            val enabled = manager?.isAutoFlushEnabled() ?: false
-            autoFlushSetting?.setToggled(enabled)
-            autoFlushAnimation.setAnimation(if (enabled) 1.0f else 0.0f, 16.0)
-            
-            val toggleX = rowX + w - toggleWidth - 16f
-            val toggleY = rowY
-            
-            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-            
-            if (autoFlushAnimation.value > 0f) {
-                nvg.drawGradientRoundedRect(
-                    toggleX,
-                    toggleY,
-                    toggleWidth,
-                    toggleHeight,
-                    toggleRadius,
-                    ColorUtils.applyAlpha(accent.color1, (autoFlushAnimation.value * 255).toInt()),
-                    ColorUtils.applyAlpha(accent.color2, (autoFlushAnimation.value * 255).toInt())
-                )
-            }
-            
-            val knobSize = toggleHeight - 8f
-            val knobX = toggleX + 4f + autoFlushAnimation.value * (toggleWidth - knobSize - 8f)
-            val knobY = toggleY + 4f
-            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-            
-            nvg.drawText(TranslateText.NETWORK_AUTO_FLUSH.text, rowX, rowY + 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
-            rowY += 34f
-        }
-        if (jitterSetting != null && jitterSlider != null) {
-            jitterSetting?.setValue(manager?.getJitterSensitivity()?.toDouble() ?: 0.0)
-            nvg.drawText(TranslateText.NETWORK_JITTER_SENSITIVITY.text, rowX, rowY - 10f, palette.getFontColor(ColorType.NORMAL), 9.5f, Fonts.MEDIUM)
-            jitterSlider?.setX(rowX)
-            jitterSlider?.setY(rowY)
-            jitterSlider?.setWidth(w - 40f)
-            jitterSlider?.draw(mouseX, mouseY, 0f)
-            manager?.setJitterSensitivity((jitterSetting?.getValue() ?: 0.0).toInt())
-        }
-        return y + cardH
+        width: Float,
+        height: Float,
+        title: String,
+        value: String
+    ) {
+        nvg.drawRoundedRect(x, y, width, height, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 215))
+        nvg.drawGradientRoundedRect(
+            x, y, width, height, 12f,
+            ColorUtils.applyAlpha(accent.getColor1(), 28),
+            ColorUtils.applyAlpha(accent.getColor2(), 28)
+        )
+        nvg.drawText(title, x + 16f, y + 18f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+        nvg.drawText(
+            nvg.getLimitText(value, 11f, Fonts.SEMIBOLD, width - 32f),
+            x + 16f,
+            y + 38f,
+            palette.getFontColor(ColorType.DARK),
+            11f,
+            Fonts.SEMIBOLD
+        )
     }
 
-    private class SettingsLayout {
-        var x = 0f
-        var y = 0f
-        var width = 0f
-        var height = 0f
-        var contentX = 0f
-        var contentY = 0f
-        var contentWidth = 0f
-        var viewportHeight = 0f
+    private fun drawProxyPage(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        networkManager: NetworkManager,
+        mouseX: Int,
+        mouseY: Int,
+        startY: Float
+    ) {
+        var yCursor = drawProxySectionChips(nvg, palette, accent, mouseX, mouseY, startY) + SECTION_SPACING
+        val x = getX() + CONTENT_PADDING
+        val width = getWidth() - CONTENT_PADDING * 2f
+
+        if (sectionFilter != ProxySectionFilter.CUSTOM) {
+            syncCloudflareCard(networkManager)
+            cloudflareCard.setBounds(x, yCursor, width, PROXY_CARD_HEIGHT)
+            cloudflareCard.draw(mouseX, mouseY, 0f)
+            yCursor += PROXY_CARD_HEIGHT + CARD_GAP
+        }
+
+        if (sectionFilter == ProxySectionFilter.PRESET) {
+            visibleProxyCards.clear()
+            return
+        }
+
+        drawCustomProxyList(nvg, networkManager, mouseX, mouseY, x, yCursor, width)
+    }
+
+    private fun drawCustomProxyList(
+        nvg: NanoVGManager,
+        networkManager: NetworkManager,
+        mouseX: Int,
+        mouseY: Int,
+        x: Float,
+        y: Float,
+        width: Float
+    ) {
+        visibleProxyCards.clear()
+
+        val proxies = networkManager.proxyManager.getCustomProxies()
+        val viewportHeight = max(0f, getHeight() - (y - getY()) - CONTENT_BOTTOM_PADDING)
+        val totalHeight = (proxies.size + 1) * (PROXY_CARD_HEIGHT + PROXY_CARD_GAP) - PROXY_CARD_GAP
+        proxyScroll.maxScroll = max(0f, totalHeight - viewportHeight)
+
+        if (!isFormInteractionLocked() && MouseUtils.isInside(mouseX, mouseY, x, y, width, viewportHeight)) {
+            proxyScroll.onScroll()
+        }
+        proxyScroll.onAnimation()
+        proxyScrollY = proxyScroll.getValue()
+        val listMouseY = (mouseY - proxyScrollY).toInt()
+
+        nvg.save()
+        nvg.scissor(x, y, width, viewportHeight)
+        nvg.translate(0f, proxyScrollY)
+
+        var cardY = y
+        for (proxy in proxies) {
+            val card = proxyCardPool.getOrPut(proxy.id) { CompProxyCard() }
+            syncProxyCard(card, proxy, networkManager.getActiveCustomProxyId() == proxy.id)
+            card.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
+
+            val displayY = cardY + proxyScrollY
+            if (displayY + PROXY_CARD_HEIGHT >= y && displayY <= y + viewportHeight) {
+                card.draw(mouseX, listMouseY, 0f)
+                visibleProxyCards.add(card)
+            }
+
+            cardY += PROXY_CARD_HEIGHT + PROXY_CARD_GAP
+        }
+
+        addProxyCard.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
+        val addDisplayY = cardY + proxyScrollY
+        if (addDisplayY + PROXY_CARD_HEIGHT >= y && addDisplayY <= y + viewportHeight) {
+            addProxyCard.draw(mouseX, listMouseY, 0f)
+        }
+
+        nvg.restore()
+    }
+
+    private fun drawProxyForm(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
+        if (!showProxyForm && formAnimation.isDone(Direction.FORWARDS)) {
+            return
+        }
+
+        panelX = getX() + CONTENT_PADDING
+        panelY = getY() + 15f
+        panelWidth = getWidth() - CONTENT_PADDING * 2f
+        panelHeight = getHeight() - 30f
+
+        val panelMouseX = (mouseX - panelOffsetX).toInt()
+        nvg.save()
+        nvg.translate(panelOffsetX, 0f)
+        nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
+
+        nvg.drawText(
+            if (editingProxyId == null) "Add Custom Proxy" else "Edit Proxy",
+            panelX + 24f,
+            panelY + 22f,
+            palette.getFontColor(ColorType.DARK),
+            14f,
+            Fonts.SEMIBOLD
+        )
+
+        val fieldWidth = (panelWidth - 48f) / 2f - 15f
+        val fieldStartY = panelY + 62f
+
+        nvg.drawText("Name", panelX + 24f, fieldStartY, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nameBox.setPosition(panelX + 24f, fieldStartY + 20f, fieldWidth, 20f)
+        nameBox.setDefaultText("Proxy name")
+        nameBox.draw(panelMouseX, mouseY, partialTicks)
+
+        nvg.drawText("Primary DNS", panelX + 24f, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        primaryDNSBox.setPosition(panelX + 24f, fieldStartY + 62f, fieldWidth, 20f)
+        primaryDNSBox.setDefaultText("1.1.1.1")
+        primaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
+
+        val secondColumnX = panelX + 24f + fieldWidth + 30f
+        nvg.drawText("Secondary DNS", secondColumnX, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        secondaryDNSBox.setPosition(secondColumnX, fieldStartY + 62f, fieldWidth, 20f)
+        secondaryDNSBox.setDefaultText("Optional")
+        secondaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
+
+        val buttonY = panelY + panelHeight - FORM_BUTTON_HEIGHT - 20f
+        val cancelX = panelX + panelWidth - FORM_BUTTON_WIDTH * 2f - 30f
+        val saveX = panelX + panelWidth - FORM_BUTTON_WIDTH - 20f
+
+        val cancelHovered = MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+        nvg.drawRoundedRect(
+            cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
+            if (cancelHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
+        )
+        nvg.drawCenteredText("Cancel", cancelX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+
+        val saveHovered = MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+        nvg.drawRoundedRect(
+            saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
+            if (saveHovered) accent.getColor1() else palette.getBackgroundColor(ColorType.MID)
+        )
+        nvg.drawCenteredText("Save", saveX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+
+        nvg.restore()
+    }
+
+    private fun handleFormClick(mouseX: Int, mouseY: Int) {
+        val panelMouseX = (mouseX - panelOffsetX).toInt()
+        val insidePanel = MouseUtils.isInside(panelMouseX, mouseY, panelX, panelY, panelWidth, panelHeight)
+        if (!insidePanel) {
+            closeForm()
+            return
+        }
+
+        nameBox.mouseClicked(panelMouseX, mouseY, 0)
+        primaryDNSBox.mouseClicked(panelMouseX, mouseY, 0)
+        secondaryDNSBox.mouseClicked(panelMouseX, mouseY, 0)
+
+        val buttonY = panelY + panelHeight - FORM_BUTTON_HEIGHT - 20f
+        val cancelX = panelX + panelWidth - FORM_BUTTON_WIDTH * 2f - 30f
+        val saveX = panelX + panelWidth - FORM_BUTTON_WIDTH - 20f
+
+        if (MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)) {
+            closeForm()
+            return
+        }
+        if (MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)) {
+            saveProxy(Shindo.getInstance().networkManager)
+        }
+    }
+
+    private fun saveProxy(networkManager: NetworkManager) {
+        val name = nameBox.getText().trim()
+        val primary = primaryDNSBox.getText().trim()
+        val secondary = secondaryDNSBox.getText().trim().takeIf { it.isNotEmpty() }
+
+        if (name.isEmpty() || primary.isEmpty()) {
+            return
+        }
+
+        val success = editingProxyId?.let { id ->
+            networkManager.proxyManager.updateProxy(id, name, primary, secondary)
+        } ?: networkManager.proxyManager.addProxy(
+            CustomProxy(name = name, primaryDNS = primary, secondaryDNS = secondary)
+        )
+
+        if (success) {
+            closeForm()
+            saveProfileState()
+        }
+    }
+
+    private fun syncCloudflareCard(networkManager: NetworkManager) {
+        cloudflareCard.title = "Cloudflare DNS"
+        cloudflareCard.subtitle = "1.1.1.1 / 1.0.0.1"
+        cloudflareCard.active = networkManager.getActiveProxyType() == NetworkManager.ProxyType.CLOUDFLARE
+        cloudflareCard.onCardClick = null
+    }
+
+    private fun syncProxyCard(card: CompProxyCard, proxy: CustomProxy, active: Boolean) {
+        card.title = proxy.name
+        card.subtitle = proxy.primaryDNS + (proxy.secondaryDNS?.let { " / $it" } ?: "")
+        card.active = active
+        card.onCardClick = { openEditForm(proxy) }
+        card.onToggleClick = { toggleCustomProxy(Shindo.getInstance().networkManager, proxy.id) }
+    }
+
+    private fun toggleCloudflare(networkManager: NetworkManager) {
+        if (networkManager.getActiveProxyType() == NetworkManager.ProxyType.CLOUDFLARE) {
+            networkManager.disableAllProxies()
+        } else {
+            networkManager.proxyManager.setActiveProxy(null)
+            networkManager.enableCloudflareProxy()
+        }
+        saveProfileState()
+    }
+
+    private fun toggleCustomProxy(networkManager: NetworkManager, proxyId: String) {
+        if (networkManager.getActiveCustomProxyId() == proxyId) {
+            networkManager.disableAllProxies()
+        } else {
+            networkManager.disableCloudflareProxy()
+            networkManager.enableCustomProxy(proxyId)
+        }
+        saveProfileState()
+    }
+
+    private fun openCreateForm() {
+        editingProxyId = null
+        resetForm()
+        showProxyForm = true
+        setCanClose(false)
+        formAnimation.setDirection(Direction.BACKWARDS)
+    }
+
+    private fun openEditForm(proxy: CustomProxy) {
+        editingProxyId = proxy.id
+        nameBox.setText(proxy.name)
+        primaryDNSBox.setText(proxy.primaryDNS)
+        secondaryDNSBox.setText(proxy.secondaryDNS ?: "")
+        showProxyForm = true
+        setCanClose(false)
+        formAnimation.setDirection(Direction.BACKWARDS)
+    }
+
+    private fun closeForm() {
+        showProxyForm = false
+        editingProxyId = null
+        formAnimation.setDirection(Direction.FORWARDS)
+    }
+
+    private fun updateAnimationState() {
+        formAnimation.setDirection(if (showProxyForm) Direction.BACKWARDS else Direction.FORWARDS)
+
+        val slide = (formAnimation.getValue() * PANEL_SLIDE_DISTANCE).toFloat()
+        panelOffsetX = slide
+        contentOffsetX = -(PANEL_SLIDE_DISTANCE - slide)
+
+        if (!showProxyForm && formAnimation.isDone(Direction.FORWARDS)) {
+            resetForm()
+            setCanClose(true)
+        }
+    }
+
+    private fun isFormInteractionLocked(): Boolean {
+        return showProxyForm || !formAnimation.isDone(Direction.FORWARDS)
+    }
+
+    private fun resetForm() {
+        nameBox.setText("")
+        primaryDNSBox.setText("")
+        secondaryDNSBox.setText("")
+    }
+
+    private fun saveProfileState() {
+        Shindo.getInstance().profileManager.save()
+    }
+
+    private fun resetState() {
+        currentPage = NetworkPage.GENERAL
+        sectionFilter = ProxySectionFilter.ALL
+        proxyScroll.resetAll()
+        proxyScrollY = 0f
+        showProxyForm = false
+        editingProxyId = null
+        resetForm()
+
+        formAnimation = SmoothStepAnimation(PANEL_ANIMATION_MS, 1.0)
+        formAnimation.setValue(1.0)
+        formAnimation.setDirection(Direction.FORWARDS)
+
+        contentOffsetX = 0f
+        panelOffsetX = PANEL_SLIDE_DISTANCE
+        setCanClose(true)
     }
 
     private companion object {
         private const val CONTENT_PADDING = 18f
-        private const val CARD_RADIUS = 14f
+        private const val CONTENT_BOTTOM_PADDING = 20f
+        private const val CHIP_TOP_PADDING = 16f
+        private const val CHIP_GAP = 8f
+        private const val SECTION_SPACING = 12f
+
         private const val CARD_GAP = 12f
-        private const val HERO_HEIGHT = 190f
-        private const val CHART_HEIGHT = 120f
-        private const val BUTTON_HEIGHT = 28f
+        private const val PROXY_CARD_HEIGHT = 70f
+        private const val PROXY_CARD_GAP = 12f
+
+        private const val FORM_BUTTON_WIDTH = 84f
+        private const val FORM_BUTTON_HEIGHT = 22f
+
+        private const val PANEL_ANIMATION_MS = 260
+        private const val PANEL_SLIDE_DISTANCE = 600f
     }
 }

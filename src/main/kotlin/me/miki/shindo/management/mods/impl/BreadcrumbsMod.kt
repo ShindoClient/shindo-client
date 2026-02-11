@@ -33,16 +33,16 @@ class BreadcrumbsMod : Mod(
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.TIMEOUT)
     private val timeoutEnabled = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 1.0, max = 15.00, step = 1.0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 1.0, max = 150.0, step = 1.0)
     private val timeoutTicks = 15.0
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
-        val currentColor = getInstance().colorManager.currentColor
+        val currentColor = getInstance().colorManager.getCurrentColor()
 
         Render3DUtils.renderBreadCrumbs(
             path.toList(),
-            if (customColor) applyAlpha(trailColor, 255) else currentColor.interpolateColor
+            if (customColor) applyAlpha(trailColor, 255) else currentColor.getInterpolateColor()
         )
     }
 

@@ -7,11 +7,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(PropertyInteger.class)
 public class MixinPropertyInteger {
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public int hashCode() {
         return ((ICachedHashcode) this).getCachedHashcode();

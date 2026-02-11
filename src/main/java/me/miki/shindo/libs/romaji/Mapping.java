@@ -4,31 +4,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The mapping from hiragana/katakana to romaji.
- * Note that each of hiragana/katakana char must have the System.STANDARD as a default system.
- *
- * @see System
- * @see Romaji
- */
 class Mapping {
 
     static final Map<String, Romaji> MAP = Collections.unmodifiableMap(new HashMap<String, Romaji>() {{
 
-        // 全角ひらがな
 
-        // あ行
         put("あ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "a");
         }})));
         put("い", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "i");
-            //put(System.Y,			"yi");
+
         }})));
         put("う", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "u");
-            //put(System.SHORT,		"wi");
-            //put(System.LONG,		"whi");
+
+
         }})));
         put("え", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "e");
@@ -89,7 +80,6 @@ class Mapping {
             put(System.STANDARD, "ye");
         }})));
 
-        // か行
         put("か", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ka");
             put(System.SHORT, "ca");
@@ -100,7 +90,7 @@ class Mapping {
         put("く", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ku");
             put(System.SHORT, "cu");
-            //put(System.SHORT,		"qu");
+
         }})));
         put("け", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ke");
@@ -138,7 +128,7 @@ class Mapping {
         put("くぁ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "qwa");
             put(System.SHORT, "qa");
-            //put(System.LONG,		"kwa");
+
         }})));
         put("くぃ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "qwi");
@@ -206,7 +196,6 @@ class Mapping {
             put(System.STANDARD, "gwo");
         }})));
 
-        // さ行
         put("さ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "sa");
         }})));
@@ -304,7 +293,6 @@ class Mapping {
             put(System.LONG, "jyo");
         }})));
 
-        // た行
         put("た", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ta");
         }})));
@@ -463,7 +451,6 @@ class Mapping {
             put(System.LONG, "ltsu");
         }})));
 
-        // な行
         put("な", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "na");
         }})));
@@ -496,7 +483,6 @@ class Mapping {
             put(System.STANDARD, "nyo");
         }})));
 
-        // は行
         put("は", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ha");
         }})));
@@ -626,7 +612,6 @@ class Mapping {
             put(System.STANDARD, "pyo");
         }})));
 
-        // ま行
         put("ま", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ma");
         }})));
@@ -659,7 +644,6 @@ class Mapping {
             put(System.STANDARD, "myo");
         }})));
 
-        // や行
         put("や", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ya");
         }})));
@@ -683,7 +667,6 @@ class Mapping {
             put(System.L, "lyo");
         }})));
 
-        // ら行
         put("ら", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ra");
         }})));
@@ -716,7 +699,6 @@ class Mapping {
             put(System.STANDARD, "ryo");
         }})));
 
-        // わ行
         put("わ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "wa");
         }})));
@@ -727,7 +709,7 @@ class Mapping {
             put(System.STANDARD, "n");
             put(System.LONG, "nn");
             put(System.SHORT, "n'");
-            //put(System.X,			"xn");
+
         }})));
 
         put("ゎ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
@@ -735,20 +717,18 @@ class Mapping {
             put(System.L, "lwa");
         }})));
 
-        // 全角カタカナ
 
-        // ア行
         put("ア", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "a");
         }})));
         put("イ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "i");
-            //put(System.Y,			"yi");
+
         }})));
         put("ウ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "u");
-            //put(System.SHORT,		"wi");
-            //put(System.LONG,		"whi");
+
+
         }})));
         put("エ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "e");
@@ -809,7 +789,6 @@ class Mapping {
             put(System.STANDARD, "ye");
         }})));
 
-        // カ行
         put("カ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ka");
             put(System.SHORT, "ca");
@@ -820,7 +799,7 @@ class Mapping {
         put("ク", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ku");
             put(System.SHORT, "cu");
-            //put(System.SHORT,		"qu");
+
         }})));
         put("ケ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ke");
@@ -858,7 +837,7 @@ class Mapping {
         put("クァ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "qwa");
             put(System.SHORT, "qa");
-            //put(System.LONG,		"kwa");
+
         }})));
         put("クィ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "qwi");
@@ -935,7 +914,6 @@ class Mapping {
             put(System.L, "lke");
         }})));
 
-        // サ行
         put("サ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "sa");
         }})));
@@ -1033,7 +1011,6 @@ class Mapping {
             put(System.LONG, "jyo");
         }})));
 
-        // タ行
         put("タ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ta");
         }})));
@@ -1192,7 +1169,6 @@ class Mapping {
             put(System.LONG, "ltsu");
         }})));
 
-        // ナ行
         put("ナ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "na");
         }})));
@@ -1225,7 +1201,6 @@ class Mapping {
             put(System.STANDARD, "nyo");
         }})));
 
-        // ハ行
         put("ハ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ha");
         }})));
@@ -1383,7 +1358,6 @@ class Mapping {
             put(System.STANDARD, "vyo");
         }})));
 
-        // マ行
         put("マ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ma");
         }})));
@@ -1416,7 +1390,6 @@ class Mapping {
             put(System.STANDARD, "myo");
         }})));
 
-        // ヤ行
         put("ヤ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ya");
         }})));
@@ -1440,7 +1413,6 @@ class Mapping {
             put(System.L, "lyo");
         }})));
 
-        // ラ行
         put("ラ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "ra");
         }})));
@@ -1473,7 +1445,6 @@ class Mapping {
             put(System.STANDARD, "ryo");
         }})));
 
-        // ワ行
         put("ワ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{
             put(System.STANDARD, "wa");
         }})));
@@ -1484,7 +1455,7 @@ class Mapping {
             put(System.STANDARD, "n");
             put(System.LONG, "nn");
             put(System.SHORT, "n'");
-            //put(System.X,			"xn");
+
         }})));
 
         put("ヮ", Romaji.valueOf(Collections.unmodifiableMap(new HashMap<System, String>() {{

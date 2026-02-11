@@ -8,9 +8,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CompCellGrid(
-    width: Float,
-    height: Float,
-    private val setting: CellGridSetting
+        width: Float,
+        height: Float,
+        private val setting: CellGridSetting
 ) : Comp() {
 
     private val padding = 12f
@@ -30,8 +30,22 @@ class CompCellGrid(
         val paletteColors = palette
         val nvgInstance = nvg
 
-        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 10f, paletteColors.getBackgroundColor(ColorType.DARK))
-        nvgInstance.drawRoundedRect(getX() + 1f, getY() + 1f, getWidth() - 2f, getHeight() - 2f, 9f, paletteColors.getBackgroundColor(ColorType.MID))
+        nvgInstance.drawRoundedRect(
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                10f,
+                paletteColors.getBackgroundColor(ColorType.DARK)
+        )
+        nvgInstance.drawRoundedRect(
+                getX() + 1f,
+                getY() + 1f,
+                getWidth() - 2f,
+                getHeight() - 2f,
+                9f,
+                paletteColors.getBackgroundColor(ColorType.MID)
+        )
 
         nvgInstance.save()
         nvgInstance.scissor(getX(), getY(), getWidth(), getHeight())
@@ -45,25 +59,25 @@ class CompCellGrid(
                 val cellX = layout.offsetX + col * layout.cellSize
                 val cellY = layout.offsetY + row * layout.cellSize
                 val cellSize = layout.cellSize - gap
-                val fillColor = if (rowCells[col]) setting.getCellColor(row, col) else Color(0, 0, 0, 40)
+                val fillColor = if (rowCells[col]) Color.WHITE else Color(0, 0, 0, 40)
 
                 nvgInstance.drawRoundedRect(
-                    cellX + gap / 2f,
-                    cellY + gap / 2f,
-                    cellSize,
-                    cellSize,
-                    3f,
-                    fillColor
-                )
-
-                if (row == hoverRow && col == hoverCol) {
-                    nvgInstance.drawRoundedRect(
                         cellX + gap / 2f,
                         cellY + gap / 2f,
                         cellSize,
                         cellSize,
                         3f,
-                        Color(255, 255, 255, 80)
+                        fillColor
+                )
+
+                if (row == hoverRow && col == hoverCol) {
+                    nvgInstance.drawRoundedRect(
+                            cellX + gap / 2f,
+                            cellY + gap / 2f,
+                            cellSize,
+                            cellSize,
+                            3f,
+                            Color(255, 255, 255, 80)
                     )
                 }
             }
@@ -83,7 +97,7 @@ class CompCellGrid(
         val layout = calculateLayout(cells) ?: return
         resolveCell(mouseX, mouseY, layout, cells)?.let { (row, col) ->
             val current = cells[row][col]
-            setting.setCell(row, col, !current, null)
+            setting.setCell(row, col, !current)
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
@@ -123,10 +137,10 @@ class CompCellGrid(
     }
 
     private fun resolveCell(
-        mouseX: Int,
-        mouseY: Int,
-        layout: GridLayout,
-        cells: Array<BooleanArray>
+            mouseX: Int,
+            mouseY: Int,
+            layout: GridLayout,
+            cells: Array<BooleanArray>
     ): Pair<Int, Int>? {
         val relativeX = mouseX - layout.offsetX
         val relativeY = mouseY - layout.offsetY
@@ -143,10 +157,10 @@ class CompCellGrid(
     }
 
     private data class GridLayout(
-        val rows: Int,
-        val cols: Int,
-        val cellSize: Float,
-        val offsetX: Float,
-        val offsetY: Float
+            val rows: Int,
+            val cols: Int,
+            val cellSize: Float,
+            val offsetX: Float,
+            val offsetY: Float
     )
 }

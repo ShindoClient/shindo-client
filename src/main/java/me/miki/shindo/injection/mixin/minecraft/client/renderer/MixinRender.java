@@ -2,6 +2,7 @@ package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
 import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleManager;
+import me.miki.shindo.api.roles.RoleVisuals;
 import me.miki.shindo.api.websocket.presence.PresenceTracker;
 import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.utils.render.RenderUtils;
@@ -33,11 +34,6 @@ public abstract class MixinRender<T extends Entity> {
 
     @Shadow
     public abstract FontRenderer getFontRendererFromRenderManager();
-
-    /**
-     * @author MikiDevAHM
-     * @reason Client Logo Rendering
-     */
     @Overwrite
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
 
@@ -82,8 +78,7 @@ public abstract class MixinRender<T extends Entity> {
                 AbstractClientPlayer player = (AbstractClientPlayer) entityIn;
                 UUID uuid = player.getGameProfile().getId();
 
-                if (PresenceTracker.isOnline(uuid.toString())) {
-                    // fundo estendido
+                if (RoleVisuals.isOnline(uuid)) {
                     GlStateManager.disableTexture2D();
                     worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
                     worldrenderer.pos(-j - 11, -1 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
@@ -94,16 +89,9 @@ public abstract class MixinRender<T extends Entity> {
                     GlStateManager.enableTexture2D();
                     GlStateManager.depthMask(true);
 
-                    String texture;
-                    if (RoleManager.hasAtLeast(uuid, Role.STAFF)) texture = "logo_red";
-                    else if (RoleManager.hasAtLeast(uuid, Role.DIAMOND)) texture = "logo_blue";
-                    else if (RoleManager.hasAtLeast(uuid, Role.GOLD)) texture = "logo_yellow";
-                    else texture = "logo";
-
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("shindo/logos/" + texture + ".png"));
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RoleVisuals.getIconPNG(RoleVisuals.getPrimaryRoleCached(uuid))));
                     RenderUtils.drawModalRectWithCustomSizedTexture(-fontrenderer.getStringWidth(str) / 2F - 10, -1, 0, 0, 9, 9, 9, 9);
                 } else {
-                    // fundo sem logo
                     GlStateManager.disableTexture2D();
                     worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
                     worldrenderer.pos(-j - 1, -1 + i, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();

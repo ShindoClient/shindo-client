@@ -1,19 +1,11 @@
-﻿package me.miki.shindo.gui.modmenu
+package me.miki.shindo.gui.modmenu
 
 import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
+import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.category.impl.AddonCategory
-import me.miki.shindo.gui.modmenu.category.impl.ChatCategory
-import me.miki.shindo.gui.modmenu.category.impl.CosmeticsCategory
-import me.miki.shindo.gui.modmenu.category.impl.HomeCategory
-import me.miki.shindo.gui.modmenu.category.impl.ModuleCategory
-import me.miki.shindo.gui.modmenu.category.impl.NetworkCategory
-import me.miki.shindo.gui.modmenu.category.impl.ProfileCategory
-import me.miki.shindo.gui.modmenu.category.impl.ScreenshotCategory
-import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
-import me.miki.shindo.gui.modmenu.category.impl.SpotifyCategory
+import me.miki.shindo.gui.modmenu.category.impl.*
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -26,15 +18,14 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.buttons.CompIconButton
 import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.utils.MathUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
-import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
-import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -43,7 +34,10 @@ import java.awt.Color
 import java.io.IOException
 import kotlin.math.min
 
-class GuiModMenu : GuiScreen(), IShindoScreen {
+class GuiModMenu(
+    private val initialCategoryClass: Class<out Category>? = null,
+    private val initialSearchText: String? = null
+) : GuiScreen(), IShindoScreen {
 
     private val categories = ArrayList<Category>()
     private val moveAnimation = SimpleAnimation()
@@ -68,9 +62,9 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         categories.add(CosmeticsCategory(this))
         categories.add(SpotifyCategory(this))
         categories.add(ProfileCategory(this))
-        //categories.add(ChatCategory(this))
+
         categories.add(ScreenshotCategory(this))
-        //categories.add(NetworkCategory(this))
+        categories.add(NetworkCategory(this))
         categories.add(SettingsCategory(this))
 
         currentCategory = getCategoryByClass(HomeCategory::class.java)
@@ -97,6 +91,8 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         scroll.resetAll()
         toEditHUD = false
         canClose = true
+        initialCategoryClass?.let { currentCategory = getCategoryByClass(it) }
+        searchBox.setText(initialSearchText ?: "")
 
         layoutButton.onClick {
             toEditHUD = true
@@ -142,25 +138,62 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager ?: return
         val colorManager: ColorManager = instance.colorManager
-        val palette: ColorPalette = colorManager.palette
-        val currentColor: AccentColor = colorManager.currentColor
+        val palette: ColorPalette = colorManager.getPalette()
+        val currentColor: AccentColor = colorManager.getCurrentColor()
 
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(if (toEditHUD) GuiEditHUD(true) else null)
         }
-        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawRoundedRect(
+            x.toFloat(),
+            y.toFloat(),
+            menuWidth.toFloat(),
+            menuHeight.toFloat(),
+            12f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
 
         if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
             Blur.drawBlur {
-                nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, palette.getBackgroundColor(ColorType.DARK))
+                nvg.drawRoundedRectVarying(
+                    x.toFloat(),
+                    y.toFloat(),
+                    32f,
+                    menuHeight.toFloat(),
+                    12f,
+                    0f,
+                    12f,
+                    0f,
+                    palette.getBackgroundColor(ColorType.DARK)
+                )
             }
             val colsidebar = palette.getBackgroundColor(ColorType.DARK)
-            nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, Color(colsidebar.red, colsidebar.green, colsidebar.blue, 210))
+            nvg.drawRoundedRectVarying(
+                x.toFloat(),
+                y.toFloat(),
+                32f,
+                menuHeight.toFloat(),
+                12f,
+                0f,
+                12f,
+                0f,
+                Color(colsidebar.red, colsidebar.green, colsidebar.blue, 210)
+            )
         } else {
-            nvg.drawRoundedRectVarying(x.toFloat(), y.toFloat(), 32f, menuHeight.toFloat(), 12f, 0f, 12f, 0f, palette.getBackgroundColor(ColorType.DARK))
+            nvg.drawRoundedRectVarying(
+                x.toFloat(),
+                y.toFloat(),
+                32f,
+                menuHeight.toFloat(),
+                12f,
+                0f,
+                12f,
+                0f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
         }
 
-        nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, currentColor.color1, currentColor.color2)
+        nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, currentColor.getColor1(), currentColor.getColor2())
         nvg.drawText(LegacyIcon.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.LEGACYICON)
         if (currentCategory.isShowTitle()) {
             nvg.save()
@@ -182,11 +215,24 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
 
         nvg.save()
 
-        nvg.drawGradientRoundedRect(x + 5.5f, y + 34.5f + moveAnimation.value, 21f, 21f, 5f, currentColor.color1, currentColor.color2)
+        nvg.drawGradientRoundedRect(
+            x + 5.5f,
+            y + 34.5f + moveAnimation.value,
+            21f,
+            21f,
+            5f,
+            currentColor.getColor1(),
+            currentColor.getColor2()
+        )
 
         for (c in categories) {
             val textColor = c.getTextColorAnimation().getColor(
-                if (MathUtils.isInRange(moveAnimation.value, offsetY - 8f, offsetY + 8f)) Color.WHITE else palette.getFontColor(ColorType.NORMAL),
+                if (MathUtils.isInRange(
+                        moveAnimation.value,
+                        offsetY - 8f,
+                        offsetY + 8f
+                    )
+                ) Color.WHITE else palette.getFontColor(ColorType.NORMAL),
                 18
             )
 
@@ -237,7 +283,12 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
                     }
                 }
 
-                nvg.scissor((x + 32).toFloat(), (y + yOff).toFloat(), (menuWidth - 32).toFloat(), (menuHeight - yOff).toFloat())
+                nvg.scissor(
+                    (x + 32).toFloat(),
+                    (y + yOff).toFloat(),
+                    (menuWidth - 32).toFloat(),
+                    (menuHeight - yOff).toFloat()
+                )
                 nvg.translate(0f, 50f - (c.getCategoryAnimation().value * 50f))
 
                 c.drawScreen(mouseX, mouseY, partialTicks)
@@ -248,13 +299,24 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
             }
         }
 
-        if (MouseUtils.isInside(mouseX, mouseY, x + 32f, y + 31f, (menuWidth - 32).toFloat(), (menuHeight - 31).toFloat())) {
+        if (MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                x + 32f,
+                y + 31f,
+                (menuWidth - 32).toFloat(),
+                (menuHeight - 31).toFloat()
+            )
+        ) {
             scroll.onScroll()
         }
 
         scroll.onAnimation()
 
-        if (currentCategory.isShowSearchBox() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
+        if (currentCategory.isShowSearchBox() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(
+                Keyboard.KEY_F
+            )
+        ) {
             currentCategory.getSearchBox().setFocused(true)
         }
     }
@@ -262,13 +324,20 @@ class GuiModMenu : GuiScreen(), IShindoScreen {
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         var offsetY = 0
 
-        // exit gui if not clicked in the gui area
-        if (!MouseUtils.isInside(mouseX, mouseY, x - 5f, y - 5f, (menuWidth + 10).toFloat(), (menuHeight + 10).toFloat()) && mouseButton == 0 && canClose) {
+        if (!MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                x - 5f,
+                y - 5f,
+                (menuWidth + 10).toFloat(),
+                (menuHeight + 10).toFloat()
+            ) && mouseButton == 0 && canClose
+        ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
 
         for (c in categories) {
-        if (MouseUtils.isInside(mouseX, mouseY, x + 5.5f, y + 34.5f + offsetY, 21f, 21f) && mouseButton == 0) {
+            if (MouseUtils.isInside(mouseX, mouseY, x + 5.5f, y + 34.5f + offsetY, 21f, 21f) && mouseButton == 0) {
                 currentCategory = c
             }
             offsetY += 22

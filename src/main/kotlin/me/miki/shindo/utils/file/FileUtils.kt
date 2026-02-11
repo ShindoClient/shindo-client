@@ -79,10 +79,6 @@ object FileUtils {
 
     @JvmStatic
     fun isImageFile(file: File): Boolean = isImageFile(file.name)
-
-    /**
-     * Opens the given folder in the native file browser.
-     */
     @JvmStatic
     fun openFolderAtPath(folder: File) {
         val absolutePath = folder.absolutePath
@@ -91,10 +87,12 @@ object FileUtils {
                 Runtime.getRuntime().exec(arrayOf("/usr/bin/open", absolutePath)); return
             } catch (_: IOException) {
             }
+
             Util.EnumOS.WINDOWS -> try {
                 Runtime.getRuntime().exec(String.format("cmd.exe /C start \"Open file\" \"%s\"", absolutePath)); return
             } catch (_: IOException) {
             }
+
             else -> {}
         }
 

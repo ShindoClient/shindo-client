@@ -108,7 +108,7 @@ class AppleSkinMod :
             foodBarOffsets.setSize(preferFoodBars)
         }
 
-        for (i in 0..<preferFoodBars) {
+        for (i in 0 until preferFoodBars) {
             val x = right - i * 8 - 9
             var y = top
 
@@ -159,7 +159,7 @@ class AppleSkinMod :
         val iconStartOffset = 16
         val iconSize = 9
 
-        for (i in startSaturationBar..<endSaturationBar) {
+        for (i in startSaturationBar until endSaturationBar) {
             val offset = foodBarOffsets[i] ?: continue
 
             val x = right + offset.x
@@ -230,7 +230,7 @@ class AppleSkinMod :
         val iconStartOffset = 16
         val iconSize = 9
 
-        for (i in startFoodBars..<endFoodBars) {
+        for (i in startFoodBars until endFoodBars) {
             val offset = foodBarOffsets[i] ?: continue
 
             val x = right + offset.x
@@ -271,6 +271,7 @@ class AppleSkinMod :
         var y: Int = 0
     }
 }
+
 
 
 

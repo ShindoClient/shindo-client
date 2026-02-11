@@ -12,7 +12,7 @@ import me.miki.shindo.management.mods.impl.subtitle.Subtitle
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.audio.ISound
 import net.minecraft.util.ResourceLocation
@@ -27,7 +27,14 @@ class SoundSubtitlesMod :
     private val subtitles: MutableList<Subtitle> = Lists.newArrayList()
     private val soundMap = HashMap<String, String>()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1.0, max = 1.00, current = 3.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.MAX,
+        min = 1.0,
+        max = 10.0,
+        current = 3.0,
+        step = 1.0
+    )
     private val maxSetting = 3
 
     private val backgroundAnimation = SimpleAnimation(0.0f)
@@ -38,10 +45,10 @@ class SoundSubtitlesMod :
         val mapped = ResourceLocation("shindo/soundtitles/data.json")
 
         try {
-            val obj = JsonParser.parseString(read(mc.getResourceManager().getResource(mapped).getInputStream()))
-                .getAsJsonObject()
+            val obj = JsonParser.parseString(read(mc.resourceManager.getResource(mapped).inputStream))
+                .asJsonObject
             for (entry in obj.entrySet()) {
-                soundMap.put(entry.key, entry.value.getAsString())
+                soundMap.put(entry.key, entry.value.asString)
             }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to load sound subtitles", e)
@@ -58,7 +65,7 @@ class SoundSubtitlesMod :
     private fun drawNanoVG() {
         val Vec3 = Vec3(
             mc.thePlayer.posX,
-            mc.thePlayer.posY + mc.thePlayer.getEyeHeight().toDouble(),
+            mc.thePlayer.posY + mc.thePlayer.eyeHeight.toDouble(),
             mc.thePlayer.posZ
         )
         val Vec31 = (Vec3(0.0, 0.0, -1.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
@@ -161,10 +168,10 @@ class SoundSubtitlesMod :
             return
         }
 
-        var s = getSoundName(soundIn.getSoundLocation())
+        var s = getSoundName(soundIn.soundLocation)
 
         if (s == null) {
-            s = soundIn.getSoundLocation().getResourcePath()
+            s = soundIn.soundLocation.getResourcePath()
         }
 
         if (s.isNullOrEmpty()) {
@@ -176,9 +183,9 @@ class SoundSubtitlesMod :
                 if (subtitle.string == s) {
                     subtitle.refresh(
                         Vec3(
-                            soundIn.getXPosF().toDouble(),
-                            soundIn.getYPosF().toDouble(),
-                            soundIn.getZPosF().toDouble()
+                            soundIn.xPosF.toDouble(),
+                            soundIn.yPosF.toDouble(),
+                            soundIn.zPosF.toDouble()
                         )
                     )
                     return
@@ -189,7 +196,7 @@ class SoundSubtitlesMod :
         this.subtitles.add(
             Subtitle(
                 s,
-                Vec3(soundIn.getXPosF().toDouble(), soundIn.getYPosF().toDouble(), soundIn.getZPosF().toDouble())
+                Vec3(soundIn.xPosF.toDouble(), soundIn.yPosF.toDouble(), soundIn.zPosF.toDouble())
             )
         )
     }

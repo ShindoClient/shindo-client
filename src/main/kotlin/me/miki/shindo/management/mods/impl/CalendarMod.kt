@@ -9,7 +9,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import java.util.*
 
 class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRIPTION, LegacyIcon.MOD_CALENDAR) {
-    private var height = 0
+    private var calendarHeight = 0
 
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
@@ -38,7 +38,7 @@ class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRI
 
         firstDayCalendar.set(year, month, 1)
 
-        this.drawBackground(100f, height.toFloat())
+        this.drawBackground(100f, calendarHeight.toFloat())
         this.drawText(getMonthByNumber(month) + " " + year, 6f, 6f, 11f, getHudFont(2))
 
         for (s in dayOfWeek) {
@@ -76,7 +76,7 @@ class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRI
             index++
         }
 
-        height = if (weekIndex < 5) 97 else 110
+        calendarHeight = if (weekIndex < 5) 97 else 110
 
         this.setWidth(100)
         this.setHeight(if (weekIndex < 5) 97 else 110)

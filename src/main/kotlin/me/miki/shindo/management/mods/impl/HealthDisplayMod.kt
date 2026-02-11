@@ -21,11 +21,11 @@ class HealthDisplayMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
-        return mc.thePlayer.getHealth().toInt().toString() + " Health"
+    override fun getText(): String {
+        return mc.thePlayer.health.toInt().toString() + " Health"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconEnabled) LegacyIcon.HEART else null
     }
 }

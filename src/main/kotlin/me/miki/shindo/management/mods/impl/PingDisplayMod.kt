@@ -19,11 +19,11 @@ class PingDisplayMod :
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return getPing().toString() + " ms"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconEnabled) LegacyIcon.BAR_CHERT else null
     }
 }

@@ -3,9 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible authorization scopes.
- */
 public enum AuthorizationScope {
     APP_REMOTE_CONTROL("app-remote-control"),
     PLAYLIST_MODIFY_PRIVATE("playlist-modify-private"),
@@ -45,11 +42,6 @@ public enum AuthorizationScope {
         return map.get(type);
     }
 
-    /**
-     * Get the authorization scope as a string.
-     *
-     * @return Authorization scope as string.
-     */
     public String GetScope() {
         return scope;
     }

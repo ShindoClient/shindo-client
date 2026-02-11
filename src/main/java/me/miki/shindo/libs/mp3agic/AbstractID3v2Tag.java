@@ -580,7 +580,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
             ID3v2TextFrameData frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), new EncodedText(combinedGenre));
             addFrame(createFrame(ID_GENRE, frameData.toBytes()), true);
         } else {
-            // TODO remove frame?
+
         }
     }
 
@@ -594,7 +594,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
         try {
             return Integer.parseInt(bpmStr);
         } catch (NumberFormatException e) {
-            // try float as some utilities add BPM like 67.8, or 67,8
+
             return (int) Float.parseFloat(bpmStr.trim().replaceAll(",", "."));
         }
     }
@@ -725,7 +725,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
                     frameData = new ID3v2CommentFrameData(useFrameUnsynchronisation(), frame.getData());
                     return frameData;
                 } catch (InvalidDataException e) {
-                    // Do nothing
+
                 }
             }
         }
@@ -1139,7 +1139,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
                 frameData = new ID3v2TextFrameData(useFrameUnsynchronisation(), frame.getData());
                 return frameData;
             } catch (InvalidDataException e) {
-                // do nothing
+
             }
         }
         return null;
@@ -1154,7 +1154,7 @@ public abstract class AbstractID3v2Tag implements ID3v2 {
                 frameData = new ID3v2WWWFrameData(useFrameUnsynchronisation(), frame.getData());
                 return frameData;
             } catch (InvalidDataException e) {
-                // do nothing
+
             }
         }
         return null;

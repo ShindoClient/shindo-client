@@ -52,11 +52,6 @@ public class MixinChunk {
     private int subtractOneFromY(int y) {
         return y - 1;
     }
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public IBlockState getBlockState(BlockPos pos) {
 

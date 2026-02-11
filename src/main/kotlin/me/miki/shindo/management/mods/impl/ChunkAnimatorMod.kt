@@ -22,24 +22,31 @@ class ChunkAnimatorMod : Mod(
 ) {
     private val chunks: MutableMap<RenderChunk?, Long?> = WeakHashMap<RenderChunk?, Long?>()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DURATION, min = 0.0, max = 5.0, current = 1.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.DURATION,
+        min = 0.0,
+        max = 5.0,
+        current = 1.0,
+        step = 1.0
+    )
     private val duration = 1
 
     @EventTarget
     fun preRenderChunk(event: EventPreRenderChunk) {
-        if (chunks.containsKey(event.getRenderChunk())) {
-            var time: Long = chunks.get(event.getRenderChunk())!!
+        if (chunks.containsKey(event.renderChunk)) {
+            var time: Long = chunks.get(event.renderChunk)!!
             val now = System.currentTimeMillis()
 
             if (time == -1L) {
-                chunks.put(event.getRenderChunk(), now)
+                chunks.put(event.renderChunk, now)
                 time = now
             }
 
             val passedTime = now - time
 
             if (passedTime < (duration * 1000)) {
-                val chunkY = event.getRenderChunk().getPosition().getY()
+                val chunkY = event.renderChunk.position.y
                 GlStateManager.translate(
                     0f,
                     -chunkY + this.easeOut(passedTime.toFloat(), 0f, chunkY.toFloat(), (duration * 1000).toFloat()),
@@ -52,7 +59,7 @@ class ChunkAnimatorMod : Mod(
     @EventTarget
     fun setPosition(event: EventRenderChunkPosition) {
         if (mc.thePlayer != null) {
-            chunks.put(event.getRenderChunk(), -1L)
+            chunks.put(event.renderChunk, -1L)
         }
     }
 

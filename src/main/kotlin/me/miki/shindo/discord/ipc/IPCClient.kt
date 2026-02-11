@@ -1,12 +1,8 @@
 package me.miki.shindo.discord.ipc
 
 import com.google.gson.JsonObject
-import me.miki.shindo.discord.ipc.entities.Callback
-import me.miki.shindo.discord.ipc.entities.DiscordBuild
-import me.miki.shindo.discord.ipc.entities.Packet
+import me.miki.shindo.discord.ipc.entities.*
 import me.miki.shindo.discord.ipc.entities.Packet.OpCode
-import me.miki.shindo.discord.ipc.entities.RichPresence
-import me.miki.shindo.discord.ipc.entities.User
 import me.miki.shindo.discord.ipc.entities.pipe.Pipe
 import me.miki.shindo.discord.ipc.entities.pipe.PipeStatus
 import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException
@@ -14,7 +10,6 @@ import org.apache.logging.log4j.LogManager
 import java.io.Closeable
 import java.io.IOException
 import java.lang.management.ManagementFactory
-import java.util.HashMap
 
 class IPCClient(private val clientId: Long) : Closeable {
 
@@ -118,7 +113,8 @@ class IPCClient(private val clientId: Long) : Closeable {
 
                         Event.ERROR -> if (nonce != null && callbacks.containsKey(nonce)) {
                             val data = json.getAsJsonObject("data")
-                            callbacks.remove(nonce)?.fail(if (data.has("message")) data.get("message").asString else null)
+                            callbacks.remove(nonce)
+                                ?.fail(if (data.has("message")) data.get("message").asString else null)
                         }
 
                         Event.ACTIVITY_JOIN -> LOGGER.debug("Reading thread received a 'join' event.")
@@ -127,6 +123,7 @@ class IPCClient(private val clientId: Long) : Closeable {
                         Event.UNKNOWN -> LOGGER.debug(
                             "Reading thread encountered an event with an unknown type: ${json.get("evt").asString}"
                         )
+
                         else -> {}
                     }
 

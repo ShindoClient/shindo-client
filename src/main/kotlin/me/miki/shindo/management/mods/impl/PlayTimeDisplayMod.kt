@@ -22,16 +22,16 @@ class PlayTimeDisplayMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         var sec = ((System.currentTimeMillis() - getInstance().shindoAPI.launchTime) / 1000).toInt()
         val min = (sec % 3600) / 60
         val hour = sec / 3600
-        sec = sec % 60
+        sec %= 60
 
         return String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec)
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.CLOCK else null
     }
 }

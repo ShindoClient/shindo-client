@@ -67,7 +67,7 @@ class ItemInfoMod :
         if (heldItemStack != null) {
             var s1 = ""
 
-            if (heldItemStack.getItem() is ItemPotion) {
+            if (heldItemStack.item is ItemPotion) {
                 s1 = this.getPotionEffectString(heldItemStack)
             } else {
                 s1 = this.getEnchantmentString(heldItemStack)
@@ -79,15 +79,15 @@ class ItemInfoMod :
 
             fr.drawStringWithShadow(
                 s1,
-                (sr.getScaledWidth() / 2f) - (mc.fontRendererObj.getStringWidth(s1) / 2f),
-                (sr.getScaledHeight() - addY - 1).toFloat(),
-                event.getColor()
+                (sr.scaledWidth / 2f) - (mc.fontRendererObj.getStringWidth(s1) / 2f),
+                (sr.scaledHeight - addY - 1).toFloat(),
+                event.color
             )
         }
     }
 
     private fun getPotionEffectString(heldItemStack: ItemStack): String {
-        val potion = heldItemStack.getItem() as ItemPotion
+        val potion = heldItemStack.item as ItemPotion
         val effects: MutableList<*>? = potion.getEffects(heldItemStack)
 
         if (effects == null) {
@@ -97,42 +97,42 @@ class ItemInfoMod :
 
             for (effect in effects) {
                 val entry = effect as PotionEffect
-                val duration = entry.getDuration() / 20
+                val duration = entry.duration / 20
 
                 if (potionColorSetting) {
-                    if (entry.getPotionID() == Potion.moveSpeed.getId()) {
+                    if (entry.potionID == Potion.moveSpeed.getId()) {
                         potionBuilder.append(EnumChatFormatting.AQUA)
                     }
-                    if (entry.getPotionID() == Potion.regeneration.getId()) {
+                    if (entry.potionID == Potion.regeneration.getId()) {
                         potionBuilder.append(EnumChatFormatting.LIGHT_PURPLE)
                     }
-                    if (entry.getPotionID() == Potion.poison.getId()) {
+                    if (entry.potionID == Potion.poison.getId()) {
                         potionBuilder.append(EnumChatFormatting.DARK_GREEN)
                     }
-                    if (entry.getPotionID() == Potion.jump.getId()) {
+                    if (entry.potionID == Potion.jump.getId()) {
                         potionBuilder.append(EnumChatFormatting.GREEN)
                     }
-                    if (entry.getPotionID() == Potion.fireResistance.getId()) {
+                    if (entry.potionID == Potion.fireResistance.getId()) {
                         potionBuilder.append(EnumChatFormatting.GOLD)
                     }
-                    if (entry.getPotionID() == Potion.heal.getId()) {
+                    if (entry.potionID == Potion.heal.getId()) {
                         potionBuilder.append(EnumChatFormatting.RED)
                     }
-                    if (entry.getPotionID() == Potion.moveSlowdown.getId()) {
+                    if (entry.potionID == Potion.moveSlowdown.getId()) {
                         potionBuilder.append(EnumChatFormatting.GRAY)
                     }
-                    if (entry.getPotionID() == Potion.nightVision.getId()) {
+                    if (entry.potionID == Potion.nightVision.getId()) {
                         potionBuilder.append(EnumChatFormatting.DARK_BLUE)
                     }
-                    if (entry.getPotionID() == Potion.damageBoost.getId()) {
+                    if (entry.potionID == Potion.damageBoost.getId()) {
                         potionBuilder.append(EnumChatFormatting.DARK_PURPLE)
                     }
                 }
 
-                potionBuilder.append(StatCollector.translateToLocal(entry.getEffectName()))
+                potionBuilder.append(StatCollector.translateToLocal(entry.effectName))
                 potionBuilder.append(EnumChatFormatting.WHITE)
                 potionBuilder.append(" ")
-                potionBuilder.append(entry.getAmplifier() + 1)
+                potionBuilder.append(entry.amplifier + 1)
                 potionBuilder.append(" ")
                 potionBuilder.append("(")
                 potionBuilder.append(duration / 60).append(String.format(":%02d", duration % 60))

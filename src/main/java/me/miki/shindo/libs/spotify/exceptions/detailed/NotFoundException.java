@@ -1,10 +1,6 @@
 package me.miki.shindo.libs.spotify.exceptions.detailed;
 
 import me.miki.shindo.libs.spotify.exceptions.SpotifyWebApiException;
-
-/**
- * The requested resource could not be found. This error can be due to a temporary or permanent condition.
- */
 public class NotFoundException extends SpotifyWebApiException {
 
     public NotFoundException() {

@@ -22,8 +22,8 @@ class MouseStrokesMod :
         val nvg = getInstance().nanoVGManager
 
         nvg!!.setupAndDraw(Runnable {
-            val calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * event.getPartialTicks()))
-            val calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * event.getPartialTicks()))
+            val calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * event.partialTicks))
+            val calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * event.partialTicks))
 
             this.drawBackground(58f, 58f)
             this.drawRoundedRect(calculatedMouseX + 28 - 3.5f, calculatedMouseY + 28 - 3.5f, 9f, 9f, (9 / 2).toFloat())
@@ -35,8 +35,8 @@ class MouseStrokesMod :
 
     @EventTarget
     fun onPlayerHeadRotation(event: EventPlayerHeadRotation) {
-        mouseX += event.getYaw() / 40f
-        mouseY -= event.getPitch() / 40f
+        mouseX += event.yaw / 40f
+        mouseY -= event.pitch / 40f
         mouseX = MathHelper.clamp_float(mouseX, -18f, 18f)
         mouseY = MathHelper.clamp_float(mouseY, -18f, 18f)
     }

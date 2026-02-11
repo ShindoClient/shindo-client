@@ -46,20 +46,17 @@ class ScoreboardMod :
             isFirstLoad = false
         }
 
-        if (mc.isSingleplayer()) {
+        if (mc.isSingleplayer) {
             objective = null
         }
 
         if (objective != null) {
-            val scoreboard = objective!!.getScoreboard()
+            val scoreboard = objective!!.scoreboard
             var scores = scoreboard.getSortedScores(objective)
-            val filteredScores: MutableList<Score> = Lists.newArrayList<Score?>(
-                Iterables.filter<Score?>(
-                    scores,
-                    Predicate { p_apply_1_: Score? ->
-                        p_apply_1_!!.getPlayerName() != null && !p_apply_1_.getPlayerName().startsWith("#")
-                    })
-            )
+            val filteredScores = scores.filter { score ->
+                val name = score.playerName
+                name != null && !name.startsWith("#")
+            }.toMutableList()
             Collections.reverse(filteredScores)
 
             nvg!!.setupAndDraw(Runnable {
@@ -74,14 +71,14 @@ class ScoreboardMod :
                 scores = filteredScores
             }
 
-            var maxWidth = fr.getStringWidth(objective!!.getDisplayName())
+            var maxWidth = fr.getStringWidth(objective!!.displayName)
 
             for (score in scores) {
-                val scoreplayerteam = scoreboard.getPlayersTeam(score.getPlayerName())
-                var s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName())
+                val scoreplayerteam = scoreboard.getPlayersTeam(score.playerName)
+                var s = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.playerName)
 
                 if (showNumbers) {
-                    s += ": " + EnumChatFormatting.RED + score.getScorePoints()
+                    s += ": " + EnumChatFormatting.RED + score.scorePoints
                 }
 
                 maxWidth = max(maxWidth, mc.fontRendererObj.getStringWidth(s))
@@ -94,9 +91,9 @@ class ScoreboardMod :
             for (score in scores) {
                 index++
 
-                val scoreplayerteam = scoreboard.getPlayersTeam(score.getPlayerName())
-                val playerName = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.getPlayerName())
-                val scorePoints = EnumChatFormatting.RED.toString() + "" + score.getScorePoints()
+                val scoreplayerteam = scoreboard.getPlayersTeam(score.playerName)
+                val playerName = ScorePlayerTeam.formatPlayerName(scoreplayerteam, score.playerName)
+                val scorePoints = EnumChatFormatting.RED.toString() + "" + score.scorePoints
 
                 RenderUtils.drawRect(
                     this.getX().toFloat(),
@@ -118,7 +115,7 @@ class ScoreboardMod :
                 }
 
                 if (index == scores.size) {
-                    val displayName = objective!!.getDisplayName()
+                    val displayName = objective!!.displayName
 
                     RenderUtils.drawRect(
                         this.getX().toFloat(),
@@ -157,7 +154,7 @@ class ScoreboardMod :
     @EventTarget
     fun onRenderScoreboard(event: EventRenderScoreboard) {
         event.setCancelled(true)
-        objective = event.getObjective()
+        objective = event.objective
     }
 }
 

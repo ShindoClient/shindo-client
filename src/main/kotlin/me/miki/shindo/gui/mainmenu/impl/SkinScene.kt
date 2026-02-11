@@ -1,9 +1,9 @@
-﻿package me.miki.shindo.gui.mainmenu.impl
+package me.miki.shindo.gui.mainmenu.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
-import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -20,11 +20,11 @@ import me.miki.shindo.management.skin.SkinType
 import me.miki.shindo.ui.comp.inputs.CompMainMenuTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.Multithreading
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseInOutCirc
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
-import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseInOutCirc
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.gui.ScaledResolution
@@ -32,9 +32,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.IOException
-import java.util.ArrayList
-import java.util.EnumMap
-import java.util.Locale
+import java.util.*
 import kotlin.math.roundToInt
 
 class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
@@ -74,14 +72,29 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        screenAnimation.wrap( Runnable { drawNanoVG(mouseX, mouseY, partialTicks, sr, instance, nvg) }, 0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), 2 - introAnimation.getValueFloat(),
-            introAnimation.getValueFloat().coerceAtMost(1f), false)
+        screenAnimation.wrap(
+            Runnable { drawNanoVG(mouseX, mouseY, partialTicks, sr, instance, nvg) },
+            0f,
+            0f,
+            sr.scaledWidth.toFloat(),
+            sr.scaledHeight.toFloat(),
+            2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f),
+            false
+        )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
+    private fun drawNanoVG(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        sr: ScaledResolution,
+        instance: Shindo,
+        nvg: NanoVGManager?
+    ) {
         val palette: ColorPalette = getMenuPalette()
         val accent: AccentColor = getMenuAccent()
         val skinManager: SkinManager = instance.skinManager
@@ -114,8 +127,22 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.save()
         nvg.scissor(0f, 0f, acWidth.toFloat(), acHeight.toFloat())
         nvg.translate(contentTranslate, 0f)
-        nvg.drawCenteredText(tx(TranslateText.SKIN_LIBRARY_TITLE), (acWidth / 2f), 10f, Color.WHITE, 16f, Fonts.SEMIBOLD)
-        nvg.drawCenteredText(tx(TranslateText.SKIN_LIBRARY_SUBTITLE), (acWidth / 2f), 26f, palette.getFontColor(ColorType.DARK), 9.5f, Fonts.REGULAR)
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_LIBRARY_TITLE),
+            (acWidth / 2f),
+            10f,
+            Color.WHITE,
+            16f,
+            Fonts.SEMIBOLD
+        )
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_LIBRARY_SUBTITLE),
+            (acWidth / 2f),
+            26f,
+            palette.getFontColor(ColorType.DARK),
+            9.5f,
+            Fonts.REGULAR
+        )
         drawFilterChips(logicalMouseX, logicalMouseY, nvg, palette, accent, 18f, 50f)
         drawResetButton(logicalMouseX, logicalMouseY, nvg, palette, accent, acWidth - 132f, 50f)
 
@@ -123,7 +150,19 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val gridY = 90f
         val gridWidth = acWidth - 36f
         val gridHeight = acHeight - 110f
-        drawSkinGrid(logicalMouseX, logicalMouseY, partialTicks, nvg, palette, accent, skinManager, gridX, gridY, gridWidth, gridHeight)
+        drawSkinGrid(
+            logicalMouseX,
+            logicalMouseY,
+            partialTicks,
+            nvg,
+            palette,
+            accent,
+            skinManager,
+            gridX,
+            gridY,
+            gridWidth,
+            gridHeight
+        )
         nvg.restore()
 
         if (formVisible) {
@@ -141,11 +180,20 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.restore()
     }
 
-    private fun drawFilterChips(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, startX: Float, y: Float) {
+    private fun drawFilterChips(
+        mouseX: Int,
+        mouseY: Int,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        startX: Float,
+        y: Float
+    ) {
         filterChipBounds.clear()
         var x = startX
-        for (filterType in FilterType.entries) {
-            val label = if (filterType == FilterType.ALL) tx(TranslateText.SKIN_FILTER_ALL) else tx(TranslateText.SKIN_FILTER_FAVORITES)
+        for (filterType in FilterType.values()) {
+            val label =
+                if (filterType == FilterType.ALL) tx(TranslateText.SKIN_FILTER_ALL) else tx(TranslateText.SKIN_FILTER_FAVORITES)
             val icon = if (filterType == FilterType.ALL) LegacyIcon.LIST else LegacyIcon.STAR
             val width = CategoryChipRenderer.computeWidth(nvg, label, icon)
             val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, CategoryChipRenderer.CHIP_HEIGHT)
@@ -156,7 +204,15 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 
-    private fun drawResetButton(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, x: Float, y: Float) {
+    private fun drawResetButton(
+        mouseX: Int,
+        mouseY: Int,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float
+    ) {
         val width = 120f
         val height = 22f
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
@@ -165,15 +221,35 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             background = ColorUtils.applyAlpha(background, 220)
         }
         nvg.drawRoundedRect(x, y, width, height, 6f, background)
-        nvg.drawCenteredText(tx(TranslateText.SKIN_RESET_BUTTON), x + (width / 2f), y + 7f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_RESET_BUTTON),
+            x + (width / 2f),
+            y + 7f,
+            Color.WHITE,
+            9.5f,
+            Fonts.MEDIUM
+        )
         nvg.drawText(LegacyIcon.REFRESH, x + 7f, y + 6f, Color.WHITE, 10f, Fonts.LEGACYICON)
         resetSelectionButton = Hitbox(x, y, width, height)
     }
-    private fun drawSkinGrid(mouseX: Int, mouseY: Int, partialTicks: Float, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, skinManager: SkinManager, gridX: Float, gridY: Float, gridWidth: Float, gridHeight: Float) {
+
+    private fun drawSkinGrid(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        skinManager: SkinManager,
+        gridX: Float,
+        gridY: Float,
+        gridWidth: Float,
+        gridHeight: Float
+    ) {
         cardSlots.clear()
-        val entries: MutableList<Skin> = ArrayList(skinManager.skins)
+        val entries: MutableList<Skin> = ArrayList(skinManager.getSkins())
         if (currentFilter == FilterType.FAVORITES) {
-            entries.removeIf { skin -> !skin.isFavorite }
+            entries.removeIf { skin -> !skin.favorite }
         }
 
         val cards: MutableList<Any?> = ArrayList()
@@ -196,7 +272,20 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             val renderY = cardY + scrollValue
             if (entry != null) {
                 val skin = entry as Skin
-                val slot = drawSkinCard(mouseX, mouseY, partialTicks, scrollValue, nvg, palette, accent, skinManager, skin, cardX, cardY, cardWidth)
+                val slot = drawSkinCard(
+                    mouseX,
+                    mouseY,
+                    partialTicks,
+                    scrollValue,
+                    nvg,
+                    palette,
+                    accent,
+                    skinManager,
+                    skin,
+                    cardX,
+                    cardY,
+                    cardWidth
+                )
                 slot.area = Hitbox(cardX, renderY, cardWidth, CARD_HEIGHT)
                 cardSlots.add(slot)
             } else {
@@ -219,12 +308,36 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         scroll.maxScroll = maxScroll
 
         if (entries.isEmpty()) {
-            nvg.drawCenteredText(tx(TranslateText.SKIN_EMPTY_PRIMARY), gridX + (gridWidth / 2f), gridY + (gridHeight / 2f) - 18f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-            nvg.drawCenteredText(tx(TranslateText.SKIN_EMPTY_SECONDARY), gridX + (gridWidth / 2f), gridY + (gridHeight / 2f) - 2f, palette.getFontColor(ColorType.DARK), 9f, Fonts.REGULAR)
+            nvg.drawCenteredText(
+                tx(TranslateText.SKIN_EMPTY_PRIMARY),
+                gridX + (gridWidth / 2f),
+                gridY + (gridHeight / 2f) - 18f,
+                palette.getFontColor(ColorType.DARK),
+                11f,
+                Fonts.MEDIUM
+            )
+            nvg.drawCenteredText(
+                tx(TranslateText.SKIN_EMPTY_SECONDARY),
+                gridX + (gridWidth / 2f),
+                gridY + (gridHeight / 2f) - 2f,
+                palette.getFontColor(ColorType.DARK),
+                9f,
+                Fonts.REGULAR
+            )
         }
     }
 
-    private fun drawAddCard(mouseX: Int, mouseY: Int, scrollValue: Float, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, cardX: Float, cardY: Float, cardWidth: Float) {
+    private fun drawAddCard(
+        mouseX: Int,
+        mouseY: Int,
+        scrollValue: Float,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        cardX: Float,
+        cardY: Float,
+        cardWidth: Float
+    ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
         val base = palette.getBackgroundColor(ColorType.DARK)
         if (hovered) {
@@ -233,13 +346,40 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 8f, getControlColor())
         nvg.drawRoundedRect(cardX + 8f, cardY + 8f, cardWidth - 16f, CARD_HEIGHT - 16f, 8f, getPanelColor())
         nvg.drawCenteredText(LegacyIcon.PLUS, cardX + (cardWidth / 2f), cardY + 36f, Color.WHITE, 26f, Fonts.LEGACYICON)
-        nvg.drawCenteredText(tx(TranslateText.SKIN_ADD_CARD_TITLE), cardX + (cardWidth / 2f), cardY + CARD_HEIGHT - 45f, Color.WHITE, 11f, Fonts.MEDIUM)
-        nvg.drawCenteredText(tx(TranslateText.SKIN_ADD_CARD_SUBTITLE), cardX + (cardWidth / 2f), cardY + CARD_HEIGHT - 30f, palette.getFontColor(ColorType.DARK), 8.5f, Fonts.REGULAR)
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_ADD_CARD_TITLE),
+            cardX + (cardWidth / 2f),
+            cardY + CARD_HEIGHT - 45f,
+            Color.WHITE,
+            11f,
+            Fonts.MEDIUM
+        )
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_ADD_CARD_SUBTITLE),
+            cardX + (cardWidth / 2f),
+            cardY + CARD_HEIGHT - 30f,
+            palette.getFontColor(ColorType.DARK),
+            8.5f,
+            Fonts.REGULAR
+        )
     }
 
-    private fun drawSkinCard(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, skinManager: SkinManager, skin: Skin, cardX: Float, cardY: Float, cardWidth: Float): CardSlot {
+    private fun drawSkinCard(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        scrollValue: Float,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        skinManager: SkinManager,
+        skin: Skin,
+        cardX: Float,
+        cardY: Float,
+        cardWidth: Float
+    ): CardSlot {
         val hovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
-        val current = skinManager.currentSkin
+        val current = skinManager.getCurrentSkin()
         val selected = current != null && current == skin
 
         val base = palette.getBackgroundColor(ColorType.DARK)
@@ -247,7 +387,15 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 8f, background)
 
         if (selected) {
-            nvg.drawGradientRoundedRect(cardX - 1, cardY - 1, cardWidth + 2, CARD_HEIGHT + 2, 9f, ColorUtils.applyAlpha(accent.color1, 120), ColorUtils.applyAlpha(accent.color2, 120))
+            nvg.drawGradientRoundedRect(
+                cardX - 1,
+                cardY - 1,
+                cardWidth + 2,
+                CARD_HEIGHT + 2,
+                9f,
+                ColorUtils.applyAlpha(accent.getColor1(), 120),
+                ColorUtils.applyAlpha(accent.getColor2(), 120)
+            )
         }
 
         val limitedName = nvg.getLimitText(skin.name, 12f, Fonts.MEDIUM, cardWidth - 70)
@@ -258,7 +406,14 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         if (selected) {
             val badge = tx(TranslateText.SKIN_BADGE_IN_USE)
             val badgeWidth = nvg.getTextWidth(badge, 8f, Fonts.REGULAR) + 12
-            nvg.drawRoundedRect(cardX + cardWidth - badgeWidth - 12, cardY + 28f, badgeWidth, 14f, 6f, ColorUtils.applyAlpha(accent.color1, 200))
+            nvg.drawRoundedRect(
+                cardX + cardWidth - badgeWidth - 12,
+                cardY + 28f,
+                badgeWidth,
+                14f,
+                6f,
+                ColorUtils.applyAlpha(accent.getColor1(), 200)
+            )
             nvg.drawText(badge, cardX + cardWidth - badgeWidth - 6, cardY + 32f, Color.WHITE, 8f, Fonts.REGULAR)
         }
 
@@ -269,9 +424,21 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val deleteX = editX - iconSize - 4
 
         val slot = CardSlot(skin, false)
-        slot.favoriteButton = drawIconButton(nvg, palette, accent, starX, iconY, iconSize, if (skin.isFavorite) LegacyIcon.STAR_FILL else LegacyIcon.STAR, skin.isFavorite, scrollValue)
-        slot.editButton = drawIconButton(nvg, palette, accent, editX, iconY, iconSize, LegacyIcon.EDIT, false, scrollValue)
-        slot.deleteButton = drawIconButton(nvg, palette, accent, deleteX, iconY, iconSize, LegacyIcon.TRASH, false, scrollValue)
+        slot.favoriteButton = drawIconButton(
+            nvg,
+            palette,
+            accent,
+            starX,
+            iconY,
+            iconSize,
+            if (skin.favorite) LegacyIcon.STAR_FILL else LegacyIcon.STAR,
+            skin.favorite,
+            scrollValue
+        )
+        slot.editButton =
+            drawIconButton(nvg, palette, accent, editX, iconY, iconSize, LegacyIcon.EDIT, false, scrollValue)
+        slot.deleteButton =
+            drawIconButton(nvg, palette, accent, deleteX, iconY, iconSize, LegacyIcon.TRASH, false, scrollValue)
 
         val previewBottom = cardY + CARD_HEIGHT - 40
         val previewMaxWidth = Math.max(20f, cardWidth - 32f)
@@ -281,36 +448,76 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val previewScale = Math.min(Math.min(scaleByWidth, scaleByHeight), 4.0f)
         val rendered = renderPreview(skin, cardX + (cardWidth / 2f), previewBottom, previewScale, nvg)
         if (!rendered) {
-            nvg.drawCenteredText(tx(TranslateText.SKIN_PREVIEW_UNAVAILABLE), cardX + (cardWidth / 2f), previewBottom - 10, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.REGULAR)
+            nvg.drawCenteredText(
+                tx(TranslateText.SKIN_PREVIEW_UNAVAILABLE),
+                cardX + (cardWidth / 2f),
+                previewBottom - 10,
+                palette.getFontColor(ColorType.NORMAL),
+                9f,
+                Fonts.REGULAR
+            )
         }
 
-        val typeLabel = if (skin.type == SkinType.SLIM) tx(TranslateText.SKIN_TYPE_SLIM) else tx(TranslateText.SKIN_TYPE_DEFAULT)
+        val typeLabel =
+            if (skin.type == SkinType.SLIM) tx(TranslateText.SKIN_TYPE_SLIM) else tx(TranslateText.SKIN_TYPE_DEFAULT)
         val typeWidth = nvg.getTextWidth(typeLabel, 9f, Fonts.REGULAR) + 10f
-        nvg.drawRoundedRect(cardX + 12f, cardY + CARD_HEIGHT - 43f, typeWidth, 14f, 4f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawRoundedRect(
+            cardX + 12f,
+            cardY + CARD_HEIGHT - 43f,
+            typeWidth,
+            14f,
+            4f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
         nvg.drawText(typeLabel, cardX + 16f, cardY + CARD_HEIGHT - 40f, Color.WHITE, 9f, Fonts.REGULAR)
 
         val buttonWidth = cardWidth - 24
         val buttonHeight = 20f
         val buttonX = cardX + 12
         val buttonY = cardY + CARD_HEIGHT - buttonHeight - 8
-        val buttonColor = if (selected) ColorUtils.applyAlpha(accent.color1, 220) else palette.getBackgroundColor(ColorType.NORMAL)
+        val buttonColor =
+            if (selected) ColorUtils.applyAlpha(accent.getColor1(), 220) else palette.getBackgroundColor(ColorType.NORMAL)
         nvg.drawRoundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 6f, buttonColor)
-        nvg.drawCenteredText(if (selected) tx(TranslateText.SKIN_BUTTON_SELECTED) else tx(TranslateText.SKIN_BUTTON_USE), buttonX + (buttonWidth / 2f), buttonY + 6f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+        nvg.drawCenteredText(
+            if (selected) tx(TranslateText.SKIN_BUTTON_SELECTED) else tx(TranslateText.SKIN_BUTTON_USE),
+            buttonX + (buttonWidth / 2f),
+            buttonY + 6f,
+            Color.WHITE,
+            9.5f,
+            Fonts.MEDIUM
+        )
 
         slot.selectButton = Hitbox(buttonX, buttonY + scrollValue, buttonWidth, buttonHeight)
         return slot
     }
 
-    private fun drawIconButton(nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, x: Float, y: Float, size: Float, icon: String, active: Boolean, scrollValue: Float): Hitbox {
+    private fun drawIconButton(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        size: Float,
+        icon: String,
+        active: Boolean,
+        scrollValue: Float
+    ): Hitbox {
         var background = palette.getBackgroundColor(ColorType.NORMAL)
         if (active) {
-            background = ColorUtils.applyAlpha(accent.color1, 200)
+            background = ColorUtils.applyAlpha(accent.getColor1(), 200)
         }
         nvg.drawRoundedRect(x, y, size, size, 4f, background)
         nvg.drawCenteredText(icon, x + (size / 2f), y + 3f, Color.WHITE, 11f, Fonts.LEGACYICON)
         return Hitbox(x, y + scrollValue, size, size)
     }
-    private fun renderPreview(skin: Skin?, centerX: Float, bottomY: Float, pixelScale: Float, nvg: NanoVGManager): Boolean {
+
+    private fun renderPreview(
+        skin: Skin?,
+        centerX: Float,
+        bottomY: Float,
+        pixelScale: Float,
+        nvg: NanoVGManager
+    ): Boolean {
         if (skin == null) {
             return false
         }
@@ -337,50 +544,86 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         return previewRenderer.isPreviewCached(uuid)
     }
 
-    private fun drawFormPanel(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, formX: Float, formY: Float) {
+    private fun drawFormPanel(
+        mouseX: Int,
+        mouseY: Int,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        formX: Float,
+        formY: Float
+    ) {
         val formWidth = FORM_PANEL_WIDTH
         val formHeight = FORM_PANEL_HEIGHT
-        val drawX = formX
         formBounds = Hitbox(formX, formY, formWidth, formHeight)
 
-        nvg.drawRoundedRect(drawX, formY, formWidth, formHeight, 10f, getPanelColor())
-        nvg.drawCenteredText(if (formMode == FormMode.ADD) tx(TranslateText.SKIN_FORM_ADD_TITLE) else tx(TranslateText.SKIN_FORM_EDIT_TITLE), drawX + (formWidth / 2f), formY + 12f, Color.WHITE, 14f, Fonts.SEMIBOLD)
+        nvg.drawRoundedRect(formX, formY, formWidth, formHeight, 10f, getPanelColor())
+        nvg.drawCenteredText(
+            if (formMode == FormMode.ADD) tx(TranslateText.SKIN_FORM_ADD_TITLE) else tx(TranslateText.SKIN_FORM_EDIT_TITLE),
+            formX + (formWidth / 2f),
+            formY + 12f,
+            Color.WHITE,
+            14f,
+            Fonts.SEMIBOLD
+        )
 
         val inset = 16f
         var currentY = formY + 38f
 
-        formState.nameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
+        formState.nameField.setPosition(formX + inset, currentY, formWidth - (inset * 2f), 22F)
         formState.nameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
         formState.nameField.setFontColor(Color.WHITE)
-        formState.nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.text)
+        formState.nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.getText())
         formState.nameField.draw(mouseX, mouseY, 0f)
         currentY += 40f
 
-        nvg.drawText(tx(TranslateText.SKIN_FORM_SOURCE_LABEL), drawX + inset, currentY - 6f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.REGULAR)
-        drawSourceChips(mouseX, mouseY, nvg, palette, accent, drawX + inset, currentY + 4f)
+        nvg.drawText(
+            tx(TranslateText.SKIN_FORM_SOURCE_LABEL),
+            formX + inset,
+            currentY - 6f,
+            palette.getFontColor(ColorType.NORMAL),
+            9f,
+            Fonts.REGULAR
+        )
+        drawSourceChips(mouseX, mouseY, nvg, palette, accent, formX + inset, currentY + 4f)
         currentY += CategoryChipRenderer.CHIP_HEIGHT + 18f
 
         if (formState.source == SkinSource.USERNAME) {
-            formState.usernameField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
+            formState.usernameField.setPosition(formX + inset, currentY, formWidth - (inset * 2f), 22F)
             formState.usernameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
             formState.usernameField.setFontColor(Color.WHITE)
-            formState.usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.text)
+            formState.usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.getText())
             formState.usernameField.draw(mouseX, mouseY, 0f)
         } else {
-            formState.uuidField.setPosition(drawX + inset, currentY, formWidth - (inset * 2f), 22F)
+            formState.uuidField.setPosition(formX + inset, currentY, formWidth - (inset * 2f), 22F)
             formState.uuidField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
             formState.uuidField.setFontColor(Color.WHITE)
-            formState.uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.text)
+            formState.uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.getText())
             formState.uuidField.draw(mouseX, mouseY, 0f)
         }
         currentY += 40f
 
-        nvg.drawText(tx(TranslateText.SKIN_FORM_MODEL_LABEL), drawX + inset, currentY - 6f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.REGULAR)
-        drawTypeChips(mouseX, mouseY, nvg, palette, accent, drawX + inset, currentY + 4f)
+        nvg.drawText(
+            tx(TranslateText.SKIN_FORM_MODEL_LABEL),
+            formX + inset,
+            currentY - 6f,
+            palette.getFontColor(ColorType.NORMAL),
+            9f,
+            Fonts.REGULAR
+        )
+        drawTypeChips(mouseX, mouseY, nvg, palette, accent, formX + inset, currentY + 4f)
 
         if (formState.statusMessage != null) {
-            val statusColor = if (formState.statusError) palette.getMaterialRed(220) else palette.getFontColor(ColorType.NORMAL)
-            nvg.drawText(formState.statusMessage!!, drawX + inset, formY + formHeight - 74, statusColor, 8.5f, Fonts.REGULAR)
+            val statusColor =
+                if (formState.statusError) palette.getMaterialRed(220) else palette.getFontColor(ColorType.NORMAL)
+            nvg.drawText(
+                formState.statusMessage!!,
+                formX + inset,
+                formY + formHeight - 74,
+                statusColor,
+                8.5f,
+                Fonts.REGULAR
+            )
         }
 
         val buttonWidth = (formWidth - (inset * 2f) - 8f) / 2f
@@ -390,15 +633,47 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         cancelButton = Hitbox(formX + inset, buttonY, buttonWidth, buttonHeight)
         saveButton = Hitbox(formX + inset + buttonWidth + 8f, buttonY, buttonWidth, buttonHeight)
 
-        nvg.drawRoundedRect(drawX + inset, buttonY, buttonWidth, buttonHeight, 6f, palette.getBackgroundColor(ColorType.DARK))
-        nvg.drawCenteredText(tx(TranslateText.SKIN_FORM_CANCEL), drawX + inset + (buttonWidth / 2f), buttonY + 6f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+        nvg.drawRoundedRect(
+            formX + inset,
+            buttonY,
+            buttonWidth,
+            buttonHeight,
+            6f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
+        nvg.drawCenteredText(
+            tx(TranslateText.SKIN_FORM_CANCEL),
+            formX + inset + (buttonWidth / 2f),
+            buttonY + 6f,
+            Color.WHITE,
+            9.5f,
+            Fonts.MEDIUM
+        )
 
-        val saveColor = if (formState.processing) palette.getFontColor(ColorType.DARK) else ColorUtils.applyAlpha(accent.color1, 220)
-        nvg.drawRoundedRect(drawX + inset + buttonWidth + 8f, buttonY, buttonWidth, buttonHeight, 6f, saveColor)
-        nvg.drawCenteredText(if (formMode == FormMode.ADD) tx(TranslateText.SKIN_FORM_ADD_ACTION) else tx(TranslateText.SKIN_FORM_SAVE_ACTION), drawX + inset + buttonWidth + 8f + (buttonWidth / 2f), buttonY + 6f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+        val saveColor = if (formState.processing) palette.getFontColor(ColorType.DARK) else ColorUtils.applyAlpha(
+            accent.getColor1(),
+            220
+        )
+        nvg.drawRoundedRect(formX + inset + buttonWidth + 8f, buttonY, buttonWidth, buttonHeight, 6f, saveColor)
+        nvg.drawCenteredText(
+            if (formMode == FormMode.ADD) tx(TranslateText.SKIN_FORM_ADD_ACTION) else tx(TranslateText.SKIN_FORM_SAVE_ACTION),
+            formX + inset + buttonWidth + 8f + (buttonWidth / 2f),
+            buttonY + 6f,
+            Color.WHITE,
+            9.5f,
+            Fonts.MEDIUM
+        )
     }
 
-    private fun drawSourceChips(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, startX: Float, y: Float) {
+    private fun drawSourceChips(
+        mouseX: Int,
+        mouseY: Int,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        startX: Float,
+        y: Float
+    ) {
         sourceChipBounds.clear()
         var x = startX
         for (source in SkinSource.values()) {
@@ -436,11 +711,20 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         previewRenderer.clearCache(vg)
     }
 
-    private fun drawTypeChips(mouseX: Int, mouseY: Int, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, startX: Float, y: Float) {
+    private fun drawTypeChips(
+        mouseX: Int,
+        mouseY: Int,
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        startX: Float,
+        y: Float
+    ) {
         typeChipBounds.clear()
         var x = startX
-        for (type in SkinType.entries) {
-            val label = if (type == SkinType.SLIM) tx(TranslateText.SKIN_TYPE_SLIM) else tx(TranslateText.SKIN_TYPE_DEFAULT)
+        for (type in SkinType.values()) {
+            val label =
+                if (type == SkinType.SLIM) tx(TranslateText.SKIN_TYPE_SLIM) else tx(TranslateText.SKIN_TYPE_DEFAULT)
             val width = CategoryChipRenderer.computeWidth(nvg, label, LegacyIcon.USER)
             val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, CategoryChipRenderer.CHIP_HEIGHT)
             val active = formState.selectedType == type
@@ -457,12 +741,12 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
         val acY = sr.scaledHeight / 2 - (acHeight / 2)
         val slideDistance = acWidth + CONTENT_SLIDE_EXTRA
-        val transition = Math.max(0f, Math.min(1f, formTransition.value))
+        val transition = 0f.coerceAtLeast(1f.coerceAtMost(formTransition.value))
         val contentTranslate = -transition * slideDistance
         val formTranslate = (1f - transition) * slideDistance
-        val logicalMouseX = Math.round(mouseX - acX - contentTranslate)
+        val logicalMouseX = (mouseX - acX - contentTranslate).roundToInt()
         val logicalMouseY = mouseY - acY
-        val formMouseX = Math.round(mouseX - acX - formTranslate)
+        val formMouseX = (mouseX - acX - formTranslate).roundToInt()
         val formMouseY = mouseY - acY
         val formVisible = isFormTransitionActive(transition)
 
@@ -480,7 +764,8 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat())
-            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 112f, 6f, 22f, 22f)) {
+            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 112f, 6f, 22f, 22f)
+        ) {
             introAnimation.setDirection(Direction.BACKWARDS)
             return
         }
@@ -555,6 +840,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
         return false
     }
+
     private fun handleSubmitForm() {
         if (formState.processing) {
             return
@@ -565,10 +851,6 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         val manager = Shindo.getInstance().skinManager
-        if (manager == null) {
-            updateFormStatus(tx(TranslateText.SKIN_STATUS_MANAGER_UNAVAILABLE), true)
-            return
-        }
 
         formState.processing = true
         updateFormStatus(tx(TranslateText.SKIN_STATUS_PROCESSING), false)
@@ -604,30 +886,46 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     }
 
     @Throws(IOException::class)
-    private fun processAdd(manager: SkinManager, providedName: String, source: SkinSource, selectedType: SkinType, username: String, uuid: String) {
-        val type = selectedType
+    private fun processAdd(
+        manager: SkinManager,
+        providedName: String,
+        source: SkinSource,
+        selectedType: SkinType,
+        username: String,
+        uuid: String
+    ) {
         when (source) {
             SkinSource.UUID -> {
                 if (uuid.isEmpty()) {
                     throw IOException(tx(TranslateText.SKIN_STATUS_UUID_INVALID))
                 }
                 val remote = manager.downloadSkinByUuid(uuid)
-                val nameFromUuid = if (providedName.isEmpty()) uuid.substring(0, Math.min(12, uuid.length)) else providedName
-                manager.addSkin(nameFromUuid, type, false, remote.image, remote.uuid)
+                val nameFromUuid =
+                    if (providedName.isEmpty()) uuid.substring(0, Math.min(12, uuid.length)) else providedName
+                manager.addSkin(nameFromUuid, selectedType, false, remote.image, remote.uuid)
             }
+
             SkinSource.USERNAME -> {
                 if (username.isEmpty()) {
                     throw IOException(tx(TranslateText.SKIN_STATUS_USERNAME_INVALID))
                 }
                 val downloaded = manager.downloadSkinByUsername(username)
                 val nameFromUser = if (providedName.isEmpty()) username else providedName
-                manager.addSkin(nameFromUser, type, false, downloaded.image, downloaded.uuid)
+                manager.addSkin(nameFromUser, selectedType, false, downloaded.image, downloaded.uuid)
             }
         }
     }
 
     @Throws(IOException::class)
-    private fun processEdit(manager: SkinManager, skin: Skin, newName: String, source: SkinSource, selectedType: SkinType, username: String, uuid: String) {
+    private fun processEdit(
+        manager: SkinManager,
+        skin: Skin,
+        newName: String,
+        source: SkinSource,
+        selectedType: SkinType,
+        username: String,
+        uuid: String
+    ) {
         var replacement: BufferedImage? = null
         var profileUuid: String? = null
         when (source) {
@@ -638,6 +936,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     profileUuid = remote.uuid
                 }
             }
+
             SkinSource.USERNAME -> {
                 if (username.isNotEmpty()) {
                     val downloaded = manager.downloadSkinByUsername(username)
@@ -647,8 +946,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             }
         }
         val finalName = if (newName.isEmpty()) skin.name else newName
-        val type = selectedType
-        manager.updateSkin(skin, finalName, type, replacement, profileUuid)
+        manager.updateSkin(skin, finalName, selectedType, replacement, profileUuid)
     }
 
     private fun updateFormStatus(message: String, error: Boolean) {
@@ -682,14 +980,18 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             return
         }
         Shindo.getInstance().skinManager.setCurrentSkin(skin)
-        Shindo.getInstance().notificationManager.post(tx(TranslateText.SKIN_NOTIFICATION_TITLE), String.format(Locale.ROOT, tx(TranslateText.SKIN_NOTIFICATION_SELECTED), skin.name), NotificationType.SUCCESS)
+        Shindo.getInstance().notificationManager.post(
+            tx(TranslateText.SKIN_NOTIFICATION_TITLE),
+            String.format(Locale.ROOT, tx(TranslateText.SKIN_NOTIFICATION_SELECTED), skin.name),
+            NotificationType.SUCCESS
+        )
     }
 
     private fun toggleFavorite(skin: Skin?) {
         if (skin == null) {
             return
         }
-        Shindo.getInstance().skinManager.setFavorite(skin, !skin.isFavorite)
+        Shindo.getInstance().skinManager.setFavorite(skin, !skin.favorite)
     }
 
     private fun deleteSkin(skin: Skin?) {
@@ -697,12 +999,20 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             return
         }
         Shindo.getInstance().skinManager.deleteSkin(skin)
-        Shindo.getInstance().notificationManager.post(tx(TranslateText.SKIN_NOTIFICATION_TITLE), tx(TranslateText.SKIN_NOTIFICATION_REMOVED), NotificationType.WARNING)
+        Shindo.getInstance().notificationManager.post(
+            tx(TranslateText.SKIN_NOTIFICATION_TITLE),
+            tx(TranslateText.SKIN_NOTIFICATION_REMOVED),
+            NotificationType.WARNING
+        )
     }
 
     private fun resetSelection() {
         Shindo.getInstance().skinManager.clearCurrentSkin()
-        Shindo.getInstance().notificationManager.post(tx(TranslateText.SKIN_NOTIFICATION_TITLE), tx(TranslateText.SKIN_NOTIFICATION_RESET), NotificationType.INFO)
+        Shindo.getInstance().notificationManager.post(
+            tx(TranslateText.SKIN_NOTIFICATION_TITLE),
+            tx(TranslateText.SKIN_NOTIFICATION_RESET),
+            NotificationType.INFO
+        )
     }
 
     private fun isFormTransitionActive(transition: Float): Boolean {
@@ -732,7 +1042,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     }
 
     private fun tx(text: TranslateText): String {
-        return text.text
+        return text.getText()
     }
 
     private enum class FilterType {
@@ -789,9 +1099,9 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         fun resetForAdd() {
             applyPlaceholders()
-            nameField.setText("");
-            usernameField.setText("");
-            uuidField.setText("");
+            nameField.setText("")
+            usernameField.setText("")
+            uuidField.setText("")
             source = SkinSource.USERNAME
             selectedType = SkinType.DEFAULT
             processing = false
@@ -801,9 +1111,9 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         fun resetForEdit(skin: Skin) {
             applyPlaceholders()
-            nameField.setText(skin.name);
-            usernameField.setText("");
-            uuidField.setText(skin.profileUuid ?: "");
+            nameField.setText(skin.name)
+            usernameField.setText("")
+            uuidField.setText(skin.profileUuid ?: "")
             selectedType = skin.type
             source = if (skin.profileUuid == null) SkinSource.USERNAME else SkinSource.UUID
             processing = false
@@ -821,9 +1131,9 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             get() = uuidField.getText().trim()
 
         private fun applyPlaceholders() {
-            nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.text)
-            usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.text)
-            uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.text)
+            nameField.setEmptyText(LegacyIcon.PENCIL, TranslateText.SKIN_FIELD_NAME_PLACEHOLDER.getText())
+            usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.getText())
+            uuidField.setEmptyText(LegacyIcon.KEY, TranslateText.SKIN_FIELD_UUID_PLACEHOLDER.getText())
         }
     }
 
@@ -836,3 +1146,4 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         private const val CONTENT_SLIDE_EXTRA = 48f
     }
 }
+

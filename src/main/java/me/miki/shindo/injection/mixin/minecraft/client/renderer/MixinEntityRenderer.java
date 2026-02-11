@@ -4,7 +4,7 @@ import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
-import me.miki.shindo.utils.animation.simple.SimpleAnimation;
+import me.miki.shindo.ui.animation.value.SimpleAnimation;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -137,7 +137,7 @@ public abstract class MixinEntityRenderer {
         AnimationsMod mod = AnimationsMod.instance;
         if (mod.getSmoothSneakSetting().isToggled()) {
             smooth.setAnimation(mod.isToggled() && mod.getSneakSetting().isToggled() ? previousHeight + (height - previousHeight) * partialTicks : entity.getEyeHeight(), mod.getSmoothSneakSpeedSetting() * 10);
-            return smooth.getValue();
+            return smooth.value;
         } else {
             return mod.isToggled() && mod.getSneakSetting().isToggled() ? previousHeight + (height - previousHeight) * partialTicks : entity.getEyeHeight();
         }
@@ -291,17 +291,5 @@ public abstract class MixinEntityRenderer {
                     ordinal = 0, shift = At.Shift.AFTER))
     private void disablePolygonOffset(CallbackInfo ci) {
         GlStateManager.disablePolygonOffset();
-    }
-
-    @ModifyConstant(method = "orientCamera", constant = @Constant(floatValue = -0.1F))
-    private float modifyParallax(float original) {
-        // PatcherAddon removed - using original parallax value
-        return original;
-    }
-
-    @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;"))
-    private MovingObjectPosition changeBlockingType(WorldClient instance, Vec3 from, Vec3 to) {
-        // PatcherAddon removed - using default rayTraceBlocks
-        return instance.rayTraceBlocks(from, to);
     }
 }

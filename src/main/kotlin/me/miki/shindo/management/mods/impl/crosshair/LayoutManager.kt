@@ -175,7 +175,7 @@ class LayoutManager {
             return target
         }
 
-        val preset = LayoutManager.CellGridPreset(
+        val preset = CellGridPreset(
             id ?: UUID.randomUUID().toString(),
             nameOverride ?: "",
             layout,
@@ -238,7 +238,7 @@ class LayoutManager {
                 val array = json.getAsJsonArray("presets")
                 val iterator = array.iterator()
                 while (iterator.hasNext() && userPresets.size < MAX_CUSTOM_PRESETS) {
-                    val element = iterator.next()!!.getAsJsonObject()
+                    val element = iterator.next()!!.asJsonObject
                     val layout: Array<BooleanArray?>? = parseBooleanGrid(element.get("layout")) as Array<BooleanArray?>?
                     val colors: Array<IntArray?>? = parseIntGrid(element.get("colors")) as Array<IntArray?>?
                     val id = getStringProperty(element, "id", UUID.randomUUID().toString())
@@ -330,7 +330,7 @@ class LayoutManager {
                 if (source != null && i < source.size && source[i] != null) {
                     System.arraycopy(source[i], 0, copy[i], 0, min(length, source[i]!!.size))
                 }
-                for (j in 0..<length) {
+                for (j in 0 until length) {
                     if (copy[i]!![j] == 0) {
                         copy[i]!![j] = DEFAULT_PRESET_COLOR
                     }
@@ -340,3 +340,4 @@ class LayoutManager {
         }
     }
 }
+

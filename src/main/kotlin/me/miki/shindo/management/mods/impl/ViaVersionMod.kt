@@ -23,7 +23,7 @@ class ViaVersionMod : Mod(
         instance = this
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         if (!this.isLoaded) {
@@ -35,13 +35,13 @@ class ViaVersionMod : Mod(
         }
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
 
         if (this.isLoaded) {
-            ViaShindo.getInstance().getAsyncVersionSlider()
-                .setVersion(ProtocolInfo.R1_8.getProtocolVersion().getVersion())
-            ViaLoadingBase.getInstance().reload(ProtocolInfo.R1_8.getProtocolVersion())
+            ViaShindo.getInstance().asyncVersionSlider
+                .setVersion(ProtocolInfo.R1_8.protocolVersion.version)
+            ViaLoadingBase.getInstance().reload(ProtocolInfo.R1_8.protocolVersion)
         }
     }
 

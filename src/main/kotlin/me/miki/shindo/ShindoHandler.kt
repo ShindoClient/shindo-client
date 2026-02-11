@@ -90,11 +90,11 @@ class ShindoHandler {
         if (profile.id != player.gameProfile.id) return
 
         val skinManager: SkinManager = instance.skinManager
-        val skin: Skin? = skinManager.currentSkin
-        if (skin == null || skin.texture == null) return
+        val skin: Skin? = skinManager.getCurrentSkin()
+        if (skin?.texture == null) return
 
         event.isCancelled = true
-        event.skin = skin.texture
+        event.skin = skin.texture!!
     }
 
     private fun profiles(): List<Profile> = instance.profileManager.profiles.toList()

@@ -19,7 +19,7 @@ enum class HypixelGameMode(command: String) {
 
     companion object {
         fun getModeByCommand(command: String?): HypixelGameMode? {
-            for (g in HypixelGameMode.entries) {
+            for (g in HypixelGameMode.values()) {
                 if (g.command == command) {
                     return g
                 }
@@ -29,12 +29,13 @@ enum class HypixelGameMode(command: String) {
         }
 
         fun isBedwars(mode: HypixelGameMode): Boolean {
-            return mode == HypixelGameMode.BEDWARS_4V4 || mode == HypixelGameMode.BEDWARS_3V3 || mode == HypixelGameMode.BEDWARS_DOUBLES || mode == HypixelGameMode.BEDWARS_SOLO
+            return mode == BEDWARS_4V4 || mode == BEDWARS_3V3 || mode == BEDWARS_DOUBLES || mode == BEDWARS_SOLO
         }
 
         fun isTntGames(mode: HypixelGameMode): Boolean {
-            return mode == HypixelGameMode.TNT_RUN || mode == HypixelGameMode.PVP_RUN || mode == HypixelGameMode.BOW_SPLEEF
-                    || mode == HypixelGameMode.TNT_TAG || mode == HypixelGameMode.TNT_WIZARDS
+            return mode == TNT_RUN || mode == PVP_RUN || mode == BOW_SPLEEF
+                    || mode == TNT_TAG || mode == TNT_WIZARDS
         }
     }
 }
+

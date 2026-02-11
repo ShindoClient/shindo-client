@@ -1,7 +1,6 @@
 package me.miki.shindo.utils
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.Entity
 
 object ServerUtils {

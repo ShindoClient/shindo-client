@@ -134,16 +134,22 @@ class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @Jv
     companion object {
         @JvmField
         val XN = Vector3f(-1.0f, 0.0f, 0.0f)
+
         @JvmField
         val XP = Vector3f(1.0f, 0.0f, 0.0f)
+
         @JvmField
         val YN = Vector3f(0.0f, -1.0f, 0.0f)
+
         @JvmField
         val YP = Vector3f(0.0f, 1.0f, 0.0f)
+
         @JvmField
         val ZN = Vector3f(0.0f, 0.0f, -1.0f)
+
         @JvmField
         val ZP = Vector3f(0.0f, 0.0f, 1.0f)
+
         @JvmField
         val ZERO = Vector3f(0.0f, 0.0f, 0.0f)
     }

@@ -3,9 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible currently playing types.
- */
 public enum CurrentlyPlayingType {
 
     TRACK("track"),
@@ -32,11 +29,6 @@ public enum CurrentlyPlayingType {
         return map.get(type);
     }
 
-    /**
-     * Get the currently playing type as a string.
-     *
-     * @return The currently playing type as a string.
-     */
     public String getType() {
         return type;
     }

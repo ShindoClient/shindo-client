@@ -9,9 +9,7 @@ import me.miki.shindo.discord.ipc.entities.Packet
 import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException
 import org.apache.logging.log4j.LogManager
 import java.io.IOException
-import java.util.HashMap
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 
 abstract class Pipe(
     val ipcClient: IPCClient,
@@ -35,7 +33,7 @@ abstract class Pipe(
         ): Pipe {
             val order = if (preferredOrder.isEmpty()) arrayOf(DiscordBuild.ANY) else preferredOrder
             var pipe: Pipe? = null
-            val open = arrayOfNulls<Pipe>(DiscordBuild.entries.size)
+            val open = arrayOfNulls<Pipe>(DiscordBuild.values().size)
 
             for (i in 0 until 10) {
                 try {
@@ -93,7 +91,7 @@ abstract class Pipe(
                         if (cb == DiscordBuild.ANY) {
                             for (k in open.indices) {
                                 if (open[k] == pipe) {
-                                    pipe.build = DiscordBuild.entries.toTypedArray()[k]
+                                    pipe.build = DiscordBuild.values()[k]
                                     open[k] = null
                                 }
                             }
@@ -129,7 +127,7 @@ abstract class Pipe(
             callbacks: HashMap<String, Callback>,
             location: String
         ): Pipe {
-            val osName = System.getProperty("os.name").uppercase(Locale.ROOT)
+            val osName = System.getProperty("os.name").toUpperCase(Locale.ROOT)
             return if (osName.contains("win")) {
                 WindowsPipe(ipcClient, callbacks, location)
             } else {
@@ -195,3 +193,4 @@ abstract class Pipe(
     val discordBuild: DiscordBuild?
         get() = build
 }
+

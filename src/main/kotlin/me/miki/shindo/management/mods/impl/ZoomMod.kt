@@ -10,7 +10,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 
 class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_ZOOM) {
@@ -26,7 +26,7 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
         type = PropertyType.NUMBER,
         translate = TranslateText.ZOOM_SPEED,
         min = 5.0,
-        max = 2.00,
+        max = 20.0,
         step = 1.0,
         current = 14.0
     )
@@ -36,7 +36,7 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
         type = PropertyType.NUMBER,
         translate = TranslateText.ZOOM_FACTOR,
         min = 2.0,
-        max = 1.05,
+        max = 15.0,
         step = 1.0,
         current = 4.0
     )
@@ -76,18 +76,18 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
     fun onFov(event: EventZoomFov) {
         zoomAnimation.setAnimation(currentFactor, zoomSpeedSetting.toFloat().toDouble())
 
-        event.setFov(event.getFov() * (if (smoothZoomSetting) zoomAnimation.value else currentFactor))
+        event.fov = event.fov * (if (smoothZoomSetting) zoomAnimation.value else currentFactor)
     }
 
     @EventTarget
     fun onScroll(event: EventScrollMouse) {
         if (active && scrollSetting) {
             event.setCancelled(true)
-            if (event.getAmount() < 0) {
+            if (event.amount < 0) {
                 if (currentFactor < 0.98) {
                     currentFactor += 0.03f
                 }
-            } else if (event.getAmount() > 0) {
+            } else if (event.amount > 0) {
                 if (currentFactor > 0.06) {
                     currentFactor -= 0.03f
                 }

@@ -23,13 +23,13 @@ class PackDisplayMod :
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private val compactSetting = false
 
-    private val resourcePackRepository: ResourcePackRepository = mc.getResourcePackRepository()
+    private val resourcePackRepository: ResourcePackRepository = mc.resourcePackRepository
 
     private var pack: IResourcePack? = null
     private var currentPack: ResourceLocation? = null
-    private var packs: MutableList<ResourcePackRepository.Entry?> = resourcePackRepository.getRepositoryEntries()
+    private var packs: MutableList<ResourcePackRepository.Entry?> = resourcePackRepository.repositoryEntries
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         this.loadTexture()
     }
@@ -47,7 +47,7 @@ class PackDisplayMod :
     }
 
     private fun drawNanoVG() {
-        val name = removeColorCode(pack!!.getPackName()).replace(".zip", "")
+        val name = removeColorCode(pack!!.packName).replace(".zip", "")
 
         val stringWidth: Float = this.getTextWidth(name, 9f, getHudFont(1))!!
         val compact = compactSetting
@@ -60,7 +60,7 @@ class PackDisplayMod :
         this.drawBackground((if (compact) 24 else 44) + stringWidth, (if (compact) 18 else 39).toFloat())
 
         this.drawRoundedImage(
-            mc.getTextureManager().getTexture(currentPack).getGlTextureId(),
+            mc.textureManager.getTexture(currentPack).glTextureId,
             imgX,
             imgY,
             imgSize.toFloat(),
@@ -75,7 +75,7 @@ class PackDisplayMod :
 
     @EventTarget
     fun onSwitchTexture(event: EventSwitchTexture?) {
-        packs = resourcePackRepository.getRepositoryEntries()
+        packs = resourcePackRepository.repositoryEntries
         pack = this.getCurrentPack()
         this.loadTexture()
     }
@@ -83,21 +83,21 @@ class PackDisplayMod :
     private fun loadTexture() {
         var dynamicTexture: DynamicTexture?
         try {
-            dynamicTexture = DynamicTexture(getCurrentPack()!!.getPackImage())
+            dynamicTexture = DynamicTexture(getCurrentPack()!!.packImage)
         } catch (e: Exception) {
             try {
-                dynamicTexture = DynamicTexture((mc as IMixinMinecraft).getMcDefaultResourcePack().getPackImage())
+                dynamicTexture = DynamicTexture((mc as IMixinMinecraft).getMcDefaultResourcePack().packImage)
             } catch (e1: IOException) {
                 dynamicTexture = TextureUtil.missingTexture
             }
         }
 
-        this.currentPack = mc.getTextureManager().getDynamicTextureLocation("texturepackicon", dynamicTexture)
+        this.currentPack = mc.textureManager.getDynamicTextureLocation("texturepackicon", dynamicTexture)
     }
 
     private fun getCurrentPack(): IResourcePack? {
         if (!packs.isEmpty()) {
-            return packs.get(packs.size - 1)!!.getResourcePack()
+            return packs.get(packs.size - 1)!!.resourcePack
         }
         return (mc as IMixinMinecraft).getMcDefaultResourcePack()
     }

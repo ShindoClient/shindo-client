@@ -1,7 +1,6 @@
 package me.miki.shindo.utils.vector
 
 import java.nio.FloatBuffer
-import kotlin.math.abs
 
 class Matrix4f {
 
@@ -235,22 +234,38 @@ class Matrix4f {
     }
 
     fun adjugateAndDetWith(matrix4f: Matrix4f): Float {
-        this.m00 = matrix4f.m11 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m31 + matrix4f.m13 * matrix4f.m21 * matrix4f.m32 - matrix4f.m11 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m31
-        this.m01 = -(matrix4f.m01 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m31 + matrix4f.m03 * matrix4f.m21 * matrix4f.m32 - matrix4f.m01 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m31)
-        this.m02 = matrix4f.m01 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m31 + matrix4f.m03 * matrix4f.m11 * matrix4f.m32 - matrix4f.m01 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m31
-        this.m03 = -(matrix4f.m01 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m21 + matrix4f.m03 * matrix4f.m11 * matrix4f.m22 - matrix4f.m01 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m21)
-        this.m10 = -(matrix4f.m10 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m32 - matrix4f.m10 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m30)
-        this.m11 = matrix4f.m00 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m32 - matrix4f.m00 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m30
-        this.m12 = -(matrix4f.m00 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m32 - matrix4f.m00 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m30)
-        this.m13 = matrix4f.m00 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m22 - matrix4f.m00 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m20
-        this.m20 = matrix4f.m10 * matrix4f.m21 * matrix4f.m33 + matrix4f.m11 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m23 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m21 * matrix4f.m30
-        this.m21 = -(matrix4f.m00 * matrix4f.m21 * matrix4f.m33 + matrix4f.m01 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m23 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m21 * matrix4f.m30)
-        this.m22 = matrix4f.m00 * matrix4f.m11 * matrix4f.m33 + matrix4f.m01 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m13 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m11 * matrix4f.m30
-        this.m23 = -(matrix4f.m00 * matrix4f.m11 * matrix4f.m23 + matrix4f.m01 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m13 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m11 * matrix4f.m20)
-        this.m30 = -(matrix4f.m10 * matrix4f.m21 * matrix4f.m32 + matrix4f.m11 * matrix4f.m22 * matrix4f.m30 + matrix4f.m12 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m22 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m30)
-        this.m31 = matrix4f.m00 * matrix4f.m21 * matrix4f.m32 + matrix4f.m01 * matrix4f.m22 * matrix4f.m30 + matrix4f.m02 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m22 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m30
-        this.m32 = -(matrix4f.m00 * matrix4f.m11 * matrix4f.m32 + matrix4f.m01 * matrix4f.m12 * matrix4f.m30 + matrix4f.m02 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m12 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m30)
-        this.m33 = matrix4f.m00 * matrix4f.m11 * matrix4f.m22 + matrix4f.m01 * matrix4f.m12 * matrix4f.m20 + matrix4f.m02 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m12 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m20
+        this.m00 =
+            matrix4f.m11 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m31 + matrix4f.m13 * matrix4f.m21 * matrix4f.m32 - matrix4f.m11 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m31
+        this.m01 =
+            -(matrix4f.m01 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m31 + matrix4f.m03 * matrix4f.m21 * matrix4f.m32 - matrix4f.m01 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m31)
+        this.m02 =
+            matrix4f.m01 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m31 + matrix4f.m03 * matrix4f.m11 * matrix4f.m32 - matrix4f.m01 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m31
+        this.m03 =
+            -(matrix4f.m01 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m21 + matrix4f.m03 * matrix4f.m11 * matrix4f.m22 - matrix4f.m01 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m21)
+        this.m10 =
+            -(matrix4f.m10 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m32 - matrix4f.m10 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m30)
+        this.m11 =
+            matrix4f.m00 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m32 - matrix4f.m00 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m30
+        this.m12 =
+            -(matrix4f.m00 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m32 - matrix4f.m00 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m30)
+        this.m13 =
+            matrix4f.m00 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m22 - matrix4f.m00 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m20
+        this.m20 =
+            matrix4f.m10 * matrix4f.m21 * matrix4f.m33 + matrix4f.m11 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m23 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m21 * matrix4f.m30
+        this.m21 =
+            -(matrix4f.m00 * matrix4f.m21 * matrix4f.m33 + matrix4f.m01 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m23 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m21 * matrix4f.m30)
+        this.m22 =
+            matrix4f.m00 * matrix4f.m11 * matrix4f.m33 + matrix4f.m01 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m13 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m11 * matrix4f.m30
+        this.m23 =
+            -(matrix4f.m00 * matrix4f.m11 * matrix4f.m23 + matrix4f.m01 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m13 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m11 * matrix4f.m20)
+        this.m30 =
+            -(matrix4f.m10 * matrix4f.m21 * matrix4f.m32 + matrix4f.m11 * matrix4f.m22 * matrix4f.m30 + matrix4f.m12 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m22 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m30)
+        this.m31 =
+            matrix4f.m00 * matrix4f.m21 * matrix4f.m32 + matrix4f.m01 * matrix4f.m22 * matrix4f.m30 + matrix4f.m02 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m22 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m30
+        this.m32 =
+            -(matrix4f.m00 * matrix4f.m11 * matrix4f.m32 + matrix4f.m01 * matrix4f.m12 * matrix4f.m30 + matrix4f.m02 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m12 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m30)
+        this.m33 =
+            matrix4f.m00 * matrix4f.m11 * matrix4f.m22 + matrix4f.m01 * matrix4f.m12 * matrix4f.m20 + matrix4f.m02 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m12 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m20
         return matrix4f.m00 * this.m00 + matrix4f.m01 * this.m10 + matrix4f.m02 * this.m20 + matrix4f.m03 * this.m30
     }
 

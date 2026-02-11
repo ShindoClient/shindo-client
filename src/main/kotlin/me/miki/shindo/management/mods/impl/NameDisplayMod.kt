@@ -16,7 +16,7 @@ class NameDisplayMod :
     @Property(type = PropertyType.COMBO, translate = TranslateText.PREFIX)
     private val prefix = Prefix.NAME
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         val label: String?
 
         if (Objects.requireNonNull<Prefix?>(prefix) == Prefix.IGN) {
@@ -25,10 +25,10 @@ class NameDisplayMod :
             label = "Name"
         }
 
-        return label + ": " + mc.getSession().getUsername()
+        return label + ": " + mc.session.username
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.USER else null
     }
 

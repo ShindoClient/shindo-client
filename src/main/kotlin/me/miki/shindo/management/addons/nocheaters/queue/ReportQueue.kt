@@ -1,33 +1,17 @@
 package me.miki.shindo.management.addons.nocheaters.queue
 
 import me.miki.shindo.management.addons.nocheaters.NoCheatersAddon
-import me.miki.shindo.logger.ShindoLogger
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiChat
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventTick
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiChat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-
-/**
- * Fila de reportes automáticos
- * 
- * Funcionalidades:
- * - Mantém fila de jogadores para reportar
- * - Detecta quando jogador está parado
- * - Envia /wdr automaticamente
- * 
- * Extensível para:
- * - Configuração de delay personalizado
- * - Múltiplas filas por servidor
- * - Priorização de reportes
- * - Rate limiting inteligente
- */
 class ReportQueue {
 
     companion object {
-        private const val TIME_ABORT_REPORT = 30_000L // 30 segundos
-        
+        private const val TIME_ABORT_REPORT = 30_000L
+
         @JvmStatic
         lateinit var INSTANCE: ReportQueue
     }
@@ -54,7 +38,6 @@ class ReportQueue {
         val mc = Minecraft.getMinecraft()
         if (queueList.isEmpty() || mc.thePlayer == null) return
 
-        // Remove reportes muito antigos
         val now = System.currentTimeMillis()
         queueList.removeIf { it.time + TIME_ABORT_REPORT < now }
         if (queueList.isEmpty()) return
@@ -67,14 +50,13 @@ class ReportQueue {
                 movingCounter = 0
                 val playername = queueList.removeAt(0).name
                 val msg = "/wdr $playername"
-                
-                // Envia comando
+
                 mc.thePlayer.sendChatMessage(msg)
-                
+
                 standStillLimit = 20 + random.nextInt(11)
                 standStillCounter = 0
                 betweenReportCounter = 50
-                
+
                 me.miki.shindo.logger.ShindoLogger.info("[NoCheaters] Auto-reported $playername")
             }
         } else {
@@ -90,7 +72,6 @@ class ReportQueue {
     fun addReportToQueue(playername: String) {
         if (playersReportedThisGame.contains(playername)) return
 
-        // Verifica se já está na fila
         for (i in queueList.indices) {
             val report = queueList[i]
             if (report.name.equals(playername, ignoreCase = true)) {
@@ -123,8 +104,8 @@ class ReportQueue {
         prevItemHeld = player.inventory.currentItem
 
         val isChatOpen = mc.currentScreen is GuiChat
-        // Não podemos acessar inputField diretamente (é protegido), então assumimos que o chat está vazio
-        // se o jogador não está digitando (movimento indica que não está focado no chat)
+
+
         val chatEmpty = true
 
         return (mc.inGameHasFocus || (isChatOpen && chatEmpty))
@@ -132,8 +113,8 @@ class ReportQueue {
                 && player.movementInput.moveStrafe == 0.0F
                 && !player.movementInput.jump
                 && !player.movementInput.sneak
-                && !mc.gameSettings.keyBindAttack.isKeyDown()
-                && !mc.gameSettings.keyBindUseItem.isKeyDown()
+                && !mc.gameSettings.keyBindAttack.isKeyDown
+                && !mc.gameSettings.keyBindUseItem.isKeyDown
                 && player.prevRotationYawHead == player.rotationYawHead
                 && sameItem
     }

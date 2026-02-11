@@ -1,134 +1,202 @@
-﻿package me.miki.shindo.ui.comp.layout
+package me.miki.shindo.ui.comp.layout
 
-import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.ui.comp.Comp
-import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
-import java.awt.Color
+import kotlin.math.max
 
-/**
- * Container scrollável vertical com estilo padrão do client.
- * Usado em várias scenes do mod menu.
- */
 open class CompScrollableContainer(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 0f,
-    height: Float = 0f
-) : Comp(x, y) {
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 0f,
+        height: Float = 0f
+) : CompSurfaceTemplate(x, y, width, height) {
+
+    data class ScrollViewport(val x: Float, val y: Float, val width: Float, val height: Float)
 
     private val scroll = Scroll()
-    private var radius: Float = 12f
-    private var shadowStrength: Int = 7
-    private var innerPadding: Float = 18f
-    private var contentHeight: Float = 0f
+    private var innerPadding = 18f
+    private var contentHeight = 0f
+    private var scrollbarGutter = 12f
+    private var contentRenderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)? = null
+    private var contentRendererWithViewport: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)? =
+            null
+    private var lastViewport = ScrollViewport(0f, 0f, 0f, 0f)
 
     init {
-        setWidth(width)
-        setHeight(height)
+        setSurfaceVariant(CompSurfaceVariant.CARD)
+        setRadius(12f)
+        setShadowStrength(7)
     }
 
-    fun setRadius(radius: Float): CompScrollableContainer {
-        this.radius = radius
+    override fun setRadius(radius: Float): CompScrollableContainer {
+        super.setRadius(radius)
         return this
     }
 
-    fun setShadowStrength(strength: Int): CompScrollableContainer {
-        this.shadowStrength = strength
+    override fun setShadowStrength(strength: Int): CompScrollableContainer {
+        super.setShadowStrength(strength)
         return this
     }
 
     fun setInnerPadding(padding: Float): CompScrollableContainer {
-        this.innerPadding = padding
+        this.innerPadding = max(0f, padding)
         return this
     }
 
-    fun getScroll(): Scroll = scroll
-
-    fun setContentHeight(height: Float) {
-        this.contentHeight = height
-        scroll.maxScroll = kotlin.math.max(0f, contentHeight - getHeight())
+    fun setScrollbarGutter(gutter: Float): CompScrollableContainer {
+        this.scrollbarGutter = max(0f, gutter)
+        return this
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!isVisible()) return
+    fun getInnerPadding(): Float = innerPadding
 
-        val nvgInstance = nvg
-        val paletteColors = palette
-        val accentColors = accent
+    fun getScroll(): Scroll = scroll
 
-        // Container principal
-        nvgInstance.drawShadow(getX(), getY(), getWidth(), getHeight(), radius, shadowStrength)
-        nvgInstance.drawRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            radius,
-            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), 210)
-        )
-        nvgInstance.drawRoundedRect(
-            getX() + 1f,
-            getY() + 1f,
-            getWidth() - 2f,
-            getHeight() - 2f,
-            radius - 1f,
-            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 230)
-        )
+    fun getScrollValue(): Float = scroll.getValue()
 
-        // Scroll
-        if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) {
+    fun getContentHeight(): Float = contentHeight
+
+    fun getViewport(): ScrollViewport = lastViewport
+
+    fun setContentHeight(height: Float) {
+        contentHeight = max(0f, height)
+        updateScrollBounds(lastViewport.height)
+    }
+
+    fun setContentRenderer(
+            renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
+    ): CompScrollableContainer {
+        contentRenderer = renderer
+        return this
+    }
+
+    fun setContentRendererWithViewport(
+            renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)?
+    ): CompScrollableContainer {
+        contentRendererWithViewport = renderer
+        return this
+    }
+
+    fun clearContentRenderer(): CompScrollableContainer {
+        contentRenderer = null
+        contentRendererWithViewport = null
+        return this
+    }
+
+    fun render(
+            mouseX: Int,
+            mouseY: Int,
+            partialTicks: Float,
+            contentHeight: Float,
+            renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
+    ) {
+        setContentHeight(contentHeight)
+        setContentRenderer(renderer)
+        draw(mouseX, mouseY, partialTicks)
+    }
+
+    fun renderWithViewport(
+            mouseX: Int,
+            mouseY: Int,
+            partialTicks: Float,
+            contentHeight: Float,
+            renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+    ) {
+        setContentHeight(contentHeight)
+        setContentRendererWithViewport(renderer)
+        draw(mouseX, mouseY, partialTicks)
+    }
+
+    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val fullViewport = calculateViewport()
+        val needsScrollbar = contentHeight > fullViewport.height
+        val viewport = if (needsScrollbar) {
+            ScrollViewport(
+                fullViewport.x,
+                fullViewport.y,
+                max(0f, fullViewport.width - scrollbarGutter),
+                fullViewport.height
+            )
+        } else {
+            fullViewport
+        }
+        lastViewport = viewport
+
+        if (viewport.width <= 0f || viewport.height <= 0f) {
+            return
+        }
+
+        updateScrollBounds(viewport.height)
+
+        if (scroll.maxScroll > 0f && MouseUtils.isInside(mouseX, mouseY, fullViewport.x, fullViewport.y, fullViewport.width, fullViewport.height)) {
             scroll.onScroll()
         }
         scroll.onAnimation()
 
         val scrollValue = scroll.getValue()
 
-        // Scissor para clipar conteúdo
-        nvgInstance.save()
-        nvgInstance.scissor(getX(), getY(), getWidth(), getHeight())
+        nvg.save()
+        nvg.scissor(viewport.x, viewport.y, viewport.width, viewport.height)
 
-        // Renderiza conteúdo customizado (já com scroll aplicado)
-        drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue)
+        drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue, viewport)
+        contentRendererWithViewport?.invoke(mouseX, mouseY, partialTicks, scrollValue, viewport)
+        contentRenderer?.invoke(mouseX, mouseY, partialTicks, scrollValue)
 
-        // Renderiza children
-        super.draw(mouseX, mouseY, partialTicks)
+        nvg.restore()
 
-        nvgInstance.restore()
-
-        // Scrollbar
-        nvgInstance.drawScrollbar(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            contentHeight,
-            scrollValue,
-            paletteColors,
-            accentColors,
-            24f
+        nvg.drawScrollbar(
+                fullViewport.x,
+                fullViewport.y,
+                fullViewport.width,
+                fullViewport.height,
+                contentHeight,
+                scrollValue,
+                palette,
+                accent,
+                24f
         )
-
-        super.draw(mouseX, mouseY, partialTicks)
     }
 
-    /**
-     * Callback para renderizar o conteúdo scrollável.
-     * Pode ser definido externamente para customização.
-     */
-    var drawScrollableContent: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)? = null
+    protected open fun drawScrollableContent(
+            mouseX: Int,
+            mouseY: Int,
+            partialTicks: Float,
+            scrollValue: Float,
+            viewport: ScrollViewport
+    ) {
+        drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue)
+    }
 
-    /**
-     * Método para renderizar o conteúdo scrollável.
-     * @param scrollValue Valor atual do scroll
-     */
+    @Deprecated("Use drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue, viewport).")
     protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) {
-        drawScrollableContent?.invoke(mouseX, mouseY, partialTicks, scrollValue)
     }
+
+    @Deprecated("Use setContentRenderer(...) or render(...).")
+    var drawScrollableContent: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
+        get() = contentRenderer
+        set(value) {
+            contentRenderer = value
+        }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        scroll.onKey(keyCode)
+        if (scroll.maxScroll > 0f) {
+            scroll.onKey(keyCode)
+        }
         super.keyTyped(typedChar, keyCode)
+    }
+
+    private fun calculateViewport(): ScrollViewport {
+        val viewportX = getX() + innerPadding
+        val viewportY = getY() + innerPadding
+        val viewportWidth = max(0f, getWidth() - innerPadding * 2f)
+        val viewportHeight = max(0f, getHeight() - innerPadding * 2f)
+        return ScrollViewport(viewportX, viewportY, viewportWidth, viewportHeight)
+    }
+
+    private fun updateScrollBounds(visibleHeight: Float) {
+        val boundedVisible = max(0f, visibleHeight)
+        scroll.maxScroll = max(0f, contentHeight - boundedVisible)
     }
 }

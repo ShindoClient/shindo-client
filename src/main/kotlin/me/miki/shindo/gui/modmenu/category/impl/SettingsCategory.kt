@@ -4,37 +4,42 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.AppearanceScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.GeneralScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.LanguageScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.LayoutScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.PerformanceScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.*
+import me.miki.shindo.ui.comp.buttons.CompSceneButton
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
-import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
 
-class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETTINGS, LegacyIcon.SETTINGS, false, false) {
+class SettingsCategory(parent: GuiModMenu) :
+    Category(parent, TranslateText.SETTINGS, LegacyIcon.SETTINGS, false, false) {
 
     private val scenes = arrayListOf<SettingScene>()
+    private val sceneButtons = arrayListOf<CompSceneButton>()
     private lateinit var sceneAnimation: Animation
     private var currentScene: SettingScene? = null
 
     init {
-        scenes.add(AppearanceScene(this))
-        scenes.add(LanguageScene(this))
-        scenes.add(GeneralScene(this))
-        scenes.add(LayoutScene(this))
-        scenes.add(PerformanceScene(this))
+        registerScene(AppearanceScene(this))
+        registerScene(LanguageScene(this))
+        registerScene(GeneralScene(this))
+        registerScene(LayoutScene(this))
+        registerScene(PerformanceScene(this))
+    }
+
+    private fun registerScene(scene: SettingScene) {
+        scenes.add(scene)
+        sceneButtons.add(
+            CompSceneButton({ scene.icon }, { scene.name }, { scene.description })
+        )
     }
 
     override fun initGui() {
@@ -55,12 +60,11 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
-        val palette = instance.colorManager.palette
-        val accent = instance.colorManager.currentColor
+        val palette = instance.colorManager.getPalette()
+        val accent = instance.colorManager.getCurrentColor()
 
         val cardHeight = 52f
         val cardSpacing = 10f
-        var offsetY = 15f
         val scrollValue = scroll.getValue()
 
         if (sceneAnimation.isDone(Direction.FORWARDS)) {
@@ -68,7 +72,15 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
             currentScene = null
         }
 
-        if (currentScene == null && MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) {
+        if (currentScene == null && MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            )
+        ) {
             scroll.onScroll()
             scroll.onAnimation()
         }
@@ -76,61 +88,14 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
         nvg.save()
         val sceneSlide = (sceneAnimation.getValue() * 600.0).toFloat()
         nvg.translate(-(600f - sceneSlide), 0f)
-        nvg.save()
-        nvg.translate(0f, scrollValue)
 
-        for (scene in scenes) {
-            val cardX = getX() + 18f
-            val cardY = getY() + offsetY
-            val cardWidth = getWidth() - 36f
-            val isActive = currentScene == scene && !sceneAnimation.isDone(Direction.FORWARDS)
-            val hovered = currentScene == null && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, cardHeight)
-
-            val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (isActive) 220 else 180)
-            val overlayStart = ColorUtils.applyAlpha(accent.color1, if (hovered || isActive) 70 else 35)
-            val overlayEnd = ColorUtils.applyAlpha(accent.color2, if (hovered || isActive) 70 else 35)
-
-            nvg.drawShadow(cardX, cardY, cardWidth, cardHeight, 10f, 5)
-            nvg.drawRoundedRect(cardX, cardY, cardWidth, cardHeight, 10f, base)
-            nvg.drawGradientRoundedRect(cardX, cardY, cardWidth, cardHeight, 10f, overlayStart, overlayEnd)
-
-            val iconSize = 28f
-            val iconX = cardX + 18f
-            val iconY = cardY + (cardHeight - iconSize) / 2f
-
-            nvg.drawGradientRoundedRect(
-                iconX,
-                iconY,
-                iconSize,
-                iconSize,
-                8f,
-                ColorUtils.applyAlpha(accent.color1, 160),
-                ColorUtils.applyAlpha(accent.color2, 160)
-            )
-
-            nvg.drawCenteredText(scene.icon, iconX + (iconSize / 2f) - 1f, iconY + (iconSize / 2f) - 8f, Color.WHITE, 18f, Fonts.LEGACYICON)
-
-            val textStartX = iconX + iconSize + 14f
-            val textWidth = cardWidth - (textStartX - cardX) - 34f
-            val displayName = nvg.getLimitText(scene.name, 11.5f, Fonts.MEDIUM, textWidth)
-            val displayDescription = nvg.getLimitText(scene.description, 8.5f, Fonts.REGULAR, textWidth)
-
-            nvg.drawText(displayName, textStartX, cardY + 16f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)
-            nvg.drawText(displayDescription, textStartX, cardY + 30f, palette.getFontColor(ColorType.NORMAL), 8.5f, Fonts.REGULAR)
-
-            nvg.drawCenteredText(
-                LegacyIcon.CHEVRON_RIGHT,
-                cardX + cardWidth - 22f,
-                cardY + (cardHeight / 2f) - (nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, 12f, Fonts.LEGACYICON) / 2f),
-                palette.getFontColor(ColorType.NORMAL),
-                12f,
-                Fonts.LEGACYICON
-            )
-
-            offsetY += cardHeight + cardSpacing
+        forEachSceneEntry(scrollValue) { scene, button, cardX, cardY, cardW, cardH ->
+            button.setBounds(cardX, cardY, cardW, cardH)
+            button.setActive(currentScene == scene && !sceneAnimation.isDone(Direction.FORWARDS))
+            button.setEnabled(currentScene == null)
+            button.draw(mouseX, mouseY, partialTicks)
         }
 
-        nvg.restore()
         nvg.restore()
 
         nvg.save()
@@ -147,13 +112,20 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
             val textX = headerX + iconSize + 16f
             val textWidth = getWidth() - (textX - getX()) - 24f
 
-            val iconStart = ColorUtils.applyAlpha(accent.color1, 200)
-            val iconEnd = ColorUtils.applyAlpha(accent.color2, 200)
+            val iconStart = ColorUtils.applyAlpha(accent.getColor1(), 200)
+            val iconEnd = ColorUtils.applyAlpha(accent.getColor2(), 200)
             val titleColor = palette.getFontColor(ColorType.DARK)
             val subtitleColor = palette.getFontColor(ColorType.NORMAL)
 
             nvg.drawGradientRoundedRect(headerX, headerY, iconSize, iconSize, iconRadius, iconStart, iconEnd)
-            nvg.drawCenteredText(headerScene.icon, headerX + (iconSize / 2f) - 1f, headerY + (iconSize / 2f) - 10f, Color.WHITE, 22f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(
+                headerScene.icon,
+                headerX + (iconSize / 2f) - 1f,
+                headerY + (iconSize / 2f) - 10f,
+                Color.WHITE,
+                22f,
+                Fonts.LEGACYICON
+            )
 
             val title = nvg.getLimitText(headerScene.name, 13.5f, Fonts.MEDIUM, textWidth)
             nvg.drawText(title, textX, headerY + 7f, titleColor, 13.5f, Fonts.MEDIUM)
@@ -177,30 +149,37 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val cardHeight = 52f
-        val cardSpacing = 10f
-        var offsetY = 15f
-        val scrollValue = scroll.getValue()
-
-        for (scene in scenes) {
-            val cardX = getX() + 18f
-            val cardY = getY() + offsetY + scrollValue
-            val cardWidth = getWidth() - 36f
-            if (MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight) && mouseButton == 0 && currentScene == null) {
+        forEachSceneEntryUntil(scroll.getValue()) { scene, _, cardX, cardY, cardWidth, cardHeight ->
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    cardX,
+                    cardY,
+                    cardWidth,
+                    cardHeight
+                ) && mouseButton == 0 && currentScene == null
+            ) {
                 currentScene = scene
                 setCanClose(false)
                 sceneAnimation.setDirection(Direction.BACKWARDS)
-                break
+                return@forEachSceneEntryUntil true
             }
-
-            offsetY += cardHeight + cardSpacing
+            false
         }
 
         if (currentScene != null && sceneAnimation.isDone(Direction.BACKWARDS)) {
             currentScene?.mouseClicked(mouseX, mouseY, mouseButton)
         }
 
-        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat()) && mouseButton == 0) {
+        if (!MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            ) && mouseButton == 0
+        ) {
             sceneAnimation.setDirection(Direction.FORWARDS)
         }
 
@@ -224,6 +203,38 @@ class SettingsCategory(parent: GuiModMenu) : Category(parent, TranslateText.SETT
         }
         if (currentScene != null && sceneAnimation.isDone(Direction.BACKWARDS)) {
             currentScene?.keyTyped(typedChar, keyCode)
+        }
+    }
+
+    private inline fun forEachSceneEntryUntil(
+        scrollValue: Float,
+        action: (scene: SettingScene, button: CompSceneButton, cardX: Float, cardY: Float, cardWidth: Float, cardHeight: Float) -> Boolean
+    ): Boolean {
+        var offsetY = 15f
+        val baseX = getX().toFloat()
+        val baseY = getY().toFloat()
+        val entryWidth = getWidth() - 36f
+        val entryHeight = 52f
+        for (index in scenes.indices) {
+            val scene = scenes[index]
+            val button = sceneButtons[index]
+            val cardX = baseX + 18f
+            val cardY = baseY + offsetY + scrollValue
+            if (action(scene, button, cardX, cardY, entryWidth, entryHeight)) {
+                return true
+            }
+            offsetY += 52f + 10f
+        }
+        return false
+    }
+
+    private inline fun forEachSceneEntry(
+        scrollValue: Float,
+        action: (scene: SettingScene, button: CompSceneButton, cardX: Float, cardY: Float, cardWidth: Float, cardHeight: Float) -> Unit
+    ) {
+        forEachSceneEntryUntil(scrollValue) { scene, button, cardX, cardY, cardWidth, cardHeight ->
+            action(scene, button, cardX, cardY, cardWidth, cardHeight)
+            false
         }
     }
 

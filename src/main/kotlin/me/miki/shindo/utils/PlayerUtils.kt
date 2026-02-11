@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.potion.Potion
-import net.minecraft.potion.PotionEffect
 import net.minecraft.util.MathHelper
 import net.minecraft.world.WorldSettings
 

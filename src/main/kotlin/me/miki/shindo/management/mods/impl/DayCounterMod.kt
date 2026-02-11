@@ -18,13 +18,13 @@ class DayCounterMod :
         this.draw()
     }
 
-    public override fun getText(): String? {
-        val time = mc.theWorld.getWorldInfo().getWorldTotalTime() / 24000L
+    override fun getText(): String {
+        val time = mc.theWorld.getWorldInfo().worldTotalTime / 24000L
 
         return time.toString() + " Day" + (if (time != 1L) "s" else "")
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.SUNRISE else null
     }
 }

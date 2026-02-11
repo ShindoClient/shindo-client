@@ -11,15 +11,15 @@ class FullbrightMod :
     Mod(TranslateText.FULLBRIGHT, TranslateText.FULLBRIGHT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_FULLBRIGHT) {
     @EventTarget
     fun onGamma(event: EventGamma) {
-        event.setGamma(20f)
+        event.gamma = 20f
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         mc.renderGlobal.loadRenderers()
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
         mc.renderGlobal.loadRenderers()
     }

@@ -34,7 +34,7 @@ class ReachDisplayMod :
         }
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         if ((System.currentTimeMillis() - hitTime) > 5000) {
             distance = 0.0
         }
@@ -46,7 +46,7 @@ class ReachDisplayMod :
         }
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconEnabled) LegacyIcon.ACTIVITY else null
     }
 }

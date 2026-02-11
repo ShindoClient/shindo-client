@@ -1,8 +1,4 @@
 package me.miki.shindo.utils.vector
-
-/**
- * Simplified PoseStack akin to newer Minecraft versions.
- */
 class PoseStack {
     private val poseStack: MutableList<Pose> = mutableListOf(identityPose())
 

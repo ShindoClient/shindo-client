@@ -11,21 +11,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(ModelPlayer.class)
 public class MixinModelPlayer extends ModelBiped {
 
-    //private ModelRenderer boobs;
-
     @Shadow
     private boolean smallArms;
-
-    @ModifyConstant(method = "<init>", constant = @Constant(floatValue = 2.5F))
-    private float fixAlexArmHeight(float original) {
-        // PatcherAddon removed - using original value
-        return original;
-    }
-
-    /**
-     * @author asbyth
-     * @reason Resolve item positions being incorrect on Alex models (MC-72397)
-     */
     @Overwrite
     public void postRenderArm(float scale) {
         if (this.smallArms) {

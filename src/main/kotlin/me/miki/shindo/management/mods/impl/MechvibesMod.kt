@@ -13,7 +13,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.Multithreading.runAsync
 import me.miki.shindo.utils.RandomUtils.getRandomInt
-import me.miki.shindo.utils.Sound
+import me.miki.shindo.management.sound.Sound
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
@@ -64,11 +64,11 @@ class MechvibesMod :
     private var mouseRightPress = false
     private var loaded = false
 
-    public override fun setup() {
+    override fun setup() {
         loaded = false
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         loadKeyboardSounds(keyType.resourceFolder)
@@ -216,6 +216,7 @@ class MechvibesMod :
         }
     }
 }
+
 
 
 

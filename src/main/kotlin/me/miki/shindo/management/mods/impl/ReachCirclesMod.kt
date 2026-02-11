@@ -23,7 +23,14 @@ class ReachCirclesMod : Mod(
     ModCategory.PLAYER,
     LegacyIcon.MOD_REACH_CIRCLES
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1.0, max = 5.0, current = 2.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.LINE_WIDTH,
+        min = 1.0,
+        max = 5.0,
+        current = 2.0,
+        step = 1.0
+    )
     private val lineWidthSetting = 2
 
     @EventTarget
@@ -37,18 +44,18 @@ class ReachCirclesMod : Mod(
         GL11.glDepthMask(false)
 
         for (o in mc.theWorld.loadedEntityList) {
-            if (o is EntityLivingBase && !o.isInvisible() && !o.isSneaking() && o !== mc.thePlayer && o.canEntityBeSeen(
+            if (o is EntityLivingBase && !o.isInvisible && !o.isSneaking && o !== mc.thePlayer && o.canEntityBeSeen(
                     mc.thePlayer
-                ) && !o.isInvisible() && o is EntityPlayer
+                ) && !o.isInvisible && o is EntityPlayer
             ) {
-                val posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * event.getPartialTicks()
-                    .toDouble() - mc.getRenderManager().viewerPosX
-                val posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * event.getPartialTicks()
-                    .toDouble() - mc.getRenderManager().viewerPosY
-                val posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * event.getPartialTicks()
-                    .toDouble() - mc.getRenderManager().viewerPosZ
+                val posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * event.partialTicks
+                    .toDouble() - mc.renderManager.viewerPosX
+                val posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * event.partialTicks
+                    .toDouble() - mc.renderManager.viewerPosY
+                val posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * event.partialTicks
+                    .toDouble() - mc.renderManager.viewerPosZ
 
-                this.circle(posX, posY, posZ, if (mc.playerController.isInCreativeMode()) 4.7 else 3.4)
+                this.circle(posX, posY, posZ, if (mc.playerController.isInCreativeMode) 4.7 else 3.4)
             }
         }
 
@@ -67,11 +74,11 @@ class ReachCirclesMod : Mod(
         val color = applyAlpha(currentColor.getInterpolateColor(), 120)
 
         GL11.glLineWidth(lineWidthSetting.toFloat())
-        setColor(color.getRGB())
+        setColor(color.rgb)
         GL11.glBegin(1)
 
         for (i in 0..90) {
-            setColor(color.getRGB(), 0.4f)
+            setColor(color.rgb, 0.4f)
             GL11.glVertex3d(
                 x + rad * cos(i.toDouble() * 6.283185307179586 / 45.0),
                 y,

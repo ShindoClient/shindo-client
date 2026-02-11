@@ -43,14 +43,14 @@ class ClearGlassMod : Mod(
         }
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         prevNormal = normalSetting
         prevStained = stainedSetting
         super.onEnable()
         mc.renderGlobal.loadRenderers()
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
         mc.renderGlobal.loadRenderers()
     }

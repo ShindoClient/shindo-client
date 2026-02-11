@@ -7,11 +7,6 @@ import me.miki.shindo.libs.spotify.model_objects.AbstractModelObject;
 
 import java.util.Arrays;
 import java.util.Objects;
-
-/**
- * Retrieve information about Playlist Track Position objects by building instances from this class. These objects
- * contain the position in a playlist, where tracks should be added in a request.
- */
 @JsonDeserialize(builder = PlaylistTrackPosition.Builder.class)
 public class PlaylistTrackPosition extends AbstractModelObject {
     private final String uri;
@@ -23,22 +18,9 @@ public class PlaylistTrackPosition extends AbstractModelObject {
         this.uri = builder.uri;
         this.positions = builder.positions;
     }
-
-    /**
-     * Get the <a href="https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids">Spotify URI</a> of the
-     * track.
-     *
-     * @return Spotify track URI.
-     */
     public String getUri() {
         return uri;
     }
-
-    /**
-     * Get the position, where the track should be added in the playlist.
-     *
-     * @return Track position.
-     */
     public int[] getPositions() {
         return positions;
     }
@@ -69,10 +51,6 @@ public class PlaylistTrackPosition extends AbstractModelObject {
     public int hashCode() {
         return Objects.hash(uri);
     }
-
-    /**
-     * Builder class for building {@link PlaylistTrackPosition} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private String uri;
         private int[] positions;
@@ -92,10 +70,6 @@ public class PlaylistTrackPosition extends AbstractModelObject {
             return new PlaylistTrackPosition(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link PlaylistTrackPosition} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<PlaylistTrackPosition> {
         public PlaylistTrackPosition createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

@@ -6,7 +6,11 @@ import me.miki.shindo.management.nanovg.font.Fonts
 
 open class SimpleHUDMod : HUDMod {
 
-    constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String) : super(nameTranslate, descriptionText, icon)
+    constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String) : super(
+        nameTranslate,
+        descriptionText,
+        icon
+    )
 
     constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String, alias: String) : super(
         nameTranslate,
@@ -43,7 +47,4 @@ open class SimpleHUDMod : HUDMod {
         return null
     }
 
-    override fun getIcon(): String? {
-        return super.getIcon()
-    }
 }

@@ -1,19 +1,14 @@
 package me.miki.shindo.ui.comp.templates
 
-import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.Comp
-import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.ui.comp.style.CompStyleResolver
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import java.awt.Color
-
-/**
- * Template para painéis com fundo, sombra e bordas arredondadas.
- * Útil para criar áreas de conteúdo destacadas.
- */
 open class CompPanel(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 0f,
-    height: Float = 0f
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 0f,
+        height: Float = 0f
 ) : Comp(x, y) {
 
     private var radius: Float = 8f
@@ -23,13 +18,14 @@ open class CompPanel(
     private var borderWidth: Float = 0f
     private var borderColor: Color? = null
     private var padding: Float = 0f
+    private var surfaceVariant: CompSurfaceVariant = CompSurfaceVariant.PANEL
 
     init {
         setWidth(width)
         setHeight(height)
     }
 
-    fun setRadius(radius: Float): CompPanel {
+    open fun setRadius(radius: Float): CompPanel {
         this.radius = radius
         return this
     }
@@ -46,7 +42,7 @@ open class CompPanel(
         return this
     }
 
-    fun setShadowStrength(strength: Int): CompPanel {
+    open fun setShadowStrength(strength: Int): CompPanel {
         this.shadowStrength = strength
         return this
     }
@@ -62,6 +58,13 @@ open class CompPanel(
         return this
     }
 
+    fun setSurfaceVariant(surfaceVariant: CompSurfaceVariant): CompPanel {
+        this.surfaceVariant = surfaceVariant
+        return this
+    }
+
+    fun getSurfaceVariant(): CompSurfaceVariant = surfaceVariant
+
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return
 
@@ -69,6 +72,7 @@ open class CompPanel(
         val paletteColors = palette
         val accentColors = accent
 
+        beforeDrawPanel(mouseX, mouseY, partialTicks)
         val bgColor = getBackgroundColor(paletteColors, accentColors)
 
         if (shadowEnabled) {
@@ -81,13 +85,13 @@ open class CompPanel(
 
         if (borderWidth > 0f && borderColor != null) {
             nvgInstance.drawOutlineRoundedRect(
-                getX(),
-                getY(),
-                getWidth(),
-                getHeight(),
-                radius,
-                borderWidth,
-                borderColor!!
+                    getX(),
+                    getY(),
+                    getWidth(),
+                    getHeight(),
+                    radius,
+                    borderWidth,
+                    borderColor!!
             )
         }
 
@@ -105,16 +109,18 @@ open class CompPanel(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    /**
-     * Método para obter a cor de fundo. Pode ser sobrescrito para customização.
-     */
-    protected open fun getBackgroundColor(paletteColors: me.miki.shindo.management.color.palette.ColorPalette, accentColors: me.miki.shindo.management.color.AccentColor): Color? {
-        return backgroundColor ?: paletteColors.getBackgroundColor(ColorType.DARK)
+    protected open fun beforeDrawPanel(mouseX: Int, mouseY: Int, partialTicks: Float) {}
+
+    protected open fun getBackgroundColor(
+            paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
+            accentColors: me.miki.shindo.management.color.AccentColor
+    ): Color? {
+        return backgroundColor ?: resolveDefaultBackground()
     }
 
-    /**
-     * Método para renderizar conteúdo específico do painel.
-     * Pode ser sobrescrito por subclasses.
-     */
+    protected open fun resolveDefaultBackground(): Color {
+        return CompStyleResolver.resolveSurfaceBackground(surfaceVariant, palette, accent)
+    }
+
     protected open fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 }

@@ -20,7 +20,7 @@ class FPSSpooferMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.MULTIPLIER,
         min = 1.0,
-        max = 3.00,
+        max = 30.0,
         step = 1.0
     )
     private val multiplierSetting = 2.0

@@ -1,6 +1,5 @@
 package me.miki.shindo.management.addons.nocheaters.command
 
-import me.miki.shindo.management.addons.nocheaters.NoCheatersAddon
 import me.miki.shindo.management.addons.nocheaters.data.WDR
 import me.miki.shindo.management.addons.nocheaters.data.WdrData
 import me.miki.shindo.management.addons.nocheaters.warning.WarningMessages
@@ -14,19 +13,6 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.IChatComponent
 import java.util.*
 
-/**
- * Comando /nocheaters
- * 
- * Funcionalidades:
- * - Lista jogadores reportados no mundo atual
- * - Mostra lista completa de reportes
- * - Ajuda e informações
- * 
- * Extensível para:
- * - Filtros e busca
- * - Exportação de dados
- * - Estatísticas
- */
 class CommandNoCheaters : ICommand {
 
     override fun getCommandName(): String = "nocheaters"
@@ -41,13 +27,15 @@ class CommandNoCheaters : ICommand {
             return
         }
 
-        when (args[0].lowercase()) {
+        when (args[0].toLowerCase(Locale.ROOT)) {
             "reportlist" -> {
                 printReportList(args)
             }
+
             "help" -> {
                 printCommandHelp(sender)
             }
+
             else -> {
                 printCommandHelp(sender)
             }
@@ -74,11 +62,11 @@ class CommandNoCheaters : ICommand {
     }
 
     private val mc = Minecraft.getMinecraft()
-    
+
     private fun sendChatMessage(component: IChatComponent) {
         mc.ingameGUI?.chatGUI?.addToSentMessages(component.toString())
     }
-    
+
     private fun printReportList(args: Array<String>) {
         val displayPage = if (args.size > 1) {
             try {
@@ -97,7 +85,6 @@ class CommandNoCheaters : ICommand {
             return
         }
 
-        // Ordena por timestamp (mais recentes primeiro)
         val sortedWDRs = allWDRs.entries.toList().sortedByDescending { it.value.getTimestamp() }
 
         val itemsPerPage = 10
@@ -123,15 +110,14 @@ class CommandNoCheaters : ICommand {
 
         for (i in startIndex until endIndex) {
             val (key, wdr) = sortedWDRs[i]
-            
-            // Processa cada entrada (pode ser async se tiver API key)
+
             if (key is UUID && hasHypixelApi) {
-                // Busca informações do Hypixel (async)
+
                 me.miki.shindo.utils.Multithreading.runAsync {
                     try {
                         val playerData = me.miki.shindo.libs.hypixel.data.HypixelPlayerData(key)
                         val loginData = me.miki.shindo.libs.hypixel.parser.LoginData(playerData)
-                        
+
                         TaskExecutor.runOnMainThread {
                             val timeSince = formatTimeSince(wdr.getTimestamp())
                             val message = ChatComponentText("${EnumChatFormatting.GRAY}- ")
@@ -146,8 +132,7 @@ class CommandNoCheaters : ICommand {
                                 )
                                 .appendText("${EnumChatFormatting.GRAY} reported: ${EnumChatFormatting.YELLOW}$timeSince")
                                 .appendSibling(wdr.getFormattedCheats())
-                            
-                            // Adiciona status online/offline
+
                             if (loginData.isOnline()) {
                                 message.appendText(" ${EnumChatFormatting.GREEN}Online")
                             } else {
@@ -155,18 +140,18 @@ class CommandNoCheaters : ICommand {
                                 val timeSinceLogout = formatTimeSince(lastLogout)
                                 message.appendText(" ${EnumChatFormatting.GRAY}Last logout: ${EnumChatFormatting.YELLOW}$timeSinceLogout")
                             }
-                            
+
                             sendChatMessage(message)
                         }
                     } catch (e: Exception) {
-                        // Fallback para exibição simples
+
                         TaskExecutor.runOnMainThread {
                             printSimpleReportEntry(key, wdr)
                         }
                     }
                 }
             } else {
-                // Exibição simples (sem API ou nickname)
+
                 printSimpleReportEntry(key, wdr)
             }
         }
@@ -181,7 +166,7 @@ class CommandNoCheaters : ICommand {
     }
 
     private fun printSimpleReportEntry(key: Any, wdr: WDR) {
-        val mc = net.minecraft.client.Minecraft.getMinecraft()
+        Minecraft.getMinecraft()
         val name = when (key) {
             is UUID -> {
                 try {
@@ -190,6 +175,7 @@ class CommandNoCheaters : ICommand {
                     key.toString()
                 }
             }
+
             is String -> "[Nick] $key"
             else -> key.toString()
         }
@@ -228,5 +214,7 @@ class CommandNoCheaters : ICommand {
     }
 
     private val sender: ICommandSender
-        get() = net.minecraft.client.Minecraft.getMinecraft().thePlayer
+        get() = Minecraft.getMinecraft().thePlayer
 }
+
+

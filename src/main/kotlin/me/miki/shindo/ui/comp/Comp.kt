@@ -6,22 +6,14 @@ import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.ui.comp.base.IBounded
-import me.miki.shindo.ui.comp.base.IContainer
 import me.miki.shindo.ui.comp.base.IComponent
+import me.miki.shindo.ui.comp.base.IContainer
 import me.miki.shindo.utils.mouse.MouseUtils
 
-/**
- * Classe base para todos os componentes da UI.
- * Implementa as interfaces fundamentais e fornece funcionalidades comuns.
- * 
- * Esta classe é otimizada para performance com:
- * - Cache de instâncias do Shindo
- * - Lazy initialization de children
- * - Early return em métodos quando não visível
- */
+
 open class Comp(
-    x: Float = 0f,
-    y: Float = 0f
+        x: Float = 0f,
+        y: Float = 0f
 ) : IComponent, IBounded, IContainer {
 
     private var _x: Float = x
@@ -31,21 +23,19 @@ open class Comp(
     private var _visible: Boolean = true
 
     private val children: MutableList<Comp> = mutableListOf()
-    
-    // Cache de instâncias do Shindo para evitar múltiplas chamadas
+
     private var _nvg: NanoVGManager? = null
     private var _palette: ColorPalette? = null
-    private var _accent: AccentColor? = null
     private var _colors: ColorManager? = null
 
     protected val nvg: NanoVGManager
         get() = _nvg ?: Shindo.getInstance().nanoVGManager!!.also { _nvg = it }
 
     protected val palette: ColorPalette
-        get() = _palette ?: Shindo.getInstance().colorManager.palette.also { _palette = it }
+        get() = _palette ?: Shindo.getInstance().colorManager.getPalette().also { _palette = it }
 
     protected val accent: AccentColor
-        get() = _accent ?: Shindo.getInstance().colorManager.currentColor.also { _accent = it }
+        get() = Shindo.getInstance().colorManager.getCurrentColor()
 
     protected val colors: ColorManager
         get() = _colors ?: Shindo.getInstance().colorManager.also { _colors = it }
@@ -85,16 +75,26 @@ open class Comp(
         forEachChild { it.update(partialTicks) }
     }
 
-    // IBounded implementation
     override fun getX(): Float = _x
     override fun getY(): Float = _y
     override fun getWidth(): Float = _width
     override fun getHeight(): Float = _height
 
-    override fun setX(x: Float) { this._x = x }
-    override fun setY(y: Float) { this._y = y }
-    override fun setWidth(width: Float) { this._width = width }
-    override fun setHeight(height: Float) { this._height = height }
+    override fun setX(x: Float) {
+        this._x = x
+    }
+
+    override fun setY(y: Float) {
+        this._y = y
+    }
+
+    override fun setWidth(width: Float) {
+        this._width = width
+    }
+
+    override fun setHeight(height: Float) {
+        this._height = height
+    }
 
     override fun setBounds(x: Float, y: Float, width: Float, height: Float) {
         this._x = x
@@ -103,11 +103,11 @@ open class Comp(
         this._height = height
     }
 
-    // IComponent implementation
     override fun isVisible(): Boolean = _visible
-    override fun setVisible(visible: Boolean) { this._visible = visible }
+    override fun setVisible(visible: Boolean) {
+        this._visible = visible
+    }
 
-    // IContainer implementation
     override fun addChild(component: IComponent?) {
         if (component is Comp && !children.contains(component)) {
             children.add(component)
@@ -128,15 +128,9 @@ open class Comp(
 
     override fun hasChildren(): Boolean = children.isNotEmpty()
 
-    /**
-     * Verifica se o componente está sendo hovered.
-     */
     open fun isHovered(mouseX: Int, mouseY: Int): Boolean =
-        MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
+            MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
 
-    /**
-     * Método auxiliar para iterar sobre os filhos de forma otimizada.
-     */
     private inline fun forEachChild(action: (Comp) -> Unit) {
         val size = children.size
         var i = 0
@@ -146,9 +140,6 @@ open class Comp(
         }
     }
 
-    /**
-     * Retorna uma lista imutável dos filhos (compatibilidade com código legado).
-     */
     @Deprecated("Use getChildren() instead", ReplaceWith("getChildren()"))
     fun children(): List<Comp> = children.toList()
 }

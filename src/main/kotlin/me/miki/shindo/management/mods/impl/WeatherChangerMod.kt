@@ -24,7 +24,13 @@ class WeatherChangerMod : Mod(
     @JvmField
     var rainStrength = 1.0
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.THUNDER_STRENGTH, min = 0.0, max = 1.0, current = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.THUNDER_STRENGTH,
+        min = 0.0,
+        max = 1.0,
+        current = 1.0
+    )
     @JvmField
     var thunderStrength = 1.0
 

@@ -39,22 +39,10 @@ public class MixinGuiMultiplayer extends GuiScreen {
             this.buttonList.add(ViaShindo.getInstance().getAsyncVersionSlider());
         }
     }
-    
-    
-
-    /**
-     * @author EldoDebug
-     * @reason Add GuiFixConnecting
-     */
     @Overwrite
     private void connectToServer(ServerData server) {
         mc.displayGuiScreen(new GuiFixConnecting(this, mc, server));
     }
-
-    /**
-     * @author MikiDevAHM
-     * @reason Featured Servers Protection
-     */
     @Overwrite
     public void selectServer(int index) {
         this.serverListSelector.setSelectedSlotIndex(index);
@@ -71,18 +59,12 @@ public class MixinGuiMultiplayer extends GuiScreen {
                 this.btnDeleteServer.enabled = true;
             }
 
-            // MODIFIED CODE
             if (savedServerList.getServerData(index) instanceof ServerDataHook) {
                 this.btnEditServer.enabled = false;
                 this.btnDeleteServer.enabled = false;
             }
         }
     }
-
-    /**
-     * @author MikiDevAHM
-     * @reason
-     */
     @Overwrite
     public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_) {
         return p_175392_2_ > ((IMixinServerList) savedServerList).getFeaturedServerCount();

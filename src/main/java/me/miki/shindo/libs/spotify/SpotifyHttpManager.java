@@ -44,12 +44,6 @@ public class SpotifyHttpManager implements IHttpManager {
     private final Boolean cacheShared;
     private final Integer connectionRequestTimeout;
     private final Integer socketTimeout;
-
-    /**
-     * Construct a new SpotifyHttpManager instance.
-     *
-     * @param builder The builder.
-     */
     public SpotifyHttpManager(Builder builder) {
         this.connectionManager = builder.connectionManager;
         this.proxy = builder.proxy;
@@ -317,7 +311,7 @@ public class SpotifyHttpManager implements IHttpManager {
                     }
                 }
             } catch (JsonSyntaxException e) {
-                // Not necessary
+
             }
         }
 
@@ -335,7 +329,7 @@ public class SpotifyHttpManager implements IHttpManager {
             case HttpStatus.SC_NOT_FOUND:
                 throw new NotFoundException(errorMessage);
             case 429: // TOO_MANY_REQUESTS (additional status code, RFC 6585)
-                // Sets "Retry-After" header as described at https://beta.developer.spotify.com/documentation/web-api/#rate-limiting
+
                 Header header = httpResponse.getFirstHeader("Retry-After");
 
                 if (header != null) {

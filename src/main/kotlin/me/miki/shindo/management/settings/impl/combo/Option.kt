@@ -11,8 +11,8 @@ class Option {
 
     constructor(nameTranslate: TranslateText) {
         this.nameTranslate = nameTranslate
-        this.fallbackName = nameTranslate.text
-        this.nameKey = nameTranslate.key
+        this.fallbackName = nameTranslate.getText()
+        this.nameKey = nameTranslate.getKey()
     }
 
     constructor(name: String) {
@@ -22,7 +22,7 @@ class Option {
     }
 
     val name: String
-        get() = nameTranslate?.text ?: fallbackName
+        get() = nameTranslate?.getText() ?: fallbackName
 
     fun getTranslate(): TranslateText? {
         return nameTranslate

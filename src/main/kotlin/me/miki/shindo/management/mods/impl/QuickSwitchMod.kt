@@ -45,27 +45,27 @@ class QuickSwitchMod : Mod(
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == swordKey) {
+        if (event.keyCode == swordKey) {
             setCurrentItem(getBestSword(mc.thePlayer))
         }
 
-        if (event.getKeyCode() == blockKey) {
+        if (event.keyCode == blockKey) {
             setCurrentItem(getBestBlock(mc.thePlayer))
         }
 
-        if (event.getKeyCode() == rodKey) {
+        if (event.keyCode == rodKey) {
             setCurrentItem(getItemSlot(Items.fishing_rod))
         }
 
-        if (event.getKeyCode() == axeKey) {
+        if (event.keyCode == axeKey) {
             setCurrentItem(getBestAxe(mc.thePlayer))
         }
 
-        if (event.getKeyCode() == pickaxeKey) {
+        if (event.keyCode == pickaxeKey) {
             setCurrentItem(getBestPickaxe(mc.thePlayer))
         }
 
-        if (event.getKeyCode() == bowKey) {
+        if (event.keyCode == bowKey) {
             setCurrentItem(getBestBow(mc.thePlayer))
         }
     }

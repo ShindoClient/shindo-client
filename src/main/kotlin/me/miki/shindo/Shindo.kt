@@ -1,18 +1,20 @@
 package me.miki.shindo
 
-import me.miki.shindo.injection.mixin.ShindoTweaker
-import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.api.chat.ChatManager
 import me.miki.shindo.api.broadcast.BroadcastManager
+import me.miki.shindo.api.chat.ChatManager
+import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.libs.hypixel.HypixelApiKeyManager
+import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.command.CommandManager
+import me.miki.shindo.management.cosmetic.bandana.BandanaManager
 import me.miki.shindo.management.cosmetic.cape.CapeManager
+import me.miki.shindo.management.cosmetic.wing.WingManager
 import me.miki.shindo.management.event.EventManager
 import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.LanguageManager
-import me.miki.shindo.management.layout.UILayoutManager
+import me.miki.shindo.ui.layout.UILayoutManager
 import me.miki.shindo.management.mods.ModManager
 import me.miki.shindo.management.mods.RestrictedMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
@@ -20,7 +22,6 @@ import me.miki.shindo.management.music.MusicManager
 import me.miki.shindo.management.music.RomanizationManager
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.network.NetworkManager
-import me.miki.shindo.management.network.proxy.WarpProxyManager
 import me.miki.shindo.management.notification.NotificationManager
 import me.miki.shindo.management.profile.ProfileManager
 import me.miki.shindo.management.profile.ProfileShareManager
@@ -38,12 +39,13 @@ import me.miki.shindo.management.skin.SkinManager
 import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.ClickEffects
 import me.miki.shindo.utils.OptifineUtils
-import me.miki.shindo.utils.Sound
+import me.miki.shindo.management.sound.Sound
+import me.miki.shindo.management.sound.Sounds
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import org.apache.commons.lang3.ArrayUtils
-import java.util.Arrays
+import java.util.*
 
 class Shindo private constructor() {
 
@@ -72,6 +74,10 @@ class Shindo private constructor() {
         private set
     lateinit var capeManager: CapeManager
         private set
+    lateinit var wingManager: WingManager
+        private set
+    lateinit var bandanaManager: BandanaManager
+        private set
     lateinit var colorManager: ColorManager
         private set
     lateinit var profileManager: ProfileManager
@@ -82,14 +88,12 @@ class Shindo private constructor() {
         private set
     lateinit var broadcastManager: BroadcastManager
         private set
-    lateinit var commandManager: CommandManager
-        private set
+    private lateinit var commandManager: CommandManager
     lateinit var screenshotManager: ScreenshotManager
         private set
     lateinit var notificationManager: NotificationManager
         private set
-    lateinit var securityFeatureManager: SecurityFeatureManager
-        private set
+    private lateinit var securityFeatureManager: SecurityFeatureManager
     lateinit var uiLayoutManager: UILayoutManager
         private set
     lateinit var musicManager: MusicManager
@@ -104,10 +108,6 @@ class Shindo private constructor() {
         private set
     lateinit var waypointManager: WaypointManager
         private set
-    lateinit var warpProxyManager: WarpProxyManager
-        private set
-    lateinit var connectionTweakerManager: NetworkManager
-        private set
     lateinit var update: Update
         private set
     lateinit var clickEffects: ClickEffects
@@ -121,6 +121,8 @@ class Shindo private constructor() {
     lateinit var romanizationManager: RomanizationManager
         private set
     lateinit var skinManager: SkinManager
+        private set
+    lateinit var networkManager: NetworkManager
         private set
     lateinit var shindoAPI: ShindoAPI
         private set
@@ -154,10 +156,9 @@ class Shindo private constructor() {
         modManager.init()
         addonManager.init()
 
-        warpProxyManager = WarpProxyManager()
-        connectionTweakerManager = NetworkManager()
-
         capeManager = CapeManager()
+        wingManager = WingManager()
+        bandanaManager = BandanaManager()
         colorManager = ColorManager()
         uiLayoutManager = UILayoutManager()
         profileManager = ProfileManager()
@@ -167,11 +168,11 @@ class Shindo private constructor() {
         musicManager = MusicManager(fileManager)
         romanizationManager = RomanizationManager()
         skinManager = SkinManager()
+        networkManager = NetworkManager().also { it.init() }
 
         shindoAPI = ShindoAPI()
         shindoAPI.init()
-        
-        // Inicializa API do Hypixel
+
         HypixelApiKeyManager.initialize()
 
         commandManager = CommandManager()
@@ -187,8 +188,8 @@ class Shindo private constructor() {
 
         eventManager.register(ShindoHandler())
 
-        InternalSettingsMod.instance?.setToggled(true)
-        InternalSettingsMod.instance?.applyBorderlessOnStartup()
+        InternalSettingsMod.instance.setToggled(true)
+        InternalSettingsMod.instance.applyBorderlessOnStartup()
         clickEffects = ClickEffects()
         shaderManager = ShaderManager().also { it.init() }
         started = true
@@ -207,7 +208,7 @@ class Shindo private constructor() {
 
         shaderManager.cleanup()
 
-        Sound.play("shindo/audio/close.wav", true)
+        Sound.play(Sounds.SHINDO_AUDIO_CLOSE, true)
 
         romanizationManager.shutdown()
     }
@@ -223,9 +224,9 @@ class Shindo private constructor() {
     }
 
     private fun unregisterKeybind(key: KeyBinding) {
-        if (Arrays.asList(*mc.gameSettings.keyBindings).contains(key)) {
+        if (listOf(*mc.gameSettings.keyBindings).contains(key)) {
             mc.gameSettings.keyBindings =
-                ArrayUtils.remove(mc.gameSettings.keyBindings, Arrays.asList(*mc.gameSettings.keyBindings).indexOf(key))
+                ArrayUtils.remove(mc.gameSettings.keyBindings, listOf(*mc.gameSettings.keyBindings).indexOf(key))
             key.keyCode = 0
         }
     }
@@ -237,3 +238,6 @@ class Shindo private constructor() {
         fun getInstance(): Shindo = instance
     }
 }
+
+
+

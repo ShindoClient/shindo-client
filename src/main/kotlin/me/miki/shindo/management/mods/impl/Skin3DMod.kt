@@ -1,10 +1,10 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+
 class Skin3DMod :
     Mod(TranslateText.SKIN_3D, TranslateText.SKIN_3D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_SKIN3_D) {
     private val baseVoxelSize = 1.15f
@@ -17,7 +17,7 @@ class Skin3DMod :
         instance = this
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         val mobends = MoBendsMod.instance

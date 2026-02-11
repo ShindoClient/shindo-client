@@ -40,19 +40,16 @@ enum class ProjectileTrailType(
         return nameTranslate
     }
 
-    override fun getDisplayName(): String = super.getDisplayName()
-
-    override fun getNameKey(): String = super.getNameKey()
-
     companion object {
         fun getTypeByKey(key: String?): ProjectileTrailType {
-            for (t in ProjectileTrailType.entries) {
+            for (t in ProjectileTrailType.values()) {
                 if (t.nameTranslate.getKey() == key) {
                     return t
                 }
             }
 
-            return ProjectileTrailType.HEARTS
+            return HEARTS
         }
     }
 }
+

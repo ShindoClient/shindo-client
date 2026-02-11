@@ -10,12 +10,6 @@ import me.miki.shindo.libs.spotify.model_objects.specification.Context;
 import me.miki.shindo.libs.spotify.model_objects.specification.Disallows;
 import me.miki.shindo.libs.spotify.model_objects.specification.Episode;
 import me.miki.shindo.libs.spotify.model_objects.specification.Track;
-
-/**
- * Retrieve information about
- * <a href="https://developer.spotify.com/documentation/web-api/reference/get-information-about-the-users-current-playback">Currently Playing
- * Context objects</a> by creating instances from this class.
- */
 @JsonDeserialize(builder = CurrentlyPlayingContext.Builder.class)
 public class CurrentlyPlayingContext extends AbstractModelObject {
     private final Device device;
@@ -43,93 +37,33 @@ public class CurrentlyPlayingContext extends AbstractModelObject {
         this.currentlyPlayingType = builder.currentlyPlayingType;
         this.actions = builder.actions;
     }
-
-    /**
-     * Get the currently active device.
-     *
-     * @return The device that is currently active.
-     */
     public Device getDevice() {
         return device;
     }
-
-    /**
-     * Get the repeat state of the device. (No repeat, track repeat, context repeat)
-     *
-     * @return The repeat state.
-     */
     public String getRepeat_state() {
         return repeat_state;
     }
-
-    /**
-     * Get the shuffle state of the device.
-     *
-     * @return If shuffle is on or off.
-     */
     public Boolean getShuffle_state() {
         return shuffle_state;
     }
-
-    /**
-     * Get the context from where the currently playing item is played from.
-     *
-     * @return A Context Object. Can be {@code null}.
-     */
     public Context getContext() {
         return context;
     }
-
-    /**
-     * Get the Unix timestamp in milliseconds when the time was fetched.
-     *
-     * @return Unix Millisecond Timestamp when data was fetched.
-     */
     public Long getTimestamp() {
         return timestamp;
     }
-
-    /**
-     * Get the progress of the currently playing item.
-     *
-     * @return Progress into the currently playing item. Can be {@code null}.
-     */
     public Integer getProgress_ms() {
         return progress_ms;
     }
-
-    /**
-     * Check whether a track or episode is playing on the device or not.
-     *
-     * @return If something is currently playing.
-     */
     public Boolean getIs_playing() {
         return is_playing;
     }
-
-    /**
-     * Get the currently playing track or episode, if the device is playing something.
-     *
-     * @return The currently playing item. Can be {@code null}.
-     */
     public IPlaylistItem getItem() {
         return item;
     }
-
-    /**
-     * Get the type of the currently playing item.
-     *
-     * @return The type of the currently playing item.
-     */
     public CurrentlyPlayingType getCurrentlyPlayingType() {
         return currentlyPlayingType;
     }
-
-    /**
-     * Get which playback actions are available within the current context.
-     *
-     * @return A {@link Actions} object which contains a {@link Disallows} object.
-     */
     public Actions getActions() {
         return actions;
     }
@@ -146,10 +80,6 @@ public class CurrentlyPlayingContext extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link CurrentlyPlayingContext} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private Device device;
         private String repeat_state;
@@ -161,112 +91,42 @@ public class CurrentlyPlayingContext extends AbstractModelObject {
         private IPlaylistItem item;
         private CurrentlyPlayingType currentlyPlayingType;
         private Actions actions;
-
-        /**
-         * The active device setter.
-         *
-         * @param device The device that is currently active.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setDevice(Device device) {
             this.device = device;
             return this;
         }
-
-        /**
-         * The repeat state setter.
-         *
-         * @param repeat_state The repeat state.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setRepeat_state(String repeat_state) {
             this.repeat_state = repeat_state;
             return this;
         }
-
-        /**
-         * The shuffle state setter.
-         *
-         * @param shuffle_state If shuffle is on or off.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setShuffle_state(Boolean shuffle_state) {
             this.shuffle_state = shuffle_state;
             return this;
         }
-
-        /**
-         * The playing context setter.
-         *
-         * @param context A Context Object. Can be {@code null}.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setContext(Context context) {
             this.context = context;
             return this;
         }
-
-        /**
-         * The timestamp setter.
-         *
-         * @param timestamp Unix Millisecond Timestamp when data was fetched.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setTimestamp(Long timestamp) {
             this.timestamp = timestamp;
             return this;
         }
-
-        /**
-         * The item progress setter.
-         *
-         * @param progress_ms Progress into the currently playing item. Can be {@code null}.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setProgress_ms(Integer progress_ms) {
             this.progress_ms = progress_ms;
             return this;
         }
-
-        /**
-         * The playing state setter.
-         *
-         * @param is_playing If something is currently playing.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setIs_playing(Boolean is_playing) {
             this.is_playing = is_playing;
             return this;
         }
-
-        /**
-         * The currently playing item setter.
-         *
-         * @param item If something is currently playing.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setItem(IPlaylistItem item) {
             this.item = item;
             return this;
         }
-
-        /**
-         * The currently playing type setter.
-         *
-         * @param currentlyPlayingType The type of the currently playing item.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setCurrentlyPlayingType(CurrentlyPlayingType currentlyPlayingType) {
             this.currentlyPlayingType = currentlyPlayingType;
             return this;
         }
-
-        /**
-         * The actions setter.
-         *
-         * @param actions A {@link Actions} object which contains a {@link Disallows} object.
-         * @return A {@link CurrentlyPlayingContext.Builder}.
-         */
         public Builder setActions(Actions actions) {
             this.actions = actions;
             return this;
@@ -277,10 +137,6 @@ public class CurrentlyPlayingContext extends AbstractModelObject {
             return new CurrentlyPlayingContext(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link CurrentlyPlayingContext} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<CurrentlyPlayingContext> {
         public CurrentlyPlayingContext createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

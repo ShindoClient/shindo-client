@@ -31,7 +31,7 @@ class SessionInfoMod :
     private fun drawNanoVG() {
         val time: String?
 
-        if (mc.isSingleplayer()) {
+        if (mc.isSingleplayer) {
             time = "Singleplayer"
         } else {
             val durationInMillis = System.currentTimeMillis() - startTime
@@ -65,21 +65,21 @@ class SessionInfoMod :
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        if (isHypixel() && event.getPacket() is S02PacketChat) {
-            val chatPacket = event.getPacket() as S02PacketChat
-            val chatMessage = chatPacket.getChatComponent().getUnformattedText()
+        if (isHypixel() && event.packet is S02PacketChat) {
+            val chatPacket = event.packet as S02PacketChat
+            val chatMessage = chatPacket.chatComponent.unformattedText
 
             val message = StringUtils.stripControlCodes(chatMessage)
 
             if (!message.contains(":") && Arrays.stream<String?>(killTrigger)
-                    .anyMatch { s: String? -> message.replace(mc.thePlayer.getName(), "*").contains(s!!) }
+                    .anyMatch { s: String? -> message.replace(mc.thePlayer.name, "*").contains(s!!) }
             ) {
                 killCount++
             }
         }
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         startTime = System.currentTimeMillis()
     }

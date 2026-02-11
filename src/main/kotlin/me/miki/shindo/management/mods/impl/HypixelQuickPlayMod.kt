@@ -22,7 +22,7 @@ class HypixelQuickPlayMod : Mod(
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == keybindSetting) {
+        if (event.keyCode == keybindSetting) {
             mc.displayGuiScreen(GuiQuickPlay())
         }
     }

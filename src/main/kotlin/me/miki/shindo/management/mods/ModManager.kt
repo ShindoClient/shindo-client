@@ -3,9 +3,8 @@ package me.miki.shindo.management.mods
 import me.miki.shindo.management.mods.impl.*
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.metadata.SettingRegistry
-import me.miki.shindo.utils.Sound
-import java.util.ArrayList
-
+import me.miki.shindo.management.sound.Sound
+import me.miki.shindo.management.sound.Sounds
 class ModManager {
 
     private val mods = ArrayList<Mod>()
@@ -203,9 +202,9 @@ class ModManager {
 
     fun playToggleSound(toggled: Boolean) {
         if (toggled) {
-            Sound.play("shindo/audio/positive.wav", true)
+            Sound.play(Sounds.SHINDO_AUDIO_POSITIVE, true)
         } else {
-            Sound.play("shindo/audio/negative.wav", true)
+            Sound.play(Sounds.SHINDO_AUDIO_NEGATIVE, true)
         }
     }
 
@@ -217,3 +216,6 @@ class ModManager {
         return settings
     }
 }
+
+
+

@@ -7,7 +7,6 @@ enum class LogCategory {
     WEBSOCKET,
     CHAT,
     NOTIFICATIONS,
-    NETWORK,
     MUSIC,
     DISCORD,
     UI,

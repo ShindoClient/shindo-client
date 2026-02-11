@@ -1,10 +1,6 @@
 package me.miki.shindo.management.addons.rpo
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
+import com.google.gson.*
 import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.client.Minecraft
 import java.io.File
@@ -13,7 +9,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
-import java.util.Collections
+import java.util.*
 
 class ConfigHandler(private val configFile: File) {
 

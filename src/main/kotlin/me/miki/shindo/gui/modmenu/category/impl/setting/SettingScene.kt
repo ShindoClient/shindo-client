@@ -21,10 +21,10 @@ open class SettingScene(
     open fun keyTyped(typedChar: Char, keyCode: Int) {}
 
     val name: String
-        get() = nameTranslate.text
+        get() = nameTranslate.getText()
 
     val description: String
-        get() = descriptionTranslate.text
+        get() = descriptionTranslate.getText()
 
     val x: Int
         get() = parent.getSceneX()

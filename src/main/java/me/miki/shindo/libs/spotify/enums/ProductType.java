@@ -3,9 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible Spotify product types.
- */
 public enum ProductType {
 
     BASIC_DESKTOP("basic-desktop"),
@@ -32,11 +29,6 @@ public enum ProductType {
         return map.get(type);
     }
 
-    /**
-     * Get the Spotify product type as a string.
-     *
-     * @return The Spotify product type as a string.
-     */
     public String getType() {
         return type;
     }

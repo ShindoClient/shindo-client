@@ -3,9 +3,10 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer
-import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip
-import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
+import me.miki.shindo.ui.comp.layout.SettingsPanel
+import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.addons.AddonType
@@ -21,9 +22,9 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.SearchUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
@@ -64,8 +65,8 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         val nvg = instance.nanoVGManager ?: return
         val addonManager: AddonManager = instance.addonManager
         val colorManager: ColorManager = instance.colorManager
-        val palette: ColorPalette = colorManager.palette
-        val accentColor: AccentColor = colorManager.currentColor
+        val palette: ColorPalette = colorManager.getPalette()
+        val accentColor: AccentColor = colorManager.getCurrentColor()
 
         val scrollValue = scroll.getValue()
 
@@ -80,7 +81,6 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         nvg.save()
         nvg.translate(-(600f - (settingAnimation.getValue().toFloat() * 600f)), 0f)
 
-        // Lista de addons (lado esquerdo)
         nvg.save()
         nvg.translate(0f, scrollValue)
 
@@ -169,8 +169,8 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                 card.width,
                 card.height,
                 8f,
-                ColorUtils.applyAlpha(accentColor.color1, overlayAlpha),
-                ColorUtils.applyAlpha(accentColor.color2, overlayAlpha)
+                ColorUtils.applyAlpha(accentColor.getColor1(), overlayAlpha),
+                ColorUtils.applyAlpha(accentColor.getColor2(), overlayAlpha)
             )
 
             if (outlineAlpha > 0) {
@@ -181,7 +181,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                     card.height,
                     8f,
                     1.0f,
-                    ColorUtils.applyAlpha(accentColor.color2, outlineAlpha)
+                    ColorUtils.applyAlpha(accentColor.getColor2(), outlineAlpha)
                 )
             }
 
@@ -239,8 +239,8 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                     SETTINGS_SIZE,
                     5f,
                     1.0f,
-                    ColorUtils.applyAlpha(accentColor.color1, (settingsHoverAnimation * 255).toInt()),
-                    ColorUtils.applyAlpha(accentColor.color2, (settingsHoverAnimation * 255).toInt())
+                    ColorUtils.applyAlpha(accentColor.getColor1(), (settingsHoverAnimation * 255).toInt()),
+                    ColorUtils.applyAlpha(accentColor.getColor2(), (settingsHoverAnimation * 255).toInt())
                 )
             }
 
@@ -255,8 +255,8 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                     toggleWidth,
                     toggleHeight,
                     toggleRadius,
-                    ColorUtils.applyAlpha(accentColor.color1, (toggleProgress * 255).toInt()),
-                    ColorUtils.applyAlpha(accentColor.color2, (toggleProgress * 255).toInt())
+                    ColorUtils.applyAlpha(accentColor.getColor1(), (toggleProgress * 255).toInt()),
+                    ColorUtils.applyAlpha(accentColor.getColor2(), (toggleProgress * 255).toInt())
                 )
             }
 
@@ -305,7 +305,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                 settingScroll.onAnimation()
             }
 
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
 
             val headerX = getX() + 15f
             val headerY = getY() + 15f
@@ -456,7 +456,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             if (MouseUtils.isInside(mouseX, mouseY, getX() + 22f, getY() + 20f, 18f, 18f) && mouseButton == 0) {
                 openSetting = false
                 settingsPanel.clear()
@@ -516,14 +516,14 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (currentAddon != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (currentAddon != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
         }
 
@@ -559,7 +559,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         var blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
 
 
-        for (type in AddonType.entries) {
+        for (type in AddonType.values()) {
             val label = type.getName()
             val chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null)
 
@@ -612,6 +612,10 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
     }
 
     private fun filterAddon(a: Addon): Boolean {
+        if (a.isHide()) {
+            return true
+        }
+
         if (currentType != AddonType.ALL && a.type != currentType) {
             return true
         }
@@ -647,11 +651,17 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         var hasSettings: Boolean = false
     )
 
+    private fun applySettingsPanelPreferences() {
+        val settings = InternalSettingsMod.instance
+        settingsPanel.setStyle(ADDON_SETTINGS_PANEL_STYLE)
+        settingsPanel.setLayoutMode(settings.settingsLayoutMode)
+        settingsPanel.setDensityMode(settings.settingsDensityMode)
+    }
+
     private fun rebuildAddonCards(addonManager: AddonManager, startOffset: Float) {
         addonCardCache.clear()
 
         val availableWidth = getWidth() - 30f
-        val cardWidth = availableWidth
         val cardHeight = LIST_CARD_HEIGHT
         val spacingY = 14f
 
@@ -661,7 +671,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             if (filterAddon(addon)) continue
 
             val cardX = getX() + 15f
-            addonCardCache.add(AddonCard(addon, cardX, rowY, cardWidth, cardHeight))
+            addonCardCache.add(AddonCard(addon, cardX, rowY, availableWidth, cardHeight))
 
             rowY += cardHeight + spacingY
         }
@@ -680,7 +690,6 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
     private companion object {
         const val TYPE_CHIP_GAP = 8f
-        const val CHIP_HORIZONTAL_PADDING = 12f
         const val LIST_CARD_HEIGHT = 51.84f
         const val LIST_TOGGLE_WIDTH = 44f
         const val LIST_TOGGLE_HEIGHT = 18f
@@ -690,5 +699,12 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         const val LIST_ICON_FONT_SIZE = 24f
         const val LIST_ICON_FONT_OFFSET = 7.5f
         const val SETTINGS_SIZE = 18f
+
+        val ADDON_SETTINGS_PANEL_STYLE = SettingsPanelStyle(
+            cardPaddingX = 15f,
+            cardPaddingY = 11f,
+            rowGap = 7f,
+            categoryGap = 13f
+        )
     }
 }

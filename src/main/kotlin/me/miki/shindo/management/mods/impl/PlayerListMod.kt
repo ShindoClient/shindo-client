@@ -11,7 +11,14 @@ import me.miki.shindo.management.settings.config.PropertyType
 
 class PlayerListMod :
     HUDMod(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.MAX, min = 1.0, max = 10.00, current = 1.06, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.MAX,
+        min = 1.0,
+        max = 100.0,
+        current = 16.0,
+        step = 1.0
+    )
     private val maxSetting = 16
 
     private var index = 0
@@ -32,15 +39,15 @@ class PlayerListMod :
         this.drawText("Player List", 5.5f, 6f, 10.5f, getHudFont(1))
         this.drawRect(0f, 18f, maxName, 1f)
 
-        for (playerInfo in mc.getNetHandler().getPlayerInfoMap()) {
-            if (playerInfo != null && playerInfo.getGameProfile() != null) {
-                val name = playerInfo.getGameProfile().getName()
+        for (playerInfo in mc.netHandler.playerInfoMap) {
+            if (playerInfo != null && playerInfo.gameProfile != null) {
+                val name = playerInfo.gameProfile.name
 
                 if (this.getTextWidth(name, 9f, getHudFont(2))!! + 26 > maxName) {
                     maxName = this.getTextWidth(name, 9f, getHudFont(2))!! + 26
                 }
 
-                this.drawPlayerHead(playerInfo.getLocationSkin(), 5.5f, offsetY.toFloat(), 12f, 12f, 2.5f)
+                this.drawPlayerHead(playerInfo.locationSkin, 5.5f, offsetY.toFloat(), 12f, 12f, 2.5f)
                 this.drawText(name, 20f, offsetY + 2.5f, 9f, getHudFont(1))
 
                 if (prevIndex > maxSetting) {

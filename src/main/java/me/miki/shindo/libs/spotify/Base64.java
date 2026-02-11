@@ -1,11 +1,6 @@
 package me.miki.shindo.libs.spotify;
 
 import java.io.ByteArrayOutputStream;
-
-/**
- * Source: <a href="https://gist.github.com/EmilHernvall/953733#file-base64-java">EmilHernvall/Base64.java</a>
- * Due to Java version support issues with DataTypeConverter (&lt;=1.7) class and Base64 (&gt;=1.8) class.
- */
 public class Base64 {
     private static final char[] ENCODE_TABLE_BASE = {
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -76,7 +71,7 @@ public class Base64 {
             if (DECODE_TABLE_BASE[bytes[i]] != -1) {
                 b = (DECODE_TABLE_BASE[bytes[i]] & MASK_8_BITS) << SHIFT_18;
             }
-            // skip unknown characters
+
             else {
                 i++;
                 continue;

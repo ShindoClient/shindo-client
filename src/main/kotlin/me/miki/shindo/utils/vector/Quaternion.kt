@@ -1,11 +1,7 @@
 package me.miki.shindo.utils.vector
 
 import me.miki.shindo.utils.MathUtils
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 class Quaternion(
     private var i: Float,

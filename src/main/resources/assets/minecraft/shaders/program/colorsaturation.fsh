@@ -51,6 +51,6 @@ vec4 applyHSBCEffect(vec4 startColor, vec4 hsbc) {
 }
 
 void main() {
-	gl_FragColor = applyHSBCEffect(texture2D(DiffuseSampler, texCoord), vec4(hue, Saturation, Brightness, Contrast));
+    gl_FragColor = applyHSBCEffect(texture2D(DiffuseSampler, texCoord), vec4(hue, Saturation, Brightness, Contrast));
 }
 

@@ -17,9 +17,9 @@ class MinemenMod :
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        if (autoPlaySetting && event.getPacket() is S02PacketChat) {
-            val chatPacket = event.getPacket() as S02PacketChat
-            val raw = chatPacket.getChatComponent().toString()
+        if (autoPlaySetting && event.packet is S02PacketChat) {
+            val chatPacket = event.packet as S02PacketChat
+            val raw = chatPacket.chatComponent.toString()
 
             if (raw.contains("clickEvent=ClickEvent{action=RUN_COMMAND, value='/requeue")) {
                 mc.thePlayer.sendChatMessage("/requeue")

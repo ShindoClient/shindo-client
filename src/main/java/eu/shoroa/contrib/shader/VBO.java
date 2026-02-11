@@ -1,8 +1,3 @@
-/*
- * Nanovg Blur
- * © Shoroa 2025, All Rights Reserved
- */
-
 package eu.shoroa.contrib.shader;
 
 import org.lwjgl.opengl.GL15;

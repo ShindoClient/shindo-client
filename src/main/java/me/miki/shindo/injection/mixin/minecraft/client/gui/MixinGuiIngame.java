@@ -19,6 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiIngame implements IMixinGuiIngame {
@@ -74,12 +77,11 @@ public abstract class MixinGuiIngame implements IMixinGuiIngame {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    // ----- DEBUG ONLY ----- //
-    //@Inject(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", shift = Shift.BEFORE, ordinal = 2), locals = LocalCapture.CAPTURE_FAILSOFT)
-    //public void tabOverlayRender(float partialTicks, CallbackInfo ci, ScaledResolution scaledresolution, int i, int j, ItemStack itemstack, int k1, Scoreboard scoreboard, ScoreObjective scoreobjective, ScorePlayerTeam scoreplayerteam, ScoreObjective scoreobjective1) {
-    //	this.overlayPlayerList.updatePlayerList(true);
-    //	this.overlayPlayerList.renderPlayerlist(i, scoreboard, scoreobjective1);
-    //}
+
+
+
+
+
 
     @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", shift = At.Shift.BEFORE, ordinal = 2))
     public void postRenderGameOverlay(float partialTicks, CallbackInfo ci) {

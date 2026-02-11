@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.awt.image.BufferedImage
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
@@ -36,7 +36,7 @@ object PlayerHeadUtils {
                         cache[key] = texture
                     }
                 } catch (_: Exception) {
-                    // Ignore failed lookups.
+
                 } finally {
                     pending.remove(key)
                 }
@@ -47,7 +47,7 @@ object PlayerHeadUtils {
     }
 
     private fun normalize(username: String?): String {
-        return username?.trim()?.lowercase(Locale.ROOT) ?: ""
+        return username?.trim()?.toLowerCase(Locale.ROOT) ?: ""
     }
 
     private fun registerTexture(image: BufferedImage, id: String): ResourceLocation? {
@@ -83,3 +83,4 @@ object PlayerHeadUtils {
         return ref.get()
     }
 }
+

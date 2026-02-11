@@ -34,40 +34,40 @@ class FovModifierMod : Mod(
     @EventTarget
     fun onFovUpdate(event: EventFovUpdate) {
         var base = 1.0f
-        val entity: EntityPlayer = event.getEntity()
-        val item = entity.getItemInUse()
-        val useDuration = entity.getItemInUseDuration()
+        val entity: EntityPlayer = event.entity
+        val item = entity.itemInUse
+        val useDuration = entity.itemInUseDuration
 
         val sprintingFov = sprintingSetting.toFloat()
         val bowFov = bowSetting.toFloat()
         val speedFov = speedSetting.toFloat()
         val slownessFov = slownessSetting.toFloat()
 
-        if (entity.isSprinting()) {
+        if (entity.isSprinting) {
             base += (0.15000000596046448 * sprintingFov).toFloat()
         }
 
-        if (item != null && item.getItem() === Items.bow) {
+        if (item != null && item.item === Items.bow) {
             val duration = min(useDuration.toFloat(), 20.0f).toInt()
             val modifier: Float = PlayerUtils.MODIFIER_BY_TICK.get(duration)!!
             base -= modifier * bowFov
         }
 
-        val effects = entity.getActivePotionEffects()
+        val effects = entity.activePotionEffects
         if (!effects.isEmpty()) {
             for (effect in effects) {
-                val potionID = effect.getPotionID()
+                val potionID = effect.potionID
                 if (potionID == 1) {
-                    base += 0.1f * (effect.getAmplifier() + 1) * speedFov
+                    base += 0.1f * (effect.amplifier + 1) * speedFov
                 }
 
                 if (potionID == 2) {
-                    base += -0.075f * (effect.getAmplifier() + 1) * slownessFov
+                    base += -0.075f * (effect.amplifier + 1) * slownessFov
                 }
             }
         }
 
-        event.setFov(base)
+        event.fov = base
     }
 }
 

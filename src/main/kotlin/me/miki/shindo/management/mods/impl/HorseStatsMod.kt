@@ -28,11 +28,11 @@ class HorseStatsMod :
         if (mc.objectMouseOver.entityHit is EntityHorse) {
             val horse = mc.objectMouseOver.entityHit as EntityHorse
 
-            if (!mc.thePlayer.isRidingHorse()) {
+            if (!mc.thePlayer.isRidingHorse) {
                 speed = "Speed: " + this.getHorseSpeedRounded(
-                    horse.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue()
+                    horse.getEntityAttribute(SharedMonsterAttributes.movementSpeed).attributeValue
                 ) + " b/s"
-                jump = "Jump: " + df.format(horse.getHorseJumpStrength() * 5.5) + " Blocks"
+                jump = "Jump: " + df.format(horse.horseJumpStrength * 5.5) + " Blocks"
             }
         }
 

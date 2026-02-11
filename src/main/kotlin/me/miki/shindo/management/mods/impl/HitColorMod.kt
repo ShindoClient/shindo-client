@@ -27,10 +27,10 @@ class HitColorMod :
         val currentColor = getInstance().colorManager.getCurrentColor()
         val lastColor = if (customColorSetting) colorSetting else currentColor.getInterpolateColor()
 
-        event.setRed(lastColor.getRed() / 255f)
-        event.setGreen(lastColor.getGreen() / 255f)
-        event.setBlue(lastColor.getBlue() / 255f)
-        event.setAlpha(alphaSetting.toFloat())
+        event.red = lastColor.red / 255f
+        event.green = lastColor.green / 255f
+        event.blue = lastColor.blue / 255f
+        event.alpha = alphaSetting.toFloat()
     }
 }
 

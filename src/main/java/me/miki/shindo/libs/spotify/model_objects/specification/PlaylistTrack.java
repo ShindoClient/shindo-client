@@ -10,11 +10,6 @@ import me.miki.shindo.libs.spotify.model_objects.utils.PlaylistItemFactory;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.logging.Level;
-
-/**
- * Retrieve information about <a href="https://developer.spotify.com/web-api/object-model/#playlist-track-object">
- * Playlist Track objects</a> by building instances from this class.
- */
 @JsonDeserialize(builder = PlaylistTrack.Builder.class)
 public class PlaylistTrack extends AbstractModelObject {
     private final Date addedAt;
@@ -30,42 +25,15 @@ public class PlaylistTrack extends AbstractModelObject {
         this.isLocal = builder.isLocal;
         this.track = builder.track;
     }
-
-    /**
-     * Get the date, when the track or episode has been added to its playlist.
-     * <b>Note:</b> Some very old playlists may return {@code null} in this field.
-     *
-     * @return The date and time the track or episode was added.
-     */
     public Date getAddedAt() {
         return addedAt;
     }
-
-    /**
-     * Get the user, who added the track or episode to its playlist.
-     * <b>Note:</b> Some very old playlists may return null in this field.
-     *
-     * @return The Spotify user who added the track or episode.
-     */
     public User getAddedBy() {
         return addedBy;
     }
-
-    /**
-     * Check whether a playlist track is a local track or episode or not.<br>
-     * Local tracks can only be played on devices, where the track files are present.
-     *
-     * @return Whether this track is a local file or not.
-     */
     public Boolean getIsLocal() {
         return isLocal;
     }
-
-    /**
-     * Get a full track or episode object from this playlist track object.
-     *
-     * @return Information about the track.
-     */
     public IPlaylistItem getTrack() {
         return track;
     }
@@ -80,55 +48,23 @@ public class PlaylistTrack extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link PlaylistTrack} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private Date addedAt;
         private User addedBy;
         private Boolean isLocal;
         private IPlaylistItem track;
-
-        /**
-         * Set the "added at" date of the playlist track to be built.
-         *
-         * @param addedAt The date and time the track or episode was added.
-         * @return A {@link PlaylistTrack.Builder}.
-         */
         public Builder setAddedAt(Date addedAt) {
             this.addedAt = addedAt;
             return this;
         }
-
-        /**
-         * Set the user who added the track or episode to the playlist.
-         *
-         * @param addedBy The Spotify user who added the track or episode.
-         * @return A {@link PlaylistTrack.Builder}.
-         */
         public Builder setAddedBy(User addedBy) {
             this.addedBy = addedBy;
             return this;
         }
-
-        /**
-         * Set whether the track to be built is local or not.
-         *
-         * @param isLocal Whether this track or episode is a local file or not.
-         * @return A {@link PlaylistTrack.Builder}.
-         */
         public Builder setIsLocal(Boolean isLocal) {
             this.isLocal = isLocal;
             return this;
         }
-
-        /**
-         * Set the full track or episode object of the playlist track to be built.
-         *
-         * @param track Information about the track.
-         * @return A {@link PlaylistTrack.Builder}.
-         */
         public Builder setTrack(IPlaylistItem track) {
             this.track = track;
             return this;
@@ -139,10 +75,6 @@ public class PlaylistTrack extends AbstractModelObject {
             return new PlaylistTrack(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link PlaylistTrack} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<PlaylistTrack> {
         public PlaylistTrack createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

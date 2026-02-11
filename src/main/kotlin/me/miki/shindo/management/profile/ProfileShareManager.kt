@@ -1,13 +1,12 @@
 package me.miki.shindo.management.profile
 
-import arrow.core.Either
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.miki.shindo.Shindo
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.client.Minecraft
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class ProfileShareManager {
@@ -47,7 +46,7 @@ class ProfileShareManager {
             onResult(FetchResult.Error("websocket_unavailable"))
             return
         }
-        val normalizedCode = code.trim().uppercase()
+        val normalizedCode = code.trim().toUpperCase(Locale.ROOT)
         val requestId = UUID.randomUUID().toString()
         pendingFetch[requestId] = onResult
 
@@ -63,7 +62,7 @@ class ProfileShareManager {
             onResult?.invoke(UnshareResult.Error("websocket_unavailable"))
             return
         }
-        val normalizedCode = code.trim().uppercase()
+        val normalizedCode = code.trim().toUpperCase(Locale.ROOT)
         if (normalizedCode.length != 12) {
             onResult?.invoke(UnshareResult.Error("invalid_code"))
             return
@@ -112,16 +111,14 @@ class ProfileShareManager {
         val name = payload.get("name")?.asString
         val rawProfile = payload.get("profile")?.asString ?: return
 
-        val parsed = Either.catch { JsonParser.parseString(rawProfile).asJsonObject }
-        parsed.fold(
-            { e ->
-                ShindoLogger.error("Failed to parse shared profile JSON", e)
-                dispatchFetch(requestId, FetchResult.Error("invalid_profile"))
-            },
-            { profileJson ->
-                dispatchFetch(requestId, FetchResult.Success(code, name, profileJson))
-            }
-        )
+        val profileJson = try {
+            JsonParser.parseString(rawProfile).asJsonObject
+        } catch (e: Exception) {
+            ShindoLogger.error("Failed to parse shared profile JSON", e)
+            dispatchFetch(requestId, FetchResult.Error("invalid_profile"))
+            return
+        }
+        dispatchFetch(requestId, FetchResult.Success(code, name, profileJson))
     }
 
     private fun handleFetchError(payload: JsonObject) {
@@ -172,3 +169,5 @@ class ProfileShareManager {
         data class Error(val message: String?) : UnshareResult()
     }
 }
+
+

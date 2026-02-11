@@ -2,9 +2,7 @@ package me.miki.shindo.management.addons.rpo.packs
 
 import net.minecraft.client.resources.ResourcePackListEntry
 import net.minecraft.client.resources.ResourcePackListEntryFound
-import java.util.Collections
-import java.util.Comparator
-import java.util.Locale
+import java.util.*
 import java.util.regex.Pattern
 
 class ResourcePackListProcessor(
@@ -42,20 +40,26 @@ class ResourcePackListProcessor(
     }
 
     private fun checkFilter(entryText: String): Boolean {
-        return textFilter == null || textFilter!!.matcher(entryText.lowercase(Locale.ENGLISH)).find()
+        return textFilter == null || textFilter!!.matcher(entryText.toLowerCase(Locale.ENGLISH)).find()
     }
 
     companion object {
         @JvmField
         val sortAZ: Comparator<ResourcePackListEntry> =
             Comparator { entry1, entry2 ->
-                String.CASE_INSENSITIVE_ORDER.compare(nameSort(entry1, reverse = false), nameSort(entry2, reverse = false))
+                String.CASE_INSENSITIVE_ORDER.compare(
+                    nameSort(entry1, reverse = false),
+                    nameSort(entry2, reverse = false)
+                )
             }
 
         @JvmField
         val sortZA: Comparator<ResourcePackListEntry> =
             Comparator { entry1, entry2 ->
-                -String.CASE_INSENSITIVE_ORDER.compare(nameSort(entry1, reverse = true), nameSort(entry2, reverse = true))
+                -String.CASE_INSENSITIVE_ORDER.compare(
+                    nameSort(entry1, reverse = true),
+                    nameSort(entry2, reverse = true)
+                )
             }
 
         private fun name(entry: ResourcePackListEntry): String {
@@ -91,4 +95,5 @@ class ResourcePackListProcessor(
         }
     }
 }
+
 

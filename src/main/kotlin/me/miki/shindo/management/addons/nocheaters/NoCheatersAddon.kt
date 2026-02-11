@@ -4,9 +4,6 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonType
-import me.miki.shindo.management.addons.nocheaters.command.CommandNoCheaters
-import me.miki.shindo.management.addons.nocheaters.command.CommandUnWDR
-import me.miki.shindo.management.addons.nocheaters.command.CommandWDR
 import me.miki.shindo.management.addons.nocheaters.data.NoCheatersData
 import me.miki.shindo.management.addons.nocheaters.data.WDR
 import me.miki.shindo.management.addons.nocheaters.data.WdrData
@@ -17,23 +14,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.management.event.EventManager
+import java.util.*
 
-/**
- * Addon NoCheaters - Sistema de detecção e aviso de jogadores reportados
- * 
- * Baseado no sistema NoCheaters do MWE, este addon:
- * - Salva jogadores reportados via /wdr
- * - Avisa quando jogadores reportados entram no mundo
- * - Mantém uma lista de jogadores reportados
- * - Suporta reportes automáticos via fila
- * 
- * Estrutura extensível para melhorias futuras:
- * - Integração com APIs externas
- * - Sistema de sincronização entre clientes
- * - Detecção automática de cheats
- * - Estatísticas e relatórios
- */
 class NoCheatersAddon : Addon(
     "NoCheaters",
     "Sistema de detecção e aviso de jogadores reportados",
@@ -48,7 +30,6 @@ class NoCheatersAddon : Addon(
             private set
     }
 
-    // Settings
     @Property(type = PropertyType.BOOLEAN, name = "Enable Warnings", category = "General", current = 1.0)
     @JvmField
     var enableWarningsSetting = true
@@ -69,11 +50,15 @@ class NoCheatersAddon : Addon(
     @JvmField
     var autoReportQueueSetting = false
 
-    @Property(type = PropertyType.BOOLEAN, name = "Add Detected to Report List", category = "Auto Report", current = 0.0)
+    @Property(
+        type = PropertyType.BOOLEAN,
+        name = "Add Detected to Report List",
+        category = "Auto Report",
+        current = 0.0
+    )
     @JvmField
     var addDetectedToReportListSetting = false
 
-    // Managers
     lateinit var data: NoCheatersData
     lateinit var reportQueue: ReportQueue
     lateinit var warningMessages: WarningMessages
@@ -85,22 +70,23 @@ class NoCheatersAddon : Addon(
     }
 
     override fun setup() {
-        // Inicializa componentes
+        super.setup()
+        setHide(true)
+        
         val configFile = java.io.File(
             Shindo.getInstance().fileManager.addonConfigDir,
             "nocheaters.json"
         )
-        
+
         data = NoCheatersData(configFile)
-        WdrData.initialize(data) // Inicializa singleton
-        
+        WdrData.initialize(data)
+
         reportQueue = ReportQueue()
-        ReportQueue.INSTANCE = reportQueue // Define instância estática
-        
+        ReportQueue.INSTANCE = reportQueue
+
         warningMessages = WarningMessages
         playerJoinListener = PlayerJoinListener()
 
-        // Registra comandos
         registerCommands()
 
         ShindoLogger.info("[NoCheaters] Addon initialized successfully")
@@ -108,8 +94,7 @@ class NoCheatersAddon : Addon(
 
     override fun onEnable() {
         super.onEnable()
-        
-        // Registra listeners no EventManager do Shindo
+
         val eventManager = Shindo.getInstance().eventManager
         eventManager.register(playerJoinListener)
         eventManager.register(reportQueue)
@@ -119,10 +104,8 @@ class NoCheatersAddon : Addon(
     }
 
     override fun onDisable() {
-        // Salva dados antes de desabilitar
         data.saveReportedPlayers()
-        
-        // Remove listeners do EventManager
+
         val eventManager = Shindo.getInstance().eventManager
         eventManager.unregister(playerJoinListener)
         eventManager.unregister(reportQueue)
@@ -133,37 +116,22 @@ class NoCheatersAddon : Addon(
     }
 
     private fun registerCommands() {
-        // Comandos do Minecraft (ICommand) são registrados automaticamente
-        // Não precisam de registro manual, o Minecraft os detecta automaticamente
-        // quando implementam ICommand corretamente
         ShindoLogger.info("[NoCheaters] Commands will be registered automatically by Minecraft")
     }
 
-    /**
-     * Verifica se um jogador está na lista de reportados
-     */
-    fun isPlayerReported(uuid: java.util.UUID?, playername: String?): Boolean {
+    fun isPlayerReported(uuid: UUID?, playername: String?): Boolean {
         return data.getWDR(uuid, playername) != null
     }
 
-    /**
-     * Obtém informações de WDR de um jogador
-     */
-    fun getPlayerWDR(uuid: java.util.UUID?, playername: String?): WDR? {
+    fun getPlayerWDR(uuid: UUID?, playername: String?): WDR? {
         return data.getWDR(uuid, playername)
     }
 
-    /**
-     * Adiciona um jogador à lista de reportados
-     */
-    fun addReportedPlayer(uuid: java.util.UUID?, playername: String?, cheats: List<String>) {
+    fun addReportedPlayer(uuid: UUID?, playername: String?, cheats: List<String>) {
         data.put(uuid, playername, WDR(cheats))
     }
 
-    /**
-     * Remove um jogador da lista de reportados
-     */
-    fun removeReportedPlayer(uuid: java.util.UUID?, playername: String?): Boolean {
+    fun removeReportedPlayer(uuid: UUID?, playername: String?): Boolean {
         return data.remove(uuid, playername) != null
     }
 }

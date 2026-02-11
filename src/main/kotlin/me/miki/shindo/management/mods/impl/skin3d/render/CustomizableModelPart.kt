@@ -37,7 +37,7 @@ class CustomizableModelPart(private val cubes: MutableList<CustomizableCube>) {
 
     private fun compile(redTint: Boolean) {
         for (cube in this.cubes) {
-            cube.render(Tessellator.getInstance().getWorldRenderer(), redTint)
+            cube.render(Tessellator.getInstance().worldRenderer, redTint)
         }
     }
 }

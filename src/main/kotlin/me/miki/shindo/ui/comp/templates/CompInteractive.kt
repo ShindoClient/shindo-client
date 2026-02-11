@@ -3,14 +3,9 @@ package me.miki.shindo.ui.comp.templates
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.base.IInteractive
 import me.miki.shindo.utils.mouse.MouseUtils
-
-/**
- * Template base para componentes interativos (clicáveis, hover, etc).
- * Fornece funcionalidades comuns de interação como hover detection, callbacks, etc.
- */
 abstract class CompInteractive(
-    x: Float = 0f,
-    y: Float = 0f
+        x: Float = 0f,
+        y: Float = 0f
 ) : Comp(x, y), IInteractive {
 
     private var enabled: Boolean = true
@@ -34,7 +29,6 @@ abstract class CompInteractive(
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return
 
-        // Atualiza estado de hover
         val currentlyHovered = isHoveredInteractive(mouseX, mouseY)
         if (currentlyHovered != hovered) {
             hovered = currentlyHovered
@@ -65,18 +59,6 @@ abstract class CompInteractive(
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
-
-    /**
-     * Método abstrato para renderização específica do componente interativo.
-     * @param mouseX Posição X do mouse
-     * @param mouseY Posição Y do mouse
-     * @param partialTicks Ticks parciais
-     * @param hovered Se o componente está sendo hovered
-     */
     protected abstract fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean)
-
-    /**
-     * Método chamado quando o componente é clicado (pode ser sobrescrito).
-     */
     protected open fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {}
 }

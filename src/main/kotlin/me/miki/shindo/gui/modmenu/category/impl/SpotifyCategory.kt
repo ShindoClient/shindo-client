@@ -1,4 +1,4 @@
-﻿package me.miki.shindo.gui.modmenu.category.impl
+package me.miki.shindo.gui.modmenu.category.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
@@ -7,14 +7,15 @@ import me.miki.shindo.libs.spotify.model_objects.specification.PlaylistSimplifie
 import me.miki.shindo.libs.spotify.model_objects.specification.Track
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
-import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.music.LyricsManager
 import me.miki.shindo.management.music.MusicManager
+import me.miki.shindo.management.music.TrackInfoCallback
+import me.miki.shindo.management.music.model.LyricsLine
 import me.miki.shindo.management.nanovg.NanoVGManager
+import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
@@ -30,14 +31,13 @@ import java.awt.Color
 import java.io.File
 import java.lang.ref.WeakReference
 import java.net.URI
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
+import java.util.*
+import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.ArrayList
 
-class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTIFY, LegacyIcon.SPOTIFY, true, true), MusicManager.TrackInfoCallback {
+class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTIFY, LegacyIcon.SPOTIFY, true, true),
+    TrackInfoCallback {
 
     private val volumeSlider = CompSlider(
         InternalSettingsMod.instance.getVolumeSetting()
@@ -47,7 +47,9 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     private val clientIdTextBox = CompTextBox()
     private val clientSecretTextBox = CompTextBox()
     private val parentRef = WeakReference(parent)
-    private val searchDebouncer: ScheduledExecutorService
+    private val searchDebouncer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { runnable ->
+        Thread(runnable, "Search-Debouncer").apply { isDaemon = true }
+    }
     private val isSearching = AtomicBoolean(false)
     private val noColour = Color(0, 0, 0, 0)
     private val lyricsScroll = Scroll()
@@ -75,16 +77,13 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     private var currentHighlightedLyricIndex = -1
 
     init {
-        searchDebouncer = Executors.newSingleThreadScheduledExecutor { runnable ->
-            Thread(runnable, "Search-Debouncer").apply { isDaemon = true }
-        }
         initializeComponents()
     }
 
     private fun initializeComponents() {
         textBox.setDefaultText("Enter a Spotify link")
-        clientIdTextBox.setDefaultText(TranslateText.SPOTIFY_CLIENT_ID.text)
-        clientSecretTextBox.setDefaultText(TranslateText.SPOTIFY_CLIENT_SECRET.text)
+        clientIdTextBox.setDefaultText(TranslateText.SPOTIFY_CLIENT_ID.getText())
+        clientSecretTextBox.setDefaultText(TranslateText.SPOTIFY_CLIENT_SECRET.getText())
         volumeSlider.setCircle(false)
         volumeSlider.setShowValue(false)
     }
@@ -100,7 +99,7 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val musicManager = Shindo.getInstance().musicManager
 
         showSetupScreen = !musicManager.hasCredentials()
-        showConnectButton = !showSetupScreen && !musicManager.isAuthorized
+        showConnectButton = !showSetupScreen && !musicManager.isAuthorized()
 
         musicManager.setTrackInfoCallback(this)
 
@@ -110,7 +109,7 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             CompletableFuture.runAsync {
                 try {
                     musicManager.fetchAndUpdateVolume()
-                    val actualVolume = musicManager.volume
+                    val actualVolume = musicManager.getVolume()
                     volumeSlider.getSetting().setValue(actualVolume / 100.0)
                 } catch (e: Exception) {
                     ShindoLogger.warn("Failed to sync volume slider: " + e.message)
@@ -124,10 +123,10 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     }
 
     private fun fetchUserPlaylists() {
-        Shindo.getInstance().musicManager.userPlaylists
+        Shindo.getInstance().musicManager.getUserPlaylists()
             .thenAccept { playlists ->
                 if (playlists != null) {
-                    java.util.Collections.reverse(playlists)
+                    Collections.reverse(playlists)
                 }
                 userPlaylists = playlists
             }
@@ -168,8 +167,8 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager!!
         val colorManager = instance.colorManager
-        val palette = colorManager.palette
-        val accentColor = colorManager.currentColor
+        val palette = colorManager.getPalette()
+        val accentColor = colorManager.getCurrentColor()
         val musicManager = instance.musicManager
 
         if (!isSearching.get()) {
@@ -208,27 +207,41 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             }
 
             if (!showingLyrics) {
-                nvg.drawVerticalGradientRect(getX() + 15f, getY().toFloat(), getWidth() - 30f, 12f,
-                    palette.getBackgroundColor(ColorType.NORMAL), noColour)
-                nvg.drawVerticalGradientRect(getX() + 15f, getY() + getHeight() - 58f, getWidth() - 30f, 12f,
-                    noColour, palette.getBackgroundColor(ColorType.NORMAL))
+                nvg.drawVerticalGradientRect(
+                    getX() + 15f, getY().toFloat(), getWidth() - 30f, 12f,
+                    palette.getBackgroundColor(ColorType.NORMAL), noColour
+                )
+                nvg.drawVerticalGradientRect(
+                    getX() + 15f, getY() + getHeight() - 58f, getWidth() - 30f, 12f,
+                    noColour, palette.getBackgroundColor(ColorType.NORMAL)
+                )
             }
         }
 
         updateScroll()
     }
 
-    private fun drawSetupScreen(nvg: NanoVGManager, mouseX: Int, mouseY: Int, palette: ColorPalette, accentColor: AccentColor) {
+    private fun drawSetupScreen(
+        nvg: NanoVGManager,
+        mouseX: Int,
+        mouseY: Int,
+        palette: ColorPalette,
+        accentColor: AccentColor
+    ) {
         val centerX = getX() + (getWidth() / 2f)
         val centerY = getY() + (getHeight() / 2f) - 40f
 
-        nvg.drawCenteredText(TranslateText.SPOTIFY_SETUP.text,
+        nvg.drawCenteredText(
+            TranslateText.SPOTIFY_SETUP.getText(),
             centerX, getY() + 40f,
-            palette.getFontColor(ColorType.DARK), 20f, Fonts.MEDIUM)
+            palette.getFontColor(ColorType.DARK), 20f, Fonts.MEDIUM
+        )
 
-        nvg.drawText(TranslateText.SPOTIFY_CLIENT_ID.text,
+        nvg.drawText(
+            TranslateText.SPOTIFY_CLIENT_ID.getText(),
             centerX - 150f, centerY - 10f,
-            palette.getFontColor(ColorType.NORMAL), 12f, Fonts.MEDIUM)
+            palette.getFontColor(ColorType.NORMAL), 12f, Fonts.MEDIUM
+        )
 
         clientIdTextBox.setWidth(300f)
         clientIdTextBox.setHeight(20f)
@@ -236,9 +249,11 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         clientIdTextBox.setY(centerY + 5f)
         clientIdTextBox.draw(mouseX, mouseY, 0f)
 
-        nvg.drawText(TranslateText.SPOTIFY_CLIENT_SECRET.text,
+        nvg.drawText(
+            TranslateText.SPOTIFY_CLIENT_SECRET.getText(),
             centerX - 150f, centerY + 40f,
-            palette.getFontColor(ColorType.NORMAL), 12f, Fonts.MEDIUM)
+            palette.getFontColor(ColorType.NORMAL), 12f, Fonts.MEDIUM
+        )
 
         clientSecretTextBox.setWidth(300f)
         clientSecretTextBox.setHeight(20f)
@@ -247,34 +262,51 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         clientSecretTextBox.draw(mouseX, mouseY, 0f)
 
         val tutorialButtonY = centerY + 100f
-        val tutorialHovered = MouseUtils.isInside(mouseX, mouseY,
-            centerX - 150f, tutorialButtonY, 140f, 30f)
+        val tutorialHovered = MouseUtils.isInside(
+            mouseX, mouseY,
+            centerX - 150f, tutorialButtonY, 140f, 30f
+        )
 
-        nvg.drawRoundedRect(centerX - 150f, tutorialButtonY, 140f, 30f, 5f,
-            palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRoundedRect(
+            centerX - 150f, tutorialButtonY, 140f, 30f, 5f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
 
-        nvg.drawCenteredText(TranslateText.SPOTIFY_TUTORIAL.text,
+        nvg.drawCenteredText(
+            TranslateText.SPOTIFY_TUTORIAL.getText(),
             centerX - 80f, tutorialButtonY + 11f,
             if (tutorialHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
-            11f, Fonts.MEDIUM)
+            11f, Fonts.MEDIUM
+        )
 
         val setupButtonX = centerX + 10f
-        val setupHovered = MouseUtils.isInside(mouseX, mouseY,
-            setupButtonX, tutorialButtonY, 140f, 30f)
+        val setupHovered = MouseUtils.isInside(
+            mouseX, mouseY,
+            setupButtonX, tutorialButtonY, 140f, 30f
+        )
 
-        nvg.drawRoundedRect(setupButtonX, tutorialButtonY, 140f, 30f, 5f,
-            if (setupHovered) accentColor.interpolateColor else palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRoundedRect(
+            setupButtonX, tutorialButtonY, 140f, 30f, 5f,
+            if (setupHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.DARK)
+        )
 
-        nvg.drawCenteredText(TranslateText.SPOTIFY_NEXT.text,
+        nvg.drawCenteredText(
+            TranslateText.SPOTIFY_NEXT.getText(),
             setupButtonX + 70f, tutorialButtonY + 11f,
             if (setupHovered) Color.WHITE else palette.getFontColor(ColorType.NORMAL),
-            11f, Fonts.MEDIUM)
+            11f, Fonts.MEDIUM
+        )
 
         if (setupError) {
-            Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_INVALID_CREDENTIALS, NotificationType.ERROR)
+            Shindo.getInstance().notificationManager.post(
+                TranslateText.MUSIC,
+                TranslateText.SPOTIFY_INVALID_CREDENTIALS,
+                NotificationType.ERROR
+            )
             setupError = false
         }
     }
+
     private fun drawSearchResults(nvg: NanoVGManager, palette: ColorPalette) {
         if (searchResults == null && searchPlaylistResults == null) {
             return
@@ -293,7 +325,6 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val playlistResults = searchPlaylistResults
         if (playlistResults != null) {
             for (playlist in playlistResults) {
-                if (playlist == null) continue
                 if (offsetY + 46f >= -scroll.getValue() && offsetY <= -scroll.getValue() + getHeight()) {
                     drawPlaylistEntry(nvg, palette, playlist, offsetY)
                 }
@@ -303,7 +334,14 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     }
 
     private fun drawTrackEntry(nvg: NanoVGManager, palette: ColorPalette, track: Track, offsetY: Float) {
-        nvg.drawRoundedRect(getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f, 8f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRoundedRect(
+            getX() + 15f,
+            getY() + offsetY,
+            getWidth() - 30f,
+            46f,
+            8f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
 
         drawTrackImage(nvg, track, offsetY)
         drawTrackInfo(nvg, palette, track, offsetY)
@@ -332,9 +370,30 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
     private fun drawTrackInfo(nvg: NanoVGManager, palette: ColorPalette, track: Track, offsetY: Float) {
         val trackName = nvg.getLimitText(track.name, 11f, Fonts.MEDIUM, 280f)
-        nvg.drawText(trackName, getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        nvg.drawText(track.artists[0].name, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
-        nvg.drawText(LegacyIcon.PLUS_SQUARE, getX() + getWidth() - 60f, getY() + offsetY + 15f, palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            trackName,
+            getX() + 63f,
+            getY() + offsetY + 9f,
+            palette.getFontColor(ColorType.DARK),
+            11f,
+            Fonts.MEDIUM
+        )
+        nvg.drawText(
+            track.artists[0].name,
+            getX() + 63f,
+            getY() + offsetY + 25f,
+            palette.getFontColor(ColorType.NORMAL),
+            9f,
+            Fonts.MEDIUM
+        )
+        nvg.drawText(
+            LegacyIcon.PLUS_SQUARE,
+            getX() + getWidth() - 60f,
+            getY() + offsetY + 15f,
+            palette.getFontColor(ColorType.NORMAL),
+            16f,
+            Fonts.LEGACYICON
+        )
     }
 
     private fun drawPlaceholderImage(nvg: NanoVGManager, offsetY: Float) {
@@ -345,8 +404,20 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
     }
 
-    private fun drawPlaylistEntry(nvg: NanoVGManager, palette: ColorPalette, playlist: PlaylistSimplified, offsetY: Float) {
-        nvg.drawRoundedRect(getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f, 8f, palette.getBackgroundColor(ColorType.DARK))
+    private fun drawPlaylistEntry(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        playlist: PlaylistSimplified,
+        offsetY: Float
+    ) {
+        nvg.drawRoundedRect(
+            getX() + 15f,
+            getY() + offsetY,
+            getWidth() - 30f,
+            46f,
+            8f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
 
         val imageUrl = Shindo.getInstance().musicManager.getPlaylistImageUrl(playlist)
         if (imageUrl != null) {
@@ -361,16 +432,37 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
 
         val playlistName = playlist.name ?: "Untitled Playlist"
-        nvg.drawText(nvg.getLimitText(playlistName, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nvg.drawText(
+            nvg.getLimitText(playlistName, 11f, Fonts.MEDIUM, 280f),
+            getX() + 63f,
+            getY() + offsetY + 9f,
+            palette.getFontColor(ColorType.DARK),
+            11f,
+            Fonts.MEDIUM
+        )
 
         var ownerName = "Unknown Artist"
         if (playlist.owner != null && playlist.owner.displayName != null) {
             ownerName = playlist.owner.displayName
         }
 
-        nvg.drawText(ownerName, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+        nvg.drawText(
+            ownerName,
+            getX() + 63f,
+            getY() + offsetY + 25f,
+            palette.getFontColor(ColorType.NORMAL),
+            9f,
+            Fonts.MEDIUM
+        )
 
-        nvg.drawText(LegacyIcon.PLAY, getX() + getWidth() - 60f, getY() + offsetY + 15f, palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            LegacyIcon.PLAY,
+            getX() + getWidth() - 60f,
+            getY() + offsetY + 15f,
+            palette.getFontColor(ColorType.NORMAL),
+            16f,
+            Fonts.LEGACYICON
+        )
 
         if (DEBUG_HITBOXES) {
             nvg.drawRect(getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f, DEBUG_COLOR)
@@ -383,11 +475,15 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
         var offsetY = 13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f
         for (playlist in playlists) {
-            if (playlist == null) {
-                continue
-            }
 
-            nvg.drawRoundedRect(getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f, 8f, palette.getBackgroundColor(ColorType.DARK))
+            nvg.drawRoundedRect(
+                getX() + 15f,
+                getY() + offsetY,
+                getWidth() - 30f,
+                46f,
+                8f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
 
             val imageUrl = Shindo.getInstance().musicManager.getPlaylistImageUrl(playlist)
             if (imageUrl != null) {
@@ -402,14 +498,28 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             }
 
             val playlistName = playlist.name ?: "Untitled Playlist"
-            nvg.drawText(nvg.getLimitText(playlistName, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            nvg.drawText(
+                nvg.getLimitText(playlistName, 11f, Fonts.MEDIUM, 280f),
+                getX() + 63f,
+                getY() + offsetY + 9f,
+                palette.getFontColor(ColorType.DARK),
+                11f,
+                Fonts.MEDIUM
+            )
 
             var ownerName = "Unknown Artist"
             if (playlist.owner != null && playlist.owner.displayName != null) {
                 ownerName = playlist.owner.displayName
             }
 
-            nvg.drawText(ownerName, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+            nvg.drawText(
+                ownerName,
+                getX() + 63f,
+                getY() + offsetY + 25f,
+                palette.getFontColor(ColorType.NORMAL),
+                9f,
+                Fonts.MEDIUM
+            )
 
             if (DEBUG_HITBOXES) {
                 nvg.drawRect(getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f, DEBUG_COLOR)
@@ -419,10 +529,21 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             offsetY += 56f
         }
     }
-    private fun drawControlBar(nvg: NanoVGManager, palette: ColorPalette, musicManager: MusicManager) {
-        nvg.drawRoundedRectVarying(getX().toFloat(), getY() + getHeight() - 46f, getWidth().toFloat(), 46f, 0f, 0f, 0f, 12f, palette.getBackgroundColor(ColorType.DARK))
 
-        val currentTrack = musicManager.currentTrack
+    private fun drawControlBar(nvg: NanoVGManager, palette: ColorPalette, musicManager: MusicManager) {
+        nvg.drawRoundedRectVarying(
+            getX().toFloat(),
+            getY() + getHeight() - 46f,
+            getWidth().toFloat(),
+            46f,
+            0f,
+            0f,
+            0f,
+            12f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
+
+        val currentTrack = musicManager.getCurrentTrack()
         if (currentTrack != null) {
             val albumArtUrl = musicManager.getAlbumArtUrl(currentTrack)
             if (albumArtUrl != null) {
@@ -444,15 +565,36 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
                 }
             }
 
-            nvg.drawText(nvg.getLimitText(currentTrack.name, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 39f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
-            nvg.drawText(nvg.getLimitText(currentTrack.artists[0].name, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 27f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+            nvg.drawText(
+                nvg.getLimitText(currentTrack.name, 9f, Fonts.MEDIUM, 100f),
+                getX() + 45f,
+                getY() + getHeight() - 39f,
+                palette.getFontColor(ColorType.DARK),
+                9f,
+                Fonts.MEDIUM
+            )
+            nvg.drawText(
+                nvg.getLimitText(currentTrack.artists[0].name, 9f, Fonts.MEDIUM, 100f),
+                getX() + 45f,
+                getY() + getHeight() - 27f,
+                palette.getFontColor(ColorType.NORMAL),
+                9f,
+                Fonts.MEDIUM
+            )
         } else {
             nvg.drawRoundedRect(getX() + 4f, getY() + getHeight() - 43f, 36f, 36f, 6f, Color(50, 50, 50))
             try {
                 nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, getY() + getHeight() - 43f, 36f, 36f, 6f)
             } catch (ignored: Exception) {
             }
-            nvg.drawText(TranslateText.NOTHING_IS_PLAYING.text, getX() + 45f, getY() + getHeight() - 33f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
+            nvg.drawText(
+                TranslateText.NOTHING_IS_PLAYING.getText(),
+                getX() + 45f,
+                getY() + getHeight() - 33f,
+                palette.getFontColor(ColorType.DARK),
+                9f,
+                Fonts.MEDIUM
+            )
         }
     }
 
@@ -462,7 +604,14 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val normalColor = palette.getFontColor(ColorType.NORMAL)
 
         nvg.drawText(LegacyIcon.BACK, centerX - 32f, centerY, normalColor, 16f, Fonts.LEGACYICON)
-        nvg.drawText(if (musicManager.isPlaying) LegacyIcon.PAUSE else LegacyIcon.PLAY, centerX - 8f, centerY, normalColor, 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            if (musicManager.isPlaying()) LegacyIcon.PAUSE else LegacyIcon.PLAY,
+            centerX - 8f,
+            centerY,
+            normalColor,
+            16f,
+            Fonts.LEGACYICON
+        )
         nvg.drawText(LegacyIcon.FORWARD, centerX + 16f, centerY, normalColor, 16f, Fonts.LEGACYICON)
         if (DEBUG_HITBOXES) {
             nvg.drawRect(centerX - 24f - 8f, centerY, 16f, 16f, DEBUG_COLOR)
@@ -471,7 +620,13 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
     }
 
-    private fun drawVolumeSlider(nvg: NanoVGManager, palette: ColorPalette, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    private fun drawVolumeSlider(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
         volumeSlider.setX(getX() + getWidth() - 72f)
         volumeSlider.setY(getY() + getHeight() - 20f)
         volumeSlider.setWidth(62f)
@@ -480,7 +635,14 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
         val volume = (volumeSlider.getSetting().getValueFloat() * 100).toInt()
         val volumeIcon = getVolumeIcon(volume)
-        nvg.drawText(volumeIcon, getX() + getWidth() - 94f, getY() + getHeight() - 26f, palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            volumeIcon,
+            getX() + getWidth() - 94f,
+            getY() + getHeight() - 26f,
+            palette.getFontColor(ColorType.NORMAL),
+            16f,
+            Fonts.LEGACYICON
+        )
     }
 
     private fun getVolumeIcon(volume: Int): String {
@@ -503,9 +665,23 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
         val progressBarWidth = getWidth() - 40
         val progressBarY = getY() + getHeight() - 5
-        nvg.drawRoundedRect(getX() + 20f, progressBarY.toFloat(), progressBarWidth.toFloat(), 2f, 1f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawRoundedRect(
+            getX() + 20f,
+            progressBarY.toFloat(),
+            progressBarWidth.toFloat(),
+            2f,
+            1f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
         val progress = trackPosition.toFloat() / trackDuration.toFloat()
-        nvg.drawRoundedRect(getX() + 20f, progressBarY.toFloat(), progressBarWidth * progress, 2f, 1f, accentColor.interpolateColor)
+        nvg.drawRoundedRect(
+            getX() + 20f,
+            progressBarY.toFloat(),
+            progressBarWidth * progress,
+            2f,
+            1f,
+            accentColor.getInterpolateColor()
+        )
     }
 
     private fun checkAndUpdateSearch() {
@@ -557,52 +733,95 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
                     }
                 } catch (ex: Exception) {
                     ShindoLogger.error("Search failed", ex)
-                    Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_SEARCH_FAILED, NotificationType.ERROR)
+                    Shindo.getInstance().notificationManager.post(
+                        TranslateText.MUSIC,
+                        TranslateText.SPOTIFY_SEARCH_FAILED,
+                        NotificationType.ERROR
+                    )
                 } finally {
                     isSearching.set(false)
                 }
             }
         }, SEARCH_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
     }
+
     private fun drawLyricsButton(nvg: NanoVGManager, palette: ColorPalette, mouseX: Int, mouseY: Int) {
         val buttonX = getX() + getWidth() - 116f
         val buttonY = getY() + getHeight() - 26f
 
         val isHovered = MouseUtils.isInside(mouseX, mouseY, buttonX, buttonY, 16f, 16f)
 
-        nvg.drawText(LegacyIcon.LIST, buttonX, buttonY, if (isHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            LegacyIcon.LIST,
+            buttonX,
+            buttonY,
+            if (isHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
+            16f,
+            Fonts.LEGACYICON
+        )
 
         if (DEBUG_HITBOXES) {
             nvg.drawRect(buttonX, buttonY, 16f, 16f, DEBUG_COLOR)
         }
     }
 
-    private fun drawLyricsView(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, musicManager: MusicManager, mouseX: Int, mouseY: Int) {
-        nvg.drawRoundedRect(getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight() - 46f, 0f, palette.getBackgroundColor(ColorType.NORMAL))
+    private fun drawLyricsView(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accentColor: AccentColor,
+        musicManager: MusicManager,
+        mouseX: Int,
+        mouseY: Int
+    ) {
+        nvg.drawRoundedRect(
+            getX().toFloat(),
+            getY().toFloat(),
+            getWidth().toFloat(),
+            getHeight() - 46f,
+            0f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
 
-        val currentTrack = musicManager.currentTrack
+        val currentTrack = musicManager.getCurrentTrack()
 
         val backButtonX = getX() + 15f
         val backButtonY = getY() + 15f
 
         val isBackHovered = MouseUtils.isInside(mouseX, mouseY, backButtonX, backButtonY, 16f, 16f)
 
-        nvg.drawText(LegacyIcon.ARROW_LEFT, backButtonX, backButtonY, if (isBackHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            LegacyIcon.ARROW_LEFT,
+            backButtonX,
+            backButtonY,
+            if (isBackHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
+            16f,
+            Fonts.LEGACYICON
+        )
 
         if (currentTrack != null) {
-            val lyricsManager = musicManager.lyricsManager
-            if (lyricsManager != null) {
-                if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight() - 46f)) {
-                    lyricsScroll.onScroll()
-                }
-                lyricsScroll.onAnimation()
-
-                drawScrollableLyrics(nvg, palette, accentColor, musicManager, mouseX, mouseY, 0f, trackPosition)
-            } else {
-                nvg.drawCenteredText("Lyrics feature not available", getX() + (getWidth() / 2f), getY() + getHeight() / 2.7f, palette.getFontColor(ColorType.NORMAL), 14f, Fonts.MEDIUM)
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    getX().toFloat(),
+                    getY().toFloat(),
+                    getWidth().toFloat(),
+                    getHeight() - 46f
+                )
+            ) {
+                lyricsScroll.onScroll()
             }
+            lyricsScroll.onAnimation()
+
+            drawScrollableLyrics(nvg, palette, accentColor, musicManager, mouseX, mouseY, 0f, trackPosition)
         } else {
-            nvg.drawCenteredText("No track is currently playing", getX() + (getWidth() / 2f), getY() + getHeight() / 2.7f, palette.getFontColor(ColorType.NORMAL), 14f, Fonts.MEDIUM)
+            nvg.drawCenteredText(
+                "No track is currently playing",
+                getX() + (getWidth() / 2f),
+                getY() + getHeight() / 2.7f,
+                palette.getFontColor(ColorType.NORMAL),
+                14f,
+                Fonts.MEDIUM
+            )
         }
 
         drawControlBar(nvg, palette, musicManager)
@@ -621,18 +840,25 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         startY: Float,
         currentPosition: Long
     ) {
-        val lyricsManager = musicManager.lyricsManager ?: return
-        val lyrics = lyricsManager.currentLyrics
+        val lyricsManager = musicManager.getLyricsManager()
+        val lyrics = lyricsManager.getCurrentLyrics()
 
-        if (lyrics == null || lyrics.isError || lyrics.lines.isEmpty()) {
-            nvg.drawCenteredText("No lyrics available for this track", getX() + (getWidth() / 2f), getY() + getHeight() / 2.7f, palette.getFontColor(ColorType.NORMAL), 14f, Fonts.MEDIUM)
+        if (lyrics == null || lyrics.isError() || lyrics.lines.isEmpty()) {
+            nvg.drawCenteredText(
+                "No lyrics available for this track",
+                getX() + (getWidth() / 2f),
+                getY() + getHeight() / 2.7f,
+                palette.getFontColor(ColorType.NORMAL),
+                14f,
+                Fonts.MEDIUM
+            )
             return
         }
 
         val allLines = lyrics.lines
 
         lyricsManager.updateCurrentLineIndex(currentPosition)
-        val currentLineIndex = lyricsManager.currentLineIndex
+        val currentLineIndex = lyricsManager.getCurrentLineIndex()
 
         val lyricsAreaHeight = getHeight() - startY - 46f
 
@@ -671,7 +897,8 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             wrappedLines[i] = wrapped
 
             val linesCount = wrapped.size
-            lineHeights[i] = if (linesCount <= 1) baseLineHeight.toInt() else (fontSize * linesCount * 1.0f + 10).toInt()
+            lineHeights[i] =
+                if (linesCount <= 1) baseLineHeight.toInt() else (fontSize * linesCount * 1.0f + 10).toInt()
 
             totalContentHeight += lineHeights[i].toFloat()
         }
@@ -681,11 +908,6 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val visibleBottom = visibleTop + lyricsAreaHeight
 
         for (i in allLines.indices) {
-            val line = allLines[i]
-            if (line == null) {
-                currentY += lineHeights[i]
-                continue
-            }
 
             if (currentY + lineHeights[i] < visibleTop || currentY > visibleBottom) {
                 currentY += lineHeights[i]
@@ -693,7 +915,8 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             }
 
             val isCurrentLine = i == currentLineIndex
-            val isHovered = MouseUtils.isInside(mouseX, mouseY, getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat())
+            val isHovered =
+                MouseUtils.isInside(mouseX, mouseY, getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat())
 
             if (isHovered) {
                 currentHighlightedLyricIndex = i
@@ -703,11 +926,13 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
             val fontSize: Float
 
             if (isCurrentLine) {
-                lineColor = accentColor.interpolateColor
+                lineColor = accentColor.getInterpolateColor()
                 fontSize = 14f
 
-                nvg.drawRoundedRect(getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat(), 4f,
-                    Color(accentColor.color1.red, accentColor.color1.green, accentColor.color1.blue, 30))
+                nvg.drawRoundedRect(
+                    getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat(), 4f,
+                    Color(accentColor.getColor1().red, accentColor.getColor1().green, accentColor.getColor1().blue, 30)
+                )
             } else if (isHovered) {
                 lineColor = palette.getFontColor(ColorType.DARK)
                 fontSize = 12f
@@ -745,15 +970,35 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         lyricsScroll.maxScroll = maxScroll
 
         if (lyricsScroll.getValue() < 0) {
-            nvg.drawVerticalGradientRect(getX() + 15f, getY() + startY, getWidth() - 30f, 12f, palette.getBackgroundColor(ColorType.NORMAL), noColour)
+            nvg.drawVerticalGradientRect(
+                getX() + 15f,
+                getY() + startY,
+                getWidth() - 30f,
+                12f,
+                palette.getBackgroundColor(ColorType.NORMAL),
+                noColour
+            )
         }
 
         if (-lyricsScroll.getValue() < maxScroll) {
-            nvg.drawVerticalGradientRect(getX() + 15f, getY() + startY + lyricsAreaHeight - 12f, getWidth() - 30f, 12f, noColour, palette.getBackgroundColor(ColorType.NORMAL))
+            nvg.drawVerticalGradientRect(
+                getX() + 15f,
+                getY() + startY + lyricsAreaHeight - 12f,
+                getWidth() - 30f,
+                12f,
+                noColour,
+                palette.getBackgroundColor(ColorType.NORMAL)
+            )
         }
     }
 
-    private fun wrapText(nvg: NanoVGManager, text: String?, fontSize: Float, font: me.miki.shindo.management.nanovg.font.Font, maxWidth: Float): Array<String> {
+    private fun wrapText(
+        nvg: NanoVGManager,
+        text: String?,
+        fontSize: Float,
+        font: Font,
+        maxWidth: Float
+    ): Array<String> {
         if (text == null || text.isEmpty()) {
             return emptyArray()
         }
@@ -807,19 +1052,28 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         return lines.toTypedArray()
     }
 
-    private fun extractLyricsText(line: LyricsManager.LyricsLine): String {
-        if (line.words != null && line.words.isNotEmpty()) {
-            return line.words
+    private fun extractLyricsText(line: LyricsLine): String {
+        if (line.words != null && line.words!!.isNotEmpty()) {
+            return line.words!!
         }
 
-        if (line.romanizedWords != null && line.romanizedWords.isNotEmpty()) {
-            return line.romanizedWords
+        if (line.romanizedWords != null && line.romanizedWords!!.isNotEmpty()) {
+            return line.romanizedWords!!
         }
 
         return ""
     }
+
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) {
+        if (!MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            )
+        ) {
             return
         }
 
@@ -834,8 +1088,16 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
 
         if (showConnectButton) {
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + (getWidth() / 2f) - 75f, getY() + (getHeight() / 2f) - 20f, 150f, 40f) && mouseButton == 0) {
-                openConfirmDialog(Shindo.getInstance().musicManager.authorizationCodeUri)
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    getX() + (getWidth() / 2f) - 75f,
+                    getY() + (getHeight() / 2f) - 20f,
+                    150f,
+                    40f
+                ) && mouseButton == 0
+            ) {
+                openConfirmDialog(Shindo.getInstance().musicManager.getAuthorizationCodeUri())
                 showConnectButton = false
             }
             return
@@ -850,8 +1112,8 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
                 lyricsScroll.resetAll()
 
                 val musicManager = Shindo.getInstance().musicManager
-                if (musicManager.currentTrack != null && musicManager.lyricsManager != null) {
-                    musicManager.lyricsManager.fetchLyrics(musicManager.currentTrack)
+                if (musicManager.getCurrentTrack() != null) {
+                    musicManager.getLyricsManager().fetchLyrics(musicManager.getCurrentTrack())
                 }
                 return
             }
@@ -871,15 +1133,13 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
             if (currentHighlightedLyricIndex >= 0 && mouseButton == 0) {
                 val musicManager = Shindo.getInstance().musicManager
-                val lyricsManager = musicManager.lyricsManager
-                val lyrics = lyricsManager.currentLyrics
+                val lyricsManager = musicManager.getLyricsManager()
+                val lyrics = lyricsManager.getCurrentLyrics()
 
-                if (lyrics != null && !lyrics.isError && currentHighlightedLyricIndex < lyrics.lines.size) {
+                if (lyrics != null && !lyrics.isError() && currentHighlightedLyricIndex < lyrics.lines.size) {
                     val line = lyrics.lines[currentHighlightedLyricIndex]
-                    if (line != null) {
-                        val startTime = line.startTime
-                        musicManager.seekToPosition(startTime)
-                    }
+                    val startTime = line.startTime
+                    musicManager.seekToPosition(startTime)
                 }
                 return
             }
@@ -934,7 +1194,15 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     private fun handleDownloaderClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
         textBox.mouseClicked(mouseX, mouseY, mouseButton)
 
-        if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 34f, getY() + getHeight() - 80f, 18f, 18f) && mouseButton == 0) {
+        if (MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX() + getWidth() - 34f,
+                getY() + getHeight() - 80f,
+                18f,
+                18f
+            ) && mouseButton == 0
+        ) {
             openDownloader = false
             Shindo.getInstance().musicManager.play(textBox.getText())
             return
@@ -956,7 +1224,7 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
 
         if (MouseUtils.isInside(mouseX, mouseY, centerX - 8f, centerY, 16f, 16f)) {
-            if (musicManager.isPlaying) {
+            if (musicManager.isPlaying()) {
                 musicManager.pause()
             } else {
                 musicManager.resume()
@@ -991,7 +1259,15 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         if (localResults != null) {
             for (track in localResults) {
                 if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f)) {
-                    if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 60f, getY() + offsetY + 15f, 16f, 16f)) {
+                    if (MouseUtils.isInside(
+                            mouseX,
+                            mouseY,
+                            getX() + getWidth() - 60f,
+                            getY() + offsetY + 15f,
+                            16f,
+                            16f
+                        )
+                    ) {
                         addToQueue(track)
                     } else {
                         Shindo.getInstance().musicManager.play(track.uri)
@@ -1004,13 +1280,17 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val playlistResults = searchPlaylistResults
         if (playlistResults != null) {
             for (playlist in playlistResults) {
-                if (playlist == null || playlist.uri == null) continue
+                if (playlist.uri == null) continue
                 if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f)) {
                     try {
                         Shindo.getInstance().musicManager.playPlaylist(playlist.uri)
                     } catch (e: Exception) {
                         ShindoLogger.error("Failed to play playlist: " + e.message)
-                        Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST, NotificationType.ERROR)
+                        Shindo.getInstance().notificationManager.post(
+                            TranslateText.MUSIC,
+                            TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST,
+                            NotificationType.ERROR
+                        )
                     }
                     return
                 }
@@ -1023,9 +1303,10 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val playlists = userPlaylists ?: return
         val musicManager = Shindo.getInstance().musicManager
 
-        var offsetY = 13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f + scroll.getValue()
+        var offsetY =
+            13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f + scroll.getValue()
         for (playlist in playlists) {
-            if (playlist == null || playlist.uri == null) {
+            if (playlist.uri == null) {
                 continue
             }
 
@@ -1034,7 +1315,11 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
                     musicManager.playPlaylist(playlist.uri)
                 } catch (e: Exception) {
                     ShindoLogger.error("Failed to play playlist: " + e.message)
-                    Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST, NotificationType.ERROR)
+                    Shindo.getInstance().notificationManager.post(
+                        TranslateText.MUSIC,
+                        TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST,
+                        NotificationType.ERROR
+                    )
                 }
                 break
             }
@@ -1045,15 +1330,33 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     private fun addToQueue(track: Track) {
         val musicManager = Shindo.getInstance().musicManager
         musicManager.addToQueue(track.uri)
-            .thenRun { Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_ADDED_TO_QUEUE, NotificationType.SUCCESS) }
+            .thenRun {
+                Shindo.getInstance().notificationManager.post(
+                    TranslateText.MUSIC,
+                    TranslateText.SPOTIFY_ADDED_TO_QUEUE,
+                    NotificationType.SUCCESS
+                )
+            }
             .exceptionally {
-                Shindo.getInstance().notificationManager.post(TranslateText.MUSIC, TranslateText.SPOTIFY_FAILED_TO_ADD_TO_QUEUE, NotificationType.ERROR)
+                Shindo.getInstance().notificationManager.post(
+                    TranslateText.MUSIC,
+                    TranslateText.SPOTIFY_FAILED_TO_ADD_TO_QUEUE,
+                    NotificationType.ERROR
+                )
                 null
             }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) {
+        if (!MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            )
+        ) {
             return
         }
 
@@ -1084,11 +1387,11 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         }
 
         val parent = parentRef.get()
-        val searchBarFocused = parent != null && parent.getSearchBox() != null && parent.getSearchBox().isFocused()
+        val searchBarFocused = parent != null && parent.getSearchBox().isFocused()
 
         if (keyCode == Keyboard.KEY_SPACE && !showConnectButton && !searchBarFocused) {
             val musicManager = Shindo.getInstance().musicManager
-            if (musicManager.isPlaying) {
+            if (musicManager.isPlaying()) {
                 musicManager.pause()
             } else {
                 musicManager.resume()
@@ -1133,15 +1436,15 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         trackDuration = duration
 
         val musicManager = Shindo.getInstance().musicManager
-        val currentTrack = musicManager.currentTrack
+        val currentTrack = musicManager.getCurrentTrack()
         if (currentTrack != null) {
             val trackId = currentTrack.id
             if (trackId != currentTrackId) {
                 currentTrackId = trackId
                 musicManager.getAlbumArtUrl(currentTrack)
 
-                if (showingLyrics && musicManager.lyricsManager != null) {
-                    musicManager.lyricsManager.fetchLyrics(currentTrack)
+                if (showingLyrics) {
+                    musicManager.getLyricsManager().fetchLyrics(currentTrack)
                     lyricsScroll.resetAll()
                 }
             }
@@ -1159,8 +1462,8 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     }
 
     private fun drawConnectButton(nvg: NanoVGManager, mouseX: Int, mouseY: Int) {
-        val palette = Shindo.getInstance().colorManager.palette
-        val accentColor = Shindo.getInstance().colorManager.currentColor
+        val palette = Shindo.getInstance().colorManager.getPalette()
+        val accentColor = Shindo.getInstance().colorManager.getCurrentColor()
 
         val centerX = getX() + (getWidth() / 2f)
         val centerY = getY() + (getHeight() / 2f)
@@ -1171,10 +1474,12 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         val buttonY = centerY - (buttonHeight / 2f)
 
         val isHovered = MouseUtils.isInside(mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight)
-        nvg.drawRoundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 8f,
-            if (isHovered) accentColor.interpolateColor else palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRoundedRect(
+            buttonX, buttonY, buttonWidth, buttonHeight, 8f,
+            if (isHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.DARK)
+        )
 
-        val text = TranslateText.SPOTIFY_CONNECT.text
+        val text = TranslateText.SPOTIFY_CONNECT.getText()
         val textWidth = nvg.getTextWidth(text, 11f, Fonts.MEDIUM)
         val iconWidth = 16f
         val spacing = 8f
@@ -1186,11 +1491,15 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
         val textY = buttonY + (buttonHeight / 2f) - 3f
 
-        nvg.drawText(LegacyIcon.MUSIC, startX, iconY,
-            if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK), 16f, Fonts.LEGACYICON)
+        nvg.drawText(
+            LegacyIcon.MUSIC, startX, iconY,
+            if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK), 16f, Fonts.LEGACYICON
+        )
 
-        nvg.drawText(text, startX + iconWidth + spacing, textY,
-            if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nvg.drawText(
+            text, startX + iconWidth + spacing, textY,
+            if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM
+        )
 
         if (DEBUG_HITBOXES) {
             nvg.drawRect(buttonX, buttonY, buttonWidth, buttonHeight, DEBUG_COLOR)

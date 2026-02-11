@@ -23,8 +23,6 @@ float SCurve (float x) {
     //return dot(vec3(-x, 2.0, 1.0 ),vec3(abs(x), x, 1.0)) * 0.5; // possibly faster version
 
 
-
-
     // ---- original for posterity
 
     // How to do this without if-then-else?

@@ -21,7 +21,7 @@ class StopwatchMod :
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_P)
     private val keybind = Keyboard.KEY_P
 
-    private val timer: TimerUtils? = TimerUtils()
+    private val timer: TimerUtils = TimerUtils()
     private val timeFormat = DecimalFormat("0.00")
     private var pressCount = 0
     private var currentTime = 0f
@@ -46,20 +46,20 @@ class StopwatchMod :
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == keybind) {
+        if (event.keyCode == keybind) {
             pressCount++
         }
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return timeFormat.format(currentTime.toDouble()) + " s"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.WATCH else null
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         if (timer != null) {

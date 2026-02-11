@@ -1,19 +1,14 @@
-﻿package me.miki.shindo.ui.comp.buttons
+package me.miki.shindo.ui.comp.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.comp.Comp
-import me.miki.shindo.ui.comp.templates.CompInteractive
+import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
-/**
- * Componente compartilhado tipo card usado em telas de configurações para renderizar título,
- * descrição e controle opcional à direita (slider, toggle, keybind, etc.).
- * 
- * Agora usa CompInteractive para melhor gerenciamento de interações.
- */
-class CompSettingButton : CompInteractive {
+class CompSettingButton : CompControlTemplate {
     private val titleSupplier: () -> String
     private val descriptionSupplier: () -> String
 
@@ -27,23 +22,24 @@ class CompSettingButton : CompInteractive {
     private var drawShadow: Boolean = true
     private var shadowStrength: Float = 6f
     private var shadowRadius: Float = 8f
-    
+
     constructor(x: Float, y: Float, width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) :
-        super(x, y) {
+            super(x, y) {
         this.titleSupplier = titleSupplier
         this.descriptionSupplier = descriptionSupplier
-        setWidth(width);
-        setHeight(DEFAULT_HEIGHT);
+        setWidth(width)
+        setHeight(DEFAULT_HEIGHT)
+        setVariant(CompControlVariant.GHOST)
     }
 
     constructor(width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) :
-        this(0f, 0f, width, titleSupplier, descriptionSupplier)
+            this(0f, 0f, width, titleSupplier, descriptionSupplier)
 
     fun onClickAction(onClick: () -> Unit): CompSettingButton {
         this.onClick = onClick
         return this
     }
-    
+
     @Deprecated("Use onClickAction instead", ReplaceWith("onClickAction(onClick)"))
     fun onClick(onClick: () -> Unit): CompSettingButton = onClickAction(onClick)
 
@@ -58,12 +54,29 @@ class CompSettingButton : CompInteractive {
         return this
     }
 
-    fun setPaddingLeft(paddingLeft: Float)         { this.paddingLeft = paddingLeft         }
-    fun setPaddingRight(paddingRight: Float)       { this.paddingRight = paddingRight       }
-    fun setPaddingVertical(paddingVertical: Float) { this.paddingVertical = paddingVertical }
-    fun setDrawShadow(drawShadow: Boolean)         { this.drawShadow = drawShadow           }
-    fun setShadowStrength(shadowStrength: Float)   { this.shadowStrength = shadowStrength   }
-    fun setShadowRadius(shadowRadius: Float)       { this.shadowRadius = shadowRadius       }
+    fun setPaddingLeft(paddingLeft: Float) {
+        this.paddingLeft = paddingLeft
+    }
+
+    fun setPaddingRight(paddingRight: Float) {
+        this.paddingRight = paddingRight
+    }
+
+    fun setPaddingVertical(paddingVertical: Float) {
+        this.paddingVertical = paddingVertical
+    }
+
+    fun setDrawShadow(drawShadow: Boolean) {
+        this.drawShadow = drawShadow
+    }
+
+    fun setShadowStrength(shadowStrength: Float) {
+        this.shadowStrength = shadowStrength
+    }
+
+    fun setShadowRadius(shadowRadius: Float) {
+        this.shadowRadius = shadowRadius
+    }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         val nvgInstance = nvg
@@ -76,8 +89,8 @@ class CompSettingButton : CompInteractive {
         val height = getHeight()
 
         val base = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), if (hovered) 210 else 188)
-        val overlayStart = ColorUtils.applyAlpha(accentColors.color1, if (hovered) 62 else 38)
-        val overlayEnd = ColorUtils.applyAlpha(accentColors.color2, if (hovered) 62 else 38)
+        val overlayStart = ColorUtils.applyAlpha(accentColors.getColor1(), if (hovered) 62 else 38)
+        val overlayEnd = ColorUtils.applyAlpha(accentColors.getColor2(), if (hovered) 62 else 38)
 
         if (drawShadow) {
             nvgInstance.drawShadow(x, y, width, height, shadowRadius, shadowStrength.toInt())
@@ -95,24 +108,55 @@ class CompSettingButton : CompInteractive {
         val titleY = y + paddingVertical - 4f
         val descriptionY = titleY + 13f
 
-        val title = nvgInstance.getLimitText(titleSupplier.invoke(), TEXT_TITLE_SIZE, Fonts.MEDIUM, availableTextWidth.coerceAtLeast(48f))
+        val title = nvgInstance.getLimitText(
+                titleSupplier.invoke(),
+                TEXT_TITLE_SIZE,
+                Fonts.MEDIUM,
+                availableTextWidth.coerceAtLeast(48f)
+        )
         var description = descriptionSupplier.invoke()
         description = if (!"null".equals(description, ignoreCase = true)) {
-            nvgInstance.getLimitText(description, TEXT_DESCRIPTION_SIZE, Fonts.REGULAR, availableTextWidth.coerceAtLeast(48f))
+            nvgInstance.getLimitText(
+                    description,
+                    TEXT_DESCRIPTION_SIZE,
+                    Fonts.REGULAR,
+                    availableTextWidth.coerceAtLeast(48f)
+            )
         } else {
             ""
         }
 
-        nvgInstance.drawText(title, x + paddingLeft, titleY, paletteColors.getFontColor(ColorType.DARK), TEXT_TITLE_SIZE, Fonts.MEDIUM)
+        nvgInstance.drawText(
+                title,
+                x + paddingLeft,
+                titleY,
+                paletteColors.getFontColor(ColorType.DARK),
+                TEXT_TITLE_SIZE,
+                Fonts.MEDIUM
+        )
         if (description.isNotEmpty()) {
-            nvgInstance.drawText(description, x + paddingLeft, descriptionY, paletteColors.getFontColor(ColorType.NORMAL), TEXT_DESCRIPTION_SIZE, Fonts.REGULAR)
+            nvgInstance.drawText(
+                    description,
+                    x + paddingLeft,
+                    descriptionY,
+                    paletteColors.getFontColor(ColorType.NORMAL),
+                    TEXT_DESCRIPTION_SIZE,
+                    Fonts.REGULAR
+            )
         }
 
         if (statusSupplier != null && statusColorSupplier != null) {
             val status = statusSupplier?.invoke()
             if (!status.isNullOrEmpty()) {
                 val statusY = y + height - paddingVertical + 4f
-                nvgInstance.drawText(status, x + paddingLeft, statusY, statusColorSupplier!!.invoke(), TEXT_STATUS_SIZE, Fonts.MEDIUM)
+                nvgInstance.drawText(
+                        status,
+                        x + paddingLeft,
+                        statusY,
+                        statusColorSupplier!!.invoke(),
+                        TEXT_STATUS_SIZE,
+                        Fonts.MEDIUM
+                )
             }
         }
 
@@ -130,9 +174,9 @@ class CompSettingButton : CompInteractive {
 
         var insideTrailing = false
         trailingComp?.let {
-            insideTrailing = isHovered(mouseX, mouseY) && 
-                mouseX >= it.getX() && mouseX <= it.getX() + it.getWidth() &&
-                mouseY >= it.getY() && mouseY <= it.getY() + it.getHeight()
+            insideTrailing = isHovered(mouseX, mouseY) &&
+                    mouseX >= it.getX() && mouseX <= it.getX() + it.getWidth() &&
+                    mouseY >= it.getY() && mouseY <= it.getY() + it.getHeight()
         }
 
         if (!insideTrailing && mouseButton == 0) {

@@ -1,7 +1,7 @@
 package me.miki.shindo.utils
 
 import org.apache.commons.lang3.StringUtils
-import java.util.Locale
+import java.util.*
 
 object SearchUtils {
 
@@ -10,8 +10,8 @@ object SearchUtils {
 
     @JvmStatic
     fun isSimilar(s1: String, s2: String, searchDistance: Int): Boolean {
-        val left = s1.lowercase(Locale.ENGLISH)
-        val right = s2.lowercase(Locale.ENGLISH)
+        val left = s1.toLowerCase(Locale.ENGLISH)
+        val right = s2.toLowerCase(Locale.ENGLISH)
 
         if (left.length <= searchDistance) {
             return left.contains(right)
@@ -26,3 +26,4 @@ object SearchUtils {
         return left.contains(right) || StringUtils.getLevenshteinDistance(left, right) <= searchDistance
     }
 }
+

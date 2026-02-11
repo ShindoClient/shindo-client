@@ -33,7 +33,7 @@ class JumpCircleMod : Mod(
     fun onUpdate(event: EventUpdate?) {
         if (jumping && mc.thePlayer.onGround) {
             jumping = false
-            circles.add(JumpCircle(mc.thePlayer.getPositionVector()))
+            circles.add(JumpCircle(mc.thePlayer.positionVector))
         }
 
         circles.removeIf { obj: JumpCircle? -> obj!!.update() }
@@ -59,9 +59,9 @@ class JumpCircleMod : Mod(
             GL11.glBegin(8)
             var i = 0
             while (i <= 360) {
-                val red = (currentColor.getInterpolateColor().getRGB() shr 16 and 255).toFloat() / 255.0f
-                val green = (currentColor.getInterpolateColor().getRGB() shr 8 and 255).toFloat() / 255.0f
-                val blue = (currentColor.getInterpolateColor().getRGB() and 255).toFloat() / 255.0f
+                val red = (currentColor.getInterpolateColor().rgb shr 16 and 255).toFloat() / 255.0f
+                val green = (currentColor.getInterpolateColor().rgb shr 8 and 255).toFloat() / 255.0f
+                val blue = (currentColor.getInterpolateColor().rgb and 255).toFloat() / 255.0f
 
                 val pos = circle.pos()
                 val x: Double =
@@ -113,9 +113,9 @@ class JumpCircleMod : Mod(
 
         fun pos(): Vec3 {
             return Vec3(
-                this.vector.xCoord - (mc.getRenderManager() as IMixinRenderManager).getRenderPosX(),
-                this.vector.yCoord - (mc.getRenderManager() as IMixinRenderManager).getRenderPosY(),
-                this.vector.zCoord - (mc.getRenderManager() as IMixinRenderManager).getRenderPosZ()
+                this.vector.xCoord - (mc.renderManager as IMixinRenderManager).getRenderPosX(),
+                this.vector.yCoord - (mc.renderManager as IMixinRenderManager).getRenderPosY(),
+                this.vector.zCoord - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
             )
         }
     }

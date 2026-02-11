@@ -25,7 +25,7 @@ class ItemPhysicsMod : Mod(
 
     fun getSpeedSetting(): NumberSetting? = getNumberSetting(this, "speedSetting")
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         val items2D = Items2DMod.instance

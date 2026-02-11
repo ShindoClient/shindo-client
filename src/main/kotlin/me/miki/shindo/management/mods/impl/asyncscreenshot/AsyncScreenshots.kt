@@ -27,7 +27,7 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
 
             val asyncMod = AsyncScreenshotMod.instance
             if (asyncMod != null && asyncMod.isMessageEnabled) {
-                mc.ingameGUI.getChatGUI().printChatMessage(
+                mc.ingameGUI.chatGUI.printChatMessage(
                     ChatComponentText(EnumChatFormatting.UNDERLINE.toString() + "Saved screenshot" + EnumChatFormatting.RESET + " ")
                         .appendSibling(
                             ChatComponentText("[Open] ").setChatStyle(
@@ -90,6 +90,7 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
     companion object {
         private var image: BufferedImage? = null
         private var screenshot: File? = null
+
         @JvmStatic
         val timestampedPNGFileForDirectory: File
             get() {

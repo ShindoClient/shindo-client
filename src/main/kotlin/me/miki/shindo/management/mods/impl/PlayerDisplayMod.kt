@@ -21,8 +21,8 @@ class PlayerDisplayMod : HUDMod(
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.YAW_OFFSET,
-        min = -9.00,
-        max = 12.00,
+        min = -90.0,
+        max = 120.0,
         current = 0.0,
         step = 1.0
     )
@@ -40,11 +40,11 @@ class PlayerDisplayMod : HUDMod(
         GlStateManager.rotate(135.0f, 0.0f, 1.0f, 0.0f)
         RenderHelper.enableStandardItemLighting()
         GlStateManager.rotate(-135.0f, 0.0f, 1.0f, 0.0f)
-        val rendermanager = Minecraft.getMinecraft().getRenderManager()
+        val rendermanager = Minecraft.getMinecraft().renderManager
 
-        rendermanager.setRenderShadow(false)
-        rendermanager.doRenderEntity(mc.thePlayer, 0.0, 0.0, 0.0, 0.0f, event.getPartialTicks(), true)
-        rendermanager.setRenderShadow(true)
+        rendermanager.isRenderShadow = false
+        rendermanager.doRenderEntity(mc.thePlayer, 0.0, 0.0, 0.0, 0.0f, event.partialTicks, true)
+        rendermanager.isRenderShadow = true
         GlStateManager.popMatrix()
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableRescaleNormal()

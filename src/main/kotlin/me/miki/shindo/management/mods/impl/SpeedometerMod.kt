@@ -40,7 +40,7 @@ class SpeedometerMod :
             startTranslate((this.getX() - 3).toFloat(), this.getY().toFloat())
 
             GL11.glLineWidth(1.5f)
-            if (!mc.isGamePaused() && (lastUpdate == -1L || (System.currentTimeMillis() - lastUpdate) > 30)) {
+            if (!mc.isGamePaused && (lastUpdate == -1L || (System.currentTimeMillis() - lastUpdate) > 30)) {
                 addSpeed((getSpeed() / 5).toDouble())
                 lastUpdate = System.currentTimeMillis()
             }
@@ -53,9 +53,9 @@ class SpeedometerMod :
 
             GL11.glBegin(GL11.GL_LINE_STRIP)
 
-            setColor(this.getFontColor().getRGB())
+            setColor(this.getFontColor().rgb)
 
-            for (i in 0..<speedCount) {
+            for (i in 0 until speedCount) {
                 GL11.glVertex2d(
                     (this.getWidth() + 1) * i / speedCount.toDouble() + 3,
                     this.getHeight() - (speeds[i] * (16)) - 10
@@ -82,11 +82,11 @@ class SpeedometerMod :
         this.drawText("Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s", 5.5f, 6f, 10.5f, getHudFont(2))
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return "Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (showIcon) LegacyIcon.ACTIVITY else null
     }
 
@@ -100,5 +100,6 @@ class SpeedometerMod :
         speeds[speedCount - 1] = speed
     }
 }
+
 
 

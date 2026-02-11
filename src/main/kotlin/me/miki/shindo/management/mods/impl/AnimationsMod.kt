@@ -38,7 +38,7 @@ class AnimationsMod : Mod(
     @JvmField
     var smoothSneakSetting = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.SMOOTH_SPEED, min = 0.5, max = 2.00, step = 0.5)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.SMOOTH_SPEED, min = 0.5, max = 20.0, step = 0.5)
     private val smoothSneakSpeedSetting = 6.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HEALTH)

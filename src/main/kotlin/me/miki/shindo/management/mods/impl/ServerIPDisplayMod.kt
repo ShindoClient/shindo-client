@@ -22,11 +22,11 @@ class ServerIPDisplayMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return getServerIP()
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (showIcon) LegacyIcon.SERVER else null
     }
 }

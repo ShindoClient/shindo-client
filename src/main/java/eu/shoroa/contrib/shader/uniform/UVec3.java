@@ -1,8 +1,3 @@
-/*
- * Nanovg Blur
- * © Shoroa 2025, All Rights Reserved
- */
-
 package eu.shoroa.contrib.shader.uniform;
 
 public class UVec3 extends Uniform {

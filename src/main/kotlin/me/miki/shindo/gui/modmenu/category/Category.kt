@@ -1,10 +1,16 @@
-﻿package me.miki.shindo.gui.modmenu.category
+package me.miki.shindo.gui.modmenu.category
 
 import me.miki.shindo.gui.modmenu.GuiModMenu
+import me.miki.shindo.gui.modmenu.category.section.CategorySectionCursor
+import me.miki.shindo.gui.modmenu.category.section.CategorySectionRenderer
+import me.miki.shindo.gui.modmenu.category.section.CategorySectionSpec
+import me.miki.shindo.gui.modmenu.category.section.CategorySectionStyle
 import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.color.palette.ColorPalette
+import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.ui.comp.inputs.CompSearchBox
-import me.miki.shindo.utils.animation.ColorAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.ColorAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.Minecraft
 
@@ -24,6 +30,7 @@ open class Category(
 
     @JvmField
     var scroll: Scroll = parent.getScroll()
+
     private var initialized = false
 
     open fun initGui() {
@@ -45,11 +52,11 @@ open class Category(
     }
 
     fun getName(): String {
-        return nameTranslate.text
+        return nameTranslate.getText()
     }
 
     fun getNameKey(): String {
-        return nameTranslate.key
+        return nameTranslate.getKey()
     }
 
     fun getIcon(): String {
@@ -112,5 +119,31 @@ open class Category(
 
     fun setCanClose(canClose: Boolean) {
         parent.setCanClose(canClose)
+    }
+
+    protected fun createSectionCursor(
+        startY: Float,
+        style: CategorySectionStyle = CategorySectionStyle()
+    ): CategorySectionCursor {
+        return CategorySectionCursor(startY, style)
+    }
+
+    protected fun drawSectionHeader(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        x: Float,
+        cursor: CategorySectionCursor,
+        section: CategorySectionSpec
+    ): Float {
+        val nextY = CategorySectionRenderer.drawHeader(
+            nvg,
+            palette,
+            x,
+            cursor.y,
+            section,
+            cursor.style
+        )
+        cursor.y = nextY
+        return nextY
     }
 }

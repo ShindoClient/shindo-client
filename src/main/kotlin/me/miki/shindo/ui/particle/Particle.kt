@@ -53,5 +53,5 @@ class Particle(x: Int, y: Int) {
     }
 
     private fun genRandom(): Float =
-        (0.3f + Math.random() * (0.6f - 0.3f + 1.0)).toFloat()
+            (0.3f + Math.random() * (0.6f - 0.3f + 1.0)).toFloat()
 }

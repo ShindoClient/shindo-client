@@ -65,12 +65,6 @@ public abstract class AbstractRequest<T> implements IRequest<T> {
         this.body = builder.body;
         this.bodyParameters = builder.bodyParameters;
     }
-
-    /**
-     * Get something asynchronously.
-     *
-     * @return A {@link CompletableFuture} for a generic.
-     */
     public CompletableFuture<T> executeAsync() {
         return SpotifyApiThreading.executeAsync(
                 this::execute);
@@ -94,8 +88,7 @@ public abstract class AbstractRequest<T> implements IRequest<T> {
     public String bodyParametersToJson(List<NameValuePair> bodyParameters) {
         JsonObject jsonObject = new JsonObject();
 
-        // Parameters that should be parsed as their original types (not strings)
-        // These are parameters that accept Integer, Boolean, JsonArray, or JsonObject types
+
         Set<String> numericAndStructuredParams = Sets.newHashSet(
                 "collaborative", "device_ids", "ids", "insert_before", "offset",
                 "play", "position", "position_ms", "public", "range_length",
@@ -107,17 +100,17 @@ public abstract class AbstractRequest<T> implements IRequest<T> {
             String value = nameValuePair.getValue();
 
             if (numericAndStructuredParams.contains(name)) {
-                // For known numeric/boolean/structured parameters, parse as JSON to preserve type
+
                 try {
                     JsonElement jsonElement = JsonParser.parseString(value);
                     jsonObject.add(name, jsonElement);
                 } catch (JsonSyntaxException e) {
-                    // Fallback to string if parsing fails
+
                     jsonObject.addProperty(name, value);
                 }
             } else {
-                // For string parameters (like name, description), always keep as string
-                // This prevents numeric strings like "2025" from being converted to numbers
+
+
                 jsonObject.addProperty(name, value);
             }
         }
@@ -262,7 +255,7 @@ public abstract class AbstractRequest<T> implements IRequest<T> {
             String builtPath = path;
 
             for (NameValuePair nameValuePair : pathParameters) {
-                // Don't remove the "\\" before the "}" to prevent a regex issue on Android.
+
                 String key = "\\{" + nameValuePair.getName() + "\\}";
                 String value = nameValuePair.getValue();
                 builtPath = builtPath.replaceAll(key, Matcher.quoteReplacement(value));
@@ -340,12 +333,6 @@ public abstract class AbstractRequest<T> implements IRequest<T> {
                     .collect(Collectors.toList()));
             headers.add(newHeader);
         }
-
-        /**
-         * Return this instance to simulate a self-type.
-         *
-         * @return This instance.
-         */
         protected abstract BT self();
     }
 }

@@ -93,7 +93,7 @@ object JsonUtils {
         var parent: JsonObject = jsonObject
 
         for (i in tokens.indices) {
-            // Tokens can contain escaped commas (\,) that need to be restored.
+
             val keyToken = tokens[i].replace("\\\\,".toRegex(), ",")
             val child = parent.get(keyToken)
             if (i + 1 == tokens.size) {

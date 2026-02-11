@@ -10,11 +10,6 @@ import me.miki.shindo.libs.spotify.model_objects.specification.Context;
 import me.miki.shindo.libs.spotify.model_objects.specification.Disallows;
 import me.miki.shindo.libs.spotify.model_objects.specification.Episode;
 import me.miki.shindo.libs.spotify.model_objects.specification.Track;
-
-/**
- * Retrieve information about <a href="https://developer.spotify.com/documentation/web-api/reference/get-the-users-currently-playing-track">
- * Currently Playing objects</a> by creating instances from this class.
- */
 @JsonDeserialize(builder = CurrentlyPlaying.Builder.class)
 public class CurrentlyPlaying extends AbstractModelObject {
     private final Context context;
@@ -36,66 +31,24 @@ public class CurrentlyPlaying extends AbstractModelObject {
         this.currentlyPlayingType = builder.currentlyPlayingType;
         this.actions = builder.actions;
     }
-
-    /**
-     * Get the context the item was played from.
-     *
-     * @return The context the item was played from. Can be {@code null}.
-     */
     public Context getContext() {
         return context;
     }
-
-    /**
-     * Get the timestamp when the received data was fetched.
-     *
-     * @return Unix Millisecond Timestamp when data was fetched.
-     */
     public Long getTimestamp() {
         return timestamp;
     }
-
-    /**
-     * Get the progress of the current played item.
-     *
-     * @return Progress into the currently playing item. Can be {@code null}.
-     */
     public Integer getProgress_ms() {
         return progress_ms;
     }
-
-    /**
-     * Check if something is played at the moment.
-     *
-     * @return If something is currently playing.
-     */
     public Boolean getIs_playing() {
         return is_playing;
     }
-
-    /**
-     * Get the currently played track or episode.
-     *
-     * @return The currently playing track or episode. Can be {@code null}.
-     */
     public IPlaylistItem getItem() {
         return item;
     }
-
-    /**
-     * Get the type of the currently playing item.
-     *
-     * @return The type of the currently playing item.
-     */
     public CurrentlyPlayingType getCurrentlyPlayingType() {
         return currentlyPlayingType;
     }
-
-    /**
-     * Get which playback actions are available within the current context.
-     *
-     * @return A {@link Actions} object which contains a {@link Disallows} object.
-     */
     public Actions getActions() {
         return actions;
     }
@@ -111,10 +64,6 @@ public class CurrentlyPlaying extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link CurrentlyPlaying} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private Context context;
         private Long timestamp;
@@ -123,79 +72,30 @@ public class CurrentlyPlaying extends AbstractModelObject {
         private IPlaylistItem item;
         private CurrentlyPlayingType currentlyPlayingType;
         private Actions actions;
-
-        /**
-         * The playing context setter.
-         *
-         * @param context The context the track was played from. Can be {@code null}.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setContext(Context context) {
             this.context = context;
             return this;
         }
-
-        /**
-         * The timestamp setter.
-         *
-         * @param timestamp Unix Millisecond Timestamp when data was fetched.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setTimestamp(Long timestamp) {
             this.timestamp = timestamp;
             return this;
         }
-
-        /**
-         * The current track progress setter.
-         *
-         * @param progress_ms Progress into the currently playing track. Can be {@code null}.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setProgress_ms(Integer progress_ms) {
             this.progress_ms = progress_ms;
             return this;
         }
-
-        /**
-         * The playing state setter.
-         *
-         * @param is_playing If something is currently playing.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setIs_playing(Boolean is_playing) {
             this.is_playing = is_playing;
             return this;
         }
-
-        /**
-         * The currently playing item setter.
-         *
-         * @param item The currently playing item. Can be {@code null}.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setItem(IPlaylistItem item) {
             this.item = item;
             return this;
         }
-
-        /**
-         * The currently playing type setter.
-         *
-         * @param currentlyPlayingType The type of the currently playing item.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setCurrentlyPlayingType(CurrentlyPlayingType currentlyPlayingType) {
             this.currentlyPlayingType = currentlyPlayingType;
             return this;
         }
-
-        /**
-         * The actions setter.
-         *
-         * @param actions A {@link Actions} object which contains a {@link Disallows} object.
-         * @return A {@link CurrentlyPlaying.Builder}.
-         */
         public Builder setActions(Actions actions) {
             this.actions = actions;
             return this;
@@ -206,10 +106,6 @@ public class CurrentlyPlaying extends AbstractModelObject {
             return new CurrentlyPlaying(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link CurrentlyPlaying} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<CurrentlyPlaying> {
         public CurrentlyPlaying createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

@@ -1,29 +1,27 @@
-﻿package me.miki.shindo.gui.modmenu.category.impl.setting.impl
+package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.selectors.CompAccentColorSelector
+import me.miki.shindo.ui.animation.GlobalAnimationSettings
+import me.miki.shindo.ui.comp.buttons.CompSettingButton
+import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.ui.comp.inputs.CompComboBox
 import me.miki.shindo.ui.comp.inputs.CompSlider
-import me.miki.shindo.ui.comp.buttons.CompSettingButton
+import me.miki.shindo.ui.comp.selectors.CompAccentColorSelector
 import me.miki.shindo.ui.comp.selectors.CompThemeSelector
-import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.ui.comp.templates.CompLabel
-import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import kotlin.math.max
 
 class AppearanceScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
+        SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
 
     private val contentScroll = Scroll()
 
@@ -54,65 +52,62 @@ class AppearanceScene(parent: SettingsCategory) :
         blurStrength = CompSlider(0f, 0f, requireNotNull(InternalSettingsMod.instance.getBlurStrengthSetting()), 75f)
         clientAnimations = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getAnimationsSetting()))
 
-        // Inicializa seletores
         themeSelector = CompThemeSelector().apply {
-            setSelectedTheme(colorManager.theme)
+            setSelectedTheme(colorManager.getTheme())
             setOnThemeSelected { theme ->
-                colorManager.theme = theme
+                colorManager.setTheme(theme)
             }
         }
 
         accentColorSelector = CompAccentColorSelector(
-            accentColors = colorManager.colors
+                accentColors = colorManager.getColors()
         ).apply {
-            setSelectedColor(colorManager.currentColor)
+            setSelectedColor(colorManager.getCurrentColor())
             setOnColorSelected { accent ->
-                colorManager.currentColor = accent
+                colorManager.setCurrentColor(accent)
             }
         }
 
-        // Títulos das seções
-        themeTitle = CompLabel(0f, 0f, TranslateText.THEME.text)
-            .setFontSize(12.5f)
+        themeTitle = CompLabel(0f, 0f, TranslateText.THEME.getText())
+                .setFontSize(12.5f)
 
-        accentTitle = CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.text)
-            .setFontSize(12.5f)
+        accentTitle = CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.getText())
+                .setFontSize(12.5f)
 
         settingCards.clear()
-
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.HUD_THEME.text }, { TranslateText.STYLE.text })
-                .trailing(modTheme)
+                CompSettingButton(0f, { TranslateText.HUD_THEME.getText() }, { TranslateText.STYLE.getText() })
+                        .trailing(modTheme)
         )
 
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.UI_BLUR.text }, { TranslateText.SMOOTH.text })
-                .trailing(uiBlur)
-                .onClickAction {
-                    val setting = uiBlur.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                }
+                CompSettingButton(0f, { TranslateText.UI_BLUR.getText() }, { TranslateText.SMOOTH.getText() })
+                        .trailing(uiBlur)
+                        .onClickAction {
+                            val setting = uiBlur.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                        }
         )
 
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.BLUR_STRENGTH.text }, { TranslateText.SMOOTH.text})
-                .trailing(blurStrength)
-                .onClickAction {
-                    if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
-                        val setting = blurStrength.getSetting()
-                        setting.setValue(setting.getValue())
-                    }
-                }
+                CompSettingButton(0f, { TranslateText.BLUR_STRENGTH.getText() }, { TranslateText.SMOOTH.getText() })
+                        .trailing(blurStrength)
+                        .onClickAction {
+                            if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
+                                val setting = blurStrength.getSetting()
+                                setting.setValue(setting.getValue())
+                            }
+                        }
         )
 
         settingCards.add(
-            CompSettingButton(0f, { TranslateText.ANIMATION.text }, { TranslateText.SMOOTH.text })
-                .trailing(clientAnimations)
-                .onClickAction {
-                    val setting = clientAnimations.getSetting()
-                    setting.setToggled(!setting.isToggled())
-                    GlobalAnimationSettings.enabled = setting.isToggled()
-                }
+                CompSettingButton(0f, { TranslateText.ANIMATION.getText() }, { TranslateText.SMOOTH.getText() })
+                        .trailing(clientAnimations)
+                        .onClickAction {
+                            val setting = clientAnimations.getSetting()
+                            setting.setToggled(!setting.isToggled())
+                            GlobalAnimationSettings.enabled = setting.isToggled()
+                        }
         )
 
         contentScroll.resetAll()
@@ -122,9 +117,9 @@ class AppearanceScene(parent: SettingsCategory) :
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager = instance.colorManager
-        val palette = colorManager.palette
-        val currentAccent = colorManager.currentColor
-        val currentTheme = colorManager.theme
+        val palette = colorManager.getPalette()
+        val currentAccent = colorManager.getCurrentColor()
+        val currentTheme = colorManager.getTheme()
 
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
@@ -135,27 +130,26 @@ class AppearanceScene(parent: SettingsCategory) :
             return
         }
 
-        // Atualiza seletores com valores atuais
         themeSelector.setSelectedTheme(currentTheme)
         accentColorSelector.setSelectedColor(currentAccent)
 
         val containerRadius = 12f
         nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7)
         nvg.drawRoundedRect(
-            baseX,
-            baseY,
-            baseWidth,
-            baseHeight,
-            containerRadius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+                baseX,
+                baseY,
+                baseWidth,
+                baseHeight,
+                containerRadius,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
         )
         nvg.drawRoundedRect(
-            baseX + 1f,
-            baseY + 1f,
-            baseWidth - 2f,
-            baseHeight - 2f,
-            containerRadius - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+                baseX + 1f,
+                baseY + 1f,
+                baseWidth - 2f,
+                baseHeight - 2f,
+                containerRadius - 1f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
         )
 
         val top = baseY + OUTER_PADDING
@@ -168,27 +162,26 @@ class AppearanceScene(parent: SettingsCategory) :
         cardY = accentSectionY + accentHeight + 10f
         cardWidth = sectionWidth
 
-        val contentHeight = OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f +
-                ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING
+        val contentHeight = OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f + ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING * 2
         contentScroll.maxScroll = max(0f, contentHeight - baseHeight)
 
         if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight) &&
-            !MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                baseX + OUTER_PADDING,
-                themeSectionY + contentScroll.getValue(),
-                sectionWidth,
-                themeHeight
-            ) &&
-            !MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                baseX + OUTER_PADDING,
-                accentSectionY + contentScroll.getValue(),
-                sectionWidth,
-                accentHeight
-            )
+                !MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        baseX + OUTER_PADDING,
+                        themeSectionY + contentScroll.getValue(),
+                        sectionWidth,
+                        themeHeight
+                ) &&
+                !MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        baseX + OUTER_PADDING,
+                        accentSectionY + contentScroll.getValue(),
+                        sectionWidth,
+                        accentHeight
+                )
         ) {
             contentScroll.onScroll()
         }
@@ -203,40 +196,35 @@ class AppearanceScene(parent: SettingsCategory) :
         nvg.save()
         nvg.scissor(baseX, baseY, baseWidth, baseHeight)
 
-        // Título do tema
         themeTitle.setX(baseX + OUTER_PADDING)
         themeTitle.setY(themeScreenY - 26f)
         themeTitle.draw(mouseX, mouseY, partialTicks)
 
-        // Seletor de tema
         themeSelector.setBounds(baseX + OUTER_PADDING, themeScreenY, sectionWidth, themeHeight)
         themeSelector.draw(mouseX, mouseY, partialTicks)
 
-        // Título do accent color
         accentTitle.setX(baseX + OUTER_PADDING)
         accentTitle.setY(accentScreenY - 26f)
         accentTitle.draw(mouseX, mouseY, partialTicks)
 
-        // Seletor de accent color
         accentColorSelector.setBounds(baseX + OUTER_PADDING, accentScreenY, sectionWidth, accentHeight)
         accentColorSelector.draw(mouseX, mouseY, partialTicks)
 
-        // Cards de configuração
         drawControlCards(mouseX, mouseY, partialTicks, controlsScreenY)
 
         nvg.resetScissor()
         nvg.restore()
 
         nvg.drawScrollbar(
-            baseX,
-            baseY,
-            baseWidth,
-            baseHeight,
-            contentHeight,
-            verticalScroll,
-            palette,
-            currentAccent,
-            30f
+                baseX,
+                baseY,
+                baseWidth,
+                baseHeight,
+                contentHeight,
+                verticalScroll,
+                palette,
+                currentAccent,
+                30f
         )
     }
 
@@ -263,11 +251,9 @@ class AppearanceScene(parent: SettingsCategory) :
             return
         }
 
-        // Processa cliques nos seletores
         themeSelector.mouseClicked(mouseX, mouseY, mouseButton)
         accentColorSelector.mouseClicked(mouseX, mouseY, mouseButton)
 
-        // Processa cliques nos cards de configuração
         for (card in settingCards) {
             card.mouseClicked(mouseX, mouseY, mouseButton)
         }

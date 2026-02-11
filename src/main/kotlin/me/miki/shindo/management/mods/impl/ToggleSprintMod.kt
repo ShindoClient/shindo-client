@@ -25,7 +25,7 @@ class ToggleSprintMod :
 
     private var state: State = State.WALK
 
-    public override fun setup() {
+    override fun setup() {
         state = State.WALK
     }
 
@@ -41,14 +41,14 @@ class ToggleSprintMod :
     @EventTarget
     fun onUpdate(event: EventUpdate?) {
         KeyBinding.setKeyBindState(
-            mc.gameSettings.keyBindSprint.getKeyCode(),
+            mc.gameSettings.keyBindSprint.keyCode,
             state == State.HELD || state == State.TOGGLED || alwaysSprint
         )
     }
 
     @EventTarget
     fun onTick(event: EventTick?) {
-        val down = Keyboard.isKeyDown(mc.gameSettings.keyBindSprint.getKeyCode())
+        val down = Keyboard.isKeyDown(mc.gameSettings.keyBindSprint.keyCode)
 
         if (alwaysSprint || mc.currentScreen != null) {
             return
@@ -66,16 +66,16 @@ class ToggleSprintMod :
             } else if ((System.currentTimeMillis() - startTime) > 250) {
                 state = State.HELD
             }
-        } else if (state == State.HELD && mc.thePlayer.isSprinting()) {
+        } else if (state == State.HELD && mc.thePlayer.isSprinting) {
             state = State.VANILLA
-        } else if ((state == State.VANILLA || state == State.HELD) && !mc.thePlayer.isSprinting()) {
+        } else if ((state == State.VANILLA || state == State.HELD) && !mc.thePlayer.isSprinting) {
             state = State.WALK
         }
 
         wasDown = down
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         val prefix = "Sprinting"
 
         if (alwaysSprint) {

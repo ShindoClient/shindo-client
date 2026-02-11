@@ -1,16 +1,11 @@
-﻿package me.miki.shindo.ui.comp.display
+package me.miki.shindo.ui.comp.display
 
-import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.templates.CompDisplay
 import java.awt.Color
-
-/**
- * Badge pequeno para mostrar status, contadores, etc.
- */
 class CompBadge(
-    text: String,
-    x: Float = 0f,
-    y: Float = 0f
+        text: String,
+        x: Float = 0f,
+        y: Float = 0f
 ) : CompDisplay(x, y) {
 
     private var text: String = text
@@ -68,20 +63,20 @@ class CompBadge(
 
     override fun drawDisplay(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
-        val paletteColors = palette
+        palette
         val accentColors = accent
 
-        val bgColor = backgroundColor ?: accentColors.color1
+        val bgColor = backgroundColor ?: accentColors.getColor1()
         val txtColor = textColor ?: Color.WHITE
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
         nvgInstance.drawCenteredText(
-            text,
-            getX() + getWidth() / 2f,
-            getY() + getHeight() / 2f,
-            txtColor,
-            fontSize,
-            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+                text,
+                getX() + getWidth() / 2f,
+                getY() + getHeight() / 2f,
+                txtColor,
+                fontSize,
+                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
         )
     }
 }

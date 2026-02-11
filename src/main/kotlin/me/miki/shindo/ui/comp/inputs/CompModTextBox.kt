@@ -1,9 +1,8 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.comp.inputs.CompTextBoxBase
+import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.utils.TimerUtils
 import java.awt.Color
 
@@ -49,14 +48,21 @@ class CompModTextBox : CompTextBoxBase {
         if (selectionEnd < outTextSize) {
             val reversedText = StringBuilder(text).reverse().toString()
             addX =
-                getWidth() - nvgInstance.getTextWidth(
-                    reversedText.substring(outTextSize - selectionEnd),
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - halfHeight - 5
+                    getWidth() - nvgInstance.getTextWidth(
+                            reversedText.substring(outTextSize - selectionEnd),
+                            halfHeight,
+                            Fonts.REGULAR
+                    ) - halfHeight - 5
         }
 
-        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 4f, paletteColors.getBackgroundColor(ColorType.NORMAL))
+        nvgInstance.drawRoundedRect(
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                4f,
+                paletteColors.getBackgroundColor(ColorType.NORMAL)
+        )
 
         nvgInstance.save()
         nvgInstance.scissor(getX() + 1, getY(), getWidth() - 2, getHeight())
@@ -70,36 +76,36 @@ class CompModTextBox : CompTextBoxBase {
 
             if (selectionWidth != 0f) {
                 nvgInstance.drawRect(
-                    getX() + 4 + offset + addX,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
-                    selectionWidth,
-                    nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR),
-                    Color(0, 135, 247)
+                        getX() + 4 + offset + addX,
+                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
+                        selectionWidth,
+                        nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR),
+                        Color(0, 135, 247)
                 )
             }
         }
 
         nvgInstance.drawText(
-            text,
-            getX() + 5 + addX,
-            getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
-            paletteColors.getFontColor(ColorType.DARK),
-            halfHeight,
-            Fonts.REGULAR
+                text,
+                getX() + 5 + addX,
+                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
+                paletteColors.getFontColor(ColorType.DARK),
+                halfHeight,
+                Fonts.REGULAR
         )
 
         if (timer.delay(600)) {
             val position =
-                nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
-                    nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
+                    nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
+                            nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
 
             if (focused && cursorPosition == selectionEnd) {
                 nvgInstance.drawRect(
-                    getX() + 5 + addX + position,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
-                    0.7f,
-                    10f,
-                    paletteColors.getFontColor(ColorType.DARK)
+                        getX() + 5 + addX + position,
+                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
+                        0.7f,
+                        10f,
+                        paletteColors.getFontColor(ColorType.DARK)
                 )
             }
 

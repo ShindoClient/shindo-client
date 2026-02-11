@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.utils.animation.ColorAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.ColorAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 
 enum class ModCategory(private val nameTranslate: TranslateText) {
     ALL(TranslateText.ALL),
@@ -16,6 +16,6 @@ enum class ModCategory(private val nameTranslate: TranslateText) {
     val backgroundAnimation = SimpleAnimation()
 
     fun getName(): String {
-        return nameTranslate.text
+        return nameTranslate.getText()
     }
 }

@@ -8,13 +8,13 @@ enum class SkinDirection(private val normal: Vec3i) {
     WEST(Vec3i(-1, 0, 0)), EAST(Vec3i(1, 0, 0));
 
     val stepX: Int
-        get() = this.normal.getX()
+        get() = this.normal.x
 
     val stepY: Int
-        get() = this.normal.getY()
+        get() = this.normal.y
 
     val stepZ: Int
-        get() = this.normal.getZ()
+        get() = this.normal.z
 
     fun step(): Vector3f {
         return Vector3f(this.stepX.toFloat(), this.stepY.toFloat(), this.stepZ.toFloat())

@@ -14,7 +14,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.applyAlpha
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -56,8 +56,8 @@ class ModernHotbarMod :
 
         nvg!!.setupAndDraw(Runnable { drawNanoVG(nvg) })
 
-        if (mc.getRenderViewEntity() is EntityPlayer) {
-            val entityplayer = mc.getRenderViewEntity() as EntityPlayer
+        if (mc.renderViewEntity is EntityPlayer) {
+            val entityplayer = mc.renderViewEntity as EntityPlayer
 
             GlStateManager.enableRescaleNormal()
             GlStateManager.enableBlend()
@@ -65,14 +65,14 @@ class ModernHotbarMod :
             RenderHelper.enableGUIStandardItemLighting()
 
             for (j in 0..8) {
-                val k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2
-                var l = sr.getScaledHeight() - 16 - 3
+                val k = sr.scaledWidth / 2 - 90 + j * 20 + 2
+                var l = sr.scaledHeight - 16 - 3
 
                 if (currentDesign == Design.CHILL) {
                     l = l + 4
                 }
 
-                renderHotBarItem(j, k, l - 4, event.getPartialTicks(), entityplayer)
+                renderHotBarItem(j, k, l - 4, event.partialTicks, entityplayer)
             }
 
             RenderHelper.disableStandardItemLighting()
@@ -90,7 +90,7 @@ class ModernHotbarMod :
             val take = if (animTreatment) partialTicks / 2 else partialTicks
             val progress = itemstack.animationsToGo.toFloat() - take
             if (progress > 0.0f) {
-                // from betterhotbarmod
+
                 GlStateManager.pushMatrix()
                 GlStateManager.translate((xPos + 8).toFloat(), (yPos + 12).toFloat(), 0.0f)
                 if (animationMode == PickupAnimation.PICKUP_BREAD) {
@@ -107,13 +107,13 @@ class ModernHotbarMod :
                 GlStateManager.translate(-(xPos + 8).toFloat(), -(yPos + 12).toFloat(), 0.0f)
             }
 
-            mc.getRenderItem().renderItemAndEffectIntoGUI(itemstack, xPos, yPos)
+            mc.renderItem.renderItemAndEffectIntoGUI(itemstack, xPos, yPos)
 
             if (progress > 0.0f) {
                 GlStateManager.popMatrix()
             }
 
-            mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, itemstack, xPos, yPos)
+            mc.renderItem.renderItemOverlays(mc.fontRendererObj, itemstack, xPos, yPos)
         }
     }
 
@@ -123,10 +123,10 @@ class ModernHotbarMod :
         val currentColor = getInstance().colorManager.getCurrentColor()
         val isText = InternalSettingsMod.instance.hudTheme == HudTheme.TEXT
 
-        if (mc.getRenderViewEntity() is EntityPlayer) {
+        if (mc.renderViewEntity is EntityPlayer) {
             if (currentDesign != Design.CHILL) {
-                barX = sr.getScaledWidth() / 2.0f - 91
-                barY = (sr.getScaledHeight() - 26).toFloat()
+                barX = sr.scaledWidth / 2.0f - 91
+                barY = (sr.scaledHeight - 26).toFloat()
                 barWidth = (91 * 2).toFloat()
                 barHeight = 22f
 
@@ -155,17 +155,17 @@ class ModernHotbarMod :
                 }
             } else {
                 barX = 0f
-                barY = (sr.getScaledHeight() - 22).toFloat()
-                barWidth = sr.getScaledWidth().toFloat()
+                barY = (sr.scaledHeight - 22).toFloat()
+                barWidth = sr.scaledWidth.toFloat()
                 barHeight = 22f
 
                 nvg.drawShadow(barX, barY, barWidth, barHeight, 0f)
                 nvg.drawRect(barX, barY, barWidth, barHeight, Color(20, 20, 20, 180))
             }
 
-            val entityplayer = mc.getRenderViewEntity() as EntityPlayer
+            val entityplayer = mc.renderViewEntity as EntityPlayer
 
-            val i = sr.getScaledWidth() / 2
+            val i = sr.scaledWidth / 2
 
             if (smoothSetting) {
                 selectorAnimation.setAnimation((i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat(), 18)
@@ -178,7 +178,7 @@ class ModernHotbarMod :
                 if (currentDesign == Design.SHINDO) {
                     nvg.drawRoundedRect(
                         selX + 1,
-                        (sr.getScaledHeight() - 22 - 4).toFloat(),
+                        (sr.scaledHeight - 22 - 4).toFloat(),
                         22f,
                         22f,
                         6f,
@@ -187,7 +187,7 @@ class ModernHotbarMod :
                 } else {
                     nvg.drawRoundedRect(
                         selX + 1,
-                        (sr.getScaledHeight() - 22 - 4).toFloat(),
+                        (sr.scaledHeight - 22 - 4).toFloat(),
                         22f,
                         22f,
                         6f,
@@ -195,7 +195,7 @@ class ModernHotbarMod :
                     )
                 }
             } else {
-                nvg.drawRect(selX + 1, (sr.getScaledHeight() - 22).toFloat(), 22f, 22f, Color(230, 230, 230, 180))
+                nvg.drawRect(selX + 1, (sr.scaledHeight - 22).toFloat(), 22f, 22f, Color(230, 230, 230, 180))
             }
         }
     }
@@ -220,9 +220,6 @@ class ModernHotbarMod :
             return translate
         }
 
-        override fun getNameKey(): String = super.getNameKey()
-
-        override fun getDisplayName(): String = super.getDisplayName()
     }
 
     private enum class PickupAnimation(private val translate: TranslateText) : PropertyEnum {

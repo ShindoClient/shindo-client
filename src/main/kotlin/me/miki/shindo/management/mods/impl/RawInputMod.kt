@@ -6,7 +6,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.java.games.input.ControllerEnvironment
 import net.java.games.input.Mouse
-import kotlin.concurrent.Volatile
+import kotlin.jvm.Volatile
 
 class RawInputMod :
     Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT) {
@@ -32,7 +32,7 @@ class RawInputMod :
         instance = this
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         if (!initialised) {
@@ -42,8 +42,8 @@ class RawInputMod :
             try {
                 val env = ControllerEnvironment.getDefaultEnvironment()
 
-                if (env.isSupported()) {
-                    for (controller in env.getControllers()) {
+                if (env.isSupported) {
+                    for (controller in env.controllers) {
                         if (controller is Mouse) {
                             mouseList.add(controller)
                         }
@@ -62,7 +62,7 @@ class RawInputMod :
         thread!!.start()
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
         running = false
     }
@@ -81,8 +81,8 @@ class RawInputMod :
                         continue
                     }
 
-                    val dx = mouse.getX().getPollData()
-                    val dy = mouse.getY().getPollData()
+                    val dx = mouse.x.pollData
+                    val dy = mouse.y.pollData
 
                     if (org.lwjgl.input.Mouse.isGrabbed()) {
                         this@RawInputMod.dx += dx

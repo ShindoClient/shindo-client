@@ -7,8 +7,9 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.management.settings.metadata.SettingMetadata
 import java.text.Normalizer
-import java.util.Locale
+import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.abs
 
 open class Setting protected constructor(
     private val nameTranslate: TranslateText?,
@@ -23,8 +24,8 @@ open class Setting protected constructor(
     protected constructor(nameTranslate: TranslateText, parent: ConfigOwner) : this(
         nameTranslate,
         parent,
-        nameTranslate.text,
-        nameTranslate.key
+        nameTranslate.getText(),
+        nameTranslate.getKey()
     ) {
         register()
     }
@@ -90,16 +91,17 @@ open class Setting protected constructor(
             var candidate = raw ?: ""
             candidate = Normalizer.normalize(candidate, Normalizer.Form.NFD)
                 .replace("\\p{M}".toRegex(), "")
-                .lowercase(Locale.ROOT)
+                .toLowerCase(Locale.ROOT)
             candidate = KEY_SANITIZE.matcher(candidate).replaceAll("_")
             candidate = candidate.replace("^_+".toRegex(), "").replace("_+$".toRegex(), "")
 
             if (candidate.isEmpty()) {
                 val hashSource = raw ?: "null"
-                candidate = "setting_" + Math.abs(hashSource.hashCode())
+                candidate = "setting_" + abs(hashSource.hashCode())
             }
 
             return candidate
         }
     }
 }
+

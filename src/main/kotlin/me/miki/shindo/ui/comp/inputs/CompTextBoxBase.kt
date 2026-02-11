@@ -1,4 +1,4 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.IOUtils
@@ -10,7 +10,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-open class CompTextBoxBase: Comp {
+open class CompTextBoxBase : Comp {
 
     private var text: String
 
@@ -25,17 +25,26 @@ open class CompTextBoxBase: Comp {
     fun getSelectionEnd(): Int = selectionEnd
     fun getMaxStringLength(): Int = maxStringLength
 
-    fun setFocused(focused: Boolean)             { this.focused = focused                 }
-    fun setSelectionEnd(selectionEnd: Int)       { this.selectionEnd = selectionEnd       }
-    fun setMaxStringLength(maxStringLength: Int) { this.maxStringLength = maxStringLength }
-    
-    constructor(x: Float, y: Float, width: Float, height: Float): super(x, y) {
+    fun setFocused(focused: Boolean) {
+        this.focused = focused
+    }
+
+    fun setSelectionEnd(selectionEnd: Int) {
+        this.selectionEnd = selectionEnd
+    }
+
+    fun setMaxStringLength(maxStringLength: Int) {
+        this.maxStringLength = maxStringLength
+    }
+
+    constructor(x: Float, y: Float, width: Float, height: Float) : super(x, y) {
         setWidth(width)
         setHeight(height)
         this.focused = false
         this.text = ""
         this.maxStringLength = 256
     }
+
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val flag = MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
 

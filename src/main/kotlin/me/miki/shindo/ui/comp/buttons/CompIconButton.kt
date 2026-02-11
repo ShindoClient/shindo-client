@@ -1,18 +1,12 @@
-﻿package me.miki.shindo.ui.comp.buttons
+package me.miki.shindo.ui.comp.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.comp.templates.CompInteractive
+import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
-
-/**
- * Botão leve com ícone que usa as cores de destaque atuais.
- * Destinado para cenários como barra lateral do Mod Menu, botões de toolbar e ações rápidas.
- * 
- * Agora usa o template CompInteractive para melhor organização e reutilização de código.
- */
-class CompIconButton : CompInteractive {
+class CompIconButton : CompControlTemplate {
     private val iconSupplier: () -> String?
     private var enabledSupplier: (() -> Boolean)? = null
 
@@ -26,6 +20,7 @@ class CompIconButton : CompInteractive {
         this.iconSupplier = iconSupplier
         setWidth(size)
         setHeight(size)
+        setVariant(CompControlVariant.GHOST)
     }
 
     constructor(size: Float, iconSupplier: () -> String?) : this(0f, 0f, size, iconSupplier)
@@ -40,7 +35,7 @@ class CompIconButton : CompInteractive {
         return this
     }
 
-    fun setRadius(radius: Float): CompIconButton {
+    override fun setRadius(radius: Float): CompIconButton {
         this.radius = radius
         return this
     }
@@ -50,7 +45,7 @@ class CompIconButton : CompInteractive {
         return this
     }
 
-    fun setFontSize(fontSize: Float): CompIconButton {
+    override fun setFontSize(fontSize: Float): CompIconButton {
         this.fontSize = fontSize
         return this
     }
@@ -74,17 +69,17 @@ class CompIconButton : CompInteractive {
         val enabled = isEnabled()
 
         val baseBackground = overrideBackground ?: ColorUtils.applyAlpha(
-            paletteColors.getBackgroundColor(ColorType.DARK),
-            if (enabled) 190 else 120
+                paletteColors.getBackgroundColor(ColorType.DARK),
+                if (enabled) 190 else 120
         )
 
         val start = ColorUtils.applyAlpha(
-            accentColors.color1,
-            if (enabled) if (hovered) 210 else 180 else 90
+                accentColors.getColor1(),
+                if (enabled) if (hovered) 210 else 180 else 90
         )
         val end = ColorUtils.applyAlpha(
-            accentColors.color2,
-            if (enabled) if (hovered) 210 else 180 else 90
+                accentColors.getColor2(),
+                if (enabled) if (hovered) 210 else 180 else 90
         )
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, baseBackground)
@@ -96,12 +91,12 @@ class CompIconButton : CompInteractive {
             val centerX = getX() + getWidth() / 2f
             val centerY = getY() + getHeight() / 2f - nvgInstance.getTextHeight(icon, fontSize, Fonts.LEGACYICON) / 2f
             nvgInstance.drawText(
-                icon,
-                centerX - nvgInstance.getTextWidth(icon, fontSize, Fonts.LEGACYICON) / 2f,
-                centerY,
-                iconColor,
-                fontSize,
-                Fonts.LEGACYICON
+                    icon,
+                    centerX - nvgInstance.getTextWidth(icon, fontSize, Fonts.LEGACYICON) / 2f,
+                    centerY,
+                    iconColor,
+                    fontSize,
+                    Fonts.LEGACYICON
             )
         }
     }

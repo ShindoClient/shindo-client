@@ -61,12 +61,6 @@ public class ID3v24Tag extends AbstractID3v2Tag {
         frameSet.addFrame(createFrame(ID_GENRE, frameData.toBytes()));
     }
 
-
-    /*
-     * 'recording time' (TDRC) replaces the deprecated frames 'TDAT - Date', 'TIME - Time',
-     * 'TRDA - Recording dates' and 'TYER - Year' in 4.0
-     */
-
     public String getRecordingTime() {
         ID3v2TextFrameData frameData = extractTextFrameData(ID_RECTIME);
         if (frameData != null && frameData.getText() != null)

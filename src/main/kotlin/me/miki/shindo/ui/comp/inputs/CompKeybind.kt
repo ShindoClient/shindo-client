@@ -1,7 +1,7 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
-import me.miki.shindo.management.settings.impl.KeybindSetting
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.management.settings.impl.KeybindSetting
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
@@ -15,17 +15,17 @@ class CompKeybind : Comp {
         private set
 
     constructor(x: Float, y: Float, width: Float, setting: KeybindSetting) : super(x, y) {
-        this.setting = setting;
-        this.width = width;
-        setWidth(width);
-        setHeight(16F);
+        this.setting = setting
+        this.width = width
+        setWidth(width)
+        setHeight(16F)
     }
 
     constructor(width: Float, setting: KeybindSetting) : super(0f, 0f) {
-        this.setting = setting;
-        this.width = width;
-        setWidth(width);
-        setHeight(16F);
+        this.setting = setting
+        this.width = width
+        setWidth(width)
+        setHeight(16F)
     }
 
     override fun getWidth(): Float = width
@@ -33,7 +33,7 @@ class CompKeybind : Comp {
         this.width = width
         super.setWidth(width)
     }
-    
+
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
         val accentColor = accent
@@ -41,22 +41,22 @@ class CompKeybind : Comp {
         val info = if (isBinding) "Binding..." else Keyboard.getKeyName(setting.getKeyCode())
 
         nvgInstance.drawGradientRoundedRect(
-            getX(),
-            getY(),
-            width,
-            16f,
-            4f,
-            accentColor.color1,
-            accentColor.color2
+                getX(),
+                getY(),
+                width,
+                16f,
+                4f,
+                accentColor.getColor1(),
+                accentColor.getColor2()
         )
 
         nvgInstance.drawCenteredText(
-            info,
-            getX() + width / 2,
-            getY() + 5f,
-            Color(255, 255, 255),
-            8f,
-            Fonts.REGULAR
+                info,
+                getX() + width / 2,
+                getY() + 5f,
+                Color(255, 255, 255),
+                8f,
+                Fonts.REGULAR
         )
 
         super.draw(mouseX, mouseY, partialTicks)

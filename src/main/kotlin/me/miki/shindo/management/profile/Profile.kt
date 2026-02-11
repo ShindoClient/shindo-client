@@ -1,6 +1,6 @@
 package me.miki.shindo.management.profile
 
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.io.File
 
 data class Profile(

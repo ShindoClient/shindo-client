@@ -27,6 +27,9 @@ class CrosshairMod :
     @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN)
     private val crosshairLayout: Array<BooleanArray?>? = layoutManager.defaultLayout
 
+    @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
+    private val crosshairColor: Color = Color.WHITE
+
     private var cellGridSetting: CellGridSetting? = null
 
     @EventTarget
@@ -34,29 +37,21 @@ class CrosshairMod :
         val sr = ScaledResolution(Minecraft.getMinecraft())
 
         if (hideInThirdPerson && mc.gameSettings.thirdPersonView != 0) {
-            event.isCancelled = true
+            event.setCancelled(true)
         }
 
         if (!hideInThirdPerson || mc.gameSettings.thirdPersonView == 0) {
-            val grid: Array<out BooleanArray?>? =
-                if (cellGridSetting != null) cellGridSetting!!.getCells() else crosshairLayout
-            if (grid == null) {
-                return
-            }
+            val grid: Array<out BooleanArray?> =
+                (if (cellGridSetting != null) cellGridSetting!!.getCells() else crosshairLayout) ?: return
 
             val toggled = isToggled()
             val rows = min(grid.size, 11)
-            for (row in 0..<rows) {
+            for (row in 0 until rows) {
                 val cells = grid[row] ?: continue
                 val cols = min(cells.size, 11)
-                for (col in 0..<cols) {
+                for (col in 0 until cols) {
                     if (cells[col] && toggled) {
-                        val color = if (cellGridSetting != null) cellGridSetting!!.getCellColorOrDefault(
-                            row,
-                            col,
-                            Color.WHITE
-                        ) else Color.WHITE
-                        drawRect(sr.scaledWidth / 2f - 5 + col, sr.scaledHeight / 2f - 5 + row, 1f, 1f, color)
+                        drawRect(sr.scaledWidth / 2f - 5 + col, sr.scaledHeight / 2f - 5 + row, 1f, 1f, crosshairColor)
                     }
                 }
             }
@@ -65,7 +60,7 @@ class CrosshairMod :
 
     @EventTarget
     fun onRender2D(event: EventRenderCrosshair) {
-        event.isCancelled = true
+        event.setCancelled(true)
     }
 
     override fun onCellGridAvailable(setting: CellGridSetting) {
@@ -76,6 +71,7 @@ class CrosshairMod :
         val layoutManager: LayoutManager = LayoutManager()
     }
 }
+
 
 
 

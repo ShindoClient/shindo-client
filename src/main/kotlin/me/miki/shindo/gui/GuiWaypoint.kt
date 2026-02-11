@@ -1,19 +1,18 @@
-﻿package me.miki.shindo.gui
+package me.miki.shindo.gui
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.waypoint.Waypoint
 import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.comp.inputs.CompTextBox
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
-import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -21,7 +20,6 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.util.ArrayList
 
 class GuiWaypoint : GuiScreen(), IShindoScreen {
 
@@ -32,8 +30,8 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
     private lateinit var introAnimation: Animation
     private var x = 0
     private var y = 0
-    private var width = 0
-    private var height = 0
+    private var menuWidth = 0
+    private var menuHeight = 0
     private var removeWaypoint: Waypoint? = null
     private var currentColor: Color = Color.RED
 
@@ -57,8 +55,8 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
 
         x = (sr.scaledWidth / 2) - addX
         y = (sr.scaledHeight / 2) - addY
-        width = addX * 2
-        height = addY * 2
+        menuWidth = addX * 2
+        menuHeight = addY * 2
 
         introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation.setDirection(Direction.FORWARDS)
@@ -67,8 +65,16 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         BlurUtils.drawBlurScreen(20F)
 
-        screenAnimation.wrap(Runnable { drawNanoVG(mouseX, mouseY, partialTicks) }, x, y, width, height, 2 - introAnimation.getValueFloat(),
-            introAnimation.getValueFloat().coerceAtMost(1f), false)
+        screenAnimation.wrap(
+            Runnable { drawNanoVG(mouseX, mouseY, partialTicks) },
+            x,
+            y,
+            menuWidth,
+            menuHeight,
+            2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f),
+            false
+        )
     }
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -76,9 +82,9 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
         val nvg = instance.nanoVGManager
         val waypointManager: WaypointManager = instance.waypointManager
         val colorManager: ColorManager = instance.colorManager
-        val palette: ColorPalette = colorManager.palette
+        val palette: ColorPalette = colorManager.getPalette()
 
-        var offsetX = 0
+        var offsetX: Int
         var offsetY = 0
         var index = 0
 
@@ -89,31 +95,64 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
             mc.displayGuiScreen(null)
         }
 
-        nvg!!.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f)
-        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 10f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg!!.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 10f)
+        nvg.drawRoundedRect(
+            x.toFloat(),
+            y.toFloat(),
+            menuWidth.toFloat(),
+            menuHeight.toFloat(),
+            10f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
         nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
-        nvg.drawRect(x.toFloat(), y + 24f, width.toFloat(), 1f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRect(x.toFloat(), y + 24f, menuWidth.toFloat(), 1f, palette.getBackgroundColor(ColorType.DARK))
 
         nvg.save()
-        nvg.scissor(x.toFloat(), y + 25f, 190f, height - 25f)
+        nvg.scissor(x.toFloat(), y + 25f, 190f, menuHeight - 25f)
         nvg.translate(0f, scroll.getValue())
 
-        for (waypoint in waypointManager.waypoints) {
-            if (waypoint.world == waypointManager.world) {
-                waypoint.trashAnimation.setAnimation(
-                    if (MouseUtils.isInside(mouseX, mouseY, x + 162f, y + 44f + offsetY + scroll.getValue(), 11f, 11f)) 1.0f else 0.0f,
+        for (waypoint in waypointManager.getWaypoints()) {
+            if (waypoint.getWorld() == waypointManager.getWorld()) {
+                waypoint.getTrashAnimation().setAnimation(
+                    if (MouseUtils.isInside(
+                            mouseX,
+                            mouseY,
+                            x + 162f,
+                            y + 44f + offsetY + scroll.getValue(),
+                            11f,
+                            11f
+                        )
+                    ) 1.0f else 0.0f,
                     16
                 )
 
-                nvg.drawRoundedRect(x + 10f, y + 35f + offsetY, 170f, 28f, 6f, palette.getBackgroundColor(ColorType.DARK))
-                nvg.drawRoundedRect(x + 16f, y + 40f + offsetY, 18f, 18f, 4f, waypoint.color)
-                nvg.drawText(waypoint.name, x + 40f, y + 45.5f + offsetY, palette.getFontColor(ColorType.DARK), 9.5f, Fonts.REGULAR)
+                nvg.drawRoundedRect(
+                    x + 10f,
+                    y + 35f + offsetY,
+                    170f,
+                    28f,
+                    6f,
+                    palette.getBackgroundColor(ColorType.DARK)
+                )
+                nvg.drawRoundedRect(x + 16f, y + 40f + offsetY, 18f, 18f, 4f, waypoint.getColor())
+                nvg.drawText(
+                    waypoint.getName(),
+                    x + 40f,
+                    y + 45.5f + offsetY,
+                    palette.getFontColor(ColorType.DARK),
+                    9.5f,
+                    Fonts.REGULAR
+                )
 
                 nvg.drawText(
                     LegacyIcon.TRASH,
                     x + 162f,
                     y + 44f + offsetY,
-                    Color(255, 255 - (waypoint.trashAnimation.value * 255).toInt(), 255 - (waypoint.trashAnimation.value * 255).toInt()),
+                    Color(
+                        255,
+                        255 - (waypoint.getTrashAnimation().value * 255).toInt(),
+                        255 - (waypoint.getTrashAnimation().value * 255).toInt()
+                    ),
                     11f,
                     Fonts.LEGACYICON
                 )
@@ -127,11 +166,25 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
 
         scroll.maxScroll = if (index < 3) 0f else (index - 3) * 66f
 
-        nvg.drawRoundedRect(x + width - 130f, y + 35f, 120f, height - 45f, 6f, palette.getBackgroundColor(ColorType.DARK))
-        nvg.drawCenteredText("Create a waypoint", x + width - 130f + (120 / 2f), y + 43f, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
+        nvg.drawRoundedRect(
+            x + menuWidth - 130f,
+            y + 35f,
+            120f,
+            menuHeight - 45f,
+            6f,
+            palette.getBackgroundColor(ColorType.DARK)
+        )
+        nvg.drawCenteredText(
+            "Create a waypoint",
+            x + menuWidth - 130f + (120 / 2f),
+            y + 43f,
+            palette.getFontColor(ColorType.DARK),
+            10.5f,
+            Fonts.MEDIUM
+        )
 
         textBox.setDefaultText("Name")
-        textBox.setPosition(x + width - 120f, y + 59f, 100f, 18f)
+        textBox.setPosition(x + menuWidth - 120f, y + 59f, 100f, 18f)
         textBox.draw(mouseX, mouseY, partialTicks)
 
         offsetX = 0
@@ -139,10 +192,17 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
         index = 0
 
         for (color in colors) {
-            nvg.drawRoundedRect(x + width - 120f + offsetX, y + 84f + offsetY, 13f, 13f, 2f, color)
+            nvg.drawRoundedRect(x + menuWidth - 120f + offsetX, y + 84f + offsetY, 13f, 13f, 2f, color)
 
             if (currentColor == color) {
-                nvg.drawText(LegacyIcon.CHECK, x + width - 118f + offsetX, y + 86.5f + offsetY, Color.WHITE, 9f, Fonts.LEGACYICON)
+                nvg.drawText(
+                    LegacyIcon.CHECK,
+                    x + menuWidth - 118f + offsetX,
+                    y + 86.5f + offsetY,
+                    Color.WHITE,
+                    9f,
+                    Fonts.LEGACYICON
+                )
             }
 
             offsetX += 17
@@ -154,11 +214,25 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
             }
         }
 
-        nvg.drawRoundedRect(x + width - 85f, y + height - 34f, 65f, 18f, 6f, palette.getBackgroundColor(ColorType.NORMAL))
-        nvg.drawCenteredText("Save", x + width - 85f + (65 / 2f), y + height - 29f, palette.getFontColor(ColorType.DARK), 9f, Fonts.REGULAR)
+        nvg.drawRoundedRect(
+            x + menuWidth - 85f,
+            y + menuHeight - 34f,
+            65f,
+            18f,
+            6f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
+        nvg.drawCenteredText(
+            "Save",
+            x + menuWidth - 85f + (65 / 2f),
+            y + menuHeight - 29f,
+            palette.getFontColor(ColorType.DARK),
+            9f,
+            Fonts.REGULAR
+        )
 
         if (removeWaypoint != null) {
-            waypointManager.waypoints.remove(removeWaypoint)
+            waypointManager.getWaypoints().remove(removeWaypoint!!)
             removeWaypoint = null
             waypointManager.save()
         }
@@ -168,13 +242,21 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
         val instance = Shindo.getInstance()
         val waypointManager: WaypointManager = instance.waypointManager
 
-        var offsetX = 0
+        var offsetX: Int
         var offsetY = 0
         var index = 0
 
-        for (waypoint in waypointManager.waypoints) {
-            if (waypoint.world == waypointManager.world) {
-                if (MouseUtils.isInside(mouseX, mouseY, x + 160f, y + 41f + offsetY + scroll.getValue().toInt(), 16f, 16f) && mouseButton == 0) {
+        for (waypoint in waypointManager.getWaypoints()) {
+            if (waypoint.getWorld() == waypointManager.getWorld()) {
+                if (MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        x + 160f,
+                        y + 41f + offsetY + scroll.getValue().toInt(),
+                        16f,
+                        16f
+                    ) && mouseButton == 0
+                ) {
                     removeWaypoint = waypoint
                 }
 
@@ -188,7 +270,15 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
         index = 0
 
         for (color in colors) {
-            if (MouseUtils.isInside(mouseX, mouseY, x + width - 120f + offsetX, y + 84f + offsetY, 13f, 13f) && mouseButton == 0) {
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    x + menuWidth - 120f + offsetX,
+                    y + 84f + offsetY,
+                    13f,
+                    13f
+                ) && mouseButton == 0
+            ) {
                 currentColor = color
             }
 
@@ -201,8 +291,22 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
             }
         }
 
-        if (MouseUtils.isInside(mouseX, mouseY, x + width - 85f, y + height - 34f, 65f, 18f) && mouseButton == 0 && textBox.getText().isNotEmpty()) {
-            waypointManager.addWaypoint(textBox.getText(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, currentColor)
+        if (MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                x + menuWidth - 85f,
+                y + menuHeight - 34f,
+                65f,
+                18f
+            ) && mouseButton == 0 && textBox.getText().isNotEmpty()
+        ) {
+            waypointManager.addWaypoint(
+                textBox.getText(),
+                mc.thePlayer.posX,
+                mc.thePlayer.posY,
+                mc.thePlayer.posZ,
+                currentColor
+            )
             textBox.setText("")
             waypointManager.save()
         }

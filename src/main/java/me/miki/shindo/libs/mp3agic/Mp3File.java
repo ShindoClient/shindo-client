@@ -124,11 +124,11 @@ public class Mp3File extends FileWrapper {
                     ID3v2TagFactory.sanityCheckTag(bytes);
                     return AbstractID3v2Tag.HEADER_LENGTH + BufferTools.unpackSynchsafeInteger(bytes[AbstractID3v2Tag.DATA_LENGTH_OFFSET], bytes[AbstractID3v2Tag.DATA_LENGTH_OFFSET + 1], bytes[AbstractID3v2Tag.DATA_LENGTH_OFFSET + 2], bytes[AbstractID3v2Tag.DATA_LENGTH_OFFSET + 3]);
                 } catch (NoSuchTagException | UnsupportedTagException e) {
-                    // do nothing
+
                 }
             }
         } catch (IOException e) {
-            // do nothing
+
         }
         return 0;
     }

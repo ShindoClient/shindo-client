@@ -1,4 +1,4 @@
-﻿package me.miki.shindo.gui.modmenu.category.impl.setting.impl
+package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
@@ -15,161 +15,108 @@ import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
 class LanguageScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
+        SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
 
     private lateinit var container: CompScrollableContainer
-    private val languageCards = ArrayList<LanguageCard>()
-
-    private var columns = 0
-    private var cardHeight = 0f
+    private val languages = Language.values()
+    private val languageCards = ArrayList<LanguageCard>(languages.size)
 
     override fun initGui() {
-        container = CompScrollableContainer()
+        container = CompScrollableContainer().setScrollbarGutter(14f)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager = instance.colorManager
-        val palette = colorManager.palette
-        val accentColor = colorManager.currentColor
+        val palette = colorManager.getPalette()
+        val accent = colorManager.getCurrentColor()
         val languageManager = instance.languageManager
+        val selectedLanguage = languageManager.getCurrentLanguage()
 
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
         val baseHeight = contentHeight.toFloat()
-        if (baseHeight <= 0f || baseWidth <= 0f) {
-            return
-        }
+        if (baseWidth <= 0f || baseHeight <= 0f) return
 
         container.setBounds(baseX, baseY, baseWidth, baseHeight)
-
-        val viewportX = baseX + OUTER_PADDING
-        val viewportY = baseY + OUTER_PADDING
-        val viewportWidth = baseWidth - OUTER_PADDING * 2f
-        val viewportHeight = baseHeight - OUTER_PADDING * 2f
-
-        columns = if (viewportWidth > 420f) 2 else 1
-        val cardWidth = (viewportWidth - (ROW_GAP * (columns - 1))) / columns
-        val estimatedRows = max(1f, Language.entries.size / columns.toFloat())
-        cardHeight = max(66f, min(86f, viewportHeight / estimatedRows))
-
-        val totalContentHeight = calculateTotalContentHeight(Language.entries.size)
-        container.setContentHeight(totalContentHeight)
+        val estimatedViewportWidth = max(0f, baseWidth - 36f - 14f - OUTER_PADDING * 2f)
+        val estimatedViewportHeight = max(0f, baseHeight - 36f - OUTER_PADDING * 2f)
+        val estimatedGrid = resolveGridMetrics(estimatedViewportWidth, estimatedViewportHeight)
+        val totalContentHeight = calculateTotalContentHeight(estimatedGrid)
 
         languageCards.clear()
+        container.renderWithViewport(mouseX, mouseY, partialTicks, totalContentHeight) { innerMouseX, innerMouseY, _, scrollValue, viewport ->
+            val contentX = viewport.x + OUTER_PADDING
+            val contentY = viewport.y + OUTER_PADDING
+            val contentWidth = max(0f, viewport.width - OUTER_PADDING * 2f)
+            val contentHeight = max(0f, viewport.height - OUTER_PADDING * 2f)
+            val grid = resolveGridMetrics(contentWidth, contentHeight)
 
-        // Renderiza os cards dentro do container
-        container.drawScrollableContent = { mouseX, mouseY, partialTicks, scrollValue ->
-            for ((index, language) in Language.entries.withIndex()) {
-                val row = index / columns
-                val column = index % columns
+            drawHeader(
+                    nvg,
+                    palette,
+                    accent,
+                    selectedLanguage,
+                    contentX,
+                    contentY,
+                    contentWidth
+            )
 
-                val cardX = viewportX + column * (cardWidth + ROW_GAP)
-                val cardY = viewportY + row * (cardHeight + ROW_GAP) + scrollValue
+            val cardsStartY = contentY + HEADER_HEIGHT + SECTION_GAP
 
-                val cardHovered = MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight)
-                val selected = language == languageManager.currentLanguage
+            for (index in languages.indices) {
+                val language = languages[index]
+                val row = index / grid.columns
+                val column = index % grid.columns
+                val cardX = contentX + column * (grid.cardWidth + ROW_GAP)
+                val cardY = cardsStartY + row * (grid.cardHeight + ROW_GAP) + scrollValue
+                val hovered = MouseUtils.isInside(innerMouseX, innerMouseY, cardX, cardY, grid.cardWidth, grid.cardHeight)
+                val selected = language == selectedLanguage
 
-                language.animation.setAnimation(if (selected) 1.0f else 0.0f, 16.0)
+                language.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 16.0)
 
-                drawLanguageCard(nvg, palette, accentColor, language, cardX, cardY, cardWidth, cardHeight, cardHovered, selected)
+                drawLanguageCard(
+                        nvg,
+                        palette,
+                        accent,
+                        language,
+                        cardX,
+                        cardY,
+                        grid.cardWidth,
+                        grid.cardHeight,
+                        hovered,
+                        selected
+                )
 
-                languageCards.add(LanguageCard(language, cardX, cardY, cardWidth, cardHeight))
+                languageCards.add(LanguageCard(language, cardX, cardY, grid.cardWidth, grid.cardHeight))
             }
         }
-
-        container.draw(mouseX, mouseY, partialTicks)
-    }
-
-    private fun calculateTotalContentHeight(languageCount: Int): Float {
-        val rows = ceil(languageCount / columns.toFloat()).toInt()
-        return (rows * cardHeight + max(0f, rows - 1f) * ROW_GAP) + OUTER_PADDING * 2f
-    }
-
-    private fun drawLanguageCard(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        accentColor: AccentColor,
-        language: Language,
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        hovered: Boolean,
-        selected: Boolean
-    ) {
-        val baseColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered || selected) 210 else 175)
-        nvg.drawRoundedRect(x, y, width, height, CARD_RADIUS, baseColor)
-        nvg.drawGradientRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            CARD_RADIUS,
-            ColorUtils.applyAlpha(accentColor.color1, if (hovered || selected) 45 else 25),
-            ColorUtils.applyAlpha(accentColor.color2, if (hovered || selected) 45 else 25)
-        )
-
-        val flagSize = min(56f, height - 24f)
-        val flagX = x + 16f
-        val flagY = y + (height - flagSize) / 2f
-        drawFlag(nvg, language.flag, flagX, flagY, flagSize)
-
-        val textX = flagX + flagSize + 34f
-        var textWidth = width - (textX - x) - 20f
-        textWidth = max(120f, textWidth)
-
-        val languageName = nvg.getLimitText(language.name, 12f, Fonts.MEDIUM, textWidth)
-        nvg.drawText(languageName, textX, y + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
-        nvg.drawText(language.id.uppercase(), textX, y + 34f, palette.getFontColor(ColorType.NORMAL), 7.5f, Fonts.REGULAR)
-
-        if (selected) {
-            nvg.drawText(
-                LegacyIcon.CHECK,
-                x + width - 22f,
-                y + 18f,
-                ColorUtils.applyAlpha(accentColor.interpolateColor, (language.animation.value * 255).toInt()),
-                13f,
-                Fonts.LEGACYICON
-            )
-        } else if (hovered) {
-            nvg.drawOutlineRoundedRect(x, y, width, height, CARD_RADIUS, 1.4f, ColorUtils.applyAlpha(accentColor.color2, 160))
-        }
-    }
-
-    private fun drawFlag(nvg: NanoVGManager, flag: ResourceLocation, x: Float, y: Float, size: Float) {
-        val flagWidth = size * 1.6f
-        nvg.drawRoundedImage(flag, x, y, flagWidth, size, 6f)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (mouseButton != 0) {
-            return
-        }
+        if (mouseButton != 0) return
 
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
         val baseHeight = contentHeight.toFloat()
-
-        if (!MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) {
-            return
-        }
+        if (!MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) return
 
         val languageManager = Shindo.getInstance().languageManager
-
         for (card in languageCards) {
-            if (MouseUtils.isInside(mouseX, mouseY, card.x, card.y, card.width, card.height)) {
+            if (!MouseUtils.isInside(mouseX, mouseY, card.x, card.y, card.width, card.height)) continue
+            if (card.language != languageManager.getCurrentLanguage()) {
                 languageManager.setCurrentLanguage(card.language)
-                break
             }
+            break
         }
     }
 
@@ -177,11 +124,193 @@ class LanguageScene(parent: SettingsCategory) :
         container.keyTyped(typedChar, keyCode)
     }
 
-    private data class LanguageCard(val language: Language, val x: Float, val y: Float, val width: Float, val height: Float)
+    private fun resolveGridMetrics(availableWidth: Float, availableHeight: Float): GridMetrics {
+        val columns = if (availableWidth > 420f) 2 else 1
+        val cardWidth = max(120f, (availableWidth - ROW_GAP * (columns - 1)) / columns)
+        val rows = max(1, ceil(languages.size / columns.toDouble()).toInt())
+        val cardsHeightBudget = max(0f, availableHeight - HEADER_HEIGHT - SECTION_GAP)
+        val cardHeight = max(CARD_MIN_HEIGHT, min(CARD_MAX_HEIGHT, (cardsHeightBudget - ROW_GAP * (rows - 1)) / rows))
+        return GridMetrics(columns, cardWidth, cardHeight, rows)
+    }
+
+    private fun calculateTotalContentHeight(grid: GridMetrics): Float {
+        val cardsHeight = grid.rows * grid.cardHeight + max(0f, grid.rows - 1f) * ROW_GAP
+        return OUTER_PADDING * 2f + HEADER_HEIGHT + SECTION_GAP + cardsHeight
+    }
+
+    private fun drawHeader(
+            nvg: NanoVGManager,
+            palette: ColorPalette,
+            accent: AccentColor,
+            selectedLanguage: Language,
+            x: Float,
+            y: Float,
+            width: Float
+    ) {
+        val headerColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 168)
+        nvg.drawRoundedRect(x, y, width, HEADER_HEIGHT, 9f, headerColor)
+        nvg.drawGradientRoundedRect(
+                x,
+                y,
+                width,
+                HEADER_HEIGHT,
+                9f,
+                ColorUtils.applyAlpha(accent.getColor1(), 38),
+                ColorUtils.applyAlpha(accent.getColor2(), 38)
+        )
+
+        val title = nvg.getLimitText(TranslateText.LANGUAGE.getText(), 10.5f, Fonts.MEDIUM, width - 90f)
+        nvg.drawText(title, x + 12f, y + 8f, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
+        nvg.drawText(
+                selectedLanguage.getId().toUpperCase(Locale.ROOT),
+                x + 12f,
+                y + 20f,
+                palette.getFontColor(ColorType.NORMAL),
+                7.6f,
+                Fonts.REGULAR
+        )
+
+        val countLabel = "${languages.size}"
+        val countWidth = nvg.getTextWidth(countLabel, 8.4f, Fonts.MEDIUM) + 14f
+        val badgeX = x + width - countWidth - 10f
+        nvg.drawRoundedRect(
+                badgeX,
+                y + 7f,
+                countWidth,
+                16f,
+                7f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
+        )
+        nvg.drawCenteredText(countLabel, badgeX + countWidth / 2f, y + 15f, palette.getFontColor(ColorType.DARK), 8.4f, Fonts.MEDIUM)
+    }
+
+    private fun drawLanguageCard(
+            nvg: NanoVGManager,
+            palette: ColorPalette,
+            accent: AccentColor,
+            language: Language,
+            x: Float,
+            y: Float,
+            width: Float,
+            height: Float,
+            hovered: Boolean,
+            selected: Boolean
+    ) {
+        val progress = language.getAnimation().value
+        val baseAlpha = if (hovered || selected) 210 else 178
+        val overlayAlpha = 24 + (progress * 44f).toInt()
+
+        nvg.drawRoundedRect(x, y, width, height, CARD_RADIUS, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), baseAlpha))
+        nvg.drawGradientRoundedRect(
+                x,
+                y,
+                width,
+                height,
+                CARD_RADIUS,
+                ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
+                ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
+        )
+
+        val borderColor = if (selected) {
+            ColorUtils.applyAlpha(accent.getColor2(), 190)
+        } else if (hovered) {
+            ColorUtils.applyAlpha(accent.getColor2(), 125)
+        } else {
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 188)
+        }
+        nvg.drawOutlineRoundedRect(x, y, width, height, CARD_RADIUS, 1.2f, borderColor)
+
+        if (selected) {
+            nvg.drawRoundedRect(
+                    x + 6f,
+                    y + 8f,
+                    3f,
+                    max(12f, height - 16f),
+                    2f,
+                    ColorUtils.applyAlpha(accent.getInterpolateColor(), (110 + progress * 120f).toInt())
+            )
+        }
+
+        val mediaHeight = max(34f, height - 22f)
+        val mediaWidth = min(86f, max(56f, width * 0.28f))
+        val mediaX = x + 14f
+        val mediaY = y + (height - mediaHeight) / 2f
+
+        nvg.drawRoundedRect(
+                mediaX,
+                mediaY,
+                mediaWidth,
+                mediaHeight,
+                7f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 188)
+        )
+        drawFlag(nvg, language.getFlag(), mediaX + 4f, mediaY + 4f, mediaWidth - 8f, mediaHeight - 8f)
+
+        val textX = mediaX + mediaWidth + 14f
+        val rightPadding = 14f
+        val availableTextWidth = max(90f, width - (textX - x) - rightPadding)
+        val languageName = nvg.getLimitText(language.getName(), 11.8f, Fonts.MEDIUM, availableTextWidth)
+        nvg.drawText(languageName, textX, y + 18f, palette.getFontColor(ColorType.DARK), 11.8f, Fonts.MEDIUM)
+
+        val localeCode = language.getId().toUpperCase(Locale.ROOT)
+        val codeWidth = nvg.getTextWidth(localeCode, 7.4f, Fonts.MEDIUM) + 12f
+        val codeX = x + width - rightPadding - codeWidth
+        val codeY = y + 11f
+        nvg.drawRoundedRect(
+                codeX,
+                codeY,
+                codeWidth,
+                13f,
+                6f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198)
+        )
+        nvg.drawCenteredText(localeCode, codeX + codeWidth / 2f, codeY + 8f, palette.getFontColor(ColorType.DARK), 7.4f, Fonts.MEDIUM)
+
+        if (selected || hovered) {
+            nvg.drawText(
+                    LegacyIcon.CHECK,
+                    x + width - 20f,
+                    y + height - 18f,
+                    ColorUtils.applyAlpha(accent.getInterpolateColor(), if (selected) (80 + progress * 175f).toInt() else 130),
+                    12f,
+                    Fonts.LEGACYICON
+            )
+        }
+    }
+
+    private fun drawFlag(
+            nvg: NanoVGManager,
+            flag: ResourceLocation,
+            x: Float,
+            y: Float,
+            width: Float,
+            height: Float
+    ) {
+        nvg.drawRoundedImage(flag, x, y, width, height, 5f)
+    }
+
+    private data class GridMetrics(
+            val columns: Int,
+            val cardWidth: Float,
+            val cardHeight: Float,
+            val rows: Int
+    )
+
+    private data class LanguageCard(
+            val language: Language,
+            val x: Float,
+            val y: Float,
+            val width: Float,
+            val height: Float
+    )
 
     companion object {
         private const val OUTER_PADDING = 26f
         private const val ROW_GAP = 14f
         private const val CARD_RADIUS = 10f
+        private const val HEADER_HEIGHT = 30f
+        private const val SECTION_GAP = 10f
+        private const val CARD_MIN_HEIGHT = 70f
+        private const val CARD_MAX_HEIGHT = 90f
     }
 }

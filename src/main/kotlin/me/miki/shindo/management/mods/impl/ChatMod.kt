@@ -12,7 +12,8 @@ import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
-import me.miki.shindo.utils.Sound.Companion.play
+import me.miki.shindo.management.sound.Sounds
+import me.miki.shindo.management.sound.Sound.Companion.play
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import java.util.*
@@ -28,7 +29,7 @@ class ChatMod :
         translate = TranslateText.SMOOTH_SPEED,
         category = "Animation",
         min = 1.0,
-        max = 1.00,
+        max = 10.0,
         step = 1.0,
         current = 4.0
     )
@@ -74,11 +75,11 @@ class ChatMod :
         val player: EntityPlayer = mc.thePlayer
 
         val component = event.message
-        val name = player.name.lowercase(Locale.getDefault())
-        var text = component.unformattedText.lowercase(Locale.getDefault())
+        val name = player.name.toLowerCase(Locale.getDefault())
+        var text = component.unformattedText.toLowerCase(Locale.getDefault())
         text = text.replaceFirst("<.+>".toRegex(), "")
         if (text.contains(name)) {
-            play("shindo/audio/pling.wav", false)
+            play(Sounds.SHINDO_AUDIO_PLING, false)
         }
     }
 
@@ -104,6 +105,10 @@ class ChatMod :
 
     fun getMentionPingSetting(): BooleanSetting? = getBooleanSetting(this, "mentionPingSetting")
 }
+
+
+
+
 
 
 

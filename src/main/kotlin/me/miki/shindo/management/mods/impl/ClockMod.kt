@@ -34,11 +34,11 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
         }
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String? {
         return df.format(Calendar.getInstance().getTime())
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.CLOCK else null
     }
 

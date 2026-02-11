@@ -80,7 +80,7 @@ class HypixelMod :
         instance = this
     }
 
-    public override fun setup() {
+    override fun setup() {
         currentMode = HypixelGameMode.SKYWARS_SOLO_NORMAL
     }
 
@@ -91,10 +91,10 @@ class HypixelMod :
             return
         }
 
-        val scoreboard = mc.theWorld.getScoreboard()
+        val scoreboard = mc.theWorld.scoreboard
 
         if (scoreboard != null && scoreboard.getObjectiveInDisplaySlot(1) != null) {
-            val title = removeColorCode(scoreboard.getObjectiveInDisplaySlot(1).getDisplayName())
+            val title = removeColorCode(scoreboard.getObjectiveInDisplaySlot(1).displayName)
 
             if (title.contains("TNT RUN")) {
                 currentMode = HypixelGameMode.TNT_RUN
@@ -133,10 +133,10 @@ class HypixelMod :
             return
         }
 
-        val message = event.getMessage()
+        val message = event.message
 
         if (message.startsWith("/play")) {
-            val mode: HypixelGameMode? = HypixelGameMode.Companion.getModeByCommand(message)
+            val mode: HypixelGameMode? = HypixelGameMode.getModeByCommand(message)
 
             if (mode != null) {
                 currentMode = mode
@@ -150,11 +150,11 @@ class HypixelMod :
             return
         }
 
-        if (event.getPacket() is S2FPacketSetSlot) {
-            val slotPacket = event.getPacket() as S2FPacketSetSlot
+        if (event.packet is S2FPacketSetSlot) {
+            val slotPacket = event.packet as S2FPacketSetSlot
             val stack = slotPacket.func_149174_e()
 
-            if (stack != null && stack.getItem() == Items.paper &&
+            if (stack != null && stack.item == Items.paper &&
                 currentMode != null &&
                 (HypixelGameMode.isBedwars(currentMode!!) || HypixelGameMode.isTntGames(currentMode!!))
             ) {
@@ -163,9 +163,9 @@ class HypixelMod :
             }
         }
 
-        if (event.getPacket() is S02PacketChat) {
-            val chatPacket = event.getPacket() as S02PacketChat
-            val chatMessage = chatPacket.getChatComponent().getUnformattedText()
+        if (event.packet is S02PacketChat) {
+            val chatPacket = event.packet as S02PacketChat
+            val chatMessage = chatPacket.chatComponent.unformattedText
 
             if (antiLSetting) {
                 val regex = Pattern.compile(".*\\b[Ll]+\\b.*")
@@ -181,11 +181,11 @@ class HypixelMod :
             }
         }
 
-        if (event.getPacket() is S45PacketTitle) {
-            val titlePacket = event.getPacket() as S45PacketTitle
+        if (event.packet is S45PacketTitle) {
+            val titlePacket = event.packet as S45PacketTitle
 
-            if (titlePacket.getMessage() != null) {
-                val title = titlePacket.getMessage().getFormattedText()
+            if (titlePacket.message != null) {
+                val title = titlePacket.message.formattedText
 
                 if (autoggSetting && title.startsWith("\u00a76\u00a7l") && title.endsWith("\u00a7r")) {
                     schedule(Runnable {
@@ -209,18 +209,18 @@ class HypixelMod :
             return
         }
 
-        if (event.getPacket() is C0EPacketClickWindow) {
-            val packet = event.getPacket() as C0EPacketClickWindow
+        if (event.packet is C0EPacketClickWindow) {
+            val packet = event.packet as C0EPacketClickWindow
             val itemname: String
 
-            if (packet.getClickedItem() == null) {
+            if (packet.clickedItem == null) {
                 return
             }
 
-            itemname = packet.getClickedItem().getDisplayName()
+            itemname = packet.clickedItem.displayName
 
-            if (packet.getClickedItem().getDisplayName().startsWith("\u00a7a")) {
-                val itemID = Item.getIdFromItem(packet.getClickedItem().getItem())
+            if (packet.clickedItem.displayName.startsWith("\u00a7a")) {
+                val itemID = Item.getIdFromItem(packet.clickedItem.item)
 
                 if (itemID == 381 || itemID == 368) {
                     if (itemname.contains("SkyWars")) {

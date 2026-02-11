@@ -38,20 +38,12 @@ class FreelookMod : Mod(
 
     var isActive: Boolean = false
         private set
-
-    /**
-     * Yaw da câmera enquanto o freelook está ativo (em graus).
-     */
     var cameraYaw: Float = 0f
         private set
-
-    /**
-     * Pitch da câmera enquanto o freelook está ativo (em graus).
-     */
     var cameraPitch: Float = 0f
         private set
     private var previousPerspective = 0
-    private var toggled = false
+    private var toggleActive = false
 
     init {
         instance = this
@@ -70,7 +62,7 @@ class FreelookMod : Mod(
         }
 
         if (mode == Mode.TOGGLE) {
-            if (toggled) {
+            if (toggleActive) {
                 start()
             } else {
                 stop()
@@ -83,29 +75,29 @@ class FreelookMod : Mod(
         val mode = modeSetting
 
         if (mode == Mode.TOGGLE) {
-            if (event.getKeyCode() == keybindSetting && mc.currentScreen == null) {
-                toggled = !toggled
+            if (event.keyCode == keybindSetting && mc.currentScreen == null) {
+                toggleActive = !toggleActive
             }
         }
 
-        if (event.getKeyCode() == mc.gameSettings.keyBindTogglePerspective.getKeyCode()) {
-            toggled = false
+        if (event.keyCode == mc.gameSettings.keyBindTogglePerspective.keyCode) {
+            toggleActive = false
         }
     }
 
     @EventTarget
     fun onCameraRotation(event: EventCameraRotation) {
         if (this.isActive) {
-            event.setYaw(this.cameraYaw)
-            event.setPitch(this.cameraPitch)
+            event.yaw = this.cameraYaw
+            event.pitch = this.cameraPitch
         }
     }
 
     @EventTarget
     fun onPlayerHeadRotation(event: EventPlayerHeadRotation) {
         if (this.isActive) {
-            var yaw = event.getYaw()
-            var pitch = event.getPitch()
+            var yaw = event.yaw
+            var pitch = event.pitch
             event.setCancelled(true)
             pitch = -pitch
 
@@ -128,7 +120,7 @@ class FreelookMod : Mod(
             this.isActive = true
             previousPerspective = mc.gameSettings.thirdPersonView
             mc.gameSettings.thirdPersonView = 3
-            val renderView = mc.getRenderViewEntity()
+            val renderView = mc.renderViewEntity
             this.cameraYaw = renderView.rotationYaw
             this.cameraPitch = renderView.rotationPitch
         }

@@ -1,8 +1,4 @@
 package me.miki.shindo.utils.vector
-
-/**
- * Quad with per-vertex UVs and a precomputed normal (similar to Minecraft's TexturedQuad).
- */
 class Polygon(
     vertices: Array<Vertex>,
     u1: Float,

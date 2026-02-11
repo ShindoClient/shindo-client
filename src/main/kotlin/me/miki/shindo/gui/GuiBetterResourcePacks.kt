@@ -6,25 +6,16 @@ import me.miki.shindo.management.addons.rpo.packs.ResourcePackListEntryFolder
 import me.miki.shindo.management.addons.rpo.packs.ResourcePackListProcessor
 import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom
 import me.miki.shindo.utils.file.FileUtils
-import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiOptionButton
-import net.minecraft.client.gui.GuiResourcePackAvailable
-import net.minecraft.client.gui.GuiResourcePackSelected
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.GuiScreenResourcePacks
-import net.minecraft.client.gui.GuiTextField
-import net.minecraft.client.resources.I18n
-import net.minecraft.client.resources.ResourcePackRepository
+import net.minecraft.client.gui.*
+import net.minecraft.client.resources.*
 import net.minecraft.client.resources.ResourcePackRepository.Entry
-import net.minecraft.client.resources.ResourcePackListEntry
-import net.minecraft.client.resources.ResourcePackListEntryDefault
-import net.minecraft.client.resources.ResourcePackListEntryFound
 import org.lwjgl.input.Keyboard
 import java.io.File
-import java.util.Collections
-import java.util.Comparator
+import java.util.Locale
+import java.util.*
 
-class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen), IShindoScreen {
+class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen),
+    IShindoScreen {
     private var searchField: GuiTextField? = null
     private lateinit var guiPacksAvailable: GuiResourcePackAvailable
     private lateinit var guiPacksSelected: GuiResourcePackSelected
@@ -176,13 +167,13 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         refreshAvailablePacks()
     }
 
-    fun refreshAvailablePacks() {
+    private fun refreshAvailablePacks() {
         listPacksAvailable.clear()
         listPacksAvailable.addAll(createAvailablePackList(mc.resourcePackRepository))
         listProcessor.refresh()
     }
 
-    fun refreshSelectedPacks(): List<Entry> {
+    private fun refreshSelectedPacks(): List<Entry> {
         val selected = Lists.newArrayListWithCapacity<Entry>(listPacksSelected.size)
 
         for (entry in listPacksSelected) {
@@ -196,7 +187,7 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
             }
         }
 
-        Collections.reverse(selected)
+        selected.reverse()
 
         mc.resourcePackRepository.setRepositories(selected)
         return selected
@@ -239,7 +230,7 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
                 } else {
                     list.add(ResourcePackListEntryFolder(this, file))
                 }
-            } else if (file.name.lowercase().endsWith(".zip")) {
+            } else if (file.name.toLowerCase(Locale.ROOT).endsWith(".zip")) {
                 val entry = ResourcePackRepositoryCustom.createEntryInstance(repository, file)
                 if (entry != null) {
                     try {
@@ -283,3 +274,5 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         requiresReload = true
     }
 }
+
+

@@ -5,12 +5,6 @@ import com.google.gson.JsonObject;
 import me.miki.shindo.libs.spotify.model_objects.AbstractModelObject;
 
 import java.util.Objects;
-
-/**
- * Retrieve information about
- * <a href="https://developer.spotify.com/documentation/web-api/tutorials/code-flow">Authorization Code
- * Credentials</a> by building instances from this class.
- */
 @JsonDeserialize(builder = AuthorizationCodeCredentials.Builder.class)
 public class AuthorizationCodeCredentials extends AbstractModelObject {
     private final String accessToken;
@@ -28,51 +22,18 @@ public class AuthorizationCodeCredentials extends AbstractModelObject {
         this.expiresIn = builder.expiresIn;
         this.refreshToken = builder.refreshToken;
     }
-
-    /**
-     * Get the access token. It becomes invalid after a certain period of time.
-     *
-     * @return An access token that can be provided in subsequent calls, for example to Spotify Web API services.
-     */
     public String getAccessToken() {
         return accessToken;
     }
-
-    /**
-     * Get the type of an access token, which will always be "Bearer".
-     *
-     * @return How the access token may be used: always &quot;Bearer&quot;.
-     */
     public String getTokenType() {
         return tokenType;
     }
-
-
-    /**
-     * Get the <a href="https://developer.spotify.com/documentation/web-api/concepts/scopes">Scopes</a> specified in the authorization
-     * code credentials request.
-     *
-     * @return The scopes specified in the credentials request.
-     */
     public String getScope() {
         return scope;
     }
-
-    /**
-     * Get the time period (in seconds) for which the access token is valid.
-     *
-     * @return The time period (in seconds) for which the access token is valid.
-     */
     public Integer getExpiresIn() {
         return expiresIn;
     }
-
-    /**
-     * Get the refresh token. This token can be sent to the Spotify Accounts service in place of an authorization code to
-     * retrieve a new access token.
-     *
-     * @return A token that can be sent to the Spotify Accounts service in place of an access token.
-     */
     public String getRefreshToken() {
         return refreshToken;
     }
@@ -106,68 +67,28 @@ public class AuthorizationCodeCredentials extends AbstractModelObject {
     public int hashCode() {
         return Objects.hash(accessToken, tokenType, scope, expiresIn, refreshToken);
     }
-
-    /**
-     * Builder class for building {@link AuthorizationCodeCredentials} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private String accessToken;
         private String tokenType;
         private String scope;
         private Integer expiresIn;
         private String refreshToken;
-
-        /**
-         * The access token setter.
-         *
-         * @param accessToken An access token that can be provided in subsequent calls,
-         *                    for example to Spotify Web API services.
-         * @return An {@link AuthorizationCodeCredentials.Builder}.
-         */
         public Builder setAccessToken(final String accessToken) {
             this.accessToken = accessToken;
             return this;
         }
-
-        /**
-         * The access token type setter.
-         *
-         * @param tokenType How the access token may be used: always &quot;Bearer&quot;.
-         * @return An {@link AuthorizationCodeCredentials.Builder}.
-         */
         public Builder setTokenType(final String tokenType) {
             this.tokenType = tokenType;
             return this;
         }
-
-        /**
-         * The scopes setter.
-         *
-         * @param scope The scopes specified in the credentials request.
-         * @return An {@link AuthorizationCodeCredentials.Builder}.
-         */
         public Builder setScope(final String scope) {
             this.scope = scope;
             return this;
         }
-
-        /**
-         * The expiration time setter.
-         *
-         * @param expiresIn The time period (in seconds) for which the access token is valid.
-         * @return An {@link AuthorizationCodeCredentials.Builder}.
-         */
         public Builder setExpiresIn(final Integer expiresIn) {
             this.expiresIn = expiresIn;
             return this;
         }
-
-        /**
-         * The refresh token setter.
-         *
-         * @param refreshToken A token that can be sent to the Spotify Accounts service in place of an authorization code.
-         * @return An {@link AuthorizationCodeCredentials.Builder}.
-         */
         public Builder setRefreshToken(final String refreshToken) {
             this.refreshToken = refreshToken;
             return this;
@@ -178,10 +99,6 @@ public class AuthorizationCodeCredentials extends AbstractModelObject {
             return new AuthorizationCodeCredentials(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link AuthorizationCodeCredentials} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<AuthorizationCodeCredentials> {
         public AuthorizationCodeCredentials createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

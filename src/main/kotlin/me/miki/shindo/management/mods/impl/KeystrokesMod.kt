@@ -9,7 +9,7 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod.HudTheme
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -40,57 +40,49 @@ class KeystrokesMod :
         val openGui = mc.currentScreen != null
 
         animations[0]!!.setAnimation(
-            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode())) 1.0f else 0.0f,
+            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode)) 1.0f else 0.0f,
             16
         )
         animations[1]!!.setAnimation(
-            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode())) 1.0f else 0.0f,
+            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)) 1.0f else 0.0f,
             16
         )
         animations[2]!!.setAnimation(
-            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode())) 1.0f else 0.0f,
+            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindBack.keyCode)) 1.0f else 0.0f,
             16
         )
         animations[3]!!.setAnimation(
-            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode())) 1.0f else 0.0f,
+            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)) 1.0f else 0.0f,
             16
         )
         animations[4]!!.setAnimation(
-            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode())) 1.0f else 0.0f,
+            if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCode)) 1.0f else 0.0f,
             16
         )
 
-        // W
         this.drawBackground(32f, 0f, 28f, 28f)
 
-        // A
         this.drawBackground(0f, 32f, 28f, 28f)
 
-        // S
         this.drawBackground(32f, 32f, 28f, 28f)
 
-        // D
         this.drawBackground(64f, 32f, 28f, 28f)
 
-        // W
         this.save()
         this.scale(32f, 0f, 28f, 28f, animations[0]!!.value)
         this.drawHighlight(32f, 0f, 28f, 28f, 6f, this.getFontColor((120 * animations[0]!!.value).toInt()))
         this.restore()
 
-        // A
         this.save()
         this.scale(0f, 32f, 28f, 28f, animations[1]!!.value)
         this.drawHighlight(0f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[1]!!.value).toInt()))
         this.restore()
 
-        // S
         this.save()
         this.scale(32f, 32f, 28f, 28f, animations[2]!!.value)
         this.drawHighlight(32f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[2]!!.value).toInt()))
         this.restore()
 
-        // D
         this.save()
         this.scale(64f, 32f, 28f, 28f, animations[3]!!.value)
         this.drawHighlight(64f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[3]!!.value).toInt()))
@@ -98,28 +90,28 @@ class KeystrokesMod :
 
         if (!unmarkedSetting) {
             this.drawCenteredText(
-                Keyboard.getKeyName(mc.gameSettings.keyBindForward.getKeyCode()),
+                Keyboard.getKeyName(mc.gameSettings.keyBindForward.keyCode),
                 32 + (28 / 2f),
                 (28 / 2f) - 4,
                 12f,
                 getHudFont(1)
             )
             this.drawCenteredText(
-                Keyboard.getKeyName(mc.gameSettings.keyBindLeft.getKeyCode()),
+                Keyboard.getKeyName(mc.gameSettings.keyBindLeft.keyCode),
                 (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,
                 getHudFont(1)
             )
             this.drawCenteredText(
-                Keyboard.getKeyName(mc.gameSettings.keyBindBack.getKeyCode()),
+                Keyboard.getKeyName(mc.gameSettings.keyBindBack.keyCode),
                 32 + (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,
                 getHudFont(1)
             )
             this.drawCenteredText(
-                Keyboard.getKeyName(mc.gameSettings.keyBindRight.getKeyCode()),
+                Keyboard.getKeyName(mc.gameSettings.keyBindRight.keyCode),
                 64 + (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,

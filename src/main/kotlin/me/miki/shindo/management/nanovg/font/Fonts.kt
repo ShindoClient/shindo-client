@@ -1,8 +1,7 @@
 package me.miki.shindo.management.nanovg.font
 
 import net.minecraft.util.ResourceLocation
-import java.util.ArrayList
-import java.util.Arrays
+import java.util.*
 
 object Fonts {
 
@@ -10,18 +9,25 @@ object Fonts {
 
     @JvmField
     val FALLBACK = Font("fallback", ResourceLocation(PATH + "fallback.ttf"))
+
     @JvmField
     val REGULAR = Font("regular", ResourceLocation(PATH + "inter/Inter-Regular.ttf"))
+
     @JvmField
     val MEDIUM = Font("medium", ResourceLocation(PATH + "inter/Inter-Medium.ttf"))
+
     @JvmField
     val SEMIBOLD = Font("semi-bold", ResourceLocation(PATH + "inter/Inter-SemiBold.ttf"))
+
     @JvmField
     val LEGACYICON = Font("icon", ResourceLocation(PATH + "Icon.ttf"))
+
     @JvmField
     val SHINCONIC = Font("shinconic", ResourceLocation(PATH + "Shinconic.ttf"))
+
     @JvmField
     val MOJANGLES = Font("mojangles", ResourceLocation(PATH + "mojangles.ttf"))
+
     @JvmField
     val UNIFONT = Font("unifont", ResourceLocation(PATH + "unifont/unifont.otf"))
 

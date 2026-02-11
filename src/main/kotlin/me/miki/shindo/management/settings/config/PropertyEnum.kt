@@ -13,7 +13,7 @@ interface PropertyEnum {
     fun getNameKey(): String {
         val translate = getTranslate()
         if (translate != TranslateText.NONE) {
-            return translate.key
+            return translate.getKey()
         }
         return Setting.normalizeKey((this as Enum<*>).name)
     }
@@ -21,19 +21,18 @@ interface PropertyEnum {
     fun getDisplayName(): String {
         val translate = getTranslate()
         if (translate != TranslateText.NONE) {
-            return translate.text
+            return translate.getText()
         }
-        var raw = (this as Enum<*>)
+        val raw = (this as Enum<*>)
             .name
-            .lowercase(Locale.ROOT)
+            .toLowerCase(Locale.ROOT)
             .replace('_', ' ')
 
         if (raw.isEmpty()) {
             return ""
         }
 
-        return raw.replaceFirstChar {
-            it.titlecase(Locale.ROOT)
-        }
+        return raw.substring(0, 1).toUpperCase(Locale.ROOT) + raw.substring(1)
     }
 }
+

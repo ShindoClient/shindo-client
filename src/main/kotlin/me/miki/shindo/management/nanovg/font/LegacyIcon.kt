@@ -114,7 +114,6 @@ object LegacyIcon {
     const val EXPERIMENTAL: String = "Ê"
     const val GRID: String = "Ë"
 
-    // SHINDO ICONS
     const val PIECE: String = "Ò"
     const val COPYRIGHT: String = "Ó"
     const val SPOTIFY: String = "Ô"
@@ -136,7 +135,6 @@ object LegacyIcon {
     const val ARROW_DROP_LEFT: String = "ã"
     const val DNS: String = "Þ"
 
-    // MOD/ADDON ICON PLACEHOLDERS
     const val MOD_ANIMATIONS: String = "\uE000"
     const val MOD_APPLE_SKIN: String = "\uE001"
     const val MOD_ARMOR_STATUS: String = "\uE002"
@@ -256,12 +254,10 @@ object LegacyIcon {
     const val MOD_WEATHER_DISPLAY: String = "\uE074"
     const val MOD_ZOOM: String = "\uE075"
 
-    // ---
     const val MOD_CHUNK_ANIMATOR: String = ""
     const val MOD_BORDERLESS_FULLSCREEN: String = ""
-    // ---
 
-    // ADDONS
+
     const val ADDON_RPO: String = "\uE076"
 }
 

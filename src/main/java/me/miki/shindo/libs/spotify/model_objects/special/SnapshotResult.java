@@ -3,14 +3,6 @@ package me.miki.shindo.libs.spotify.model_objects.special;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonObject;
 import me.miki.shindo.libs.spotify.model_objects.AbstractModelObject;
-
-/**
- * Retrieve information about Snapshot Result objects by building instances from this class. These objects contain a
- * playlist snapshot ID, which is created after adding or removing tracks from a playlist.
- * <p>
- * <a href="https://developer.spotify.com/documentation/web-api/concepts/playlists">
- * Spotify: Working With Playlists</a>
- */
 @JsonDeserialize(builder = SnapshotResult.Builder.class)
 public class SnapshotResult extends AbstractModelObject {
     private final String snapshotId;
@@ -20,12 +12,6 @@ public class SnapshotResult extends AbstractModelObject {
 
         this.snapshotId = builder.snapshotId;
     }
-
-    /**
-     * Get the snapshot ID.
-     *
-     * @return The snapshot ID.
-     */
     public String getSnapshotId() {
         return snapshotId;
     }
@@ -39,10 +25,6 @@ public class SnapshotResult extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link SnapshotResult} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         public String snapshotId;
 
@@ -56,10 +38,6 @@ public class SnapshotResult extends AbstractModelObject {
             return new SnapshotResult(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link SnapshotResult} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<SnapshotResult> {
         public SnapshotResult createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

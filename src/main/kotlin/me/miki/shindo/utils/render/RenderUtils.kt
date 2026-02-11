@@ -114,10 +114,13 @@ object RenderUtils {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x, y + height, 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble()).endVertex()
-        worldrenderer.pos(x + width, y + height, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
+        worldrenderer.pos(x, y + height, 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
             .endVertex()
-        worldrenderer.pos(x + width, y, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble()).endVertex()
+        worldrenderer.pos(x + width, y + height, 0.0)
+            .tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
+            .endVertex()
+        worldrenderer.pos(x + width, y, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble())
+            .endVertex()
         worldrenderer.pos(x, y, 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
@@ -187,10 +190,12 @@ object RenderUtils {
         worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0)
             .tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
         worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
-            .tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
+            .tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble())
+            .endVertex()
         worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0)
             .tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble())
+        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0)
+            .tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble())
             .endVertex()
         tessellator.draw()
     }
@@ -225,10 +230,12 @@ object RenderUtils {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
+        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0)
+            .tex((u * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
         worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
             .tex(((u + width.toFloat()) * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + width.toFloat()) * f).toDouble(), (v * f1).toDouble())
+        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0)
+            .tex(((u + width.toFloat()) * f).toDouble(), (v * f1).toDouble())
             .endVertex()
         worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
@@ -263,7 +270,6 @@ object RenderUtils {
         drawRect(x.toFloat(), (sY + 1).toFloat(), (x + 1).toFloat(), eY.toFloat(), c)
     }
 
-    // barra topo/bottom com leve fade
     @JvmStatic
     fun gradientBar(x1: Int, y1: Int, x2: Int, y2: Int, a: Color, b: Color) {
         val t = Tessellator.getInstance()

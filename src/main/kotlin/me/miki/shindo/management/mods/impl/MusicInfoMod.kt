@@ -1,7 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.libs.spotify.model_objects.specification.ArtistSimplified
 import me.miki.shindo.libs.spotify.model_objects.specification.Track
 import me.miki.shindo.logger.ShindoLogger.info
 import me.miki.shindo.management.event.EventTarget
@@ -10,9 +9,8 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.music.LyricsManager
-import me.miki.shindo.management.music.LyricsManager.LyricsResponse
-import me.miki.shindo.management.music.MusicManager.TrackInfoCallback
+import me.miki.shindo.management.music.TrackInfoCallback
+import me.miki.shindo.management.music.model.LyricsResponse
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
@@ -25,7 +23,6 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
-import java.util.*
 import java.util.function.Consumer
 import kotlin.math.max
 import kotlin.math.min
@@ -84,7 +81,7 @@ class MusicInfoMod :
     fun onUpdate(event: EventUpdate?) {
         this.setDraggable(true)
         val musicManager = getInstance().musicManager
-        if (musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
+        if (musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
             this.updateLyrics(musicManager.getCurrentTrack(), musicManager.getTrackPosition())
         }
     }
@@ -95,39 +92,34 @@ class MusicInfoMod :
             return
         }
 
-        val keyCode = event.getKeyCode()
+        val keyCode = event.keyCode
         val musicManager = getInstance().musicManager
 
-        if (musicManager == null || !musicManager.isPlaying()) {
+        if (!musicManager.isPlaying()) {
             return
         }
 
         var lastVolumeChangeTime = 0L
         if (keyCode == Keyboard.KEY_UP) {
             val currentVolume = musicManager.getVolume()
-            val newVolume = min(100, currentVolume + 5) // Increase by 5%, capped at 100%
+            val newVolume = min(100, currentVolume + 5)
             musicManager.setVolume(newVolume)
             lastVolumeChangeTime = System.currentTimeMillis()
         } else if (keyCode == Keyboard.KEY_DOWN) {
             val currentVolume = musicManager.getVolume()
-            val newVolume = max(0, currentVolume - 5) // Decrease by 5%, minimum 0%
+            val newVolume = max(0, currentVolume - 5)
             musicManager.setVolume(newVolume)
             lastVolumeChangeTime = System.currentTimeMillis()
         }
 
-        // Fixed seeking implementation
         if (keyCode == Keyboard.KEY_RIGHT) {
-            // Get current position directly from MusicManager to ensure it's up-to-date
             val currentPosition = musicManager.getTrackPosition()
-            val duration = if (trackDuration > 0) trackDuration else Long.Companion.MAX_VALUE
-            // Skip forward 10 seconds (10,000 ms)
+            val duration = if (trackDuration > 0) trackDuration else Long.MAX_VALUE
             val newPosition = min(currentPosition + 10000, duration)
             info("Seeking from " + currentPosition + "ms to " + newPosition + "ms")
             musicManager.seekToPosition(newPosition)
         } else if (keyCode == Keyboard.KEY_LEFT) {
-            // Get current position directly from MusicManager to ensure it's up-to-date
             val currentPosition = musicManager.getTrackPosition()
-            // Skip backward 10 seconds (10,000 ms)
             val newPosition = max(currentPosition - 10000, 0)
             info("Seeking from " + currentPosition + "ms to " + newPosition + "ms")
             musicManager.seekToPosition(newPosition)
@@ -137,13 +129,13 @@ class MusicInfoMod :
     private fun updateDynamicHeight() {
         val musicManager = getInstance().musicManager
         var baseHeight = 85
-        if (musicManager == null || !musicManager.isPlaying() || musicManager.getCurrentTrack() == null) {
+        if (!musicManager.isPlaying() || musicManager.getCurrentTrack() == null) {
             baseHeight = 75
         } else {
             val lyricsManager = musicManager.getLyricsManager()
-            val lyrics = lyricsManager?.getCurrentLyrics()
-            if (this.showLyricsSetting && lyrics != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
-            baseHeight = 110 + this.visibleLyrics * 12
+            val lyrics = lyricsManager.getCurrentLyrics()
+            if (this.showLyricsSetting && lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
+                baseHeight = 110 + this.visibleLyrics * 12
             }
         }
         this.cachedHeight = baseHeight
@@ -155,15 +147,12 @@ class MusicInfoMod :
             return
         }
         val musicManager = getInstance().musicManager
-        if (musicManager == null || musicManager.getLyricsManager() == null) {
-            return
-        }
         val lyricsManager = musicManager.getLyricsManager()
-        if (currentTrack.getId() != this.currentTrackId) {
-            this.currentTrackId = currentTrack.getId()
+        if (currentTrack.id != this.currentTrackId) {
+            this.currentTrackId = currentTrack.id
             lyricsManager.reset()
             lyricsManager.fetchLyrics(currentTrack).thenAcceptAsync(Consumer { lyrics: LyricsResponse? ->
-                if (lyrics != null && !lyrics.isError() && !lyrics.getLines().isEmpty()) {
+                if (lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
                     if (this.romanizeJapaneseSetting) {
                         lyricsManager.processLyricsRomanization(lyrics)
                     }
@@ -177,18 +166,18 @@ class MusicInfoMod :
         val musicManager = getInstance().musicManager
         var hasLyrics = false
         val baseHeight = this.cachedHeight
-        if (this.showLyricsSetting && musicManager != null && musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
+        if (this.showLyricsSetting && musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
             val lyricsManager = musicManager.getLyricsManager()
-            val lyrics = lyricsManager?.getCurrentLyrics()
-            if (lyrics != null && !lyrics.getLines().isEmpty()) {
+            val lyrics = lyricsManager.getCurrentLyrics()
+            if (lyrics != null && lyrics.lines.isNotEmpty()) {
                 hasLyrics = true
             }
         }
         this.drawBackground(155.0f, baseHeight.toFloat())
         if (musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
-            val currentTrack = musicManager.getCurrentTrack()
+            val currentTrack = musicManager.getCurrentTrack()!!
             val albumArtUrl = musicManager.getAlbumArtUrl(currentTrack)
-            if (albumArtUrl != null && !albumArtUrl.isEmpty()) {
+            if (albumArtUrl != null && albumArtUrl.isNotEmpty()) {
                 val albumArtFile = File(albumArtUrl)
                 if (albumArtFile.exists()) {
                     this.drawRoundedImage(albumArtFile, 5.5f, 25.0f, 37.0f, 37.0f, 6.0f)
@@ -208,10 +197,10 @@ class MusicInfoMod :
                 this.getHudFont(3),
                 Color(255, 255, 255, 80)
             )
-            val trackName = currentTrack.getName()
-            val artistNames = currentTrack.getArtists()
+            val trackName = currentTrack.name
+            val artistNames = currentTrack.artists
                 .filterNotNull()
-                .joinToString(", ") { it.getName() }
+                .joinToString(", ") { it.name }
             val trackNameLines = this.breakTextIntoLines(trackName, 95.0f)
             var trackNameY = 25.0f
             for (line in trackNameLines) {
@@ -228,7 +217,6 @@ class MusicInfoMod :
             val progressBarY = 70.5f
             val progressFactor = current / end
 
-            // Use improved progress bar design from main menu
             this.drawRoundedRect(
                 6.0f, progressBarY, 142.5f, 2.5f, 1.3f,
                 Color(255, 255, 255, 80)
@@ -248,10 +236,10 @@ class MusicInfoMod :
                 val lyricsManager2 = musicManager.getLyricsManager()
                 val visibleLines = lyricsManager2.getVisibleLines(this.visibleLyrics)
 
-                if (visibleLines != null && !visibleLines.isEmpty()) {
-                    // Begin scissoring (clipping) for lyrics section
+                if (visibleLines.isNotEmpty()) {
+
                     this.save()
-                    val lyricsAreaHeight = baseHeight - lyricsHeaderY - 5.0f // 5px padding at bottom
+                    val lyricsAreaHeight = baseHeight - lyricsHeaderY - 5.0f
                     this.scissor(0f, lyricsHeaderY, 145.0f, lyricsAreaHeight + 4.0f)
 
                     val currentLineIndex = lyricsManager2.getCurrentLineIndex()
@@ -261,18 +249,16 @@ class MusicInfoMod :
                     val yOffset = this.lyricsScrollOffset * lineHeight
 
                     for (i in visibleLines.indices) {
-                        val line = visibleLines.get(i)
-                        if (line == null) continue
+                        val line = visibleLines[i]
                         val actualIndex = max(0, currentLineIndex - visibleLines.size / 2) + i
                         val isCurrentLine = actualIndex == currentLineIndex
-                        var text = line.getWords()
+                        var text = line.words
 
-                        // Use romanized text if available and the setting is enabled
-                        if (this.romanizeJapaneseSetting && line.getRomanizedWords() != null) {
-                            text = line.getRomanizedWords()
+                        if (this.romanizeJapaneseSetting && line.romanizedWords != null) {
+                            text = line.romanizedWords
                         }
 
-                        if (text != null && !text.isEmpty()) {
+                        if (text != null && text.isNotEmpty()) {
                             val limitedText =
                                 getInstance().nanoVGManager!!.getLimitText(text, 9.0f, this.getHudFont(1), 140.0f)
                             val xPos = 5.0f
@@ -299,7 +285,6 @@ class MusicInfoMod :
                         lyricsY += lineHeight
                     }
 
-                    // End scissoring
                     this.restore()
                 } else {
                     val noLyricsText = "No lyrics available"
@@ -326,7 +311,7 @@ class MusicInfoMod :
             )
             this.drawRoundedImage(PLACEHOLDER_IMAGE, 5.5f, 25.0f, 37.0f, 37.0f, 6.0f)
             val progressBarY = 67.5f
-            // Use consistent progress bar design even when nothing is playing
+
             this.drawRoundedRect(
                 6.0f, progressBarY, 142.5f, 2.5f, 1.3f,
                 Color(255, 255, 255, 80)
@@ -335,10 +320,10 @@ class MusicInfoMod :
         this.setWidth(155)
     }
 
-    private fun formatTime(seconds: Long): kotlin.String {
+    private fun formatTime(seconds: Long): String {
         val minutes = seconds / 60L
         val remainingSeconds = seconds % 60L
-        return kotlin.String.format("%02d:%02d", minutes, remainingSeconds)
+        return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
     private fun updateLyricsScrollAnimation(currentLineIndex: Int) {
@@ -365,9 +350,9 @@ class MusicInfoMod :
         return 1.0f - (1.0f - t).toDouble().pow(3.0).toFloat()
     }
 
-    private fun breakTextIntoLines(text: kotlin.String, maxWidth: Float): MutableList<kotlin.String> {
-        val lines = ArrayList<kotlin.String>()
-        val nvgManager = getInstance().nanoVGManager
+    private fun breakTextIntoLines(text: String, maxWidth: Float): MutableList<String> {
+        val lines = ArrayList<String>()
+        getInstance().nanoVGManager
         if (this.getTextWidth(text, 10.5f, this.getHudFont(1))!! <= maxWidth) {
             lines.add(text)
             return lines
@@ -375,55 +360,52 @@ class MusicInfoMod :
         val words = text.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         var currentLine = StringBuilder()
         for (word in words) {
-            val testLine: kotlin.String
-            testLine = if (currentLine.length > 0) currentLine.toString() + " " + word else word
-            val string: kotlin.String? = testLine
+            val testLine: String = if (currentLine.isNotEmpty()) "$currentLine $word" else word
+            testLine
             if (this.getTextWidth(testLine, 10.5f, this.getHudFont(1))!! <= maxWidth) {
                 currentLine = StringBuilder(testLine)
                 continue
             }
-            if (currentLine.length > 0) {
+            if (currentLine.isNotEmpty()) {
                 lines.add(currentLine.toString())
             }
             currentLine = StringBuilder(word)
         }
-        if (currentLine.length > 0) {
+        if (currentLine.isNotEmpty()) {
             lines.add(currentLine.toString())
         }
         if (lines.size > 2) {
-            val lastLine = lines.get(1)
+            val lastLine = lines[1]
             if (lastLine.length > 3) {
-                lines.set(1, lastLine.substring(0, lastLine.length - 3) + "...")
+                lines[1] = lastLine.substring(0, lastLine.length - 3) + "..."
             }
             return lines.subList(0, 2)
         }
         return lines
     }
 
-    public override fun getText(): kotlin.String? {
+    override fun getText(): String? {
         val musicManager = getInstance().musicManager
         if (musicManager.isPlaying()) {
             val currentTrack = musicManager.getCurrentTrack()
-            return if (currentTrack != null) "Now Playing: " + currentTrack.getName() else "Nothing is Playing"
+            return if (currentTrack != null) "Now Playing: " + currentTrack.name else "Nothing is Playing"
         }
         return "Nothing is Playing"
     }
 
-    public override fun getIcon(): kotlin.String? {
+    override fun getIcon(): String? {
         return if (this.iconSetting) "9" else null
     }
 
     override fun onTrackInfoUpdated(position: Long, duration: Long) {
         this.trackDuration = duration
         val musicManager = getInstance().musicManager
-        if (musicManager != null && musicManager.getLyricsManager() != null) {
-            musicManager.getLyricsManager().updateCurrentLineIndex(position)
-            val newLineIndex = musicManager.getLyricsManager().getCurrentLineIndex()
-            if (newLineIndex != this.prevLyricsLineIndex) {
-                this.lyricsScrollOffset = (newLineIndex - this.prevLyricsLineIndex).toFloat()
-                this.lastLyricsScrollTime = System.currentTimeMillis()
-                this.prevLyricsLineIndex = newLineIndex
-            }
+        musicManager.getLyricsManager().updateCurrentLineIndex(position)
+        val newLineIndex = musicManager.getLyricsManager().getCurrentLineIndex()
+        if (newLineIndex != this.prevLyricsLineIndex) {
+            this.lyricsScrollOffset = (newLineIndex - this.prevLyricsLineIndex).toFloat()
+            this.lastLyricsScrollTime = System.currentTimeMillis()
+            this.prevLyricsLineIndex = newLineIndex
         }
     }
 
@@ -455,6 +437,7 @@ class MusicInfoMod :
     companion object {
         private val PLACEHOLDER_IMAGE = ResourceLocation("shindo/music.png")
         private const val LYRICS_SCROLL_DURATION = 500L
+
         @JvmField
         var instance: MusicInfoMod? = null
     }

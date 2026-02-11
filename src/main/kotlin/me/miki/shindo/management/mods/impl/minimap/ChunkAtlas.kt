@@ -161,7 +161,7 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
 
         check(offs != -1) { "Chunk coordinate array full." }
 
-        this.chunkCoords[offs] = c.getChunkCoordIntPair()
+        this.chunkCoords[offs] = c.chunkCoordIntPair
 
         this.updateColorData(c, offs)
     }
@@ -207,7 +207,7 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         val north = this.getLoadedChunk(src.xPosition, src.zPosition - 1)
         if (north != null) {
             for (x in 0..15) {
-                northHeights[x] = this.getTopColoredBlockState(north, x, 15).getY()
+                northHeights[x] = this.getTopColoredBlockState(north, x, 15).y
             }
         }
 
@@ -217,9 +217,9 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
             for (z in 0..15) {
                 var pos = this.getTopColoredBlockState(src, x, z)
                 var state = src.getBlockState(pos)
-                val color = state.getBlock().getMapColor(state)
+                val color = state.block.getMapColor(state)
 
-                val height = pos.getY()
+                val height = pos.y
                 var shade = 1
 
                 if (northHeight > height) {
@@ -229,7 +229,7 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
                 }
 
                 var depth = 0
-                while (pos.getY() >= 0 && !state.getBlock().getMaterial().isSolid()) {
+                while (pos.y >= 0 && !state.block.material.isSolid) {
                     pos = pos.add(0, -1, 0)
                     state = src.getBlockState(pos)
                     depth++
@@ -265,10 +265,10 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
     private fun getTopColoredBlockState(src: Chunk, x: Int, z: Int): BlockPos {
         val pos = MutableBlockPos()
 
-        for (y in src.getTopFilledSegment() + 15 downTo 0) {
+        for (y in src.topFilledSegment + 15 downTo 0) {
             val state = src.getBlockState(pos.set(x, y, z))
 
-            if (state.getBlock().getMapColor(state) !== MapColor.airColor) {
+            if (state.block.getMapColor(state) !== MapColor.airColor) {
                 break
             }
         }
@@ -298,7 +298,7 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         }
 
         val c = world.getChunkFromChunkCoords(x, z)
-        if (c.isEmpty()) {
+        if (c.isEmpty) {
             return null
         }
 

@@ -15,7 +15,7 @@ class TimeChangerMod : Mod(
     ModCategory.WORLD,
     LegacyIcon.MOD_TIME_CHANGER
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 0.0, max = 2.04, current = 12.0)
+    @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 0.0, max = 24.0, current = 12.0)
     @JvmField
     var timeSetting = 12.0
 

@@ -14,7 +14,7 @@ public class MixinModelBase implements IMixinModelBase {
 
 
     @Shadow
-    private Map<String, TextureOffset> modelTextureMap = Maps.newHashMap();
+    private final Map<String, TextureOffset> modelTextureMap = Maps.newHashMap();
 
     @Override
     public void setTextureOffset(String partName, int x, int y) {

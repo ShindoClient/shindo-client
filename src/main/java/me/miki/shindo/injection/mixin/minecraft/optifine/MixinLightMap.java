@@ -19,9 +19,8 @@ public class MixinLightMap {
         EventGamma event = new EventGamma(Minecraft.getMinecraft().gameSettings.gammaSetting);
         event.call();
 
-        if (event.getGamma() > 1) {
+        if(event.getGamma() > 1) {
             callback.setReturnValue(false);
         }
     }
 }
-

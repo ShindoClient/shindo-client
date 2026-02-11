@@ -23,9 +23,9 @@ void main() {
     color += sampleClamped(uTex, uv - vec2(texelSize.x, -texelSize.y));
 
     color += sampleClamped(uTex, uv + vec2(-texelSize.x, 0.0)) * 2.0;
-    color += sampleClamped(uTex, uv + vec2( texelSize.x, 0.0)) * 2.0;
+    color += sampleClamped(uTex, uv + vec2(texelSize.x, 0.0)) * 2.0;
     color += sampleClamped(uTex, uv + vec2(0.0, -texelSize.y)) * 2.0;
-    color += sampleClamped(uTex, uv + vec2(0.0,  texelSize.y)) * 2.0;
+    color += sampleClamped(uTex, uv + vec2(0.0, texelSize.y)) * 2.0;
 
     color = color / 16.0;
     color.a = 1.0;

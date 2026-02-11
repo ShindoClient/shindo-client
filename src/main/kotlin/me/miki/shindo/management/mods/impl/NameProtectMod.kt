@@ -21,7 +21,7 @@ class NameProtectMod : Mod(
 
     @EventTarget
     fun onText(event: EventText) {
-        event.replace(mc.getSession().getUsername(), nameSetting)
+        event.replace(mc.session.username, nameSetting)
     }
 }
 

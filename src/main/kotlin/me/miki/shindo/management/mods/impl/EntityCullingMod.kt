@@ -36,22 +36,30 @@ class EntityCullingMod : Mod(
     ModCategory.OTHER,
     LegacyIcon.MOD_ENTITY_CULLING
 ) {
-    private val renderManager: RenderManager = mc.getRenderManager()
+    private val renderManager: RenderManager = mc.renderManager
     private val queries: ConcurrentHashMap<UUID?, OcclusionQuery> = ConcurrentHashMap<UUID?, OcclusionQuery>()
     private val SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.DELAY, min = 1.0, max = 3.0, current = 2.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.DELAY,
+        min = 1.0,
+        max = 3.0,
+        current = 2.0,
+        step = 1.0
+    )
     private val delaySetting = 2
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.DISTANCE,
-        min = 1.00,
-        max = 15.00,
-        current = 4.05,
+        min = 10.0,
+        max = 150.0,
+        current = 45.0,
         step = 1.0
     )
     private val distanceSetting = 45
+
     private var destroyTimer = 0
 
     @EventTarget
@@ -60,7 +68,7 @@ class EntityCullingMod : Mod(
             return
         }
 
-        val entity = event.getEntity() as EntityLivingBase
+        val entity = event.entity as EntityLivingBase
 
         val armorstand = entity is EntityArmorStand
 
@@ -78,15 +86,15 @@ class EntityCullingMod : Mod(
                 return
             }
 
-            val x = event.getX()
-            val y = event.getY()
-            val z = event.getZ()
-            val renderer = event.getRenderer()
+            val x = event.x
+            val y = event.y
+            val z = event.z
+            val renderer = event.renderer
 
             renderer.renderName(entity, x, y, z)
         }
 
-        if ((entity is EntityArmorStand) || (entity.isInvisible() && entity is EntityPlayer)) {
+        if ((entity is EntityArmorStand) || (entity.isInvisible && entity is EntityPlayer)) {
             event.setCancelled(true)
         }
 
@@ -111,15 +119,12 @@ class EntityCullingMod : Mod(
         }
 
         this.destroyTimer = 0
-        val theWorld = mc.theWorld
-        if (theWorld == null) {
-            return
-        }
+        val theWorld = mc.theWorld ?: return
 
         val remove: MutableList<UUID> = ArrayList<UUID>()
         val loaded: MutableSet<UUID?> = HashSet<UUID?>()
         for (entity in theWorld.loadedEntityList) {
-            loaded.add(entity.getUniqueID())
+            loaded.add(entity.uniqueID)
         }
 
         for (value in queries.values) {
@@ -141,11 +146,11 @@ class EntityCullingMod : Mod(
     fun canRenderName(entity: EntityLivingBase): Boolean {
         val player = mc.thePlayer
         if (entity is EntityPlayer && entity !== player) {
-            val otherEntityTeam = entity.getTeam()
-            val playerTeam = player.getTeam()
+            val otherEntityTeam = entity.team
+            val playerTeam = player.team
 
             if (otherEntityTeam != null) {
-                val teamVisibilityRule = otherEntityTeam.getNameTagVisibility()
+                val teamVisibilityRule = otherEntityTeam.nameTagVisibility
 
                 when (teamVisibilityRule) {
                     EnumVisible.NEVER -> return false
@@ -160,7 +165,7 @@ class EntityCullingMod : Mod(
             }
         }
 
-        return Minecraft.isGuiEnabled() && entity !== mc.getRenderManager().livingPlayer && ((entity is EntityArmorStand) || !entity.isInvisibleToPlayer(
+        return Minecraft.isGuiEnabled() && entity !== mc.renderManager.livingPlayer && ((entity is EntityArmorStand) || !entity.isInvisibleToPlayer(
             player
         )) && entity.riddenByEntity == null
     }
@@ -205,7 +210,7 @@ class EntityCullingMod : Mod(
     }
 
     private fun checkEntity(entity: Entity): Boolean {
-        val query = queries.computeIfAbsent(entity.getUniqueID()) { uuid: UUID? -> OcclusionQuery(uuid) }
+        val query = queries.computeIfAbsent(entity.uniqueID) { uuid: UUID? -> OcclusionQuery(uuid) }
 
         if (query.refresh) {
             query.nextQuery = Companion.query
@@ -213,7 +218,7 @@ class EntityCullingMod : Mod(
             val mode = if (SUPPORT_NEW_GL) GL33.GL_ANY_SAMPLES_PASSED else GL15.GL_SAMPLES_PASSED
             GL15.glBeginQuery(mode, query.nextQuery)
             drawSelectionBoundingBox(
-                entity.getEntityBoundingBox()
+                entity.entityBoundingBox
                     .expand(.2, .2, .2)
                     .offset(
                         -(renderManager as IMixinRenderManager).getRenderPosX(),
@@ -227,7 +232,7 @@ class EntityCullingMod : Mod(
         return query.occluded
     }
 
-    private inner class OcclusionQuery(val uuid: UUID?) {
+    private class OcclusionQuery(val uuid: UUID?) {
         var nextQuery: Int = 0
         var refresh: Boolean = true
         var occluded: Boolean = false
@@ -244,7 +249,7 @@ class EntityCullingMod : Mod(
             GlStateManager.depthMask(false)
             GlStateManager.colorMask(false, false, false, false)
             val tessellator = Tessellator.getInstance()
-            val worldrenderer = tessellator.getWorldRenderer()
+            val worldrenderer = tessellator.worldRenderer
             worldrenderer.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION)
             worldrenderer.pos(b.maxX, b.maxY, b.maxZ).endVertex()
             worldrenderer.pos(b.maxX, b.maxY, b.minZ).endVertex()

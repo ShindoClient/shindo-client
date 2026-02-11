@@ -2,17 +2,8 @@ package me.miki.shindo.gui.mainmenu
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.IShindoScreen
-import me.miki.shindo.gui.mainmenu.impl.BackgroundScene
-import me.miki.shindo.gui.mainmenu.impl.MainScene
-import me.miki.shindo.gui.mainmenu.impl.ShopScene
-import me.miki.shindo.gui.mainmenu.impl.SkinScene
-import me.miki.shindo.gui.mainmenu.impl.UpdateScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.AccentColorSelectScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.CheckingDataScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.LanguageSelectScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.LastMessageScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.ThemeSelectScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.WelcomeMessageScene
+import me.miki.shindo.gui.mainmenu.impl.*
+import me.miki.shindo.gui.mainmenu.impl.welcome.*
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -21,23 +12,22 @@ import me.miki.shindo.management.event.impl.EventRenderNotification
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.management.profile.mainmenu.impl.Background
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.Sound
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.DecelerateAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.management.sound.Sound
+import me.miki.shindo.management.sound.Sounds
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
 import java.awt.Color
-import java.util.ArrayList
 
 class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
@@ -110,10 +100,13 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
         currentScene?.drawScreen(mouseX, mouseY, partialTicks)
 
-        if (fadeBackgroundAnimation == null || (fadeBackgroundAnimation != null && !fadeBackgroundAnimation!!.isDone(Direction.FORWARDS))) {
+        if (fadeBackgroundAnimation == null || (fadeBackgroundAnimation != null && !fadeBackgroundAnimation!!.isDone(
+                Direction.FORWARDS
+            ))
+        ) {
             nvg.setupAndDraw(Runnable { drawSplashScreen(sr, nvg) })
             if (!soundPlayed) {
-                Sound.play("shindo/audio/start.wav", true)
+                Sound.play(Sounds.SHINDO_AUDIO_START, true)
                 soundPlayed = true
             }
         }
@@ -125,31 +118,31 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     private fun drawNanoVG(sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
         val copyright = "Copyright Mojang AB. Do not distribute!"
-        val currentBackground = instance.profileManager.backgroundManager.currentBackground
-
-        when (currentBackground) {
+        when (val currentBackground = instance.profileManager.backgroundManager.getCurrentBackground()) {
             is DefaultBackground -> {
                 nvg.drawImage(
-                    currentBackground.image,
+                    currentBackground.getImage()!!,
                     -21f + backgroundAnimations[0].value / 90,
                     backgroundAnimations[1].value * -1 / 90,
                     sr.scaledWidth + 21f,
                     sr.scaledHeight + 20f
                 )
             }
+
             is CustomBackground -> {
                 nvg.drawImage(
-                    currentBackground.image,
+                    currentBackground.getImage(),
                     -21f + backgroundAnimations[0].value / 90,
                     backgroundAnimations[1].value * -1 / 90,
                     sr.scaledWidth + 21f,
                     sr.scaledHeight + 20f
                 )
             }
+
             is ShaderBackground -> {
                 ShaderBackgroundRenderer.renderShaderBackground(
                     nvg,
-                    currentBackground.shaderFile,
+                    currentBackground.getShaderFile(),
                     -21f + backgroundAnimations[0].value / 90,
                     backgroundAnimations[1].value * -1 / 90,
                     sr.scaledWidth + 21f,
@@ -158,7 +151,14 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             }
         }
 
-        nvg.drawText(copyright, sr.scaledWidth - (nvg.getTextWidth(copyright, 9f, Fonts.REGULAR)) - 4, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
+        nvg.drawText(
+            copyright,
+            sr.scaledWidth - (nvg.getTextWidth(copyright, 9f, Fonts.REGULAR)) - 4,
+            sr.scaledHeight - 12f,
+            Color.WHITE,
+            9f,
+            Fonts.REGULAR
+        )
         nvg.drawText("Shindo Client v" + instance.version, 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
     }
 
@@ -175,7 +175,11 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             LegacyIcon.X,
             sr.scaledWidth - 19f,
             8f,
-            Color(255, 255 - (closeFocusAnimation.value * 200).toInt(), 255 - (closeFocusAnimation.value * 200).toInt()),
+            Color(
+                255,
+                255 - (closeFocusAnimation.value * 200).toInt(),
+                255 - (closeFocusAnimation.value * 200).toInt()
+            ),
             18f,
             Fonts.LEGACYICON
         )
@@ -190,7 +194,11 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             LegacyIcon.IMAGE,
             sr.scaledWidth - 52f + 6.5f - 1.5f,
             9.5f - 1.5f,
-            Color(255 - (backgroundSelectFocusAnimation.value * 200).toInt(), 255, 255 - (backgroundSelectFocusAnimation.value * 200).toInt()),
+            Color(
+                255 - (backgroundSelectFocusAnimation.value * 200).toInt(),
+                255,
+                255 - (backgroundSelectFocusAnimation.value * 200).toInt()
+            ),
             18f,
             Fonts.LEGACYICON
         )
@@ -240,7 +248,18 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
                 fadeBackgroundAnimation!!.reset()
             }
 
-            nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, if (fadeBackgroundAnimation != null) (255 - (fadeBackgroundAnimation!!.getValue() * 255)).toInt() else 255))
+            nvg.drawRect(
+                0f,
+                0f,
+                sr.scaledWidth.toFloat(),
+                sr.scaledHeight.toFloat(),
+                Color(
+                    0,
+                    0,
+                    0,
+                    if (fadeBackgroundAnimation != null) (255 - (fadeBackgroundAnimation!!.getValue() * 255)).toInt() else 255
+                )
+            )
             nvg.drawCenteredText(
                 LegacyIcon.SHINDO,
                 sr.scaledWidth / 2f,
@@ -262,7 +281,15 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
                 mc.shutdown()
             }
 
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f) && currentScene != getSceneByClass(BackgroundScene::class.java)) {
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    sr.scaledWidth - 56f,
+                    6f,
+                    22f,
+                    22f
+                ) && currentScene != getSceneByClass(BackgroundScene::class.java)
+            ) {
                 setCurrentScene(getSceneByClass(BackgroundScene::class.java))
             }
 
@@ -285,10 +312,6 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         currentScene?.keyTyped(typedChar, keyCode)
-    }
-
-    override fun handleInput() {
-        super.handleInput()
     }
 
     override fun onGuiClosed() {
@@ -315,32 +338,30 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
     }
 
     private fun ensureDefaultColorScheme(instance: Shindo?, forceDefaults: Boolean) {
-        if (instance == null) {
-            return
-        }
-        val colorManager: ColorManager? = instance.colorManager
-        if (colorManager == null) {
-            return
-        }
-        if (forceDefaults || colorManager.currentColor == null) {
-            colorManager.currentColor = colorManager.getColorByName("Default")
-        }
-        if (forceDefaults || colorManager.theme == null) {
-            colorManager.theme = Theme.DARK
+        if (instance == null) return
+
+        val colorManager: ColorManager = instance.colorManager
+
+        if (forceDefaults) {
+            colorManager.setCurrentColor(colorManager.getColorByName("Default"))
+            colorManager.setTheme(Theme.DARK)
         }
     }
 
     private fun getControlFillColor(): Color {
         val instance = Shindo.getInstance()
-        val palette: ColorPalette? = if (instance != null && instance.colorManager != null) instance.colorManager.palette else null
-        val base = palette?.getBackgroundColor(ColorType.NORMAL) ?: getBackgroundColor()
-        return ColorUtils.applyAlpha(base, Math.min(255, base.alpha + 5))
+        val palette: ColorPalette = instance.colorManager.getPalette()
+        val base = palette.getBackgroundColor(ColorType.NORMAL)
+        return ColorUtils.applyAlpha(base, 255.coerceAtMost(base.alpha + 5))
     }
 
     fun getBackgroundColor(): Color {
         val instance = Shindo.getInstance()
-        val palette: ColorPalette? = if (instance != null && instance.colorManager != null) instance.colorManager.palette else null
-        val base = palette?.getBackgroundColor(ColorType.DARK) ?: Color(30, 30, 30)
+        val palette: ColorPalette = instance.colorManager.getPalette()
+        val base = palette.getBackgroundColor(ColorType.DARK)
         return ColorUtils.applyAlpha(base, 235)
     }
 }
+
+
+

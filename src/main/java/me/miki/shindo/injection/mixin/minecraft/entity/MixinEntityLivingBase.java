@@ -1,10 +1,11 @@
 package me.miki.shindo.injection.mixin.minecraft.entity;
 
 import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
+import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer;
 import me.miki.shindo.management.event.impl.EventLivingUpdate;
 import me.miki.shindo.management.mods.impl.SlowSwingMod;
 import me.miki.shindo.management.settings.impl.NumberSetting;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements IMixinEntityLivingBase {
@@ -40,7 +42,7 @@ public abstract class MixinEntityLivingBase extends Entity implements IMixinEnti
     public void changeSwingSpeed(CallbackInfoReturnable<Integer> cir) {
 
         SlowSwingMod mod = SlowSwingMod.instance;
-        NumberSetting delaySetting = mod.getDelaySetting();
+        NumberSetting delaySetting = Objects.requireNonNull(mod).getDelaySetting();
 
         if (mod.isToggled() && delaySetting != null) {
             cir.setReturnValue(delaySetting.getValueInt());
@@ -54,6 +56,13 @@ public abstract class MixinEntityLivingBase extends Entity implements IMixinEnti
         }
     }
 
+    @Inject(method = "setRotationYawHead", at = @At("HEAD"))
+    private void onSetRotationYawHead(float yawHead, CallbackInfo ci) {
+        if ((Object) this instanceof EntityOtherPlayerMP && this instanceof IMixinEntityPlayer) {
+            ((IMixinEntityPlayer) this).getPlayerDataSamples().setRotationYawHead(yawHead);
+        }
+    }
+
     @Override
     public int getArmSwingAnimation() {
         return getArmSwingAnimationEnd();
@@ -64,12 +73,6 @@ public abstract class MixinEntityLivingBase extends Entity implements IMixinEnti
         if (potioneffect == null) {
             ci.cancel();
         }
-    }
-
-    @SuppressWarnings({"ConstantConditions"})
-    @Inject(method = "updatePotionEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnParticle(Lnet/minecraft/util/EnumParticleTypes;DDDDDD[I)V"), cancellable = true)
-    private void patcher$cleanView(CallbackInfo ci) {
-        // PatcherAddon removed - clean view disabled
     }
 }
 

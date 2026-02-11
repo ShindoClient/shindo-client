@@ -23,10 +23,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Mixin(GuiPlayerTabOverlay.class)
 public abstract class MixinGuiPlayerTabOverlay extends Gui {
@@ -50,8 +47,7 @@ public abstract class MixinGuiPlayerTabOverlay extends Gui {
         }
     }
 
-    @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 2))
+    @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 2))
     public int renderShindoIcon(FontRenderer fontRenderer, String text, float x, float y, int color) {
         UUID uuid = shindo$tabNameCache.get(text);
 
@@ -64,12 +60,14 @@ public abstract class MixinGuiPlayerTabOverlay extends Gui {
 
                 float iconX = x;
                 float iconY = y;
+                float iconSize = 8F;
 
                 if (nvg != null) {
                     nvg.setupAndDraw(() -> {
-                        nvg.drawText(RoleVisuals.getTabIcon(role), iconX, iconY, iconColor, 8F, Fonts.LEGACYICON);
+                        nvg.drawText(RoleVisuals.getTabIcon(role), iconX, iconY, iconColor, iconSize, Fonts.LEGACYICON);
                     });
-                    x += 10;
+                    float iconWidth = nvg.getTextWidth(RoleVisuals.getTabIcon(role), iconSize, Fonts.LEGACYICON);
+                    x += iconWidth + 2f;
                 } else {
                     String fallback = RoleVisuals.getTabFallbackText(role);
                     fontRenderer.drawStringWithShadow(fallback, iconX, iconY, iconColor.getRGB());
@@ -85,7 +83,7 @@ public abstract class MixinGuiPlayerTabOverlay extends Gui {
     public EntityPlayer removePlayerHead(WorldClient instance, UUID uuid) {
 
         TabEditorMod tabMod = TabEditorMod.instance;
-        BooleanSetting headSetting = tabMod.getHeadSetting();
+        BooleanSetting headSetting = Objects.requireNonNull(tabMod).getHeadSetting();
         if (tabMod.isToggled() && headSetting != null && !headSetting.isToggled()) {
             return null;
         }

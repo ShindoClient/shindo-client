@@ -3,9 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible release date precisions.
- */
 public enum ReleaseDatePrecision {
 
     DAY("day"),
@@ -30,11 +27,6 @@ public enum ReleaseDatePrecision {
         return map.get(precision);
     }
 
-    /**
-     * Get the release date precision as a string.
-     *
-     * @return The release date precision as a string.
-     */
     public String getPrecision() {
         return precision;
     }

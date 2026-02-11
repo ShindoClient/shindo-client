@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import java.awt.Color
 
@@ -60,18 +60,17 @@ open class MainMenuScene(private val parent: GuiShindoMainMenu) {
 
     protected fun getMenuPalette(): ColorPalette {
         val manager = getColorManager()
-        return manager?.palette ?: FALLBACK_PALETTE
+        return manager.getPalette()
     }
 
     protected fun getMenuAccent(): AccentColor {
         val manager = getColorManager()
-        val accent = manager?.currentColor
-        return accent ?: FALLBACK_ACCENT
+        return manager.getCurrentColor()
     }
 
-    private fun getColorManager(): ColorManager? {
+    private fun getColorManager(): ColorManager {
         val instance = Shindo.getInstance()
-        return instance?.colorManager
+        return instance.colorManager
     }
 
     fun getSceneByClass(clazz: Class<out MainMenuScene>): MainMenuScene? {

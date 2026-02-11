@@ -1,10 +1,10 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.management.settings.impl.ComboSetting
-import me.miki.shindo.management.settings.impl.combo.Option
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.settings.impl.ComboSetting
+import me.miki.shindo.management.settings.impl.combo.Option
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -32,6 +32,7 @@ class CompDropdown : Comp {
         this.width = width
         super.setWidth(width)
     }
+
     fun setOpenUp(openUp: Boolean) {
         this.openUp = openUp
     }
@@ -45,10 +46,10 @@ class CompDropdown : Comp {
         this.open = open
     }
 
-    val dropdownHeight: Float
+    private val dropdownHeight: Float
         get() = if (open) LIST_PADDING * 2f + getOptionCount().coerceAtLeast(0) * OPTION_HEIGHT else 0f
 
-    private fun getOptionCount(): Int = setting.getOptions().size ?: 0
+    private fun getOptionCount(): Int = setting.getOptions().size
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
@@ -64,9 +65,9 @@ class CompDropdown : Comp {
         val x = getX()
         val y = getY()
 
-        nvgInstance.drawGradientRoundedRect(x, y, width, controlHeight, 5f, accent.color1, accent.color2)
+        nvgInstance.drawGradientRoundedRect(x, y, width, controlHeight, 5f, accent.getColor1(), accent.getColor2())
 
-        val label = setting.getOption()!!.name ?: "None"
+        val label = setting.getOption()!!.name
         nvgInstance.drawText(label, x + 8f, y + 6f, Color.WHITE, 8.5f, Fonts.MEDIUM)
 
         val arrow = if (open) LegacyIcon.CHEVRON_UP else LegacyIcon.CHEVRON_DOWN
@@ -78,12 +79,12 @@ class CompDropdown : Comp {
             val listY = if (openUp) y - listHeight - 4f else y + controlHeight + 4f
 
             nvgInstance.drawRoundedRect(
-                listX,
-                listY,
-                width,
-                listHeight,
-                5f,
-                ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), 240)
+                    listX,
+                    listY,
+                    width,
+                    listHeight,
+                    5f,
+                    ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), 240)
             )
 
             val options: List<Option> = setting.getOptions()
@@ -94,12 +95,12 @@ class CompDropdown : Comp {
                 val hovered = MouseUtils.isInside(mouseX, mouseY, listX + 2f, optionY, width - 4f, optionHeight)
                 if (hovered) {
                     nvgInstance.drawRoundedRect(
-                        listX + 2f,
-                        optionY,
-                        width - 4f,
-                        optionHeight,
-                        4f,
-                        ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 220)
+                            listX + 2f,
+                            optionY,
+                            width - 4f,
+                            optionHeight,
+                            4f,
+                            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 220)
                     )
                 }
 

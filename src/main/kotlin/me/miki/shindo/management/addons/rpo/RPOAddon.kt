@@ -47,7 +47,7 @@ class RPOAddon : Addon(
             private set
 
         init {
-            // instance will be set when constructed
+
         }
     }
 

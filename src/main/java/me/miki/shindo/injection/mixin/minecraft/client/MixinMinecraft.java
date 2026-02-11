@@ -48,6 +48,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
+import java.util.Objects;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IMixinMinecraft {
@@ -77,12 +78,14 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Unique
     long lastFrame = client$getCurrentTime();
     @Shadow
+    private boolean running;
+    @Shadow
     @Final
     private File fileResourcepacks;
     @Shadow
     private ResourcePackRepository mcResourcePackRepository;
     @Shadow
-    private Timer timer = new Timer(20.0F);
+    private final Timer timer = new Timer(20.0F);
     @Shadow
     private Session session;
     @Shadow
@@ -96,11 +99,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private Entity renderViewEntity;
     @Shadow
     private boolean enableGLErrorChecking;
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public static int getDebugFPS() {
 
@@ -157,7 +155,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         RPOAddon.getInstance().init();
     }
 
-    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;next()Z"))
+    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;next()Z", remap = false))
     public boolean nextMouse() {
 
         boolean next = Mouse.next();
@@ -191,11 +189,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public void preShutdown(CallbackInfo ci) {
         Shindo.getInstance().stop();
     }
-
-    /**
-     * @param i : exit code
-     * @reason let the shutdown sound play before killing the process
-     */
     @Redirect(method = "shutdownMinecraftApplet", at = @At(value = "INVOKE", target = "Ljava/lang/System;exit(I)V", remap = false))
     private void ignoreGcCall(int i) {
         try {
@@ -286,7 +279,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         }
     }
 
-    @Redirect(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V"))
+    @Redirect(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", remap = false))
     public void overrideTitle(String title) {
         Display.setTitle("Shindo Client v" + Shindo.getInstance().getVersion() + " (" + Shindo.getInstance().getVerIdentifier() + ") for " + title);
     }
@@ -298,7 +291,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         }
     }
 
-    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I"))
+    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I", remap = false))
     public int onScroll() {
 
         int dWheel = Mouse.getEventDWheel();
@@ -324,11 +317,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public void postRenderTick(CallbackInfo ci) {
         new EventRenderTick().call();
     }
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public int getLimitFramerate() {
 
@@ -349,11 +337,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
         return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public boolean isFramerateLimitBelowMax() {
 
@@ -408,12 +391,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
             this.entityRenderer.getMapItemRenderer().clearLoadedMaps();
         }
     }
-
-    /**
-     * Mixin setGameIcon
-     *
-     * @reason change the game icon to a custom one
-     */
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setGameIcon(CallbackInfo c) {
         if (Util.getOSType() == Util.EnumOS.OSX) {
@@ -475,17 +452,11 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Redirect(method = "clickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V"))
     private void redirectAttack(PlayerControllerMP instance, EntityPlayer playerIn, Entity targetEntity) {
         ViaVersionMod viaMod = ViaVersionMod.instance;
-        if (viaMod.isToggled() && viaMod.isLoaded()) {
+        if (Objects.requireNonNull(viaMod).isToggled() && viaMod.isLoaded()) {
             AttackOrder.sendFixedAttack(thePlayer, objectMouseOver.entityHit);
         } else {
             playerController.attackEntity(thePlayer, objectMouseOver.entityHit);
         }
-    }
-
-    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;loadEntityShader(Lnet/minecraft/entity/Entity;)V"))
-    private void keepShadersOnPerspectiveChange(EntityRenderer entityRenderer, Entity entityIn) {
-        // PatcherAddon removed - always load shader
-        entityRenderer.loadEntityShader(entityIn);
     }
 
     @Override
@@ -521,7 +492,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Override
     public boolean isRunning() {
-        return ((Minecraft) (Object) this).running;
+        return this.running;
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE",

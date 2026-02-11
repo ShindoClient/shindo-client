@@ -22,7 +22,14 @@ class BloodParticlesMod : Mod(
     ModCategory.RENDER,
     LegacyIcon.MOD_BLOOD_PARTICLES
 ) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.AMOUNT, min = 1.0, max = 10.0, current = 2.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.AMOUNT,
+        min = 1.0,
+        max = 10.0,
+        current = 2.0,
+        step = 1.0
+    )
     private val amountSetting = 2
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)
@@ -32,12 +39,12 @@ class BloodParticlesMod : Mod(
 
     @EventTarget
     fun onAttackEntity(event: EventAttackEntity) {
-        if (event.getEntity() !is EntityLivingBase) {
+        if (event.entity !is EntityLivingBase) {
             return
         }
 
         if (target != null) {
-            for (i in 0..<amountSetting) {
+            for (i in 0 until amountSetting) {
                 mc.theWorld.spawnParticle(
                     EnumParticleTypes.BLOCK_CRACK,
                     target!!.posX,
@@ -46,13 +53,13 @@ class BloodParticlesMod : Mod(
                     0.0,
                     0.0,
                     0.0,
-                    Block.getStateId(Blocks.redstone_block.getDefaultState())
+                    Block.getStateId(Blocks.redstone_block.defaultState)
                 )
             }
         }
 
         if (soundSetting && target != null) {
-            mc.getSoundHandler().playSound(
+            mc.soundHandler.playSound(
                 PositionedSoundRecord(
                     ResourceLocation("dig.stone"),
                     4.0f,
@@ -74,6 +81,7 @@ class BloodParticlesMod : Mod(
         }
     }
 }
+
 
 
 

@@ -13,7 +13,7 @@ class Items2DMod :
         instance = this
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         val itemPhysics = ItemPhysicsMod.instance

@@ -27,7 +27,7 @@ public class MixinAbstractClientPlayer {
         cir.setReturnValue(event.getFov());
     }
 
-    @Inject(method = "getLocationSkin", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getLocationSkin*", at = @At("HEAD"), cancellable = true)
     public void onGetLocationSkin(CallbackInfoReturnable<ResourceLocation> cir) {
 
         EventLocationSkin event = new EventLocationSkin(playerInfo);

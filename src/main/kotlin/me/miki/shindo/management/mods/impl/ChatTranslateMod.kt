@@ -43,7 +43,7 @@ class ChatTranslateMod : Mod(
                     .setChatHoverEvent(
                         HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            ChatComponentText(TranslateText.CLICK_TO_TRANSLATE.text)
+                            ChatComponentText(TranslateText.CLICK_TO_TRANSLATE.getText())
                         )
                     )
             )
@@ -53,7 +53,7 @@ class ChatTranslateMod : Mod(
                 return
             }
 
-            event.isCancelled = true
+            event.setCancelled(true)
 
             mc.ingameGUI.chatGUI.printChatMessage(chatPacket.chatComponent.appendSibling(translate))
         }

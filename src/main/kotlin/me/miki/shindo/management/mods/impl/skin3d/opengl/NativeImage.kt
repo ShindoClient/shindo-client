@@ -52,8 +52,8 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
         getTexImage(3553, i, this.format.glFormat(), 5121, this.buffer)
 
         if (bl && this.format.hasAlpha()) {
-            for (j in 0..<this.height) {
-                for (k in 0..<this.width) {
+            for (j in 0 until this.height) {
+                for (k in 0 until this.width) {
                     setPixelRGBA(k, j, getPixelRGBA(k, j) or (255 shl this.format.alphaOffset()))
                 }
             }
@@ -188,11 +188,11 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
         companion object {
             fun getStbFormat(i: Int): Format {
                 when (i) {
-                    1 -> return Format.LUMINANCE
-                    2 -> return Format.LUMINANCE_ALPHA
-                    3 -> return Format.RGB
+                    1 -> return LUMINANCE
+                    2 -> return LUMINANCE_ALPHA
+                    3 -> return RGB
                 }
-                return Format.RGBA
+                return RGBA
             }
         }
     }

@@ -12,7 +12,7 @@ class RestrictedMod {
 
     fun checkAllowed(mod: Mod): Boolean {
         if (shouldCheck) {
-            val servers = blacklistManager.blacklist
+            val servers = blacklistManager.getBlacklist()
             for (server in servers) {
                 if (currentServerIP.contains(server.serverIp)) {
                     val blacklistedMods = server.mods

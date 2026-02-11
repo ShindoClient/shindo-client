@@ -12,9 +12,9 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.utils.MathUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseBackIn
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.GuiScreen
@@ -24,7 +24,6 @@ import org.lwjgl.input.Mouse
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color
 import java.io.IOException
-import java.util.Collections
 import kotlin.math.max
 import kotlin.math.min
 
@@ -55,7 +54,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager ?: return
-        val palette: ColorPalette = instance.colorManager.palette
+        val palette: ColorPalette = instance.colorManager.getPalette()
         val shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
         localMouseX = mouseX
         localMouseY = mouseY
@@ -65,33 +64,73 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(null)
         }
-        if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() != true) {
+        if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() != true) {
             BlurUtils.drawBlurScreen((min(introAnimation.getValue(), 1.0) * 20).toFloat() + 1f)
         }
 
         nvg.setupAndDraw(Runnable {
             nvg.save()
             NanoVG.nvgGlobalAlpha(nvg.getContext(), introAnimation.getValue().toFloat())
-            if (InternalSettingsMod.instance?.getBlurSetting()?.isToggled() == true) {
+            if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
                 Blur.drawBlur {
                     nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.WHITE)
                 }
             }
             nvg.restore()
-            nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, (introAnimation.getValue() * 100).toInt()))
+            nvg.drawRect(
+                0f,
+                0f,
+                sr.scaledWidth.toFloat(),
+                sr.scaledHeight.toFloat(),
+                Color(0, 0, 0, (introAnimation.getValue() * 100).toInt())
+            )
             val halfScreenWidth = sr.scaledWidth / 2
             val halfScreenHeight = sr.scaledHeight / 2
 
-            // guide lines
-            nvg.drawRect(0f, halfScreenHeight.toFloat(), sr.scaledWidth.toFloat(), 0.5f, palette.getBackgroundColor(ColorType.DARK))
-            nvg.drawRect(halfScreenWidth.toFloat(), 0f, 0.5f, sr.scaledHeight.toFloat(), palette.getBackgroundColor(ColorType.DARK))
-            // todo add more splashers
-            nvg.drawCenteredText(TranslateText.HUD_RESIZE_HINT.text, sr.scaledWidth / 2f, sr.scaledHeight - 15f, Color(255, 255, 255, 200), 8f, Fonts.REGULAR)
+            nvg.drawRect(
+                0f,
+                halfScreenHeight.toFloat(),
+                sr.scaledWidth.toFloat(),
+                0.5f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
+            nvg.drawRect(
+                halfScreenWidth.toFloat(),
+                0f,
+                0.5f,
+                sr.scaledHeight.toFloat(),
+                palette.getBackgroundColor(ColorType.DARK)
+            )
+
+            nvg.drawCenteredText(
+                TranslateText.HUD_RESIZE_HINT.getText(),
+                sr.scaledWidth / 2f,
+                sr.scaledHeight - 15f,
+                Color(255, 255, 255, 200),
+                8f,
+                Fonts.REGULAR
+            )
 
             for (m in mods) {
                 if (m.isToggled() && !m.isHide()) {
-                    val topMost = mods.firstOrNull { it.isToggled() && MouseUtils.isInside(mouseX, mouseY, it.getX(), it.getY(), it.getWidth(), it.getHeight()) }
-                    val isInside = MouseUtils.isInside(mouseX, mouseY, m.getX(), m.getY(), m.getWidth(), m.getHeight()) && topMost == m
+                    val topMost = mods.firstOrNull {
+                        it.isToggled() && MouseUtils.isInside(
+                            mouseX,
+                            mouseY,
+                            it.getX(),
+                            it.getY(),
+                            it.getWidth(),
+                            it.getHeight()
+                        )
+                    }
+                    val isInside = MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        m.getX(),
+                        m.getY(),
+                        m.getWidth(),
+                        m.getHeight()
+                    ) && topMost == m
 
                     if (isInside) {
                         val dWheel = Mouse.getDWheel()
@@ -133,11 +172,21 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                     m.setY(max(0, min(modY, sr.scaledHeight - modHeight)))
 
                     if (canSnap) {
-                        if (MathUtils.isInRange(modX + (modWidth / 2f), halfScreenWidth - snapRange.toFloat(), halfScreenWidth + snapRange.toFloat())) {
+                        if (MathUtils.isInRange(
+                                modX + (modWidth / 2f),
+                                halfScreenWidth - snapRange.toFloat(),
+                                halfScreenWidth + snapRange.toFloat()
+                            )
+                        ) {
                             m.setX(halfScreenWidth - (modWidth / 2))
                         }
 
-                        if (MathUtils.isInRange(modY + (modHeight / 2f), halfScreenHeight - snapRange.toFloat(), halfScreenHeight + snapRange.toFloat())) {
+                        if (MathUtils.isInRange(
+                                modY + (modHeight / 2f),
+                                halfScreenHeight - snapRange.toFloat(),
+                                halfScreenHeight + snapRange.toFloat()
+                            )
+                        ) {
                             m.setY(halfScreenHeight - (modHeight / 2))
                         }
                     }
@@ -149,50 +198,114 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                             val mod2Width = m2.getWidth()
                             val mod2Height = m2.getHeight()
 
-                            if (MathUtils.isInRange(mod2X.toFloat(), (modX - snapRange).toFloat(), (modX + snapRange).toFloat())) {
+                            if (MathUtils.isInRange(
+                                    mod2X.toFloat(),
+                                    (modX - snapRange).toFloat(),
+                                    (modX + snapRange).toFloat()
+                                )
+                            ) {
                                 nvg.drawRect(mod2X.toFloat(), 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
                                 snapping = true
                                 m.setX(mod2X)
                             }
 
-                            if (MathUtils.isInRange(mod2Y.toFloat(), (modY - snapRange).toFloat(), (modY + snapRange).toFloat())) {
+                            if (MathUtils.isInRange(
+                                    mod2Y.toFloat(),
+                                    (modY - snapRange).toFloat(),
+                                    (modY + snapRange).toFloat()
+                                )
+                            ) {
                                 nvg.drawRect(0f, mod2Y.toFloat(), sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
                                 snapping = true
                                 m.setY(mod2Y)
                             }
 
-                            if (MathUtils.isInRange((mod2X + mod2Width).toFloat(), (modX - snapRange).toFloat(), (modX + snapRange).toFloat())) {
-                                nvg.drawRect((mod2X + mod2Width).toFloat(), 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            if (MathUtils.isInRange(
+                                    (mod2X + mod2Width).toFloat(),
+                                    (modX - snapRange).toFloat(),
+                                    (modX + snapRange).toFloat()
+                                )
+                            ) {
+                                nvg.drawRect(
+                                    (mod2X + mod2Width).toFloat(),
+                                    0f,
+                                    0.5f,
+                                    sr.scaledHeight.toFloat(),
+                                    Color(217, 60, 255)
+                                )
                                 snapping = true
                                 m.setX(mod2X + mod2Width)
                             }
 
-                            if (MathUtils.isInRange((mod2Y + mod2Height).toFloat(), (modY - snapRange).toFloat(), (modY + snapRange).toFloat())) {
-                                nvg.drawRect(0f, (mod2Y + mod2Height).toFloat(), sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            if (MathUtils.isInRange(
+                                    (mod2Y + mod2Height).toFloat(),
+                                    (modY - snapRange).toFloat(),
+                                    (modY + snapRange).toFloat()
+                                )
+                            ) {
+                                nvg.drawRect(
+                                    0f,
+                                    (mod2Y + mod2Height).toFloat(),
+                                    sr.scaledWidth.toFloat(),
+                                    0.5f,
+                                    Color(217, 60, 255)
+                                )
                                 snapping = true
                                 m.setY(mod2Y + mod2Height)
                             }
 
-                            if (MathUtils.isInRange(mod2X.toFloat(), (modX + modWidth - snapRange).toFloat(), (modX + modWidth + snapRange).toFloat())) {
+                            if (MathUtils.isInRange(
+                                    mod2X.toFloat(),
+                                    (modX + modWidth - snapRange).toFloat(),
+                                    (modX + modWidth + snapRange).toFloat()
+                                )
+                            ) {
                                 nvg.drawRect(mod2X.toFloat(), 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
                                 snapping = true
                                 m.setX(mod2X - modWidth)
                             }
 
-                            if (MathUtils.isInRange(mod2Y.toFloat(), (modY + modHeight - snapRange).toFloat(), (modY + modHeight + snapRange).toFloat())) {
+                            if (MathUtils.isInRange(
+                                    mod2Y.toFloat(),
+                                    (modY + modHeight - snapRange).toFloat(),
+                                    (modY + modHeight + snapRange).toFloat()
+                                )
+                            ) {
                                 nvg.drawRect(0f, mod2Y.toFloat(), sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
                                 snapping = true
                                 m.setY(mod2Y - modHeight)
                             }
 
-                            if (MathUtils.isInRange((mod2X + mod2Width).toFloat(), (modX + modWidth - snapRange).toFloat(), (modX + modWidth + snapRange).toFloat())) {
-                                nvg.drawRect((mod2X + mod2Width).toFloat(), 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            if (MathUtils.isInRange(
+                                    (mod2X + mod2Width).toFloat(),
+                                    (modX + modWidth - snapRange).toFloat(),
+                                    (modX + modWidth + snapRange).toFloat()
+                                )
+                            ) {
+                                nvg.drawRect(
+                                    (mod2X + mod2Width).toFloat(),
+                                    0f,
+                                    0.5f,
+                                    sr.scaledHeight.toFloat(),
+                                    Color(217, 60, 255)
+                                )
                                 snapping = true
                                 m.setX(mod2X + mod2Width - modWidth)
                             }
 
-                            if (MathUtils.isInRange((mod2Y + mod2Height).toFloat(), (modY + modHeight - snapRange).toFloat(), (modY + modHeight + snapRange).toFloat())) {
-                                nvg.drawRect(0f, (mod2Y + mod2Height).toFloat(), sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            if (MathUtils.isInRange(
+                                    (mod2Y + mod2Height).toFloat(),
+                                    (modY + modHeight - snapRange).toFloat(),
+                                    (modY + modHeight + snapRange).toFloat()
+                                )
+                            ) {
+                                nvg.drawRect(
+                                    0f,
+                                    (mod2Y + mod2Height).toFloat(),
+                                    sr.scaledWidth.toFloat(),
+                                    0.5f,
+                                    Color(217, 60, 255)
+                                )
                                 snapping = true
                                 m.setY(mod2Y + mod2Height - modHeight)
                             }
@@ -200,7 +313,15 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                     }
                 }
 
-                nvg.drawOutlineRoundedRect(m.getX() - 2f, m.getY() - 2f, m.getWidth() + 4f, m.getHeight() + 4f, 6.5f * m.getScale(), 2f, palette.getBackgroundColor(ColorType.DARK, (m.animation.value * 255).toInt()))
+                nvg.drawOutlineRoundedRect(
+                    m.getX() - 2f,
+                    m.getY() - 2f,
+                    m.getWidth() + 4f,
+                    m.getHeight() + 4f,
+                    6.5f * m.getScale(),
+                    2f,
+                    palette.getBackgroundColor(ColorType.DARK, (m.animation.value * 255).toInt())
+                )
             }
         })
 
@@ -211,14 +332,23 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         for (m in mods) {
             if (m.isToggled() && !m.isHide()) {
-                val topMost = mods.firstOrNull { it.isToggled() && MouseUtils.isInside(mouseX, mouseY, it.getX(), it.getY(), it.getWidth(), it.getHeight()) }
-                val isInside = MouseUtils.isInside(mouseX, mouseY, m.getX(), m.getY(), m.getWidth(), m.getHeight()) && topMost == m
+                val topMost = mods.firstOrNull {
+                    it.isToggled() && MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        it.getX(),
+                        it.getY(),
+                        it.getWidth(),
+                        it.getHeight()
+                    )
+                }
+                val isInside =
+                    MouseUtils.isInside(mouseX, mouseY, m.getX(), m.getY(), m.getWidth(), m.getHeight()) && topMost == m
 
                 if (mouseButton == 0) {
                     canSnap = true
                 }
 
-                // right click to remove
                 if (mouseButton == 1) {
                     if (isInside) {
                         m.toggle()
@@ -226,7 +356,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                         return
                     }
                 }
-                // middle click resets scale
+
                 if (mouseButton == 2 && isInside) {
                     m.setScale(1.0f)
                 }
@@ -262,10 +392,25 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
         }
         for (m in mods) {
             if (m.isToggled() && !m.isHide()) {
-                val topMost = mods.firstOrNull { it.isToggled() && MouseUtils.isInside(localMouseX, localMouseY, it.getX(), it.getY(), it.getWidth(), it.getHeight()) }
-                val isInside = MouseUtils.isInside(localMouseX, localMouseY, m.getX(), m.getY(), m.getWidth(), m.getHeight()) && topMost == m
+                val topMost = mods.firstOrNull {
+                    it.isToggled() && MouseUtils.isInside(
+                        localMouseX,
+                        localMouseY,
+                        it.getX(),
+                        it.getY(),
+                        it.getWidth(),
+                        it.getHeight()
+                    )
+                }
+                val isInside = MouseUtils.isInside(
+                    localMouseX,
+                    localMouseY,
+                    m.getX(),
+                    m.getY(),
+                    m.getWidth(),
+                    m.getHeight()
+                ) && topMost == m
 
-                // backspace to remove
                 if (keyCode == Keyboard.KEY_BACK || keyCode == Keyboard.KEY_DELETE) {
                     if (isInside) {
                         m.toggle()

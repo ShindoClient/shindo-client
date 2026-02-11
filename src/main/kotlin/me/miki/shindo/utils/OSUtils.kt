@@ -1,8 +1,10 @@
 package me.miki.shindo.utils
 
+import java.util.Locale
+
 object OSUtils {
 
-    private val osName = System.getProperty("os.name").lowercase()
+    private val osName = System.getProperty("os.name").toLowerCase(Locale.ROOT)
 
     @JvmField
     val windows: Boolean = osName.contains("windows")
@@ -26,3 +28,5 @@ object OSUtils {
         }
     }
 }
+
+

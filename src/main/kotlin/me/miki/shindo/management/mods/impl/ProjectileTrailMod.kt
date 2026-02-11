@@ -40,7 +40,7 @@ class ProjectileTrailMod : Mod(
                     mc.thePlayer
                 ) > 3.0f
             ) {
-                spawnParticle(currentType, entity.getPositionVector())
+                spawnParticle(currentType, entity.positionVector)
             }
         }
     }
@@ -51,7 +51,7 @@ class ProjectileTrailMod : Mod(
                 val translate = trail.translate
                 val velocity = trail.velocity
 
-                for (i in 0..<trail.count) {
+                for (i in 0 until trail.count) {
                     val random = Random()
                     val x = random.nextFloat() * translate * 2.0f - translate
                     val y = random.nextFloat() * translate * 2.0f - translate
@@ -110,6 +110,7 @@ class ProjectileTrailMod : Mod(
         }
     }
 }
+
 
 
 

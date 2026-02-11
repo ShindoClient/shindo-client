@@ -9,7 +9,6 @@ import net.minecraft.client.resources.ResourcePackRepository
 import net.minecraft.client.resources.data.IMetadataSerializer
 import net.minecraft.client.settings.GameSettings
 import java.io.File
-import java.lang.RuntimeException
 import java.lang.reflect.Constructor
 
 class ResourcePackRepositoryCustom(
@@ -57,7 +56,7 @@ class ResourcePackRepositoryCustom(
                     entry.updateResourcePack()
                     list.add(entry)
                 } catch (_: Exception) {
-                    // ignore broken packs
+
                 }
             } else {
                 val index = repositoryEntriesAll.indexOf(entry)
@@ -117,19 +116,19 @@ class ResourcePackRepositoryCustom(
             val mc = Minecraft.getMinecraft()
 
             try {
-                val fileResourcepacks = (mc as IMixinMinecraft).fileResourcepacks
-                val originalRepo = (mc as IMixinMinecraft).mcResourcePackRepository
+                val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
+                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository()
 
                 val customRepo = ResourcePackRepositoryCustom(
                     fileResourcepacks,
                     File(mc.mcDataDir, "server-resource-packs"),
-                    (mc as IMixinMinecraft).mcDefaultResourcePack,
+                    (mc as IMixinMinecraft).getMcDefaultResourcePack(),
                     originalRepo.rprMetadataSerializer,
                     mc.gameSettings,
                     enabledPacks
                 )
 
-                (mc as IMixinMinecraft).mcResourcePackRepository = customRepo
+                (mc as IMixinMinecraft).setMcResourcePackRepository(customRepo)
             } catch (t: Throwable) {
                 throw RuntimeException("Failed to override resource pack repository", t)
             }

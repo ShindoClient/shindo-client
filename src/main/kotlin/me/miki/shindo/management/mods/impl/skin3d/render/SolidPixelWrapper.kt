@@ -42,8 +42,8 @@ object SolidPixelWrapper {
         val staticYOffset = if (topPivot) +rotationOffset else -height + rotationOffset
         val staticZOffset = -depth / 2f
 
-        for (u in 0..<width) {
-            for (v in 0..<height) {
+        for (u in 0 until width) {
+            for (v in 0 until height) {
                 addPixel(
                     natImage, cubes, pixelSize, u == 0 || v == 0 || u == width - 1 || v == height - 1,
                     textureU + depth + u, textureV + depth + v, staticXOffset + u, staticYOffset + v, staticZOffset,
@@ -58,8 +58,8 @@ object SolidPixelWrapper {
             }
         }
 
-        for (u in 0..<depth) {
-            for (v in 0..<height) {
+        for (u in 0 until depth) {
+            for (v in 0 until height) {
                 addPixel(
                     natImage, cubes, pixelSize, u == 0 || v == 0 || u == depth - 1 || v == height - 1,
                     textureU - 1 + depth - u, textureV + depth + v, staticXOffset, staticYOffset + v,
@@ -74,8 +74,8 @@ object SolidPixelWrapper {
             }
         }
 
-        for (u in 0..<width) {
-            for (v in 0..<depth) {
+        for (u in 0 until width) {
+            for (v in 0 until depth) {
                 addPixel(
                     natImage, cubes, pixelSize, u == 0 || v == 0 || u == width - 1 || v == depth - 1,
                     textureU + depth + u, textureV + depth - 1 - v, staticXOffset + u, staticYOffset,
@@ -137,9 +137,10 @@ object SolidPixelWrapper {
             }
 
             cubes.addAll(
-                CustomizableCubeListBuilder.Companion.create().texOffs(u - 2, v - 1)
+                CustomizableCubeListBuilder.create().texOffs(u - 2, v - 1)
                     .addBox(x, y, z, pixelSize, hide.toTypedArray()).cubes
             )
         }
     }
 }
+

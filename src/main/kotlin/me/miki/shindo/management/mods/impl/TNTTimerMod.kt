@@ -46,25 +46,25 @@ class TNTTimerMod :
     @EventTarget
     fun onRenderTNT(event: EventRenderTNT) {
         if (displayMode == DisplayMode.TAG) {
-            val fuseTimer = if (isHypixel()) event.getEntity().fuse - 28 else event.getEntity().fuse
+            val fuseTimer = if (isHypixel()) event.entity.fuse - 28 else event.entity.fuse
 
             if (fuseTimer >= 1) {
                 val distance =
-                    event.getEntity().getDistanceSqToEntity(event.getTntRenderer().getRenderManager().livingPlayer)
+                    event.entity.getDistanceSqToEntity(event.tntRenderer.getRenderManager().livingPlayer)
 
                 if (distance <= 4096.0) {
-                    val number = (fuseTimer.toFloat() - event.getPartialTicks()) / 20.0f
+                    val number = (fuseTimer.toFloat() - event.partialTicks) / 20.0f
                     val time = timeFormatter.format(number.toDouble())
-                    val fontrenderer = event.getTntRenderer().getFontRendererFromRenderManager()
+                    val fontrenderer = event.tntRenderer.fontRendererFromRenderManager
 
                     GlStateManager.pushMatrix()
                     GlStateManager.translate(
-                        event.getX().toFloat() + 0.0f,
-                        event.getY().toFloat() + event.getEntity().height + 0.5f,
-                        event.getZ().toFloat()
+                        event.x.toFloat() + 0.0f,
+                        event.y.toFloat() + event.entity.height + 0.5f,
+                        event.z.toFloat()
                     )
                     GL11.glNormal3f(0.0f, 1.0f, 0.0f)
-                    GlStateManager.rotate(-event.getTntRenderer().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
+                    GlStateManager.rotate(-event.tntRenderer.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
                     var xMultiplier: Byte = 1
 
                     if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2) {
@@ -74,7 +74,7 @@ class TNTTimerMod :
                     val scale = 0.02666667f
 
                     GlStateManager.rotate(
-                        event.getTntRenderer().getRenderManager().playerViewX * xMultiplier.toFloat(),
+                        event.tntRenderer.getRenderManager().playerViewX * xMultiplier.toFloat(),
                         1.0f,
                         0.0f,
                         0.0f
@@ -86,7 +86,7 @@ class TNTTimerMod :
                     GlStateManager.enableBlend()
                     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
                     val tessellator = Tessellator.getInstance()
-                    val worldrenderer = tessellator.getWorldRenderer()
+                    val worldrenderer = tessellator.worldRenderer
                     val stringWidth = fontrenderer.getStringWidth(time) shr 1
                     val green = min(fuseTimer.toFloat() / (if (isHypixel()) 52.0f else 80.0f), 1.0f)
                     val color = Color(1.0f - green, green, 0.0f)
@@ -104,7 +104,7 @@ class TNTTimerMod :
                         .endVertex()
                     tessellator.draw()
                     GlStateManager.enableTexture2D()
-                    fontrenderer.drawString(time, -fontrenderer.getStringWidth(time) shr 1, 0, color.getRGB())
+                    fontrenderer.drawString(time, -fontrenderer.getStringWidth(time) shr 1, 0, color.rgb)
                     GlStateManager.enableLighting()
                     GlStateManager.disableBlend()
                     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -114,7 +114,7 @@ class TNTTimerMod :
         }
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         if ((mc.objectMouseOver != null && mc.objectMouseOver.entityHit != null && mc.objectMouseOver.typeOfHit == MovingObjectType.ENTITY && mc.objectMouseOver.entityHit is EntityTNTPrimed)) {
             currentTNT = mc.objectMouseOver.entityHit as EntityTNTPrimed
         }

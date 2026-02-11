@@ -1,13 +1,8 @@
 package me.miki.shindo.libs.spotify.enums;
 
-import me.miki.shindo.libs.spotify.model_objects.specification.Copyright;
-
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible {@link Copyright} types.
- */
 public enum CopyrightType {
 
     C("c"),
@@ -31,11 +26,6 @@ public enum CopyrightType {
         return map.get(type);
     }
 
-    /**
-     * Get the {@link Copyright} type as a string.
-     *
-     * @return {@link Copyright} type as string.
-     */
     public String getType() {
         return type;
     }

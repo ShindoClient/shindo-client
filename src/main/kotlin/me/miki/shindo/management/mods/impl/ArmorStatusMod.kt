@@ -15,6 +15,7 @@ import kotlin.math.abs
 
 class ArmorStatusMod :
     SimpleHUDMod(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, LegacyIcon.MOD_ARMOR_STATUS) {
+
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         val fakeStack = arrayOfNulls<ItemStack>(4)
@@ -31,18 +32,18 @@ class ArmorStatusMod :
     }
 
     private fun drawNanoVG(nvg: NanoVGManager?, items: Array<ItemStack?>) {
-        this.drawBackground(72f, 64f)
+        this.drawBackground(52f, 64f)
 
         for (i in 0..3) {
             val item = items[abs(3 - i)]
             val addY = 16 * i
             if (item != null) {
-                val remaining = item.getMaxDamage() - item.getItemDamage()
+                val remaining = item.maxDamage - item.itemDamage
                 drawText(remaining.toString(), 28f, (addY + 4).toFloat(), 9f, getHudFont(1))
             }
         }
 
-        this.setWidth(72)
+        this.setWidth(52)
         this.setHeight(16 * 4)
     }
 
@@ -55,8 +56,8 @@ class ArmorStatusMod :
             val addY = 16 * i
             val iconX = getX() + 6
             val iconY = getY() + addY
-            mc.getRenderItem().renderItemAndEffectIntoGUI(item, iconX, iconY)
-            mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, item, iconX, iconY)
+            mc.renderItem.renderItemAndEffectIntoGUI(item, iconX, iconY)
+            mc.renderItem.renderItemOverlays(mc.fontRendererObj, item, iconX, iconY)
         }
         RenderHelper.disableStandardItemLighting()
         GlStateManager.popMatrix()

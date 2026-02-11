@@ -1,19 +1,16 @@
-﻿package me.miki.shindo.ui.comp.layout
+package me.miki.shindo.ui.comp.layout
 
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import me.miki.shindo.ui.comp.templates.CompPanel
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
-/**
- * Card com header e conteúdo.
- * Útil para criar cards informativos ou de ação.
- */
 class CompCard(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 200f,
-    height: Float = 150f
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 200f,
+        height: Float = 150f
 ) : CompPanel(x, y, width, height) {
 
     private var headerHeight: Float = 30f
@@ -21,6 +18,10 @@ class CompCard(
     private var headerColor: Color? = null
     private var headerTextColor: Color? = null
     private var showHeader: Boolean = false
+
+    init {
+        setSurfaceVariant(CompSurfaceVariant.CARD)
+    }
 
     fun setHeader(text: String, height: Float = 30f): CompCard {
         this.headerText = text
@@ -50,25 +51,25 @@ class CompCard(
         val accentColors = accent
 
         if (showHeader && headerText != null) {
-            val headerBg = headerColor ?: ColorUtils.applyAlpha(accentColors.color1, 180)
+            val headerBg = headerColor ?: ColorUtils.applyAlpha(accentColors.getColor1(), 180)
             val headerTextColor = this.headerTextColor ?: paletteColors.getFontColor(ColorType.NORMAL)
 
             nvgInstance.drawRoundedRect(
-                getX(),
-                getY(),
-                getWidth(),
-                headerHeight,
-                (this as CompPanel).getRadius(),
-                headerBg
+                    getX(),
+                    getY(),
+                    getWidth(),
+                    headerHeight,
+                    getRadius(),
+                    headerBg
             )
 
             nvgInstance.drawText(
-                headerText!!,
-                getX() + 10f,
-                getY() + headerHeight / 2f,
-                headerTextColor,
-                10f,
-                me.miki.shindo.management.nanovg.font.Fonts.MEDIUM
+                    headerText!!,
+                    getX() + 10f,
+                    getY() + headerHeight / 2f,
+                    headerTextColor,
+                    10f,
+                    me.miki.shindo.management.nanovg.font.Fonts.MEDIUM
             )
         }
     }

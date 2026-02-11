@@ -1,6 +1,8 @@
 package me.miki.shindo.discord.ipc.entities.serialize
 
-import com.google.gson.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import me.miki.shindo.discord.ipc.entities.Packet
 import java.lang.reflect.Type
 

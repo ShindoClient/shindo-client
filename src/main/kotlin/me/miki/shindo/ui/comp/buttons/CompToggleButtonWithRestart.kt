@@ -6,16 +6,14 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.comp.display.CompTooltip
-import me.miki.shindo.ui.comp.templates.CompInteractive
+import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.ColorAnimation
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.ColorAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.mouse.MouseUtils
 import java.awt.Color
-
-/**
- * Toggle button que mostra um aviso quando a setting requer reinício do jogo.
- */
-class CompToggleButtonWithRestart : CompInteractive {
+class CompToggleButtonWithRestart : CompControlTemplate {
     private val opacityAnimation = SimpleAnimation()
     private val toggleAnimation = SimpleAnimation()
     private val circleAnimation = ColorAnimation()
@@ -25,11 +23,10 @@ class CompToggleButtonWithRestart : CompInteractive {
     private val requiresRestart: Boolean
     private var scale: Float = 1.0f
     private var showWarning: Boolean = false
-    private var warningHovered: Boolean = false
     private val tooltip: CompTooltip by lazy {
-        CompTooltip(TranslateText.PERFORMANCE_RESTART_REQUIRED.text, 0f, 0f)
+        CompTooltip(TranslateText.PERFORMANCE_RESTART_REQUIRED.getText(), 0f, 0f)
     }
-    
+
     fun getSetting(): BooleanSetting = setting
     fun getScale(): Float = scale
     fun setShowWarning(show: Boolean) {
@@ -41,6 +38,7 @@ class CompToggleButtonWithRestart : CompInteractive {
         this.setting = setting
         this.requiresRestart = requiresRestart
         setScale(scale)
+        setVariant(CompControlVariant.SECONDARY)
         initState()
     }
 
@@ -48,13 +46,14 @@ class CompToggleButtonWithRestart : CompInteractive {
         this.setting = setting
         this.requiresRestart = requiresRestart
         setScale(1.0f)
+        setVariant(CompControlVariant.SECONDARY)
         initState()
     }
 
     private fun initState() {
         toggleAnimation.value = if (setting.isToggled()) 20.5f else 2.5f
         circleAnimation.setColor(
-            if (setting.isToggled()) Color.WHITE else palette.getBackgroundColor(ColorType.DARK)
+                if (setting.isToggled()) Color.WHITE else palette.getBackgroundColor(ColorType.DARK)
         )
         warningAnimation.value = 0.0f
     }
@@ -81,49 +80,43 @@ class CompToggleButtonWithRestart : CompInteractive {
         toggleAnimation.setAnimation(if (toggled) 20.5f else 2.5f, 14.0)
 
         nvgInstance.drawRoundedRect(x, y, width, height, 7 * scale, palette.getBackgroundColor(ColorType.NORMAL))
+
         nvgInstance.drawGradientRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            7.4f * scale,
-            ColorUtils.applyAlpha(accentColor.color1, (opacityAnimation.value * 255).toInt()),
-            ColorUtils.applyAlpha(accentColor.color2, (opacityAnimation.value * 255).toInt())
+                x,
+                y,
+                width,
+                height,
+                7.4f * scale,
+                ColorUtils.applyAlpha(accentColor.getColor1(), (opacityAnimation.value * 255).toInt()),
+                ColorUtils.applyAlpha(accentColor.getColor2(), (opacityAnimation.value * 255).toInt())
         )
+
         nvgInstance.drawRoundedRect(
-            x + toggleAnimation.value * scale,
-            y + 2.5f * scale,
-            circle,
-            circle,
-            circle / 2,
-            circleAnimation.getColor(if (toggled) Color.WHITE else palette.getBackgroundColor(ColorType.DARK), 16)
+                x + toggleAnimation.value * scale,
+                y + 2.5f * scale,
+                circle,
+                circle,
+                circle / 2,
+                circleAnimation.getColor(if (toggled) Color.WHITE else palette.getBackgroundColor(ColorType.DARK), 16)
         )
-        
-        // Desenha aviso de reinício se necessário
+
         if (requiresRestart && (showWarning || warningAnimation.value > 0.01f)) {
-            val warningX = x + width + 8f
-            val warningY = y + (height / 2f) - 8f
+            val warningX = x - 16f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, 12f, Fonts.LEGACYICON) / 2f
+            val warningY = y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, 12f, Fonts.LEGACYICON) / 2f
             val warningAlpha = (warningAnimation.value * 255).toInt()
             val warningColor = ColorUtils.applyAlpha(Color(255, 200, 0), warningAlpha)
-            
-            // Verifica se o mouse está sobre o aviso
-            val warningHoveredNow = mouseX >= warningX && mouseX <= warningX + 16f &&
-                                    mouseY >= warningY && mouseY <= warningY + 16f
-            warningHovered = warningHoveredNow
-            
-            // Ícone de aviso (triângulo de alerta)
-            nvgInstance.drawCenteredText(
-                LegacyIcon.ALERT_TRIANGLE,
-                warningX + 8f,
-                warningY + 8f,
-                warningColor,
-                12f,
-                Fonts.LEGACYICON
+
+            nvgInstance.drawText(
+                    LegacyIcon.ALERT_TRIANGLE,
+                    warningX,
+                    warningY,
+                    warningColor,
+                    12f,
+                    Fonts.LEGACYICON
             )
-            
-            // Mostra tooltip se hovered
-            if (warningHovered) {
-                tooltip.setX(warningX + 20f)
+
+            if (MouseUtils.isInside(mouseX, mouseY, warningX - 2f, warningY - 2f, 16f, 16f)) {
+                tooltip.setX(warningX - 6F - tooltip.getWidth())
                 tooltip.setY(warningY - 2f)
                 tooltip.show()
                 tooltip.draw(mouseX, mouseY, partialTicks)
@@ -137,24 +130,21 @@ class CompToggleButtonWithRestart : CompInteractive {
         if (mouseButton == 0) {
             val newValue = !setting.isToggled()
             setting.setToggled(newValue)
-            
-            // Mostra aviso se requer reinício
+
             if (requiresRestart) {
                 setShowWarning(true)
             }
         }
     }
-    
+
     override fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
         val x = getX()
         val y = getY()
         val width = getWidth()
         val height = getHeight()
-        
-        // Inclui área do aviso no hover
+
         val warningWidth = if (requiresRestart && warningAnimation.value > 0.01f) 20f else 0f
-        
-        return mouseX >= x && mouseX <= x + width + warningWidth &&
-               mouseY >= y && mouseY <= y + height
+
+        return mouseX >= x && mouseX <= x + width + warningWidth && mouseY >= y && mouseY <= y + height
     }
 }

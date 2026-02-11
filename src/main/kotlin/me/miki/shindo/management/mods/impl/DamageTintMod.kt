@@ -9,7 +9,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils.isCreative
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -26,7 +26,14 @@ class DamageTintMod : Mod(
 
     private val animation1 = SimpleAnimation(0.0f)
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEALTH, min = 5.0, max = 1.06, step = 1.0, current = 10.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.HEALTH,
+        min = 5.0,
+        max = 16.0,
+        step = 1.0,
+        current = 10.0
+    )
     private val healthSetting = 10.0
 
     @EventTarget

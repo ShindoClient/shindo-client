@@ -7,6 +7,7 @@ import me.miki.shindo.management.event.impl.EventJump;
 import me.miki.shindo.management.mods.impl.skin3d.render.CustomizableModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +19,7 @@ public class MixinEntityPlayer implements IMixinEntityPlayer {
 
     private CustomizableModelPart headLayer;
     private CustomizableModelPart[] skinLayer;
-    
+
     @Unique
     private PlayerDataSamples shindo$playerDataSamples = new PlayerDataSamples();
 
@@ -35,14 +36,13 @@ public class MixinEntityPlayer implements IMixinEntityPlayer {
     }
 
 
-
     @Override
     public CustomizableModelPart[] getSkinLayers() {
         return skinLayer;
     }
 
     @Override
-    public void setupSkinLayers(CustomizableModelPart[] box) {
+    public void setupSkinLayers(@NotNull CustomizableModelPart[] box) {
         this.skinLayer = box;
     }
 
@@ -55,12 +55,12 @@ public class MixinEntityPlayer implements IMixinEntityPlayer {
     public void setupHeadLayers(CustomizableModelPart box) {
         this.headLayer = box;
     }
-    
+
     @Override
     public PlayerDataSamples getPlayerDataSamples() {
         return shindo$playerDataSamples;
     }
-    
+
     @Override
     public void setPlayerDataSamples(PlayerDataSamples data) {
         this.shindo$playerDataSamples = data;

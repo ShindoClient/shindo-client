@@ -9,7 +9,7 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiOptions
@@ -43,16 +43,69 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val height = 20f
         val spacing = 26f
 
-        nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, sr.scaledHeight / 2f - (nvg.getTextHeight(LegacyIcon.SHINDO, 54f, Fonts.LEGACYICON) / 2) - 60, Color.WHITE, 54f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(
+            LegacyIcon.SHINDO,
+            centerX,
+            sr.scaledHeight / 2f - (nvg.getTextHeight(LegacyIcon.SHINDO, 54f, Fonts.LEGACYICON) / 2) - 60,
+            Color.WHITE,
+            54f,
+            Fonts.LEGACYICON
+        )
 
-        singlePlayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos, width, height)) 1.0f else 0.0f, 16.0)
-        drawMenuButton(nvg, centerX, yPos, width, height, TranslateText.SINGLEPLAYER.text, singlePlayerAnimation.value)
+        singlePlayerAnimation.setAnimation(
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    centerX - (width / 2f),
+                    yPos,
+                    width,
+                    height
+                )
+            ) 1.0f else 0.0f, 16.0
+        )
+        drawMenuButton(nvg, centerX, yPos, width, height, TranslateText.SINGLEPLAYER.getText(), singlePlayerAnimation.value)
 
-        multiplayerAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + spacing, width, height)) 1.0f else 0.0f, 16.0)
-        drawMenuButton(nvg, centerX, yPos + spacing, width, height, TranslateText.MULTIPLAYER.text, multiplayerAnimation.value)
+        multiplayerAnimation.setAnimation(
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    centerX - (width / 2f),
+                    yPos + spacing,
+                    width,
+                    height
+                )
+            ) 1.0f else 0.0f, 16.0
+        )
+        drawMenuButton(
+            nvg,
+            centerX,
+            yPos + spacing,
+            width,
+            height,
+            TranslateText.MULTIPLAYER.getText(),
+            multiplayerAnimation.value
+        )
 
-        optionsAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, centerX - (width / 2f), yPos + (spacing * 2), width, height)) 1.0f else 0.0f, 16.0)
-        drawMenuButton(nvg, centerX, yPos + (spacing * 2), width, height, TranslateText.SETTINGS.text, optionsAnimation.value)
+        optionsAnimation.setAnimation(
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    centerX - (width / 2f),
+                    yPos + (spacing * 2),
+                    width,
+                    height
+                )
+            ) 1.0f else 0.0f, 16.0
+        )
+        drawMenuButton(
+            nvg,
+            centerX,
+            yPos + (spacing * 2),
+            width,
+            height,
+            TranslateText.SETTINGS.getText(),
+            optionsAnimation.value
+        )
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -75,15 +128,23 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 
-    private fun drawMenuButton(nvg: NanoVGManager, centerX: Float, y: Float, width: Float, height: Float, label: String, hoverProgress: Float) {
+    private fun drawMenuButton(
+        nvg: NanoVGManager,
+        centerX: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        label: String,
+        hoverProgress: Float
+    ) {
         val radius = 6f
         val buttonX = centerX - (width / 2f)
         val baseColor = getControlColor()
         val accent: AccentColor = getMenuAccent()
 
         if (hoverProgress > 0.01f) {
-            val glowStart = ColorUtils.applyAlpha(accent.color1, (80 + 140 * hoverProgress).toInt())
-            val glowEnd = ColorUtils.applyAlpha(accent.color2, (80 + 140 * hoverProgress).toInt())
+            val glowStart = ColorUtils.applyAlpha(accent.getColor1(), (80 + 140 * hoverProgress).toInt())
+            val glowEnd = ColorUtils.applyAlpha(accent.getColor2(), (80 + 140 * hoverProgress).toInt())
             nvg.drawGradientShadow(buttonX, y, width, height, radius, glowStart, glowEnd)
         }
 
@@ -91,7 +152,7 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawRoundedRect(buttonX, y, width, height, radius, fillColor)
 
         if (hoverProgress > 0.01f) {
-            val outline = ColorUtils.applyAlpha(accent.color2, (80 + 90 * hoverProgress).toInt())
+            val outline = ColorUtils.applyAlpha(accent.getColor2(), (80 + 90 * hoverProgress).toInt())
             nvg.drawOutlineRoundedRect(buttonX, y, width, height, radius, 1.0f, outline)
         }
 

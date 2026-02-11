@@ -3,9 +3,10 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.category.impl.shared.CategoryChipRenderer
-import me.miki.shindo.gui.modmenu.category.impl.shared.FilterChip
-import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
+import me.miki.shindo.ui.comp.layout.SettingsPanel
+import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -21,9 +22,9 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.SearchUtils
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
@@ -65,8 +66,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         val nvg = instance.nanoVGManager ?: return
         val modManager: ModManager = instance.modManager
         val colorManager: ColorManager = instance.colorManager
-        val palette: ColorPalette = colorManager.palette
-        val accentColor: AccentColor = colorManager.currentColor
+        val palette: ColorPalette = colorManager.getPalette()
+        val accentColor: AccentColor = colorManager.getCurrentColor()
 
         val scrollValue = scroll.getValue()
         val moduleColumns = resolveModuleColumns()
@@ -83,7 +84,6 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         nvg.save()
         nvg.translate(-(600f - (settingAnimation.getValue().toFloat() * 600f)), 0f)
 
-        // Draw mod scene
         nvg.save()
         nvg.translate(0f, scrollValue)
 
@@ -168,8 +168,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                     card.width,
                     card.height,
                     8f,
-                    ColorUtils.applyAlpha(accentColor.color1, overlayAlpha),
-                    ColorUtils.applyAlpha(accentColor.color2, overlayAlpha)
+                    ColorUtils.applyAlpha(accentColor.getColor1(), overlayAlpha),
+                    ColorUtils.applyAlpha(accentColor.getColor2(), overlayAlpha)
                 )
 
                 if (outlineAlpha > 0) {
@@ -180,7 +180,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                         card.height,
                         8f,
                         1.0f,
-                        ColorUtils.applyAlpha(accentColor.color2, outlineAlpha)
+                        ColorUtils.applyAlpha(accentColor.getColor2(), outlineAlpha)
                     )
                 }
 
@@ -257,8 +257,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                         style.settingsSize,
                         5f,
                         1.0f,
-                        ColorUtils.applyAlpha(accentColor.color1, (settingsHoverAnimation * 255).toInt()),
-                        ColorUtils.applyAlpha(accentColor.color2, (settingsHoverAnimation * 255).toInt())
+                        ColorUtils.applyAlpha(accentColor.getColor1(), (settingsHoverAnimation * 255).toInt()),
+                        ColorUtils.applyAlpha(accentColor.getColor2(), (settingsHoverAnimation * 255).toInt())
                     )
                 }
 
@@ -272,8 +272,8 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                         toggleWidth,
                         toggleHeight,
                         toggleRadius,
-                        ColorUtils.applyAlpha(accentColor.color1, (toggleProgress * 255).toInt()),
-                        ColorUtils.applyAlpha(accentColor.color2, (toggleProgress * 255).toInt())
+                        ColorUtils.applyAlpha(accentColor.getColor1(), (toggleProgress * 255).toInt()),
+                        ColorUtils.applyAlpha(accentColor.getColor2(), (toggleProgress * 255).toInt())
                     )
                 }
                 val knobSize = toggleHeight - 6f
@@ -305,7 +305,6 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
 
         nvg.restore()
 
-        // Draw mod setting scene
         nvg.save()
         nvg.translate(settingAnimation.getValue().toFloat() * 600f, 0f)
 
@@ -324,7 +323,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
                 settingScroll.onAnimation()
             }
 
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
 
             val headerX = getX() + 15f
             val headerY = getY() + 15f
@@ -499,7 +498,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         }
 
         if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             if (MouseUtils.isInside(mouseX, mouseY, getX() + 22f, getY() + 20f, 18f, 18f) && mouseButton == 0) {
                 openSetting = false
                 settingsPanel.clear()
@@ -557,14 +556,14 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (currentMod != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (currentMod != null) {
-            settingsPanel.setLayoutMode(InternalSettingsMod.instance.settingsLayoutMode)
+            applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
         }
 
@@ -669,7 +668,7 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         var currentY = getY() + 16f
         var blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
 
-        for (category in ModCategory.entries) {
+        for (category in ModCategory.values()) {
             val label = category.getName()
             val chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null)
 
@@ -750,23 +749,17 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         val textRightPadding: Float
     )
 
+    private fun applySettingsPanelPreferences() {
+        val settings = InternalSettingsMod.instance
+        settingsPanel.setStyle(MODULE_SETTINGS_PANEL_STYLE)
+        settingsPanel.setLayoutMode(settings.settingsLayoutMode)
+        settingsPanel.setDensityMode(settings.settingsDensityMode)
+    }
+
     private companion object {
         const val CHIP_GAP = 8f
         const val ICON_CARD_GAP = 14f
-        const val ICON_CARD_RADIUS = 12f
-        const val ICON_CARD_PADDING = 12f
-        const val ICON_ICON_SIZE = 72f
-        const val ICON_ICON_OFFSET = 0f
-        const val ICON_ICON_FONT_SIZE = 26f
-        const val ICON_ICON_FONT_OFFSET = 14f
-        const val ICON_SETTINGS_SIZE = 18f
-        const val ICON_TOGGLE_WIDTH = 44f
-        const val ICON_TOGGLE_HEIGHT = 18f
-        const val ICON_TOGGLE_GAP = 6f
-        const val ICON_RESTRICT_SIZE = 12f
         const val ICON_CARD_HEIGHT_RATIO = 0.576f
-        const val ICON_TEXT_GAP = 12f
-        const val ICON_ICON_GAP = 10f
         const val LIST_CARD_HEIGHT = 51.84f
         const val LIST_TOGGLE_WIDTH = 44f
         const val LIST_TOGGLE_HEIGHT = 18f
@@ -775,5 +768,12 @@ class ModuleCategory(parent: GuiModMenu) : Category(parent, TranslateText.MODULE
         const val LIST_ICON_FONT_OFFSET = 7.5f
         const val LIST_WARNING_BOTTOM_PADDING = 12f
         const val LIST_WARNING_ICON_OFFSET = 2f
+
+        val MODULE_SETTINGS_PANEL_STYLE = SettingsPanelStyle(
+            cardPaddingX = 16f,
+            cardPaddingY = 12f,
+            rowGap = 8f,
+            categoryGap = 14f
+        )
     }
 }

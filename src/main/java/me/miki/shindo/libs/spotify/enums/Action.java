@@ -3,11 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An enumeration of all possible {@link Action} types.
- *
- * @see <a href="https://developer.spotify.com/web-api/object-model/#disallows-object">Disallows object</a>
- */
 public enum Action {
 
     INTERRUPTING_PLAYBACK("interrupting_playback"),
@@ -39,11 +34,6 @@ public enum Action {
         return map.get(key);
     }
 
-    /**
-     * Get the {@link Action} key as a string.
-     *
-     * @return {@link Action} key as string.
-     */
     public String getKey() {
         return key;
     }

@@ -11,10 +11,6 @@ import me.miki.shindo.libs.spotify.model_objects.utils.PlaylistItemFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Get the list of items that make up the user's queue.
- */
 @JsonDeserialize(builder = CurrentlyPlaying.Builder.class)
 public class PlaybackQueue extends AbstractModelObject {
     private final IPlaylistItem currentlyPlaying;
@@ -25,21 +21,9 @@ public class PlaybackQueue extends AbstractModelObject {
         this.currentlyPlaying = builder.currentlyPlaying;
         this.queue = builder.queue;
     }
-
-    /**
-     * Get the user's currently playing item.
-     *
-     * @return the user's currently playing item
-     */
     public IPlaylistItem getCurrentlyPlaying() {
         return currentlyPlaying;
     }
-
-    /**
-     * Get the list of items that make up the user's queue.
-     *
-     * @return The items that are in the user's queue for the upcoming playback.
-     */
     public List<IPlaylistItem> getQueue() {
         return queue;
     }
@@ -56,32 +40,14 @@ public class PlaybackQueue extends AbstractModelObject {
     public IModelObject.Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link PlaybackQueue} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
 
         private IPlaylistItem currentlyPlaying;
         private List<IPlaylistItem> queue;
-
-        /**
-         * The item representing the user's currently playing item setter.
-         *
-         * @param currentlyPlaying The item representing the user's currently playing item.
-         * @return A {@link PlaybackQueue.Builder}.
-         */
         public Builder setCurrentlyPlaying(IPlaylistItem currentlyPlaying) {
             this.currentlyPlaying = currentlyPlaying;
             return this;
         }
-
-        /**
-         * The items that are in the user's queue for the upcoming playback setter.
-         *
-         * @param queue The items that are in the user's queue for the upcoming playback.
-         * @return A {@link PlaybackQueue.Builder}.
-         */
         public Builder setQueue(List<IPlaylistItem> queue) {
             this.queue = queue;
             return this;
@@ -92,10 +58,6 @@ public class PlaybackQueue extends AbstractModelObject {
             return new PlaybackQueue(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link PlaybackQueue} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<PlaybackQueue> {
         public PlaybackQueue createModelObject(JsonObject jsonObject) {
             if (jsonObject == null || jsonObject.isJsonNull()) {

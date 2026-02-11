@@ -12,7 +12,8 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.Sound.Companion.play
+import me.miki.shindo.management.sound.Sounds
+import me.miki.shindo.management.sound.Sound.Companion.play
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.shader.Shader
 import net.minecraft.client.shader.ShaderGroup
@@ -41,7 +42,7 @@ class MotionBlurMod : Mod(
     private var prevWidth = 0
     private var prevHeight = 0
 
-    public override fun setup() {
+    override fun setup() {
         loaded = false
     }
 
@@ -50,15 +51,15 @@ class MotionBlurMod : Mod(
         val sr = ScaledResolution(mc)
 
         if (mode == Mode.SHADER) {
-            if (group == null || prevWidth != sr.getScaledWidth() || prevHeight != sr.getScaledHeight()) {
-                prevWidth = sr.getScaledWidth()
-                prevHeight = sr.getScaledHeight()
+            if (group == null || prevWidth != sr.scaledWidth || prevHeight != sr.scaledHeight) {
+                prevWidth = sr.scaledWidth
+                prevHeight = sr.scaledHeight
 
                 groupBlur = amountSetting.toFloat()
 
                 try {
                     group =
-                        ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), motion_blur)
+                        ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, motion_blur)
                     group!!.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                 } catch (e: Exception) {
                     ShindoLogger.error("[MotionBlurMod] | Failed to load shader", e)
@@ -68,15 +69,12 @@ class MotionBlurMod : Mod(
             if (groupBlur != amountSetting.toFloat() || !loaded) {
                 loaded = true
                 (group as IMixinShaderGroup).getListShaders().forEach(Consumer { shader: Shader? ->
-                    val factor = shader!!.getShaderManager().getShaderUniform("BlurFactor")
-                    if (factor != null) {
-                        factor.set(amountSetting.toFloat())
-                    }
+                    shader!!.shaderManager.getShaderUniform("BlurFactor")?.set(amountSetting.toFloat())
                 })
                 groupBlur = amountSetting.toFloat()
             }
 
-            event.getGroups().add(group)
+            event.groups.add(group!!)
         }
     }
 
@@ -101,7 +99,7 @@ class MotionBlurMod : Mod(
                     if (error == 1282) {
                         this.setToggled(false)
                         try {
-                            play("shindo/audio/error.wav", false)
+                            play(Sounds.SHINDO_AUDIO_ERROR, false)
                         } catch (ignored: Exception) {
                         }
                     }
@@ -110,7 +108,7 @@ class MotionBlurMod : Mod(
         }
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         group = null
         super.onEnable()
     }
@@ -124,6 +122,9 @@ class MotionBlurMod : Mod(
         }
     }
 }
+
+
+
 
 
 

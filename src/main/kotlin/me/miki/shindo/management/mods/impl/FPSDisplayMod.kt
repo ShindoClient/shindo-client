@@ -19,11 +19,11 @@ class FPSDisplayMod :
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return Minecraft.getDebugFPS().toString() + " FPS"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconEnabled) LegacyIcon.MONITOR else null
     }
 }

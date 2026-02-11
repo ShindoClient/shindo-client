@@ -35,7 +35,7 @@ class KillEffectsMod : Mod(
         type = PropertyType.NUMBER,
         translate = TranslateText.MULTIPLIER,
         min = 1.0,
-        max = 1.00,
+        max = 10.0,
         step = 1.0,
         current = 1.0
     )
@@ -68,7 +68,7 @@ class KillEffectsMod : Mod(
                     mc.theWorld.addEntityToWorld(entityID--, entityLightningBolt)
 
                     if (soundSetting) {
-                        mc.getSoundHandler().playSound(
+                        mc.soundHandler.playSound(
                             PositionedSoundRecord.create(
                                 ResourceLocation("ambient.weather.thunder"),
                                 (target!!.posX.toFloat()),
@@ -78,12 +78,12 @@ class KillEffectsMod : Mod(
                         )
                     }
                 } else if (effectType == EffectType.FLAMES) {
-                    for (i in 0..<multiplierSetting) {
+                    for (i in 0 until multiplierSetting) {
                         mc.effectRenderer.emitParticleAtEntity(target, EnumParticleTypes.FLAME)
                     }
 
                     if (soundSetting) {
-                        mc.getSoundHandler().playSound(
+                        mc.soundHandler.playSound(
                             PositionedSoundRecord.create(
                                 ResourceLocation("item.fireCharge.use"),
                                 (target!!.posX.toFloat()),
@@ -93,12 +93,12 @@ class KillEffectsMod : Mod(
                         )
                     }
                 } else if (effectType == EffectType.CLOUD) {
-                    for (i in 0..<multiplierSetting) {
+                    for (i in 0 until multiplierSetting) {
                         mc.effectRenderer.emitParticleAtEntity(target, EnumParticleTypes.CLOUD)
                     }
 
                     if (soundSetting) {
-                        mc.getSoundHandler().playSound(
+                        mc.soundHandler.playSound(
                             PositionedSoundRecord.create(
                                 ResourceLocation("fireworks.twinkle"),
                                 (target!!.posX.toFloat()),
@@ -117,12 +117,12 @@ class KillEffectsMod : Mod(
                             0.0,
                             0.0,
                             0.0,
-                            Block.getStateId(Blocks.redstone_block.getDefaultState())
+                            Block.getStateId(Blocks.redstone_block.defaultState)
                         )
                     }
 
                     if (soundSetting) {
-                        mc.getSoundHandler().playSound(
+                        mc.soundHandler.playSound(
                             PositionedSoundRecord(
                                 ResourceLocation("dig.stone"),
                                 4.0f,
@@ -155,6 +155,7 @@ class KillEffectsMod : Mod(
         }
     }
 }
+
 
 
 

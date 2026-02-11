@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * A substring of the input string with attributes including the corresponding romaji.
- */
 class Substring {
 
     private final int index;
@@ -27,15 +24,6 @@ class Substring {
         return new Substring(str.substring(begin, begin + 1), begin);
     }
 
-    /**
-     * search for the romaji to lookahead with the length n.
-     * If the search failed, return <code>null</code>.
-     *
-     * @param lookahead the length to lookahead.
-     * @param str       the source string to search.
-     * @param begin     the index to search at.
-     * @return the found Substring.
-     */
     static Substring lookahead(final int lookahead, final String str, final int begin) {
         int end = begin + lookahead + 1;
         if (str.length() < end) {

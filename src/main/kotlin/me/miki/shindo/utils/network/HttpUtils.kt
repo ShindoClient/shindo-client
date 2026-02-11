@@ -3,12 +3,14 @@ package me.miki.shindo.utils.network
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import me.miki.shindo.logger.ShindoLogger
-import java.io.BufferedInputStream
+import me.miki.shindo.utils.network.okhttp.HttpResponseData
+import me.miki.shindo.utils.network.okhttp.OkHttpClientPool
+import me.miki.shindo.utils.network.okhttp.OkHttpRequestUtils
+import me.miki.shindo.utils.network.okhttp.OkHttpResponseUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
 import java.net.HttpURLConnection
@@ -19,12 +21,26 @@ import java.nio.charset.StandardCharsets
 
 object HttpUtils {
 
-    private const val ACCEPTED_RESPONSE = "application/json"
+    private const val DEFAULT_TIMEOUT = 5000
     private val gson = Gson()
 
     @JvmStatic
-    fun readJson(connection: HttpURLConnection): JsonObject? {
-        return gson.fromJson(readResponse(connection), JsonObject::class.java)
+    fun get(url: String, headers: Map<String, String>?, userAgent: String, timeout: Int): HttpResponseData? {
+        return try {
+            val request = OkHttpRequestUtils.buildGetRequest(url, userAgent, headers)
+            val client = OkHttpClientPool.get(timeout)
+            client.newCall(request).execute().use { response ->
+                OkHttpResponseUtils.toResponseData(response)
+            }
+        } catch (e: Exception) {
+            ShindoLogger.error("Failed to execute GET request: $url", e)
+            null
+        }
+    }
+
+    @JvmStatic
+    fun get(url: String, headers: Map<String, String>?): HttpResponseData? {
+        return get(url, headers, UserAgents.MOZILLA, DEFAULT_TIMEOUT)
     }
 
     @JvmStatic
@@ -34,88 +50,41 @@ object HttpUtils {
 
     @JvmStatic
     fun postJson(url: String, request: Any, headers: Map<String, String>?): JsonObject? {
-        val connection = setupConnection(url, UserAgents.MOZILLA, 5000, false)
-        if (connection == null) {
-            ShindoLogger.error("Failed to setup connection for post json")
+        val response = postJsonRaw(url, request, headers, UserAgents.MOZILLA, DEFAULT_TIMEOUT) ?: return null
+        if (!response.successful || response.body.isBlank()) {
             return null
         }
-
-        connection.doOutput = true
-        connection.addRequestProperty("Content-Type", ACCEPTED_RESPONSE)
-        connection.addRequestProperty("Accept", ACCEPTED_RESPONSE)
-
-        if (!headers.isNullOrEmpty()) {
-            for ((key, value) in headers) {
-                if (key != null && value != null) {
-                    connection.addRequestProperty(key, value)
-                }
-            }
-        }
-
-        try {
-            connection.requestMethod = "POST"
-            connection.outputStream.use { output ->
-                output.write(gson.toJson(request).toByteArray(StandardCharsets.UTF_8))
-            }
-        } catch (e: IOException) {
-            ShindoLogger.error("Failed to post json", e)
-            return null
-        }
-
-        return readJson(connection)
+        return parseJson(response.body)
     }
 
     @JvmStatic
-    fun readResponse(connection: HttpURLConnection): String {
-        val redirection = connection.getHeaderField("Location")
-        if (redirection != null) {
-            val redirected = setupConnection(redirection, UserAgents.MOZILLA, 5000, false)
-            return readResponse(redirected ?: return "")
-        }
-
-        val response = StringBuilder()
-        try {
-            BufferedReader(
-                InputStreamReader(
-                    if (connection.responseCode >= 400) connection.errorStream else connection.inputStream
-                )
-            ).use { br ->
-                var line: String?
-                while (br.readLine().also { line = it } != null) {
-                    response.append(line).append('\n')
-                }
+    fun postJsonRaw(
+        url: String,
+        request: Any,
+        headers: Map<String, String>?,
+        userAgent: String,
+        timeout: Int
+    ): HttpResponseData? {
+        return try {
+            val payload = gson.toJson(request)
+            val httpRequest = OkHttpRequestUtils.buildJsonPostRequest(url, payload, userAgent, headers)
+            val client = OkHttpClientPool.get(timeout)
+            client.newCall(httpRequest).execute().use { response ->
+                OkHttpResponseUtils.toResponseData(response)
             }
-        } catch (e: IOException) {
-            ShindoLogger.error("Failed to read response", e)
+        } catch (e: Exception) {
+            ShindoLogger.error("Failed to POST JSON: $url", e)
+            null
         }
-
-        return response.toString()
     }
 
     @JvmStatic
     fun readJson(url: String, headers: Map<String, String>?, userAgents: String): JsonObject? {
-        return try {
-            val connection = setupConnection(url, userAgents, 5000, false)
-            if (connection == null) {
-                ShindoLogger.error("Failed to setup connection for read json")
-                return null
-            }
-
-            if (!headers.isNullOrEmpty()) {
-                for ((key, value) in headers) {
-                    connection.addRequestProperty(key, value)
-                }
-            }
-
-            val isr: InputStream =
-                if (connection.responseCode != 200) connection.errorStream else connection.inputStream
-            BufferedReader(InputStreamReader(isr, StandardCharsets.UTF_8)).use { reader ->
-                gson.fromJson(readResponse(reader), JsonObject::class.java)
-            }
-        } catch (e: IOException) {
-            ShindoLogger.error("Failed to read json", e)
-            null
+        val response = get(url, headers, userAgents, DEFAULT_TIMEOUT) ?: return null
+        if (response.body.isBlank()) {
+            return null
         }
+        return parseJson(response.body)
     }
 
     @JvmStatic
@@ -123,53 +92,64 @@ object HttpUtils {
         return readJson(url, headers, UserAgents.MOZILLA)
     }
 
-    private fun readResponse(br: BufferedReader): String? {
-        return try {
-            val sb = StringBuilder()
-            var line: String?
-            while (br.readLine().also { line = it } != null) {
-                sb.append(line)
-            }
-            sb.toString()
-        } catch (e: IOException) {
-            ShindoLogger.error("Failed to read response", e)
-            null
+    @JvmStatic
+    fun readJson(response: HttpResponseData): JsonObject? {
+        if (response.body.isBlank()) {
+            return null
         }
+        return parseJson(response.body)
+    }
+
+    @JvmStatic
+    fun readJson(connection: HttpURLConnection): JsonObject? {
+        return parseJson(readResponse(connection))
     }
 
     @JvmStatic
     fun downloadFile(url: String, outputFile: File, userAgent: String, timeout: Int, useCaches: Boolean): Boolean {
-        val sanitized = url.replace(" ", "%20")
         return try {
-            val connection = setupConnection(sanitized, userAgent, timeout, useCaches) ?: return false
-            FileOutputStream(outputFile).use { fileOut ->
-                BufferedInputStream(connection.inputStream).use { input ->
-                    org.apache.commons.io.IOUtils.copy(input, fileOut)
+            val request = OkHttpRequestUtils.buildGetRequest(url, userAgent, null)
+            val client = OkHttpClientPool.get(timeout)
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return false
                 }
+
+                val body = response.body() ?: return false
+                outputFile.parentFile?.mkdirs()
+                FileOutputStream(outputFile).use { output ->
+                    body.byteStream().use { input ->
+                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                        while (true) {
+                            val read = input.read(buffer)
+                            if (read == -1) break
+                            output.write(buffer, 0, read)
+                        }
+                    }
+                }
+                true
             }
-            true
         } catch (e: Exception) {
-            ShindoLogger.error("Failed to download file", e)
+            ShindoLogger.error("Failed to download file: $url", e)
             false
         }
     }
 
     @JvmStatic
     fun downloadFile(url: String, outputFile: File, userAgents: String): Boolean {
-        return downloadFile(url, outputFile, userAgents, 5000, false)
+        return downloadFile(url, outputFile, userAgents, DEFAULT_TIMEOUT, false)
     }
 
     @JvmStatic
     fun downloadFile(url: String, outputFile: File) {
-        downloadFile(url, outputFile, UserAgents.MOZILLA, 5000, false)
+        downloadFile(url, outputFile, UserAgents.MOZILLA, DEFAULT_TIMEOUT, false)
     }
 
     @JvmStatic
+    @Deprecated("Legacy API. Prefer HttpUtils.get()/postJsonRaw()", ReplaceWith("HttpUtils.get(url, null, userAgent, timeout)"))
     fun setupConnection(url: String, userAgent: String, timeout: Int, useCaches: Boolean): HttpURLConnection? {
         return try {
-            val punycodeUrl = PunycodeUtils.punycode(url)
-            val connection = URL(punycodeUrl).openConnection() as HttpURLConnection
-
+            val connection = URL(PunycodeUtils.punycode(url)).openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.useCaches = useCaches
             connection.addRequestProperty("User-Agent", userAgent)
@@ -177,12 +157,33 @@ object HttpUtils {
             connection.setRequestProperty("Accept-Charset", "UTF-8")
             connection.readTimeout = timeout
             connection.connectTimeout = timeout
-            connection.doOutput = true
-
+            connection.doOutput = false
             connection
         } catch (e: Exception) {
-            ShindoLogger.error("Failed to setup connection")
+            ShindoLogger.error("Failed to setup legacy HttpURLConnection for $url", e)
             null
+        }
+    }
+
+    @JvmStatic
+    fun readResponse(connection: HttpURLConnection): String {
+        return try {
+            BufferedReader(
+                InputStreamReader(
+                    if (connection.responseCode >= 400) connection.errorStream else connection.inputStream,
+                    StandardCharsets.UTF_8
+                )
+            ).use { reader ->
+                val sb = StringBuilder()
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    sb.append(line).append('\n')
+                }
+                sb.toString()
+            }
+        } catch (e: IOException) {
+            ShindoLogger.error("Failed to read response from legacy HttpURLConnection", e)
+            ""
         }
     }
 
@@ -201,6 +202,15 @@ object HttpUtils {
             URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
         } catch (_: UnsupportedEncodingException) {
             url
+        }
+    }
+
+    private fun parseJson(body: String): JsonObject? {
+        return try {
+            gson.fromJson(body, JsonObject::class.java)
+        } catch (e: Exception) {
+            ShindoLogger.error("Failed to parse JSON response", e)
+            null
         }
     }
 }

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.notification
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.logger.FileLogWriter
+import me.miki.shindo.management.language.TranslateText
 import java.util.concurrent.LinkedBlockingQueue
 
 class NotificationManager {
@@ -15,7 +15,7 @@ class NotificationManager {
 
     fun post(title: TranslateText, message: TranslateText, type: NotificationType) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title.text + " | " + message.text + " | " + type.name)
+        FileLogWriter.notification(title.getText() + " | " + message.getText() + " | " + type.name)
     }
 
     fun post(title: String, message: String, type: NotificationType) {
@@ -25,6 +25,11 @@ class NotificationManager {
 
     fun post(title: TranslateText, message: String, type: NotificationType) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title.text + " | " + message + " | " + type.name)
+        FileLogWriter.notification(title.getText() + " | " + message + " | " + type.name)
+    }
+
+    fun post(title: String, message: TranslateText, type: NotificationType) {
+        notifications.add(Notification(title, message, type))
+        FileLogWriter.notification(title + " | " + message.getText() + " | " + type.name)
     }
 }

@@ -34,7 +34,7 @@ class CoordsMod :
         var biome: String? = ""
         val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(mc.thePlayer))
         var maxWidth = 100
-        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.getWorldChunkManager()).biomeName
+        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.worldChunkManager).biomeName
 
         if (maxWidth < (this.getTextWidth("Biome: " + biome, 9f, getHudFont(1))!!)) {
             maxWidth = (this.getTextWidth("Biome: " + biome, 9f, getHudFont(1))!! + 12).toInt()
@@ -52,11 +52,11 @@ class CoordsMod :
         this.setHeight(48)
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return "X: " + mc.thePlayer.posX.toInt() + " Y: " + mc.thePlayer.posY.toInt() + " Z: " + mc.thePlayer.posZ.toInt() + " "
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.MAP_PIN else null
     }
 

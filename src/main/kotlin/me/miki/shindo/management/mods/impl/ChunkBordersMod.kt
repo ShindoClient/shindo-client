@@ -24,9 +24,9 @@ class ChunkBordersMod : Mod(
     fun onRender3D(event: EventRender3D) {
         val entity = Minecraft.getMinecraft().thePlayer
         val tessellator = Tessellator.getInstance()
-        val worldRenderer = tessellator.getWorldRenderer()
+        val worldRenderer = tessellator.worldRenderer
 
-        val frame = event.getPartialTicks()
+        val frame = event.partialTicks
         val inChunkPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * frame.toDouble()
         val inChunkPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * frame.toDouble()
         val inChunkPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * frame.toDouble()
@@ -57,21 +57,21 @@ class ChunkBordersMod : Mod(
                     z = (eyeHeight * 16).toDouble()
 
                     worldRenderer.pos(x, 0.0, z)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x, 256.0, z)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, 0.0, z)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, 256.0, z)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x, 0.0, z + 16.0)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x, 256.0, z + 16.0)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, 0.0, z + 16.0)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, 256.0, z + 16.0)
-                        .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex()
+                        .color(color.red, color.green, color.blue, color.alpha).endVertex()
                 }
                 ++eyeHeightBlock
             }
@@ -80,7 +80,7 @@ class ChunkBordersMod : Mod(
         z = 0.0
         x = 0.0
 
-        val f = (entity.getEyeHeight().toDouble() + entity.posY).toFloat()
+        val f = (entity.eyeHeight.toDouble() + entity.posY).toFloat()
 
         eyeHeightBlock = floor(f.toDouble()).toInt()
 
@@ -88,40 +88,40 @@ class ChunkBordersMod : Mod(
             if (y < 256) {
                 for (n in 1..15) {
                     worldRenderer.pos(n.toDouble(), y.toDouble(), z)
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(n.toDouble(), (y + 1).toDouble(), z)
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(x, y.toDouble(), n.toDouble())
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(x, (y + 1).toDouble(), n.toDouble())
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(n.toDouble(), y.toDouble(), z + 16.0)
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(n.toDouble(), (y + 1).toDouble(), z + 16.0)
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, y.toDouble(), n.toDouble())
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                     worldRenderer.pos(x + 16.0, (y + 1).toDouble(), n.toDouble())
-                        .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                        .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
                 }
             }
 
             worldRenderer.pos(0.0, y.toDouble(), 0.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(16.0, y.toDouble(), 0.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(0.0, y.toDouble(), 0.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(0.0, y.toDouble(), 16.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(16.0, y.toDouble(), 0.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(16.0, y.toDouble(), 16.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(0.0, y.toDouble(), 16.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
             worldRenderer.pos(16.0, y.toDouble(), 16.0)
-                .color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex()
+                .color(color2.red, color2.green, color2.blue, color2.alpha).endVertex()
         }
 
         tessellator.draw()

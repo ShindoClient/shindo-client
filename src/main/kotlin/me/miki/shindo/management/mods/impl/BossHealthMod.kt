@@ -25,9 +25,9 @@ class BossHealthMod :
 
             startScale(this.getX().toFloat(), this.getY().toFloat(), this.getScale())
 
-            mc.getTextureManager().bindTexture(Gui.icons)
+            mc.textureManager.bindTexture(Gui.icons)
             BossStatus.statusBarTime--
-            mc.getTextureManager().bindTexture(Gui.icons)
+            mc.textureManager.bindTexture(Gui.icons)
 
             drawTexturedModalRect(this.getX(), this.getY() + 14, 0, 74, bossHealthWidth, 5)
             drawTexturedModalRect(this.getX(), this.getY() + 14, 0, 74, bossHealthWidth, 5)
@@ -43,7 +43,7 @@ class BossHealthMod :
                 16777215
             )
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-            mc.getTextureManager().bindTexture(Gui.icons)
+            mc.textureManager.bindTexture(Gui.icons)
 
             stopScale()
         }

@@ -2,25 +2,19 @@ package me.miki.shindo.utils.concurrent
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
-
-/**
- * Gerenciador centralizado de thread pools.
- * Cria e gerencia pools especializados para diferentes tipos de operações.
- */
 object ThreadPoolManager {
-    
+
     private val ioPool: ThreadPoolExecutor
     private val cpuPool: ThreadPoolExecutor
     private val networkPool: ThreadPoolExecutor
     private val scheduledPool: ScheduledExecutorService
     private val generalPool: ThreadPoolExecutor
-    
+
     private val threadCounter = AtomicInteger(0)
-    
+
     init {
         val cpuCount = Runtime.getRuntime().availableProcessors()
-        
-        // IO Pool - muitas threads para operações bloqueantes
+
         ioPool = ThreadPoolExecutor(
             4,
             32,
@@ -34,8 +28,7 @@ object ThreadPoolManager {
                 }
             }
         )
-        
-        // CPU Pool - poucas threads (número de cores)
+
         cpuPool = ThreadPoolExecutor(
             cpuCount,
             cpuCount,
@@ -49,8 +42,7 @@ object ThreadPoolManager {
                 }
             }
         )
-        
-        // Network Pool - muitas threads para operações de rede
+
         networkPool = ThreadPoolExecutor(
             4,
             16,
@@ -64,8 +56,7 @@ object ThreadPoolManager {
                 }
             }
         )
-        
-        // Scheduled Pool - para tarefas agendadas
+
         scheduledPool = Executors.newScheduledThreadPool(
             cpuCount.coerceAtLeast(4),
             ThreadFactory { runnable ->
@@ -75,8 +66,7 @@ object ThreadPoolManager {
                 }
             }
         )
-        
-        // General Pool - pool genérico
+
         generalPool = ThreadPoolExecutor(
             2,
             16,
@@ -91,10 +81,6 @@ object ThreadPoolManager {
             }
         )
     }
-    
-    /**
-     * Obtém o executor apropriado para o tipo de pool.
-     */
     @JvmStatic
     fun getExecutor(type: ThreadPoolType): ExecutorService = when (type) {
         ThreadPoolType.IO -> ioPool
@@ -103,16 +89,8 @@ object ThreadPoolManager {
         ThreadPoolType.SCHEDULED -> scheduledPool
         ThreadPoolType.GENERAL -> generalPool
     }
-    
-    /**
-     * Obtém o scheduled executor.
-     */
     @JvmStatic
     fun getScheduledExecutor(): ScheduledExecutorService = scheduledPool
-    
-    /**
-     * Obtém estatísticas de um pool.
-     */
     @JvmStatic
     fun getPoolStats(type: ThreadPoolType): PoolStats {
         val executor = getExecutor(type) as? ThreadPoolExecutor ?: return PoolStats(0, 0, 0, 0)
@@ -123,18 +101,14 @@ object ThreadPoolManager {
             completedTaskCount = executor.completedTaskCount.toInt()
         )
     }
-    
-    /**
-     * Obtém estatísticas de todos os pools.
-     */
     @JvmStatic
     fun getAllStats(): Map<ThreadPoolType, PoolStats> {
-        return ThreadPoolType.values().associateWith { getPoolStats(it) }
+        val stats = LinkedHashMap<ThreadPoolType, PoolStats>()
+        for (type in ThreadPoolType.values()) {
+            stats[type] = getPoolStats(type)
+        }
+        return stats
     }
-    
-    /**
-     * Encerra todos os pools. Deve ser chamado no shutdown do cliente.
-     */
     @JvmStatic
     fun shutdown() {
         ioPool.shutdown()
@@ -143,10 +117,6 @@ object ThreadPoolManager {
         scheduledPool.shutdown()
         generalPool.shutdown()
     }
-    
-    /**
-     * Encerra todos os pools agressivamente.
-     */
     @JvmStatic
     fun shutdownNow() {
         ioPool.shutdownNow()
@@ -155,10 +125,6 @@ object ThreadPoolManager {
         scheduledPool.shutdownNow()
         generalPool.shutdownNow()
     }
-    
-    /**
-     * Estatísticas de um pool.
-     */
     data class PoolStats(
         val activeCount: Int,
         val poolSize: Int,

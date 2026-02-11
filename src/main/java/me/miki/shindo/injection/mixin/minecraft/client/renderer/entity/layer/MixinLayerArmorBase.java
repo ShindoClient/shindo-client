@@ -20,10 +20,5 @@ public class MixinLayerArmorBase {
 
         cir.setReturnValue(mod.isToggled() && armorDamageSetting != null && armorDamageSetting.isToggled());
     }
-
-    @Inject(method = "renderGlint", at = @At("HEAD"), cancellable = true)
-    private void disableEnchantGlint(CallbackInfo ci) {
-        // PatcherAddon removed - enchant glint always enabled
-    }
 }
 

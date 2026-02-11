@@ -4,12 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonObject;
 import me.miki.shindo.libs.spotify.model_objects.AbstractModelObject;
 import me.miki.shindo.libs.spotify.model_objects.specification.Disallows;
-
-/**
- * Retrieve information about Actions objects by building instances from this class. These objects
- * contain information to allow to update the user interface based on which playback actions are
- * available within the current context. These objects contain a {@link Disallows} object.
- */
 @JsonDeserialize(builder = Actions.Builder.class)
 public class Actions extends AbstractModelObject {
     private final Disallows disallows;
@@ -18,12 +12,6 @@ public class Actions extends AbstractModelObject {
         super(builder);
         this.disallows = builder.disallows;
     }
-
-    /**
-     * Get the Disallows object.
-     *
-     * @return Disallows object.
-     */
     public Disallows getDisallows() {
         return disallows;
     }
@@ -37,19 +25,8 @@ public class Actions extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link Actions} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private Disallows disallows;
-
-        /**
-         * Set the Disallows object of the Actions object to be built.
-         *
-         * @param disallows The {@link Disallows} object.
-         * @return A {@link Actions.Builder}.
-         */
         public Builder setDisallows(Disallows disallows) {
             this.disallows = disallows;
             return this;
@@ -60,10 +37,6 @@ public class Actions extends AbstractModelObject {
             return new Actions(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link Actions} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<Actions> {
         @Override
         public Actions createModelObject(JsonObject jsonObject) {

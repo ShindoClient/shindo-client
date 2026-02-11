@@ -22,13 +22,13 @@ class WeatherDisplayMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         var biome = ""
         val prefix = "Weather: "
         val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(mc.thePlayer))
-        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.getWorldChunkManager()).biomeName
+        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.worldChunkManager).biomeName
 
-        if (mc.theWorld.isRaining()) {
+        if (mc.theWorld.isRaining) {
             if (biome.contains("Extreme Hills") && mc.thePlayer.posY > 100) {
                 return prefix + "Snowing"
             } else {
@@ -36,21 +36,21 @@ class WeatherDisplayMod : SimpleHUDMod(
             }
         }
 
-        if (mc.theWorld.isThundering()) {
+        if (mc.theWorld.isThundering) {
             return prefix + "Thundering"
         }
 
         return prefix + "Cleaning"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         var biome = ""
         val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(mc.thePlayer))
-        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.getWorldChunkManager()).biomeName
+        biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.worldChunkManager).biomeName
 
         var iconFont = LegacyIcon.SUN
 
-        if (mc.theWorld.isRaining()) {
+        if (mc.theWorld.isRaining) {
             if (biome.contains("Extreme Hills") && mc.thePlayer.posY > 100) {
                 iconFont = LegacyIcon.CLOUD_SNOW
             } else {
@@ -58,7 +58,7 @@ class WeatherDisplayMod : SimpleHUDMod(
             }
         }
 
-        if (mc.theWorld.isThundering()) {
+        if (mc.theWorld.isThundering) {
             iconFont = LegacyIcon.CLOUD_LIGHTING
         }
 

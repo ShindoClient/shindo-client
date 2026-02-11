@@ -189,7 +189,7 @@ object SettingRegistry {
     private fun createCategorySetting(owner: ConfigOwner, category: String): CategorySetting {
         if (owner is SettingCategoryProvider) {
             val provider = owner
-            val key = category.lowercase(Locale.ROOT)
+            val key = category.toLowerCase(Locale.ROOT)
             val label = provider.resolveCategoryLabel(key)
             val setting = if (label != null && label != TranslateText.NONE) {
                 CategorySetting(label, owner)
@@ -575,9 +575,9 @@ object SettingRegistry {
             return Option(constant.getDisplayName())
         }
 
-        var display = constant.name.lowercase(Locale.ROOT).replace('_', ' ')
+        var display = constant.name.toLowerCase(Locale.ROOT).replace('_', ' ')
         if (display.isNotEmpty()) {
-            display = display.substring(0, 1).uppercase(Locale.ROOT) + display.substring(1)
+            display = display.substring(0, 1).toUpperCase(Locale.ROOT) + display.substring(1)
         }
         return Option(display.ifEmpty { constant.name })
     }
@@ -1125,3 +1125,4 @@ object SettingRegistry {
         }
     }
 }
+

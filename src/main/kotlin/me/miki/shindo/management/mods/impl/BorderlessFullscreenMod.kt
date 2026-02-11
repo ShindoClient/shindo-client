@@ -39,22 +39,22 @@ class BorderlessFullscreenMod : Mod(
 
     @EventTarget
     fun onFullscreenToggle(event: EventToggleFullscreen) {
-        event.setApplyState(false)
-        setBorderlessFullscreen(event.getState())
+        event.isApplyState = false
+        setBorderlessFullscreen(event.state)
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
-        if (mc.isFullScreen()) {
+        if (mc.isFullScreen) {
             setBorderlessFullscreen(true)
         }
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
 
-        if (mc.isFullScreen()) {
+        if (mc.isFullScreen) {
             setBorderlessFullscreen(false)
             mc.toggleFullscreen()
             mc.toggleFullscreen()
@@ -74,14 +74,14 @@ class BorderlessFullscreenMod : Mod(
                 prevHeight = mc.displayHeight
                 Display.setDisplayMode(
                     DisplayMode(
-                        Display.getDesktopDisplayMode().getWidth(),
-                        Display.getDesktopDisplayMode().getHeight()
+                        Display.getDesktopDisplayMode().width,
+                        Display.getDesktopDisplayMode().height
                     )
                 )
                 Display.setLocation(0, 0)
                 (mc as IMixinMinecraft).resizeWindow(
-                    Display.getDesktopDisplayMode().getWidth(),
-                    Display.getDesktopDisplayMode().getHeight()
+                    Display.getDesktopDisplayMode().width,
+                    Display.getDesktopDisplayMode().height
                 )
             } else {
                 Display.setDisplayMode(DisplayMode(prevWidth, prevHeight))

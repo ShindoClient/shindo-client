@@ -41,7 +41,13 @@ open class HUDMod : Mod {
         alias
     )
 
-    constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String, alias: String, restricted: Boolean) : super(
+    constructor(
+        nameTranslate: TranslateText,
+        descriptionText: TranslateText,
+        icon: String,
+        alias: String,
+        restricted: Boolean
+    ) : super(
         nameTranslate,
         descriptionText,
         ModCategory.HUD,
@@ -130,7 +136,14 @@ open class HUDMod : Mod {
         )
     }
 
-    fun drawPlayerHead(location: ResourceLocation, addX: Float, addY: Float, width: Float, height: Float, radius: Float) {
+    fun drawPlayerHead(
+        location: ResourceLocation,
+        addX: Float,
+        addY: Float,
+        width: Float,
+        height: Float,
+        radius: Float
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
         nvg?.drawPlayerHead(
             location,
@@ -159,7 +172,15 @@ open class HUDMod : Mod {
         )
     }
 
-    fun drawRoundedImage(file: File, addX: Float, addY: Float, width: Float, height: Float, radius: Float, alpha: Float) {
+    fun drawRoundedImage(
+        file: File,
+        addX: Float,
+        addY: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        alpha: Float
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
         nvg?.drawRoundedImage(
             file,
@@ -176,7 +197,14 @@ open class HUDMod : Mod {
         drawRoundedImage(file, addX, addY, width, height, radius, 1.0f)
     }
 
-    fun drawRoundedImage(location: ResourceLocation, addX: Float, addY: Float, width: Float, height: Float, radius: Float) {
+    fun drawRoundedImage(
+        location: ResourceLocation,
+        addX: Float,
+        addY: Float,
+        width: Float,
+        height: Float,
+        radius: Float
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
         nvg?.drawRoundedImage(
             location,
@@ -188,7 +216,15 @@ open class HUDMod : Mod {
         )
     }
 
-    fun drawArc(addX: Float, addY: Float, radius: Float, startAngle: Float, endAngle: Float, strokeWidth: Float, color: Color) {
+    fun drawArc(
+        addX: Float,
+        addY: Float,
+        radius: Float,
+        startAngle: Float,
+        endAngle: Float,
+        strokeWidth: Float,
+        color: Color
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
         nvg?.drawArc(
             x + (addX * scale),
@@ -254,7 +290,7 @@ open class HUDMod : Mod {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
         val colorManager: ColorManager = instance.colorManager
-        val currentColor: AccentColor = colorManager.currentColor
+        val currentColor: AccentColor = colorManager.getCurrentColor()
         val theme = InternalSettingsMod.instance.hudTheme
 
         val isNormal = theme == InternalSettingsMod.HudTheme.NORMAL
@@ -283,7 +319,7 @@ open class HUDMod : Mod {
         if (isNormal || isVanilla || isShadow || isDark || isLight || isModern) {
             nvg?.drawShadow(x, y, lastWidth, lastHeight, radius - 0.75f)
         } else if (isGlow || isVanillaGlow) {
-            nvg?.drawGradientShadow(x, y, lastWidth, lastHeight, radius, currentColor.color1, currentColor.color2)
+            nvg?.drawGradientShadow(x, y, lastWidth, lastHeight, radius, currentColor.getColor1(), currentColor.getColor2())
         } else if (isOutline || isOutlineGlow) {
             if (isOutline) {
                 nvg?.drawShadow(x - 2, y - 2, lastWidth + 4, lastHeight + 4, radius + 2)
@@ -294,8 +330,8 @@ open class HUDMod : Mod {
                     lastWidth + 4,
                     lastHeight + 4,
                     radius + 2,
-                    currentColor.color1,
-                    currentColor.color2
+                    currentColor.getColor1(),
+                    currentColor.getColor2()
                 )
             }
         }
@@ -308,8 +344,8 @@ open class HUDMod : Mod {
                 lastHeight + 2,
                 radius + 1,
                 1.5f,
-                currentColor.color1,
-                currentColor.color2
+                currentColor.getColor1(),
+                currentColor.getColor2()
             )
         }
 
@@ -322,8 +358,8 @@ open class HUDMod : Mod {
                 lastWidth,
                 lastHeight,
                 radius,
-                ColorUtils.applyAlpha(currentColor.color1, 220),
-                ColorUtils.applyAlpha(currentColor.color2, 220)
+                ColorUtils.applyAlpha(currentColor.getColor1(), 220),
+                ColorUtils.applyAlpha(currentColor.getColor2(), 220)
             )
         } else if (isLight) {
             nvg?.drawRoundedRect(x, y, lastWidth, lastHeight, radius, Color(240, 240, 240, 220))
@@ -339,13 +375,21 @@ open class HUDMod : Mod {
                 y - (2 * scale),
                 lastWidth,
                 (2 * scale),
-                ColorUtils.interpolateColors(8, 0, currentColor.color1, currentColor.color2),
-                ColorUtils.interpolateColors(10, 20, currentColor.color1, currentColor.color2)
+                ColorUtils.interpolateColors(8, 0, currentColor.getColor1(), currentColor.getColor2()),
+                ColorUtils.interpolateColors(10, 20, currentColor.getColor1(), currentColor.getColor2())
             )
         }
         if (isModern) {
             nvg?.drawRoundedRect(x, y, lastWidth, lastHeight, radius, Color(0, 0, 0, 110))
-            nvg?.drawOutlineRoundedRect(x - 0.5f, y - 0.5f, lastWidth + 1, lastHeight + 1, radius + 0.5f, 0.7f, Color(255, 255, 255, 110))
+            nvg?.drawOutlineRoundedRect(
+                x - 0.5f,
+                y - 0.5f,
+                lastWidth + 1,
+                lastHeight + 1,
+                radius + 0.5f,
+                0.7f,
+                Color(255, 255, 255, 110)
+            )
         }
     }
 
@@ -381,7 +425,14 @@ open class HUDMod : Mod {
             nvg?.restore()
         }
 
-        nvg?.drawText(text, x + (localX * scale), y + (localY * scale), Color(color.red, color.green, color.blue, 180), lastSize, font)
+        nvg?.drawText(
+            text,
+            x + (localX * scale),
+            y + (localY * scale),
+            Color(color.red, color.green, color.blue, 180),
+            lastSize,
+            font
+        )
     }
 
     fun scale(addX: Float, addY: Float, width: Float, height: Float, nvgScale: Float) {
@@ -419,7 +470,7 @@ open class HUDMod : Mod {
         val isLight = theme == InternalSettingsMod.HudTheme.LIGHT
 
         if (isDark || isLight) {
-            return Shindo.getInstance().colorManager.currentColor.getInterpolateColor(alpha)
+            return Shindo.getInstance().colorManager.getCurrentColor().getInterpolateColor(alpha)
         }
         return Color(255, 255, 255, alpha)
     }

@@ -23,13 +23,13 @@ class PotionCounterMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         val amount = getPotionsFromInventory(Potion.heal)
 
         return amount.toString() + " " + (if (amount <= 1) "pot" else "pots")
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (showIcon) LegacyIcon.ARCHIVE else null
     }
 }

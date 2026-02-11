@@ -1,11 +1,11 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
 
 class CompSearchBox : CompTextBoxBase {
@@ -53,14 +53,21 @@ class CompSearchBox : CompTextBoxBase {
             val reversedText = StringBuilder(text).reverse().toString()
 
             addX =
-                getWidth() - nvgInstance.getTextWidth(
-                    reversedText.substring(outTextSize - selectionEnd),
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - halfHeight - 5
+                    getWidth() - nvgInstance.getTextWidth(
+                            reversedText.substring(outTextSize - selectionEnd),
+                            halfHeight,
+                            Fonts.REGULAR
+                    ) - halfHeight - 5
         }
 
-        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 6f, paletteColors.getBackgroundColor(ColorType.DARK))
+        nvgInstance.drawRoundedRect(
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                6f,
+                paletteColors.getBackgroundColor(ColorType.DARK)
+        )
 
         nvgInstance.save()
         nvgInstance.scissor(getX() + 1, getY(), getWidth() - 2, getHeight())
@@ -74,11 +81,11 @@ class CompSearchBox : CompTextBoxBase {
 
             if (selectionWidth != 0f) {
                 nvgInstance.drawRect(
-                    getX() + 15 + offset + addX,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
-                    selectionWidth,
-                    nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR),
-                    Color(0, 135, 247)
+                        getX() + 15 + offset + addX,
+                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
+                        selectionWidth,
+                        nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR),
+                        Color(0, 135, 247)
                 )
             }
         }
@@ -86,49 +93,53 @@ class CompSearchBox : CompTextBoxBase {
         searchAnimation.setAnimation(if (!focused && text.isEmpty()) 1.0f else 0.0f, 16.0)
 
         nvgInstance.drawText(
-            LegacyIcon.SEARCH,
-            getX() + 5,
-            getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
-            paletteColors.getFontColor(ColorType.NORMAL),
-            halfHeight,
-            Fonts.LEGACYICON
+                LegacyIcon.SEARCH,
+                getX() + 5,
+                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
+                paletteColors.getFontColor(ColorType.NORMAL),
+                halfHeight,
+                Fonts.LEGACYICON
         )
 
         if (text.isEmpty()) {
             nvgInstance.save()
             nvgInstance.translate(searchAnimation.value * 8 - 8, 0f)
             nvgInstance.drawText(
-                TranslateText.SEARCH.text,
-                getX() + 16,
-                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
-                paletteColors.getFontColor(ColorType.NORMAL, (searchAnimation.value * 200).toInt()),
-                halfHeight,
-                Fonts.REGULAR
+                    TranslateText.SEARCH.getText(),
+                    getX() + 16,
+                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
+                    paletteColors.getFontColor(ColorType.NORMAL, (searchAnimation.value * 200).toInt()),
+                    halfHeight,
+                    Fonts.REGULAR
             )
             nvgInstance.restore()
         }
 
         nvgInstance.drawText(
-            text,
-            getX() + 16 + addX,
-            getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
-            paletteColors.getFontColor(ColorType.NORMAL),
-            halfHeight,
-            Fonts.REGULAR
+                text,
+                getX() + 16 + addX,
+                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
+                paletteColors.getFontColor(ColorType.NORMAL),
+                halfHeight,
+                Fonts.REGULAR
         )
 
         if (timer.delay(600)) {
             val position =
-                nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
-                    nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
+                    nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
+                            nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
 
             if (focused && cursorPosition == selectionEnd) {
                 nvgInstance.drawRect(
-                    getX() + 16 + addX + position,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) - 0.5f,
-                    0.7f,
-                    10f,
-                    paletteColors.getFontColor(ColorType.DARK)
+                        getX() + 16 + addX + position,
+                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(
+                                text,
+                                halfHeight,
+                                Fonts.REGULAR
+                        ) / 2) - 0.5f,
+                        0.7f,
+                        10f,
+                        paletteColors.getFontColor(ColorType.DARK)
                 )
             }
 

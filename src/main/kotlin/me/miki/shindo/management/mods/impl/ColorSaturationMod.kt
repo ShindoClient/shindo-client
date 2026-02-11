@@ -53,9 +53,9 @@ class ColorSaturationMod : Mod(
         val brightness = brightnessSetting.toFloat()
         val contrast = contrastSetting.toFloat()
 
-        if (group == null || prevWidth != sr.getScaledWidth() || prevHeight != sr.getScaledHeight()) {
-            prevWidth = sr.getScaledWidth()
-            prevHeight = sr.getScaledHeight()
+        if (group == null || prevWidth != sr.scaledWidth || prevHeight != sr.scaledHeight) {
+            prevWidth = sr.scaledWidth
+            prevHeight = sr.scaledHeight
 
             prevHue = hue
             prevSaturation = saturation
@@ -64,7 +64,7 @@ class ColorSaturationMod : Mod(
 
             try {
                 group =
-                    ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), colorsaturation)
+                    ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, colorsaturation)
                 group!!.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
             } catch (error: JsonSyntaxException) {
                 error.printStackTrace()
@@ -75,10 +75,10 @@ class ColorSaturationMod : Mod(
 
         if (prevHue != hue || prevSaturation != saturation || prevBrightness != brightness || prevContrast != contrast) {
             (group as IMixinShaderGroup).getListShaders().forEach(Consumer { shader: Shader? ->
-                val hueUniform = shader!!.getShaderManager().getShaderUniform("hue")
-                val contrastUniform = shader.getShaderManager().getShaderUniform("Contrast")
-                val brightnessUniform = shader.getShaderManager().getShaderUniform("Brightness")
-                val saturationUniform = shader.getShaderManager().getShaderUniform("Saturation")
+                val hueUniform = shader!!.shaderManager.getShaderUniform("hue")
+                val contrastUniform = shader.shaderManager.getShaderUniform("Contrast")
+                val brightnessUniform = shader.shaderManager.getShaderUniform("Brightness")
+                val saturationUniform = shader.shaderManager.getShaderUniform("Saturation")
 
                 if (hueUniform != null) {
                     hueUniform.set(hue)
@@ -102,10 +102,10 @@ class ColorSaturationMod : Mod(
             prevContrast = contrast
         }
 
-        event.getGroups().add(group)
+        event.groups.add(group!!)
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         group = null
     }

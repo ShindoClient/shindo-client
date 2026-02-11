@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl.mechibes
 
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.utils.Sound
+import me.miki.shindo.management.sound.Sound
 import net.minecraft.util.ResourceLocation
 
 class SoundKey(mode: String?, key: String?) {
@@ -29,3 +29,4 @@ class SoundKey(mode: String?, key: String?) {
         sound.setVolume(volume)
     }
 }
+

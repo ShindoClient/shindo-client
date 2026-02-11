@@ -7,16 +7,15 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public final class UIShader {
+    private final String vSrc;
+    private final String fSrc;
     private int pid, vid, fid;
-    private String vSrc, fSrc;
     private VBO vbo;
 
     public UIShader(String vSrc, String fSrc) {
@@ -61,7 +60,7 @@ public final class UIShader {
     }
 
     private ByteBuffer readStream(InputStream is) throws IOException {
-        // Java 8 doesn't have InputStream.readAllBytes(), so read into a ByteArrayOutputStream
+
         try (InputStream in = is; java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream()) {
             byte[] buf = new byte[8192];
             int read;

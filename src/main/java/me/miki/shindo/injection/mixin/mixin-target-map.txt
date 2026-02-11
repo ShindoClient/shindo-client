@@ -100,9 +100,6 @@ E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinEntityPacket.java                            net.S14PacketEntity.server            
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinLazyLoadBase.java                            net.LazyLoadBase.util                 
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetHandlerPlayClient.java                    net.NetHandlerPlayClient.network      
-E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetworkManager.java                          net.NetworkManager.network            
-E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinNetworkManager5.java                                                               
-E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinPacketThreadUtil.java                                                              
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinS14PacketEntity.java                         net.S14PacketEntity.server            
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinS3FPacketCustomPayload.java                  net.S3FPacketCustomPayload.server     
 E:\UTIL\Projects\SHINDO\INFRESTRUTURA\shindo-client\src\main\java\me\miki\shindo\injection\mixin\mixins\network\MixinServerAddress.java                           net.ServerAddress.multiplayer         

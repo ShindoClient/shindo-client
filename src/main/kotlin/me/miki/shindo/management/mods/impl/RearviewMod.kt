@@ -17,23 +17,44 @@ class RearviewMod :
     private val rearviewCamera = RearviewCamera()
     private val timer = TimerUtils()
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 1.00, max = 50.00, current = 19.00, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.WIDTH,
+        min = 10.0,
+        max = 500.0,
+        current = 190.0,
+        step = 1.0
+    )
     private val rearviewWidthSetting = 190
 
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.HEIGHT,
-        min = 1.00,
-        max = 50.00,
-        current = 10.00,
+        min = 10.0,
+        max = 500.0,
+        current = 100.0,
         step = 1.0
     )
     private val rearviewHeightSetting = 100
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.FPS, min = 1.0, max = 12.00, current = 6.00, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.FPS,
+        min = 1.0,
+        max = 120.0,
+        current = 60.0,
+        step = 1.0
+    )
     private val fpsSetting = 60
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.FOV, min = 3.00, max = 12.00, current = 7.00, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.FOV,
+        min = 30.0,
+        max = 120.0,
+        current = 70.0,
+        step = 1.0
+    )
     private val fovSetting = 70
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOCK_CAMERA)
@@ -104,7 +125,7 @@ class RearviewMod :
     @EventTarget
     fun onHurtCamera(event: EventHurtCamera) {
         if (rearviewCamera.isRecording) {
-            event.setIntensity(0f)
+            event.intensity = 0f
         }
     }
 

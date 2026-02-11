@@ -1,6 +1,5 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventPreRenderTick
@@ -50,7 +49,7 @@ class MoBendsMod :
         }
 
         for (i in Data_Player.dataList.indices) {
-            Data_Player.dataList.get(i).update((mc as IMixinMinecraft).getTimer().renderPartialTicks)
+            Data_Player.dataList[i].update((mc as IMixinMinecraft).getTimer().renderPartialTicks)
         }
     }
 
@@ -61,13 +60,13 @@ class MoBendsMod :
         }
 
         for (i in Data_Player.dataList.indices) {
-            val data = Data_Player.dataList.get(i)
+            val data = Data_Player.dataList[i]
             val entity = mc.theWorld.getEntityByID(data.entityID)
 
             if (entity != null) {
-                if (!data.entityType.equals(entity.getName(), ignoreCase = true)) {
+                if (!data.entityType.equals(entity.name, ignoreCase = true)) {
                     Data_Player.dataList.remove(data)
-                    Data_Player.add(Data_Player(entity.getEntityId()))
+                    Data_Player.add(Data_Player(entity.entityId))
                 } else {
                     data.motion_prev.set(data.motion)
 
@@ -85,37 +84,34 @@ class MoBendsMod :
 
     @EventTarget
     fun onRenderPlayer(event: EventRenderPlayer) {
-        if (event.getEntity() !is EntityPlayer) {
+        if (event.entity !is EntityPlayer) {
             return
         }
 
-        if (AnimatedEntity.getByEntity(event.getEntity()) == null) {
-            return
-        }
+        val animated = AnimatedEntity.getByEntity(event.entity) ?: return
+        if (animated.animate) {
+            val player = event.entity as AbstractClientPlayer
 
-        if (Objects.requireNonNull<AnimatedEntity?>(AnimatedEntity.getByEntity(event.getEntity())).animate) {
-            val player = event.getEntity() as AbstractClientPlayer
-
-            if (!currentlyRenderedEntities.contains(event.getEntity().getUniqueID())) {
-                currentlyRenderedEntities.add(event.getEntity().getUniqueID())
+            if (!currentlyRenderedEntities.contains(event.entity.uniqueID)) {
+                currentlyRenderedEntities.add(event.entity.uniqueID)
                 event.setCancelled(true)
 
                 val renderer = AnimatedEntity.getPlayerRenderer(player)
-                val model = renderer.getMainModel() as ModelBendsPlayer
+                val model = renderer.mainModel as ModelBendsPlayer
 
                 model.bipedHead.isHidden = false
                 model.bipedHeadwear.isHidden = false
 
                 val entityYaw =
-                    event.getEntity().prevRotationYaw + (event.getEntity().rotationYaw - event.getEntity().prevRotationYaw) * event.getPartialTicks()
+                    event.entity.prevRotationYaw + (event.entity.rotationYaw - event.entity.prevRotationYaw) * event.partialTicks
                 AnimatedEntity.getPlayerRenderer(player)
-                    .doRender(player, event.getX(), event.getY(), event.getZ(), entityYaw, event.getPartialTicks())
-                currentlyRenderedEntities.remove(event.getEntity().getUniqueID())
+                    .doRender(player, event.x, event.y, event.z, entityYaw, event.partialTicks)
+                currentlyRenderedEntities.remove(event.entity.uniqueID)
             }
         }
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
         val skin3D = Skin3DMod.instance

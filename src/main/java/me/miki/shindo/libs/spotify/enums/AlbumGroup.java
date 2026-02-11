@@ -3,9 +3,6 @@ package me.miki.shindo.libs.spotify.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Compare to [AlbumType] this field represents relationship between the artist and the album.
- */
 public enum AlbumGroup {
 
     ALBUM("album"),
@@ -31,11 +28,6 @@ public enum AlbumGroup {
         return map.get(type);
     }
 
-    /**
-     * Get the album group as a string.
-     *
-     * @return Album group as string.
-     */
     public String getGroup() {
         return group;
     }

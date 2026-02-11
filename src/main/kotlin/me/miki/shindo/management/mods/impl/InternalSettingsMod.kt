@@ -1,7 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.gui.modmenu.category.impl.shared.SettingsPanel.LayoutMode
+import me.miki.shindo.gui.GuiNavigationHub
+import me.miki.shindo.ui.comp.layout.SettingsPanel.DensityMode
+import me.miki.shindo.ui.comp.layout.SettingsPanel.LayoutMode
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.event.EventTarget
@@ -12,7 +14,6 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.management.screenshot.ScreenshotDisplayMode
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -24,7 +25,7 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSet
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
-import me.miki.shindo.ui.animation.engine.GlobalAnimationSettings
+import me.miki.shindo.ui.animation.GlobalAnimationSettings
 import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -45,7 +46,7 @@ class InternalSettingsMod :
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.BLUR_STRENGTH, min = 10.0, max = 20.0, current = 1.0)
     @JvmField
-    var blurStrengthSetting  = false
+    var blurStrengthSetting = 1.0
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     @JvmField
@@ -64,6 +65,12 @@ class InternalSettingsMod :
     @Property(type = PropertyType.TEXT, translate = TranslateText.CUSTOM_CAPE, text = "None")
     var capeConfigName: String? = "None"
 
+    @Property(type = PropertyType.TEXT, name = "Custom Wing", text = "None")
+    var wingConfigName: String? = "None"
+
+    @Property(type = PropertyType.TEXT, name = "Custom Bandana", text = "None")
+    var bandanaConfigName: String? = "None"
+
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CLICK_EFFECT)
     @JvmField
     var clickEffectsSetting = false
@@ -73,54 +80,36 @@ class InternalSettingsMod :
     var soundsUISetting = false
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BORDERLESS_FULSCREEN)
-    private val borderlessFullscreenSetting = false
+    @JvmField
+    val borderlessFullscreenSetting = false
 
-    // Performance Settings
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION)
     @JvmField
     var textureOptimizationSetting = true
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_CHUNK_OPTIMIZATION)
-    @JvmField
-    var chunkOptimizationSetting = true
 
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_LOG_OPTIMIZATION)
-    @JvmField
-    var logOptimizationSetting = true
-
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_SOUND_OPTIMIZATION)
-    @JvmField
-    var soundOptimizationSetting = true
-
-    @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_NETWORK_OPTIMIZATION)
-    @JvmField
-    var networkOptimizationSetting = false
 
     @Property(type = PropertyType.COMBO, name = "Settings Layout")
     val settingsLayout: SettingsLayout = SettingsLayout.SINGLE_COLUMN
 
+    @Property(type = PropertyType.COMBO, name = "Settings Density")
+    val settingsDensity: SettingsDensity = SettingsDensity.AUTO
+
+    @Property(type = PropertyType.COMBO, name = "Visual Preset")
+    @JvmField
+    val visualPreset: VisualPreset = VisualPreset.MODERN
+
     @Property(type = PropertyType.COMBO, name = "Module Layout")
-    private val moduleLayout = ModuleLayout.SINGLE_COLUMN
+    @JvmField
+    val moduleLayout = ModuleLayout.SINGLE_COLUMN
 
-
-    @Property(type = PropertyType.COMBO, name = "Screenshot Display")
-    var screenshotDisplayMode: ScreenshotDisplayMode = ScreenshotDisplayMode.FILMSTRIP
-        set(mode) {
-            val target = if (mode == null) ScreenshotDisplayMode.FILMSTRIP else mode
-            val combo = this.screenshotDisplaySetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions().get(target.ordinal))
-            }
-            field = mode
-        }
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
     var notificationCorner: NotificationCorner = NotificationCorner.BOTTOM_RIGHT
         set(corner) {
-            val target = if (corner == null) NotificationCorner.BOTTOM_RIGHT else corner
             val combo = this.notificationCornerSetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions().get(target.ordinal))
+            if (combo != null && corner.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions()[corner.ordinal])
             }
             field = corner
         }
@@ -145,10 +134,9 @@ class InternalSettingsMod :
     @EventTarget
     fun onKey(event: EventKey) {
         if (event.keyCode == modMenuKeybindSetting) {
-            mc.displayGuiScreen(Shindo.getInstance().shindoAPI.modMenu)
+            mc.displayGuiScreen(GuiNavigationHub(mc.currentScreen))
         }
 
-        // Uncomment to enable the ability to change the theme of the mod menu using the down arrow key
         if (event.keyCode == Keyboard.KEY_DOWN) {
             val combo = this.modThemeSetting
             if (combo != null) {
@@ -189,16 +177,19 @@ class InternalSettingsMod :
         return moduleLayout
     }
 
-    val settingsLayoutSetting: ComboSetting?
+    private val settingsLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "settingsLayout")
 
-    val moduleLayoutSetting: ComboSetting?
+    private val settingsDensitySetting: ComboSetting?
+        get() = getComboSetting(this, "settingsDensity")
+
+    private val visualPresetSetting: ComboSetting?
+        get() = getComboSetting(this, "visualPreset")
+
+    private val moduleLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "moduleLayout")
 
-    val screenshotDisplaySetting: ComboSetting?
-        get() = getComboSetting(this, "screenshotDisplayMode")
-
-    val notificationCornerSetting: ComboSetting?
+    private val notificationCornerSetting: ComboSetting?
         get() = getComboSetting(this, "notificationCorner")
 
     var settingsLayoutMode: LayoutMode?
@@ -214,7 +205,25 @@ class InternalSettingsMod :
                     SettingsLayout.SINGLE_COLUMN
             val combo = this.settingsLayoutSetting
             if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions().get(target.ordinal))
+                combo.setOption(combo.getOptions()[target.ordinal])
+            }
+        }
+
+    var settingsDensityMode: DensityMode?
+        get() = when (settingsDensity) {
+            SettingsDensity.COMPACT -> DensityMode.COMPACT
+            SettingsDensity.COMFORTABLE -> DensityMode.COMFORTABLE
+            SettingsDensity.AUTO -> DensityMode.AUTO
+        }
+        set(mode) {
+            val target = when (mode) {
+                DensityMode.COMPACT -> SettingsDensity.COMPACT
+                DensityMode.COMFORTABLE -> SettingsDensity.COMFORTABLE
+                else -> SettingsDensity.AUTO
+            }
+            val combo = this.settingsDensitySetting
+            if (combo != null && target.ordinal < combo.getOptions().size) {
+                combo.setOption(combo.getOptions()[target.ordinal])
             }
         }
 
@@ -230,15 +239,27 @@ class InternalSettingsMod :
             val target = if (normalized == 2) ModuleLayout.TWO_COLUMNS else ModuleLayout.SINGLE_COLUMN
             val combo = this.moduleLayoutSetting
             if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions().get(target.ordinal))
+                combo.setOption(combo.getOptions()[target.ordinal])
             }
         }
 
+    fun getVisualPreset(): VisualPreset {
+        return visualPreset
+    }
+
+    fun setVisualPreset(preset: VisualPreset?) {
+        val target = preset ?: VisualPreset.MODERN
+        val combo = this.visualPresetSetting
+        if (combo != null && target.ordinal < combo.getOptions().size) {
+            combo.setOption(combo.getOptions()[target.ordinal])
+        }
+    }
+
     fun setModuleLayout(layout: ModuleLayout?) {
-        val target = if (layout == null) ModuleLayout.SINGLE_COLUMN else layout
+        val target = layout ?: ModuleLayout.SINGLE_COLUMN
         val combo = this.moduleLayoutSetting
         if (combo != null && target.ordinal < combo.getOptions().size) {
-            combo.setOption(combo.getOptions().get(target.ordinal))
+            combo.setOption(combo.getOptions()[target.ordinal])
         }
     }
 
@@ -269,11 +290,6 @@ class InternalSettingsMod :
     fun getSoundsUISetting(): BooleanSetting? = getBooleanSetting(this, "soundsUISetting")
 
     fun getTextureOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "textureOptimizationSetting")
-    fun getChunkOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "chunkOptimizationSetting")
-    fun getLogOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "logOptimizationSetting")
-    fun getSoundOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "soundOptimizationSetting")
-
-    fun getNetworkOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "networkOptimizationSetting")
 
     fun applyBorderlessOnStartup() {
         borderlessInitialized = true
@@ -365,11 +381,7 @@ class InternalSettingsMod :
         SINGLE_COLUMN("Single Column"),
         COMPACT_GRID("Compact Grid");
 
-        private val displayName: String
-
-        init {
-            this.displayName = displayName
-        }
+        private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }
@@ -378,11 +390,28 @@ class InternalSettingsMod :
         SINGLE_COLUMN("Single Column"),
         TWO_COLUMNS("Two Columns");
 
-        private val displayName: String
+        private val displayName: String = displayName
 
-        init {
-            this.displayName = displayName
-        }
+        override fun getDisplayName(): String = displayName
+    }
+
+    enum class SettingsDensity(displayName: String) : PropertyEnum {
+        AUTO("Auto"),
+        COMPACT("Compact"),
+        COMFORTABLE("Comfortable");
+
+        private val displayName: String = displayName
+
+        override fun getDisplayName(): String = displayName
+    }
+
+    enum class VisualPreset(displayName: String) : PropertyEnum {
+        CLASSIC("Classic"),
+        MODERN("Modern"),
+        LIGHT("Light"),
+        DARK("Dark");
+
+        private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }

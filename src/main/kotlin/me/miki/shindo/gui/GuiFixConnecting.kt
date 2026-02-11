@@ -1,8 +1,6 @@
 package me.miki.shindo.gui
 
-import me.miki.shindo.Shindo
 import me.miki.shindo.management.event.impl.EventJoinServer
-import me.miki.shindo.management.network.proxy.WarpProxyManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiDisconnected
@@ -18,9 +16,7 @@ import net.minecraft.network.login.client.C00PacketLoginStart
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatComponentTranslation
 import org.apache.logging.log4j.LogManager
-import java.io.IOException
 import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -66,7 +62,7 @@ class GuiFixConnecting : GuiScreen, IShindoScreen {
                         port,
                         mc.gameSettings.isUsingNativeTransport
                     )
-                    networkManager?.setNetHandler(NetHandlerLoginClient(networkManager, mc, previousGuiScreen))
+                    networkManager?.netHandler = NetHandlerLoginClient(networkManager, mc, previousGuiScreen)
                     networkManager?.sendPacket(C00Handshake(47, ip, port, EnumConnectionState.LOGIN))
                     networkManager?.sendPacket(C00PacketLoginStart(mc.session.profile))
                 } catch (unknownhostexception: UnknownHostException) {
@@ -126,7 +122,7 @@ class GuiFixConnecting : GuiScreen, IShindoScreen {
                         port,
                         mc.gameSettings.isUsingNativeTransport
                     )
-                    networkManager?.setNetHandler(NetHandlerLoginClient(networkManager, mc, previousGuiScreen))
+                    networkManager?.netHandler = NetHandlerLoginClient(networkManager, mc, previousGuiScreen)
                     networkManager?.sendPacket(C00Handshake(47, ip, port, EnumConnectionState.LOGIN))
                     networkManager?.sendPacket(C00PacketLoginStart(mc.session.profile))
                 } catch (unknownhostexception: UnknownHostException) {
@@ -203,7 +199,13 @@ class GuiFixConnecting : GuiScreen, IShindoScreen {
         if (networkManager == null) {
             drawCenteredString(fontRendererObj, I18n.format("connect.connecting"), width / 2, height / 2 - 50, 16777215)
         } else {
-            drawCenteredString(fontRendererObj, I18n.format("connect.authorizing"), width / 2, height / 2 - 50, 16777215)
+            drawCenteredString(
+                fontRendererObj,
+                I18n.format("connect.authorizing"),
+                width / 2,
+                height / 2 - 50,
+                16777215
+            )
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -211,17 +213,6 @@ class GuiFixConnecting : GuiScreen, IShindoScreen {
 
     @Throws(UnknownHostException::class)
     private fun resolveAddress(host: String, port: Int): InetAddress {
-        val warpProxyManager = Shindo.getInstance().warpProxyManager
-        if (warpProxyManager != null && warpProxyManager.isEnabled()) {
-            try {
-                val endpoint: InetSocketAddress? = warpProxyManager.resolveEndpoint(host, port)
-                if (endpoint != null && endpoint.address != null) {
-                    return endpoint.address
-                }
-            } catch (exception: IOException) {
-                logger.warn("Warp proxy resolution failed for host {}", host, exception)
-            }
-        }
         return InetAddress.getByName(host)
     }
 

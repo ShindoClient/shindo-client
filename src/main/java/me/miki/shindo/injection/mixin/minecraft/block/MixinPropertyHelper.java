@@ -19,11 +19,6 @@ public class MixinPropertyHelper implements ICachedHashcode {
     private void cacheHashcode(String p_i45652_1_, Class<?> p_i45652_2_, CallbackInfo ci) {
         this.cachedHashcode = this.hashCode();
     }
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public int hashCode() {
         return this.cachedHashcode;

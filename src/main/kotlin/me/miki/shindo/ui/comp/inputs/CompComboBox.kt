@@ -1,10 +1,10 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
-import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.MathUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import java.awt.Color
 
@@ -46,15 +46,15 @@ class CompComboBox : Comp {
 
         changeAnimation.setAnimation(changeDirection.toFloat(), 16.0)
 
-        nvgInstance.drawGradientRoundedRect(getX(), getY(), width, 16f, 4f, accentColor.color1, accentColor.color2)
+        nvgInstance.drawGradientRoundedRect(getX(), getY(), width, 16f, 4f, accentColor.getColor1(), accentColor.getColor2())
 
         nvgInstance.drawCenteredText(
-            setting.getOption()!!.name,
-            getX() + width / 2 + (changeDirection - changeAnimation.value) * 22,
-            getY() + 5f,
-            Color(255, 255, 255, MathUtils.abs((changeAnimation.value * 255).toDouble()).toInt()),
-            8f,
-            Fonts.REGULAR
+                setting.getOption()!!.name,
+                getX() + width / 2 + (changeDirection - changeAnimation.value) * 22,
+                getY() + 5f,
+                Color(255, 255, 255, MathUtils.abs((changeAnimation.value * 255).toDouble()).toInt()),
+                8f,
+                Fonts.REGULAR
         )
 
         nvgInstance.drawText("<", getX() + 4, getY() + 4f, Color.WHITE, 10f, Fonts.REGULAR)

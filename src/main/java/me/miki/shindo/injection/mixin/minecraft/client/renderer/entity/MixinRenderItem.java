@@ -30,14 +30,8 @@ public abstract class MixinRenderItem {
 
     @Shadow
     public abstract void renderModel(IBakedModel model, int color);
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     private void renderEffect(IBakedModel model) {
-        // PatcherAddon removed - enchant glint always enabled
         int color = -8372020;
 
         Mod glintMod = GlintColorMod.instance;

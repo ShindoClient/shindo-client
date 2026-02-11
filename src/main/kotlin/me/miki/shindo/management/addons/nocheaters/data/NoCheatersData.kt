@@ -4,34 +4,19 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.miki.shindo.logger.ShindoLogger
-import net.minecraft.client.Minecraft
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventTick
 import java.io.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Gerencia o armazenamento de dados do NoCheaters
- * 
- * Funcionalidades:
- * - Salva/carrega jogadores reportados em JSON
- * - Suporta UUID e nicknames
- * - Auto-save periódico
- * 
- * Extensível para:
- * - Sincronização com servidor/API
- * - Backup automático
- * - Compressão de dados
- * - Migração de formatos
- */
 class NoCheatersData(private val configFile: File) {
 
     private val uuidMap: MutableMap<UUID, WDR> = ConcurrentHashMap()
     private val nickMap: MutableMap<String, WDR> = ConcurrentHashMap()
     private var dirty = false
     private var lastSaveTime = 0L
-    private val autoSaveInterval = 300_000L // 5 minutos
+    private val autoSaveInterval = 300_000L
 
     init {
         loadReportedPlayers()
@@ -40,8 +25,7 @@ class NoCheatersData(private val configFile: File) {
 
     @EventTarget
     fun onTick(event: EventTick) {
-        
-        // Auto-save periódico
+
         val currentTime = System.currentTimeMillis()
         if (dirty && currentTime - lastSaveTime > autoSaveInterval) {
             saveReportedPlayers()
@@ -92,21 +76,17 @@ class NoCheatersData(private val configFile: File) {
     fun saveReportedPlayers() {
         try {
             val reportLines = ArrayList<String>(uuidMap.size + nickMap.size)
-            
-            // Salva por UUID
+
             for ((uuid, wdr) in uuidMap) {
                 reportLines.add("$uuid ${wdr.getTimestamp()}${wdr.cheatsToString()}")
             }
-            
-            // Salva por nickname
+
             for ((playername, wdr) in nickMap) {
                 reportLines.add("$playername ${wdr.getTimestamp()}${wdr.cheatsToString()}")
             }
 
-            // Cria diretório se não existir
             configFile.parentFile?.mkdirs()
 
-            // Salva em JSON
             BufferedWriter(FileWriter(configFile)).use { writer ->
                 val gson = GsonBuilder()
                     .setPrettyPrinting()
@@ -117,7 +97,7 @@ class NoCheatersData(private val configFile: File) {
 
             dirty = false
             lastSaveTime = System.currentTimeMillis()
-            me.miki.shindo.logger.ShindoLogger.info("[NoCheaters] Saved ${reportLines.size} reported players")
+            ShindoLogger.info("[NoCheaters] Saved ${reportLines.size} reported players")
         } catch (e: IOException) {
             ShindoLogger.error("[NoCheaters] Failed to save reported players", e)
         }
@@ -157,7 +137,7 @@ class NoCheatersData(private val configFile: File) {
     }
 
     private fun loadReportLine(reportLine: String) {
-        // Formato: uuid/nickname timestamp cheat1 cheat2 cheat3
+
         val split = reportLine.split(" ")
         if (split.size < 3) return
 
@@ -170,7 +150,6 @@ class NoCheatersData(private val configFile: File) {
             return
         }
 
-        // Verifica se é formato antigo (com timestamp duplicado)
         val oldDataFormat = try {
             split[2].toLong()
             false
@@ -181,18 +160,15 @@ class NoCheatersData(private val configFile: File) {
         val startIndex = if (oldDataFormat) 2 else 3
         val hacks = split.subList(startIndex, split.size).toMutableList()
 
-        // Remove "ignored" (compatibilidade com versões antigas)
         hacks.remove("ignored")
         if (hacks.isEmpty()) return
 
-        // Verifica se deve deletar reportes antigos (opcional, pode ser configurável)
         val now = System.currentTimeMillis()
-        val maxAge = 90L * 24 * 3600 * 1000 // 90 dias
+        val maxAge = 90L * 24 * 3600 * 1000
         if (now > timestamp + maxAge) {
-            return // Ignora reportes muito antigos
+            return
         }
 
-        // Tenta parsear como UUID
         val uuid = try {
             UUID.fromString(mapKey)
         } catch (e: IllegalArgumentException) {
@@ -202,7 +178,7 @@ class NoCheatersData(private val configFile: File) {
         if (uuid != null) {
             uuidMap[uuid] = WDR(hacks, timestamp)
         } else if (mapKey.length < 17) {
-            // Nickname (limita a 24 horas para nicks)
+
             val nickMaxAge = 24L * 3600 * 1000
             if (now <= timestamp + nickMaxAge) {
                 nickMap[mapKey] = WDR(hacks, timestamp)
@@ -211,8 +187,8 @@ class NoCheatersData(private val configFile: File) {
     }
 
     private fun isRealPlayer(uuid: UUID): Boolean {
-        // Verifica se é um UUID válido (não offline mode)
-        // Pode ser expandido para verificar contra API
+
+
         return uuid.version() == 4
     }
 }

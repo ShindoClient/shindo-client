@@ -5,7 +5,7 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.settings.config.ConfigOwner
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
@@ -46,7 +46,7 @@ open class Mod @JvmOverloads constructor(
         } else {
             setToggled(false)
             Shindo.getInstance().notificationManager.post(
-                nameTranslate.text,
+                nameTranslate.getText(),
                 "Disabled due to serverside blacklist",
                 NotificationType.INFO
             )
@@ -115,11 +115,11 @@ open class Mod @JvmOverloads constructor(
     }
 
     fun getName(): String {
-        return nameTranslate.text
+        return nameTranslate.getText()
     }
 
     fun getDescription(): String {
-        return descriptionTranslate.text
+        return descriptionTranslate.getText()
     }
 
     open fun getIcon(): String? {
@@ -131,7 +131,7 @@ open class Mod @JvmOverloads constructor(
     }
 
     fun getNameKey(): String {
-        return nameTranslate.key
+        return nameTranslate.getKey()
     }
 
     fun isRestricted(): Boolean {

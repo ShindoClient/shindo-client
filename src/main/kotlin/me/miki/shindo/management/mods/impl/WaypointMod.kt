@@ -32,14 +32,14 @@ class WaypointMod :
     fun onRender3D(event: EventRender3D?) {
         for (wy in getInstance().waypointManager.getWaypoints()) {
             if (getInstance().waypointManager.getWorld() == wy.getWorld()) {
-                var distance = this.getDistance(wy, mc.getRenderViewEntity())
+                var distance = this.getDistance(wy, mc.renderViewEntity)
                 val renderDistance = (mc.gameSettings.renderDistanceChunks * 16) * 0.75
 
                 val tagName = wy.getName() + " [" + distance.toInt() + "m]"
 
-                var x = wy.getX() - (mc.getRenderManager() as IMixinRenderManager).getRenderPosX()
-                var y = 2.0 + wy.getY() - (mc.getRenderManager() as IMixinRenderManager).getRenderPosY()
-                var z = wy.getZ() - (mc.getRenderManager() as IMixinRenderManager).getRenderPosZ()
+                var x = wy.getX() - (mc.renderManager as IMixinRenderManager).getRenderPosX()
+                var y = 2.0 + wy.getY() - (mc.renderManager as IMixinRenderManager).getRenderPosY()
+                var z = wy.getZ() - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
 
                 if (distance > renderDistance) {
                     x = x / distance * renderDistance
@@ -54,8 +54,8 @@ class WaypointMod :
                 GlStateManager.translate(x, y, z)
                 GlStateManager.disableDepth()
 
-                GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
-                GlStateManager.rotate(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f)
+                GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+                GlStateManager.rotate(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
                 GlStateManager.scale(-scale, -scale, scale)
 
                 val width = fr.getStringWidth(tagName)
@@ -69,7 +69,7 @@ class WaypointMod :
                     -rectHeight / 2f,
                     rectWidth.toFloat(),
                     rectHeight.toFloat(),
-                    getColorByInt(Int.Companion.MIN_VALUE)
+                    getColorByInt(Int.MIN_VALUE)
                 )
                 drawOutline(
                     -rectWidth / 2f,
@@ -80,7 +80,7 @@ class WaypointMod :
                     wy.getColor()
                 )
 
-                fr.drawString(tagName, -width / 2, -height / 2 + 2, Color.WHITE.getRGB())
+                fr.drawString(tagName, -width / 2, -height / 2 + 2, Color.WHITE.rgb)
 
                 GlStateManager.enableDepth()
                 GL11.glPopMatrix()
@@ -90,7 +90,7 @@ class WaypointMod :
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.getKeyCode() == keybindSetting) {
+        if (event.keyCode == keybindSetting) {
             mc.displayGuiScreen(GuiWaypoint())
         }
     }

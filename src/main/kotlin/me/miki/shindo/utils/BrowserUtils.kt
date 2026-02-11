@@ -5,10 +5,6 @@ import org.lwjgl.Sys
 import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
-
-/**
- * Utility to open system browsers in a cross-platform way.
- */
 object BrowserUtils {
 
     @JvmStatic

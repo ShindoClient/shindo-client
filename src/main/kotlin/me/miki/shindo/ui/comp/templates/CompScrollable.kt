@@ -6,16 +6,11 @@ import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Mouse
 import java.awt.Color
-
-/**
- * Template para componentes com scroll vertical.
- * Gerencia automaticamente o scroll e renderiza a scrollbar.
- */
 open class CompScrollable(
-    x: Float = 0f,
-    y: Float = 0f,
-    width: Float = 0f,
-    height: Float = 0f
+        x: Float = 0f,
+        y: Float = 0f,
+        width: Float = 0f,
+        height: Float = 0f
 ) : Comp(x, y) {
 
     private var scrollY: Float = 0f
@@ -91,20 +86,16 @@ open class CompScrollable(
         val paletteColors = palette
         val accentColors = accent
 
-        // Aplica scissor para clipar o conteúdo
         nvgInstance.save()
         nvgInstance.scissor(getX(), getY(), getWidth(), getHeight())
 
-        // Aplica transformação de scroll
         nvgInstance.save()
         nvgInstance.translate(0f, -scrollY)
 
-        // Renderiza conteúdo
         drawScrollableContent(mouseX, mouseY, partialTicks)
 
         nvgInstance.restore()
 
-        // Renderiza scrollbar se necessário
         if (scrollbarEnabled && contentHeight > getHeight()) {
             val scrollbarX = getX() + getWidth() - scrollbarWidth - 4f
             val scrollbarY = getY() + 4f
@@ -118,7 +109,7 @@ open class CompScrollable(
             val maxScroll = getMaxScroll()
             val handleY = scrollbarY + (scrollbarHeight - handleHeight) * (scrollY / maxScroll.coerceAtLeast(1f))
 
-            val handleColor = scrollbarColor ?: ColorUtils.applyAlpha(accentColors.color1, 190)
+            val handleColor = scrollbarColor ?: ColorUtils.applyAlpha(accentColors.getColor1(), 190)
             nvgInstance.drawRoundedRect(scrollbarX, handleY, scrollbarWidth, handleHeight, 2f, handleColor)
         }
 
@@ -129,7 +120,6 @@ open class CompScrollable(
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (!isVisible()) return
 
-        // Verifica se clicou na scrollbar
         if (scrollbarEnabled && contentHeight > getHeight()) {
             val scrollbarX = getX() + getWidth() - scrollbarWidth - 4f
             val scrollbarY = getY() + 4f
@@ -158,18 +148,20 @@ open class CompScrollable(
             lastMouseY = Mouse.getY()
         }
 
-        // Scroll com mouse wheel
         val wheel = Mouse.getDWheel()
-        if (wheel != 0 && MouseUtils.isInside(Mouse.getX() * 2, Mouse.getY() * 2, getX(), getY(), getWidth(), getHeight())) {
+        if (wheel != 0 && MouseUtils.isInside(
+                        Mouse.getX() * 2,
+                        Mouse.getY() * 2,
+                        getX(),
+                        getY(),
+                        getWidth(),
+                        getHeight()
+                )
+        ) {
             scrollBy(wheel / 120f * scrollSpeed)
         }
 
         super.update(partialTicks)
     }
-
-    /**
-     * Método para renderizar o conteúdo scrollável.
-     * Pode ser sobrescrito por subclasses.
-     */
     protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 }

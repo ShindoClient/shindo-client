@@ -38,16 +38,23 @@ class HitBoxMod :
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LOOK_VECTOR)
     private val lookVectorSetting = true
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.LINE_WIDTH, min = 1.0, max = 5.0, current = 2.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.LINE_WIDTH,
+        min = 1.0,
+        max = 5.0,
+        current = 2.0,
+        step = 1.0
+    )
     private val lineWidthSetting = 2
 
     @EventTarget
     fun onRenderHitbox(event: EventRenderHitbox) {
-        val half = event.getEntity().width / 2.0f
+        val half = event.entity.width / 2.0f
 
         event.setCancelled(true)
 
-        if (event.getEntity() is EntityArmorStand) {
+        if (event.entity is EntityArmorStand) {
             return
         }
 
@@ -59,52 +66,52 @@ class HitBoxMod :
         GL11.glLineWidth(lineWidthSetting.toFloat())
 
         if (boundingBoxSetting) {
-            val box = event.getEntity().getEntityBoundingBox()
+            val box = event.entity.entityBoundingBox
             val offsetBox = AxisAlignedBB(
-                box.minX - event.getEntity().posX + event.getX(),
-                box.minY - event.getEntity().posY + event.getY(), box.minZ - event.getEntity().posZ + event.getZ(),
-                box.maxX - event.getEntity().posX + event.getX(), box.maxY - event.getEntity().posY + event.getY(),
-                box.maxZ - event.getEntity().posZ + event.getZ()
+                box.minX - event.entity.posX + event.x,
+                box.minY - event.entity.posY + event.y, box.minZ - event.entity.posZ + event.z,
+                box.maxX - event.entity.posX + event.x, box.maxY - event.entity.posY + event.y,
+                box.maxZ - event.entity.posZ + event.z
             )
             val boundingBoxColor = colorSetting
             RenderGlobal.drawOutlinedBoundingBox(
                 offsetBox,
-                boundingBoxColor.getRed(),
-                boundingBoxColor.getGreen(),
-                boundingBoxColor.getBlue(),
+                boundingBoxColor.red,
+                boundingBoxColor.green,
+                boundingBoxColor.blue,
                 (alphaSetting * 255).toInt()
             )
         }
 
-        if (eyeHeightSetting && event.getEntity() is EntityLivingBase) {
+        if (eyeHeightSetting && event.entity is EntityLivingBase) {
             RenderGlobal.drawOutlinedBoundingBox(
                 AxisAlignedBB(
-                    event.getX() - half, event.getY() + event.getEntity().getEyeHeight() - 0.009999999776482582,
-                    event.getZ() - half, event.getX() + half,
-                    event.getY() + event.getEntity().getEyeHeight() + 0.009999999776482582, event.getZ() + half
+                    event.x - half, event.y + event.entity.eyeHeight - 0.009999999776482582,
+                    event.z - half, event.x + half,
+                    event.y + event.entity.eyeHeight + 0.009999999776482582, event.z + half
                 ),
-                eyeHeightColor.getRed(), eyeHeightColor.getGreen(), eyeHeightColor.getBlue(),
+                eyeHeightColor.red, eyeHeightColor.green, eyeHeightColor.blue,
                 (alphaSetting * 255).toInt()
             )
         }
 
         if (lookVectorSetting) {
             val tessellator = Tessellator.getInstance()
-            val worldrenderer = tessellator.getWorldRenderer()
+            val worldrenderer = tessellator.worldRenderer
 
-            val look = event.getEntity().getLook(event.getPartialTicks())
+            val look = event.entity.getLook(event.partialTicks)
             worldrenderer.begin(3, DefaultVertexFormats.POSITION_COLOR)
-            worldrenderer.pos(event.getX(), event.getY() + event.getEntity().getEyeHeight(), event.getZ())
+            worldrenderer.pos(event.x, event.y + event.entity.eyeHeight, event.z)
                 .color(0, 0, 255, 255)
                 .endVertex()
             worldrenderer.pos(
-                event.getX() + look.xCoord * 2,
-                event.getY() + event.getEntity().getEyeHeight() + look.yCoord * 2, event.getZ() + look.zCoord * 2
+                event.x + look.xCoord * 2,
+                event.y + event.entity.eyeHeight + look.yCoord * 2, event.z + look.zCoord * 2
             )
                 .color(
-                    lookVectorColor.getRed(),
-                    lookVectorColor.getGreen(),
-                    lookVectorColor.getBlue(),
+                    lookVectorColor.red,
+                    lookVectorColor.green,
+                    lookVectorColor.blue,
                     (alphaSetting * 255).toInt()
                 ).endVertex()
             tessellator.draw()
@@ -117,19 +124,19 @@ class HitBoxMod :
         GlStateManager.depthMask(true)
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
 
-        if (mc.getRenderManager() != null) {
-            mc.getRenderManager().setDebugBoundingBox(true)
+        if (mc.renderManager != null) {
+            mc.renderManager.isDebugBoundingBox = true
         }
     }
 
-    public override fun onDisable() {
+    override fun onDisable() {
         super.onDisable()
 
-        if (mc.getRenderManager() != null) {
-            mc.getRenderManager().setDebugBoundingBox(false)
+        if (mc.renderManager != null) {
+            mc.renderManager.isDebugBoundingBox = false
         }
     }
 }

@@ -155,12 +155,6 @@ public final class ID3v1Genres {
     private ID3v1Genres() {
     }
 
-    /**
-     * Match provided description against genres, ignoring case.
-     *
-     * @param description genre description
-     * @return matching genre index or -1
-     */
     public static int matchGenreDescription(String description) {
         if (description != null && description.length() > 0) {
             for (int i = 0; i < ID3v1Genres.GENRES.length; i++) {

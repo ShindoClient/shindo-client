@@ -33,7 +33,6 @@ class FileManager {
     val chatLogFile: File
     val notificationLogFile: File
     val websocketLogFile: File
-    val networkLogFile: File
     val musicLogFile: File
     val discordLogFile: File
     val uiLogFile: File
@@ -69,7 +68,6 @@ class FileManager {
         chatLogFile = File(logsDir, "chat-friends.log")
         notificationLogFile = File(logsDir, "notifications.log")
         websocketLogFile = File(logsDir, "websocket.log")
-        networkLogFile = File(logsDir, "network.log")
         musicLogFile = File(logsDir, "music.log")
         discordLogFile = File(logsDir, "discord.log")
         uiLogFile = File(logsDir, "ui.log")
@@ -110,7 +108,6 @@ class FileManager {
             createFile(chatLogFile)
             createFile(notificationLogFile)
             createFile(websocketLogFile)
-            createFile(networkLogFile)
             createFile(musicLogFile)
             createFile(discordLogFile)
             createFile(uiLogFile)

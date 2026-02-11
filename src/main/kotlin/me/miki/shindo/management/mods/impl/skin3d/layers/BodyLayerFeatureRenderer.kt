@@ -1,6 +1,5 @@
 package me.miki.shindo.management.mods.impl.skin3d.layers
 
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer
 import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
 import me.miki.shindo.management.mods.impl.Skin3DMod
@@ -74,7 +73,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
         paramFloat6: Float,
         paramFloat7: Float
     ) {
-        if (player == null || !player.hasSkin() || player.isInvisible()) {
+        if (player == null || !player.hasSkin() || player.isInvisible) {
             return
         }
 
@@ -83,8 +82,8 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
         }
 
         val skinMod = Skin3DMod.getInstance() ?: return
-        if (mc.thePlayer.getPositionVector()
-                .squareDistanceTo(player.getPositionVector()) > skinMod.getRenderDistanceLOD()
+        if (mc.thePlayer.positionVector
+                .squareDistanceTo(player.positionVector) > skinMod.getRenderDistanceLOD()
         ) {
             return
         }
@@ -128,7 +127,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
             if (abstractClientPlayer.isWearing(layer.modelPart) && !layer.vanillaGetter.get()!!.isHidden) {
                 GlStateManager.pushMatrix()
 
-                if (abstractClientPlayer.isSneaking()) {
+                if (abstractClientPlayer.isSneaking) {
                     GlStateManager.translate(0.0f, 0.2f, 0.0f)
                 }
 

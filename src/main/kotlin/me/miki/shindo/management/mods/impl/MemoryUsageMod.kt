@@ -10,7 +10,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 
 class MemoryUsageMod :
     SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
@@ -47,11 +47,11 @@ class MemoryUsageMod :
         this.setHeight(60)
     }
 
-    public override fun getText(): String? {
+    override fun getText(): String {
         return "Mem: " + this.usingMemory + "%"
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.SERVER else null
     }
 

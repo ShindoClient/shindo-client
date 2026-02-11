@@ -16,7 +16,14 @@ import javax.imageio.ImageIO
 
 class ImageDisplayMod :
     HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.RADIUS, min = 2.0, max = 6.04, current = 6.0, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.RADIUS,
+        min = 2.0,
+        max = 64.0,
+        current = 6.0,
+        step = 1.0
+    )
     private val radiusSetting = 6
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
@@ -44,13 +51,13 @@ class ImageDisplayMod :
             try {
                 image = ImageIO.read(imageFile)
             } catch (e: IOException) {
-                ShindoLogger.error("Error reading image file: " + imageFile.getAbsolutePath(), e)
+                ShindoLogger.error("Error reading image file: " + imageFile.absolutePath, e)
             }
         }
 
         if (image != null) {
-            var width = image!!.getWidth()
-            var height = image!!.getHeight()
+            var width = image!!.width
+            var height = image!!.height
 
             if (width > 500 || height > 500) {
                 if ((width < 1000 || height < 1000)) {

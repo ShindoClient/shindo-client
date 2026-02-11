@@ -3,12 +3,6 @@ package me.miki.shindo.libs.romaji;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Romaji is a value of a mapping from a hiragana/katakana string to romaji.
- * A value itself also has a mapping from <code>System</code> to romaji string.
- *
- * @see System
- */
 class Romaji {
 
     private final Map<System, String> map;

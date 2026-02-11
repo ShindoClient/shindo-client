@@ -3,16 +3,14 @@ package me.miki.shindo.gui
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.quickplay.QuickPlay
-import me.miki.shindo.management.quickplay.QuickPlayCommand
 import me.miki.shindo.management.quickplay.QuickPlayManager
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.easing.EaseBackIn
-import me.miki.shindo.utils.animation.normal.other.SmoothStepAnimation
-import me.miki.shindo.utils.buffer.ScreenAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -30,8 +28,8 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
     private var currentQuickPlay: QuickPlay? = null
     private var x = 0
     private var y = 0
-    private var width = 0
-    private var height = 0
+    private var menuWidth = 0
+    private var menuHeight = 0
 
     override fun initGui() {
         val sr = ScaledResolution(mc)
@@ -41,8 +39,8 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
 
         x = (sr.scaledWidth / 2) - addX
         y = (sr.scaledHeight / 2) - addY
-        width = addX * 2
-        height = addY * 2
+        menuWidth = addX * 2
+        menuHeight = addY * 2
 
         introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation.setDirection(Direction.FORWARDS)
@@ -56,11 +54,19 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
         BlurUtils.drawBlurScreen(20F)
 
         screenAnimation.wrap(Runnable {
-            nvg!!.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f)
+            nvg!!.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f)
         }, 2 - introAnimation.getValueFloat(), introAnimation.getValueFloat().coerceAtMost(1f))
 
-        screenAnimation.wrap({ drawNanoVG() }, x, y, width, height, 2 - introAnimation.getValueFloat(),
-            introAnimation.getValueFloat().coerceAtMost(1f), true)
+        screenAnimation.wrap(
+            Runnable { drawNanoVG() },
+            x,
+            y,
+            menuWidth,
+            menuHeight,
+            2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f),
+            true
+        )
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -68,7 +74,7 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val palette: ColorPalette = instance.colorManager.palette
+        val palette: ColorPalette = instance.colorManager.getPalette()
         val quickPlayManager: QuickPlayManager = instance.quickPlayManager
 
         var offsetX = 0
@@ -83,17 +89,45 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
             currentQuickPlay = null
         }
 
-        nvg!!.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 12f, palette.getBackgroundColor(ColorType.NORMAL))
-        nvg.drawCenteredText("Choose a " + if (currentQuickPlay != null) "Mode" else "Game", x + (width / 2f), y + 10f, palette.getFontColor(ColorType.DARK), 15f, Fonts.MEDIUM)
+        nvg!!.drawRoundedRect(
+            x.toFloat(),
+            y.toFloat(),
+            menuWidth.toFloat(),
+            menuHeight.toFloat(),
+            12f,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
+        nvg.drawCenteredText(
+            "Choose a " + if (currentQuickPlay != null) "Mode" else "Game",
+            x + (menuWidth / 2f),
+            y + 10f,
+            palette.getFontColor(ColorType.DARK),
+            15f,
+            Fonts.MEDIUM
+        )
 
         nvg.save()
         nvg.translate(-(600 - (sceneChangeAnimation.getValue() * 600)).toFloat(), 0f)
 
-        for (q in quickPlayManager.quickPlays) {
-            nvg.drawRoundedRect(x + 15f + offsetX, y + 42f + offsetY, 110f, 42f, 6f, palette.getBackgroundColor(ColorType.DARK))
-            nvg.drawRoundedImage(q.icon, x + 20f + offsetX, y + 47f + offsetY, 32f, 32f, 6f)
+        for (q in quickPlayManager.getQuickPlays()) {
+            nvg.drawRoundedRect(
+                x + 15f + offsetX,
+                y + 42f + offsetY,
+                110f,
+                42f,
+                6f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
+            nvg.drawRoundedImage(q.getIcon(), x + 20f + offsetX, y + 47f + offsetY, 32f, 32f, 6f)
 
-            nvg.drawText(q.name, x + 58f + offsetX, y + 50f + offsetY, palette.getFontColor(ColorType.DARK), 10f, Fonts.MEDIUM)
+            nvg.drawText(
+                q.getName(),
+                x + 58f + offsetX,
+                y + 50f + offsetY,
+                palette.getFontColor(ColorType.DARK),
+                10f,
+                Fonts.MEDIUM
+            )
 
             offsetX += 120
 
@@ -121,15 +155,36 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
             scroll.onScroll()
             scroll.onAnimation()
 
-            nvg.scissor(x.toFloat(), y + 29f, width.toFloat(), height.toFloat())
+            nvg.scissor(x.toFloat(), y + 29f, menuWidth.toFloat(), menuHeight.toFloat())
             nvg.translate(0f, scroll.getValue())
 
-            nvg.drawRoundedImage(selected.icon, x + (width / 2f) - (46 / 2f), y + 40f, 46f, 46f, 6f)
-            nvg.drawCenteredText(selected.name, x + (width / 2f), y + 94f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
+            nvg.drawRoundedImage(selected.getIcon(), x + (menuWidth / 2f) - (46 / 2f), y + 40f, 46f, 46f, 6f)
+            nvg.drawCenteredText(
+                selected.getName(),
+                x + (menuWidth / 2f),
+                y + 94f,
+                palette.getFontColor(ColorType.DARK),
+                12f,
+                Fonts.MEDIUM
+            )
 
-            for (c in selected.commands) {
-                nvg.drawRoundedRect(x + 15f + offsetX, y + 112f + offsetY, 110f, 20f, 6f, palette.getBackgroundColor(ColorType.DARK))
-                nvg.drawCenteredText(c.name, x + 15f + offsetX + (110 / 2f), y + 118.5f + offsetY, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.REGULAR)
+            for (c in selected.getCommands()) {
+                nvg.drawRoundedRect(
+                    x + 15f + offsetX,
+                    y + 112f + offsetY,
+                    110f,
+                    20f,
+                    6f,
+                    palette.getBackgroundColor(ColorType.DARK)
+                )
+                nvg.drawCenteredText(
+                    c.getName(),
+                    x + 15f + offsetX + (110 / 2f),
+                    y + 118.5f + offsetY,
+                    palette.getFontColor(ColorType.NORMAL),
+                    9f,
+                    Fonts.REGULAR
+                )
 
                 offsetX += 120
 
@@ -142,7 +197,8 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
                 index++
             }
 
-            scroll.maxScroll = if (prevIndex <= 3) 0f else (((prevIndex + if (prevIndex % 3 == 0) 0.5f else 0f) * 30) / 1.48f) - 30
+            scroll.maxScroll =
+                if (prevIndex <= 3) 0f else (((prevIndex + if (prevIndex % 3 == 0) 0.5f else 0f) * 30) / 1.48f) - 30
         }
 
         nvg.restore()
@@ -159,8 +215,16 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton)
 
         if (currentQuickPlay == null) {
-            for (q in quickPlayManager.quickPlays) {
-                if (MouseUtils.isInside(mouseX, mouseY, x + 15f + offsetX, y + 42f + offsetY, 110f, 42f) && mouseButton == 0) {
+            for (q in quickPlayManager.getQuickPlays()) {
+                if (MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        x + 15f + offsetX,
+                        y + 42f + offsetY,
+                        110f,
+                        42f
+                    ) && mouseButton == 0
+                ) {
                     scroll.resetAll()
                     currentQuickPlay = q
                     sceneChangeAnimation.setDirection(Direction.BACKWARDS)
@@ -183,9 +247,17 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
 
             val selected = currentQuickPlay
             if (selected != null) {
-                for (c in selected.commands) {
-                    if (MouseUtils.isInside(mouseX, mouseY, x + 15f + offsetX, y + 112f + offsetY, 110f, 20f) && mouseButton == 0 && sceneChangeAnimation.isDone(Direction.BACKWARDS)) {
-                        mc.thePlayer.sendChatMessage(c.command)
+                for (c in selected.getCommands()) {
+                    if (MouseUtils.isInside(
+                            mouseX,
+                            mouseY,
+                            x + 15f + offsetX,
+                            y + 112f + offsetY,
+                            110f,
+                            20f
+                        ) && mouseButton == 0 && sceneChangeAnimation.isDone(Direction.BACKWARDS)
+                    ) {
+                        mc.thePlayer.sendChatMessage(c.getCommand())
                     }
 
                     offsetX += 120

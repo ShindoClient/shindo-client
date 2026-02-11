@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
+
 @Mixin(MouseHelper.class)
 public class MixinMouseHelper {
 
@@ -23,7 +25,7 @@ public class MixinMouseHelper {
 
         RawInputMod mod = RawInputMod.instance;
 
-        if (mod.isToggled() && Mouse.isGrabbed() && mod.isAvailable()) {
+        if (Objects.requireNonNull(mod).isToggled() && Mouse.isGrabbed() && mod.isAvailable()) {
             ci.cancel();
             deltaX = (int) mod.getDx();
             deltaY = (int) -mod.getDy();

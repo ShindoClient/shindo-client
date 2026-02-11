@@ -12,7 +12,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.GlUtils.startTranslate
 import me.miki.shindo.utils.GlUtils.stopTranslate
-import me.miki.shindo.utils.buffer.ScreenStencil
+import me.miki.shindo.ui.animation.screen.ScreenStencil
 import me.miki.shindo.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -22,10 +22,24 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION, LegacyIcon.MOD_MINIMAP) {
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.WIDTH, min = 1.00, max = 18.00, current = 15.00, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.WIDTH,
+        min = 10.0,
+        max = 180.0,
+        current = 150.0,
+        step = 1.0
+    )
     private val widthSetting = 150
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.HEIGHT, min = 1.00, max = 18.00, current = 7.00, step = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.HEIGHT,
+        min = 10.0,
+        max = 180.0,
+        current = 70.0,
+        step = 1.0
+    )
     private val heightSetting = 70
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.ALPHA, min = 0.0, max = 1.0, current = 1.0)
@@ -34,7 +48,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
     private val stencil = ScreenStencil()
     private var chunkAtlas: ChunkAtlas? = null
 
-    public override fun setup() {
+    override fun setup() {
         chunkAtlas = ChunkAtlas(10)
     }
 
@@ -58,7 +72,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         GlStateManager.disableBlend()
 
         stencil.wrap(
-            Runnable { drawMap(event.getPartialTicks()) },
+            Runnable { drawMap(event.partialTicks) },
             this.getX().toFloat(),
             this.getY().toFloat(),
             width * this.getScale(),
@@ -75,7 +89,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         val width = widthSetting
         val height = heightSetting
         val tessellator = Tessellator.getInstance()
-        val worldRenderer = tessellator.getWorldRenderer()
+        val worldRenderer = tessellator.worldRenderer
         val p: EntityPlayer = mc.thePlayer
 
         val x = lerp(p.prevPosX, p.posX, partialTicks)
@@ -139,7 +153,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         return prev + (current - prev) * partialTicks
     }
 
-    public override fun onEnable() {
+    override fun onEnable() {
         super.onEnable()
         chunkAtlas!!.clear()
     }

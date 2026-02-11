@@ -1,9 +1,9 @@
-﻿package me.miki.shindo.ui.comp.inputs
+package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.settings.impl.ColorSetting
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.MathUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
@@ -40,8 +40,13 @@ class CompColorPicker : Comp {
     fun isOpen(): Boolean = isOpen
     fun getScale(): Float = scale
 
-    fun setOpen(isOpen: Boolean) { this.isOpen = isOpen }
-    fun setScale(scale: Float) { this.scale = scale }
+    fun setOpen(isOpen: Boolean) {
+        this.isOpen = isOpen
+    }
+
+    fun setScale(scale: Float) {
+        this.scale = scale
+    }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
@@ -67,7 +72,12 @@ class CompColorPicker : Comp {
             if (hueDiff == 0.0) {
                 colorSetting.setHue(hueMinValue)
             } else {
-                colorSetting.setHue(MathUtils.roundToPlace((hueDiff / size) * (hueMaxValue - hueMinValue) + hueMinValue, 2).toFloat())
+                colorSetting.setHue(
+                        MathUtils.roundToPlace(
+                                (hueDiff / size) * (hueMaxValue - hueMinValue) + hueMinValue,
+                                2
+                        ).toFloat()
+                )
             }
         }
 
@@ -87,12 +97,16 @@ class CompColorPicker : Comp {
 
         if (sbDragging) {
             colorSetting.setBrightness(
-                if (brightnessDiff == 0.0) sbMinValue
-                else MathUtils.roundToPlace((brightnessDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2).toFloat())
+                    if (brightnessDiff == 0.0) sbMinValue
+                    else MathUtils.roundToPlace((brightnessDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
+                            .toFloat()
+            )
 
             colorSetting.setSaturation(
-                if (saturationDiff == 0.0) sbMinValue
-                else MathUtils.roundToPlace((saturationDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2).toFloat())
+                    if (saturationDiff == 0.0) sbMinValue
+                    else MathUtils.roundToPlace((saturationDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
+                            .toFloat()
+            )
         }
 
         val alphaMaxValue = 255
@@ -109,22 +123,71 @@ class CompColorPicker : Comp {
         if (alphaDragging) {
             if (colorSetting.isShowAlpha()) {
                 colorSetting.setAlpha(
-                    if (alphaDiff == 0.0) 0
-                    else MathUtils.roundToPlace((alphaDiff / alphaWidth) * (alphaMaxValue - alphaMinValue) + alphaMinValue, 2).toInt())
+                        if (alphaDiff == 0.0) 0
+                        else MathUtils.roundToPlace(
+                                (alphaDiff / alphaWidth) * (alphaMaxValue - alphaMinValue) + alphaMinValue,
+                                2
+                        ).toInt()
+                )
             } else {
                 colorSetting.setAlpha(255)
             }
         }
 
         nvgInstance.drawHSBBox(getX(), getY(), size, size, 6f * scale, Color.getHSBColor(colorSetting.getHue(), 1f, 1f))
-        nvgInstance.drawRoundedImage(ResourceLocation("shindo/hue.png"), getX() + 106 * scale, getY(), 12 * scale, size, 3 * scale)
-        nvgInstance.drawArc(getX() + 112 * scale, getY() + hueAnimation.value + 6 * scale, 3 * scale, 0f, 360f, 1.2f * scale, Color.WHITE)
-        nvgInstance.drawArc(getX() + saturationAnimation.value + 6 * scale, getY() + size - brightnessAnimation.value - 6 * scale, 3 * scale, 0f, 360f, 1.2f * scale, Color.WHITE)
+        nvgInstance.drawRoundedImage(
+                ResourceLocation("shindo/hue.png"),
+                getX() + 106 * scale,
+                getY(),
+                12 * scale,
+                size,
+                3 * scale
+        )
+        nvgInstance.drawArc(
+                getX() + 112 * scale,
+                getY() + hueAnimation.value + 6 * scale,
+                3 * scale,
+                0f,
+                360f,
+                1.2f * scale,
+                Color.WHITE
+        )
+        nvgInstance.drawArc(
+                getX() + saturationAnimation.value + 6 * scale,
+                getY() + size - brightnessAnimation.value - 6 * scale,
+                3 * scale,
+                0f,
+                360f,
+                1.2f * scale,
+                Color.WHITE
+        )
 
         if (colorSetting.isShowAlpha()) {
-            nvgInstance.drawRoundedImage(ResourceLocation("shindo/alpha.png"), getX(), getY() + 106 * scale, size + 18 * scale, 12 * scale, 3 * scale)
-            nvgInstance.drawAlphaBar(getX(), getY() + 106 * scale, alphaWidth, 12 * scale, 3 * scale, Color.getHSBColor(colorSetting.getHue(), 1f, 1f))
-            nvgInstance.drawArc(getX() + alphaAnimation.value + 6 * scale, getY() + 112 * scale, 3 * scale, 0f, 360f, 1.2f * scale, Color.WHITE)
+            nvgInstance.drawRoundedImage(
+                    ResourceLocation("shindo/alpha.png"),
+                    getX(),
+                    getY() + 106 * scale,
+                    size + 18 * scale,
+                    12 * scale,
+                    3 * scale
+            )
+            nvgInstance.drawAlphaBar(
+                    getX(),
+                    getY() + 106 * scale,
+                    alphaWidth,
+                    12 * scale,
+                    3 * scale,
+                    Color.getHSBColor(colorSetting.getHue(), 1f, 1f)
+            )
+            nvgInstance.drawArc(
+                    getX() + alphaAnimation.value + 6 * scale,
+                    getY() + 112 * scale,
+                    3 * scale,
+                    0f,
+                    360f,
+                    1.2f * scale,
+                    Color.WHITE
+            )
         }
 
         nvgInstance.restore()
@@ -149,7 +212,15 @@ class CompColorPicker : Comp {
                     sbDragging = true
                 }
 
-                if (MouseUtils.isInside(mouseX, mouseY, getX(), getY() + 106 * scale + addY, alphaWidth, 12 * scale) && colorSetting.isShowAlpha()) {
+                if (MouseUtils.isInside(
+                                mouseX,
+                                mouseY,
+                                getX(),
+                                getY() + 106 * scale + addY,
+                                alphaWidth,
+                                12 * scale
+                        ) && colorSetting.isShowAlpha()
+                ) {
                     alphaDragging = true
                 }
             }
@@ -172,5 +243,5 @@ class CompColorPicker : Comp {
     fun isShowAlpha(): Boolean = colorSetting.isShowAlpha()
 
     fun isInsideOpen(mouseX: Int, mouseY: Int): Boolean =
-        MouseUtils.isInside(mouseX, mouseY, getX() + 106 * scale, getY(), 16 * scale, 16 * scale)
+            MouseUtils.isInside(mouseX, mouseY, getX() + 106 * scale, getY(), 16 * scale, 16 * scale)
 }

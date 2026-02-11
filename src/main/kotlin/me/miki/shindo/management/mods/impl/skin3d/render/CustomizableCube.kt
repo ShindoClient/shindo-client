@@ -180,7 +180,7 @@ class CustomizableCube(
         worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
         var polygon: Polygon
 
-        for (id in 0..<polygonCount) {
+        for (id in 0 until polygonCount) {
             polygon = polygons[id]!!
 
             for (i in 0..3) {
@@ -195,3 +195,4 @@ class CustomizableCube(
         Tessellator.getInstance().draw()
     }
 }
+

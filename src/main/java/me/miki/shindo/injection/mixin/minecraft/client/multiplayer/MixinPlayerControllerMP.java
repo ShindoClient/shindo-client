@@ -10,13 +10,11 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,7 +33,7 @@ public class MixinPlayerControllerMP {
     private final NetHandlerPlayClient netClientHandler;
 
     @Shadow
-    private BlockPos currentBlock = new BlockPos(-1, -1, -1);
+    private final BlockPos currentBlock = new BlockPos(-1, -1, -1);
 
     @Shadow
     private boolean isHittingBlock;
@@ -46,11 +44,6 @@ public class MixinPlayerControllerMP {
     protected MixinPlayerControllerMP(NetHandlerPlayClient netClientHandler) {
         this.netClientHandler = netClientHandler;
     }
-
-    /**
-     * @author
-     * @reason
-     */
     @Overwrite
     public void resetBlockRemoving() {
 
@@ -76,10 +69,10 @@ public class MixinPlayerControllerMP {
             cir.setReturnValue(false);
         }
     }
-    
+
     @Inject(method = "onPlayerDestroyBlock", at = @At("HEAD"))
     private void onPlayerDestroyBlock(BlockPos pos, EnumFacing side, CallbackInfoReturnable<Boolean> cir) {
-        // HackerDetector: Rastreia quebra de blocos
+
         if (mc.theWorld != null && mc.thePlayer != null) {
             IBlockState state = mc.theWorld.getBlockState(pos);
             Block block = state.getBlock();
@@ -88,11 +81,10 @@ public class MixinPlayerControllerMP {
             HackerDetectorAddon.getInstance().addBrokenBlock(block, pos, tool);
         }
     }
-    
+
     @Inject(method = "onPlayerRightClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;onItemUse(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/util/EnumFacing;FFF)Z", shift = At.Shift.AFTER))
     private void onPlayerRightClick(EntityPlayerSP player, WorldClient worldIn, ItemStack heldStack, BlockPos pos, EnumFacing side, Vec3 hitVec, CallbackInfoReturnable<Boolean> cir) {
 
-        // HackerDetector: Rastreia colocação de blocos
         if (pos != null && worldIn != null && !worldIn.isAirBlock(pos)) {
             IBlockState state = worldIn.getBlockState(pos);
             HackerDetectorAddon.getInstance().addPlacedBlock(pos, state);

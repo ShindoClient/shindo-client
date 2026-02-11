@@ -1,10 +1,6 @@
 package me.miki.shindo.libs.spotify.exceptions.detailed;
 
 import me.miki.shindo.libs.spotify.exceptions.SpotifyWebApiException;
-
-/**
- * Rate limiting has been applied.
- */
 public class TooManyRequestsException extends SpotifyWebApiException {
 
     private int retryAfter;

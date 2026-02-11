@@ -1,10 +1,6 @@
 package me.miki.shindo.libs.spotify.exceptions.detailed;
 
 import me.miki.shindo.libs.spotify.exceptions.SpotifyWebApiException;
-
-/**
- * The server was acting as a gateway or proxy and received an invalid response from the upstream server.
- */
 public class BadGatewayException extends SpotifyWebApiException {
 
     public BadGatewayException() {

@@ -1,5 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer.texture;
 
+import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
@@ -8,40 +9,32 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Otimiza o carregamento de texturas usando cache para evitar carregamentos duplicados.
- * 
- * Nota: Carregamento paralelo completo não é implementado devido a restrições do OpenGL
- * (texturas devem ser carregadas no thread principal). Esta otimização foca em evitar
- * carregamentos duplicados e melhorar a eficiência do cache.
- */
 @Mixin(TextureManager.class)
 public abstract class MixinTextureManager {
-    
+
+    private final Map<ResourceLocation, Boolean> loadingTextures = new ConcurrentHashMap<>();
     @Shadow
     private Map<ResourceLocation, ITextureObject> mapTextureObjects;
-    
-    // Cache de texturas que estão sendo carregadas para evitar duplicatas
-    private final Map<ResourceLocation, Boolean> loadingTextures = new ConcurrentHashMap<>();
-    
-    /**
-     * Marca uma textura como carregando para evitar carregamentos duplicados.
-     */
+
     @Inject(method = "loadTexture", at = @At("HEAD"))
-    private void onTextureLoadStart(ResourceLocation textureLocation, CallbackInfo ci) {
-        // Marca como carregando (evita carregamentos duplicados simultâneos)
-        loadingTextures.put(textureLocation, Boolean.TRUE);
+    private void onTextureLoadStart(ResourceLocation p_110579_0_, ITextureObject textureLocation, CallbackInfoReturnable<Boolean> cir) {
+        if (InternalSettingsMod.instance == null) return;
+        if (!InternalSettingsMod.instance.textureOptimizationSetting) return;
+
+        loadingTextures.put(p_110579_0_, Boolean.TRUE);
     }
-    
-    /**
-     * Limpa o cache quando uma textura é removida.
-     */
-    @Inject(method = "deleteTexture", at = @At("HEAD"))
+
+    @Inject(method = "deleteTexture", at = @At("TAIL"))
     private void onTextureDeleted(ResourceLocation textureLocation, CallbackInfo ci) {
+        if (textureLocation == null) return;
+        if (InternalSettingsMod.instance == null) return;
+        if (!InternalSettingsMod.instance.textureOptimizationSetting) return;
         loadingTextures.remove(textureLocation);
     }
+
 }

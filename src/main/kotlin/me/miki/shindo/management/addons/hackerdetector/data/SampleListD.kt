@@ -1,44 +1,36 @@
 package me.miki.shindo.management.addons.hackerdetector.data
 
-/**
- * Lista circular otimizada para armazenar amostras de valores double
- * Usa array nativo para melhor performance
- */
 class SampleListD(private val capacity: Int) {
-    
+
     init {
         require(capacity >= 2) { "Size must be at least 2" }
     }
-    
+
     private val data = DoubleArray(capacity)
     private var size = 0
     private var latestIndex = -1
-    
+
     fun add(value: Double) {
         latestIndex = (latestIndex + 1) % capacity
         data[latestIndex] = value
         if (size < capacity) size++
     }
-    
-    /**
-     * get(0) retorna o elemento mais recente
-     * get(capacity - 1) retorna o elemento mais antigo
-     */
+
     fun get(index: Int): Double {
         require(index in 0..size) { "Index out of bounds: $index" }
         val i = latestIndex - index
         return data[if (i < 0) i + capacity else i]
     }
-    
+
     fun clear() {
         size = 0
         latestIndex = -1
     }
-    
+
     fun size(): Int = size
     fun capacity(): Int = capacity
     fun hasCollected(): Boolean = size == capacity
-    
+
     fun sum(): Double {
         var s = 0.0
         for (i in 0 until size) {
@@ -46,9 +38,9 @@ class SampleListD(private val capacity: Int) {
         }
         return s
     }
-    
+
     fun average(): Double = sum() / size
-    
+
     fun isSameValues(): Boolean {
         if (size < 2) return false
         val v = get(0)
@@ -57,7 +49,7 @@ class SampleListD(private val capacity: Int) {
         }
         return true
     }
-    
+
     override fun toString(): String {
         if (size == 0) return "[]"
         return buildString {

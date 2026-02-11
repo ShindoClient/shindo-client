@@ -9,12 +9,6 @@ import me.miki.shindo.libs.spotify.model_objects.special.Actions;
 
 import java.util.EnumSet;
 import java.util.Map;
-
-/**
- * Retrieve information about
- * <a href="https://developer.spotify.com/web-api/object-model/#disallows-object">Disallows objects</a>
- * by building instances from this class.
- */
 @JsonDeserialize(builder = Actions.Builder.class)
 public class Disallows extends AbstractModelObject {
     private final EnumSet<Action> disallowedActions;
@@ -23,12 +17,6 @@ public class Disallows extends AbstractModelObject {
         super(builder);
         this.disallowedActions = builder.disallowedActions;
     }
-
-    /**
-     * Get a set of disallowed actions.
-     *
-     * @return The set of disallowed actions.
-     */
     public EnumSet<Action> getDisallowedActions() {
         return disallowedActions;
     }
@@ -42,19 +30,8 @@ public class Disallows extends AbstractModelObject {
     public Builder builder() {
         return new Builder();
     }
-
-    /**
-     * Builder class for building {@link Disallows} instances.
-     */
     public static final class Builder extends AbstractModelObject.Builder {
         private EnumSet<Action> disallowedActions;
-
-        /**
-         * Set the set of disallowed actions.
-         *
-         * @param disallowedActions The set of disallowed actions.
-         * @return A {@link Disallows.Builder}.
-         */
         public Builder setDisallowedActions(EnumSet<Action> disallowedActions) {
             this.disallowedActions = disallowedActions;
             return this;
@@ -65,10 +42,6 @@ public class Disallows extends AbstractModelObject {
             return new Disallows(this);
         }
     }
-
-    /**
-     * JsonUtil class for building {@link Disallows} instances.
-     */
     public static final class JsonUtil extends AbstractModelObject.JsonUtil<Disallows> {
         @Override
         public Disallows createModelObject(JsonObject jsonObject) {

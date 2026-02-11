@@ -1,19 +1,14 @@
-﻿package me.miki.shindo.ui.comp.display
+package me.miki.shindo.ui.comp.display
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.animation.simple.SimpleAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
-
-/**
- * Tooltip que aparece quando o mouse está sobre um componente.
- * Suporta múltiplas linhas e formatação.
- */
 class CompTooltip(
-    text: String,
-    x: Float = 0f,
-    y: Float = 0f
+        text: String,
+        x: Float = 0f,
+        y: Float = 0f
 ) : Comp(x, y) {
 
     private var text: String = text
@@ -87,10 +82,10 @@ class CompTooltip(
     private fun updateSize() {
         val nvgInstance = nvg
         val textHeight = nvgInstance.getTextBoxHeight(
-            text,
-            fontSize,
-            me.miki.shindo.management.nanovg.font.Fonts.REGULAR,
-            maxWidth
+                text,
+                fontSize,
+                me.miki.shindo.management.nanovg.font.Fonts.REGULAR,
+                maxWidth
         )
         setWidth(maxWidth + padding * 2)
         setHeight(textHeight + padding * 2)
@@ -113,13 +108,13 @@ class CompTooltip(
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
 
         nvgInstance.drawTextBox(
-            text,
-            getX() + padding,
-            getY() + padding,
-            maxWidth,
-            txtColor,
-            fontSize,
-            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+                text,
+                getX() + padding,
+                getY() + padding,
+                maxWidth,
+                txtColor,
+                fontSize,
+                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
         )
 
         super.draw(mouseX, mouseY, partialTicks)

@@ -5,9 +5,9 @@ import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.DecelerateAnimation
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.DecelerateAnimation
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
@@ -41,7 +41,7 @@ class CheckingDataScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 )
             })
 
-            if (Shindo.getInstance().downloadManager.isDownloaded && fadeAnimation!!.direction == Direction.FORWARDS) {
+            if (Shindo.getInstance().downloadManager.isDownloaded() && fadeAnimation!!.direction == Direction.FORWARDS) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
             }
 

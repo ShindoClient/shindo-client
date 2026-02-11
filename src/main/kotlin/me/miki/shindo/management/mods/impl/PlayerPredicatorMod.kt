@@ -29,7 +29,7 @@ class PlayerPredicatorMod : Mod(
     "",
     true
 ) {
-    private var realTargetPosition = PlayerPredicatorMod.Position(0.0, 0.0, 0.0)
+    private var realTargetPosition = Position(0.0, 0.0, 0.0)
     private var target: AbstractClientPlayer? = null
     private var isActive = false
 
@@ -43,14 +43,14 @@ class PlayerPredicatorMod : Mod(
         }
 
         if (isActive) {
-            realTargetPosition = PlayerPredicatorMod.Position(target!!.posX, target!!.posY, target!!.posZ)
+            realTargetPosition = Position(target!!.posX, target!!.posY, target!!.posZ)
             isActive = false
         }
     }
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        val packet = event.getPacket()
+        val packet = event.packet
 
         if (target == null) {
             return
@@ -60,7 +60,7 @@ class PlayerPredicatorMod : Mod(
             val s14PacketEntity = packet
             val iS14PacketEntity = s14PacketEntity as IMixinS14PacketEntity
 
-            if (iS14PacketEntity.getEntityId() == target!!.getEntityId()) {
+            if (iS14PacketEntity.getEntityId() == target!!.entityId) {
                 realTargetPosition.x += iS14PacketEntity.getPosX() / 32.0
                 realTargetPosition.y += iS14PacketEntity.getPosY() / 32.0
                 realTargetPosition.z += iS14PacketEntity.getPosZ() / 32.0
@@ -68,10 +68,10 @@ class PlayerPredicatorMod : Mod(
         } else if (packet is S18PacketEntityTeleport) {
             val s18PacketEntityTeleport = packet
 
-            realTargetPosition = PlayerPredicatorMod.Position(
-                s18PacketEntityTeleport.getX() / 32.0,
-                s18PacketEntityTeleport.getY() / 32.0,
-                s18PacketEntityTeleport.getZ() / 32.0
+            realTargetPosition = Position(
+                s18PacketEntityTeleport.x / 32.0,
+                s18PacketEntityTeleport.y / 32.0,
+                s18PacketEntityTeleport.z / 32.0
             )
         }
     }
@@ -97,10 +97,10 @@ class PlayerPredicatorMod : Mod(
 
             val expand = 0.14
 
-            setColor(applyAlpha(getInstance().colorManager.getCurrentColor().getInterpolateColor(0), 80).getRGB())
+            setColor(applyAlpha(getInstance().colorManager.getCurrentColor().getInterpolateColor(0), 80).rgb)
 
             drawBoundingBox(
-                mc.thePlayer.getEntityBoundingBox().offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)
+                mc.thePlayer.entityBoundingBox.offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)
                     .offset
                         (realTargetPosition.x, realTargetPosition.y, realTargetPosition.z)
                     .expand(expand, expand, expand)

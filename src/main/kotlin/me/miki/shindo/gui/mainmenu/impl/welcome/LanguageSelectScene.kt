@@ -8,13 +8,10 @@ import me.miki.shindo.management.language.Language
 import me.miki.shindo.management.language.LanguageManager
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.comp.frame.CompFrameButton
-import me.miki.shindo.ui.frame.adapter.MainMenuSceneFrameAdapter
-import me.miki.shindo.ui.frame.template.WelcomeFrameTemplate
-import me.miki.shindo.utils.animation.normal.Animation
-import me.miki.shindo.utils.animation.normal.Direction
-import me.miki.shindo.utils.animation.normal.other.DecelerateAnimation
-import me.miki.shindo.utils.buffer.ScreenAlpha
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.Direction
+import me.miki.shindo.ui.animation.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.screen.ScreenAlpha
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -26,19 +23,20 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private val screenAlpha = ScreenAlpha()
     private val scroll = Scroll()
     private val languageManager: LanguageManager = Shindo.getInstance().languageManager
+    private var x = 0
+    private var y = 0
+    private var width = 0
+    private var height = 0
     private var fadeAnimation: Animation? = null
-    private var currentLanguage: Language = languageManager.currentLanguage
-    private lateinit var nextButton: CompFrameButton
-    
-    // Frame adapter
-    private val frameAdapter = MainMenuSceneFrameAdapter(
-        this,
-        WelcomeFrameTemplate,
-        "Choose a Language"
-    )
+    private var currentLanguage: Language = languageManager.getCurrentLanguage()
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val sr = ScaledResolution(mc)
+
+        width = 280
+        height = 146
+        x = sr.scaledWidth / 2 - (width / 2)
+        y = sr.scaledHeight / 2 - (height / 2)
 
         if (fadeAnimation == null) {
             fadeAnimation = DecelerateAnimation(800, 1.0)
@@ -58,133 +56,56 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
-        val currentColor: AccentColor = instance.colorManager.currentColor
-        val frame = frameAdapter.getFrame()
-        
-        // Ajusta tamanho do frame para o tamanho original
-        frame.setSize(280f, 146f)
-        val sr = ScaledResolution(mc)
-        frame.setPosition(
-            (sr.scaledWidth - 280f) / 2f,
-            (sr.scaledHeight - 146f) / 2f
-        )
-        
-        val x = frame.getX().toInt()
-        val y = frame.getY().toInt()
-        val width = frame.getWidth().toInt()
-        val height = frame.getHeight().toInt()
+        val currentColor: AccentColor = instance.colorManager.getCurrentColor()
 
         var offsetX = 0
         var index = 1
 
+        val panelColor = getPanelColor()
         val controlColor = getControlColor()
-        
-        // Desenha o frame (header e container)
-        frameAdapter.draw(0, 0, 0f)
+        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
+        nvg.drawCenteredText("Choose a Language", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
+        nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)
 
         scroll.onScroll()
         scroll.onAnimation()
 
-        // Área de scroll para os idiomas usando o método auxiliar do frame
-        // Isso garante que o translate e scissor funcionem corretamente juntos
-        frame.drawInContainer(scroll.getValue(), 0f) { nvgInstance ->
-            val container = frameAdapter.getContainer()
-            val contentArea = container.getContentArea()
-            
-            // Desenha os idiomas dentro da área de conteúdo
-            for (lang in Language.entries) {
-                val flagX = contentArea.x + offsetX + 14f
-                val flagY = contentArea.y + 27f
-                
-                nvgInstance.drawRoundedImage(
-                    lang.flag,
-                    flagX,
-                    flagY,
-                    90f,
-                    56f,
-                    4f
-                )
-                nvgInstance.drawCenteredText(
-                    lang.name,
-                    flagX + (90 / 2f),
-                    flagY + 62f, // 27f + 35f (meio da flag) + offset para texto
-                    Color.WHITE,
-                    7f,
-                    Fonts.REGULAR
-                )
-                if (lang == currentLanguage) {
-                    nvgInstance.drawGradientOutlineRoundedRect(
-                        flagX,
-                        flagY,
-                        90f,
-                        56f,
-                        6f,
-                        2f,
-                        currentColor.color1,
-                        currentColor.color2
-                    )
-                }
-                offsetX += 102
-                index++
+        nvg.save()
+        nvg.scissor(x.toFloat(), y + 27f, width.toFloat(), height - 27f)
+        nvg.translate(scroll.getValue(), 0f)
+
+        for (lang in Language.values()) {
+            nvg.drawRoundedImage(lang.getFlag(), x + offsetX + 14f, y + 42f, 90f, 56f, 4f)
+            nvg.drawCenteredText(lang.name, x + offsetX + 14f + (90 / 2f), y + 104f, Color.WHITE, 7f, Fonts.REGULAR)
+            if (lang == currentLanguage) {
+                nvg.drawGradientOutlineRoundedRect(x + offsetX + 14f, y + 42f, 90f, 56f, 6f, 2f, currentColor.getColor1(), currentColor.getColor2())
             }
+            offsetX += 102
+            index++
         }
 
         scroll.maxScroll = (index - 3.58f) * 102
 
-        // Botão Next
-        if (!::nextButton.isInitialized) {
-            nextButton = CompFrameButton(
-                frame.getX() + frame.getWidth() - 86f,
-                frame.getY() + frame.getHeight() - 26f,
-                80f,
-                20f,
-                "Next"
-            )
-            nextButton.onClick = {
-                Shindo.getInstance().languageManager.currentLanguage = currentLanguage
-                fadeAnimation!!.setDirection(Direction.BACKWARDS)
-            }
-            frameAdapter.attachToFrame(nextButton)
-        }
-        
-        nextButton.setBounds(
-            frame.getX() + frame.getWidth() - 86f,
-            frame.getY() + frame.getHeight() - 26f,
-            80f,
-            20f
-        )
-        nextButton.draw(0, 0, 0f)
+        nvg.restore()
+
+        nvg.drawRoundedRect(x + width - 86f, y + height - 26f, 80f, 20f, 6f, controlColor)
+        nvg.drawCenteredText("Next", x + width - 86f + (80 / 2f), y + height - 20f, Color.WHITE, 10f, Fonts.REGULAR)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val frame = frameAdapter.getFrame()
-        val container = frameAdapter.getContainer()
-        val contentArea = container.getContentArea()
-        
-        // Processa eventos do frame primeiro
-        frameAdapter.mouseClicked(mouseX, mouseY, mouseButton)
+        var offsetX = scroll.getValue()
 
-        // Ajusta as coordenadas do mouse para considerar o translate do scroll
-        // O translate é aplicado no desenho, então precisamos desfazê-lo aqui
-        val scrollValue = scroll.getValue()
-        val adjustedMouseX = mouseX - scrollValue.toInt()
-        
-        var offsetX = 0
-        for (lang in Language.entries) {
-            // Usa as mesmas coordenadas que o desenho (contentArea + offsetX + padding)
-            val flagX = contentArea.x + offsetX + 14f
-            val flagY = contentArea.y + 27f
-            
-            if (MouseUtils.isInside(
-                    adjustedMouseX, mouseY,
-                    flagX, flagY,
-                    90f, 56f
-                ) && mouseButton == 0
-            ) {
+        for (lang in Language.values()) {
+            if (MouseUtils.isInside(mouseX, mouseY, x + offsetX + 14f, y + 42f, 90f, 56f) && mouseButton == 0) {
                 currentLanguage = lang
             }
 
             offsetX += 102
+        }
+
+        if (MouseUtils.isInside(mouseX, mouseY, x + width - 86f, y + height - 26f, 80f, 20f) && mouseButton == 0) {
+            Shindo.getInstance().languageManager.setCurrentLanguage(currentLanguage)
+            fadeAnimation!!.setDirection(Direction.BACKWARDS)
         }
     }
 }

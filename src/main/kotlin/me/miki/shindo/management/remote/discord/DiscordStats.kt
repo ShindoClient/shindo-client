@@ -6,9 +6,6 @@ import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.network.HttpUtils
 
-/**
- * Consulta a API do Discord para exibir contagem de membros no mod menu.
- */
 class DiscordStats {
     var membersCount: Int = -1
         private set

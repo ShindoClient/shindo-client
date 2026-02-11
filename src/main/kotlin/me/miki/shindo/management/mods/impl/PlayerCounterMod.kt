@@ -21,11 +21,11 @@ class PlayerCounterMod : SimpleHUDMod(
         this.draw()
     }
 
-    public override fun getText(): String? {
-        return "Player: " + mc.thePlayer.sendQueue.getPlayerInfoMap().size
+    override fun getText(): String {
+        return "Player: " + mc.thePlayer.sendQueue.playerInfoMap.size
     }
 
-    public override fun getIcon(): String? {
+    override fun getIcon(): String? {
         return if (iconSetting) LegacyIcon.USERS else null
     }
 }

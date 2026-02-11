@@ -15,14 +15,12 @@ import paulscode.sound.SoundSystem;
 
 import java.util.*;
 
-/**
- * Otimiza o carregamento de sons usando multithreading.
- * Sons são carregados em paralelo no pool IO, melhorando o tempo de inicialização.
- */
 @Mixin(SoundManager.class)
 public abstract class MixinSoundManager {
 
-    private final List<String> pausedSounds = new ArrayList<>();
+    @Shadow
+    public abstract boolean isSoundPlaying(ISound sound);
+
     @Shadow
     @Final
     private Map<String, ISound> playingSounds;
@@ -30,11 +28,7 @@ public abstract class MixinSoundManager {
     @Shadow
     private boolean loaded;
 
-    @Shadow
-    public abstract boolean isSoundPlaying(ISound sound);
-    
-    // Cache de futures para evitar carregamentos duplicados (reservado para uso futuro)
-    // private final Map<String, CompletableFuture<Void>> loadingSounds = new ConcurrentHashMap<>();
+    private final List<String> pausedSounds = new ArrayList<>();
 
     @Redirect(method = "pauseAllSounds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/audio/SoundManager$SoundSystemStarterThread;pause(Ljava/lang/String;)V", remap = false))
     private void onlyPauseSoundIfNecessary(@Coerce SoundSystem soundSystem, String sound) {
@@ -51,8 +45,8 @@ public abstract class MixinSoundManager {
 
     @Inject(method = "playSound", at = @At("HEAD"))
     public void prePlaySound(ISound p_sound, CallbackInfo ci) {
-        if (loaded) {
-            SoundSubtitlesMod.instance.soundPlay(p_sound);
+        if(loaded) {
+            Objects.requireNonNull(SoundSubtitlesMod.instance).soundPlay(p_sound);
         }
     }
 
@@ -60,8 +54,4 @@ public abstract class MixinSoundManager {
     private void clearPausedSounds(CallbackInfo ci) {
         pausedSounds.clear();
     }
-    
-    // Nota: Otimização de carregamento de sons será implementada quando necessário.
-    // Por enquanto, mantemos o comportamento original para garantir thread-safety.
 }
-
