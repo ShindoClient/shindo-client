@@ -106,6 +106,10 @@ public abstract class MixinGuiNewChat extends Gui {
 
         return instance.drawStringWithShadow(text, x, y, lastOpacity);
     }
+
+    /**
+     * @author
+     */
     @Overwrite
     public void printChatMessage(IChatComponent component) {
 

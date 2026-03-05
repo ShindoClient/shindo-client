@@ -12,8 +12,8 @@ import me.miki.shindo.utils.mouse.MouseUtils
 
 
 open class Comp(
-        x: Float = 0f,
-        y: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f
 ) : IComponent, IBounded, IContainer {
 
     private var _x: Float = x
@@ -129,7 +129,7 @@ open class Comp(
     override fun hasChildren(): Boolean = children.isNotEmpty()
 
     open fun isHovered(mouseX: Int, mouseY: Int): Boolean =
-            MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
+        MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
 
     private inline fun forEachChild(action: (Comp) -> Unit) {
         val size = children.size

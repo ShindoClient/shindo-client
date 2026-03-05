@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.animation
+
 object GlobalAnimationSettings {
 
     @JvmField

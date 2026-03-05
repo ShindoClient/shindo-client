@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventPlaySound
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -87,32 +87,32 @@ class SoundModifierMod : Mod(
 
     @EventTarget
     fun onPlaySound(event: EventPlaySound) {
-        if (event.soundName.startsWith("fireworks")) {
-            event.volume = fireworksSetting / 100f
+        if (event.getSoundName().startsWith("fireworks")) {
+            event.setVolume(fireworksSetting / 100f)
         }
 
-        if (event.soundName.startsWith("records")) {
-            event.volume = recordsSetting / 100f
+        if (event.getSoundName().startsWith("records")) {
+            event.setVolume(recordsSetting / 100f)
         }
 
-        if (event.soundName.startsWith("step")) {
-            event.volume = stepSetting / 100f
+        if (event.getSoundName().startsWith("step")) {
+            event.setVolume(stepSetting / 100f)
         }
 
-        if (event.soundName.contains("mob")) {
-            event.volume = mobsSetting / 100f
+        if (event.getSoundName().contains("mob")) {
+            event.setVolume(mobsSetting / 100f)
         }
 
-        if (event.soundName.startsWith("note")) {
-            event.volume = noteSetting / 100f
+        if (event.getSoundName().startsWith("note")) {
+            event.setVolume(noteSetting / 100f)
         }
 
-        if (event.soundName == "game.tnt.primed" || event.soundName == "random.explode" || event.soundName == "creeper.primed") {
-            event.volume = tntSetting / 100f
+        if (event.getSoundName() == "game.tnt.primed" || event.getSoundName() == "random.explode" || event.getSoundName() == "creeper.primed") {
+            event.setVolume(tntSetting / 100f)
         }
 
-        if (event.soundName.startsWith("portal")) {
-            event.volume = portalSetting / 100f
+        if (event.getSoundName().startsWith("portal")) {
+            event.setVolume(portalSetting / 100f)
         }
     }
 }

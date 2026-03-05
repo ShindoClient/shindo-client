@@ -1,6 +1,7 @@
 package me.miki.shindo.ui.animation
 
 import me.miki.shindo.utils.TimerUtils
+
 abstract class Animation {
 
     var duration: Int

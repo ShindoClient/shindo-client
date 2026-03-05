@@ -1,32 +1,31 @@
 package me.miki.shindo.injection.mixin.interfaces.client
 
-import net.minecraft.client.resources.DefaultResourcePack
-import net.minecraft.client.resources.ResourcePackRepository
-import net.minecraft.entity.Entity
-import net.minecraft.util.Session
-import net.minecraft.util.Timer
 import java.io.File
 
+/**
+ * Interface mixin para Minecraft. Usa Any para tipos do Minecraft para evitar
+ * LinkageError quando a interface é carregada por um classloader diferente.
+ */
 interface IMixinMinecraft {
     fun isRunning(): Boolean
 
-    fun getTimer(): Timer
+    fun getTimer(): Any
 
-    fun setSession(session: Session)
+    fun setSession(session: Any)
 
     fun callClickMouse()
 
     fun callRightClickMouse()
 
-    fun getMcDefaultResourcePack(): DefaultResourcePack
+    fun getMcDefaultResourcePack(): Any
 
     fun resizeWindow(width: Int, height: Int)
 
-    fun getRenderViewEntity(): Entity
+    fun getRenderViewEntity(): Any
 
     fun getFileResourcepacks(): File
 
-    fun getMcResourcePackRepository(): ResourcePackRepository
+    fun getMcResourcePackRepository(): Any
 
-    fun setMcResourcePackRepository(repo: ResourcePackRepository)
+    fun setMcResourcePackRepository(repo: Any)
 }

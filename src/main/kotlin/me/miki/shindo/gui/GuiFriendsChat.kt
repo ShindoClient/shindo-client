@@ -13,6 +13,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.PlayerHeadUtils
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -23,6 +24,7 @@ import kotlin.math.max
 
 class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShindoScreen {
 
+    private val screenAnimation = ScreenAnimation()
     private val addFriendBox = CompTextBox()
     private val messageBox = CompTextBox()
     private val friendScroll = Scroll()
@@ -60,25 +62,45 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        BlurUtils.drawBlurScreen(20f)
         val instance = Shindo.getInstance()
         val chatManager = instance.chatManager
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.colorManager.getPalette()
         val accent = instance.colorManager.getCurrentColor()
 
-        BlurUtils.drawBlurScreen(20f)
-        nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), java.awt.Color(0, 0, 0, 120))
+        screenAnimation.wrap(
+            Runnable { drawContent(nvg, palette, accent, mouseX, mouseY, partialTicks) },
+            x,
+            y,
+            menuWidth,
+            menuHeight,
+            1f,
+            1f,
+            false
+        )
+        super.drawScreen(mouseX, mouseY, partialTicks)
+    }
 
+    private fun drawContent(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
+        nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), java.awt.Color(0, 0, 0, 140))
         nvg.drawShadow(x, y, menuWidth, menuHeight, 12f)
         nvg.drawRoundedRect(x, y, menuWidth, menuHeight, 10f, palette.getBackgroundColor(ColorType.NORMAL))
         nvg.drawRoundedRect(x + 1f, y + 1f, menuWidth - 2f, menuHeight - 2f, 9f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235))
 
+        val chatManager = Shindo.getInstance().chatManager
         friendEntries.clear()
         requestEntries.clear()
 
         if (!chatManager.isFeatureAvailable()) {
             drawUnavailable(nvg, palette)
-            super.drawScreen(mouseX, mouseY, partialTicks)
             return
         }
 
@@ -99,7 +121,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             selectedFriend = null
         }
 
-        val leftHeaderY = topY + 16f
+        val leftHeaderY = topY + 14f
         nvg.drawText(
             TranslateText.CHAT_FRIENDS.getText(),
             leftX + 14f,
@@ -108,8 +130,9 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             13f,
             Fonts.SEMIBOLD
         )
+        nvg.drawRect(leftX + 14f, leftHeaderY + 16f, leftWidth - 28f, 1f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80))
 
-        val addY = leftHeaderY + 16f
+        val addY = leftHeaderY + 24f
         addFriendBox.setDefaultText(TranslateText.CHAT_ADD_FRIEND_PLACEHOLDER.getText())
         addFriendBox.setPosition(leftX + 14f, addY, leftWidth - 64f, 20f)
         addFriendBox.draw(mouseX, mouseY, partialTicks)
@@ -131,7 +154,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             mouseY
         )
 
-        val requestsTitleY = addY + 30f
+        val requestsTitleY = addY + 32f
         nvg.drawText(
             TranslateText.CHAT_REQUESTS.getText(),
             leftX + 14f,
@@ -141,7 +164,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             Fonts.MEDIUM
         )
 
-        var currentY = requestsTitleY + 12f
+        var currentY = requestsTitleY + 14f
         val requestHeight = 30f
         val requests = chatManager.getRequests()
         if (requests.isEmpty()) {
@@ -172,17 +195,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             }
         }
 
-        val friendsTitleY = currentY + 12f
-        nvg.drawText(
-            TranslateText.CHAT_FRIENDS.getText(),
-            leftX + 14f,
-            friendsTitleY,
-            palette.getFontColor(ColorType.NORMAL),
-            10.5f,
-            Fonts.MEDIUM
-        )
-
-        val friendsStartY = friendsTitleY + 12f
+        val friendsStartY = currentY + 16f
         val friendsAreaHeight = topY + panelHeight - friendsStartY - 12f
         val friendRowHeight = 38f
 
@@ -320,9 +333,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         }
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame(): Boolean = false
 
     private fun drawUnavailable(nvg: NanoVGManager, palette: ColorPalette) {
         val text = TranslateText.CHAT_FEATURE_UNAVAILABLE.getText()
@@ -458,14 +469,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
     ) {
         val chatManager = Shindo.getInstance().chatManager
         val selfUuid = Shindo.getInstance().shindoAPI.getEffectiveUuid().toString()
-        val headerY = y + 16f
+        val headerY = y + 14f
 
         val headerText = selectedFriend?.name ?: TranslateText.CHAT_SELECT_FRIEND.getText()
         nvg.drawText(headerText, x + 16f, headerY, palette.getFontColor(ColorType.DARK), 13f, Fonts.SEMIBOLD)
+        nvg.drawRect(x + 16f, headerY + 18f, width - 32f, 1f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80))
 
-        val inputHeight = 24f
-        val inputY = y + height - inputHeight - 16f
-        val messagesTop = headerY + 18f
+        val inputHeight = 28f
+        val inputY = y + height - inputHeight - 14f
+        val messagesTop = headerY + 24f
         val messagesHeight = inputY - messagesTop - 10f
 
         if (selectedFriend == null) {
@@ -486,28 +498,28 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
 
         var msgY = messagesTop
         val messages = selectedFriend?.let { chatManager.getMessages(it.uuid) } ?: emptyList()
-        val bubbleMaxWidth = width - 90f
+        val bubbleMaxWidth = width - 100f
         for (message in messages) {
             val isOwn = message.fromUuid == selfUuid
-            val textWidth = bubbleMaxWidth - 20f
+            val textWidth = bubbleMaxWidth - 24f
             val textHeight = nvg.getTextBoxHeight(message.message, 9.5f, Fonts.REGULAR, textWidth)
-            val bubbleHeight = textHeight + 14f
-            val bubbleX = if (isOwn) x + width - bubbleMaxWidth - 16f else x + 16f
+            val bubbleHeight = textHeight + 16f
+            val bubbleX = if (isOwn) x + width - bubbleMaxWidth - 20f else x + 20f
             val bubbleColor = if (isOwn) ColorUtils.applyAlpha(
                 accent.getColor1(),
-                180
-            ) else ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
-            nvg.drawRoundedRect(bubbleX, msgY, bubbleMaxWidth, bubbleHeight, 10f, bubbleColor)
+                200
+            ) else ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
+            nvg.drawRoundedRect(bubbleX, msgY, bubbleMaxWidth, bubbleHeight, 12f, bubbleColor)
             nvg.drawTextBox(
                 message.message,
-                bubbleX + 10f,
-                msgY + 8f,
+                bubbleX + 12f,
+                msgY + 10f,
                 textWidth,
                 palette.getFontColor(ColorType.DARK),
                 9.5f,
                 Fonts.REGULAR
             )
-            msgY += bubbleHeight + 8f
+            msgY += bubbleHeight + 10f
         }
         nvg.restore()
 

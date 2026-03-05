@@ -26,6 +26,7 @@ class PerformanceScene(parent: SettingsCategory) :
         )
 
         container = CompScrollableContainer()
+                .setThemeScrollbarOnly(true)
         settingCards.clear()
         settingCards.add(
                 CompSettingButton(

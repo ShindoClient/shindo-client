@@ -2,7 +2,7 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.network.IMixinS14PacketEntity
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.event.impl.EventUpdate
@@ -50,7 +50,7 @@ class PlayerPredicatorMod : Mod(
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        val packet = event.packet
+        val packet = event.getPacket()
 
         if (target == null) {
             return

@@ -4,11 +4,12 @@ import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import java.awt.Color
+
 open class CompPanel(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : Comp(x, y) {
 
     private var radius: Float = 8f
@@ -85,13 +86,13 @@ open class CompPanel(
 
         if (borderWidth > 0f && borderColor != null) {
             nvgInstance.drawOutlineRoundedRect(
-                    getX(),
-                    getY(),
-                    getWidth(),
-                    getHeight(),
-                    radius,
-                    borderWidth,
-                    borderColor!!
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                radius,
+                borderWidth,
+                borderColor!!
             )
         }
 
@@ -112,8 +113,8 @@ open class CompPanel(
     protected open fun beforeDrawPanel(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 
     protected open fun getBackgroundColor(
-            paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
-            accentColors: me.miki.shindo.management.color.AccentColor
+        paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
+        accentColors: me.miki.shindo.management.color.AccentColor
     ): Color? {
         return backgroundColor ?: resolveDefaultBackground()
     }

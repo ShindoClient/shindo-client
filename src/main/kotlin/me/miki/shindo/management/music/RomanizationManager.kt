@@ -1,15 +1,14 @@
 package me.miki.shindo.management.music
 
-import me.miki.shindo.libs.romaji.Transliterator
-import me.miki.shindo.logger.ShindoLogger
+import com.github.jikyo.romaji.Transliterator
 import me.miki.shindo.logger.ShindoLogger.error
 import me.miki.shindo.management.music.model.CachedRomanization
-import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
+
 open class RomanizationManager {
 
     private val cache = ConcurrentHashMap<String, CachedRomanization>()

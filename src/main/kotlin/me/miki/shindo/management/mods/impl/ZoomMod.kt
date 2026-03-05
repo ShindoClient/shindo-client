@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventScrollMouse
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.event.impl.EventZoomFov
@@ -76,18 +76,18 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
     fun onFov(event: EventZoomFov) {
         zoomAnimation.setAnimation(currentFactor, zoomSpeedSetting.toFloat().toDouble())
 
-        event.fov = event.fov * (if (smoothZoomSetting) zoomAnimation.value else currentFactor)
+        event.setFov(event.getFov() * (if (smoothZoomSetting) zoomAnimation.value else currentFactor))
     }
 
     @EventTarget
     fun onScroll(event: EventScrollMouse) {
         if (active && scrollSetting) {
             event.setCancelled(true)
-            if (event.amount < 0) {
+            if (event.getAmount() < 0) {
                 if (currentFactor < 0.98) {
                     currentFactor += 0.03f
                 }
-            } else if (event.amount > 0) {
+            } else if (event.getAmount() > 0) {
                 if (currentFactor > 0.06) {
                     currentFactor -= 0.03f
                 }

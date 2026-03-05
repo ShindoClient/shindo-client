@@ -6,6 +6,7 @@ import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.ui.comp.inputs.*
 import java.util.concurrent.ConcurrentHashMap
+
 object SettingComponentFactory {
     private val registry: MutableMap<Class<out Setting>, (Setting) -> Comp> = ConcurrentHashMap()
     private val componentCache: MutableMap<Setting, Comp> = ConcurrentHashMap()
@@ -43,11 +44,13 @@ object SettingComponentFactory {
             CompCellGrid(270f, 160f, setting)
         }
     }
+
     @JvmStatic
     fun <T : Setting> register(type: Class<T>, factory: (T) -> Comp) {
         @Suppress("UNCHECKED_CAST")
         registry[type] = factory as (Setting) -> Comp
     }
+
     @JvmStatic
     fun create(setting: Setting): Comp? {
 
@@ -55,12 +58,13 @@ object SettingComponentFactory {
 
         val settingClass = setting.javaClass
         val factory = findFactory(settingClass)
-                ?: return null
+            ?: return null
 
         val component = factory(setting)
         componentCache[setting] = component
         return component
     }
+
     private fun findFactory(settingClass: Class<out Setting>): ((Setting) -> Comp)? {
 
         registry[settingClass]?.let { return it }
@@ -74,14 +78,17 @@ object SettingComponentFactory {
 
         return null
     }
+
     @JvmStatic
     fun clearCache() {
         componentCache.clear()
     }
+
     @JvmStatic
     fun invalidateCache(setting: Setting) {
         componentCache.remove(setting)
     }
+
     @JvmStatic
     fun getRegisteredFactoryCount(): Int = registry.size
 }

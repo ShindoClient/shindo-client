@@ -13,6 +13,7 @@ public class MixinModelBox {
 
     @Shadow
     private TexturedQuad[] quadList;
+
     @Overwrite
     public void render(WorldRenderer renderer, float scale) {
 

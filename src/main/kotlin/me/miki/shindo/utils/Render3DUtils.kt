@@ -180,13 +180,13 @@ object Render3DUtils {
         val renderManager = mc.renderManager as IMixinRenderManager
 
         val x =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mixinMc.getTimer().renderPartialTicks - renderManager.getRenderPosX()
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosX()
         val y =
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mixinMc.getTimer().renderPartialTicks - renderManager.getRenderPosY() + sin(
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosY() + sin(
                 System.currentTimeMillis() / 2e2
             ) + 1
         val z =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mixinMc.getTimer().renderPartialTicks - renderManager.getRenderPosZ()
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosZ()
 
         var angle = 0f
         val increment = (Math.PI * 2 / 64.0).toFloat()

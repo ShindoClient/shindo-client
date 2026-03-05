@@ -1,8 +1,8 @@
 package me.miki.shindo.management.music
 
 import com.google.gson.Gson
+import com.wrapper.spotify.model_objects.specification.Track
 import me.miki.shindo.Shindo
-import me.miki.shindo.libs.spotify.model_objects.specification.Track
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.mods.impl.MusicInfoMod
 import me.miki.shindo.management.music.model.CachedLyrics

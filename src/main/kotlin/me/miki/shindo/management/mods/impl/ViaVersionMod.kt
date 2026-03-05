@@ -5,9 +5,9 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.Multithreading.runAsync
-import me.miki.shindo.viaversion.ViaLoadingBase
 import me.miki.shindo.viaversion.ViaShindo
-import me.miki.shindo.viaversion.protocolinfo.ProtocolInfo
+import me.miki.viashindo.ViaLoadingBase
+import me.miki.viashindo.protocolinfo.ProtocolInfo
 
 
 class ViaVersionMod : Mod(
@@ -39,9 +39,8 @@ class ViaVersionMod : Mod(
         super.onDisable()
 
         if (this.isLoaded) {
-            ViaShindo.getInstance().asyncVersionSlider
-                .setVersion(ProtocolInfo.R1_8.protocolVersion.version)
-            ViaLoadingBase.getInstance().reload(ProtocolInfo.R1_8.protocolVersion)
+            ViaShindo.getInstance().asyncVersionSlider.setVersion(ProtocolInfo.R1_8.versionId)
+            ViaLoadingBase.getInstance()?.reload(ProtocolInfo.R1_8)
         }
     }
 

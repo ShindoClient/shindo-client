@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderTick
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity
 import me.miki.shindo.management.event.impl.EventTick
@@ -68,7 +68,7 @@ class EntityCullingMod : Mod(
             return
         }
 
-        val entity = event.entity as EntityLivingBase
+        val entity = event.getEntity() as EntityLivingBase
 
         val armorstand = entity is EntityArmorStand
 
@@ -86,10 +86,10 @@ class EntityCullingMod : Mod(
                 return
             }
 
-            val x = event.x
-            val y = event.y
-            val z = event.z
-            val renderer = event.renderer
+            val x = event.getX()
+            val y = event.getY()
+            val z = event.getZ()
+            val renderer = event.getRenderer()
 
             renderer.renderName(entity, x, y, z)
         }

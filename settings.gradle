@@ -1,1 +1,5 @@
 rootProject.name = 'Shindo-Client'
+// Usando libs do Maven (maven.shindoclient.com) em vez de includeBuild
+// Para dev local: descomente as linhas abaixo e comente as de cima
+// includeBuild '../client-api'
+// includeBuild '../viashindo'

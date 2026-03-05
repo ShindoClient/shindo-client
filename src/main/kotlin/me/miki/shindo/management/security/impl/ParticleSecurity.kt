@@ -1,6 +1,6 @@
 package me.miki.shindo.management.security.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.security.SecurityFeature
 import net.minecraft.network.play.server.S2APacketParticles
@@ -11,7 +11,7 @@ class ParticleSecurity : SecurityFeature() {
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        val pkt = event.packet
+        val pkt = event.getPacket()
         if (pkt is S2APacketParticles) {
             particles += pkt.particleCount
             particles -= 6

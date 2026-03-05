@@ -63,12 +63,17 @@ open class ScreenAnimation : ScreenEffect {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         GL11.glClearColor(floaty.get(0), floaty.get(1), floaty.get(2), floaty.get(3))
 
-        nvg.setupAndDraw(task)
+        nvg.setupAndDraw(Runnable {
+            nvg.resetScissor()
+            task.run()
+            nvg.resetScissor()
+        })
         glRender?.run()
 
         mc.framebuffer.bindFramebuffer(true)
 
         nvg.setupAndDraw(Runnable {
+            nvg.resetScissor()
             nvg.setAlpha(alphaProgress.coerceAtMost(1.0f))
             nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
 
@@ -95,6 +100,7 @@ open class ScreenAnimation : ScreenEffect {
                 )
             )
             NanoVG.nvgFill(nvg.getContext())
+            nvg.resetScissor()
         }, false)
     }
 
@@ -111,7 +117,17 @@ open class ScreenAnimation : ScreenEffect {
 
     fun wrap(task: Runnable, animationProgress: Float, alphaProgress: Float) {
         val sr = ScaledResolution(mc)
-        wrap(null, task, 0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), animationProgress, alphaProgress, false)
+        wrap(
+            null,
+            task,
+            0f,
+            0f,
+            sr.scaledWidth.toFloat(),
+            sr.scaledHeight.toFloat(),
+            animationProgress,
+            alphaProgress,
+            false
+        )
     }
 
     fun wrap(task: Runnable, progress: Float) {
@@ -122,20 +138,66 @@ open class ScreenAnimation : ScreenEffect {
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, progress: Float) =
         wrap(null, task, x, y, width, height, progress, progress, false)
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float) =
+    fun wrap(
+        task: Runnable,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        animationProgress: Float,
+        alphaProgress: Float
+    ) =
         wrap(null, task, x, y, width, height, animationProgress, alphaProgress, false)
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, animationProgress: Float, alphaProgress: Float, stencil: Boolean) =
+    fun wrap(
+        task: Runnable,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        animationProgress: Float,
+        alphaProgress: Float,
+        stencil: Boolean
+    ) =
         wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
 
     fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, progress: Float) =
         wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), progress, progress, false)
 
     fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, animationProgress: Float, alphaProgress: Float) =
-        wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animationProgress, alphaProgress, false)
+        wrap(
+            null,
+            task,
+            x.toFloat(),
+            y.toFloat(),
+            width.toFloat(),
+            height.toFloat(),
+            animationProgress,
+            alphaProgress,
+            false
+        )
 
-    fun wrap(task: Runnable, x: Int, y: Int, width: Int, height: Int, animationProgress: Float, alphaProgress: Float, stencil: Boolean) =
-        wrap(null, task, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animationProgress, alphaProgress, stencil)
+    fun wrap(
+        task: Runnable,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        animationProgress: Float,
+        alphaProgress: Float,
+        stencil: Boolean
+    ) =
+        wrap(
+            null,
+            task,
+            x.toFloat(),
+            y.toFloat(),
+            width.toFloat(),
+            height.toFloat(),
+            animationProgress,
+            alphaProgress,
+            stencil
+        )
 
     override fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return

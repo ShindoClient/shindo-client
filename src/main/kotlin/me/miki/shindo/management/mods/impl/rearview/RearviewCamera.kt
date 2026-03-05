@@ -69,10 +69,11 @@ class RearviewCamera {
 
         w = mc.displayWidth
         h = mc.displayHeight
-        y = (mc as IMixinMinecraft).getRenderViewEntity().rotationYaw
-        py = (mc as IMixinMinecraft).getRenderViewEntity().prevRotationYaw
-        p = (mc as IMixinMinecraft).getRenderViewEntity().rotationPitch
-        pp = (mc as IMixinMinecraft).getRenderViewEntity().prevRotationPitch
+        val rve = (mc as IMixinMinecraft).getRenderViewEntity() as net.minecraft.entity.Entity
+        y = rve.rotationYaw
+        py = rve.prevRotationYaw
+        p = rve.rotationPitch
+        pp = rve.prevRotationPitch
         hide = mc.gameSettings.hideGUI
         view = mc.gameSettings.thirdPersonView
         limit = mc.gameSettings.limitFramerate
@@ -93,15 +94,15 @@ class RearviewCamera {
         mc.gameSettings.limitFramerate = 0
         mc.gameSettings.fovSetting = fov
 
-        (mc as IMixinMinecraft).getRenderViewEntity().rotationYaw += 180f
-        (mc as IMixinMinecraft).getRenderViewEntity().prevRotationYaw += 180f
+        rve.rotationYaw += 180f
+        rve.prevRotationYaw += 180f
 
         if (lockCamera) {
-            (mc as IMixinMinecraft).getRenderViewEntity().rotationPitch = 0f
-            (mc as IMixinMinecraft).getRenderViewEntity().prevRotationPitch = 0f
+            rve.rotationPitch = 0f
+            rve.prevRotationPitch = 0f
         } else {
-            (mc as IMixinMinecraft).getRenderViewEntity().rotationPitch = -p + 18
-            (mc as IMixinMinecraft).getRenderViewEntity().prevRotationPitch = -pp + 18
+            rve.rotationPitch = -p + 18
+            rve.prevRotationPitch = -pp + 18
         }
 
         this.isRecording = true
@@ -109,7 +110,7 @@ class RearviewCamera {
 
         GL11.glPushAttrib(272393)
 
-        mc.entityRenderer.renderWorld((mc as IMixinMinecraft).getTimer().renderPartialTicks, System.nanoTime())
+        mc.entityRenderer.renderWorld(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks, System.nanoTime())
         mc.entityRenderer.setupOverlayRendering()
 
         if (limit != 0) {
@@ -122,10 +123,10 @@ class RearviewCamera {
         this.isRecording = false
 
         mc.currentScreen = currentScreen
-        (mc as IMixinMinecraft).getRenderViewEntity().rotationYaw = y
-        (mc as IMixinMinecraft).getRenderViewEntity().prevRotationYaw = py
-        (mc as IMixinMinecraft).getRenderViewEntity().rotationPitch = p
-        (mc as IMixinMinecraft).getRenderViewEntity().prevRotationPitch = pp
+        rve.rotationYaw = y
+        rve.prevRotationYaw = py
+        rve.rotationPitch = p
+        rve.prevRotationPitch = pp
         mc.gameSettings.limitFramerate = limit
         mc.gameSettings.thirdPersonView = view
         mc.gameSettings.hideGUI = hide

@@ -10,6 +10,7 @@ import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
 import org.lwjgl3.BufferUtils
+
 open class ScreenStencil : ScreenEffect {
 
     private val mc: Minecraft = Minecraft.getMinecraft()

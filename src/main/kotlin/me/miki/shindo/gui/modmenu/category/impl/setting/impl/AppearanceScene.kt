@@ -3,6 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
@@ -193,27 +194,29 @@ class AppearanceScene(parent: SettingsCategory) :
         val accentScreenY = accentSectionY + verticalScroll
         val controlsScreenY = cardY + verticalScroll
 
-        nvg.save()
-        nvg.scissor(baseX, baseY, baseWidth, baseHeight)
+        ModMenuClipCoordinator.withClip(
+                nvg = nvg,
+                x = baseX,
+                y = baseY,
+                width = baseWidth,
+                height = baseHeight
+        ) {
+            themeTitle.setX(baseX + OUTER_PADDING)
+            themeTitle.setY(themeScreenY - 26f)
+            themeTitle.draw(mouseX, mouseY, partialTicks)
 
-        themeTitle.setX(baseX + OUTER_PADDING)
-        themeTitle.setY(themeScreenY - 26f)
-        themeTitle.draw(mouseX, mouseY, partialTicks)
+            themeSelector.setBounds(baseX + OUTER_PADDING, themeScreenY, sectionWidth, themeHeight)
+            themeSelector.draw(mouseX, mouseY, partialTicks)
 
-        themeSelector.setBounds(baseX + OUTER_PADDING, themeScreenY, sectionWidth, themeHeight)
-        themeSelector.draw(mouseX, mouseY, partialTicks)
+            accentTitle.setX(baseX + OUTER_PADDING)
+            accentTitle.setY(accentScreenY - 26f)
+            accentTitle.draw(mouseX, mouseY, partialTicks)
 
-        accentTitle.setX(baseX + OUTER_PADDING)
-        accentTitle.setY(accentScreenY - 26f)
-        accentTitle.draw(mouseX, mouseY, partialTicks)
+            accentColorSelector.setBounds(baseX + OUTER_PADDING, accentScreenY, sectionWidth, accentHeight)
+            accentColorSelector.draw(mouseX, mouseY, partialTicks)
 
-        accentColorSelector.setBounds(baseX + OUTER_PADDING, accentScreenY, sectionWidth, accentHeight)
-        accentColorSelector.draw(mouseX, mouseY, partialTicks)
-
-        drawControlCards(mouseX, mouseY, partialTicks, controlsScreenY)
-
-        nvg.resetScissor()
-        nvg.restore()
+            drawControlCards(mouseX, mouseY, partialTicks, controlsScreenY)
+        }
 
         nvg.drawScrollbar(
                 baseX,
@@ -224,7 +227,8 @@ class AppearanceScene(parent: SettingsCategory) :
                 verticalScroll,
                 palette,
                 currentAccent,
-                30f
+                30f,
+                false
         )
     }
 

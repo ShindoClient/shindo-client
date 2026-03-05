@@ -1,9 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
-import me.miki.shindo.api.roles.Role;
-import me.miki.shindo.api.roles.RoleManager;
 import me.miki.shindo.api.roles.RoleVisuals;
-import me.miki.shindo.api.websocket.presence.PresenceTracker;
 import me.miki.shindo.management.mods.impl.FreelookMod;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -34,6 +31,7 @@ public abstract class MixinRender<T extends Entity> {
 
     @Shadow
     public abstract FontRenderer getFontRendererFromRenderManager();
+
     @Overwrite
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
 

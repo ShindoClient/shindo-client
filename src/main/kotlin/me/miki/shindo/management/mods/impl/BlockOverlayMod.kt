@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventBlockHighlightRender
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -102,13 +102,13 @@ open class BlockOverlayMod : Mod(
             block.setBlockBoundsBasedOnState(mc.theWorld, blockpos)
 
             val x = (mc.renderViewEntity.lastTickPosX
-                    + (mc.renderViewEntity.posX - mc.renderViewEntity.lastTickPosX) * event.partialTicks
+                    + (mc.renderViewEntity.posX - mc.renderViewEntity.lastTickPosX) * event.getPartialTicks()
                 .toDouble())
             val y = (mc.renderViewEntity.lastTickPosY
-                    + (mc.renderViewEntity.posY - mc.renderViewEntity.lastTickPosY) * event.partialTicks
+                    + (mc.renderViewEntity.posY - mc.renderViewEntity.lastTickPosY) * event.getPartialTicks()
                 .toDouble())
             val z = (mc.renderViewEntity.lastTickPosZ
-                    + (mc.renderViewEntity.posZ - mc.renderViewEntity.lastTickPosZ) * event.partialTicks
+                    + (mc.renderViewEntity.posZ - mc.renderViewEntity.lastTickPosZ) * event.getPartialTicks()
                 .toDouble())
 
             var selectedBox = block.getSelectedBoundingBox(mc.theWorld, blockpos)

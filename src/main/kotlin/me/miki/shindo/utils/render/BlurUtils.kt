@@ -70,7 +70,7 @@ object BlurUtils {
         shaders[0].shaderManager.getShaderUniform("Radius").set(radius)
         shaders[1].shaderManager.getShaderUniform("Radius").set(radius)
 
-        shader.loadShaderGroup((mc as IMixinMinecraft).getTimer().renderPartialTicks)
+        shader.loadShaderGroup(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
     }
 }

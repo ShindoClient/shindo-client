@@ -117,12 +117,12 @@ class ResourcePackRepositoryCustom(
 
             try {
                 val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
-                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository()
+                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as net.minecraft.client.resources.ResourcePackRepository
 
                 val customRepo = ResourcePackRepositoryCustom(
                     fileResourcepacks,
                     File(mc.mcDataDir, "server-resource-packs"),
-                    (mc as IMixinMinecraft).getMcDefaultResourcePack(),
+                    (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack,
                     originalRepo.rprMetadataSerializer,
                     mc.gameSettings,
                     enabledPacks

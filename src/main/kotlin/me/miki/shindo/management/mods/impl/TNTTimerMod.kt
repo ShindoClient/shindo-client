@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderTNT
 import me.miki.shindo.management.language.TranslateText
@@ -46,25 +46,25 @@ class TNTTimerMod :
     @EventTarget
     fun onRenderTNT(event: EventRenderTNT) {
         if (displayMode == DisplayMode.TAG) {
-            val fuseTimer = if (isHypixel()) event.entity.fuse - 28 else event.entity.fuse
+            val fuseTimer = if (isHypixel()) event.getEntity().fuse - 28 else event.getEntity().fuse
 
             if (fuseTimer >= 1) {
                 val distance =
-                    event.entity.getDistanceSqToEntity(event.tntRenderer.getRenderManager().livingPlayer)
+                    event.getEntity().getDistanceSqToEntity(event.getTntRenderer().getRenderManager().livingPlayer)
 
                 if (distance <= 4096.0) {
-                    val number = (fuseTimer.toFloat() - event.partialTicks) / 20.0f
+                    val number = (fuseTimer.toFloat() - event.getPartialTicks()) / 20.0f
                     val time = timeFormatter.format(number.toDouble())
-                    val fontrenderer = event.tntRenderer.fontRendererFromRenderManager
+                    val fontrenderer = event.getTntRenderer().fontRendererFromRenderManager
 
                     GlStateManager.pushMatrix()
                     GlStateManager.translate(
-                        event.x.toFloat() + 0.0f,
-                        event.y.toFloat() + event.entity.height + 0.5f,
-                        event.z.toFloat()
+                        event.getX().toFloat() + 0.0f,
+                        event.getY().toFloat() + event.getEntity().height + 0.5f,
+                        event.getZ().toFloat()
                     )
                     GL11.glNormal3f(0.0f, 1.0f, 0.0f)
-                    GlStateManager.rotate(-event.tntRenderer.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
+                    GlStateManager.rotate(-event.getTntRenderer().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
                     var xMultiplier: Byte = 1
 
                     if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2) {
@@ -74,7 +74,7 @@ class TNTTimerMod :
                     val scale = 0.02666667f
 
                     GlStateManager.rotate(
-                        event.tntRenderer.getRenderManager().playerViewX * xMultiplier.toFloat(),
+                        event.getTntRenderer().getRenderManager().playerViewX * xMultiplier.toFloat(),
                         1.0f,
                         0.0f,
                         0.0f

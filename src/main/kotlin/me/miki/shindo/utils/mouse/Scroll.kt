@@ -22,6 +22,12 @@ class Scroll {
     }
 
     private fun onScroll(scrollSpeed: Int) {
+        if (ScrollInputGuard.isLocked()) {
+            // Drain wheel delta while locked so transitions do not accumulate scroll input.
+            Mouse.getDWheel()
+            return
+        }
+
         val dWheel = Mouse.getDWheel()
         rawScroll += if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             dWheel.toFloat() / scrollSpeed

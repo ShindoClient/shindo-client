@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -48,11 +48,11 @@ class ReachCirclesMod : Mod(
                     mc.thePlayer
                 ) && !o.isInvisible && o is EntityPlayer
             ) {
-                val posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * event.partialTicks
+                val posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * event.getPartialTicks()
                     .toDouble() - mc.renderManager.viewerPosX
-                val posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * event.partialTicks
+                val posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * event.getPartialTicks()
                     .toDouble() - mc.renderManager.viewerPosY
-                val posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * event.partialTicks
+                val posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * event.getPartialTicks()
                     .toDouble() - mc.renderManager.viewerPosZ
 
                 this.circle(posX, posY, posZ, if (mc.playerController.isInCreativeMode) 4.7 else 3.4)

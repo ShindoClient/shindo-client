@@ -4,11 +4,12 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.templates.CompDisplay
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
+
 open class CompSeparator(
-        x: Float = 0f,
-        y: Float = 0f,
-        length: Float = 100f,
-        orientation: Orientation = Orientation.HORIZONTAL
+    x: Float = 0f,
+    y: Float = 0f,
+    length: Float = 100f,
+    orientation: Orientation = Orientation.HORIZONTAL
 ) : CompDisplay(x, y) {
 
     enum class Orientation {
@@ -78,8 +79,8 @@ open class CompSeparator(
         val paletteColors = palette
 
         val finalColor = color ?: ColorUtils.applyAlpha(
-                paletteColors.getBackgroundColor(ColorType.NORMAL),
-                150
+            paletteColors.getBackgroundColor(ColorType.NORMAL),
+            150
         )
 
         if (gradient) {
@@ -87,23 +88,23 @@ open class CompSeparator(
             when (orientation) {
                 Orientation.HORIZONTAL -> {
                     nvgInstance.drawHorizontalGradientRect(
-                            getX(),
-                            getY(),
-                            getWidth(),
-                            getHeight(),
-                            gradColor,
-                            finalColor
+                        getX(),
+                        getY(),
+                        getWidth(),
+                        getHeight(),
+                        gradColor,
+                        finalColor
                     )
                 }
 
                 Orientation.VERTICAL -> {
                     nvgInstance.drawVerticalGradientRect(
-                            getX(),
-                            getY(),
-                            getWidth(),
-                            getHeight(),
-                            gradColor,
-                            finalColor
+                        getX(),
+                        getY(),
+                        getWidth(),
+                        getHeight(),
+                        gradColor,
+                        finalColor
                     )
                 }
             }

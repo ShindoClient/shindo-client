@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventAttackEntity
 import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
@@ -39,7 +39,7 @@ class BloodParticlesMod : Mod(
 
     @EventTarget
     fun onAttackEntity(event: EventAttackEntity) {
-        if (event.entity !is EntityLivingBase) {
+        if (event.getEntity() !is EntityLivingBase) {
             return
         }
 

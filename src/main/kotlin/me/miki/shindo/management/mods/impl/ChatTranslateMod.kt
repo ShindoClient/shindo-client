@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -31,8 +31,8 @@ class ChatTranslateMod : Mod(
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        if (event.packet is S02PacketChat) {
-            val chatPacket = event.packet as S02PacketChat
+        if (event.getPacket() is S02PacketChat) {
+            val chatPacket = event.getPacket() as S02PacketChat
             val translate = ChatComponentText(" [" + '\u270E' + "]").setChatStyle(
                 ChatStyle().setColor(EnumChatFormatting.GREEN).setChatClickEvent(
                     ClickEvent(

@@ -21,7 +21,6 @@ public class ShindoTweaker implements ITweaker {
 
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
-
         try {
             Class.forName("optifine.Patcher");
             hasOptifine = true;
@@ -85,4 +84,5 @@ public class ShindoTweaker implements ITweaker {
         } catch (NoSuchFieldException | IllegalAccessException e) {
         }
     }
+
 }

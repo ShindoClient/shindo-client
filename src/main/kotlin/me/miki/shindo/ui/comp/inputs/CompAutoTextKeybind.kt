@@ -15,6 +15,8 @@ class CompAutoTextKeybind(
     private var widthInternal = width
     private var binding = false
 
+    fun isBinding(): Boolean = binding
+
     init {
         setWidth(width)
         setHeight(16f)

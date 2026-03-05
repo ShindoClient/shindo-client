@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventJoinServer
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.event.impl.EventRender2D
@@ -65,8 +65,8 @@ class SessionInfoMod :
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        if (isHypixel() && event.packet is S02PacketChat) {
-            val chatPacket = event.packet as S02PacketChat
+        if (isHypixel() && event.getPacket() is S02PacketChat) {
+            val chatPacket = event.getPacket() as S02PacketChat
             val chatMessage = chatPacket.chatComponent.unformattedText
 
             val message = StringUtils.stripControlCodes(chatMessage)

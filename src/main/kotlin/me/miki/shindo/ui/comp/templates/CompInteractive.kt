@@ -3,9 +3,10 @@ package me.miki.shindo.ui.comp.templates
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.base.IInteractive
 import me.miki.shindo.utils.mouse.MouseUtils
+
 abstract class CompInteractive(
-        x: Float = 0f,
-        y: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f
 ) : Comp(x, y), IInteractive {
 
     private var enabled: Boolean = true
@@ -59,6 +60,7 @@ abstract class CompInteractive(
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
+
     protected abstract fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean)
     protected open fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {}
 }

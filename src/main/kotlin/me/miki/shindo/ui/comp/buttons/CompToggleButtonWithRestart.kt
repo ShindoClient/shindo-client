@@ -5,18 +5,19 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.BooleanSetting
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.display.CompTooltip
 import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.ui.animation.value.ColorAnimation
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import java.awt.Color
+
 class CompToggleButtonWithRestart : CompControlTemplate {
-    private val opacityAnimation = SimpleAnimation()
+    private val hoverAnimation = SimpleAnimation()
+    private val pressAnimation = SimpleAnimation()
     private val toggleAnimation = SimpleAnimation()
-    private val circleAnimation = ColorAnimation()
     private val warningAnimation = SimpleAnimation()
 
     private val setting: BooleanSetting
@@ -29,12 +30,19 @@ class CompToggleButtonWithRestart : CompControlTemplate {
 
     fun getSetting(): BooleanSetting = setting
     fun getScale(): Float = scale
+
     fun setShowWarning(show: Boolean) {
         showWarning = show
         warningAnimation.setAnimation(if (show) 1.0f else 0.0f, 12.0)
     }
 
-    constructor(x: Float, y: Float, scale: Float, setting: BooleanSetting, requiresRestart: Boolean = false) : super(x, y) {
+    constructor(
+        x: Float,
+        y: Float,
+        scale: Float,
+        setting: BooleanSetting,
+        requiresRestart: Boolean = false
+    ) : super(x, y) {
         this.setting = setting
         this.requiresRestart = requiresRestart
         setScale(scale)
@@ -51,17 +59,14 @@ class CompToggleButtonWithRestart : CompControlTemplate {
     }
 
     private fun initState() {
-        toggleAnimation.value = if (setting.isToggled()) 20.5f else 2.5f
-        circleAnimation.setColor(
-                if (setting.isToggled()) Color.WHITE else palette.getBackgroundColor(ColorType.DARK)
-        )
+        toggleAnimation.value = if (setting.isToggled()) 1.0f else 0.0f
         warningAnimation.value = 0.0f
     }
 
     fun setScale(scale: Float) {
         this.scale = scale
-        super.setWidth(34F * scale)
-        super.setHeight(16F * scale)
+        super.setWidth(34f * scale)
+        super.setHeight(16f * scale)
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
@@ -73,61 +78,112 @@ class CompToggleButtonWithRestart : CompControlTemplate {
         val y = getY()
         val width = getWidth()
         val height = getHeight()
-        val circle = 11 * scale
+        val enabled = isEnabled()
         val toggled = setting.isToggled()
+        val radius = height / 2f
+        val knobSize = (height - (4f * scale)).coerceAtLeast(8f * scale)
+        val knobInset = (height - knobSize) / 2f
+        val knobTravel = width - (knobInset * 2f) - knobSize
 
-        opacityAnimation.setAnimation(if (toggled) 1.0f else 0.0f, 14.0)
-        toggleAnimation.setAnimation(if (toggled) 20.5f else 2.5f, 14.0)
+        hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
+        pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.83f else 0.0f, 16.0)
+        toggleAnimation.setAnimation(if (toggled) 1.0f else 0.0f, 16.0)
+        val warningVisible = requiresRestart && (showWarning || warningAnimation.value > 0.01f)
+        warningAnimation.setAnimation(if (warningVisible) 1.0f else 0.0f, 12.0)
 
-        nvgInstance.drawRoundedRect(x, y, width, height, 7 * scale, palette.getBackgroundColor(ColorType.NORMAL))
+        val baseTrack = CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, palette, accentColor)
+        val hoverTrack = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, palette, accentColor)
+        var trackColor = ColorUtils.interpolateColor(baseTrack, hoverTrack, hoverAnimation.value.toDouble())
+        if (pressAnimation.value > 0.08f) {
+            trackColor = ColorUtils.darken(trackColor, pressAnimation.value * 0.16f)
+        }
+        if (!enabled) {
+            trackColor = ColorUtils.applyAlpha(trackColor, 116)
+        }
 
-        nvgInstance.drawGradientRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                7.4f * scale,
-                ColorUtils.applyAlpha(accentColor.getColor1(), (opacityAnimation.value * 255).toInt()),
-                ColorUtils.applyAlpha(accentColor.getColor2(), (opacityAnimation.value * 255).toInt())
+        val activeGradientStart = ColorUtils.applyAlpha(
+            accentColor.getColor1(),
+            if (enabled) (80 + (toggleAnimation.value * 145f).toInt()) else 86
         )
+        val activeGradientEnd = ColorUtils.applyAlpha(
+            accentColor.getColor2(),
+            if (enabled) (80 + (toggleAnimation.value * 145f).toInt()) else 86
+        )
+
+        val outlineIdle = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 34)
+        val outlineHover = ColorUtils.applyAlpha(accentColor.getColor1(), 98)
+        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.value.toDouble())
+        if (!enabled) {
+            outlineColor = ColorUtils.applyAlpha(outlineColor, 92)
+        }
+
+        nvgInstance.drawRoundedRect(x, y, width, height, radius, trackColor)
+        nvgInstance.drawGradientRoundedRect(x, y, width, height, radius, activeGradientStart, activeGradientEnd)
+        nvgInstance.drawOutlineRoundedRect(x, y, width, height, radius, 1f, outlineColor)
+
+        val knobX = x + knobInset + knobTravel * toggleAnimation.value
+        var knobColor = ColorUtils.interpolateColor(
+            palette.getBackgroundColor(ColorType.DARK),
+            Color.WHITE,
+            toggleAnimation.value.toDouble()
+        )
+        if (hoverAnimation.value > 0.0f) {
+            knobColor = ColorUtils.interpolateColor(knobColor, Color.WHITE, (hoverAnimation.value * 0.2f).toDouble())
+        }
+        if (!enabled) {
+            knobColor = ColorUtils.applyAlpha(knobColor, 144)
+        }
 
         nvgInstance.drawRoundedRect(
-                x + toggleAnimation.value * scale,
-                y + 2.5f * scale,
-                circle,
-                circle,
-                circle / 2,
-                circleAnimation.getColor(if (toggled) Color.WHITE else palette.getBackgroundColor(ColorType.DARK), 16)
+            knobX,
+            y + knobInset,
+            knobSize,
+            knobSize,
+            knobSize / 2f,
+            knobColor
+        )
+        nvgInstance.drawOutlineRoundedRect(
+            knobX,
+            y + knobInset,
+            knobSize,
+            knobSize,
+            knobSize / 2f,
+            1f,
+            ColorUtils.applyAlpha(Color.BLACK, if (enabled) 42 else 22)
         )
 
-        if (requiresRestart && (showWarning || warningAnimation.value > 0.01f)) {
-            val warningX = x - 16f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, 12f, Fonts.LEGACYICON) / 2f
-            val warningY = y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, 12f, Fonts.LEGACYICON) / 2f
-            val warningAlpha = (warningAnimation.value * 255).toInt()
-            val warningColor = ColorUtils.applyAlpha(Color(255, 200, 0), warningAlpha)
+        if (warningVisible) {
+            val warningSize = 11f
+            val warningX = x - 14f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
+            val warningY = y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
+            val warningAlpha = (warningAnimation.value * 255).toInt().coerceIn(0, 255)
+            val warningColor = ColorUtils.applyAlpha(Color(255, 189, 64), warningAlpha)
 
             nvgInstance.drawText(
-                    LegacyIcon.ALERT_TRIANGLE,
-                    warningX,
-                    warningY,
-                    warningColor,
-                    12f,
-                    Fonts.LEGACYICON
+                LegacyIcon.ALERT_TRIANGLE,
+                warningX,
+                warningY,
+                warningColor,
+                warningSize,
+                Fonts.LEGACYICON
             )
 
-            if (MouseUtils.isInside(mouseX, mouseY, warningX - 2f, warningY - 2f, 16f, 16f)) {
-                tooltip.setX(warningX - 6F - tooltip.getWidth())
+            if (MouseUtils.isInside(mouseX, mouseY, warningX - 3f, warningY - 3f, 16f, 16f)) {
+                tooltip.setX(warningX - 6f - tooltip.getWidth())
                 tooltip.setY(warningY - 2f)
                 tooltip.show()
                 tooltip.draw(mouseX, mouseY, partialTicks)
             } else {
                 tooltip.hide()
             }
+        } else {
+            tooltip.hide()
         }
     }
 
     override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (mouseButton == 0) {
+        if (mouseButton == 0 && isEnabled()) {
+            pressAnimation.value = 1.0f
             val newValue = !setting.isToggled()
             setting.setToggled(newValue)
 
@@ -138,13 +194,10 @@ class CompToggleButtonWithRestart : CompControlTemplate {
     }
 
     override fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
-        val x = getX()
-        val y = getY()
-        val width = getWidth()
-        val height = getHeight()
-
-        val warningWidth = if (requiresRestart && warningAnimation.value > 0.01f) 20f else 0f
-
-        return mouseX >= x && mouseX <= x + width + warningWidth && mouseY >= y && mouseY <= y + height
+        val warningWidth = if (requiresRestart && warningAnimation.value > 0.01f) 18f else 0f
+        return mouseX >= getX() - warningWidth &&
+            mouseX <= getX() + getWidth() &&
+            mouseY >= getY() &&
+            mouseY <= getY() + getHeight()
     }
 }

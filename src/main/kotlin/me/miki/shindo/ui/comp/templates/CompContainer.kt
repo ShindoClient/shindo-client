@@ -1,11 +1,12 @@
 package me.miki.shindo.ui.comp.templates
 
 import me.miki.shindo.ui.comp.Comp
+
 open class CompContainer(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : Comp(x, y) {
 
     private var padding: Float = 0f
@@ -43,6 +44,7 @@ open class CompContainer(
         updateLayout()
         super.draw(mouseX, mouseY, partialTicks)
     }
+
     protected open fun updateLayout() {
         val children = getChildren()
         if (children.isEmpty()) return

@@ -49,7 +49,9 @@ class GeneralScene(parent: SettingsCategory) :
                         ?: throw IllegalStateException("Borderless fullscreen setting missing")
         )
 
-        container = CompScrollableContainer().setScrollbarGutter(14f)
+        container = CompScrollableContainer()
+                .setScrollbarGutter(14f)
+                .setThemeScrollbarOnly(true)
 
         settingCards.clear()
         settingCards.add(

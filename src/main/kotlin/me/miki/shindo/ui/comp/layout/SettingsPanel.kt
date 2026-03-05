@@ -1,18 +1,20 @@
 package me.miki.shindo.ui.comp.layout
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.impl.CategorySetting
 import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.buttons.CompCategory
 import me.miki.shindo.ui.comp.factory.SettingComponentFactory
+import me.miki.shindo.ui.comp.inputs.CompCellGrid
 import me.miki.shindo.ui.comp.layout.settingspanel.ComponentLayoutContext
 import me.miki.shindo.ui.comp.layout.settingspanel.ComponentLayoutRegistry
 import me.miki.shindo.ui.comp.layout.settingspanel.ComponentPlacement
@@ -24,27 +26,33 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Settings panel renderer focused on a single unified surface:
+ * - no row cards/sub-panels,
+ * - category headers work as lightweight group separators,
+ * - category entries support animated collapse/expand,
+ * - supports single, double and staggered settings layout modes.
+ */
 class SettingsPanel {
 
     enum class LayoutMode {
         SINGLE_COLUMN,
-        DOUBLE_COLUMN
-    }
-
-    enum class DensityMode {
-        AUTO,
-        COMPACT,
-        COMFORTABLE
+        DOUBLE_COLUMN,
+        STAGGERED_COLUMNS
     }
 
     private val entries = ArrayList<Entry>()
-    private val categoryLayouts = ArrayList<CategoryLayout>()
+    private val sectionLayouts = ArrayList<SectionLayout>()
     private val entryStates = HashMap<Setting, EntryState>()
+    private val sectionStates = HashMap<Any, SectionState>()
     private val layoutRegistry = ComponentLayoutRegistry.createDefault()
     private val truncatedTextCache = HashMap<TruncationCacheKey, TruncatedText>()
     private val textWidthCache = HashMap<TextWidthCacheKey, Float>()
 
+    private val rootSectionKey = Any()
+
     private var style = SettingsPanelStyle()
+    private var resolvedLayoutStyle = SettingsPanelStyle()
     private var frameIndex = 0
 
     private var lastContentX = 0f
@@ -56,23 +64,17 @@ class SettingsPanel {
     var layoutMode: LayoutMode = LayoutMode.SINGLE_COLUMN
         private set
 
-    var densityMode: DensityMode = DensityMode.AUTO
-        private set
-
     fun clear() {
         entries.clear()
-        categoryLayouts.clear()
+        sectionLayouts.clear()
         entryStates.clear()
+        sectionStates.clear()
         truncatedTextCache.clear()
         textWidthCache.clear()
     }
 
     fun setLayoutMode(layoutMode: LayoutMode?) {
         this.layoutMode = layoutMode ?: LayoutMode.SINGLE_COLUMN
-    }
-
-    fun setDensityMode(densityMode: DensityMode?) {
-        this.densityMode = densityMode ?: DensityMode.AUTO
     }
 
     fun setStyle(style: SettingsPanelStyle?) {
@@ -84,16 +86,14 @@ class SettingsPanel {
 
         for (setting in settings) {
             if (setting is CategorySetting) {
-                val header = CompCategory(0f, setting)
-                header.setHeight(style.categoryHeaderHeight)
-                entries.add(Entry(setting, header))
-                getState(setting)
+                // Kept for ordering/compatibility. Rendering is custom and header-like.
+                entries.add(Entry(setting, CompCategory(0f, setting), true))
                 continue
             }
 
             val component = SettingComponentFactory.create(setting) ?: continue
-            entries.add(Entry(setting, component))
-            getState(setting)
+            entries.add(Entry(setting, component, false))
+            getEntryState(setting)
         }
     }
 
@@ -113,87 +113,76 @@ class SettingsPanel {
         storeViewportContext(contentX, contentY, contentWidth, viewportHeight)
         updateLayout(contentX, contentY, contentWidth, scroll.getValue())
 
-        var tooltip: TooltipData? = null
         var contentBottom = contentY + scroll.getValue()
-        val accent = Shindo.getInstance().colorManager.getCurrentColor()
         val viewportBottom = contentY + viewportHeight
 
-        for (layout in categoryLayouts) {
-            contentBottom = max(contentBottom, layout.getBottom())
+        nvg.withState {
+            nvg.scissor(contentX, contentY, contentWidth, viewportHeight)
 
-            val header = layout.header
-            if (header != null) {
-                header.setBounds(layout.headerX, layout.headerY, layout.headerWidth, layout.headerHeight)
-                if (isRowVisible(layout.headerY, layout.headerHeight, contentY, viewportBottom)) {
-                    header.draw(mouseX, mouseY, partialTicks)
+            for (section in sectionLayouts) {
+                contentBottom = max(contentBottom, section.bottom())
+                if (section.hasHeader() && isVisible(section.headerY, section.headerHeight, contentY, viewportBottom)) {
+                    drawCategoryHeader(nvg, palette, section)
                 }
-            }
 
-            if (layout.isCollapsed()) {
-                continue
-            }
-
-            if (isRowVisible(layout.cardY, layout.cardHeight, contentY, viewportBottom)) {
-                drawCategoryCard(nvg, palette, accent, layout)
-            }
-
-            for ((index, positioned) in layout.entries.withIndex()) {
-                if (!isRowVisible(positioned.y, positioned.height, contentY, viewportBottom)) {
+                if (section.entries.isEmpty() || section.contentProgress <= MIN_SECTION_VISUAL_PROGRESS) {
                     continue
                 }
 
-                val entry = positioned.entry
-                val state = getState(entry.setting)
-                val hovered = MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height)
-                state.hoverAnimation.setAnimation(if (hovered) 1f else 0f, 18.0)
-                val hoverProgress = state.hoverAnimation.value
-
-                val placement = layoutComponent(entry.comp, positioned)
-
-                val indicatorHeight = max(14f, positioned.height - 8f)
-                val indicatorY = positioned.y + (positioned.height - indicatorHeight) / 2f
-                nvg.drawRoundedRect(
-                    positioned.x + 1.5f,
-                    indicatorY,
-                    style.indicatorWidth,
-                    indicatorHeight,
-                    2f,
-                    ColorUtils.applyAlpha(accent.getColor1(), (hoverProgress * 110f).toInt())
-                )
-
-                val textX = positioned.x + style.indicatorWidth + 9f
-                val textY = positioned.y + 6f
-                val textWidth = resolveTextWidth(positioned, placement, textX)
-
-                val rowTooltip = drawLabels(nvg, palette, entry, textX, textY, textWidth, hoverProgress, mouseX, mouseY)
-                if (tooltip == null && rowTooltip != null) {
-                    tooltip = rowTooltip
+                val visibleContentHeight = section.contentFullHeight * section.contentProgress
+                if (visibleContentHeight <= 0.5f) {
+                    continue
                 }
 
-                entry.comp.draw(mouseX, mouseY, partialTicks)
+                nvg.withState {
+                    nvg.scissor(section.headerX, section.contentStartY, section.headerWidth, visibleContentHeight + 1f)
+                    nvg.intersectScissor(contentX, contentY, contentWidth, viewportHeight)
+                    nvg.setAlpha(section.contentProgress.coerceIn(0f, 1f))
 
-                if (index < layout.entries.size - 1) {
-                    nvg.drawDivider(
-                        positioned.x + style.indicatorWidth + 6f,
-                        positioned.y + positioned.height - 2f,
-                        positioned.width - style.indicatorWidth - 12f,
-                        1f,
-                        1f,
-                        28f + (hoverProgress * 24f)
-                    )
+                    for (positioned in section.entries) {
+                        if (positioned.height <= 0.5f) continue
+
+                        val animatedY = resolveAnimatedEntryY(section, positioned)
+                        if (!isVisible(animatedY, positioned.height, contentY, viewportBottom)) continue
+
+                        val animatedEntry = positioned.copy(y = animatedY)
+                        nvg.withState {
+                            nvg.scissor(contentX, contentY, contentWidth, viewportHeight)
+                            nvg.intersectScissor(
+                                section.headerX,
+                                section.contentStartY,
+                                section.headerWidth,
+                                visibleContentHeight + 1f
+                            )
+                            val placement = layoutComponent(animatedEntry)
+                            drawLabels(nvg, palette, animatedEntry, placement)
+                            animatedEntry.entry.comp.draw(mouseX, mouseY, partialTicks)
+                        }
+                    }
                 }
             }
         }
 
-        scroll.maxScroll = if (categoryLayouts.isEmpty()) {
+        scroll.maxScroll = if (sectionLayouts.isEmpty()) {
             0f
         } else {
             val contentHeight = contentBottom - (contentY + scroll.getValue())
             max(0f, contentHeight - viewportHeight)
         }
 
-        if (tooltip != null) {
-            drawTooltip(nvg, palette, tooltip, mouseX, mouseY, contentX, contentY, contentWidth, viewportHeight)
+        if (scroll.maxScroll > 0f) {
+            val totalContentHeight = max(0f, contentBottom - (contentY + scroll.getValue()))
+            nvg.drawScrollbar(
+                contentX,
+                contentY,
+                contentWidth,
+                viewportHeight,
+                totalContentHeight,
+                scroll.getValue(),
+                palette,
+                Shindo.getInstance().colorManager.getCurrentColor(),
+                18f * PANEL_SCALE
+            )
         }
     }
 
@@ -211,24 +200,27 @@ class SettingsPanel {
         updateLayout(contentX, contentY, contentWidth, scroll.getValue())
 
         val viewportBottom = contentY + viewportHeight
-        for (layout in categoryLayouts) {
-            if (layout.header != null
-                && isRowVisible(layout.headerY, layout.headerHeight, contentY, viewportBottom)
-                && MouseUtils.isInside(mouseX, mouseY, layout.headerX, layout.headerY, layout.headerWidth, layout.headerHeight)
+        for (section in sectionLayouts) {
+            if (section.hasHeader()
+                && section.category != null
+                && isVisible(section.headerY, section.headerHeight, contentY, viewportBottom)
+                && MouseUtils.isInside(mouseX, mouseY, section.headerX, section.headerY, section.headerWidth, section.headerHeight)
             ) {
-                layout.header?.mouseClicked(mouseX, mouseY, mouseButton)
+                if (mouseButton == 0) {
+                    section.category.toggle()
+                }
                 return true
             }
 
-            if (layout.isCollapsed()) {
+            if (section.contentProgress <= MIN_SECTION_INTERACTION_PROGRESS) {
                 continue
             }
 
-            for (positioned in layout.entries) {
-                if (positioned.height <= 0f) continue
-                if (!isRowVisible(positioned.y, positioned.height, contentY, viewportBottom)) continue
-                if (!MouseUtils.isInside(mouseX, mouseY, positioned.x, positioned.y, positioned.width, positioned.height)) continue
-
+            for (positioned in section.entries) {
+                if (positioned.height <= 0.5f) continue
+                val animatedY = resolveAnimatedEntryY(section, positioned)
+                if (!isVisible(animatedY, positioned.height, contentY, viewportBottom)) continue
+                if (!MouseUtils.isInside(mouseX, mouseY, positioned.x, animatedY, positioned.width, positioned.height)) continue
                 positioned.entry.comp.mouseClicked(mouseX, mouseY, mouseButton)
                 return true
             }
@@ -241,22 +233,32 @@ class SettingsPanel {
             updateLayout(lastContentX, lastContentY, lastContentWidth, scroll.getValue())
         }
         for (entry in entries) {
-            entry.comp.mouseReleased(mouseX, mouseY, mouseButton)
+            if (!entry.isCategoryMarker) {
+                entry.comp.mouseReleased(mouseX, mouseY, mouseButton)
+            }
         }
     }
 
     fun keyTyped(typedChar: Char, keyCode: Int) {
         for (entry in entries) {
-            entry.comp.keyTyped(typedChar, keyCode)
+            if (!entry.isCategoryMarker) {
+                entry.comp.keyTyped(typedChar, keyCode)
+            }
         }
     }
 
     fun resetSettings() {
         for (entry in entries) {
-            if (entry.setting !is CategorySetting) {
+            if (!entry.isCategoryMarker) {
                 entry.setting.reset()
             }
         }
+    }
+
+    private fun beginFrame() {
+        frameIndex++
+        truncatedTextCache.clear()
+        textWidthCache.clear()
     }
 
     private fun storeViewportContext(contentX: Float, contentY: Float, contentWidth: Float, viewportHeight: Float) {
@@ -267,386 +269,418 @@ class SettingsPanel {
         hasViewportContext = true
     }
 
-    private fun beginFrame() {
-        frameIndex++
-        truncatedTextCache.clear()
-        textWidthCache.clear()
-    }
-
-    private fun isCompact(contentWidth: Float): Boolean {
-        return when (densityMode) {
-            DensityMode.COMPACT -> true
-            DensityMode.COMFORTABLE -> false
-            DensityMode.AUTO -> contentWidth <= style.compactBreakpoint
-        }
-    }
-
-    private fun isRowVisible(y: Float, height: Float, viewportTop: Float, viewportBottom: Float): Boolean {
-        val top = viewportTop - style.virtualizationBuffer
-        val bottom = viewportBottom + style.virtualizationBuffer
+    private fun isVisible(y: Float, height: Float, viewportTop: Float, viewportBottom: Float): Boolean {
+        val buffer = style.virtualizationBuffer * PANEL_SCALE
+        val top = viewportTop - buffer
+        val bottom = viewportBottom + buffer
         return y + height >= top && y <= bottom
     }
 
     private fun updateLayout(contentX: Float, contentY: Float, contentWidth: Float, scrollOffset: Float) {
-        categoryLayouts.clear()
+        sectionLayouts.clear()
 
-        val compact = isCompact(contentWidth)
-        val innerX = contentX + style.outerMargin
-        val innerWidth = max(0f, contentWidth - (style.outerMargin * 2f))
-        var yCursor = contentY + scrollOffset
+        val narrow = contentWidth <= style.narrowBreakpoint
+        resolvedLayoutStyle = buildScaledLayoutStyle()
 
-        val singleWidth = innerWidth
-        val doubleWidth = (innerWidth - style.columnGap) / 2f
+        val sidePadding = style.outerMargin * PANEL_SCALE
+        val innerX = contentX + sidePadding
+        val innerWidth = max(0f, contentWidth - sidePadding * 2f)
+        val headerHeight = style.categoryHeaderHeight * PANEL_SCALE
+        val headerSpacing = style.categoryHeaderSpacing * PANEL_SCALE
+        val sectionGap = style.categoryGap * PANEL_SCALE
 
-        val blocks = buildBlocks()
-        val pendingRow = ArrayList<CategoryBlock>(2)
+        var yCursor = contentY + scrollOffset + (style.outerMargin * 0.45f * PANEL_SCALE)
+        val sections = buildSections()
+        for (section in sections) {
+            val layout = SectionLayout(section.category)
+            layout.headerX = innerX
+            layout.headerY = yCursor
+            layout.headerWidth = innerWidth
+            layout.headerHeight = if (section.category != null) headerHeight else 0f
+            layout.expandProgress = resolveSectionExpand(section.category)
 
-        for (block in blocks) {
-            if (layoutMode == LayoutMode.DOUBLE_COLUMN && block.spansFullWidth()) {
-                if (pendingRow.isNotEmpty()) {
-                    yCursor = placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow, compact)
-                    pendingRow.clear()
-                }
-                val layout = layoutCategory(block, innerX, yCursor, singleWidth, compact)
-                categoryLayouts.add(layout)
-                yCursor = layout.getBottom() + style.categoryGap
-                continue
+            if (layout.hasHeader()) {
+                yCursor += layout.headerHeight + headerSpacing
             }
 
-            pendingRow.add(block)
-            if (layoutMode == LayoutMode.SINGLE_COLUMN || pendingRow.size == 2) {
-                yCursor = placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow, compact)
-                pendingRow.clear()
-            }
-        }
+            layout.contentStartY = yCursor
+            val fullContentBottom = layoutEntries(section, layout, innerX, yCursor, innerWidth, narrow)
+            layout.contentFullHeight = max(0f, fullContentBottom - layout.contentStartY)
+            layout.contentProgress = smoothProgress(layout.expandProgress)
+            yCursor = layout.contentStartY + layout.contentFullHeight * layout.contentProgress
 
-        if (pendingRow.isNotEmpty()) {
-            placeRow(innerX, yCursor, singleWidth, doubleWidth, pendingRow, compact)
+            sectionLayouts.add(layout)
+            yCursor += sectionGap
         }
     }
 
-    private fun placeRow(
-        innerX: Float,
-        yCursor: Float,
-        singleWidth: Float,
-        doubleWidth: Float,
-        row: List<CategoryBlock>,
-        compact: Boolean
+    private fun layoutEntries(
+        section: Section,
+        layout: SectionLayout,
+        x: Float,
+        startY: Float,
+        width: Float,
+        narrow: Boolean
     ): Float {
-        var rowHeight = 0f
-        for (i in row.indices) {
-            val width = if (layoutMode == LayoutMode.DOUBLE_COLUMN) doubleWidth else singleWidth
-            val x = if (layoutMode == LayoutMode.DOUBLE_COLUMN && i == 1) innerX + doubleWidth + style.columnGap else innerX
-
-            val layout = layoutCategory(row[i], x, yCursor, width, compact)
-            categoryLayouts.add(layout)
-            rowHeight = max(rowHeight, layout.getTotalHeight())
+        if (section.entries.isEmpty()) {
+            return startY
         }
-        return yCursor + rowHeight + style.categoryGap
+
+        val multiColumn = !narrow && layoutMode != LayoutMode.SINGLE_COLUMN && width >= 280f
+        return when {
+            !multiColumn -> layoutSingle(section.entries, layout, x, startY, width, narrow)
+            layoutMode == LayoutMode.DOUBLE_COLUMN -> layoutDouble(section.entries, layout, x, startY, width, narrow)
+            else -> layoutStaggered(section.entries, layout, x, startY, width, narrow)
+        }
     }
 
-    private fun layoutCategory(block: CategoryBlock, x: Float, y: Float, width: Float, compact: Boolean): CategoryLayout {
-        val layout = CategoryLayout(block)
+    private fun layoutSingle(
+        list: List<Entry>,
+        layout: SectionLayout,
+        x: Float,
+        startY: Float,
+        width: Float,
+        narrow: Boolean
+    ): Float {
+        val rowGap = style.rowGap * PANEL_SCALE
+        var yCursor = startY
+        var placed = false
 
-        val headerHeight = if (block.hasHeader()) style.categoryHeaderHeight else 0f
-        val headerSpacing = if (block.hasHeader()) style.categoryHeaderSpacing else 0f
-        val cardX = x
-        val cardY = y + headerHeight + headerSpacing
-        val cardWidth = width
-        val contentX = cardX + style.cardPaddingX
-        val contentY = cardY + style.cardPaddingY
-        val contentWidth = max(0f, cardWidth - (style.cardPaddingX * 2f))
-
-        val positionedEntries = ArrayList<PositionedEntry>()
-
-        if (block.isCollapsed()) {
-            for (entry in block.settings) {
-                val state = getState(entry.setting)
-                val delegate = layoutRegistry.resolve(entry.comp)
-                val targetHeight = delegate.targetHeight(entry.comp, compact, style)
-                if (!state.initialized) {
-                    state.heightAnimation.value = targetHeight
-                    state.initialized = true
-                }
-                state.heightAnimation.setAnimation(0f, 18.0)
-            }
-            layout.setCard(cardX, cardY, cardWidth, 0f)
-            layout.setHeader(block.header, x, y, width, headerHeight, headerSpacing)
-            layout.entries = positionedEntries
-            return layout
+        for (entry in list) {
+            val rowHeight = resolveAnimatedRowHeight(entry, narrow)
+            if (rowHeight <= 0.35f) continue
+            layout.entries.add(PositionedEntry(entry, x, yCursor, width, rowHeight, narrow))
+            yCursor += rowHeight + rowGap
+            placed = true
         }
 
-        var rowCursor = contentY
-        for (entry in block.settings) {
-            val state = getState(entry.setting)
+        if (placed) {
+            yCursor -= rowGap
+        }
+        return yCursor
+    }
+
+    private fun layoutDouble(
+        list: List<Entry>,
+        layout: SectionLayout,
+        x: Float,
+        startY: Float,
+        width: Float,
+        narrow: Boolean
+    ): Float {
+        val rowGap = style.rowGap * PANEL_SCALE
+        val columnGap = style.columnGap * PANEL_SCALE
+        val columnWidth = max(0f, (width - columnGap) / 2f)
+        if (columnWidth < 120f) {
+            return layoutSingle(list, layout, x, startY, width, narrow)
+        }
+
+        data class Pending(val entry: Entry, val rowHeight: Float)
+
+        val pending = ArrayList<Pending>(2)
+        var rowY = startY
+        var placed = false
+
+        fun flushPending() {
+            if (pending.isEmpty()) return
+
+            var maxRow = 0f
+            for (item in pending) {
+                maxRow = max(maxRow, item.rowHeight)
+            }
+
+            for (i in pending.indices) {
+                val item = pending[i]
+                val entryX = if (i == 0) x else x + columnWidth + columnGap
+                layout.entries.add(PositionedEntry(item.entry, entryX, rowY, columnWidth, maxRow, narrow))
+            }
+
+            rowY += maxRow + rowGap
+            placed = true
+            pending.clear()
+        }
+
+        for (entry in list) {
             val delegate = layoutRegistry.resolve(entry.comp)
-            val minHeight = if (compact) style.minRowHeightCompact else style.minRowHeightComfortable
-            val targetHeight = max(minHeight, delegate.targetHeight(entry.comp, compact, style))
+            val rowHeight = resolveAnimatedRowHeight(entry, narrow)
+            if (rowHeight <= 0.35f) continue
 
-            if (!state.initialized) {
-                state.heightAnimation.value = targetHeight
-                state.initialized = true
-            }
-
-            state.heightAnimation.setAnimation(targetHeight, 20.0)
-            val rowHeight = max(minHeight, state.heightAnimation.value)
-            positionedEntries.add(PositionedEntry(entry, contentX, rowCursor, contentWidth, rowHeight, compact))
-            rowCursor += rowHeight + style.rowGap
-        }
-
-        if (positionedEntries.isNotEmpty()) {
-            rowCursor -= style.rowGap
-        }
-
-        val contentHeight = max(0f, rowCursor - contentY)
-        val cardHeight = max(style.minCardHeight, contentHeight + (style.cardPaddingY * 2f))
-        layout.setCard(cardX, cardY, cardWidth, cardHeight)
-        layout.setHeader(block.header, x, y, width, headerHeight, headerSpacing)
-        layout.entries = positionedEntries
-        return layout
-    }
-
-    private fun buildBlocks(): List<CategoryBlock> {
-        val blocks = ArrayList<CategoryBlock>()
-        var current = CategoryBlock(null, null)
-
-        for (entry in entries) {
-            if (entry.setting is CategorySetting) {
-                if (current.hasContent()) {
-                    blocks.add(current)
-                }
-                current = CategoryBlock(entry.setting as CategorySetting, entry.comp as CompCategory)
+            if (delegate.preferFullWidth(entry.comp)) {
+                flushPending()
+                layout.entries.add(PositionedEntry(entry, x, rowY, width, rowHeight, narrow))
+                rowY += rowHeight + rowGap
+                placed = true
                 continue
             }
-            current.settings.add(entry)
+
+            pending.add(Pending(entry, rowHeight))
+            if (pending.size == 2) {
+                flushPending()
+            }
         }
 
-        if (current.hasContent()) {
-            blocks.add(current)
+        flushPending()
+        if (placed) {
+            rowY -= rowGap
         }
-        return blocks
+        return rowY
     }
 
-    private fun layoutComponent(comp: Comp, positioned: PositionedEntry): ComponentPlacement {
-        val context = ComponentLayoutContext(
-            positioned.x,
-            positioned.y,
-            positioned.width,
-            positioned.height,
-            positioned.compact,
-            style
-        )
-        return layoutRegistry.resolve(comp).place(comp, context)
+    private fun layoutStaggered(
+        list: List<Entry>,
+        layout: SectionLayout,
+        x: Float,
+        startY: Float,
+        width: Float,
+        narrow: Boolean
+    ): Float {
+        val rowGap = style.rowGap * PANEL_SCALE
+        val columnGap = style.columnGap * PANEL_SCALE
+        val columnWidth = max(0f, (width - columnGap) / 2f)
+        if (columnWidth < 120f) {
+            return layoutSingle(list, layout, x, startY, width, narrow)
+        }
+
+        var leftY = startY
+        var rightY = startY
+        var placed = false
+
+        for (entry in list) {
+            val delegate = layoutRegistry.resolve(entry.comp)
+            val rowHeight = resolveAnimatedRowHeight(entry, narrow)
+            if (rowHeight <= 0.35f) continue
+
+            if (delegate.preferFullWidth(entry.comp)) {
+                val fullY = max(leftY, rightY)
+                layout.entries.add(PositionedEntry(entry, x, fullY, width, rowHeight, narrow))
+                val next = fullY + rowHeight + rowGap
+                leftY = next
+                rightY = next
+                placed = true
+                continue
+            }
+
+            val placeLeft = leftY <= rightY
+            val entryX = if (placeLeft) x else x + columnWidth + columnGap
+            val entryY = if (placeLeft) leftY else rightY
+            layout.entries.add(PositionedEntry(entry, entryX, entryY, columnWidth, rowHeight, narrow))
+
+            if (placeLeft) {
+                leftY += rowHeight + rowGap
+            } else {
+                rightY += rowHeight + rowGap
+            }
+            placed = true
+        }
+
+        var endY = max(leftY, rightY)
+        if (placed) {
+            endY -= rowGap
+        }
+        return endY
     }
 
-    private fun resolveTextWidth(positioned: PositionedEntry, placement: ComponentPlacement, textX: Float): Float {
-        val available = positioned.width - (textX - positioned.x)
-        if (placement.controlLeft.isNaN()) {
-            return max(96f, available - 12f)
+    private fun resolveAnimatedRowHeight(entry: Entry, narrow: Boolean): Float {
+        val state = getEntryState(entry.setting)
+        val delegate = layoutRegistry.resolve(entry.comp)
+        val minRow = (if (narrow) style.minRowHeightNarrow else style.minRowHeightDefault) * PANEL_SCALE
+        val preferred = delegate.targetHeight(entry.comp, narrow, resolvedLayoutStyle) * PANEL_SCALE
+        val target = max(minRow, preferred)
+
+        if (!state.initialized) {
+            state.heightAnimation.value = target
+            state.initialized = true
         }
-        val controlSpace = placement.controlLeft - textX - style.textGap
-        val limited = if (controlSpace > 0f) min(available, controlSpace) else available
-        return max(80f, limited)
+
+        state.heightAnimation.setAnimation(target, 16.0)
+        return max(0f, state.heightAnimation.value)
+    }
+
+    private fun drawCategoryHeader(nvg: NanoVGManager, palette: ColorPalette, section: SectionLayout) {
+        val category = section.category ?: return
+        val titleSize = style.titleFontSize * PANEL_SCALE
+        val iconSize = 9f * PANEL_SCALE
+        val textColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 232)
+        val helperColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 138)
+        val icon = LegacyIcon.CHEVRON_RIGHT
+
+        val iconX = section.headerX + 1f
+        val iconY = section.headerY + (section.headerHeight - iconSize) / 2f
+        val titleX = iconX + 12f * PANEL_SCALE
+        val titleY = section.headerY + (section.headerHeight - titleSize) / 2f
+
+        val iconCenterX = iconX + iconSize * 0.5f
+        val iconCenterY = iconY + iconSize * 0.5f
+        nvg.withState {
+            nvg.rotateDegreesAt(iconCenterX, iconCenterY, 90f * section.contentProgress)
+            nvg.drawText(icon, iconX, iconY, helperColor, iconSize, Fonts.LEGACYICON)
+        }
+        nvg.drawText(category.name, titleX, titleY, textColor, titleSize, Fonts.MEDIUM)
+
+        val measured = nvg.getTextWidth(category.name, titleSize, Fonts.MEDIUM)
+        val lineX = titleX + measured + 8f
+        val lineW = max(0f, section.headerX + section.headerWidth - (SCROLLBAR_SAFE_INSET * PANEL_SCALE) - lineX)
+        if (lineW > 1f) {
+            nvg.drawDivider(lineX, section.headerY + section.headerHeight * 0.58f, lineW, 1f, 1f, 38f)
+        }
     }
 
     private fun drawLabels(
         nvg: NanoVGManager,
         palette: ColorPalette,
-        entry: Entry,
-        textX: Float,
-        textY: Float,
-        textWidth: Float,
-        hoverProgress: Float,
-        mouseX: Int,
-        mouseY: Int
-    ): TooltipData? {
-        val setting = entry.setting
+        positioned: PositionedEntry,
+        placement: ComponentPlacement
+    ) {
+        val setting = positioned.entry.setting
         val metadata = setting.getMetadata()
+        val description = metadata?.description?.takeIf { it.isNotEmpty() }
+        val comp = positioned.entry.comp
+        val isCellGrid = comp is CompCellGrid
+        val isColorPicker = comp is me.miki.shindo.ui.comp.inputs.CompColorPicker
 
-        val titleFull = setting.name
-        val titleLimited = limitText(nvg, titleFull, style.titleFontSize, Fonts.MEDIUM, textWidth)
-        val titleColor = ColorUtils.interpolateColor(
-            palette.getFontColor(ColorType.DARK),
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 230),
-            hoverProgress * 0.3
-        )
-        nvg.drawText(titleLimited.text, textX, textY, titleColor, style.titleFontSize, Fonts.MEDIUM)
+        val titleSize = style.titleFontSize * PANEL_SCALE * SETTINGS_TEXT_SCALE
+        val descSize = style.descriptionFontSize * PANEL_SCALE * SETTINGS_TEXT_SCALE
+        val textX = positioned.x + (7f * PANEL_SCALE)
+        val descriptionGap = 2f * PANEL_SCALE
+        val textBlockHeight = titleSize + if (description != null) (descriptionGap + descSize) else 0f
+        val textY = if (isCellGrid || isColorPicker) {
+            positioned.y + (2f * PANEL_SCALE)
+        } else {
+            val centeredY = positioned.y + (positioned.height - textBlockHeight) * 0.5f
+            max(positioned.y + (2f * PANEL_SCALE), centeredY)
+        }
+        val textWidth = resolveTextWidth(positioned, placement, textX)
 
-        val nextLineY = textY + style.titleFontSize + 3f
-        var descriptionTruncated = false
-        var descriptionFull: String? = null
-        var hasDescription = false
+        val titleLimited = limitText(nvg, setting.name, titleSize, Fonts.MEDIUM, textWidth)
+        nvg.drawText(titleLimited.text, textX, textY, palette.getFontColor(ColorType.DARK), titleSize, Fonts.MEDIUM)
 
-        if (!metadata?.description.isNullOrEmpty()) {
-            descriptionFull = metadata!!.description
-            hasDescription = true
-            val limitedDesc = limitText(nvg, descriptionFull, style.descriptionFontSize, Fonts.REGULAR, textWidth)
-            descriptionTruncated = limitedDesc.truncated
+        description?.let {
+            val descY = textY + titleSize + descriptionGap
+            val descLimited = limitText(nvg, description, descSize, Fonts.REGULAR, textWidth)
             nvg.drawText(
-                limitedDesc.text,
+                descLimited.text,
                 textX,
-                nextLineY,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200 + (hoverProgress * 30f).toInt()),
-                style.descriptionFontSize,
+                descY,
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 198),
+                descSize,
                 Fonts.REGULAR
             )
         }
-
-        val labelHeight = if (hasDescription) (nextLineY - textY) + style.descriptionFontSize else style.titleFontSize
-        val hoveringText = MouseUtils.isInside(mouseX, mouseY, textX, textY - 2f, max(textWidth, 60f), max(labelHeight + 4f, 18f))
-        if (!hoveringText) return null
-        if (!titleLimited.truncated && !descriptionTruncated && !hasDescription) return null
-
-        val tooltipData = TooltipData()
-        if (titleLimited.truncated) {
-            tooltipData.addLine(TooltipLine(titleFull, style.titleFontSize, Fonts.MEDIUM, palette.getFontColor(ColorType.DARK)))
-        }
-        if (hasDescription && descriptionFull != null) {
-            tooltipData.addLine(
-                TooltipLine(
-                    descriptionFull,
-                    style.descriptionFontSize,
-                    Fonts.REGULAR,
-                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 230)
-                )
-            )
-        }
-        return tooltipData
     }
 
-    private fun drawCategoryCard(nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor, layout: CategoryLayout) {
-        nvg.drawShadow(layout.cardX, layout.cardY, layout.cardWidth, layout.cardHeight, style.categoryCardRadius, 6)
-        nvg.drawRoundedRect(
-            layout.cardX,
-            layout.cardY,
-            layout.cardWidth,
-            layout.cardHeight,
-            style.categoryCardRadius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+    private fun layoutComponent(positioned: PositionedEntry): ComponentPlacement {
+        val context = ComponentLayoutContext(
+            positioned.x,
+            positioned.y,
+            positioned.width,
+            positioned.height,
+            positioned.narrow,
+            resolvedLayoutStyle
         )
-        nvg.drawGradientRoundedRect(
-            layout.cardX,
-            layout.cardY,
-            layout.cardWidth,
-            layout.cardHeight,
-            style.categoryCardRadius,
-            ColorUtils.applyAlpha(accent.getColor1(), 20),
-            ColorUtils.applyAlpha(accent.getColor2(), 20)
-        )
-        nvg.drawOutlineRoundedRect(
-            layout.cardX,
-            layout.cardY,
-            layout.cardWidth,
-            layout.cardHeight,
-            style.categoryCardRadius,
-            1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 35)
-        )
+        return layoutRegistry.resolve(positioned.entry.comp).place(positioned.entry.comp, context)
     }
 
-    private fun drawTooltip(
-        nvg: NanoVGManager,
-        palette: ColorPalette,
-        tooltip: TooltipData,
-        mouseX: Int,
-        mouseY: Int,
-        contentX: Float,
-        contentY: Float,
-        contentWidth: Float,
-        viewportHeight: Float
-    ) {
-        val wrappedLines = ArrayList<TooltipLine>()
-        for (line in tooltip.lines) {
-            wrappedLines.addAll(wrapLine(nvg, line))
+    private fun resolveTextWidth(positioned: PositionedEntry, placement: ComponentPlacement, textX: Float): Float {
+        val available = positioned.width - (textX - positioned.x)
+        if (placement.controlLeft.isNaN()) {
+            return max(72f, available - (8f * PANEL_SCALE))
         }
-        if (wrappedLines.isEmpty()) return
-
-        val padding = 8f
-        val lineSpacing = 3f
-        var width = 0f
-        var height = padding * 2f
-        for (i in wrappedLines.indices) {
-            val line = wrappedLines[i]
-            width = max(width, textWidth(nvg, line.text, line.size, line.font))
-            height += line.size
-            if (i < wrappedLines.size - 1) {
-                height += lineSpacing
-            }
-        }
-        width += padding * 2f
-
-        var tooltipX = mouseX + 12f
-        var tooltipY = mouseY + 12f
-        val maxX = contentX + contentWidth - 6f
-        val maxY = contentY + viewportHeight - 6f
-        if (tooltipX + width > maxX) tooltipX = maxX - width
-        if (tooltipY + height > maxY) tooltipY = maxY - height
-        tooltipX = max(contentX + 6f, tooltipX)
-        tooltipY = max(contentY + 6f, tooltipY)
-
-        nvg.drawRoundedRect(tooltipX, tooltipY, width, height, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 235))
-        nvg.drawOutlineRoundedRect(
-            tooltipX,
-            tooltipY,
-            width,
-            height,
-            6f,
-            1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 90)
-        )
-
-        var textY = tooltipY + padding
-        for (line in wrappedLines) {
-            nvg.drawText(line.text, tooltipX + padding, textY, line.color, line.size, line.font)
-            textY += line.size + lineSpacing
-        }
+        val controlSpace = placement.controlLeft - textX - (style.textGap * PANEL_SCALE)
+        val limited = if (controlSpace > 0f) min(available, controlSpace) else available
+        return max(70f, limited)
     }
 
-    private fun wrapLine(nvg: NanoVGManager, line: TooltipLine): List<TooltipLine> {
-        if (line.text.isEmpty()) return emptyList()
+    private fun buildSections(): List<Section> {
+        val sections = ArrayList<Section>()
+        var current = Section(null)
 
-        val wrapped = ArrayList<TooltipLine>()
-        val words = line.text.split(" ")
-        var current = StringBuilder()
-        for (word in words) {
-            val candidate = if (current.isEmpty()) word else current.toString() + " " + word
-            if (textWidth(nvg, candidate, line.size, line.font) <= style.tooltipMaxWidth || current.isEmpty()) {
-                current = StringBuilder(candidate)
-            } else {
-                wrapped.add(TooltipLine(current.toString(), line.size, line.font, line.color))
-                current = StringBuilder(word)
-            }
-        }
-        if (current.isNotEmpty()) {
-            wrapped.add(TooltipLine(current.toString(), line.size, line.font, line.color))
-        }
-
-        val adjusted = ArrayList<TooltipLine>()
-        for (tooltipLine in wrapped) {
-            var text = tooltipLine.text
-            while (textWidth(nvg, text, tooltipLine.size, tooltipLine.font) > style.tooltipMaxWidth && text.length > 1) {
-                var end = text.length - 1
-                while (end > 1 && textWidth(nvg, text.substring(0, end), tooltipLine.size, tooltipLine.font) > style.tooltipMaxWidth) {
-                    end--
+        for (entry in entries) {
+            if (entry.isCategoryMarker) {
+                if (current.category != null || current.entries.isNotEmpty()) {
+                    sections.add(current)
                 }
-                adjusted.add(TooltipLine(text.substring(0, end), tooltipLine.size, tooltipLine.font, tooltipLine.color))
-                text = text.substring(end)
+                current = Section(entry.setting as CategorySetting)
+                continue
             }
-            if (text.isNotEmpty()) {
-                adjusted.add(TooltipLine(text, tooltipLine.size, tooltipLine.font, tooltipLine.color))
-            }
+            current.entries.add(entry)
         }
-        return adjusted
+
+        if (current.category != null || current.entries.isNotEmpty()) {
+            sections.add(current)
+        }
+        return sections
+    }
+
+    private fun resolveSectionExpand(category: CategorySetting?): Float {
+        if (category == null) {
+            return 1f
+        }
+        val key: Any = category
+        val state = sectionStates.getOrPut(key) { SectionState() }
+        val target = if (category.isCollapsed()) 0f else 1f
+        if (!state.initialized) {
+            state.expandAnimation.value = target
+            state.initialized = true
+        }
+        state.expandAnimation.setAnimation(target, 9.0)
+        return state.expandAnimation.value.coerceIn(0f, 1f)
+    }
+
+    private fun resolveAnimatedEntryY(section: SectionLayout, positioned: PositionedEntry): Float {
+        if (section.contentProgress >= 0.999f) {
+            return positioned.y
+        }
+        return section.contentStartY + (positioned.y - section.contentStartY) * section.contentProgress
+    }
+
+    private fun smoothProgress(progress: Float): Float {
+        val p = progress.coerceIn(0f, 1f)
+        return (p * p * (3f - (2f * p))).coerceIn(0f, 1f)
+    }
+
+    private fun buildScaledLayoutStyle(): SettingsPanelStyle {
+        return style.copy(
+            outerMargin = style.outerMargin * PANEL_SCALE,
+            categoryGap = style.categoryGap * PANEL_SCALE,
+            categoryHeaderHeight = style.categoryHeaderHeight * PANEL_SCALE,
+            categoryHeaderSpacing = style.categoryHeaderSpacing * PANEL_SCALE,
+            categoryCardRadius = style.categoryCardRadius * PANEL_SCALE,
+            cardPaddingX = style.cardPaddingX * PANEL_SCALE,
+            cardPaddingY = style.cardPaddingY * PANEL_SCALE,
+            rowGap = style.rowGap * PANEL_SCALE,
+            columnGap = style.columnGap * PANEL_SCALE,
+            minRowHeightDefault = style.minRowHeightDefault * PANEL_SCALE,
+            minRowHeightNarrow = style.minRowHeightNarrow * PANEL_SCALE,
+            minCardHeight = style.minCardHeight * PANEL_SCALE,
+            titleFontSize = style.titleFontSize * PANEL_SCALE,
+            descriptionFontSize = style.descriptionFontSize * PANEL_SCALE,
+            indicatorWidth = style.indicatorWidth * PANEL_SCALE,
+            tooltipMaxWidth = style.tooltipMaxWidth * PANEL_SCALE,
+            componentPadding = style.componentPadding * PANEL_SCALE,
+            textGap = style.textGap * PANEL_SCALE,
+            narrowBreakpoint = style.narrowBreakpoint,
+            virtualizationBuffer = style.virtualizationBuffer * PANEL_SCALE
+        )
+    }
+
+    private fun getEntryState(setting: Setting): EntryState {
+        return entryStates.getOrPut(setting) { EntryState() }
     }
 
     private fun limitText(nvg: NanoVGManager, input: String?, size: Float, font: Font, maxWidth: Float): TruncatedText {
-        if (input == null) return TruncatedText("", false)
+        val inputText = input ?: return TruncatedText("", false)
         val normalizedMaxWidth = max(1f, maxWidth)
-        val key = TruncationCacheKey(frameIndex, input, (size * 10f).toInt(), font.name, (normalizedMaxWidth * 10f).toInt())
+        val key = TruncationCacheKey(
+            frameIndex,
+            inputText,
+            (size * 10f).toInt(),
+            font.name,
+            (normalizedMaxWidth * 10f).toInt()
+        )
         val cached = truncatedTextCache[key]
         if (cached != null) return cached
 
-        var text = input!!
+        var text = inputText
         if (textWidth(nvg, text, size, font) <= normalizedMaxWidth) {
             val resolved = TruncatedText(text, false)
             truncatedTextCache[key] = resolved
@@ -674,20 +708,47 @@ class SettingsPanel {
         return width
     }
 
-    private fun getState(setting: Setting): EntryState {
-        return entryStates.getOrPut(setting) { EntryState() }
-    }
-
-    private data class Entry(val setting: Setting, val comp: Comp)
+    private data class Entry(val setting: Setting, val comp: Comp, val isCategoryMarker: Boolean)
+    private data class Section(val category: CategorySetting?, val entries: MutableList<Entry> = ArrayList())
     private data class PositionedEntry(
         val entry: Entry,
         val x: Float,
         val y: Float,
         val width: Float,
         val height: Float,
-        val compact: Boolean
+        val narrow: Boolean
     )
-    private data class TooltipLine(val text: String, val size: Float, val font: Font, val color: Color)
+
+    private class SectionLayout(val category: CategorySetting?) {
+        var headerX = 0f
+        var headerY = 0f
+        var headerWidth = 0f
+        var headerHeight = 0f
+        var expandProgress = 1f
+        var contentStartY = 0f
+        var contentFullHeight = 0f
+        var contentProgress = 1f
+        val entries = ArrayList<PositionedEntry>()
+
+        fun hasHeader(): Boolean = category != null && headerHeight > 0f
+
+        fun bottom(): Float {
+            val headerBottom = if (hasHeader()) headerY + headerHeight else headerY
+            val contentBottom = contentStartY + contentFullHeight * contentProgress
+            return max(headerBottom, contentBottom)
+        }
+    }
+
+    private class EntryState {
+        val heightAnimation = SimpleAnimation()
+        var initialized = false
+    }
+
+    private class SectionState {
+        val expandAnimation = SimpleAnimation()
+        var initialized = false
+    }
+
     private data class TruncatedText(val text: String, val truncated: Boolean)
     private data class TruncationCacheKey(
         val frame: Int,
@@ -696,76 +757,15 @@ class SettingsPanel {
         val fontName: String,
         val width10: Int
     )
+
     private data class TextWidthCacheKey(val frame: Int, val text: String, val size10: Int, val fontName: String)
 
-    private class EntryState {
-        val hoverAnimation = SimpleAnimation()
-        val heightAnimation = SimpleAnimation()
-        var initialized = false
-    }
-
-    private class TooltipData {
-        val lines = ArrayList<TooltipLine>()
-        fun addLine(line: TooltipLine?) {
-            if (line != null) {
-                lines.add(line)
-            }
-        }
-    }
-
-    private class CategoryBlock(val category: CategorySetting?, val header: CompCategory?) {
-        val settings = ArrayList<Entry>()
-
-        fun hasHeader(): Boolean = category != null && header != null
-        fun spansFullWidth(): Boolean = !hasHeader()
-        fun isCollapsed(): Boolean = category != null && category.isCollapsed()
-        fun hasContent(): Boolean = hasHeader() || settings.isNotEmpty()
-    }
-
-    private class CategoryLayout(private val block: CategoryBlock) {
-        var header: CompCategory? = null
-        var headerX = 0f
-        var headerY = 0f
-        var headerWidth = 0f
-        var headerHeight = 0f
-        var headerSpacing = 0f
-
-        var cardX = 0f
-        var cardY = 0f
-        var cardWidth = 0f
-        var cardHeight = 0f
-        var entries = ArrayList<PositionedEntry>()
-
-        fun isCollapsed(): Boolean = block.isCollapsed()
-
-        fun getTotalHeight(): Float {
-            var total = 0f
-            if (block.hasHeader()) total += headerHeight
-            if (!isCollapsed()) {
-                if (block.hasHeader()) total += headerSpacing
-                total += cardHeight
-            }
-            return total
-        }
-
-        fun getBottom(): Float {
-            return (if (block.hasHeader()) headerY else cardY) + getTotalHeight()
-        }
-
-        fun setHeader(header: CompCategory?, x: Float, y: Float, width: Float, height: Float, spacing: Float) {
-            this.header = header
-            this.headerX = x
-            this.headerY = y
-            this.headerWidth = width
-            this.headerHeight = height
-            this.headerSpacing = spacing
-        }
-
-        fun setCard(x: Float, y: Float, width: Float, height: Float) {
-            this.cardX = x
-            this.cardY = y
-            this.cardWidth = width
-            this.cardHeight = height
-        }
+    companion object {
+        // Global compact scaling requested for cleaner settings panel layout.
+        private const val PANEL_SCALE = 0.65f
+        private const val SETTINGS_TEXT_SCALE = 1.15f
+        private const val SCROLLBAR_SAFE_INSET = 14f
+        private const val MIN_SECTION_VISUAL_PROGRESS = 0.01f
+        private const val MIN_SECTION_INTERACTION_PROGRESS = 0.08f
     }
 }

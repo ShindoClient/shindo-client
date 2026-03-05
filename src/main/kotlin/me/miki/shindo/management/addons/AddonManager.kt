@@ -1,21 +1,22 @@
 package me.miki.shindo.management.addons
 
-import me.miki.shindo.management.addons.hackerdetector.HackerDetectorAddon
-import me.miki.shindo.management.addons.nocheaters.NoCheatersAddon
+import me.miki.shindo.Shindo
+import me.miki.shindo.management.addons.loader.AddonLoader
 import me.miki.shindo.management.addons.rpo.RPOAddon
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
+
 class AddonManager {
 
     val addons = ArrayList<Addon>()
+    val failedAddons = ArrayList<FailedAddonEntry>()
     val settings = ArrayList<Setting>()
 
     fun init() {
         registerAddon(RPOAddon())
-        registerAddon(NoCheatersAddon())
-        registerAddon(HackerDetectorAddon())
+        AddonLoader.loadExternalAddons(Shindo.getInstance().fileManager, this)
     }
 
     fun getAddonByName(name: String): Addon? {
@@ -51,9 +52,13 @@ class AddonManager {
         settings.addAll(settingsList.asList())
     }
 
-    private fun registerAddon(addon: Addon) {
+    fun registerAddon(addon: Addon) {
         addons.add(addon)
         SettingRegistry.applyMetadata(addon)
+    }
+
+    fun registerFailedAddon(jarFileName: String, errorMessage: String) {
+        failedAddons.add(FailedAddonEntry(jarFileName, errorMessage))
     }
 
     fun playToggleSound(toggled: Boolean) {

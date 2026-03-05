@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.animation
+
 open class TimedAnimation(
     ms: Int,
     endPoint: Double,

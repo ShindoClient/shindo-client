@@ -2,13 +2,19 @@ package me.miki.shindo.ui.comp.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
+
 class CompIconButton : CompControlTemplate {
     private val iconSupplier: () -> String?
     private var enabledSupplier: (() -> Boolean)? = null
+
+    private val hoverAnimation = SimpleAnimation()
+    private val pressAnimation = SimpleAnimation()
 
     private var radius: Float = 6f
     private var iconSize: Float = 12f
@@ -68,36 +74,58 @@ class CompIconButton : CompControlTemplate {
         val accentColors = accent
         val enabled = isEnabled()
 
-        val baseBackground = overrideBackground ?: ColorUtils.applyAlpha(
-                paletteColors.getBackgroundColor(ColorType.DARK),
-                if (enabled) 190 else 120
-        )
+        hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
+        pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f, 16.0)
 
-        val start = ColorUtils.applyAlpha(
-                accentColors.getColor1(),
-                if (enabled) if (hovered) 210 else 180 else 90
-        )
-        val end = ColorUtils.applyAlpha(
-                accentColors.getColor2(),
-                if (enabled) if (hovered) 210 else 180 else 90
-        )
+        val baseBackground = overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
+        val hoverBackground = overrideBackground?.let { ColorUtils.lighten(it, 0.08f) }
+            ?: CompStyleResolver.resolveControlHover(getVariant(), paletteColors, accentColors)
 
-        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, baseBackground)
-        nvgInstance.drawGradientRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, start, end)
+        var drawBackground = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
+        if (pressAnimation.value > 0.08f) {
+            drawBackground = ColorUtils.darken(drawBackground, pressAnimation.value * 0.18f)
+        }
+        if (!enabled) {
+            drawBackground = ColorUtils.applyAlpha(drawBackground, 118)
+        }
 
-        val iconColor = iconColorSupplier?.invoke() ?: Color(255, 255, 255, if (enabled) 255 else 155)
+        val outlineIdle = ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 26)
+        val outlineHover = ColorUtils.applyAlpha(accentColors.getColor1(), 92)
+        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.value.toDouble())
+        if (!enabled) {
+            outlineColor = ColorUtils.applyAlpha(outlineColor, 94)
+        }
+
+        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, drawBackground)
+        nvgInstance.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, 1f, outlineColor)
+
         val icon = iconSupplier.invoke()
         if (icon != null) {
-            val centerX = getX() + getWidth() / 2f
-            val centerY = getY() + getHeight() / 2f - nvgInstance.getTextHeight(icon, fontSize, Fonts.LEGACYICON) / 2f
-            nvgInstance.drawText(
-                    icon,
-                    centerX - nvgInstance.getTextWidth(icon, fontSize, Fonts.LEGACYICON) / 2f,
-                    centerY,
-                    iconColor,
-                    fontSize,
-                    Fonts.LEGACYICON
-            )
+            val baseIconColor = iconColorSupplier?.invoke() ?: paletteColors.getFontColor(ColorType.DARK)
+            val hoverIconColor = if (iconColorSupplier != null) {
+                ColorUtils.interpolateColor(baseIconColor, Color.WHITE, 0.2)
+            } else {
+                ColorUtils.lighten(baseIconColor, 0.16f)
+            }
+            var iconColor = ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.value.toDouble())
+            if (!enabled) {
+                iconColor = ColorUtils.applyAlpha(iconColor, 132)
+            }
+
+            val drawSize = iconSize.coerceAtLeast(fontSize)
+            val textHeight = nvgInstance.getTextHeight(icon, drawSize, Fonts.LEGACYICON)
+            val textWidth = nvgInstance.getTextWidth(icon, drawSize, Fonts.LEGACYICON)
+            val iconX = getX() + getWidth() / 2f - textWidth / 2f
+            val iconY = getY() + getHeight() / 2f - textHeight / 2f
+
+            nvgInstance.drawText(icon, iconX, iconY, iconColor, drawSize, Fonts.LEGACYICON)
         }
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (mouseButton == 0 && isEnabled() && super.isHoveredInteractive(mouseX, mouseY)) {
+            pressAnimation.value = 1.0f
+        }
+        super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 }

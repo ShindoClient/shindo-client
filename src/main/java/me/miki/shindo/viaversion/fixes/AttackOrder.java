@@ -1,7 +1,7 @@
 package me.miki.shindo.viaversion.fixes;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import me.miki.shindo.viaversion.ViaLoadingBase;
+import me.miki.viashindo.ViaLoadingBase;
+import me.miki.viashindo.protocolinfo.ProtocolInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,7 +16,14 @@ public class AttackOrder {
     }
 
     public static void sendFixedAttack(EntityPlayer entityIn, Entity target) {
-        if (ViaLoadingBase.getInstance().getTargetVersion().isOlderThanOrEqualTo(ProtocolVersion.v1_8)) {
+        if (ViaLoadingBase.getInstance() == null) {
+            // ViaShindo não inicializado (mod desligado) – usa ordem vanilla.
+            mc.playerController.attackEntity(entityIn, target);
+            mc.thePlayer.swingItem();
+            return;
+        }
+
+        if (ViaLoadingBase.getInstance().getTargetVersion().isOlderThanOrEqualTo(ProtocolInfo.R1_8)) {
             mc.thePlayer.swingItem();
             mc.playerController.attackEntity(entityIn, target);
         } else {

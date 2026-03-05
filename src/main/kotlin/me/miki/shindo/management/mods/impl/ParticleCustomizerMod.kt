@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventAttackEntity
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -59,7 +59,7 @@ class ParticleCustomizerMod : Mod(
         val sMultiplier = sharpnessAmountSetting
         val cMultiplier = criticalsAmountSetting
 
-        if (event.entity !is EntityLivingBase) {
+        if (event.getEntity() !is EntityLivingBase) {
             return
         }
 
@@ -70,19 +70,19 @@ class ParticleCustomizerMod : Mod(
         val alwaysSharpness = alwaysSharpnessSetting
         val sharpness = sharpnessSetting && EnchantmentHelper.getModifierForCreature(
             player.heldItem,
-            (event.entity as EntityLivingBase).creatureAttribute
+            (event.getEntity() as EntityLivingBase).creatureAttribute
         ) > 0
         val alwaysCriticals = alwaysCriticalsSetting
 
         if (critical || alwaysCriticals) {
             for (i in 0 until cMultiplier - 1) {
-                mc.effectRenderer.emitParticleAtEntity(event.entity, EnumParticleTypes.CRIT)
+                mc.effectRenderer.emitParticleAtEntity(event.getEntity(), EnumParticleTypes.CRIT)
             }
         }
 
         if (alwaysSharpness || sharpness) {
             for (i in 0 until sMultiplier - 1) {
-                mc.effectRenderer.emitParticleAtEntity(event.entity, EnumParticleTypes.CRIT_MAGIC)
+                mc.effectRenderer.emitParticleAtEntity(event.getEntity(), EnumParticleTypes.CRIT_MAGIC)
             }
         }
     }

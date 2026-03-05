@@ -3,9 +3,10 @@ package me.miki.shindo.gui
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.autotext.AutoTextEntry
 import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.mods.impl.AutoTextMod
+import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.management.mods.impl.AutoTextMod
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseBackIn
@@ -34,20 +35,17 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
     private val cards = ArrayList<AutoTextCard>()
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()
-
     private lateinit var introAnimation: Animation
+
     private var x = 0
     private var y = 0
-    private var menuWidth = 0
-    private var menuHeight = 0
+    private var menuWidth = 460
+    private var menuHeight = 280
 
     override fun initGui() {
         val sr = ScaledResolution(mc)
-        menuWidth = 460
-        menuHeight = 280
         x = (sr.scaledWidth / 2) - (menuWidth / 2)
         y = (sr.scaledHeight / 2) - (menuHeight / 2)
-
         introAnimation = EaseBackIn(320, 1.0, 1.8f)
         introAnimation.setDirection(Direction.FORWARDS)
         scroll.resetAll()
@@ -58,9 +56,8 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
         BlurUtils.drawBlurScreen(20f)
         val nvg = Shindo.getInstance().nanoVGManager ?: return
         val progress = introAnimation.getValueFloat().coerceIn(0f, 1f)
-
         screenAnimation.wrap(
-            Runnable { drawContent(mouseX, mouseY, partialTicks) },
+            Runnable { drawContent(nvg, mouseX, mouseY, partialTicks) },
             x.toFloat(),
             y.toFloat(),
             menuWidth.toFloat(),
@@ -69,20 +66,14 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
             progress,
             false
         )
-
         if (introAnimation.isDone(Direction.BACKWARDS)) {
-            mc.displayGuiScreen(parent)
-            if (parent == null) {
-                mc.setIngameFocus()
-            }
+            closeGui()
         }
-
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvg = Shindo.getInstance().nanoVGManager ?: return
-
+    private fun drawContent(nvg: NanoVGManager, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
         nvg.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f)
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 10f, Color(28, 28, 28, 225))
         nvg.drawRoundedRect(x + 1f, y + 1f, menuWidth - 2f, menuHeight - 2f, 9f, Color(40, 40, 40, 220))
@@ -108,9 +99,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
 
         var offsetY = 0f
         for (card in cards) {
-            val cardX = listX
-            val cardY = listY + offsetY
-            drawCard(nvg, card, cardX, cardY, listWidth, cardHeight, mouseX, mouseY, partialTicks)
+            drawCard(nvg, card, listX, listY + offsetY, listWidth, cardHeight, mouseX, mouseY, partialTicks)
             offsetY += cardHeight + cardGap
         }
 
@@ -123,7 +112,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
     }
 
     private fun drawCard(
-        nvg: me.miki.shindo.management.nanovg.NanoVGManager,
+        nvg: NanoVGManager,
         card: AutoTextCard,
         cardX: Float,
         cardY: Float,
@@ -158,7 +147,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
             card.keybindComp.draw(mouseX, mouseY, partialTicks)
         } else {
             nvg.drawText(
-                (if (card.entry.name.isBlank()) TranslateText.NAME.getText() else card.entry.name),
+                if (card.entry.name.isBlank()) TranslateText.NAME.getText() else card.entry.name,
                 cardX + 8f,
                 cardY + 10f,
                 Color.WHITE,
@@ -166,7 +155,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
                 Fonts.MEDIUM
             )
             nvg.drawText(
-                (if (card.entry.textOrCommand.isBlank()) TranslateText.TEXT.getText() else card.entry.textOrCommand),
+                if (card.entry.textOrCommand.isBlank()) TranslateText.TEXT.getText() else card.entry.textOrCommand,
                 cardX + 8f,
                 cardY + 35f,
                 Color(235, 235, 235, 235),
@@ -189,7 +178,6 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
 
         nvg.drawRoundedRect(actionX, actionY, actionSize, actionSize, 4f, if (actionHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45))
         nvg.drawRoundedRect(deleteX, deleteY, deleteSize, deleteSize, 4f, if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70))
-
         nvg.drawCenteredText(
             if (card.editing) LegacyIcon.CHECK else LegacyIcon.PENCIL,
             actionX + actionSize / 2f,
@@ -238,12 +226,11 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
         var offsetY = 0f
         var removeId: String? = null
         for (card in cards) {
-            val cardX = listX
             val cardY = listY + offsetY + scroll.getValue()
             val deleteSize = 18f
             val actionSize = 18f
             val actionGap = 5f
-            val deleteX = cardX + listWidth - 10f - deleteSize
+            val deleteX = listX + listWidth - 10f - deleteSize
             val deleteY = cardY + (cardHeight - deleteSize) / 2f
             val actionX = deleteX - actionGap - actionSize
             val actionY = deleteY
@@ -284,47 +271,77 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
+            val anyBinding = cards.any { it.editing && it.keybindComp.isBinding() }
+            if (anyBinding) {
+                for (card in cards) {
+                    if (card.editing) {
+                        card.keybindComp.keyTyped(typedChar, keyCode)
+                    }
+                }
+                return
+            }
+
+            val anyEditing = cards.any { it.editing }
+            if (anyEditing) {
+                cancelAllEditing()
+                return
+            }
+
             introAnimation.setDirection(Direction.BACKWARDS)
             return
         }
 
         for (card in cards) {
-            if (!card.editing) continue
-            card.nameBox.keyTyped(typedChar, keyCode)
-            card.textBox.keyTyped(typedChar, keyCode)
-            card.keybindComp.keyTyped(typedChar, keyCode)
+            if (card.editing) {
+                card.nameBox.keyTyped(typedChar, keyCode)
+                card.textBox.keyTyped(typedChar, keyCode)
+                card.keybindComp.keyTyped(typedChar, keyCode)
+            }
         }
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
+    override fun doesGuiPauseGame(): Boolean = false
+
+    private fun closeGui() {
+        mc.displayGuiScreen(parent)
+        if (parent == null) {
+            mc.setIngameFocus()
+        }
+    }
+
+    private fun cancelAllEditing() {
+        for (card in cards) {
+            if (card.editing) {
+                card.nameBox.setText(card.entry.name)
+                card.textBox.setText(card.entry.textOrCommand)
+                card.nameBox.setFocused(false)
+                card.textBox.setFocused(false)
+                card.editing = false
+            }
+        }
     }
 
     private fun rebuildCards() {
-        val map = HashMap<String, AutoTextCard>()
-        for (card in cards) {
-            map[card.entry.id] = card
-        }
+        val map = cards.associateBy { it.entry.id }
         cards.clear()
 
         for (entry in manager.getEntries()) {
             val old = map[entry.id]
-            if (old != null) {
-                cards.add(old)
-                continue
-            }
-
-            val card = AutoTextCard(
-                entry = entry,
-                keybindComp = CompAutoTextKeybind(
-                    72f,
-                    { entry.keyCode },
-                    {
-                        entry.keyCode = it
-                        manager.save()
-                    }
+            val card = if (old != null) {
+                old
+            } else {
+                AutoTextCard(
+                    entry = entry,
+                    keybindComp = CompAutoTextKeybind(
+                        72f,
+                        { entry.keyCode },
+                        {
+                            entry.keyCode = it
+                            manager.save()
+                        }
+                    )
                 )
-            )
+            }
             card.nameBox.setText(entry.name)
             card.textBox.setText(entry.textOrCommand)
             cards.add(card)

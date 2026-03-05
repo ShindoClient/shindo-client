@@ -3,6 +3,7 @@ package me.miki.shindo.ui.comp.layout
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
 
@@ -11,23 +12,48 @@ class CompAddProxyCard : Comp() {
     var label: String = "Add Proxy"
     var onClick: (() -> Unit)? = null
 
+    private val hoverAnimation = SimpleAnimation()
+
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!isVisible()) return
 
         val hovered = isHovered(mouseX, mouseY)
-        val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 220 else 190)
-        val overlayStart = ColorUtils.applyAlpha(accent.getColor1(), if (hovered) 70 else 35)
-        val overlayEnd = ColorUtils.applyAlpha(accent.getColor2(), if (hovered) 70 else 35)
+        hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 14.0)
+        val hoverProgress = hoverAnimation.value
 
-        nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, 6)
+        val base = ColorUtils.applyAlpha(
+            palette.getBackgroundColor(ColorType.DARK),
+            (190f + hoverProgress * 36f).toInt().coerceIn(0, 255)
+        )
+        val borderColor = if (hovered) {
+            ColorUtils.applyAlpha(accent.getInterpolateColor(), 164)
+        } else {
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 106)
+        }
+
+        nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, if (hovered) 8 else 6)
         nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, base)
-        nvg.drawGradientRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, overlayStart, overlayEnd)
-        nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, BORDER_WIDTH, ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 100))
+        nvg.drawOutlineRoundedRect(
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
+            CARD_RADIUS,
+            BORDER_WIDTH,
+            borderColor
+        )
+
+        val iconHeight = nvg.getTextHeight(LegacyIcon.PLUS, ICON_SIZE, Fonts.LEGACYICON)
+        val labelHeight = nvg.getTextHeight(label, LABEL_SIZE, Fonts.MEDIUM)
+        val spacing = 6f
+        val contentCenterY = getY() + getHeight() / 2f
+        val iconBaselineY = contentCenterY - (labelHeight + spacing) / 2f - iconHeight * 0.5f
+        val labelBaselineY = contentCenterY + spacing * 0.5f
 
         nvg.drawCenteredText(
             LegacyIcon.PLUS,
             getX() + getWidth() / 2f,
-            getY() + getHeight() / 2f - 8f,
+            iconBaselineY,
             palette.getFontColor(ColorType.DARK),
             ICON_SIZE,
             Fonts.LEGACYICON
@@ -35,7 +61,7 @@ class CompAddProxyCard : Comp() {
         nvg.drawCenteredText(
             label,
             getX() + getWidth() / 2f,
-            getY() + getHeight() / 2f + 12f,
+            labelBaselineY,
             palette.getFontColor(ColorType.DARK),
             LABEL_SIZE,
             Fonts.MEDIUM

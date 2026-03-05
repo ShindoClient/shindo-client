@@ -29,6 +29,9 @@ public class MixinAbstractClientPlayer {
 
     @Inject(method = "getLocationSkin*", at = @At("HEAD"), cancellable = true)
     public void onGetLocationSkin(CallbackInfoReturnable<ResourceLocation> cir) {
+        if (playerInfo == null) {
+            return;
+        }
 
         EventLocationSkin event = new EventLocationSkin(playerInfo);
         event.call();
@@ -41,6 +44,9 @@ public class MixinAbstractClientPlayer {
 
     @Inject(method = "getLocationCape", cancellable = true, at = @At("HEAD"))
     public void onGetLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
+        if (playerInfo == null) {
+            return;
+        }
 
         EventLocationCape event = new EventLocationCape(playerInfo);
         event.call();

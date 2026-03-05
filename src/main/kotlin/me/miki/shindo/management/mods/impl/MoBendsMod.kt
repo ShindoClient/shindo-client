@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventPreRenderTick
 import me.miki.shindo.management.event.impl.EventRenderPlayer
 import me.miki.shindo.management.event.impl.EventTick
@@ -49,7 +49,7 @@ class MoBendsMod :
         }
 
         for (i in Data_Player.dataList.indices) {
-            Data_Player.dataList[i].update((mc as IMixinMinecraft).getTimer().renderPartialTicks)
+            Data_Player.dataList[i].update(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
         }
     }
 
@@ -84,16 +84,16 @@ class MoBendsMod :
 
     @EventTarget
     fun onRenderPlayer(event: EventRenderPlayer) {
-        if (event.entity !is EntityPlayer) {
+        if (event.getEntity() !is EntityPlayer) {
             return
         }
 
-        val animated = AnimatedEntity.getByEntity(event.entity) ?: return
+        val animated = AnimatedEntity.getByEntity(event.getEntity()) ?: return
         if (animated.animate) {
-            val player = event.entity as AbstractClientPlayer
+            val player = event.getEntity() as AbstractClientPlayer
 
-            if (!currentlyRenderedEntities.contains(event.entity.uniqueID)) {
-                currentlyRenderedEntities.add(event.entity.uniqueID)
+            if (!currentlyRenderedEntities.contains(event.getEntity().uniqueID)) {
+                currentlyRenderedEntities.add(event.getEntity().uniqueID)
                 event.setCancelled(true)
 
                 val renderer = AnimatedEntity.getPlayerRenderer(player)
@@ -103,10 +103,10 @@ class MoBendsMod :
                 model.bipedHeadwear.isHidden = false
 
                 val entityYaw =
-                    event.entity.prevRotationYaw + (event.entity.rotationYaw - event.entity.prevRotationYaw) * event.partialTicks
+                    event.getEntity().prevRotationYaw + (event.getEntity().rotationYaw - event.getEntity().prevRotationYaw) * event.getPartialTicks()
                 AnimatedEntity.getPlayerRenderer(player)
-                    .doRender(player, event.x, event.y, event.z, entityYaw, event.partialTicks)
-                currentlyRenderedEntities.remove(event.entity.uniqueID)
+                    .doRender(player, event.getX(), event.getY(), event.getZ(), entityYaw, event.getPartialTicks())
+                currentlyRenderedEntities.remove(event.getEntity().uniqueID)
             }
         }
     }

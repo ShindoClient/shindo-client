@@ -3,7 +3,7 @@ package me.miki.shindo.management.command
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.command.impl.ScreenshotCommand
 import me.miki.shindo.management.command.impl.TranslateCommand
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventSendChat
 
 class CommandManager {
@@ -19,11 +19,11 @@ class CommandManager {
 
     @EventTarget
     fun onSendChat(event: EventSendChat) {
-        if (!event.message.startsWith(".scmd")) return
+        if (!event.getMessage().startsWith(".scmd")) return
         event.setCancelled(true)
-        val args = event.message.split(" ")
+        val args = event.getMessage().split(" ")
         if (args.size > 1) {
-            val msg = event.message.replace(".scmd ", "").replace(args[1] + " ", "")
+            val msg = event.getMessage().replace(".scmd ", "").replace(args[1] + " ", "")
             commands.firstOrNull { args[1] == it.getPrefix() }?.onCommand(msg)
         }
     }

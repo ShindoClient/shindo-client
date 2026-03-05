@@ -39,10 +39,12 @@ public class MixinGuiMultiplayer extends GuiScreen {
             this.buttonList.add(ViaShindo.getInstance().getAsyncVersionSlider());
         }
     }
+
     @Overwrite
     private void connectToServer(ServerData server) {
         mc.displayGuiScreen(new GuiFixConnecting(this, mc, server));
     }
+
     @Overwrite
     public void selectServer(int index) {
         this.serverListSelector.setSelectedSlotIndex(index);
@@ -65,6 +67,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
             }
         }
     }
+
     @Overwrite
     public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_) {
         return p_175392_2_ > ((IMixinServerList) savedServerList).getFeaturedServerCount();

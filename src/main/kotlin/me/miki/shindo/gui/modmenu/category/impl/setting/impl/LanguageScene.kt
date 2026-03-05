@@ -28,7 +28,9 @@ class LanguageScene(parent: SettingsCategory) :
     private val languageCards = ArrayList<LanguageCard>(languages.size)
 
     override fun initGui() {
-        container = CompScrollableContainer().setScrollbarGutter(14f)
+        container = CompScrollableContainer()
+                .setScrollbarGutter(14f)
+                .setThemeScrollbarOnly(true)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -60,17 +62,7 @@ class LanguageScene(parent: SettingsCategory) :
             val contentHeight = max(0f, viewport.height - OUTER_PADDING * 2f)
             val grid = resolveGridMetrics(contentWidth, contentHeight)
 
-            drawHeader(
-                    nvg,
-                    palette,
-                    accent,
-                    selectedLanguage,
-                    contentX,
-                    contentY,
-                    contentWidth
-            )
-
-            val cardsStartY = contentY + HEADER_HEIGHT + SECTION_GAP
+            val cardsStartY = contentY + SECTION_GAP
 
             for (index in languages.indices) {
                 val language = languages[index]
@@ -128,60 +120,14 @@ class LanguageScene(parent: SettingsCategory) :
         val columns = if (availableWidth > 420f) 2 else 1
         val cardWidth = max(120f, (availableWidth - ROW_GAP * (columns - 1)) / columns)
         val rows = max(1, ceil(languages.size / columns.toDouble()).toInt())
-        val cardsHeightBudget = max(0f, availableHeight - HEADER_HEIGHT - SECTION_GAP)
+        val cardsHeightBudget = max(0f, availableHeight - SECTION_GAP)
         val cardHeight = max(CARD_MIN_HEIGHT, min(CARD_MAX_HEIGHT, (cardsHeightBudget - ROW_GAP * (rows - 1)) / rows))
         return GridMetrics(columns, cardWidth, cardHeight, rows)
     }
 
     private fun calculateTotalContentHeight(grid: GridMetrics): Float {
         val cardsHeight = grid.rows * grid.cardHeight + max(0f, grid.rows - 1f) * ROW_GAP
-        return OUTER_PADDING * 2f + HEADER_HEIGHT + SECTION_GAP + cardsHeight
-    }
-
-    private fun drawHeader(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            selectedLanguage: Language,
-            x: Float,
-            y: Float,
-            width: Float
-    ) {
-        val headerColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 168)
-        nvg.drawRoundedRect(x, y, width, HEADER_HEIGHT, 9f, headerColor)
-        nvg.drawGradientRoundedRect(
-                x,
-                y,
-                width,
-                HEADER_HEIGHT,
-                9f,
-                ColorUtils.applyAlpha(accent.getColor1(), 38),
-                ColorUtils.applyAlpha(accent.getColor2(), 38)
-        )
-
-        val title = nvg.getLimitText(TranslateText.LANGUAGE.getText(), 10.5f, Fonts.MEDIUM, width - 90f)
-        nvg.drawText(title, x + 12f, y + 8f, palette.getFontColor(ColorType.DARK), 10.5f, Fonts.MEDIUM)
-        nvg.drawText(
-                selectedLanguage.getId().toUpperCase(Locale.ROOT),
-                x + 12f,
-                y + 20f,
-                palette.getFontColor(ColorType.NORMAL),
-                7.6f,
-                Fonts.REGULAR
-        )
-
-        val countLabel = "${languages.size}"
-        val countWidth = nvg.getTextWidth(countLabel, 8.4f, Fonts.MEDIUM) + 14f
-        val badgeX = x + width - countWidth - 10f
-        nvg.drawRoundedRect(
-                badgeX,
-                y + 7f,
-                countWidth,
-                16f,
-                7f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
-        )
-        nvg.drawCenteredText(countLabel, badgeX + countWidth / 2f, y + 15f, palette.getFontColor(ColorType.DARK), 8.4f, Fonts.MEDIUM)
+        return OUTER_PADDING * 2f + SECTION_GAP + cardsHeight
     }
 
     private fun drawLanguageCard(
@@ -254,8 +200,10 @@ class LanguageScene(parent: SettingsCategory) :
 
         val localeCode = language.getId().toUpperCase(Locale.ROOT)
         val codeWidth = nvg.getTextWidth(localeCode, 7.4f, Fonts.MEDIUM) + 12f
+        val codeHeight = nvg.getTextHeight(localeCode, 7.4f, Fonts.MEDIUM)
         val codeX = x + width - rightPadding - codeWidth
         val codeY = y + 11f
+
         nvg.drawRoundedRect(
                 codeX,
                 codeY,
@@ -264,7 +212,7 @@ class LanguageScene(parent: SettingsCategory) :
                 6f,
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198)
         )
-        nvg.drawCenteredText(localeCode, codeX + codeWidth / 2f, codeY + 8f, palette.getFontColor(ColorType.DARK), 7.4f, Fonts.MEDIUM)
+        nvg.drawCenteredText(localeCode, codeX + codeWidth / 2f, (codeY +  8f) - codeHeight / 2f , palette.getFontColor(ColorType.DARK), 7.4f, Fonts.MEDIUM)
 
         if (selected || hovered) {
             nvg.drawText(
@@ -308,7 +256,6 @@ class LanguageScene(parent: SettingsCategory) :
         private const val OUTER_PADDING = 26f
         private const val ROW_GAP = 14f
         private const val CARD_RADIUS = 10f
-        private const val HEADER_HEIGHT = 30f
         private const val SECTION_GAP = 10f
         private const val CARD_MIN_HEIGHT = 70f
         private const val CARD_MAX_HEIGHT = 90f

@@ -5,10 +5,12 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.settings.impl.combo.Option
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
+import me.miki.shindo.ui.comp.style.CompControlVariant
+import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
-import java.awt.Color
 
 class CompDropdown : Comp {
 
@@ -16,6 +18,10 @@ class CompDropdown : Comp {
     private var width: Float
     private var open: Boolean = false
     private var openUp: Boolean = false
+
+    private val openAnimation = SimpleAnimation()
+    private val hoverAnimation = SimpleAnimation()
+    private val optionHoverAnimations = HashMap<Int, SimpleAnimation>()
 
     constructor(x: Float, y: Float, width: Float, setting: ComboSetting) : super(x, y) {
         this.setting = setting
@@ -46,71 +52,154 @@ class CompDropdown : Comp {
         this.open = open
     }
 
-    private val dropdownHeight: Float
-        get() = if (open) LIST_PADDING * 2f + getOptionCount().coerceAtLeast(0) * OPTION_HEIGHT else 0f
+    private val targetDropdownHeight: Float
+        get() = LIST_PADDING * 2f + getOptionCount().coerceAtLeast(0) * OPTION_HEIGHT
 
     private fun getOptionCount(): Int = setting.getOptions().size
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
-        val accent = accent
         val paletteColors = palette
-
-        val controlHeight = CONTROL_HEIGHT
-        val dropdownHeight = dropdownHeight
-
-        super.setWidth(width)
-        super.setHeight(controlHeight + dropdownHeight)
+        val accent = accent
 
         val x = getX()
         val y = getY()
+        val controlHeight = CONTROL_HEIGHT
+        val optionCount = getOptionCount()
 
-        nvgInstance.drawGradientRoundedRect(x, y, width, controlHeight, 5f, accent.getColor1(), accent.getColor2())
+        val controlHovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, controlHeight)
+        hoverAnimation.setAnimation(if (controlHovered) 1.0f else 0.0f, 14.0)
+        openAnimation.setAnimation(if (open && optionCount > 0) 1.0f else 0.0f, 16.0)
 
-        val label = setting.getOption()!!.name
-        nvgInstance.drawText(label, x + 8f, y + 6f, Color.WHITE, 8.5f, Fonts.MEDIUM)
+        val targetHeight = targetDropdownHeight
+        val currentHeight = targetHeight * openAnimation.value
+        super.setWidth(width)
+        super.setHeight(controlHeight + if (currentHeight > 0f) currentHeight + LIST_GAP else 0f)
 
-        val arrow = if (open) LegacyIcon.CHEVRON_UP else LegacyIcon.CHEVRON_DOWN
-        nvgInstance.drawText(arrow, x + width - 16f, y + 4f, Color.WHITE, 10f, Fonts.LEGACYICON)
+        val baseBg = CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, paletteColors, accent)
+        val hoverBg = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accent)
+        val controlBg = ColorUtils.interpolateColor(baseBg, hoverBg, hoverAnimation.value.toDouble())
+        val outlineColor = ColorUtils.interpolateColor(
+            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 54),
+            ColorUtils.applyAlpha(accent.getColor1(), 112),
+            (hoverAnimation.value * 0.9f + openAnimation.value * 0.6f).toDouble().coerceAtMost(1.0)
+        )
 
-        if (open && getOptionCount() > 0) {
+        nvgInstance.drawRoundedRect(x, y, width, controlHeight, 6f, controlBg)
+        nvgInstance.drawOutlineRoundedRect(x, y, width, controlHeight, 6f, 1f, outlineColor)
+
+        val selected = setting.getOption()
+        val selectedText = selected?.name ?: "-"
+        val text = nvgInstance.getLimitText(
+            selectedText,
+            8.5f,
+            Fonts.MEDIUM,
+            (width - 28f).coerceAtLeast(24f)
+        )
+        val textHeight = nvgInstance.getTextHeight(text, 8.5f, Fonts.MEDIUM)
+        nvgInstance.drawText(
+            text,
+            x + 8f,
+            y + controlHeight / 2f - textHeight / 2f + 0.5f,
+            paletteColors.getFontColor(ColorType.DARK),
+            8.5f,
+            Fonts.MEDIUM
+        )
+
+        val downAlpha = ((1f - openAnimation.value) * 255f).toInt().coerceIn(0, 255)
+        val upAlpha = (openAnimation.value * 255f).toInt().coerceIn(0, 255)
+        nvgInstance.drawText(
+            LegacyIcon.CHEVRON_DOWN,
+            x + width - 14f,
+            y + 4f,
+            paletteColors.getFontColor(ColorType.DARK, downAlpha),
+            10f,
+            Fonts.LEGACYICON
+        )
+        nvgInstance.drawText(
+            LegacyIcon.CHEVRON_UP,
+            x + width - 14f,
+            y + 4f,
+            paletteColors.getFontColor(ColorType.DARK, upAlpha),
+            10f,
+            Fonts.LEGACYICON
+        )
+
+        if (currentHeight > 0.5f && optionCount > 0) {
             val listX = x
-            val listHeight = dropdownHeight
-            val listY = if (openUp) y - listHeight - 4f else y + controlHeight + 4f
+            val listY = if (openUp) y - currentHeight - LIST_GAP else y + controlHeight + LIST_GAP
 
             nvgInstance.drawRoundedRect(
-                    listX,
-                    listY,
-                    width,
-                    listHeight,
-                    5f,
-                    ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), 240)
+                listX,
+                listY,
+                width,
+                currentHeight,
+                6f,
+                ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), 236)
+            )
+            nvgInstance.drawOutlineRoundedRect(
+                listX,
+                listY,
+                width,
+                currentHeight,
+                6f,
+                1f,
+                ColorUtils.applyAlpha(accent.getColor1(), (86 * openAnimation.value).toInt())
             )
 
+            nvgInstance.save()
+            nvgInstance.scissor(listX + 1f, listY + 1f, width - 2f, (currentHeight - 2f).coerceAtLeast(0f))
+
             val options: List<Option> = setting.getOptions()
+            val selectedOption = setting.getOption()
             for (i in options.indices) {
                 val option = options[i]
                 val optionY = listY + LIST_PADDING + i * OPTION_HEIGHT
                 val optionHeight = OPTION_HEIGHT - 2f
                 val hovered = MouseUtils.isInside(mouseX, mouseY, listX + 2f, optionY, width - 4f, optionHeight)
-                if (hovered) {
+                val hoverAnim = optionHoverAnimations.getOrPut(i) { SimpleAnimation() }
+                hoverAnim.setAnimation(if (hovered) 1.0f else 0.0f, 14.0)
+
+                if (option == selectedOption) {
                     nvgInstance.drawRoundedRect(
-                            listX + 2f,
-                            optionY,
-                            width - 4f,
-                            optionHeight,
-                            4f,
-                            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 220)
+                        listX + 2f,
+                        optionY,
+                        width - 4f,
+                        optionHeight,
+                        4f,
+                        ColorUtils.applyAlpha(accent.getColor1(), 88)
+                    )
+                } else if (hoverAnim.value > 0.01f) {
+                    nvgInstance.drawRoundedRect(
+                        listX + 2f,
+                        optionY,
+                        width - 4f,
+                        optionHeight,
+                        4f,
+                        ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), (hoverAnim.value * 178f).toInt())
                     )
                 }
 
-                val textColor = if (option == setting.getOption()) {
+                val textColor = if (option == selectedOption) {
                     paletteColors.getFontColor(ColorType.DARK)
                 } else {
                     paletteColors.getFontColor(ColorType.NORMAL)
                 }
-                nvgInstance.drawText(option.name, listX + 8f, optionY + 5f, textColor, 8f, Fonts.REGULAR)
+                val optionText = nvgInstance.getLimitText(option.name, 8f, Fonts.REGULAR, (width - 20f).coerceAtLeast(20f))
+                val optionTextHeight = nvgInstance.getTextHeight(optionText, 8f, Fonts.REGULAR)
+                nvgInstance.drawText(
+                    optionText,
+                    listX + 8f,
+                    optionY + optionHeight / 2f - optionTextHeight / 2f,
+                    textColor,
+                    8f,
+                    Fonts.REGULAR
+                )
             }
+
+            nvgInstance.restore()
+        } else if (!open) {
+            optionHoverAnimations.clear()
         }
 
         super.draw(mouseX, mouseY, partialTicks)
@@ -120,18 +209,16 @@ class CompDropdown : Comp {
         if (mouseButton != 0) return
 
         val controlHeight = CONTROL_HEIGHT
-        val listX = getX()
-        val listHeight = dropdownHeight
-        val listY = if (openUp) getY() - listHeight - 4f else getY() + controlHeight + 4f
-        val listWidth = width
+        val listHeight = targetDropdownHeight * openAnimation.value
+        val listY = if (openUp) getY() - listHeight - LIST_GAP else getY() + controlHeight + LIST_GAP
 
         if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), width, controlHeight)) {
             open = !open
             return
         }
 
-        if (open && MouseUtils.isInside(mouseX, mouseY, listX, listY, listWidth, listHeight)) {
-            selectOptionAt(mouseX, mouseY)
+        if (open && listHeight > 1f && MouseUtils.isInside(mouseX, mouseY, getX(), listY, width, listHeight)) {
+            selectOptionAt(mouseX, mouseY, listY)
             open = false
             return
         }
@@ -139,26 +226,22 @@ class CompDropdown : Comp {
         open = false
     }
 
-    private fun selectOptionAt(mouseX: Int, mouseY: Int) {
-        val options: List<Option> = setting.getOptions()
+    private fun selectOptionAt(mouseX: Int, mouseY: Int, listY: Float) {
+        val options = setting.getOptions()
         if (options.isEmpty()) return
+        if (!MouseUtils.isInside(mouseX, mouseY, getX(), listY, width, targetDropdownHeight)) return
 
-        val optionX = getX() + 2f
-        val listHeight = dropdownHeight
-        var optionY = (if (openUp) getY() - listHeight - 4f else getY() + CONTROL_HEIGHT + 4f) + LIST_PADDING
-
-        for (option in options) {
-            if (MouseUtils.isInside(mouseX, mouseY, optionX, optionY, width - 4f, OPTION_HEIGHT - 2f)) {
-                setting.setOption(option)
-                break
-            }
-            optionY += OPTION_HEIGHT
+        val relativeY = mouseY - (listY + LIST_PADDING)
+        val index = (relativeY / OPTION_HEIGHT).toInt()
+        if (index in options.indices) {
+            setting.setOption(options[index])
         }
     }
 
     companion object {
-        private const val CONTROL_HEIGHT = 20F
-        private const val OPTION_HEIGHT = 18F
-        private const val LIST_PADDING = 4F
+        private const val CONTROL_HEIGHT = 20f
+        private const val OPTION_HEIGHT = 18f
+        private const val LIST_PADDING = 4f
+        private const val LIST_GAP = 4f
     }
 }

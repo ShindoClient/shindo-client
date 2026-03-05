@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventFovUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -28,7 +28,7 @@ class BowZoomMod :
     @EventTarget
     fun onFovUpdate(event: EventFovUpdate) {
         var base = 1.0f
-        val entity: EntityPlayer = event.entity
+        val entity: EntityPlayer = event.getEntity()
         val item = entity.itemInUse
         val useDuration = entity.itemInUseDuration
 
@@ -38,7 +38,7 @@ class BowZoomMod :
             val duration = min(useDuration.toFloat(), 20.0f).toInt()
             val modifier: Float = PlayerUtils.MODIFIER_BY_TICK.get(duration)!!
             base -= modifier * bowFov
-            event.fov = base
+            event.setFov(base)
         }
         mc.renderGlobal.setDisplayListEntitiesDirty()
     }

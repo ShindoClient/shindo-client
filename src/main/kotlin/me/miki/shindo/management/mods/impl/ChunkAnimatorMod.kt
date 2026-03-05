@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventPreRenderChunk
 import me.miki.shindo.management.event.impl.EventRenderChunkPosition
 import me.miki.shindo.management.language.TranslateText
@@ -34,19 +34,19 @@ class ChunkAnimatorMod : Mod(
 
     @EventTarget
     fun preRenderChunk(event: EventPreRenderChunk) {
-        if (chunks.containsKey(event.renderChunk)) {
-            var time: Long = chunks.get(event.renderChunk)!!
+        if (chunks.containsKey(event.getRenderChunk())) {
+            var time: Long = chunks.get(event.getRenderChunk())!!
             val now = System.currentTimeMillis()
 
             if (time == -1L) {
-                chunks.put(event.renderChunk, now)
+                chunks.put(event.getRenderChunk(), now)
                 time = now
             }
 
             val passedTime = now - time
 
             if (passedTime < (duration * 1000)) {
-                val chunkY = event.renderChunk.position.y
+                val chunkY = event.getRenderChunk().position.y
                 GlStateManager.translate(
                     0f,
                     -chunkY + this.easeOut(passedTime.toFloat(), 0f, chunkY.toFloat(), (duration * 1000).toFloat()),
@@ -59,7 +59,7 @@ class ChunkAnimatorMod : Mod(
     @EventTarget
     fun setPosition(event: EventRenderChunkPosition) {
         if (mc.thePlayer != null) {
-            chunks.put(event.renderChunk, -1L)
+            chunks.put(event.getRenderChunk(), -1L)
         }
     }
 

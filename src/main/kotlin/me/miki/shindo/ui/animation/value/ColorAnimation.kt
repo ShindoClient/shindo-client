@@ -1,6 +1,7 @@
 package me.miki.shindo.ui.animation.value
 
 import java.awt.Color
+
 open class ColorAnimation {
 
     private val animation = Array(3) { SimpleAnimation() }

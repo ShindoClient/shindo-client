@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -26,7 +26,7 @@ class ChunkBordersMod : Mod(
         val tessellator = Tessellator.getInstance()
         val worldRenderer = tessellator.worldRenderer
 
-        val frame = event.partialTicks
+        val frame = event.getPartialTicks()
         val inChunkPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * frame.toDouble()
         val inChunkPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * frame.toDouble()
         val inChunkPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * frame.toDouble()

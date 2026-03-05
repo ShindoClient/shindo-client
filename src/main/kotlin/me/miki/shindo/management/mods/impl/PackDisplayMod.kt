@@ -2,7 +2,7 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventSwitchTexture
 import me.miki.shindo.management.language.TranslateText
@@ -86,7 +86,7 @@ class PackDisplayMod :
             dynamicTexture = DynamicTexture(getCurrentPack()!!.packImage)
         } catch (e: Exception) {
             try {
-                dynamicTexture = DynamicTexture((mc as IMixinMinecraft).getMcDefaultResourcePack().packImage)
+                dynamicTexture = DynamicTexture(((mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack).packImage)
             } catch (e1: IOException) {
                 dynamicTexture = TextureUtil.missingTexture
             }
@@ -99,7 +99,7 @@ class PackDisplayMod :
         if (!packs.isEmpty()) {
             return packs.get(packs.size - 1)!!.resourcePack
         }
-        return (mc as IMixinMinecraft).getMcDefaultResourcePack()
+        return (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack
     }
 }
 

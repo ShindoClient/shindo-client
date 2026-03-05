@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.ui.comp.chips.FilterChip
 import me.miki.shindo.logger.ShindoLogger
@@ -15,20 +17,20 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.profile.*
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.IOUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.SearchUtils
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.io.IOException
+import java.util.EnumMap
 import java.util.Locale
 
 class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true) {
@@ -37,8 +39,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     private val serverIpBox = CompTextBox()
     private val importCodeBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
+    private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
     private var currentType = ProfileType.ALL
-    private var profileAnimation: Animation = SmoothStepAnimation(260, 1.0)
     private var openProfile = false
     private var currentIcon = ProfileIcon.COMMAND
     private var useCustomIcon = false
@@ -48,26 +50,36 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     private var importButtonY = 0f
     private var importButtonW = 0f
     private var importButtonH = 0f
+    private val iconHoverAnimations = EnumMap<ProfileIcon, SimpleAnimation>(ProfileIcon::class.java)
+    private val iconPressAnimations = EnumMap<ProfileIcon, SimpleAnimation>(ProfileIcon::class.java)
+    private val customIconHoverAnimation = SimpleAnimation()
+    private val customIconPressAnimation = SimpleAnimation()
 
     override fun initGui() {
         currentType = ProfileType.ALL
         currentIcon = ProfileIcon.COMMAND
         openProfile = false
-        profileAnimation = SmoothStepAnimation(260, 1.0)
-        profileAnimation.setValue(1.0)
+        detailTransition.reset()
         useCustomIcon = false
         selectedCustomIcon = null
         gridStartY = 0f
+        iconHoverAnimations.clear()
+        iconPressAnimations.clear()
+        customIconHoverAnimation.value = 0f
+        customIconPressAnimation.value = 0f
     }
 
     override fun initCategory() {
         scroll.resetAll()
         openProfile = false
-        profileAnimation = SmoothStepAnimation(260, 1.0)
-        profileAnimation.setValue(1.0)
+        detailTransition.reset()
         useCustomIcon = false
         selectedCustomIcon = null
         gridStartY = 0f
+        iconHoverAnimations.clear()
+        iconPressAnimations.clear()
+        customIconHoverAnimation.value = 0f
+        customIconPressAnimation.value = 0f
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -79,9 +91,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val accentColor = colorManager.getCurrentColor()
         val palette = colorManager.getPalette()
 
-        profileAnimation.setDirection(if (openProfile) Direction.BACKWARDS else Direction.FORWARDS)
-
-        if (profileAnimation.isDone(Direction.FORWARDS)) {
+        detailTransition.update {
             nameBox.setText("")
             serverIpBox.setText("")
             importCodeBox.setText("")
@@ -92,7 +102,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val scrollValue = scroll.getValue()
 
         nvg.save()
-        nvg.translate((-(600 - (profileAnimation.getValue() * 600))).toFloat(), 0f)
+        nvg.translate(detailTransition.getListTranslateX(), 0f)
 
         val chipBlockBottom = drawTypeChips(nvg, palette, accentColor, mouseX, mouseY)
         val contentStartY = chipBlockBottom + 24f
@@ -100,7 +110,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val cardWidth = ((getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2f)
         val viewportHeight = getHeight() - (contentStartY - getY()) - 28f
 
-        if (!openProfile && MouseUtils.isInside(
+        if (detailTransition.isListInteractive() && MouseUtils.isInside(
                 mouseX,
                 mouseY,
                 getX().toFloat(),
@@ -113,60 +123,55 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             scroll.onAnimation()
         }
 
-        nvg.save()
-        nvg.intersectScissor(
-            getX().toFloat(),
-            contentStartY - 6f,
-            getWidth().toFloat(),
-            getHeight() - (contentStartY - getY()) + 6f
-        )
-        nvg.translate(0f, scrollValue)
-
-        for (i in visibleProfiles.indices) {
-            val profile = visibleProfiles[i]
-            val isCreateCard = profile.id == 999
-            val isDefault = profile.id == -1
-            var isActive = activeProfile != null && activeProfile == profile
-            if (!isActive && activeProfile != null && activeProfile.jsonFile != null && profile.jsonFile != null) {
-                isActive = try {
-                    activeProfile.jsonFile.canonicalPath == profile.jsonFile.canonicalPath
-                } catch (e: Exception) {
-                    activeProfile.jsonFile.absolutePath == profile.jsonFile.absolutePath
+        ModMenuClipCoordinator.withClipTranslate(
+            nvg = nvg,
+            x = getX().toFloat(),
+            y = contentStartY - 6f,
+            width = getWidth().toFloat(),
+            height = getHeight() - (contentStartY - getY()) + 6f,
+            translateX = 0f,
+            translateY = scrollValue,
+            intersect = true
+        ) {
+            for (i in visibleProfiles.indices) {
+                val profile = visibleProfiles[i]
+                val isCreateCard = profile.id == 999
+                val isDefault = profile.id == -1
+                var isActive = activeProfile != null && activeProfile == profile
+                if (!isActive && activeProfile != null && activeProfile.jsonFile != null && profile.jsonFile != null) {
+                    isActive = try {
+                        activeProfile.jsonFile.canonicalPath == profile.jsonFile.canonicalPath
+                    } catch (e: Exception) {
+                        activeProfile.jsonFile.absolutePath == profile.jsonFile.absolutePath
+                    }
                 }
+
+                val column = i % 2
+                val row = i / 2
+
+                val cardX = getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP)
+                val cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP)
+
+                if (cardY + scrollValue > getY() + getHeight() || cardY + scrollValue + CARD_HEIGHT < getY()) {
+                    continue
+                }
+
+                val hovered =
+                    detailTransition.isListInteractive() && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
+
+            val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
+            val borderColor = when {
+                isActive -> ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 186)
+                hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 124)
+                else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
             }
-
-            val column = i % 2
-            val row = i / 2
-
-            val cardX = getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP)
-            val cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP)
-
-            if (cardY + scrollValue > getY() + getHeight() || cardY + scrollValue + CARD_HEIGHT < getY()) {
-                continue
-            }
-
-            val hovered =
-                !openProfile && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
-
-            val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 220 else 190)
-            val overlayStart = ColorUtils.applyAlpha(accentColor.getColor1(), if (isActive) 140 else if (hovered) 70 else 35)
-            val overlayEnd = ColorUtils.applyAlpha(accentColor.getColor2(), if (isActive) 140 else if (hovered) 70 else 35)
 
             nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10f, 6)
             nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
-            nvg.drawGradientRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, overlayStart, overlayEnd)
+            nvg.drawOutlineRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, if (isActive) 1.5f else 1f, borderColor)
 
             if (isActive) {
-                nvg.drawGradientOutlineRoundedRect(
-                    cardX,
-                    cardY,
-                    cardWidth,
-                    CARD_HEIGHT,
-                    12f,
-                    2.2f,
-                    ColorUtils.applyAlpha(accentColor.getColor1(), 225),
-                    ColorUtils.applyAlpha(accentColor.getColor2(), 225)
-                )
+                nvg.drawRoundedRect(cardX + 10f, cardY + 14f, 3f, CARD_HEIGHT - 28f, 1.5f, ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 188))
             }
 
             if (isCreateCard) {
@@ -326,6 +331,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 )
             }
         }
+        }
 
         nvg.restore()
         nvg.drawVerticalGradientRect(
@@ -344,17 +350,25 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             Color(0, 0, 0, 0),
             palette.getBackgroundColor(ColorType.NORMAL)
         )
-        nvg.restore()
-
         nvg.save()
-        nvg.translate((profileAnimation.getValue() * 600).toFloat(), 0f)
+        nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
 
         val panelX = getX() + 18f
         val panelY = getY() + 15f
         val panelWidth = getWidth() - 36f
         val panelHeight = getHeight() - 30f
 
+        nvg.drawShadow(panelX, panelY, panelWidth, panelHeight, 12f, 7)
         nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawOutlineRoundedRect(
+            panelX,
+            panelY,
+            panelWidth,
+            panelHeight,
+            12f,
+            1.1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+        )
 
         nvg.drawText(
             TranslateText.ADD_PROFILE.getText(),
@@ -380,21 +394,39 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
         for (icon in ProfileIcon.values()) {
             val selected = !useCustomIcon && currentIcon == icon
+            val hovered = MouseUtils.isInside(mouseX, mouseY, iconSelectorX, iconSelectorY, iconTileSize, iconTileSize)
+            val hoverAnimation = getIconHoverAnimation(icon)
+            val pressAnimation = getIconPressAnimation(icon)
             icon.animation.setAnimation(if (selected) 1.0f else 0.0f, 12.0)
-            val alpha = icon.animation.value
+            hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 14.0)
+            pressAnimation.setAnimation(
+                if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f,
+                16.0
+            )
+            val activeAlpha = icon.animation.value
+            val hoverAlpha = hoverAnimation.value
+            val pressAlpha = pressAnimation.value
 
-            val iconOverlayStart = ColorUtils.applyAlpha(accentColor.getColor1(), (alpha * 200).toInt())
-            val iconOverlayEnd = ColorUtils.applyAlpha(accentColor.getColor2(), (alpha * 200).toInt())
-
-            nvg.drawRoundedImage(icon.icon, iconSelectorX, iconSelectorY, iconTileSize, iconTileSize, 8f)
-            nvg.drawGradientRoundedRect(
+            var tileBase = ColorUtils.applyAlpha(
+                palette.getBackgroundColor(ColorType.NORMAL),
+                (194f + hoverAlpha * 28f).toInt().coerceIn(0, 255)
+            )
+            if (pressAlpha > 0.08f) {
+                tileBase = ColorUtils.darken(tileBase, pressAlpha * 0.12f)
+            }
+            nvg.drawRoundedRect(iconSelectorX, iconSelectorY, iconTileSize, iconTileSize, 8f, tileBase)
+            nvg.drawRoundedImage(icon.icon, iconSelectorX + 1f, iconSelectorY + 1f, iconTileSize - 2f, iconTileSize - 2f, 7f)
+            nvg.drawOutlineRoundedRect(
                 iconSelectorX,
                 iconSelectorY,
                 iconTileSize,
                 iconTileSize,
                 8f,
-                iconOverlayStart,
-                iconOverlayEnd
+                if (selected) 1.6f else 1f,
+                ColorUtils.applyAlpha(
+                    if (selected || hovered) accentColor.getInterpolateColor() else palette.getFontColor(ColorType.NORMAL),
+                    ((if (selected) 206f else if (hovered) 156f else 104f) + activeAlpha * 18f + hoverAlpha * 10f).toInt().coerceIn(0, 255)
+                )
             )
 
             iconSelectorX += iconTileSize + iconSelectorGap
@@ -402,45 +434,49 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
         val customTileX = panelX + panelWidth - iconTileSize - 24f
         val customTileY = panelY + 66f
+        val customHovered = MouseUtils.isInside(mouseX, mouseY, customTileX, customTileY, iconTileSize, iconTileSize)
+        customIconHoverAnimation.setAnimation(if (customHovered) 1.0f else 0.0f, 14.0)
+        customIconPressAnimation.setAnimation(
+            if (customIconPressAnimation.value > 0.08f) customIconPressAnimation.value * 0.82f else 0.0f,
+            16.0
+        )
+        val customHover = customIconHoverAnimation.value
+        val customPress = customIconPressAnimation.value
 
-        val customBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+        var customBase = ColorUtils.applyAlpha(
+            palette.getBackgroundColor(ColorType.NORMAL),
+            (210f + customHover * 26f).toInt().coerceIn(0, 255)
+        )
+        if (customPress > 0.08f) {
+            customBase = ColorUtils.darken(customBase, customPress * 0.13f)
+        }
         nvg.drawRoundedRect(customTileX, customTileY, iconTileSize, iconTileSize, 8f, customBase)
 
         if (selectedCustomIcon != null) {
-            nvg.drawRoundedImage(selectedCustomIcon!!, customTileX, customTileY, iconTileSize, iconTileSize, 8f)
+            nvg.drawRoundedImage(selectedCustomIcon!!, customTileX + 1f, customTileY + 1f, iconTileSize - 2f, iconTileSize - 2f, 7f)
         } else {
             nvg.drawCenteredText(
                 LegacyIcon.PLUS,
                 customTileX + iconTileSize / 2f,
-                customTileY + iconTileSize / 2f - 6f,
+                customTileY + iconTileSize / 2f - 6f + customHover * 0.25f,
                 palette.getFontColor(ColorType.DARK),
                 12f,
                 Fonts.LEGACYICON
             )
         }
 
-        if (useCustomIcon) {
-            nvg.drawGradientOutlineRoundedRect(
-                customTileX,
-                customTileY,
-                iconTileSize,
-                iconTileSize,
-                8f,
-                1.6f,
-                ColorUtils.applyAlpha(accentColor.getColor1(), 220),
-                ColorUtils.applyAlpha(accentColor.getColor2(), 220)
+        nvg.drawOutlineRoundedRect(
+            customTileX,
+            customTileY,
+            iconTileSize,
+            iconTileSize,
+            8f,
+            if (useCustomIcon) 1.6f else 1.2f,
+            ColorUtils.applyAlpha(
+                if (useCustomIcon || customHovered) accentColor.getInterpolateColor() else palette.getFontColor(ColorType.NORMAL),
+                if (useCustomIcon) (220f + customHover * 20f).toInt().coerceIn(0, 255) else if (customHovered) 154 else 100
             )
-        } else {
-            nvg.drawOutlineRoundedRect(
-                customTileX,
-                customTileY,
-                iconTileSize,
-                iconTileSize,
-                8f,
-                1.2f,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 100)
-            )
-        }
+        )
 
         val fieldStartY = panelY + 130f
         val fieldWidth = (panelWidth - 48f) / 2f - 15f
@@ -487,14 +523,27 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         importButtonH = 20f
         importButtonX = panelX + panelWidth - importButtonW - 30f
         importButtonY = importFieldY + 20f
+        val importHovered = MouseUtils.isInside(mouseX, mouseY, importButtonX, importButtonY, importButtonW, importButtonH)
         nvg.drawRoundedRect(
             importButtonX,
             importButtonY,
             importButtonW,
             importButtonH,
             8f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            if (importHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
         )
+        if (importHovered) {
+            nvg.drawGradientOutlineRoundedRect(
+                importButtonX,
+                importButtonY,
+                importButtonW,
+                importButtonH,
+                8f,
+                1f,
+                ColorUtils.applyAlpha(accentColor.getColor1(), 148),
+                ColorUtils.applyAlpha(accentColor.getColor2(), 148)
+            )
+        }
         nvg.drawCenteredText(
             TranslateText.PROFILE_IMPORT.getText(),
             importButtonX + importButtonW / 2f,
@@ -508,6 +557,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val createButtonHeight = 20f
         val createButtonX = panelX + panelWidth - createButtonWidth - 30f
         val createButtonY = panelY + panelHeight - createButtonHeight - 20f
+        val createHovered = MouseUtils.isInside(mouseX, mouseY, createButtonX, createButtonY, createButtonWidth, createButtonHeight)
 
         nvg.drawRoundedRect(
             createButtonX,
@@ -516,6 +566,15 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             createButtonHeight,
             8f,
             palette.getBackgroundColor(ColorType.NORMAL)
+        )
+        nvg.drawGradientRoundedRect(
+            createButtonX,
+            createButtonY,
+            createButtonWidth,
+            createButtonHeight,
+            8f,
+            ColorUtils.applyAlpha(accentColor.getColor1(), if (createHovered) 198 else 156),
+            ColorUtils.applyAlpha(accentColor.getColor2(), if (createHovered) 198 else 156)
         )
         nvg.drawCenteredText(
             TranslateText.CREATE.getText(),
@@ -543,7 +602,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val contentStartY = if (gridStartY > 0f) gridStartY else getY() + 56f
         val cardWidth = ((getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2f)
 
-        if (openProfile && profileAnimation.isDone(Direction.BACKWARDS)) {
+        if (openProfile && detailTransition.isDetailsInteractive()) {
             val panelX = getX() + 18f
             val panelY = getY() + 15f
             val panelWidth = getWidth() - 36f
@@ -564,6 +623,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         iconTileSize
                     ) && mouseButton == 0
                 ) {
+                    getIconPressAnimation(icon).value = 1.0f
                     currentIcon = icon
                     useCustomIcon = false
                 }
@@ -582,6 +642,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     iconTileSize
                 ) && mouseButton == 0
             ) {
+                customIconPressAnimation.value = 1.0f
                 if (selectedCustomIcon != null && !useCustomIcon) {
                     useCustomIcon = true
                 } else {
@@ -620,9 +681,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     )
                     profileManager.loadProfiles(false)
 
-                    openProfile = false
-                    useCustomIcon = false
-                    selectedCustomIcon = null
+                    closeProfilePanel(clearIconSelection = true)
                     currentIcon = ProfileIcon.COMMAND
                 }
             }
@@ -679,11 +738,9 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     panelHeight + 12f
                 ) && mouseButton == 0
             ) {
-                openProfile = false
-                useCustomIcon = false
-                selectedCustomIcon = null
+                closeProfilePanel(clearIconSelection = true)
             }
-        } else {
+        } else if (detailTransition.isListInteractive()) {
             if (mouseButton == 0) {
                 for (chip in typeChips) {
                     if (chip.contains(mouseX, mouseY)) {
@@ -708,9 +765,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
                 if (mouseButton == 0) {
                     if (profile.id == 999) {
-                        openProfile = true
-                        setCanClose(false)
-                        profileAnimation.setDirection(Direction.BACKWARDS)
+                        openProfilePanel()
                         return
                     }
 
@@ -812,28 +867,47 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         }
 
         if (mouseButton == 3) {
-            openProfile = false
-            selectedCustomIcon = null
-            useCustomIcon = false
+            closeProfilePanel(clearIconSelection = true)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (openProfile) {
+        if (openProfile && detailTransition.isDetailsInteractive()) {
             nameBox.keyTyped(typedChar, keyCode)
             serverIpBox.keyTyped(typedChar, keyCode)
             importCodeBox.keyTyped(typedChar, keyCode)
 
             if (keyCode == Keyboard.KEY_ESCAPE) {
-                openProfile = false
-                useCustomIcon = false
-                selectedCustomIcon = null
+                closeProfilePanel(clearIconSelection = true)
             }
-        } else {
+        } else if (detailTransition.isListInteractive()) {
             if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE) {
                 getSearchBox().setFocused(true)
             }
         }
+    }
+
+    private fun openProfilePanel() {
+        openProfile = true
+        detailTransition.open()
+        setCanClose(false)
+    }
+
+    private fun closeProfilePanel(clearIconSelection: Boolean) {
+        openProfile = false
+        detailTransition.close()
+        if (clearIconSelection) {
+            selectedCustomIcon = null
+            useCustomIcon = false
+        }
+    }
+
+    private fun getIconHoverAnimation(icon: ProfileIcon): SimpleAnimation {
+        return iconHoverAnimations.getOrPut(icon) { SimpleAnimation() }
+    }
+
+    private fun getIconPressAnimation(icon: ProfileIcon): SimpleAnimation {
+        return iconPressAnimations.getOrPut(icon) { SimpleAnimation() }
     }
 
     private fun drawTypeChips(
@@ -862,7 +936,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             }
 
             val active = type == currentType
-            val hovered = !openProfile && MouseUtils.isInside(
+            val hovered = detailTransition.isListInteractive() && MouseUtils.isInside(
                 mouseX,
                 mouseY,
                 currentX,
@@ -900,7 +974,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     }
 
     private fun openCustomIconPicker() {
-        Multithreading.runAsync(Runnable {
+        TaskExecutor.runAsync(ThreadPoolType.IO) {
             val fileManager = Shindo.getInstance().fileManager
 
             val file = FileUtils.selectImageFile()
@@ -921,7 +995,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     ShindoLogger.error("Failed to copy custom profile icon", e)
                 }
             }
-        })
+        }
     }
 
     private fun collectVisibleProfiles(profileManager: ProfileManager): ArrayList<Profile> {

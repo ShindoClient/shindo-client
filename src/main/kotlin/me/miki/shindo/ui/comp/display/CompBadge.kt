@@ -2,10 +2,11 @@ package me.miki.shindo.ui.comp.display
 
 import me.miki.shindo.ui.comp.templates.CompDisplay
 import java.awt.Color
+
 class CompBadge(
-        text: String,
-        x: Float = 0f,
-        y: Float = 0f
+    text: String,
+    x: Float = 0f,
+    y: Float = 0f
 ) : CompDisplay(x, y) {
 
     private var text: String = text
@@ -71,12 +72,12 @@ class CompBadge(
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
         nvgInstance.drawCenteredText(
-                text,
-                getX() + getWidth() / 2f,
-                getY() + getHeight() / 2f,
-                txtColor,
-                fontSize,
-                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+            text,
+            getX() + getWidth() / 2f,
+            getY() + getHeight() / 2f,
+            txtColor,
+            fontSize,
+            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
         )
     }
 }

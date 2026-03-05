@@ -3,6 +3,7 @@ package me.miki.shindo.ui.animation.value
 import me.miki.shindo.ui.animation.GlobalAnimationSettings
 import me.miki.shindo.ui.animation.value.AnimationUtils.calculateCompensation
 import kotlin.math.abs
+
 open class SimpleAnimation {
 
     @JvmField

@@ -8,19 +8,19 @@ import me.miki.shindo.ui.animation.value.SimpleAnimation;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -193,7 +193,7 @@ public abstract class MixinEntityRenderer {
             GlStateManager.matrixMode(5890);
             GlStateManager.pushMatrix();
             GlStateManager.loadIdentity();
-            group.loadShaderGroup(((IMixinMinecraft) mc).getTimer().renderPartialTicks);
+            group.loadShaderGroup(((net.minecraft.util.Timer) ((IMixinMinecraft) mc).getTimer()).renderPartialTicks);
             GlStateManager.popMatrix();
         }
     }
@@ -227,7 +227,7 @@ public abstract class MixinEntityRenderer {
         boolean maybeWould = entity.isInsideOfMaterial(materialIn);
         boolean would = maybeWould && isDrawBlockOutline();
 
-        EventBlockHighlightRender event = new EventBlockHighlightRender(mc.objectMouseOver, ((IMixinMinecraft) mc).getTimer().renderPartialTicks);
+        EventBlockHighlightRender event = new EventBlockHighlightRender(mc.objectMouseOver, ((net.minecraft.util.Timer) ((IMixinMinecraft) mc).getTimer()).renderPartialTicks);
         event.call();
 
         if (maybeWould && event.isCancelled()) {
@@ -243,7 +243,7 @@ public abstract class MixinEntityRenderer {
         boolean totallyWouldNot = entity.isInsideOfMaterial(materialIn);
         boolean wouldNot = totallyWouldNot || !isDrawBlockOutline();
 
-        EventBlockHighlightRender event = new EventBlockHighlightRender(mc.objectMouseOver, ((IMixinMinecraft) mc).getTimer().renderPartialTicks);
+        EventBlockHighlightRender event = new EventBlockHighlightRender(mc.objectMouseOver, ((net.minecraft.util.Timer) ((IMixinMinecraft) mc).getTimer()).renderPartialTicks);
         event.call();
 
         if (!totallyWouldNot && event.isCancelled()) {

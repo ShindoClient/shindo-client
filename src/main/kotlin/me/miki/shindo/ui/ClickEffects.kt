@@ -1,9 +1,9 @@
 package me.miki.shindo.ui
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.utils.ColorUtils
 
 class ClickEffects {
     private val effects = mutableListOf<ClickEffect>()
@@ -28,8 +28,8 @@ class ClickEffects {
     }
 
     private class ClickEffect(
-            private val x: Int,
-            private val y: Int
+        private val x: Int,
+        private val y: Int
     ) {
         private val animation = EaseBackIn(650, 1.0, 0.0f)
 
@@ -41,13 +41,13 @@ class ClickEffects {
             nvg.setupAndDraw(Runnable {
                 val progress = animation.getValueFloat()
                 nvg.drawArc(
-                        x.toFloat(),
-                        y.toFloat(),
-                        progress * 8,
-                        0f,
-                        360f,
-                        2f,
-                        ColorUtils.applyAlpha(currentColor.getInterpolateColor(0), (255 - (progress * 255)).toInt())
+                    x.toFloat(),
+                    y.toFloat(),
+                    progress * 8,
+                    0f,
+                    360f,
+                    2f,
+                    ColorUtils.applyAlpha(currentColor.getInterpolateColor(0), (255 - (progress * 255)).toInt())
                 )
             })
         }

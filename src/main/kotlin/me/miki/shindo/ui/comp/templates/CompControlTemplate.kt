@@ -6,7 +6,6 @@ import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.style.CompControlVariant
 import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
-import java.awt.Color
 
 open class CompControlTemplate(
     x: Float = 0f,
@@ -59,7 +58,8 @@ open class CompControlTemplate(
         val base = CompStyleResolver.resolveControlBase(variant, palette, accent)
         val hover = CompStyleResolver.resolveControlHover(variant, palette, accent)
         val background = ColorUtils.interpolateColor(base, hover, hoverAnimation.value.toDouble())
-        val pressed = if (pressAnimation.value > 0.1f) ColorUtils.darken(background, pressAnimation.value * 0.2f) else background
+        val pressed =
+            if (pressAnimation.value > 0.1f) ColorUtils.darken(background, pressAnimation.value * 0.2f) else background
 
         nvg.drawRoundedRect(
             getX(),

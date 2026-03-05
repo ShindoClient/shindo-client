@@ -9,15 +9,14 @@ import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
-import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
 class CompVisualPresetSelector(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 116f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 116f
 ) : CompSurfaceTemplate(x, y, width, height) {
 
     data class Entry(val title: String, val subtitle: String)
@@ -25,14 +24,15 @@ class CompVisualPresetSelector(
     private val entries = ArrayList<Entry>()
     private var selectedIndex = 0
     private var onSelect: ((index: Int) -> Unit)? = null
-    private var previewRenderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)? = null
+    private var previewRenderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)? =
+        null
 
     private val contentPadding = 12f
     private val gap = 10f
     private val minCardWidth = 108f
 
     init {
-        setSurfaceVariant(CompSurfaceVariant.CARD)
+        setSurfaceVariant(CompSurfaceVariant.PANEL)
         setRadius(10f)
         setBackgroundColor(null)
     }
@@ -57,7 +57,7 @@ class CompVisualPresetSelector(
     }
 
     fun setPreviewRenderer(
-            renderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)?
+        renderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)?
     ): CompVisualPresetSelector {
         previewRenderer = renderer
         return this
@@ -73,31 +73,15 @@ class CompVisualPresetSelector(
             val hovered = MouseUtils.isInside(mouseX, mouseY, slot.x, slot.y, slot.width, slot.height)
 
             val base = ColorUtils.applyAlpha(
-                    palette.getBackgroundColor(ColorType.NORMAL),
-                    if (selected) 215 else if (hovered) 200 else 180
+                palette.getBackgroundColor(ColorType.NORMAL),
+                if (selected) 215 else if (hovered) 200 else 180
             )
             nvg.drawRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, base)
-            nvg.drawGradientRoundedRect(
-                    slot.x,
-                    slot.y,
-                    slot.width,
-                    slot.height,
-                    8f,
-                    ColorUtils.applyAlpha(accent.getColor1(), if (selected) 80 else 35),
-                    ColorUtils.applyAlpha(accent.getColor2(), if (selected) 80 else 35)
+            val borderColor = ColorUtils.applyAlpha(
+                palette.getFontColor(ColorType.NORMAL),
+                if (selected) 136 else if (hovered) 98 else 70
             )
-
-            if (hovered || selected) {
-                nvg.drawOutlineRoundedRect(
-                        slot.x,
-                        slot.y,
-                        slot.width,
-                        slot.height,
-                        8f,
-                        1f,
-                        ColorUtils.applyAlpha(accent.getColor2(), if (selected) 180 else 120)
-                )
-            }
+            nvg.drawOutlineRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, 1f, borderColor)
 
             nvg.save()
             nvg.intersectScissor(slot.x + 1f, slot.y + 1f, slot.width - 2f, slot.height - 2f)
@@ -114,7 +98,19 @@ class CompVisualPresetSelector(
             val previewHeight = slot.height - 44f
             val customRenderer = previewRenderer
             if (customRenderer != null) {
-                customRenderer.invoke(slot.index, entry, previewX, previewY, previewWidth, previewHeight, selected, hovered, nvg, palette, accent)
+                customRenderer.invoke(
+                    slot.index,
+                    entry,
+                    previewX,
+                    previewY,
+                    previewWidth,
+                    previewHeight,
+                    selected,
+                    hovered,
+                    nvg,
+                    palette,
+                    accent
+                )
             } else {
                 drawMiniPreview(previewX, previewY, previewWidth, previewHeight, slot.index, selected)
             }
@@ -181,21 +177,21 @@ class CompVisualPresetSelector(
     }
 
     private fun drawMiniPreview(
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            index: Int,
-            selected: Boolean
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        index: Int,
+        selected: Boolean
     ) {
         if (width <= 8f || height <= 8f) return
         nvg.drawRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                4f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150)
+            x,
+            y,
+            width,
+            height,
+            4f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150)
         )
         val columns = if (index % 2 == 0) 1 else 2
         val rows = if (index % 3 == 0) 3 else 2
@@ -210,35 +206,35 @@ class CompVisualPresetSelector(
                 val activeBlock = (row + column + index) % max(1, rows + columns) == 0
 
                 nvg.drawRoundedRect(
-                        blockX,
-                        blockY,
-                        cardWidth,
-                        cardHeight,
-                        3f,
-                        ColorUtils.applyAlpha(
-                                if (activeBlock) accent.getColor1() else palette.getBackgroundColor(ColorType.MID),
-                                if (activeBlock && selected) 190 else if (activeBlock) 150 else 175
-                        )
+                    blockX,
+                    blockY,
+                    cardWidth,
+                    cardHeight,
+                    3f,
+                    ColorUtils.applyAlpha(
+                        if (activeBlock) accent.getColor1() else palette.getBackgroundColor(ColorType.MID),
+                        if (activeBlock && selected) 190 else if (activeBlock) 150 else 175
+                    )
                 )
 
                 val lineWidth = max(6f, cardWidth - 8f)
                 nvg.drawRoundedRect(
-                        blockX + 4f,
-                        blockY + 4f,
-                        lineWidth,
-                        3f,
-                        1.5f,
-                        ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175)
+                    blockX + 4f,
+                    blockY + 4f,
+                    lineWidth,
+                    3f,
+                    1.5f,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175)
                 )
             }
         }
     }
 
     private data class CardSlot(
-            val index: Int,
-            val x: Float,
-            val y: Float,
-            val width: Float,
-            val height: Float
+        val index: Int,
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float
     )
 }

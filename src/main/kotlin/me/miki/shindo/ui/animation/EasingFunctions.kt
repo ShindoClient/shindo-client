@@ -141,6 +141,6 @@ object EasingFunctions {
         val x1 = (elapsed / duration).pow(smooth.toDouble())
         val el = elasticity * 0.1f
         return 2.0.pow(-10 * if (reallyElastic) sqrt(x1) else x1) *
-            sin((x1 - el / 4) * (2 * Math.PI / el)) + 1
+                sin((x1 - el / 4) * (2 * Math.PI / el)) + 1
     }
 }

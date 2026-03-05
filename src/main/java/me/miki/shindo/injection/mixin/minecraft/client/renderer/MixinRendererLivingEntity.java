@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
-import me.miki.shindo.api.roles.Role;
 import me.miki.shindo.api.roles.RoleVisuals;
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventHitOverlay;

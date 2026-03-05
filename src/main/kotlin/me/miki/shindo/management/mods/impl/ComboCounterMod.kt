@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventAttackEntity
 import me.miki.shindo.management.event.impl.EventDamageEntity
 import me.miki.shindo.management.event.impl.EventRender2D
@@ -34,16 +34,16 @@ class ComboCounterMod :
 
     @EventTarget
     fun onAttackEntity(event: EventAttackEntity) {
-        possibleTarget = event.entity.entityId
+        possibleTarget = event.getEntity().entityId
     }
 
     @EventTarget
     fun onDamageEntity(event: EventDamageEntity) {
-        if (event.entity.entityId == possibleTarget) {
+        if (event.getEntity().entityId == possibleTarget) {
             combo++
             possibleTarget = -1
             hitTime = System.currentTimeMillis()
-        } else if (event.entity === mc.thePlayer) {
+        } else if (event.getEntity() === mc.thePlayer) {
             combo = 0
         }
     }

@@ -1,8 +1,7 @@
 package me.miki.shindo
 
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.gui.modmenu.GuiModMenu
-import me.miki.shindo.management.cosmetic.cape.CapeManager
-import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.profile.Profile
 import me.miki.shindo.management.skin.Skin
@@ -11,17 +10,13 @@ import me.miki.shindo.utils.OptifineUtils
 import me.miki.shindo.utils.TargetUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.network.play.server.S2EPacketCloseWindow
-import net.minecraft.util.ResourceLocation
 import org.apache.commons.lang3.StringUtils
 
+@Suppress("unused", "UNUSED_PARAMETER")
 class ShindoHandler {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val instance: Shindo = Shindo.getInstance()
-
-    private var prevOfflineName: String? = null
-    private var offlineSkin: ResourceLocation? = null
-
     @EventTarget
     fun onTick(event: EventTick) {
         OptifineUtils.disableFastRender()
@@ -29,15 +24,15 @@ class ShindoHandler {
 
     @EventTarget
     fun onJoinServer(event: EventJoinServer) {
-        for (p: Profile in profiles()) {
-            val serverIp = serverIp(p)
-            if (serverIp.isNotEmpty() && StringUtils.containsIgnoreCase(event.ip, serverIp)) {
+        for (p: Profile in  instance.profileManager.profiles) {
+            val serverIp = p.serverIp ?: return
+            if (serverIp.isNotEmpty() && StringUtils.containsIgnoreCase(event.getIp(), serverIp)) {
                 instance.modManager.disableAll()
-                jsonFile(p)?.let { instance.profileManager.load(it) }
+                p.jsonFile.let { instance.profileManager.load(it) }
                 break
             }
         }
-        instance.restrictedMod.joinServer(event.ip)
+        instance.restrictedMod.joinServer(event.getIp())
     }
 
     @EventTarget
@@ -60,32 +55,29 @@ class ShindoHandler {
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        val pkt = packet(event)
-        if (pkt is S2EPacketCloseWindow && mc.currentScreen is GuiModMenu) {
-            event.isCancelled = true
+        if (event.getPacket() is S2EPacketCloseWindow && mc.currentScreen is GuiModMenu) {
+            event.setCancelled(true)
         }
     }
 
     @EventTarget
     fun onCape(event: EventLocationCape) {
-        val capeManager: CapeManager = instance.capeManager
-        val playerInfo = event.playerInfo ?: return
+        val capeManager = instance.capeManager
+        val playerInfo = event.getPlayerInfo() ?: return
         if (playerInfo.gameProfile.id == mc.thePlayer.gameProfile.id) {
-            val currentCape = currentCape(capeManager)
-            val capeTex = currentCape?.capeTexture()
-            if (currentCape != null && currentCape != capeManager.getCapeByName("None")) {
-                event.isCancelled = true
-                if (capeTex != null) {
-                    event.cape = capeTex
-                }
+            val currentCape = capeManager.getCurrentCape()
+            if (currentCape != capeManager.getCapeByName("None")) {
+                event.setCancelled(true)
+                event.setCape(currentCape!!.getCape())
             }
         }
     }
 
+
     @EventTarget
     fun onSkin(event: EventLocationSkin) {
         val player = mc.thePlayer ?: return
-        val info = event.playerInfo ?: return
+        val info = event.getPlayerInfo() ?: return
         val profile = info.gameProfile ?: return
         if (profile.id != player.gameProfile.id) return
 
@@ -93,35 +85,7 @@ class ShindoHandler {
         val skin: Skin? = skinManager.getCurrentSkin()
         if (skin?.texture == null) return
 
-        event.isCancelled = true
-        event.skin = skin.texture!!
-    }
-
-    private fun profiles(): List<Profile> = instance.profileManager.profiles.toList()
-    private fun serverIp(profile: Profile): String = profile.serverIp ?: ""
-    private fun jsonFile(profile: Profile): java.io.File? = profile.jsonFile
-
-    private fun packet(event: EventReceivePacket): Any? = try {
-        val field = event.javaClass.getDeclaredField("packet")
-        field.isAccessible = true
-        field.get(event)
-    } catch (_: Exception) {
-        null
-    }
-
-    private fun currentCape(capeManager: CapeManager): Any? = try {
-        val field = capeManager.javaClass.getDeclaredField("currentCape")
-        field.isAccessible = true
-        field.get(capeManager)
-    } catch (_: Exception) {
-        null
-    }
-
-    private fun Any.capeTexture(): ResourceLocation? = try {
-        val field = this.javaClass.getDeclaredField("cape")
-        field.isAccessible = true
-        field.get(this) as? ResourceLocation
-    } catch (_: Exception) {
-        null
+        event.setCancelled(true)
+        event.setSkin(skin.texture!!)
     }
 }

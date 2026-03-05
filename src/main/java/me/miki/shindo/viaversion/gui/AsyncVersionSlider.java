@@ -1,7 +1,7 @@
 package me.miki.shindo.viaversion.gui;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import me.miki.shindo.viaversion.ViaLoadingBase;
+import me.miki.viashindo.ViaLoadingBase;
+import me.miki.viashindo.model.ComparableProtocolVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AsyncVersionSlider extends GuiButton {
 
-    private final List<ProtocolVersion> values;
+    private final List<ComparableProtocolVersion> values;
     public boolean dragging;
     private float dragValue = (float) (ViaLoadingBase.getProtocols().size() - ViaLoadingBase.getInstance().getTargetVersion().getIndex()) / ViaLoadingBase.getProtocols().size();
     private float sliderValue;

@@ -3,6 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
@@ -61,7 +62,7 @@ class ScreenshotCategory(parent: GuiModMenu) :
 
         if (screenshotManager.getScreenshots().isEmpty()) {
             hideNavigationButtons()
-            drawEmptyState(nvg, palette)
+            drawEmptyState(nvg, palette, accentColor)
             return
         }
 
@@ -142,7 +143,17 @@ class ScreenshotCategory(parent: GuiModMenu) :
         filmstripBarBounds.set(barX, barY, barWidth, barHeight)
 
         val barColor = palette.getBackgroundColor(ColorType.DARK)
+        nvg.drawShadow(barX, barY, barWidth, barHeight, 8f, 5)
         nvg.drawRoundedRect(barX, barY, barWidth, barHeight, 6f, barColor)
+        nvg.drawGradientRoundedRect(
+            barX,
+            barY,
+            barWidth,
+            barHeight,
+            6f,
+            ColorUtils.applyAlpha(accentColor.getColor1(), 24),
+            ColorUtils.applyAlpha(accentColor.getColor2(), 24)
+        )
 
         val count = screenshotManager.getScreenshots().size
 
@@ -161,46 +172,55 @@ class ScreenshotCategory(parent: GuiModMenu) :
         filmstripScroll.onAnimation()
         val scrollValue = filmstripScroll.getValue()
 
-        nvg.save()
-        nvg.scissor(barX, barY, barWidth, barHeight)
-
-        for (screenshot in screenshotManager.getScreenshots()) {
-            val x = barX + 4f + offsetX + scrollValue
-            if (x + thumbWidth > barX - 4f && x < barX + barWidth + 4f) {
-                nvg.drawRoundedRect(
-                    x,
-                    thumbY,
-                    thumbWidth,
-                    thumbHeight,
-                    6f,
-                    palette.getBackgroundColor(ColorType.NORMAL)
-                )
-                nvg.save()
-                nvg.intersectScissor(x + 1f, thumbY + 1f, thumbWidth - 2f, thumbHeight - 2f)
-                drawThumbnailImage(nvg, screenshot, x, thumbY, thumbWidth, thumbHeight)
-                nvg.restore()
-
-                screenshot.getSelectAnimation().setAnimation(if (currentScreenshot == screenshot) 1f else 0f, 16.0)
-                val alpha = (screenshot.getSelectAnimation().value * 255).toInt()
-                if (alpha > 0) {
-                    nvg.drawGradientOutlineRoundedRect(
+        ModMenuClipCoordinator.withClip(
+            nvg = nvg,
+            x = barX,
+            y = barY,
+            width = barWidth,
+            height = barHeight
+        ) {
+            for (screenshot in screenshotManager.getScreenshots()) {
+                val x = barX + 4f + offsetX + scrollValue
+                if (x + thumbWidth > barX - 4f && x < barX + barWidth + 4f) {
+                    nvg.drawRoundedRect(
                         x,
                         thumbY,
                         thumbWidth,
                         thumbHeight,
                         6f,
-                        screenshot.getSelectAnimation().value * 1.2f,
-                        ColorUtils.applyAlpha(accentColor.getColor1(), alpha),
-                        ColorUtils.applyAlpha(accentColor.getColor2(), alpha)
+                        palette.getBackgroundColor(ColorType.NORMAL)
                     )
+                    ModMenuClipCoordinator.withClip(
+                        nvg = nvg,
+                        x = x + 1f,
+                        y = thumbY + 1f,
+                        width = thumbWidth - 2f,
+                        height = thumbHeight - 2f,
+                        intersect = true
+                    ) {
+                        drawThumbnailImage(nvg, screenshot, x, thumbY, thumbWidth, thumbHeight)
+                    }
+
+                    screenshot.getSelectAnimation().setAnimation(if (currentScreenshot == screenshot) 1f else 0f, 16.0)
+                    val alpha = (screenshot.getSelectAnimation().value * 255).toInt()
+                    if (alpha > 0) {
+                        nvg.drawGradientOutlineRoundedRect(
+                            x,
+                            thumbY,
+                            thumbWidth,
+                            thumbHeight,
+                            6f,
+                            screenshot.getSelectAnimation().value * 1.2f,
+                            ColorUtils.applyAlpha(accentColor.getColor1(), alpha),
+                            ColorUtils.applyAlpha(accentColor.getColor2(), alpha)
+                        )
+                    }
                 }
+                offsetX += step
             }
-            offsetX += step
         }
 
-        nvg.restore()
-
-        drawNavigationButtons(nvg, palette, mouseX, mouseY, screenshotManager.getScreenshots().size > 1)
+        drawNavigationButtons(nvg, palette, accentColor, mouseX, mouseY, screenshotManager.getScreenshots().size > 1)
     }
 
     private fun drawScreenshotPreview(
@@ -221,8 +241,19 @@ class ScreenshotCategory(parent: GuiModMenu) :
             return
         }
 
-        trashAnimation.setAnimation(if (MouseUtils.isInside(mouseX, mouseY, x, y, width, height)) 1f else 0f, 16.0)
+        val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
+        trashAnimation.setAnimation(if (hovered) 1f else 0f, 16.0)
+        nvg.drawShadow(x, y, width, height, 9f, 6)
         nvg.drawRoundedImage(screenshot.getImage(), x, y, width, height, 8f)
+        nvg.drawGradientRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            8f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered) 42 else 26),
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 12 else 6)
+        )
 
         val trashSize = 16f
         val trashX = x + width - trashSize - 8f
@@ -242,6 +273,7 @@ class ScreenshotCategory(parent: GuiModMenu) :
     private fun drawNavigationButtons(
         nvg: NanoVGManager,
         palette: ColorPalette,
+        accentColor: AccentColor,
         mouseX: Int,
         mouseY: Int,
         visible: Boolean
@@ -276,6 +308,18 @@ class ScreenshotCategory(parent: GuiModMenu) :
             4f,
             palette.getBackgroundColor(ColorType.DARK, (leftValue * 255).toInt())
         )
+        if (leftValue > 0f) {
+            nvg.drawGradientOutlineRoundedRect(
+                leftButtonBounds.x,
+                leftButtonBounds.y,
+                buttonWidth,
+                buttonHeight,
+                4f,
+                1f,
+                ColorUtils.applyAlpha(accentColor.getColor1(), (leftValue * 200f).toInt()),
+                ColorUtils.applyAlpha(accentColor.getColor2(), (leftValue * 200f).toInt())
+            )
+        }
         nvg.drawText(
             LegacyIcon.CHEVRON_LEFT,
             leftButtonBounds.x + 2f,
@@ -296,6 +340,18 @@ class ScreenshotCategory(parent: GuiModMenu) :
             4f,
             palette.getBackgroundColor(ColorType.DARK, (rightValue * 255).toInt())
         )
+        if (rightValue > 0f) {
+            nvg.drawGradientOutlineRoundedRect(
+                rightButtonBounds.x,
+                rightButtonBounds.y,
+                buttonWidth,
+                buttonHeight,
+                4f,
+                1f,
+                ColorUtils.applyAlpha(accentColor.getColor1(), (rightValue * 200f).toInt()),
+                ColorUtils.applyAlpha(accentColor.getColor2(), (rightValue * 200f).toInt())
+            )
+        }
         nvg.drawText(
             LegacyIcon.CHEVRON_RIGHT,
             rightButtonBounds.x + 2f,
@@ -372,7 +428,7 @@ class ScreenshotCategory(parent: GuiModMenu) :
         return false
     }
 
-    private fun drawEmptyState(nvg: NanoVGManager, palette: ColorPalette) {
+    private fun drawEmptyState(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor) {
         val paddingX = 42f
         val paddingY = 12f
         val width = getWidth() - (paddingX * 2f)
@@ -380,7 +436,17 @@ class ScreenshotCategory(parent: GuiModMenu) :
         val x = getX() + paddingX
         val y = getY() + paddingY
 
+        nvg.drawShadow(x, y, width, height, 8f, 5)
         nvg.drawRoundedRect(x, y, width, height, 6f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawGradientRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            6f,
+            ColorUtils.applyAlpha(accentColor.getColor1(), 30),
+            ColorUtils.applyAlpha(accentColor.getColor2(), 30)
+        )
         nvg.drawCenteredText(
             LegacyIcon.CAMERA,
             x + width / 2f,

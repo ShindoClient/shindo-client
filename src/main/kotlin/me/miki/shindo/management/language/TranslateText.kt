@@ -12,8 +12,6 @@ enum class TranslateText(
     ADDONS("text.addons"),
     ADDON_DESCRIPTIONS("text.addons_description"),
     ADDON_RPO_DESCRIPTION("text.addon.rpo.description"),
-    ADDON_NOCHEATERS_DESCRIPTION("text.addon.nocheaters.description"),
-    ADDON_HACKERDETECTOR_DESCRIPTION("text.addon.hackerdetector.description"),
     ADD_PROFILE("text.addprofile"),
     ADD_SONG("text.addsong"),
     ADVANCED("text.advanced"),

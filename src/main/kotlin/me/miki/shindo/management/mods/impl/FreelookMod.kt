@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventCameraRotation
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventPlayerHeadRotation
@@ -88,16 +88,16 @@ class FreelookMod : Mod(
     @EventTarget
     fun onCameraRotation(event: EventCameraRotation) {
         if (this.isActive) {
-            event.yaw = this.cameraYaw
-            event.pitch = this.cameraPitch
+            event.setYaw(this.cameraYaw)
+            event.setPitch(this.cameraPitch)
         }
     }
 
     @EventTarget
     fun onPlayerHeadRotation(event: EventPlayerHeadRotation) {
         if (this.isActive) {
-            var yaw = event.yaw
-            var pitch = event.pitch
+            var yaw = event.getYaw()
+            var pitch = event.getPitch()
             event.setCancelled(true)
             pitch = -pitch
 

@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
+import me.miki.shindo.gui.modmenu.style.ModMenuMotion
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
@@ -58,16 +60,20 @@ class NetworkCategory(parent: GuiModMenu) :
 
     private var showProxyForm = false
     private var editingProxyId: String? = null
-    private var formAnimation: Animation = SmoothStepAnimation(PANEL_ANIMATION_MS, 1.0)
+    private var formAnimation: Animation = SmoothStepAnimation(ModMenuMotion.DETAILS_PANEL_ANIMATION_MS, 1.0)
 
     private var contentOffsetX = 0f
-    private var panelOffsetX = PANEL_SLIDE_DISTANCE
+    private var panelOffsetX = ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE
     private var proxyScrollY = 0f
 
     private var panelX = 0f
     private var panelY = 0f
     private var panelWidth = 0f
     private var panelHeight = 0f
+    private var proxyListViewportX = 0f
+    private var proxyListViewportY = 0f
+    private var proxyListViewportWidth = 0f
+    private var proxyListViewportHeight = 0f
 
     init {
         addProxyCard.label = "Add Proxy"
@@ -93,15 +99,24 @@ class NetworkCategory(parent: GuiModMenu) :
         updateAnimationState()
 
         val contentMouseX = (mouseX - contentOffsetX).toInt()
-        nvg.save()
-        nvg.translate(contentOffsetX, 0f)
-        val pageChipBottom = drawPageChips(nvg, palette, accent, contentMouseX, mouseY)
+        ModMenuClipCoordinator.withClip(
+            nvg = nvg,
+            x = getX().toFloat(),
+            y = getY().toFloat(),
+            width = getWidth().toFloat(),
+            height = getHeight().toFloat(),
+            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT
+        ) {
+            nvg.save()
+            nvg.translate(contentOffsetX, 0f)
+            val pageChipBottom = drawPageChips(nvg, palette, accent, contentMouseX, mouseY)
 
-        when (currentPage) {
-            NetworkPage.GENERAL -> drawGeneralPage(nvg, palette, accent, networkManager, pageChipBottom + SECTION_SPACING)
-            NetworkPage.PROXY -> drawProxyPage(nvg, palette, accent, networkManager, contentMouseX, mouseY, pageChipBottom + SECTION_SPACING)
+            when (currentPage) {
+                NetworkPage.GENERAL -> drawGeneralPage(nvg, palette, accent, networkManager, pageChipBottom + SECTION_SPACING)
+                NetworkPage.PROXY -> drawProxyPage(nvg, palette, accent, networkManager, contentMouseX, mouseY, pageChipBottom + SECTION_SPACING)
+            }
+            nvg.restore()
         }
-        nvg.restore()
 
         drawProxyForm(nvg, palette, accent, mouseX, mouseY, partialTicks)
     }
@@ -139,11 +154,21 @@ class NetworkCategory(parent: GuiModMenu) :
         }
 
         if (sectionFilter != ProxySectionFilter.PRESET) {
-            val listMouseY = (mouseY - proxyScrollY).toInt()
-            for (card in visibleProxyCards) {
-                card.mouseClicked(contentMouseX, listMouseY, mouseButton)
+            if (MouseUtils.isInside(
+                    contentMouseX,
+                    mouseY,
+                    proxyListViewportX,
+                    proxyListViewportY,
+                    proxyListViewportWidth,
+                    proxyListViewportHeight
+                )
+            ) {
+                val listMouseY = (mouseY - proxyScrollY).toInt()
+                for (card in visibleProxyCards) {
+                    card.mouseClicked(contentMouseX, listMouseY, mouseButton)
+                }
+                addProxyCard.mouseClicked(contentMouseX, listMouseY, mouseButton)
             }
-            addProxyCard.mouseClicked(contentMouseX, listMouseY, mouseButton)
         }
     }
 
@@ -273,12 +298,25 @@ class NetworkCategory(parent: GuiModMenu) :
         title: String,
         value: String
     ) {
-        nvg.drawRoundedRect(x, y, width, height, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 215))
-        nvg.drawGradientRoundedRect(
-            x, y, width, height, 12f,
-            ColorUtils.applyAlpha(accent.getColor1(), 28),
-            ColorUtils.applyAlpha(accent.getColor2(), 28)
+        nvg.drawShadow(x, y, width, height, 12f, 6)
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            12f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 212)
         )
+        nvg.drawOutlineRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            12f,
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+        )
+        nvg.drawRoundedRect(x + 10f, y + 13f, 3f, height - 26f, 1.5f, ColorUtils.applyAlpha(accent.getInterpolateColor(), 178))
         nvg.drawText(title, x + 16f, y + 18f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         nvg.drawText(
             nvg.getLimitText(value, 11f, Fonts.SEMIBOLD, width - 32f),
@@ -312,6 +350,10 @@ class NetworkCategory(parent: GuiModMenu) :
 
         if (sectionFilter == ProxySectionFilter.PRESET) {
             visibleProxyCards.clear()
+            proxyListViewportX = 0f
+            proxyListViewportY = 0f
+            proxyListViewportWidth = 0f
+            proxyListViewportHeight = 0f
             return
         }
 
@@ -333,6 +375,10 @@ class NetworkCategory(parent: GuiModMenu) :
         val viewportHeight = max(0f, getHeight() - (y - getY()) - CONTENT_BOTTOM_PADDING)
         val totalHeight = (proxies.size + 1) * (PROXY_CARD_HEIGHT + PROXY_CARD_GAP) - PROXY_CARD_GAP
         proxyScroll.maxScroll = max(0f, totalHeight - viewportHeight)
+        proxyListViewportX = x
+        proxyListViewportY = y
+        proxyListViewportWidth = width
+        proxyListViewportHeight = viewportHeight
 
         if (!isFormInteractionLocked() && MouseUtils.isInside(mouseX, mouseY, x, y, width, viewportHeight)) {
             proxyScroll.onScroll()
@@ -341,32 +387,38 @@ class NetworkCategory(parent: GuiModMenu) :
         proxyScrollY = proxyScroll.getValue()
         val listMouseY = (mouseY - proxyScrollY).toInt()
 
-        nvg.save()
-        nvg.scissor(x, y, width, viewportHeight)
-        nvg.translate(0f, proxyScrollY)
+        ModMenuClipCoordinator.withClipTranslate(
+            nvg = nvg,
+            x = x,
+            y = y,
+            width = width,
+            height = viewportHeight,
+            translateX = 0f,
+            translateY = proxyScrollY,
+            intersect = true,
+            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT
+        ) {
+            var cardY = y
+            for (proxy in proxies) {
+                val card = proxyCardPool.getOrPut(proxy.id) { CompProxyCard() }
+                syncProxyCard(card, proxy, networkManager.getActiveCustomProxyId() == proxy.id)
+                card.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
 
-        var cardY = y
-        for (proxy in proxies) {
-            val card = proxyCardPool.getOrPut(proxy.id) { CompProxyCard() }
-            syncProxyCard(card, proxy, networkManager.getActiveCustomProxyId() == proxy.id)
-            card.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
+                val displayY = cardY + proxyScrollY
+                if (displayY + PROXY_CARD_HEIGHT >= y && displayY <= y + viewportHeight) {
+                    card.draw(mouseX, listMouseY, 0f)
+                    visibleProxyCards.add(card)
+                }
 
-            val displayY = cardY + proxyScrollY
-            if (displayY + PROXY_CARD_HEIGHT >= y && displayY <= y + viewportHeight) {
-                card.draw(mouseX, listMouseY, 0f)
-                visibleProxyCards.add(card)
+                cardY += PROXY_CARD_HEIGHT + PROXY_CARD_GAP
             }
 
-            cardY += PROXY_CARD_HEIGHT + PROXY_CARD_GAP
+            addProxyCard.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
+            val addDisplayY = cardY + proxyScrollY
+            if (addDisplayY + PROXY_CARD_HEIGHT >= y && addDisplayY <= y + viewportHeight) {
+                addProxyCard.draw(mouseX, listMouseY, 0f)
+            }
         }
-
-        addProxyCard.setBounds(x, cardY, width, PROXY_CARD_HEIGHT)
-        val addDisplayY = cardY + proxyScrollY
-        if (addDisplayY + PROXY_CARD_HEIGHT >= y && addDisplayY <= y + viewportHeight) {
-            addProxyCard.draw(mouseX, listMouseY, 0f)
-        }
-
-        nvg.restore()
     }
 
     private fun drawProxyForm(
@@ -387,57 +439,91 @@ class NetworkCategory(parent: GuiModMenu) :
         panelHeight = getHeight() - 30f
 
         val panelMouseX = (mouseX - panelOffsetX).toInt()
-        nvg.save()
-        nvg.translate(panelOffsetX, 0f)
-        nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
+        ModMenuClipCoordinator.withClip(
+            nvg = nvg,
+            x = getX().toFloat(),
+            y = getY().toFloat(),
+            width = getWidth().toFloat(),
+            height = getHeight().toFloat(),
+            layer = ModMenuClipCoordinator.ClipLayer.OVERLAY
+        ) {
+            nvg.save()
+            nvg.translate(panelOffsetX, 0f)
+            nvg.drawShadow(panelX, panelY, panelWidth, panelHeight, 12f, 7)
+            nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
+            nvg.drawOutlineRoundedRect(
+                panelX,
+                panelY,
+                panelWidth,
+                panelHeight,
+                12f,
+                1.1f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            )
 
-        nvg.drawText(
-            if (editingProxyId == null) "Add Custom Proxy" else "Edit Proxy",
-            panelX + 24f,
-            panelY + 22f,
-            palette.getFontColor(ColorType.DARK),
-            14f,
-            Fonts.SEMIBOLD
-        )
+            nvg.drawText(
+                if (editingProxyId == null) "Add Custom Proxy" else "Edit Proxy",
+                panelX + 24f,
+                panelY + 22f,
+                palette.getFontColor(ColorType.DARK),
+                14f,
+                Fonts.SEMIBOLD
+            )
 
-        val fieldWidth = (panelWidth - 48f) / 2f - 15f
-        val fieldStartY = panelY + 62f
+            val fieldWidth = (panelWidth - 48f) / 2f - 15f
+            val fieldStartY = panelY + 62f
 
-        nvg.drawText("Name", panelX + 24f, fieldStartY, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        nameBox.setPosition(panelX + 24f, fieldStartY + 20f, fieldWidth, 20f)
-        nameBox.setDefaultText("Proxy name")
-        nameBox.draw(panelMouseX, mouseY, partialTicks)
+            nvg.drawText("Name", panelX + 24f, fieldStartY, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            nameBox.setPosition(panelX + 24f, fieldStartY + 20f, fieldWidth, 20f)
+            nameBox.setDefaultText("Proxy name")
+            nameBox.draw(panelMouseX, mouseY, partialTicks)
 
-        nvg.drawText("Primary DNS", panelX + 24f, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        primaryDNSBox.setPosition(panelX + 24f, fieldStartY + 62f, fieldWidth, 20f)
-        primaryDNSBox.setDefaultText("1.1.1.1")
-        primaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
+            nvg.drawText("Primary DNS", panelX + 24f, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            primaryDNSBox.setPosition(panelX + 24f, fieldStartY + 62f, fieldWidth, 20f)
+            primaryDNSBox.setDefaultText("1.1.1.1")
+            primaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
 
-        val secondColumnX = panelX + 24f + fieldWidth + 30f
-        nvg.drawText("Secondary DNS", secondColumnX, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        secondaryDNSBox.setPosition(secondColumnX, fieldStartY + 62f, fieldWidth, 20f)
-        secondaryDNSBox.setDefaultText("Optional")
-        secondaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
+            val secondColumnX = panelX + 24f + fieldWidth + 30f
+            nvg.drawText("Secondary DNS", secondColumnX, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            secondaryDNSBox.setPosition(secondColumnX, fieldStartY + 62f, fieldWidth, 20f)
+            secondaryDNSBox.setDefaultText("Optional")
+            secondaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
 
-        val buttonY = panelY + panelHeight - FORM_BUTTON_HEIGHT - 20f
-        val cancelX = panelX + panelWidth - FORM_BUTTON_WIDTH * 2f - 30f
-        val saveX = panelX + panelWidth - FORM_BUTTON_WIDTH - 20f
+            val buttonY = panelY + panelHeight - FORM_BUTTON_HEIGHT - 20f
+            val cancelX = panelX + panelWidth - FORM_BUTTON_WIDTH * 2f - 30f
+            val saveX = panelX + panelWidth - FORM_BUTTON_WIDTH - 20f
 
-        val cancelHovered = MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
-        nvg.drawRoundedRect(
-            cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
-            if (cancelHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
-        )
-        nvg.drawCenteredText("Cancel", cancelX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+            val cancelHovered = MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+            val saveHovered = MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+            nvg.drawRoundedRect(
+                cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
+                if (cancelHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
+            )
+            if (cancelHovered) {
+                nvg.drawOutlineRoundedRect(
+                    cancelX,
+                    buttonY,
+                    FORM_BUTTON_WIDTH,
+                    FORM_BUTTON_HEIGHT,
+                    6f,
+                    1f,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
+                )
+            }
+            nvg.drawCenteredText("Cancel", cancelX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
 
-        val saveHovered = MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
-        nvg.drawRoundedRect(
-            saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
-            if (saveHovered) accent.getColor1() else palette.getBackgroundColor(ColorType.MID)
-        )
-        nvg.drawCenteredText("Save", saveX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+            nvg.drawRoundedRect(
+                saveX,
+                buttonY,
+                FORM_BUTTON_WIDTH,
+                FORM_BUTTON_HEIGHT,
+                6f,
+                ColorUtils.applyAlpha(accent.getInterpolateColor(), if (saveHovered) 230 else 188)
+            )
+            nvg.drawCenteredText("Save", saveX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
 
-        nvg.restore()
+            nvg.restore()
+        }
     }
 
     private fun handleFormClick(mouseX: Int, mouseY: Int) {
@@ -548,9 +634,9 @@ class NetworkCategory(parent: GuiModMenu) :
     private fun updateAnimationState() {
         formAnimation.setDirection(if (showProxyForm) Direction.BACKWARDS else Direction.FORWARDS)
 
-        val slide = (formAnimation.getValue() * PANEL_SLIDE_DISTANCE).toFloat()
+        val slide = (formAnimation.getValue() * ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE).toFloat()
         panelOffsetX = slide
-        contentOffsetX = -(PANEL_SLIDE_DISTANCE - slide)
+        contentOffsetX = -(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE - slide)
 
         if (!showProxyForm && formAnimation.isDone(Direction.FORWARDS)) {
             resetForm()
@@ -581,12 +667,16 @@ class NetworkCategory(parent: GuiModMenu) :
         editingProxyId = null
         resetForm()
 
-        formAnimation = SmoothStepAnimation(PANEL_ANIMATION_MS, 1.0)
+        formAnimation = SmoothStepAnimation(ModMenuMotion.DETAILS_PANEL_ANIMATION_MS, 1.0)
         formAnimation.setValue(1.0)
         formAnimation.setDirection(Direction.FORWARDS)
 
         contentOffsetX = 0f
-        panelOffsetX = PANEL_SLIDE_DISTANCE
+        panelOffsetX = ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE
+        proxyListViewportX = 0f
+        proxyListViewportY = 0f
+        proxyListViewportWidth = 0f
+        proxyListViewportHeight = 0f
         setCanClose(true)
     }
 
@@ -604,7 +694,5 @@ class NetworkCategory(parent: GuiModMenu) :
         private const val FORM_BUTTON_WIDTH = 84f
         private const val FORM_BUTTON_HEIGHT = 22f
 
-        private const val PANEL_ANIMATION_MS = 260
-        private const val PANEL_SLIDE_DISTANCE = 600f
     }
 }

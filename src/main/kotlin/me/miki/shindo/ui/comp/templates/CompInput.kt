@@ -1,9 +1,10 @@
 package me.miki.shindo.ui.comp.templates
+
 abstract class CompInput<T>(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : CompInteractive(x, y) {
 
     private var focused: Boolean = false
@@ -51,5 +52,6 @@ abstract class CompInput<T>(
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         drawInput(mouseX, mouseY, partialTicks, focused, hovered)
     }
+
     protected abstract fun drawInput(mouseX: Int, mouseY: Int, partialTicks: Float, focused: Boolean, hovered: Boolean)
 }

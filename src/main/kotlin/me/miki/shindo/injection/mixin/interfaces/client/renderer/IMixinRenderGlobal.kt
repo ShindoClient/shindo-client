@@ -1,7 +1,8 @@
 package me.miki.shindo.injection.mixin.interfaces.client.renderer
 
-import net.minecraft.client.multiplayer.WorldClient
-
+/**
+ * Interface mixin para RenderGlobal. Usa Any para tipos do Minecraft para evitar LinkageError.
+ */
 interface IMixinRenderGlobal {
-    fun getWorldClient(): WorldClient
+    fun getWorldClient(): Any
 }

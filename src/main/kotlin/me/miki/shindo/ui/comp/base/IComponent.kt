@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.comp.base
+
 interface IComponent {
     fun draw(mouseX: Int, mouseY: Int, partialTicks: Float)
     fun update(partialTicks: Float)

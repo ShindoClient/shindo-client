@@ -98,7 +98,6 @@
     "minecraft.tileentity.MixinTileEntityRendererDispatcher",
     "minecraft.tileentity.MixinTileEntitySkullRenderer",
     "minecraft.util.MixinMouseHelper",
-    "minecraft.util.MixinNBTTagString",
     "minecraft.util.MixinScreenshotHelper",
     "minecraft.vertex.MixinVertexBuffer",
     "minecraft.vertex.MixinVertexFormat",
@@ -107,7 +106,8 @@
     "minecraft.world.MixinWorld",
     "minecraft.world.MixinWorldChunkManager",
     "minecraft.world.MixinWorldClient",
-    "minecraft.world.MixinWorldInfo"
+    "minecraft.world.MixinWorldInfo",
+    "mixintrace.CrashReportMixin"
   ]
 }
 

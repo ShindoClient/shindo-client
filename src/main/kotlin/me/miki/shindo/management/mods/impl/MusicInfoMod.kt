@@ -1,9 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
+import com.wrapper.spotify.model_objects.specification.Track
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.libs.spotify.model_objects.specification.Track
 import me.miki.shindo.logger.ShindoLogger.info
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventUpdate

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -43,7 +43,7 @@ class PlayerDisplayMod : HUDMod(
         val rendermanager = Minecraft.getMinecraft().renderManager
 
         rendermanager.isRenderShadow = false
-        rendermanager.doRenderEntity(mc.thePlayer, 0.0, 0.0, 0.0, 0.0f, event.partialTicks, true)
+        rendermanager.doRenderEntity(mc.thePlayer, 0.0, 0.0, 0.0, 0.0f, event.getPartialTicks(), true)
         rendermanager.isRenderShadow = true
         GlStateManager.popMatrix()
         RenderHelper.disableStandardItemLighting()

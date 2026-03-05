@@ -7,6 +7,7 @@ import me.miki.shindo.api.websocket.ShindoWebsocket
 import me.miki.shindo.api.websocket.WsIdentity
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
+import me.miki.shindo.gui.GuiNavigationHub
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.logger.ShindoLogger
@@ -14,16 +15,16 @@ import me.miki.shindo.management.file.FileManager
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Session
 import java.io.File
-import java.lang.reflect.Method
 import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Supplier
 
+@Suppress("unused")
 class ShindoAPI {
 
-    val roleManager = RoleManager()
+    private val roleManager = RoleManager()
     val presence = PresenceTracker()
 
     private val firstLoginFile: File
@@ -33,6 +34,9 @@ class ShindoAPI {
         private set
     lateinit var mainMenu: GuiShindoMainMenu
         private set
+    lateinit var navigationHub: GuiNavigationHub
+        private set
+
     var ws: ShindoWebsocket? = null
         private set
 
@@ -45,6 +49,7 @@ class ShindoAPI {
         launchTime = System.currentTimeMillis()
         modMenu = GuiModMenu()
         mainMenu = GuiShindoMainMenu()
+        navigationHub = GuiNavigationHub()
     }
 
     fun start() {
@@ -144,7 +149,6 @@ class ShindoAPI {
 
     private fun resolveAccountType(mc: Minecraft): AccountType {
         val session = mc.session ?: return AccountType.LOCAL
-        val uuid = session.profile.id ?: return AccountType.LOCAL
 
         try {
             val sessionType = session.sessionType

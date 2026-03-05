@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceiveChat
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -74,7 +74,7 @@ class ChatMod :
         val mc = Minecraft.getMinecraft()
         val player: EntityPlayer = mc.thePlayer
 
-        val component = event.message
+        val component = event.getMessage()
         val name = player.name.toLowerCase(Locale.getDefault())
         var text = component.unformattedText.toLowerCase(Locale.getDefault())
         text = text.replaceFirst("<.+>".toRegex(), "")

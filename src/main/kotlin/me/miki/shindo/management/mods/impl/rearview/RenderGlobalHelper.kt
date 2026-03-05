@@ -30,8 +30,10 @@ class RenderGlobalHelper {
 
     fun switchTo() {
         if (orig == null) orig = mc.renderGlobal
-        if ((orig as IMixinRenderGlobal).getWorldClient() !== (rg as IMixinRenderGlobal).getWorldClient()) {
-            rg!!.setWorldAndLoadRenderers((orig as IMixinRenderGlobal).getWorldClient())
+        val origWorld = (orig as IMixinRenderGlobal).getWorldClient() as net.minecraft.client.multiplayer.WorldClient
+        val rgWorld = (rg as IMixinRenderGlobal).getWorldClient() as net.minecraft.client.multiplayer.WorldClient
+        if (origWorld !== rgWorld) {
+            rg!!.setWorldAndLoadRenderers(origWorld)
             this.settings
         } else if (settingsChanged()) {
             rg!!.loadRenderers()

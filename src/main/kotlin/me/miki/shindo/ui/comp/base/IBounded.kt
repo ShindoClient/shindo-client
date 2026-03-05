@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.comp.base
+
 interface IBounded {
     fun getX(): Float
     fun setX(x: Float)

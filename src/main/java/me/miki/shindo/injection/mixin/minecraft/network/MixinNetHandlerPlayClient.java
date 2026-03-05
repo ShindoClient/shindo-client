@@ -1,7 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.network;
 
 import io.netty.buffer.Unpooled;
-import me.miki.shindo.management.addons.hackerdetector.AttackDetector;
 import me.miki.shindo.management.event.impl.EventDamageEntity;
 import me.miki.shindo.management.event.impl.EventReceiveChat;
 import me.miki.shindo.management.mods.impl.ClientSpooferMod;
@@ -13,7 +12,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraft.network.play.server.*;
+import net.minecraft.network.play.server.S02PacketChat;
+import net.minecraft.network.play.server.S19PacketEntityStatus;
 import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,22 +64,6 @@ public class MixinNetHandlerPlayClient {
         if (packetIn.getOpCode() == 2) {
             new EventDamageEntity(packetIn.getEntity(clientWorldController)).call();
         }
-        AttackDetector.lookForAttacks(packetIn);
-    }
-
-    @Inject(method = "handleAnimation", at = @At("HEAD"))
-    public void onHandleAnimation(S0BPacketAnimation packetIn, CallbackInfo ci) {
-        AttackDetector.lookForAttacks(packetIn);
-    }
-
-    @Inject(method = "handleEntityVelocity", at = @At("HEAD"))
-    public void onHandleEntityVelocity(S12PacketEntityVelocity packetIn, CallbackInfo ci) {
-        AttackDetector.lookForAttacks(packetIn);
-    }
-
-    @Inject(method = "handleSoundEffect", at = @At("HEAD"))
-    public void onHandleSoundEffect(S29PacketSoundEffect packetIn, CallbackInfo ci) {
-        AttackDetector.lookForAttacks(packetIn);
     }
 
     @Inject(method = "handleChat", at = @At("HEAD"), cancellable = true)

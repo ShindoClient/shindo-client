@@ -3,340 +3,353 @@ package me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.ui.layout.enums.UILayoutArea
-import me.miki.shindo.ui.layout.UILayoutManager
-import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.ui.comp.selectors.CompVisualPresetSelector
+import me.miki.shindo.ui.layout.UILayoutManager
+import me.miki.shindo.ui.layout.enums.UILayoutArea
+import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Base class for layout area scenes.
+ *
+ * Responsibilities:
+ * - synchronize selected [UILayoutType] with [UILayoutManager];
+ * - provide a consistent panel and preview canvas;
+ * - optionally render a type selector grid;
+ * - expose hooks for area-specific controls and previews.
+ */
 abstract class LayoutAreaScene(
-        parent: SettingsCategory,
-        val area: UILayoutArea,
-        nameTranslate: TranslateText,
-        descriptionTranslate: TranslateText,
-        icon: String
+    parent: SettingsCategory,
+    val area: UILayoutArea,
+    nameTranslate: TranslateText,
+    descriptionTranslate: TranslateText,
+    icon: String
 ) : SettingScene(parent, nameTranslate, descriptionTranslate, icon) {
 
     private val layoutManager: UILayoutManager = Shindo.getInstance().uiLayoutManager
     private var selectedType: UILayoutType? = null
-    private var hasTypeSelector: Boolean = false
+    private var typeSelector: CompVisualPresetSelector? = null
 
-    private lateinit var typeSelector: CompVisualPresetSelector
+    /**
+     * Simple immutable preview bounds shared with specialized scenes.
+     */
+    protected data class PreviewRect(val x: Float, val y: Float, val width: Float, val height: Float)
+
+    protected var lastPreviewRect: PreviewRect? = null
 
     override fun initGui() {
         selectedType = layoutManager.getSelectedType(area)
-        hasTypeSelector = showTypeSelector()
-        if (hasTypeSelector) {
-            buildTypeSelector()
-        }
+        buildTypeSelectorIfNeeded()
         initExtraControls()
     }
 
-    private fun buildTypeSelector() {
-        val types = getTypes()
-        val entries = ArrayList<CompVisualPresetSelector.Entry>(types.size)
-        for (type in types) {
-            entries.add(createTypeEntry(type))
+    /**
+     * Rebuilds selector entries when the area uses card-based type selection.
+     */
+    private fun buildTypeSelectorIfNeeded() {
+        if (!showTypeSelector()) {
+            typeSelector = null
+            return
         }
-        val selectedIdx = types.indexOf(selectedType ?: layoutManager.getSelectedType(area)).coerceAtLeast(0)
+
+        val types = getTypes()
+        if (types.isEmpty()) {
+            typeSelector = null
+            return
+        }
+
+        val entries = ArrayList<CompVisualPresetSelector.Entry>(types.size)
+        var i = 0
+        while (i < types.size) {
+            entries.add(createTypeEntry(types[i]))
+            i++
+        }
+
+        val selectedIndex = types.indexOf(selectedType).coerceAtLeast(0)
         typeSelector = CompVisualPresetSelector()
-                .setEntries(entries)
-                .setSelectedIndex(selectedIdx)
-                .setOnSelect { index ->
-                    if (index >= 0 && index < types.size) {
-                        selectType(types[index])
-                    }
+            .setEntries(entries)
+            .setSelectedIndex(selectedIndex)
+            .setOnSelect { index ->
+                if (index >= 0 && index < types.size) {
+                    selectType(types[index])
                 }
-                .setPreviewRenderer { index, _, x, y, width, height, selected, hovered, nvg, palette, accent ->
-                    if (index in 0 until types.size) {
-                        drawTypeCardPreview(
-                                nvg,
-                                palette,
-                                accent,
-                                types[index],
-                                x,
-                                y,
-                                width,
-                                height,
-                                selected,
-                                hovered
-                        )
-                    }
+            }
+            .setPreviewRenderer { index, _, x, y, width, height, selected, hovered, nvg, palette, accent ->
+                if (index >= 0 && index < types.size) {
+                    drawTypeCardPreview(
+                        nvg,
+                        palette,
+                        accent,
+                        types[index],
+                        x,
+                        y,
+                        width,
+                        height,
+                        selected,
+                        hovered
+                    )
                 }
+            }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvg = Shindo.getInstance().nanoVGManager ?: return
-        val colorManager = Shindo.getInstance().colorManager
-        val palette = colorManager.getPalette()
-        val accent = colorManager.getCurrentColor()
+        val instance = Shindo.getInstance()
+        val nvg = instance.nanoVGManager ?: return
+        val palette = instance.colorManager.getPalette()
+        val accent = instance.colorManager.getCurrentColor()
 
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
         val baseHeight = contentHeight.toFloat()
+
         if (baseWidth <= 0f || baseHeight <= 0f) {
             return
         }
 
-        val panelX = baseX + PANEL_PADDING
-        val panelY = baseY + PANEL_PADDING
-        val panelWidth = baseWidth - (PANEL_PADDING * 2f)
-        val panelHeight = baseHeight - (PANEL_PADDING * 2f)
+        val panelX = baseX + LayoutSceneStyle.PANEL_PADDING
+        val panelY = baseY + LayoutSceneStyle.PANEL_PADDING
+        val panelWidth = baseWidth - LayoutSceneStyle.PANEL_PADDING * 2f
+        val panelHeight = baseHeight - LayoutSceneStyle.PANEL_PADDING * 2f
 
-        drawContainer(nvg, palette, panelX, panelY, panelWidth, panelHeight)
-
-        if (!syncSelections()) {
+        if (panelWidth <= 0f || panelHeight <= 0f) {
             return
         }
 
-        drawPreviewPanel(
+        LayoutSceneRenderer.drawScenePanel(nvg, palette, panelX, panelY, panelWidth, panelHeight)
+
+        syncSelectionFromManager()
+        syncExtraSelections()
+
+        val contentX = panelX + LayoutSceneStyle.CONTENT_PADDING
+        val contentY = panelY + LayoutSceneStyle.CONTENT_PADDING
+        val contentWidth = panelWidth - LayoutSceneStyle.CONTENT_PADDING * 2f
+        val contentBottom = panelY + panelHeight - LayoutSceneStyle.CONTENT_PADDING
+        if (contentWidth <= 0f || contentBottom <= contentY) {
+            return
+        }
+
+        var cursorY = contentY
+        val extraHeight = max(0f, getExtraControlsHeight())
+        if (extraHeight > 0f) {
+            drawExtraControls(
                 nvg,
                 palette,
                 accent,
-                panelX,
-                panelY,
-                panelWidth,
-                panelHeight,
+                contentX,
+                cursorY,
+                contentWidth,
+                extraHeight,
                 mouseX,
                 mouseY,
                 partialTicks
-        )
-    }
+            )
+            cursorY += extraHeight + LayoutSceneStyle.CONTROL_GAP
+        }
 
-    private fun syncSelections(): Boolean {
-        val types = getTypes()
-        if (types.isNotEmpty()) {
-            val managerSelected = layoutManager.getSelectedType(area)
-            if (managerSelected != selectedType) {
-                selectedType = managerSelected
-                if (hasTypeSelector) {
-                    val idx = types.indexOf(managerSelected).coerceAtLeast(0)
-                    typeSelector.setSelectedIndex(idx)
-                }
+        val selector = typeSelector
+        if (selector == null) {
+            val previewHeight = max(26f, contentBottom - cursorY)
+            lastPreviewRect = PreviewRect(contentX, cursorY, contentWidth, previewHeight)
+            ModMenuClipCoordinator.withClip(
+                nvg = nvg,
+                x = panelX,
+                y = panelY,
+                width = panelWidth,
+                height = panelHeight,
+                intersect = true
+            ) {
+                drawPreview(nvg, palette, accent, contentX, cursorY, contentWidth, previewHeight, mouseX, mouseY, partialTicks)
             }
+            return
         }
-        syncExtraSelections()
-        return true
+
+        val availableHeight = max(90f, contentBottom - cursorY)
+        val previewHeight = min(previewMaxHeight, max(36f, availableHeight * previewHeightRatio))
+        val selectorY = cursorY + previewHeight + LayoutSceneStyle.CONTROL_GAP
+        val selectorHeight = max(72f, contentBottom - selectorY)
+
+        lastPreviewRect = PreviewRect(contentX, cursorY, contentWidth, previewHeight)
+
+        ModMenuClipCoordinator.withClip(
+            nvg = nvg,
+            x = panelX,
+            y = panelY,
+            width = panelWidth,
+            height = panelHeight,
+            intersect = true
+        ) {
+            drawPreview(nvg, palette, accent, contentX, cursorY, contentWidth, previewHeight, mouseX, mouseY, partialTicks)
+        }
+
+        selector.setBounds(contentX, selectorY, contentWidth, selectorHeight)
+        selector.draw(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawContainer(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float
-    ) {
-        nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7)
-        nvg.drawRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                CARD_RADIUS,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
-        )
-        nvg.drawRoundedRect(
-                x + 1f,
-                y + 1f,
-                width - 2f,
-                height - 2f,
-                CARD_RADIUS - 1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
-        )
-    }
-
-    private fun drawPreviewPanel(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float
-    ) {
-        val previewX = x + 16f
-        val previewY = y + 16f
-        val previewWidth = width - 32f
-        val extraHeight = getExtraControlsHeight()
-        var selectorY = previewY
-
-        if (extraHeight > 0f) {
-            drawExtraControls(
-                    nvg,
-                    palette,
-                    accent,
-                    previewX,
-                    previewY,
-                    previewWidth,
-                    extraHeight,
-                    mouseX,
-                    mouseY,
-                    partialTicks
-            )
-            selectorY += extraHeight + CONTROL_GAP
+    /**
+     * Updates local selection cache from manager state.
+     */
+    private fun syncSelectionFromManager() {
+        val managerSelected = layoutManager.getSelectedType(area)
+        if (managerSelected == selectedType) {
+            return
         }
+        selectedType = managerSelected
 
-        nvg.save()
-        nvg.intersectScissor(x, y, width, height)
-
-        if (!hasTypeSelector) {
-            val previewHeight = max(24f, (y + height) - selectorY - 12f)
-            drawPreview(
-                    nvg,
-                    palette,
-                    accent,
-                    previewX,
-                    selectorY,
-                    previewWidth,
-                    previewHeight,
-                    mouseX,
-                    mouseY,
-                    partialTicks
-            )
-        } else if (renderLegacyPreview()) {
-            var availableSelectorHeight = max(72f, (y + height) - selectorY - 12f)
-            val previewHeight = min(previewMaxHeight, max(0f, availableSelectorHeight * previewHeightRatio))
-            drawPreview(
-                    nvg,
-                    palette,
-                    accent,
-                    previewX,
-                    previewY,
-                    previewWidth,
-                    previewHeight,
-                    mouseX,
-                    mouseY,
-                    partialTicks
-            )
-            selectorY += previewHeight + PREVIEW_SELECTOR_GAP
-            availableSelectorHeight = max(72f, (y + height) - selectorY - 12f)
-            typeSelector.setBounds(previewX, selectorY, previewWidth, availableSelectorHeight)
-        } else {
-            val availableSelectorHeight = max(72f, (y + height) - selectorY - 12f)
-            typeSelector.setBounds(previewX, selectorY, previewWidth, availableSelectorHeight)
-        }
-
-        nvg.restore()
-
-        if (hasTypeSelector) {
-            typeSelector.draw(mouseX, mouseY, partialTicks)
+        val selector = typeSelector ?: return
+        val idx = getTypes().indexOf(managerSelected)
+        if (idx >= 0) {
+            selector.setSelectedIndex(idx)
         }
     }
 
+    /**
+     * Draws the scene-specific preview canvas.
+     */
     protected abstract fun drawPreview(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
     )
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton != 0) {
             return
         }
-
         mouseClickedExtra(mouseX, mouseY, mouseButton)
-        if (hasTypeSelector) {
-            typeSelector.mouseClicked(mouseX, mouseY, mouseButton)
-        }
+        typeSelector?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    protected fun getTypes(): List<UILayoutType> = layoutManager.getTypes(area)
+    /**
+     * Returns all layout types available for this area.
+     */
+    protected fun getTypes(): List<UILayoutType> {
+        return layoutManager.getTypes(area)
+    }
 
-    protected fun getSelectedType(): UILayoutType? = selectedType
+    /**
+     * Returns currently selected type for this area.
+     */
+    protected fun getSelectedType(): UILayoutType? {
+        return selectedType
+    }
 
+    /**
+     * Applies a new type through manager and synchronizes selector.
+     */
     protected fun selectType(type: UILayoutType?) {
-        if (type == null) return
+        if (type == null) {
+            return
+        }
         layoutManager.selectType(type)
         selectedType = type
 
-        if (hasTypeSelector) {
-            val types = getTypes()
-            val idx = types.indexOf(type)
-            if (idx >= 0) {
-                typeSelector.setSelectedIndex(idx)
-            }
+        val selector = typeSelector ?: return
+        val idx = getTypes().indexOf(type)
+        if (idx >= 0) {
+            selector.setSelectedIndex(idx)
         }
     }
 
-    protected open fun initExtraControls() {}
+    /**
+     * Hook for additional controls initialization.
+     */
+    protected open fun initExtraControls() {
+    }
 
-    protected open fun syncExtraSelections() {}
+    /**
+     * Hook called every frame before drawing scene content.
+     */
+    protected open fun syncExtraSelections() {
+    }
 
-    protected open fun getExtraControlsHeight(): Float = 0f
+    /**
+     * Returns extra controls block height.
+     */
+    protected open fun getExtraControlsHeight(): Float {
+        return 0f
+    }
 
+    /**
+     * Draws custom controls above preview/selector.
+     */
     protected open fun drawExtraControls(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
     ) {
     }
 
-    protected open fun mouseClickedExtra(mouseX: Int, mouseY: Int, mouseButton: Int) {}
-    protected open fun showTypeSelector(): Boolean = true
+    /**
+     * Handles mouse click for scene-specific controls.
+     */
+    protected open fun mouseClickedExtra(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    }
 
+    /**
+     * Enables selector mode for scenes that use card grids instead of carousel.
+     */
+    protected open fun showTypeSelector(): Boolean {
+        return true
+    }
+
+    /**
+     * Creates one selector entry for the provided type.
+     */
     protected open fun createTypeEntry(type: UILayoutType): CompVisualPresetSelector.Entry {
         return CompVisualPresetSelector.Entry(type.getTitle(), type.getDescription())
     }
 
+    /**
+     * Draws a selector card preview.
+     */
     protected open fun drawTypeCardPreview(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            type: UILayoutType,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            selected: Boolean,
-            hovered: Boolean
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        type: UILayoutType,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        selected: Boolean,
+        hovered: Boolean
     ) {
-        val bg = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 190 else 160)
-        val line = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (hovered || selected) 205 else 165)
-        val badge = ColorUtils.applyAlpha(accent.getColor1(), if (selected) 190 else 140)
-        nvg.drawRoundedRect(x, y, width, height, 4f, bg)
-        nvg.drawRoundedRect(x + 4f, y + 4f, max(8f, width * 0.28f), max(8f, height - 8f), 3f, badge)
-        nvg.drawRoundedRect(x + width * 0.34f, y + 5f, max(8f, width * 0.54f), 4f, 2f, line)
-        nvg.drawRoundedRect(x + width * 0.34f, y + 12f, max(8f, width * 0.44f), 3.5f, 2f, ColorUtils.applyAlpha(line, 180))
+        LayoutSceneRenderer.drawPreviewSurface(nvg, palette, x, y, width, height, 4f)
+        val line = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected || hovered) 214 else 176)
+        nvg.drawRoundedRect(x + 5f, y + 5f, max(10f, width * 0.52f), 3f, 1.5f, line)
+        nvg.drawRoundedRect(x + 5f, y + 10f, max(10f, width * 0.36f), 2.6f, 1.3f, ColorUtils.applyAlpha(line, 180))
     }
 
-    companion object {
-        private const val PANEL_PADDING = 16f
-        private const val CARD_RADIUS = 12f
-        private const val CONTROL_GAP = 8f
-        private const val PREVIEW_SELECTOR_GAP = 10f
+    /**
+     * Max preview block height used when selector is visible.
+     */
+    protected open val previewMaxHeight: Float = 196f
 
-        const val PREVIEW_RADIUS = 12f
-
-    }
-
-    protected open val previewMaxHeight: Float = 170f
-    protected open val previewHeightRatio: Float = 0.55f
-
-    protected open fun renderLegacyPreview(): Boolean = false
+    /**
+     * Fraction of content area reserved for preview when selector is visible.
+     */
+    protected open val previewHeightRatio: Float = 0.58f
 }

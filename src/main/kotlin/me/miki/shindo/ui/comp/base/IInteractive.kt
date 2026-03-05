@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.comp.base
+
 interface IInteractive {
     fun isHovered(mouseX: Int, mouseY: Int): Boolean
     fun isEnabled(): Boolean

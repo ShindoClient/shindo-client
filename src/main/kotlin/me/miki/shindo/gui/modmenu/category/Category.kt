@@ -42,13 +42,47 @@ open class Category(
     open fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
     }
 
+    /**
+     * Frame preparation phase for category logic.
+     */
+    open fun prepareFrame(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    }
+
+    /**
+     * Frame render phase. Defaults to legacy drawScreen for backward compatibility.
+     */
+    open fun renderFrame(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        drawScreen(mouseX, mouseY, partialTicks)
+    }
+
     open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    }
+
+    /**
+     * Mouse click input phase. Defaults to legacy mouseClicked.
+     */
+    open fun handleMouseClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
     }
 
+    /**
+     * Mouse release input phase. Defaults to legacy mouseReleased.
+     */
+    open fun handleMouseRelease(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        mouseReleased(mouseX, mouseY, mouseButton)
+    }
+
     open fun keyTyped(typedChar: Char, keyCode: Int) {
+    }
+
+    /**
+     * Keyboard input phase. Defaults to legacy keyTyped.
+     */
+    open fun handleKeyInput(typedChar: Char, keyCode: Int) {
+        keyTyped(typedChar, keyCode)
     }
 
     fun getName(): String {

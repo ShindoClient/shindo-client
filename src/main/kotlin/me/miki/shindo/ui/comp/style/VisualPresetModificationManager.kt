@@ -18,95 +18,246 @@ object VisualPresetModificationManager {
     }
 
     private data class ModificationRule(
-            val preset: InternalSettingsMod.VisualPreset,
-            val target: ModificationTarget,
-            val surfaceVariant: CompSurfaceVariant? = null,
-            val controlVariant: CompControlVariant? = null,
-            val alphaDelta: Int = 0,
-            val lighten: Float = 0f,
-            val darken: Float = 0f,
-            val accentMix: Float = 0f,
-            val accentIndex: Int = 1
+        val preset: InternalSettingsMod.VisualPreset,
+        val target: ModificationTarget,
+        val surfaceVariant: CompSurfaceVariant? = null,
+        val controlVariant: CompControlVariant? = null,
+        val alphaDelta: Int = 0,
+        val lighten: Float = 0f,
+        val darken: Float = 0f,
+        val accentMix: Float = 0f,
+        val accentIndex: Int = 1
     )
 
     private val rules = listOf(
-            // LIGHT: subtle lift over active theme.
-            ModificationRule(InternalSettingsMod.VisualPreset.LIGHT, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CANVAS, alphaDelta = -12, lighten = 0.045f),
-            ModificationRule(InternalSettingsMod.VisualPreset.LIGHT, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.PANEL, alphaDelta = -8, lighten = 0.04f),
-            ModificationRule(InternalSettingsMod.VisualPreset.LIGHT, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CARD, alphaDelta = -6, lighten = 0.03f),
-            ModificationRule(InternalSettingsMod.VisualPreset.LIGHT, ModificationTarget.SURFACE_BORDER, CompSurfaceVariant.CARD, alphaDelta = 8, accentMix = 0.1f, accentIndex = 1),
-            ModificationRule(InternalSettingsMod.VisualPreset.LIGHT, ModificationTarget.CONTROL_BASE, controlVariant = CompControlVariant.PRIMARY, alphaDelta = -10, lighten = 0.03f),
+        // LIGHT: roughly +15% luminance shift across most surfaces.
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CANVAS,
+            alphaDelta = -8,
+            lighten = 0.15f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.PANEL,
+            alphaDelta = -6,
+            lighten = 0.15f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CARD,
+            alphaDelta = -3,
+            lighten = 0.13f,
+            accentMix = 0.08f,
+            accentIndex = 1
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.SURFACE_BORDER,
+            CompSurfaceVariant.CARD,
+            alphaDelta = 14,
+            accentMix = 0.18f,
+            accentIndex = 1
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.PRIMARY,
+            alphaDelta = -4,
+            lighten = 0.12f,
+            accentMix = 0.1f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.SECONDARY,
+            alphaDelta = -6,
+            lighten = 0.1f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.LIGHT,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.GHOST,
+            alphaDelta = -10,
+            lighten = 0.09f
+        ),
 
-            // DARK: subtle depth over active theme.
-            ModificationRule(InternalSettingsMod.VisualPreset.DARK, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CANVAS, alphaDelta = 10, darken = 0.05f),
-            ModificationRule(InternalSettingsMod.VisualPreset.DARK, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.PANEL, alphaDelta = 8, darken = 0.04f),
-            ModificationRule(InternalSettingsMod.VisualPreset.DARK, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CARD, alphaDelta = 6, darken = 0.03f),
-            ModificationRule(InternalSettingsMod.VisualPreset.DARK, ModificationTarget.SURFACE_BORDER, CompSurfaceVariant.CARD, alphaDelta = -8, accentMix = 0.12f, accentIndex = 2),
-            ModificationRule(InternalSettingsMod.VisualPreset.DARK, ModificationTarget.CONTROL_BASE, controlVariant = CompControlVariant.PRIMARY, alphaDelta = 6, darken = 0.025f),
+        // DARK: roughly -15% luminance shift with deeper contrast.
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CANVAS,
+            alphaDelta = 10,
+            darken = 0.15f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.PANEL,
+            alphaDelta = 8,
+            darken = 0.15f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CARD,
+            alphaDelta = 4,
+            darken = 0.13f,
+            accentMix = 0.08f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.SURFACE_BORDER,
+            CompSurfaceVariant.CARD,
+            alphaDelta = -6,
+            accentMix = 0.2f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.PRIMARY,
+            alphaDelta = 8,
+            darken = 0.12f,
+            accentMix = 0.08f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.SECONDARY,
+            alphaDelta = 6,
+            darken = 0.1f
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.DARK,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.GHOST,
+            alphaDelta = 4,
+            darken = 0.08f
+        ),
 
-            // MODERN: adaptive midpoint with accent-driven contrast.
-            ModificationRule(InternalSettingsMod.VisualPreset.MODERN, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CANVAS, darken = 0.02f, accentMix = 0.06f, accentIndex = 1),
-            ModificationRule(InternalSettingsMod.VisualPreset.MODERN, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.PANEL, alphaDelta = 6, darken = 0.015f, accentMix = 0.08f, accentIndex = 1),
-            ModificationRule(InternalSettingsMod.VisualPreset.MODERN, ModificationTarget.SURFACE_BACKGROUND, CompSurfaceVariant.CARD, alphaDelta = 4, lighten = 0.015f, accentMix = 0.1f, accentIndex = 2),
-            ModificationRule(InternalSettingsMod.VisualPreset.MODERN, ModificationTarget.SURFACE_BORDER, CompSurfaceVariant.CARD, alphaDelta = 16, accentMix = 0.2f, accentIndex = 2),
-            ModificationRule(InternalSettingsMod.VisualPreset.MODERN, ModificationTarget.CONTROL_BASE, controlVariant = CompControlVariant.PRIMARY, alphaDelta = 10, accentMix = 0.18f, accentIndex = 1)
+        // MODERN: preserve base tone but increase separation/highlights/shadows.
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CANVAS,
+            darken = 0.03f,
+            accentMix = 0.07f,
+            accentIndex = 1
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.PANEL,
+            alphaDelta = 8,
+            darken = 0.02f,
+            accentMix = 0.12f,
+            accentIndex = 1
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.SURFACE_BACKGROUND,
+            CompSurfaceVariant.CARD,
+            alphaDelta = 10,
+            lighten = 0.03f,
+            accentMix = 0.14f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.SURFACE_BORDER,
+            CompSurfaceVariant.CARD,
+            alphaDelta = 20,
+            accentMix = 0.26f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.PRIMARY,
+            alphaDelta = 14,
+            accentMix = 0.24f,
+            accentIndex = 1
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.SECONDARY,
+            alphaDelta = 8,
+            darken = 0.02f,
+            accentMix = 0.14f,
+            accentIndex = 2
+        ),
+        ModificationRule(
+            InternalSettingsMod.VisualPreset.MODERN,
+            ModificationTarget.CONTROL_BASE,
+            controlVariant = CompControlVariant.GHOST,
+            alphaDelta = 6,
+            accentMix = 0.1f,
+            accentIndex = 1
+        )
     )
 
     fun applySurfaceBackground(
-            preset: InternalSettingsMod.VisualPreset,
-            variant: CompSurfaceVariant,
-            baseColor: Color,
-            palette: ColorPalette,
-            accent: AccentColor
+        preset: InternalSettingsMod.VisualPreset,
+        variant: CompSurfaceVariant,
+        baseColor: Color,
+        palette: ColorPalette,
+        accent: AccentColor
     ): Color {
         return applyRules(
-                preset,
-                ModificationTarget.SURFACE_BACKGROUND,
-                baseColor,
-                palette,
-                accent
+            preset,
+            ModificationTarget.SURFACE_BACKGROUND,
+            baseColor,
+            palette,
+            accent
         ) { it.surfaceVariant == variant }
     }
 
     fun applySurfaceBorder(
-            preset: InternalSettingsMod.VisualPreset,
-            variant: CompSurfaceVariant,
-            baseColor: Color,
-            palette: ColorPalette,
-            accent: AccentColor
+        preset: InternalSettingsMod.VisualPreset,
+        variant: CompSurfaceVariant,
+        baseColor: Color,
+        palette: ColorPalette,
+        accent: AccentColor
     ): Color {
         return applyRules(
-                preset,
-                ModificationTarget.SURFACE_BORDER,
-                baseColor,
-                palette,
-                accent
+            preset,
+            ModificationTarget.SURFACE_BORDER,
+            baseColor,
+            palette,
+            accent
         ) { it.surfaceVariant == variant }
     }
 
     fun applyControlBase(
-            preset: InternalSettingsMod.VisualPreset,
-            variant: CompControlVariant,
-            baseColor: Color,
-            palette: ColorPalette,
-            accent: AccentColor
+        preset: InternalSettingsMod.VisualPreset,
+        variant: CompControlVariant,
+        baseColor: Color,
+        palette: ColorPalette,
+        accent: AccentColor
     ): Color {
         return applyRules(
-                preset,
-                ModificationTarget.CONTROL_BASE,
-                baseColor,
-                palette,
-                accent
+            preset,
+            ModificationTarget.CONTROL_BASE,
+            baseColor,
+            palette,
+            accent
         ) { it.controlVariant == variant }
     }
 
     private fun applyRules(
-            preset: InternalSettingsMod.VisualPreset,
-            target: ModificationTarget,
-            baseColor: Color,
-            palette: ColorPalette,
-            accent: AccentColor,
-            matchVariant: (ModificationRule) -> Boolean
+        preset: InternalSettingsMod.VisualPreset,
+        target: ModificationTarget,
+        baseColor: Color,
+        palette: ColorPalette,
+        accent: AccentColor,
+        matchVariant: (ModificationRule) -> Boolean
     ): Color {
         val compatiblePreset = if (preset == InternalSettingsMod.VisualPreset.CLASSIC) {
             InternalSettingsMod.VisualPreset.MODERN
@@ -159,4 +310,3 @@ object VisualPresetModificationManager {
         return min(1f, max(0f, normalized))
     }
 }
-

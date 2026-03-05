@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.AddonManager
+import me.miki.shindo.management.addons.config.AddonConfigRegistry
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.file.FileManager
@@ -220,6 +221,7 @@ class ProfileManager {
                 var addonsLoaded = 0
                 for (addon in addonManager.addons) {
                     val addonKey = addon.getConfigId()
+                    // Fallback: só processa addons que existem no JSON; chaves órfãs (addons removidos) são ignoradas
                     val addonObject = JsonUtils.getObjectProperty(addonJson, addonKey)
                         ?: JsonUtils.getObjectProperty(addonJson, addon.name)
                         ?: continue
@@ -230,6 +232,11 @@ class ProfileManager {
                     }
 
                     addonManager.getSettingByAddon(addon)?.let { applySettings(instance.fileManager, addonObject, it) }
+
+                    // Carrega IAddonConfigStorage (key-value) se existir
+                    JsonUtils.getObjectProperty(addonObject, "Config")?.let { configJson ->
+                        AddonConfigRegistry.get(addonKey)?.fromJson(configJson)
+                    }
                 }
 
                 ShindoLogger.info("Loaded $addonsLoaded enabled addons")
@@ -540,6 +547,14 @@ class ProfileManager {
         for (addon in addonManager.addons) {
             val addonObject = JsonObject()
             addonObject.addProperty("Toggle", addon.isToggled())
+
+            // Salva IAddonConfigStorage (key-value) se o addon tiver
+            AddonConfigRegistry.get(addon.getConfigId())?.let { storage ->
+                val configJson = storage.toJson()
+                if (configJson.size() > 0) {
+                    addonObject.add("Config", configJson)
+                }
+            }
 
             addonManager.getSettingByAddon(addon)?.let { settings ->
                 val settingsObject = JsonObject()

@@ -6,90 +6,97 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
-class LayoutModulesScene(parent: SettingsCategory) :
-        LayoutCarouselScene(
-                parent,
-                UILayoutArea.MODULES,
-                TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
-                TranslateText.SETTINGS_LAYOUT_MODULE_DESCRIPTION,
-                LegacyIcon.LIST
-        ) {
+/**
+ * Modules layout scene.
+ *
+ * It previews single and double column list dispositions for module cards.
+ */
+class LayoutModulesScene(parent: SettingsCategory) : LayoutCarouselScene(
+    parent,
+    UILayoutArea.MODULES,
+    TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
+    TranslateText.SETTINGS_LAYOUT_MODULE_DESCRIPTION,
+    LegacyIcon.LIST
+) {
 
     override fun drawCarouselPreset(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            type: UILayoutType,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        type: UILayoutType,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
     ) {
-        val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 178)
-        val cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 232)
-        val line1Color = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 218)
-        val line2Color = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 196)
-        val toggleColor = ColorUtils.applyAlpha(accent.getColor1(), 198)
+        val pad = 10f
+        val gap = 8f
 
-        nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base)
+        val contentX = x + pad
+        val contentY = y + pad
+        val contentWidth = width - pad * 2f
+        val contentHeight = height - pad * 2f
 
         val columns = if (type == UILayoutType.MODULES_DOUBLE) 2 else 1
         val rows = 3
-        val padding = 12f
-        val rowGap = 8f
-        val colGap = 8f
-        val footerHeight = 34f
-        val availableHeight = max(40f, height - padding * 2f - footerHeight)
-        val cardHeight = max(20f, (availableHeight - (rows - 1) * rowGap) / rows)
-        val cardWidth = (width - padding * 2f - (columns - 1) * colGap) / columns
 
-        for (row in 0 until rows) {
-            for (column in 0 until columns) {
-                val cardX = x + padding + column * (cardWidth + colGap)
-                val cardY = y + padding + row * (cardHeight + rowGap)
-                nvg.drawRoundedRect(cardX, cardY, cardWidth, cardHeight, 6f, cardColor)
+        val cardWidth = max(40f, (contentWidth - (columns - 1) * gap) / columns)
+        val cardHeight = max(16f, (contentHeight - (rows - 1) * gap) / rows)
 
-                val lineX = cardX + 8f
-                val line1Y = cardY + max(4f, cardHeight * 0.28f)
-                val line2Y = cardY + max(8f, cardHeight * 0.6f)
-                val line1Width = max(10f, cardWidth - 26f)
-                val line2Width = max(8f, cardWidth - 34f)
-                val lineHeight = max(2f, cardHeight * 0.12f)
-
-                nvg.drawRoundedRect(lineX, line1Y, line1Width, lineHeight, lineHeight / 2f, line1Color)
-                nvg.drawRoundedRect(lineX, line2Y, line2Width, lineHeight, lineHeight / 2f, line2Color)
-
-                val toggleSize = max(5f, cardHeight * 0.24f)
-                val toggleX = cardX + cardWidth - toggleSize - 6f
-                val toggleY = cardY + (cardHeight - toggleSize) / 2f
-                nvg.drawRoundedRect(toggleX, toggleY, toggleSize, toggleSize, toggleSize / 2f, toggleColor)
-            }
-        }
-
-        val footerY = y + height - footerHeight - 10f
         nvg.drawRoundedRect(
-                x + padding,
-                footerY,
-                width - padding * 2f,
-                footerHeight,
-                7f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170)
+            contentX,
+            contentY,
+            contentWidth,
+            contentHeight,
+            8f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176)
         )
-        nvg.drawText(type.getTitle(), x + padding + 10f, footerY + 8f, palette.getFontColor(ColorType.DARK), 10f, Fonts.MEDIUM)
-        nvg.drawText(
-                type.getDescription(),
-                x + padding + 10f,
-                footerY + 20f,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 190),
-                8.2f,
-                Fonts.REGULAR
-        )
+
+        var row = 0
+        while (row < rows) {
+            var col = 0
+            while (col < columns) {
+                val cardX = contentX + col * (cardWidth + gap)
+                val cardY = contentY + row * (cardHeight + gap)
+                drawModuleCard(nvg, palette, accent, cardX, cardY, cardWidth, cardHeight)
+                col++
+            }
+            row++
+        }
+    }
+
+    /**
+     * Draws one module card sample.
+     */
+    private fun drawModuleCard(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
+    ) {
+        val cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+        val linePrimary = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220)
+        val lineSecondary = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 190)
+        val toggleColor = ColorUtils.applyAlpha(accent.getColor1(), 200)
+
+        nvg.drawRoundedRect(x, y, width, height, 6f, cardColor)
+
+        val lineY = y + max(4f, height * 0.28f)
+        nvg.drawRoundedRect(x + 8f, lineY, max(10f, width - 28f), 2.6f, 1.3f, linePrimary)
+        nvg.drawRoundedRect(x + 8f, lineY + 5f, max(8f, width - 36f), 2.3f, 1.2f, lineSecondary)
+
+        val toggleSize = max(5f, height * 0.24f)
+        val toggleX = x + width - toggleSize - 6f
+        val toggleY = y + (height - toggleSize) / 2f
+        nvg.drawRoundedRect(toggleX, toggleY, toggleSize, toggleSize, toggleSize / 2f, toggleColor)
     }
 }

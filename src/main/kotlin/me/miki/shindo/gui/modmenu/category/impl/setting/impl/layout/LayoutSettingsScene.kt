@@ -6,91 +6,216 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
-class LayoutSettingsScene(parent: SettingsCategory) :
-        LayoutCarouselScene(
-                parent,
-                UILayoutArea.SETTINGS,
-                TranslateText.SETTINGS,
-                TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-                LegacyIcon.SETTINGS
-        ) {
+/**
+ * Settings layout scene.
+ *
+ * It previews the 3 settings panel dispositions:
+ * - Single column
+ * - Double column
+ * - Adaptive (staggered + full-width heavy component)
+ */
+class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
+    parent,
+    UILayoutArea.SETTINGS,
+    TranslateText.SETTINGS,
+    TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
+    LegacyIcon.SETTINGS
+) {
 
     override fun drawCarouselPreset(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            type: UILayoutType,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        type: UILayoutType,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
     ) {
-        val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176)
-        val cardOuter = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 212)
-        val cardInner = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
-        val lineColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 212)
-        val accentColor = ColorUtils.applyAlpha(accent.getColor1(), 198)
+        val pad = 10f
+        val gap = 7f
+        val headerHeight = 3.3f
 
-        nvg.drawRoundedRect(x, y, width, height, PREVIEW_RADIUS, base)
+        val contentX = x + pad
+        val contentY = y + pad
+        val contentWidth = width - pad * 2f
+        val contentHeight = height - pad * 2f
 
-        val columns = if (type == UILayoutType.SETTINGS_DOUBLE) 2 else 1
-        val rows = 3
-        val padding = 12f
-        val colGap = 8f
-        val rowGap = 8f
-        val footerHeight = 34f
-        val headerHeight = 5f
-        val headerSpacing = 3f
-        val availableHeight = max(42f, height - padding * 2f - footerHeight)
-        val cellHeight = max(24f, (availableHeight - (rows - 1) * rowGap) / rows)
-        val cardHeight = max(14f, cellHeight - headerHeight - headerSpacing)
-        val columnWidth = (width - padding * 2f - (columns - 1) * colGap) / columns
+        val frameColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 178)
+        val blockOuter = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 215)
+        val blockInner = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 228)
+        val linePrimary = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 216)
+        val lineSecondary = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 188)
+        val accentColor = ColorUtils.applyAlpha(accent.getColor1(), 196)
 
-        for (row in 0 until rows) {
-            for (column in 0 until columns) {
-                val cardX = x + padding + column * (columnWidth + colGap)
-                val headerY = y + padding + row * (cellHeight + rowGap)
-                val cardY = headerY + headerHeight + headerSpacing
+        nvg.drawRoundedRect(contentX, contentY, contentWidth, contentHeight, 8f, frameColor)
 
-                nvg.drawRoundedRect(cardX, headerY, 7f, headerHeight, 2f, accentColor)
-                nvg.drawRoundedRect(cardX + 9f, headerY, max(12f, columnWidth - 9f), headerHeight, 2f, lineColor)
+        when (type) {
+            UILayoutType.SETTINGS_SINGLE -> {
+                val rows = 3
+                val itemHeight = max(18f, (contentHeight - gap * (rows - 1)) / rows)
+                var row = 0
+                while (row < rows) {
+                    drawSettingBlock(
+                        nvg,
+                        contentX,
+                        contentY + row * (itemHeight + gap),
+                        contentWidth,
+                        itemHeight,
+                        headerHeight,
+                        blockOuter,
+                        blockInner,
+                        accentColor,
+                        linePrimary,
+                        lineSecondary
+                    )
+                    row++
+                }
+            }
 
-                nvg.drawRoundedRect(cardX, cardY, columnWidth, cardHeight, 7f, cardOuter)
-                nvg.drawRoundedRect(cardX + 1f, cardY + 1f, columnWidth - 2f, cardHeight - 2f, 6f, cardInner)
+            UILayoutType.SETTINGS_DOUBLE -> {
+                val rows = 3
+                val columns = 2
+                val itemHeight = max(18f, (contentHeight - gap * (rows - 1)) / rows)
+                val columnWidth = max(40f, (contentWidth - gap * (columns - 1)) / columns)
+                var row = 0
+                while (row < rows) {
+                    var col = 0
+                    while (col < columns) {
+                        drawSettingBlock(
+                            nvg,
+                            contentX + col * (columnWidth + gap),
+                            contentY + row * (itemHeight + gap),
+                            columnWidth,
+                            itemHeight,
+                            headerHeight,
+                            blockOuter,
+                            blockInner,
+                            accentColor,
+                            linePrimary,
+                            lineSecondary
+                        )
+                        col++
+                    }
+                    row++
+                }
+            }
 
-                val lineX = cardX + 8f
-                val lineY1 = cardY + 5f
-                val lineY2 = cardY + 11f
-                nvg.drawRoundedRect(lineX, lineY1, 5f, 2.5f, 1.2f, accentColor)
-                nvg.drawRoundedRect(lineX + 8f, lineY1, max(14f, columnWidth - 22f), 2.5f, 1.2f, lineColor)
-                nvg.drawRoundedRect(lineX, lineY2, max(18f, columnWidth - 18f), 2.4f, 1.2f, ColorUtils.applyAlpha(lineColor, 185))
+            UILayoutType.SETTINGS_ADAPTIVE -> {
+                val doubleCardHeight = max(18f, (contentHeight - gap * 2f) / 3f)
+                val columnWidth = max(40f, (contentWidth - gap) / 2f)
+                val firstRowY = contentY
+                val secondRowY = firstRowY + doubleCardHeight + gap
+                val thirdRowY = secondRowY + doubleCardHeight + gap
+                val bottomHeight = max(18f, contentHeight - (doubleCardHeight * 2f) - (gap * 2f))
+
+                drawSettingBlock(
+                    nvg,
+                    contentX,
+                    firstRowY,
+                    columnWidth,
+                    doubleCardHeight,
+                    headerHeight,
+                    blockOuter,
+                    blockInner,
+                    accentColor,
+                    linePrimary,
+                    lineSecondary
+                )
+                drawSettingBlock(
+                    nvg,
+                    contentX + columnWidth + gap,
+                    firstRowY,
+                    columnWidth,
+                    doubleCardHeight,
+                    headerHeight,
+                    blockOuter,
+                    blockInner,
+                    accentColor,
+                    linePrimary,
+                    lineSecondary
+                )
+
+                drawSettingBlock(
+                    nvg,
+                    contentX,
+                    secondRowY,
+                    columnWidth,
+                    doubleCardHeight,
+                    headerHeight,
+                    blockOuter,
+                    blockInner,
+                    accentColor,
+                    linePrimary,
+                    lineSecondary
+                )
+                drawSettingBlock(
+                    nvg,
+                    contentX + columnWidth + gap,
+                    secondRowY,
+                    columnWidth,
+                    doubleCardHeight,
+                    headerHeight,
+                    blockOuter,
+                    blockInner,
+                    accentColor,
+                    linePrimary,
+                    lineSecondary
+                )
+
+                drawSettingBlock(
+                    nvg,
+                    contentX,
+                    thirdRowY,
+                    contentWidth,
+                    bottomHeight,
+                    headerHeight,
+                    blockOuter,
+                    blockInner,
+                    accentColor,
+                    linePrimary,
+                    lineSecondary
+                )
+            }
+
+            else -> {
             }
         }
+    }
 
-        val footerY = y + height - footerHeight - 10f
-        nvg.drawRoundedRect(
-                x + padding,
-                footerY,
-                width - padding * 2f,
-                footerHeight,
-                7f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 170)
-        )
-        nvg.drawText(type.getTitle(), x + padding + 10f, footerY + 8f, palette.getFontColor(ColorType.DARK), 10f, Fonts.MEDIUM)
-        nvg.drawText(
-                type.getDescription(),
-                x + padding + 10f,
-                footerY + 20f,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 190),
-                8.2f,
-                Fonts.REGULAR
-        )
+    /**
+     * Draws a single settings item preview block.
+     */
+    private fun drawSettingBlock(
+        nvg: NanoVGManager,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        headerHeight: Float,
+        outer: java.awt.Color,
+        inner: java.awt.Color,
+        accentColor: java.awt.Color,
+        primaryLine: java.awt.Color,
+        secondaryLine: java.awt.Color
+    ) {
+        val cardY = y + headerHeight + 2f
+        val cardHeight = max(8f, height - headerHeight - 2f)
+
+        nvg.drawRoundedRect(x, y, 7f, headerHeight, 1.6f, accentColor)
+        nvg.drawRoundedRect(x + 9f, y, max(8f, width - 9f), headerHeight, 1.6f, primaryLine)
+
+        nvg.drawRoundedRect(x, cardY, width, cardHeight, 5.5f, outer)
+        nvg.drawRoundedRect(x + 1f, cardY + 1f, width - 2f, cardHeight - 2f, 5f, inner)
+
+        val lineY = cardY + 4.8f
+        nvg.drawRoundedRect(x + 6f, lineY, max(10f, width - 18f), 2.4f, 1.2f, primaryLine)
+        nvg.drawRoundedRect(x + 6f, lineY + 4.5f, max(9f, width - 26f), 2.2f, 1.1f, secondaryLine)
     }
 }

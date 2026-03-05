@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -17,8 +17,8 @@ class MinemenMod :
 
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
-        if (autoPlaySetting && event.packet is S02PacketChat) {
-            val chatPacket = event.packet as S02PacketChat
+        if (autoPlaySetting && event.getPacket() is S02PacketChat) {
+            val chatPacket = event.getPacket() as S02PacketChat
             val raw = chatPacket.chatComponent.toString()
 
             if (raw.contains("clickEvent=ClickEvent{action=RUN_COMMAND, value='/requeue")) {

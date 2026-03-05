@@ -2,16 +2,17 @@ package me.miki.shindo.ui.comp.templates
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.style.CompControlVariant
 import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
+
 open class CompButton(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : CompInteractive(x, y) {
 
     private val hoverAnimation = SimpleAnimation()
@@ -95,12 +96,12 @@ open class CompButton(
         }
 
         nvgInstance.drawRoundedRect(
-                getX(),
-                getY(),
-                getWidth(),
-                getHeight(),
-                radius,
-                if (isEnabled()) finalBgWithClick else ColorUtils.applyAlpha(finalBgWithClick, 120)
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
+            radius,
+            if (isEnabled()) finalBgWithClick else ColorUtils.applyAlpha(finalBgWithClick, 120)
         )
 
         text?.let {
@@ -112,12 +113,12 @@ open class CompButton(
 
             val textY = getY() + getHeight() / 2f - fontSize / 2f
             nvgInstance.drawCenteredText(
-                    it,
-                    getX() + getWidth() / 2f,
-                    textY,
-                    finalTextColor,
-                    fontSize,
-                    Fonts.REGULAR
+                it,
+                getX() + getWidth() / 2f,
+                textY,
+                finalTextColor,
+                fontSize,
+                Fonts.REGULAR
             )
         }
     }

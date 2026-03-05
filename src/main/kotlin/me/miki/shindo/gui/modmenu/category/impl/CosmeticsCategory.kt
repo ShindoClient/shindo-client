@@ -4,6 +4,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.api.roles.Role
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
@@ -96,21 +97,25 @@ class CosmeticsCategory(parent: GuiModMenu) :
         val startY = viewportY + CONTENT_PADDING
         var y = startY
 
-        nvg.save()
-        nvg.scissor(viewportX, viewportY, viewportWidth, viewportHeight)
-        nvg.translate(0f, scrollOffset)
-
-        y = drawSectionChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
-        y += SECTION_BLOCK_GAP
-        y = drawCategoryChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
-        y += CATEGORY_BLOCK_GAP
-        y = when (activeSection) {
-            CosmeticSection.CAPES -> drawCapeGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
-            CosmeticSection.WINGS -> drawWingGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
-            CosmeticSection.BANDANAS -> drawBandanaGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
+        ModMenuClipCoordinator.withClipTranslate(
+            nvg = nvg,
+            x = viewportX,
+            y = viewportY,
+            width = viewportWidth,
+            height = viewportHeight,
+            translateX = 0f,
+            translateY = scrollOffset
+        ) {
+            y = drawSectionChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
+            y += SECTION_BLOCK_GAP
+            y = drawCategoryChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
+            y += CATEGORY_BLOCK_GAP
+            y = when (activeSection) {
+                CosmeticSection.CAPES -> drawCapeGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
+                CosmeticSection.WINGS -> drawWingGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
+                CosmeticSection.BANDANAS -> drawBandanaGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
+            }
         }
-
-        nvg.restore()
 
         val logicalHeight = kotlin.math.max(0f, (y - startY) + CONTENT_PADDING)
         scroll.maxScroll = kotlin.math.max(0f, logicalHeight - viewportHeight)
@@ -425,7 +430,9 @@ class CosmeticsCategory(parent: GuiModMenu) :
         scrollOffset: Float
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y + scrollOffset, width, height)
+        val overlayAlpha = if (selected) 74 else if (hovered) 48 else 30
 
+        nvg.drawShadow(x, y, width, height, 12f, 6)
         nvg.drawRoundedRect(
             x,
             y,
@@ -442,6 +449,28 @@ class CosmeticsCategory(parent: GuiModMenu) :
             11f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (hovered) 236 else 224)
         )
+        nvg.drawGradientRoundedRect(
+            x + 1f,
+            y + 1f,
+            width - 2f,
+            height - 2f,
+            11f,
+            ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
+            ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
+        )
+
+        if (selected || hovered) {
+            nvg.drawGradientOutlineRoundedRect(
+                x,
+                y,
+                width,
+                height,
+                12f,
+                if (selected) 1.8f else 1.1f,
+                ColorUtils.applyAlpha(accent.getColor1(), if (selected) 228 else 132),
+                ColorUtils.applyAlpha(accent.getColor2(), if (selected) 228 else 132)
+            )
+        }
 
         val previewX = x + 6f
         val previewY = y + 7f

@@ -14,18 +14,31 @@ open class CompTextBoxBase : Comp {
 
     private var text: String
 
+    private var enabled: Boolean
     private var focused: Boolean
     private var cursorPosition: Int = 0
     private var selectionEnd: Int = 0
     private var maxStringLength: Int
 
     fun getText(): String = text
+    fun isEnabled(): Boolean = enabled
     fun isFocused(): Boolean = focused
     fun getCursorPosition(): Int = cursorPosition
     fun getSelectionEnd(): Int = selectionEnd
     fun getMaxStringLength(): Int = maxStringLength
 
+    fun setEnabled(enabled: Boolean) {
+        this.enabled = enabled
+        if (!enabled) {
+            this.focused = false
+        }
+    }
+
     fun setFocused(focused: Boolean) {
+        if (!enabled) {
+            this.focused = false
+            return
+        }
         this.focused = focused
     }
 
@@ -40,12 +53,19 @@ open class CompTextBoxBase : Comp {
     constructor(x: Float, y: Float, width: Float, height: Float) : super(x, y) {
         setWidth(width)
         setHeight(height)
+        this.enabled = true
         this.focused = false
         this.text = ""
         this.maxStringLength = 256
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (!enabled) {
+            this.focused = false
+            super.mouseClicked(mouseX, mouseY, mouseButton)
+            return
+        }
+
         val flag = MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
 
         this.setFocused(flag)
@@ -53,6 +73,11 @@ open class CompTextBoxBase : Comp {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (!enabled) {
+            super.keyTyped(typedChar, keyCode)
+            return
+        }
+
         if (focused) {
             if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && keyCode == Keyboard.KEY_C) {
                 IOUtils.copyStringToClipboard(this.getSelectedText())
@@ -257,7 +282,7 @@ open class CompTextBoxBase : Comp {
 
     open fun setPosition(x: Float, y: Float, width: Float, height: Float) {
         this.setX(x)
-        this.setX(y)
+        this.setY(y)
         this.setWidth(width)
         this.setHeight(height)
     }

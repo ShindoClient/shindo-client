@@ -6,11 +6,12 @@ import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Mouse
 import java.awt.Color
+
 open class CompScrollable(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : Comp(x, y) {
 
     private var scrollY: Float = 0f
@@ -35,6 +36,7 @@ open class CompScrollable(
     }
 
     fun getContentHeight(): Float = contentHeight
+
     fun setContentHeight(height: Float) {
         this.contentHeight = height
         scrollY = scrollY.coerceIn(0f, getMaxScroll())
@@ -150,18 +152,19 @@ open class CompScrollable(
 
         val wheel = Mouse.getDWheel()
         if (wheel != 0 && MouseUtils.isInside(
-                        Mouse.getX() * 2,
-                        Mouse.getY() * 2,
-                        getX(),
-                        getY(),
-                        getWidth(),
-                        getHeight()
-                )
+                Mouse.getX() * 2,
+                Mouse.getY() * 2,
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight()
+            )
         ) {
             scrollBy(wheel / 120f * scrollSpeed)
         }
 
         super.update(partialTicks)
     }
+
     protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 }

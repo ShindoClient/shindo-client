@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderHitbox
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -50,11 +50,11 @@ class HitBoxMod :
 
     @EventTarget
     fun onRenderHitbox(event: EventRenderHitbox) {
-        val half = event.entity.width / 2.0f
+        val half = event.getEntity().width / 2.0f
 
         event.setCancelled(true)
 
-        if (event.entity is EntityArmorStand) {
+        if (event.getEntity() is EntityArmorStand) {
             return
         }
 
@@ -66,12 +66,12 @@ class HitBoxMod :
         GL11.glLineWidth(lineWidthSetting.toFloat())
 
         if (boundingBoxSetting) {
-            val box = event.entity.entityBoundingBox
+            val box = event.getEntity().entityBoundingBox
             val offsetBox = AxisAlignedBB(
-                box.minX - event.entity.posX + event.x,
-                box.minY - event.entity.posY + event.y, box.minZ - event.entity.posZ + event.z,
-                box.maxX - event.entity.posX + event.x, box.maxY - event.entity.posY + event.y,
-                box.maxZ - event.entity.posZ + event.z
+                box.minX - event.getEntity().posX + event.getX(),
+                box.minY - event.getEntity().posY + event.getY(), box.minZ - event.getEntity().posZ + event.getZ(),
+                box.maxX - event.getEntity().posX + event.getX(), box.maxY - event.getEntity().posY + event.getY(),
+                box.maxZ - event.getEntity().posZ + event.getZ()
             )
             val boundingBoxColor = colorSetting
             RenderGlobal.drawOutlinedBoundingBox(
@@ -83,12 +83,12 @@ class HitBoxMod :
             )
         }
 
-        if (eyeHeightSetting && event.entity is EntityLivingBase) {
+        if (eyeHeightSetting && event.getEntity() is EntityLivingBase) {
             RenderGlobal.drawOutlinedBoundingBox(
                 AxisAlignedBB(
-                    event.x - half, event.y + event.entity.eyeHeight - 0.009999999776482582,
-                    event.z - half, event.x + half,
-                    event.y + event.entity.eyeHeight + 0.009999999776482582, event.z + half
+                    event.getX() - half, event.getY() + event.getEntity().eyeHeight - 0.009999999776482582,
+                    event.getZ() - half, event.getX() + half,
+                    event.getY() + event.getEntity().eyeHeight + 0.009999999776482582, event.getZ() + half
                 ),
                 eyeHeightColor.red, eyeHeightColor.green, eyeHeightColor.blue,
                 (alphaSetting * 255).toInt()
@@ -99,14 +99,14 @@ class HitBoxMod :
             val tessellator = Tessellator.getInstance()
             val worldrenderer = tessellator.worldRenderer
 
-            val look = event.entity.getLook(event.partialTicks)
+            val look = event.getEntity().getLook(event.getPartialTicks())
             worldrenderer.begin(3, DefaultVertexFormats.POSITION_COLOR)
-            worldrenderer.pos(event.x, event.y + event.entity.eyeHeight, event.z)
+            worldrenderer.pos(event.getX(), event.getY() + event.getEntity().eyeHeight, event.getZ())
                 .color(0, 0, 255, 255)
                 .endVertex()
             worldrenderer.pos(
-                event.x + look.xCoord * 2,
-                event.y + event.entity.eyeHeight + look.yCoord * 2, event.z + look.zCoord * 2
+                event.getX() + look.xCoord * 2,
+                event.getY() + event.getEntity().eyeHeight + look.yCoord * 2, event.getZ() + look.zCoord * 2
             )
                 .color(
                     lookVectorColor.red,

@@ -3,6 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.category.impl.home.HomeCategoryInputController
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
@@ -10,6 +12,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.music.MusicManager
+import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.remote.changelog.Changelog
@@ -31,6 +34,7 @@ import kotlin.math.min
 
 class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, LegacyIcon.HOME, false, false) {
 
+    private val inputController = HomeCategoryInputController()
     private val newsScroll = Scroll()
     private val newsRotationTimer = TimerUtils()
     private val changelogRotationTimer = TimerUtils()
@@ -74,7 +78,14 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
 
             val currentNews = newsList[currentNewsIndex]
             val newsHeight = TOP_CARD_HEIGHT
-            nvg.drawRoundedRect(leftX, topY, columnWidth, newsHeight, 8f, palette.getBackgroundColor(ColorType.DARK))
+            drawHomeCardShell(
+                nvg = nvg,
+                palette = palette,
+                x = leftX,
+                y = topY,
+                width = columnWidth,
+                height = newsHeight
+            )
             nvg.drawText(
                 TranslateText.NEWS.getText(),
                 leftX + INNER_PADDING,
@@ -97,46 +108,54 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 )
             }
 
-            nvg.save()
-            nvg.scissor(leftX, topY + 20, columnWidth, newsHeight - 20)
-            nvg.translate(0f, newsScroll.getValue())
-
             val textWidth = max(0f, columnWidth - (INNER_PADDING * 2f))
-            var newsY = topY + 43f
-            val titleSize = nvg.getTextBoxHeight(currentNews.title, 10f, Fonts.SEMIBOLD, textWidth)
-            nvg.drawTextBox(
-                currentNews.title,
-                leftX + INNER_PADDING,
-                newsY,
-                textWidth,
-                palette.getFontColor(ColorType.DARK),
-                10f,
-                Fonts.SEMIBOLD
-            )
-            newsY += titleSize + 2
-            val subTitleSize = nvg.getTextBoxHeight(currentNews.subTitle, 8.5f, Fonts.MEDIUM, textWidth)
-            nvg.drawTextBox(
-                currentNews.subTitle,
-                leftX + INNER_PADDING,
-                newsY,
-                textWidth,
-                palette.getFontColor(ColorType.DARK),
-                8.5f,
-                Fonts.MEDIUM
-            )
-            newsY += subTitleSize + 3
-            val bodySize = nvg.getTextBoxHeight(currentNews.body, 8f, Fonts.REGULAR, textWidth)
-            nvg.drawTextBox(
-                currentNews.body,
-                leftX + INNER_PADDING,
-                newsY,
-                textWidth,
-                palette.getFontColor(ColorType.DARK),
-                8f,
-                Fonts.REGULAR
-            )
+            var titleSize = 0f
+            var subTitleSize = 0f
+            var bodySize = 0f
 
-            nvg.restore()
+            ModMenuClipCoordinator.withClipTranslate(
+                nvg = nvg,
+                x = leftX,
+                y = topY + 20f,
+                width = columnWidth,
+                height = newsHeight - 20f,
+                translateX = 0f,
+                translateY = newsScroll.getValue()
+            ) {
+                var newsY = topY + 43f
+                titleSize = nvg.getTextBoxHeight(currentNews.title, 10f, Fonts.SEMIBOLD, textWidth)
+                nvg.drawTextBox(
+                    currentNews.title,
+                    leftX + INNER_PADDING,
+                    newsY,
+                    textWidth,
+                    palette.getFontColor(ColorType.DARK),
+                    10f,
+                    Fonts.SEMIBOLD
+                )
+                newsY += titleSize + 2
+                subTitleSize = nvg.getTextBoxHeight(currentNews.subTitle, 8.5f, Fonts.MEDIUM, textWidth)
+                nvg.drawTextBox(
+                    currentNews.subTitle,
+                    leftX + INNER_PADDING,
+                    newsY,
+                    textWidth,
+                    palette.getFontColor(ColorType.DARK),
+                    8.5f,
+                    Fonts.MEDIUM
+                )
+                newsY += subTitleSize + 3
+                bodySize = nvg.getTextBoxHeight(currentNews.body, 8f, Fonts.REGULAR, textWidth)
+                nvg.drawTextBox(
+                    currentNews.body,
+                    leftX + INNER_PADDING,
+                    newsY,
+                    textWidth,
+                    palette.getFontColor(ColorType.DARK),
+                    8f,
+                    Fonts.REGULAR
+                )
+            }
 
             if (MouseUtils.isInside(mouseX, mouseY, leftX, topY, columnWidth, newsHeight)) {
                 newsScroll.onScroll()
@@ -165,7 +184,14 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         var offsetChangelogY = 0
         val changelogHeight = TOP_CARD_HEIGHT
 
-        nvg.drawRoundedRect(rightX, topY, columnWidth, changelogHeight, 8f, palette.getBackgroundColor(ColorType.DARK))
+        drawHomeCardShell(
+            nvg = nvg,
+            palette = palette,
+            x = rightX,
+            y = topY,
+            width = columnWidth,
+            height = changelogHeight
+        )
         nvg.drawText(
             TranslateText.CHANGELOG.getText(),
             rightX + INNER_PADDING,
@@ -274,47 +300,50 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             )
         }
 
-        nvg.save()
-        nvg.scissor(rightX, topY + 20, columnWidth, changelogHeight - 32)
-
-        if (pages.isNotEmpty()) {
-            val page = pages[min(currentChangelogPage, pages.size - 1)]
-            for (c in page) {
-                val tbSize = nvg.getTextBoxHeight(c.text, 8f, Fonts.MEDIUM, textWidth)
-                val lineY = contentTop + offsetChangelogY
-                nvg.drawRoundedRect(iconX, lineY + ((tbSize / 2f) - 4f), iconSize, iconSize, 7f, c.type.color)
-                nvg.drawCenteredText(
-                    c.type.text,
-                    iconX + (iconSize / 2f),
-                    lineY + ((tbSize / 2f) - 1f),
-                    Color.WHITE,
-                    7f,
-                    Fonts.LEGACYICON
-                )
-                nvg.drawTextBox(
-                    c.text,
-                    textX,
-                    lineY + 3f,
-                    textWidth,
-                    palette.getFontColor(ColorType.DARK),
-                    8f,
-                    Fonts.MEDIUM
-                )
-                offsetChangelogY += (tbSize + 9f).toInt()
+        ModMenuClipCoordinator.withClip(
+            nvg = nvg,
+            x = rightX,
+            y = topY + 20f,
+            width = columnWidth,
+            height = changelogHeight - 32f
+        ) {
+            if (pages.isNotEmpty()) {
+                val page = pages[min(currentChangelogPage, pages.size - 1)]
+                for (c in page) {
+                    val tbSize = nvg.getTextBoxHeight(c.text, 8f, Fonts.MEDIUM, textWidth)
+                    val lineY = contentTop + offsetChangelogY
+                    nvg.drawRoundedRect(iconX, lineY + ((tbSize / 2f) - 4f), iconSize, iconSize, 7f, c.type.color)
+                    nvg.drawCenteredText(
+                        c.type.text,
+                        iconX + (iconSize / 2f),
+                        lineY + ((tbSize / 2f) - 1f),
+                        Color.WHITE,
+                        7f,
+                        Fonts.LEGACYICON
+                    )
+                    nvg.drawTextBox(
+                        c.text,
+                        textX,
+                        lineY + 3f,
+                        textWidth,
+                        palette.getFontColor(ColorType.DARK),
+                        8f,
+                        Fonts.MEDIUM
+                    )
+                    offsetChangelogY += (tbSize + 9f).toInt()
+                }
             }
         }
 
-        nvg.restore()
-
         val playerCardHeight = BOTTOM_CARD_HEIGHT
 
-        nvg.drawRoundedRect(
-            leftX,
-            bottomY,
-            columnWidth,
-            playerCardHeight,
-            8f,
-            palette.getBackgroundColor(ColorType.DARK)
+        drawHomeCardShell(
+            nvg = nvg,
+            palette = palette,
+            x = leftX,
+            y = bottomY,
+            width = columnWidth,
+            height = playerCardHeight
         )
 
         val musicManager: MusicManager = instance.musicManager
@@ -503,13 +532,13 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         val discordStartY = bottomY.toInt()
         val discordWidth = columnWidth.toInt()
 
-        nvg.drawRoundedRect(
-            discordStartX.toFloat(),
-            discordStartY.toFloat(),
-            discordWidth.toFloat(),
-            BOTTOM_CARD_HEIGHT,
-            8f,
-            palette.getBackgroundColor(ColorType.DARK)
+        drawHomeCardShell(
+            nvg = nvg,
+            palette = palette,
+            x = discordStartX.toFloat(),
+            y = discordStartY.toFloat(),
+            width = discordWidth.toFloat(),
+            height = BOTTOM_CARD_HEIGHT
         )
         nvg.drawRoundedRectVarying(
             discordStartX + discordWidth - 22F,
@@ -578,13 +607,19 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 Fonts.REGULAR
             )
         }
+        val joinHovered = inputController.isJoinButtonClicked(
+            mouseX = mouseX,
+            mouseY = mouseY,
+            joinButtonX = discordStartX + discordWidth - 60f,
+            joinButtonY = discordStartY + BOTTOM_CARD_HEIGHT - 28f
+        )
         nvg.drawRoundedRect(
             discordStartX + discordWidth - 60f,
             discordStartY + BOTTOM_CARD_HEIGHT - 28,
             52f,
             18f,
             9f,
-            Color(114, 137, 214)
+            if (joinHovered) ColorUtils.applyAlpha(currentColor.getColor1(), 220) else Color(114, 137, 214)
         )
         nvg.drawCenteredText(
             TranslateText.JOIN.getText() + " >",
@@ -604,7 +639,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         val discordHeight = BOTTOM_CARD_HEIGHT.toInt()
         val joinButtonX = discordStartX + discordWidth - 60
         val joinButtonY = discordStartY + discordHeight - 28
-        if (MouseUtils.isInside(mouseX, mouseY, joinButtonX.toFloat(), joinButtonY.toFloat(), 52f, 18f)) {
+        if (inputController.isJoinButtonClicked(mouseX, mouseY, joinButtonX.toFloat(), joinButtonY.toFloat())) {
             try {
                 Desktop.getDesktop().browse(URL("https://shindoclient.com/discord").toURI())
             } catch (e: Exception) {
@@ -629,66 +664,86 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             val controlSize = 14f
             val controlSpacing = 24f
 
-            if (mouseButton == 0) {
-                if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        controlsCenterX - controlSpacing - controlSize / 2f,
-                        controlsY,
-                        controlSize,
-                        controlSize
-                    )
-                ) {
+            if (inputController.isPrimaryClick(mouseButton)) {
+                when (inputController.resolveMusicControlAction(
+                    mouseX = mouseX,
+                    mouseY = mouseY,
+                    controlsCenterX = controlsCenterX,
+                    controlsY = controlsY,
+                    controlSize = controlSize,
+                    controlSpacing = controlSpacing
+                )) {
+                    HomeCategoryInputController.MusicControlAction.PREVIOUS -> {
                     musicManager.previousTrack()
                     return
-                }
-
-                if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        controlsCenterX - controlSize / 2f,
-                        controlsY,
-                        controlSize,
-                        controlSize
-                    )
-                ) {
-                    if (musicManager.isPlaying()) {
-                        musicManager.pause()
-                    } else {
-                        musicManager.resume()
                     }
-                    return
-                }
-
-                if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        controlsCenterX + controlSpacing - controlSize / 2f,
-                        controlsY,
-                        controlSize,
-                        controlSize
-                    )
-                ) {
-                    musicManager.nextTrack()
-                    return
+                    HomeCategoryInputController.MusicControlAction.TOGGLE_PLAYBACK -> {
+                        if (musicManager.isPlaying()) {
+                            musicManager.pause()
+                        } else {
+                            musicManager.resume()
+                        }
+                        return
+                    }
+                    HomeCategoryInputController.MusicControlAction.NEXT -> {
+                        musicManager.nextTrack()
+                        return
+                    }
+                    null -> {
+                        // no-op
+                    }
                 }
 
                 val progressBarY = controlsY + controlSize + 6
                 val progressBarWidth = playerCardWidth - (INNER_PADDING * 2f)
-                if (MouseUtils.isInside(mouseX, mouseY, headX, progressBarY, progressBarWidth, 2f)) {
+                val seekProgress = inputController.resolveSeekProgress(
+                    mouseX = mouseX,
+                    mouseY = mouseY,
+                    barX = headX,
+                    barY = progressBarY,
+                    barWidth = progressBarWidth,
+                    barHeight = 2f
+                )
+                if (seekProgress != null) {
                     val currentTrack = musicManager.getCurrentTrack()
                     if (currentTrack != null) {
                         val trackDuration = (musicManager.getEndTime() * 1000).toLong()
                         if (trackDuration > 0) {
-                            val relativeX = mouseX - headX
-                            val progress = max(0f, min(1f, relativeX / progressBarWidth))
-                            val seekPosition = (trackDuration * progress).toLong()
+                            val seekPosition = (trackDuration * seekProgress).toLong()
                             musicManager.seekToPosition(seekPosition)
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun drawHomeCardShell(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
+    ) {
+        nvg.drawShadow(x, y, width, height, 8f, 7)
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            8f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
+        )
+        nvg.drawOutlineRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            8f,
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+        )
     }
 
     private fun formatTime(seconds: Long): String {

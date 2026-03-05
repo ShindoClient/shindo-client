@@ -4,7 +4,7 @@ import com.google.common.base.Predicate
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderScoreboard
 import me.miki.shindo.management.language.TranslateText
@@ -154,7 +154,7 @@ class ScoreboardMod :
     @EventTarget
     fun onRenderScoreboard(event: EventRenderScoreboard) {
         event.setCancelled(true)
-        objective = event.objective
+        objective = event.getObjective()
     }
 }
 

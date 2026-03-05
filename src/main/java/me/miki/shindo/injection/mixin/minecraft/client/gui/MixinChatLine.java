@@ -51,7 +51,7 @@ public class MixinChatLine implements IMixinChatLine {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(int i, IChatComponent iChatComponent, int j, CallbackInfo ci) {
 
-        chatLines.add(new WeakReference<>((ChatLine) (Object) this));
+        chatLines.add(new WeakReference<Object>(this));
         NetHandlerPlayClient netHandler = Minecraft.getMinecraft().getNetHandler();
         if (netHandler == null) return;
         Map<String, NetworkPlayerInfo> nicknameCache = new HashMap<>();
@@ -78,7 +78,7 @@ public class MixinChatLine implements IMixinChatLine {
     }
 
     @Override
-    public NetworkPlayerInfo client$getPlayerInfo() {
+    public Object client$getPlayerInfo() {
         return client$playerInfo;
     }
 }

@@ -1,9 +1,20 @@
 package me.miki.shindo
 
+import me.miki.client_api.hud.HudLayoutService
+import me.miki.client_api.hypixel.HypixelApiProvider
+import me.miki.client_api.server.ServerInfoService
+import me.miki.client_api.scoreboard.ScoreboardService
+import me.miki.client_api.settings.AddonSettingsService
 import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
+import me.miki.shindo.api.hud.AddonHudLayoutServiceImpl
+import me.miki.shindo.api.hypixel.HypixelApiProviderImpl
+import me.miki.shindo.api.server.ServerInfoServiceImpl
+import me.miki.shindo.api.scoreboard.ScoreboardServiceImpl
+import me.miki.shindo.api.settings.AddonSettingsServiceImpl
+import me.miki.shindo.api.services.ClientServiceRegistry
+import me.miki.shindo.gui.GuiNavigationHub
 import me.miki.shindo.injection.mixin.ShindoTweaker
-import me.miki.shindo.libs.hypixel.HypixelApiKeyManager
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.color.ColorManager
@@ -14,7 +25,6 @@ import me.miki.shindo.management.cosmetic.wing.WingManager
 import me.miki.shindo.management.event.EventManager
 import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.LanguageManager
-import me.miki.shindo.ui.layout.UILayoutManager
 import me.miki.shindo.management.mods.ModManager
 import me.miki.shindo.management.mods.RestrictedMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
@@ -36,29 +46,32 @@ import me.miki.shindo.management.screenshot.ScreenshotManager
 import me.miki.shindo.management.security.SecurityFeatureManager
 import me.miki.shindo.management.shader.ShaderManager
 import me.miki.shindo.management.skin.SkinManager
-import me.miki.shindo.management.waypoint.WaypointManager
-import me.miki.shindo.ui.ClickEffects
-import me.miki.shindo.utils.OptifineUtils
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
+import me.miki.shindo.management.waypoint.WaypointManager
+import me.miki.shindo.ui.ClickEffects
+import me.miki.shindo.ui.layout.UILayoutManager
+import me.miki.shindo.utils.OptifineUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import org.apache.commons.lang3.ArrayUtils
-import java.util.*
 
 class Shindo private constructor() {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
+
     val name: String = "Shindo"
-    val version: String = "5.1.10"
+    val version: String = "5.1.11"
     val author: String = "MikiDevAHM"
-    val verIdentifier: Int = 5110
+    val verIdentifier: Int = 5111
 
     var nanoVGManager: NanoVGManager? = null
     private var started: Boolean = false
 
     var updateNeeded: Boolean = false
+
+
 
     lateinit var fileManager: FileManager
         private set
@@ -127,6 +140,9 @@ class Shindo private constructor() {
     lateinit var shindoAPI: ShindoAPI
         private set
 
+    lateinit var serviceRegistry: ClientServiceRegistry
+        private set
+
     fun hasStarted(): Boolean = started
 
     fun start() {
@@ -149,6 +165,15 @@ class Shindo private constructor() {
         fileManager = FileManager()
         languageManager = LanguageManager()
         eventManager = EventManager()
+
+        serviceRegistry = ClientServiceRegistry().apply {
+            register(HypixelApiProvider::class, HypixelApiProviderImpl())
+            register(ScoreboardService::class, ScoreboardServiceImpl())
+            register(HudLayoutService::class, AddonHudLayoutServiceImpl())
+            register(ServerInfoService::class, ServerInfoServiceImpl())
+            register(AddonSettingsService::class, AddonSettingsServiceImpl())
+        }
+
         downloadManager = DownloadManager()
         modManager = ModManager()
         addonManager = AddonManager()
@@ -156,6 +181,7 @@ class Shindo private constructor() {
         modManager.init()
         addonManager.init()
 
+        notificationManager = NotificationManager()
         capeManager = CapeManager()
         wingManager = WingManager()
         bandanaManager = BandanaManager()
@@ -168,16 +194,16 @@ class Shindo private constructor() {
         musicManager = MusicManager(fileManager)
         romanizationManager = RomanizationManager()
         skinManager = SkinManager()
-        networkManager = NetworkManager().also { it.init() }
+
+        networkManager = NetworkManager()
+        networkManager.init()
 
         shindoAPI = ShindoAPI()
         shindoAPI.init()
 
-        HypixelApiKeyManager.initialize()
-
         commandManager = CommandManager()
         screenshotManager = ScreenshotManager()
-        notificationManager = NotificationManager()
+
         securityFeatureManager = SecurityFeatureManager()
         quickPlayManager = QuickPlayManager()
         changelogManager = ChangelogManager()
@@ -190,6 +216,7 @@ class Shindo private constructor() {
 
         InternalSettingsMod.instance.setToggled(true)
         InternalSettingsMod.instance.applyBorderlessOnStartup()
+
         clickEffects = ClickEffects()
         shaderManager = ShaderManager().also { it.init() }
         started = true

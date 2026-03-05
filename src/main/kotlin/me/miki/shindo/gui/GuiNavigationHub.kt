@@ -13,7 +13,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiNavigationHub(private val parent: GuiScreen?) : GuiScreen(), IShindoScreen {
+class GuiNavigationHub() : GuiScreen(), IShindoScreen {
 
     private data class IconButton(val icon: String, val action: () -> Unit)
 
@@ -129,12 +129,8 @@ class GuiNavigationHub(private val parent: GuiScreen?) : GuiScreen(), IShindoScr
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            if (parent != null) {
-                mc.displayGuiScreen(parent)
-            } else {
-                mc.displayGuiScreen(null)
-                mc.setIngameFocus()
-            }
+            mc.displayGuiScreen(null)
+            mc.setIngameFocus()
         }
     }
 

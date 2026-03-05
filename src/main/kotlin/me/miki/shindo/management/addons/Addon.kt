@@ -15,6 +15,12 @@ open class Addon(
     val type: AddonType
 ) : ConfigOwner {
 
+    /** true para addons built-in (ex: RPO), false para addons externos (JAR). */
+    open val isBuiltIn: Boolean = true
+
+    /** Se true, mostra o botão toggle na UI. Addons externos podem definir addon.showToggle=false no addon.properties. */
+    open val showToggle: Boolean = true
+
     val animation = SimpleAnimation()
     val hoverAnimation = SimpleAnimation()
     val settingsHoverAnimation = SimpleAnimation()

@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventLoadWorld
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
@@ -72,7 +72,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         GlStateManager.disableBlend()
 
         stencil.wrap(
-            Runnable { drawMap(event.partialTicks) },
+            Runnable { drawMap(event.getPartialTicks()) },
             this.getX().toFloat(),
             this.getY().toFloat(),
             width * this.getScale(),

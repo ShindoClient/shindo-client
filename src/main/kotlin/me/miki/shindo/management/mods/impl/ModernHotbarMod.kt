@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderExpBar
 import me.miki.shindo.management.event.impl.EventRenderTooltip
@@ -72,7 +72,7 @@ class ModernHotbarMod :
                     l = l + 4
                 }
 
-                renderHotBarItem(j, k, l - 4, event.partialTicks, entityplayer)
+                renderHotBarItem(j, k, l - 4, event.getPartialTicks(), entityplayer)
             }
 
             RenderHelper.disableStandardItemLighting()

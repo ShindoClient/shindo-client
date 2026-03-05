@@ -1,4 +1,5 @@
 package me.miki.shindo.ui.comp.base
+
 interface IContainer {
     fun addChild(component: IComponent?)
     fun removeChild(component: IComponent)

@@ -1,14 +1,15 @@
 package me.miki.shindo.ui.comp.display
 
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
+
 class CompTooltip(
-        text: String,
-        x: Float = 0f,
-        y: Float = 0f
+    text: String,
+    x: Float = 0f,
+    y: Float = 0f
 ) : Comp(x, y) {
 
     private var text: String = text
@@ -81,13 +82,19 @@ class CompTooltip(
 
     private fun updateSize() {
         val nvgInstance = nvg
-        val textHeight = nvgInstance.getTextBoxHeight(
-                text,
-                fontSize,
-                me.miki.shindo.management.nanovg.font.Fonts.REGULAR,
-                maxWidth
+        val singleLineWidth = nvgInstance.getTextWidth(
+            text,
+            fontSize,
+            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
         )
-        setWidth(maxWidth + padding * 2)
+        val contentWidth = kotlin.math.max(60f, kotlin.math.min(maxWidth, singleLineWidth + 2f))
+        val textHeight = nvgInstance.getTextBoxHeight(
+            text,
+            fontSize,
+            me.miki.shindo.management.nanovg.font.Fonts.REGULAR,
+            contentWidth
+        )
+        setWidth(contentWidth + padding * 2)
         setHeight(textHeight + padding * 2)
     }
 
@@ -98,7 +105,7 @@ class CompTooltip(
         val paletteColors = palette
 
         val alpha = (fadeAnimation.value * 255).toInt()
-        val bgColor = backgroundColor ?: ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), alpha)
+        val bgColor = backgroundColor ?: ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), (alpha * 0.92f).toInt())
         val txtColor = textColor ?: ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), alpha)
 
         if (shadow) {
@@ -106,15 +113,33 @@ class CompTooltip(
         }
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
+        nvgInstance.drawGradientRoundedRect(
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
+            radius,
+            ColorUtils.applyAlpha(accent.getColor1(), (alpha * 0.28f).toInt()),
+            ColorUtils.applyAlpha(accent.getColor2(), (alpha * 0.20f).toInt())
+        )
+        nvgInstance.drawOutlineRoundedRect(
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
+            radius,
+            1f,
+            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), (alpha * 0.28f).toInt())
+        )
 
         nvgInstance.drawTextBox(
-                text,
-                getX() + padding,
-                getY() + padding,
-                maxWidth,
-                txtColor,
-                fontSize,
-                me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+            text,
+            getX() + padding,
+            getY() + padding,
+            getWidth() - padding * 2f,
+            txtColor,
+            fontSize,
+            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
         )
 
         super.draw(mouseX, mouseY, partialTicks)

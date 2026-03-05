@@ -51,7 +51,14 @@ class CompCarouselPageIndicator : Comp() {
             val radius = size / 2f
             val dotX = startX + index * (dotSize + dotSpacing) + (dotSize - size) / 2f
             val dotY = centerY - radius
-            nvg.drawRoundedRect(dotX, dotY, size, size, radius, if (index == selectedIndex) activeColor else normalColor)
+            nvg.drawRoundedRect(
+                dotX,
+                dotY,
+                size,
+                size,
+                radius,
+                if (index == selectedIndex) activeColor else normalColor
+            )
         }
     }
 }

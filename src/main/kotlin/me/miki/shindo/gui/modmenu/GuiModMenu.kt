@@ -5,7 +5,15 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.impl.*
+import me.miki.shindo.gui.modmenu.navigation.ModMenuCategoryTransitionCoordinator
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSidebarController
+import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
+import me.miki.shindo.gui.modmenu.render.ModMenuHeaderController
+import me.miki.shindo.gui.modmenu.render.ModMenuTelemetryOverlay
+import me.miki.shindo.gui.modmenu.style.ModMenuResponsiveLayout
+import me.miki.shindo.gui.modmenu.style.ModMenuStyle
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -17,15 +25,14 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.buttons.CompIconButton
 import me.miki.shindo.ui.comp.inputs.CompSearchBox
-import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseBackIn
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
+import me.miki.shindo.utils.mouse.ScrollInputGuard
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -34,18 +41,27 @@ import java.awt.Color
 import java.io.IOException
 import kotlin.math.min
 
+/**
+ * Root ModMenu screen.
+ *
+ * This version keeps legacy category behavior but moves shell painting to
+ * dedicated style/renderer classes for easier migration of each category UI.
+ */
 class GuiModMenu(
     private val initialCategoryClass: Class<out Category>? = null,
     private val initialSearchText: String? = null
 ) : GuiScreen(), IShindoScreen {
 
     private val categories = ArrayList<Category>()
-    private val moveAnimation = SimpleAnimation()
     private val screenAnimation = ScreenAnimation()
     private val scroll = Scroll()
     private val searchBox = CompSearchBox()
     private val layoutButton = CompIconButton(21f) { LegacyIcon.LAYOUT }
     private val folderButton = CompIconButton(18f) { LegacyIcon.FOLDER }
+    private val sidebarController = ModMenuSidebarController()
+    private val categoryTransition = ModMenuCategoryTransitionCoordinator()
+    private val headerController = ModMenuHeaderController()
+    private val telemetryOverlay = ModMenuTelemetryOverlay()
     private lateinit var introAnimation: Animation
     private var x = 0
     private var y = 0
@@ -72,14 +88,11 @@ class GuiModMenu(
 
     override fun initGui() {
         val sr = ScaledResolution(mc)
-
-        val addX = 250
-        val addY = 160
-
-        x = (sr.scaledWidth / 2) - addX
-        y = (sr.scaledHeight / 2) - addY
-        menuWidth = addX * 2
-        menuHeight = addY * 2
+        val bounds = ModMenuResponsiveLayout.resolve(sr)
+        x = bounds.x
+        y = bounds.y
+        menuWidth = bounds.width
+        menuHeight = bounds.height
 
         introAnimation = EaseBackIn(320, 1.0, 2.0f)
         introAnimation.setDirection(Direction.FORWARDS)
@@ -93,6 +106,7 @@ class GuiModMenu(
         canClose = true
         initialCategoryClass?.let { currentCategory = getCategoryByClass(it) }
         searchBox.setText(initialSearchText ?: "")
+        categoryTransition.reset(currentCategory)
 
         layoutButton.onClick {
             toEditHUD = true
@@ -105,6 +119,9 @@ class GuiModMenu(
         folderButton.setRadius(6f)
         folderButton.setFontSize(9f)
         folderButton.setVisible(false)
+        folderButton.onClick {
+            FileUtils.openFolderAtPath(Shindo.getInstance().fileManager.customCapeDir)
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -140,172 +157,129 @@ class GuiModMenu(
         val colorManager: ColorManager = instance.colorManager
         val palette: ColorPalette = colorManager.getPalette()
         val currentColor: AccentColor = colorManager.getCurrentColor()
+        val blurEnabled = InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true
+        telemetryOverlay.beginFrame()
+        ModMenuClipCoordinator.beginFrame()
 
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(if (toEditHUD) GuiEditHUD(true) else null)
         }
-        nvg.drawRoundedRect(
-            x.toFloat(),
-            y.toFloat(),
-            menuWidth.toFloat(),
-            menuHeight.toFloat(),
-            12f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+
+        drawLegacyFrame(
+            nvg = nvg,
+            palette = palette,
+            accent = currentColor,
+            x = x.toFloat(),
+            y = y.toFloat(),
+            width = menuWidth.toFloat(),
+            height = menuHeight.toFloat(),
+            radius = ModMenuStyle.ROOT_RADIUS,
+            sidebarWidth = ModMenuStyle.SIDEBAR_WIDTH,
+            blurEnabled = blurEnabled
         )
 
-        if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
-            Blur.drawBlur {
-                nvg.drawRoundedRectVarying(
-                    x.toFloat(),
-                    y.toFloat(),
-                    32f,
-                    menuHeight.toFloat(),
-                    12f,
-                    0f,
-                    12f,
-                    0f,
-                    palette.getBackgroundColor(ColorType.DARK)
-                )
-            }
-            val colsidebar = palette.getBackgroundColor(ColorType.DARK)
-            nvg.drawRoundedRectVarying(
-                x.toFloat(),
-                y.toFloat(),
-                32f,
-                menuHeight.toFloat(),
-                12f,
-                0f,
-                12f,
-                0f,
-                Color(colsidebar.red, colsidebar.green, colsidebar.blue, 210)
-            )
-        } else {
-            nvg.drawRoundedRectVarying(
-                x.toFloat(),
-                y.toFloat(),
-                32f,
-                menuHeight.toFloat(),
-                12f,
-                0f,
-                12f,
-                0f,
-                palette.getBackgroundColor(ColorType.DARK)
-            )
-        }
-
-        nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, currentColor.getColor1(), currentColor.getColor2())
-        nvg.drawText(LegacyIcon.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.LEGACYICON)
-        if (currentCategory.isShowTitle()) {
-            nvg.save()
-            nvg.translate((currentCategory.getTextAnimation().value * 15), 0f)
-            nvg.drawText(
-                currentCategory.getName(),
-                x + 32f,
-                y + 10f,
-                palette.getFontColor(ColorType.DARK, (currentCategory.getTextAnimation().value * 255).toInt()),
-                15f,
-                Fonts.SEMIBOLD
-            )
-            nvg.restore()
-        }
-
-        var offsetY = 0
-
-        moveAnimation.setAnimation((categories.indexOf(currentCategory) * 22F), 18.0)
-
+        sidebarController.rebuildSlots(
+            categories = categories,
+            currentCategory = currentCategory,
+            startX = x + ModMenuStyle.SIDEBAR_ITEM_X,
+            startY = y + ModMenuStyle.SIDEBAR_TOP_Y,
+            slotSize = ModMenuStyle.SIDEBAR_ITEM_SIZE,
+            gap = ModMenuStyle.SIDEBAR_ITEM_GAP,
+            maxBottomY = y + menuHeight - ModMenuStyle.HUD_BUTTON_BOTTOM_MARGIN - ModMenuStyle.SIDEBAR_BOTTOM_PADDING
+        )
         nvg.save()
-
-        nvg.drawGradientRoundedRect(
-            x + 5.5f,
-            y + 34.5f + moveAnimation.value,
-            21f,
-            21f,
-            5f,
-            currentColor.getColor1(),
-            currentColor.getColor2()
+        sidebarController.draw(
+            nvg = nvg,
+            palette = palette,
+            accent = currentColor,
+            currentCategory = currentCategory,
+            mouseX = mouseX,
+            mouseY = mouseY
         )
-
-        for (c in categories) {
-            val textColor = c.getTextColorAnimation().getColor(
-                if (MathUtils.isInRange(
-                        moveAnimation.value,
-                        offsetY - 8f,
-                        offsetY + 8f
-                    )
-                ) Color.WHITE else palette.getFontColor(ColorType.NORMAL),
-                18
-            )
-
-            c.getTextAnimation().setAnimation(if (c == currentCategory) 1.0f else 0.0f, 14.0)
-
-            nvg.drawText(c.getIcon(), x + 9f, y + 38f + offsetY, textColor, 14f, Fonts.LEGACYICON)
-
-            offsetY += 22
-        }
-
         nvg.restore()
 
-        layoutButton.setBounds(x + 5.5f, y + menuHeight - 30f, 21f, 21f)
+        layoutButton.setBounds(
+            x + ModMenuStyle.HUD_BUTTON_X,
+            y + menuHeight - ModMenuStyle.HUD_BUTTON_BOTTOM_MARGIN,
+            ModMenuStyle.HUD_BUTTON_SIZE,
+            ModMenuStyle.HUD_BUTTON_SIZE
+        )
         layoutButton.draw(mouseX, mouseY, partialTicks)
+        val header = headerController.draw(
+            nvg = nvg,
+            palette = palette,
+            currentCategory = currentCategory,
+            menuX = x,
+            menuY = y,
+            menuWidth = menuWidth,
+            mouseX = mouseX,
+            mouseY = mouseY,
+            partialTicks = partialTicks,
+            searchBox = searchBox,
+            folderButton = folderButton
+        )
+        val contentOffsetY = header.contentOffsetY
 
-        for (c in categories) {
-            c.getCategoryAnimation().setAnimation(if (c == currentCategory) 1.0f else 0.0f, 16.0)
+        categoryTransition.update()
+        currentCategory = categoryTransition.getActiveCategory(currentCategory)
 
-            if (c == currentCategory) {
-                nvg.save()
+        val contentX = (x + 32).toFloat()
+        val contentY = (y + contentOffsetY).toFloat()
+        val contentWidth = (menuWidth - 32).toFloat()
+        val contentHeight = (menuHeight - contentOffsetY).toFloat()
+        val transitionRunning = categoryTransition.isTransitioning()
 
-                if (!c.isInitialized()) {
-                    c.setInitialized(true)
-                    c.initCategory()
-                    searchBox.setText("")
-                    c.setCanClose(true)
-                }
+        val drawCategoryLayers = {
+            ModMenuClipCoordinator.withClip(
+                nvg = nvg,
+                x = contentX,
+                y = contentY,
+                width = contentWidth,
+                height = contentHeight,
+                layer = ModMenuClipCoordinator.ClipLayer.CONTENT_VIEWPORT,
+                tag = "modmenu_content"
+            ) {
+                for (layer in categoryTransition.buildRenderLayers(contentWidth)) {
+                    val category = layer.category
+                    ensureCategoryInitialized(category)
 
-                if (c.isShowSearchBox()) {
-                    searchBox.setPosition(x + menuWidth - 175f, y + 6.5f, 160f, 18f)
-                    searchBox.draw(mouseX, mouseY, partialTicks)
-                }
-                val yOff = if (currentCategory.isShowTitle()) 31 else 0
-                folderButton.setVisible(false)
-
-                if (currentCategory is CosmeticsCategory) {
-                    val cosmeticsCategory = currentCategory as CosmeticsCategory
-                    if (cosmeticsCategory.shouldShowCustomCapeFolder()) {
-                        val folderButtonX = x + menuWidth - 198f
-                        val folderButtonY = y + 6.5f
-                        folderButton.setVisible(true)
-                        folderButton.setBounds(folderButtonX, folderButtonY, 18f, 18f)
-                        folderButton.setIconColorSupplier { palette.getFontColor(ColorType.NORMAL) }
-                        folderButton.onClick {
-                            FileUtils.openFolderAtPath(Shindo.getInstance().fileManager.customCapeDir)
+                    nvg.withState {
+                        if (layer.alpha < 0.999f) {
+                            nvg.setAlpha(layer.alpha)
                         }
-                        folderButton.draw(mouseX, mouseY, partialTicks)
+                        if (layer.offsetX != 0f) {
+                            nvg.translate(layer.offsetX, 0f)
+                        }
+
+                        category.prepareFrame(mouseX, mouseY, partialTicks)
+                        category.renderFrame(mouseX, mouseY, partialTicks)
                     }
                 }
-
-                nvg.scissor(
-                    (x + 32).toFloat(),
-                    (y + yOff).toFloat(),
-                    (menuWidth - 32).toFloat(),
-                    (menuHeight - yOff).toFloat()
-                )
-                nvg.translate(0f, 50f - (c.getCategoryAnimation().value * 50f))
-
-                c.drawScreen(mouseX, mouseY, partialTicks)
-
-                nvg.restore()
-            } else if (c.isInitialized()) {
-                c.setInitialized(false)
             }
         }
 
-        if (MouseUtils.isInside(
+        if (transitionRunning) {
+            ScrollInputGuard.withLock {
+                drawCategoryLayers()
+            }
+        } else {
+            drawCategoryLayers()
+        }
+
+        val visibleCategories = categoryTransition.collectVisibleCategories()
+        for (category in categories) {
+            if (category.isInitialized() && !visibleCategories.contains(category)) {
+                category.setInitialized(false)
+            }
+        }
+
+        if (!transitionRunning && MouseUtils.isInside(
                 mouseX,
                 mouseY,
-                x + 32f,
-                y + 31f,
-                (menuWidth - 32).toFloat(),
-                (menuHeight - 31).toFloat()
+                contentX,
+                contentY,
+                contentWidth,
+                contentHeight
             )
         ) {
             scroll.onScroll()
@@ -313,16 +287,97 @@ class GuiModMenu(
 
         scroll.onAnimation()
 
-        if (currentCategory.isShowSearchBox() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(
+        if (!transitionRunning && !isOverlayInputLocked() && currentCategory.isShowSearchBox() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(
                 Keyboard.KEY_F
             )
         ) {
             currentCategory.getSearchBox().setFocused(true)
         }
+
+        telemetryOverlay.endFrame()
+        telemetryOverlay.draw(
+            nvg = nvg,
+            palette = palette,
+            menuX = x.toFloat(),
+            menuY = y.toFloat(),
+            menuWidth = menuWidth.toFloat()
+        )
+
+        ModMenuClipCoordinator.drawDebugOverlay(
+            nvg = nvg,
+            originX = x.toFloat(),
+            originY = y.toFloat(),
+            panelWidth = menuWidth.toFloat()
+        )
+    }
+
+    private fun drawLegacyFrame(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        sidebarWidth: Float,
+        blurEnabled: Boolean
+    ) {
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            radius,
+            palette.getBackgroundColor(ColorType.NORMAL)
+        )
+
+        if (blurEnabled) {
+            Blur.drawBlur {
+                nvg.drawRoundedRectVarying(
+                    x,
+                    y,
+                    sidebarWidth,
+                    height,
+                    radius,
+                    0f,
+                    radius,
+                    0f,
+                    palette.getBackgroundColor(ColorType.DARK)
+                )
+            }
+            val sidebarColor = palette.getBackgroundColor(ColorType.DARK)
+            nvg.drawRoundedRectVarying(
+                x,
+                y,
+                sidebarWidth,
+                height,
+                radius,
+                0f,
+                radius,
+                0f,
+                Color(sidebarColor.red, sidebarColor.green, sidebarColor.blue, 210)
+            )
+        } else {
+            nvg.drawRoundedRectVarying(
+                x,
+                y,
+                sidebarWidth,
+                height,
+                radius,
+                0f,
+                radius,
+                0f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
+        }
+
+        nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, accent.getColor1(), accent.getColor2())
+        nvg.drawText(LegacyIcon.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.LEGACYICON)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        var offsetY = 0
+        val overlayInputLocked = isOverlayInputLocked()
 
         if (!MouseUtils.isInside(
                 mouseX,
@@ -331,23 +386,37 @@ class GuiModMenu(
                 y - 5f,
                 (menuWidth + 10).toFloat(),
                 (menuHeight + 10).toFloat()
-            ) && mouseButton == 0 && canClose
+            ) && mouseButton == 0 && canClose && !overlayInputLocked
         ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
 
-        for (c in categories) {
-            if (MouseUtils.isInside(mouseX, mouseY, x + 5.5f, y + 34.5f + offsetY, 21f, 21f) && mouseButton == 0) {
-                currentCategory = c
+        sidebarController.rebuildSlots(
+            categories = categories,
+            currentCategory = currentCategory,
+            startX = x + ModMenuStyle.SIDEBAR_ITEM_X,
+            startY = y + ModMenuStyle.SIDEBAR_TOP_Y,
+            slotSize = ModMenuStyle.SIDEBAR_ITEM_SIZE,
+            gap = ModMenuStyle.SIDEBAR_ITEM_GAP,
+            maxBottomY = y + menuHeight - ModMenuStyle.HUD_BUTTON_BOTTOM_MARGIN - ModMenuStyle.SIDEBAR_BOTTOM_PADDING
+        )
+        if (!overlayInputLocked) {
+            sidebarController.resolveClickedCategory(mouseX, mouseY, mouseButton)?.let { clicked ->
+                requestCategorySwitch(clicked)
             }
-            offsetY += 22
         }
 
-        currentCategory.mouseClicked(mouseX, mouseY, mouseButton)
-        searchBox.mouseClicked(mouseX, mouseY, mouseButton)
+        if (!categoryTransition.isTransitioning()) {
+            currentCategory.handleMouseClick(mouseX, mouseY, mouseButton)
+            if (!overlayInputLocked) {
+                searchBox.mouseClicked(mouseX, mouseY, mouseButton)
+            }
+        }
 
-        layoutButton.mouseClicked(mouseX, mouseY, mouseButton)
-        folderButton.mouseClicked(mouseX, mouseY, mouseButton)
+        if (!overlayInputLocked) {
+            layoutButton.mouseClicked(mouseX, mouseY, mouseButton)
+            folderButton.mouseClicked(mouseX, mouseY, mouseButton)
+        }
         try {
             super.mouseClicked(mouseX, mouseY, mouseButton)
         } catch (_: IOException) {
@@ -355,13 +424,53 @@ class GuiModMenu(
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        currentCategory.mouseReleased(mouseX, mouseY, mouseButton)
-        layoutButton.mouseReleased(mouseX, mouseY, mouseButton)
-        folderButton.mouseReleased(mouseX, mouseY, mouseButton)
+        val overlayInputLocked = isOverlayInputLocked()
+        if (!categoryTransition.isTransitioning()) {
+            currentCategory.handleMouseRelease(mouseX, mouseY, mouseButton)
+        }
+        if (!overlayInputLocked) {
+            layoutButton.mouseReleased(mouseX, mouseY, mouseButton)
+            folderButton.mouseReleased(mouseX, mouseY, mouseButton)
+        }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        currentCategory.keyTyped(typedChar, keyCode)
+        if (keyCode == Keyboard.KEY_F9 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+            telemetryOverlay.toggle()
+            return
+        }
+        if (keyCode == Keyboard.KEY_F10 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+            ModMenuClipCoordinator.toggleDebugOverlay()
+            return
+        }
+
+        val overlayInputLocked = isOverlayInputLocked()
+        if (overlayInputLocked) {
+            if (!categoryTransition.isTransitioning()) {
+                currentCategory.handleKeyInput(typedChar, keyCode)
+            }
+            return
+        }
+
+        if (keyCode == Keyboard.KEY_TAB && canClose) {
+            val backwards = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
+            switchCategory(if (backwards) -1 else 1)
+            return
+        }
+
+        if ((keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_RIGHT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+            switchCategory(if (keyCode == Keyboard.KEY_LEFT) -1 else 1)
+            return
+        }
+
+        if (categoryTransition.isTransitioning()) {
+            if (keyCode == Keyboard.KEY_ESCAPE && canClose) {
+                introAnimation.setDirection(Direction.BACKWARDS)
+            }
+            return
+        }
+
+        currentCategory.handleKeyInput(typedChar, keyCode)
         searchBox.keyTyped(typedChar, keyCode)
 
         if (currentCategory.isShowSearchBox() && canClose) {
@@ -413,5 +522,59 @@ class GuiModMenu(
     fun isCanClose(): Boolean = canClose
     fun setCanClose(canClose: Boolean) {
         this.canClose = canClose
+    }
+
+    private fun switchCategory(direction: Int) {
+        if (categories.isEmpty()) {
+            return
+        }
+
+        val currentIndex = categories.indexOf(currentCategory).coerceAtLeast(0)
+        val size = categories.size
+        val targetIndex = (currentIndex + direction + size) % size
+        requestCategorySwitch(categories[targetIndex], direction)
+    }
+
+    private fun requestCategorySwitch(targetCategory: Category, directionHint: Int? = null) {
+        val activeCategory = categoryTransition.getActiveCategory(currentCategory)
+        if (targetCategory == activeCategory) {
+            return
+        }
+
+        val currentIndex = categories.indexOf(activeCategory).coerceAtLeast(0)
+        val targetIndex = categories.indexOf(targetCategory)
+        if (targetIndex < 0) {
+            return
+        }
+        val resolvedDirection = directionHint ?: resolveDirectionHint(currentIndex, targetIndex, categories.size)
+
+        categoryTransition.requestSwitch(activeCategory, targetCategory, resolvedDirection)
+        currentCategory = targetCategory
+    }
+
+    private fun resolveDirectionHint(currentIndex: Int, targetIndex: Int, size: Int): Int {
+        if (size <= 1 || currentIndex == targetIndex) {
+            return 1
+        }
+
+        val forwardDistance = (targetIndex - currentIndex + size) % size
+        val backwardDistance = (currentIndex - targetIndex + size) % size
+        return if (forwardDistance <= backwardDistance) 1 else -1
+    }
+
+    private fun ensureCategoryInitialized(category: Category) {
+        if (category.isInitialized()) {
+            return
+        }
+
+        category.setInitialized(true)
+        category.initCategory()
+        searchBox.setText("")
+        category.setCanClose(true)
+    }
+
+    private fun isOverlayInputLocked(): Boolean {
+        val listCategory = currentCategory as? ModMenuListPageContract ?: return false
+        return listCategory.isDetailsLayerOpen()
     }
 }

@@ -4,10 +4,10 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.CategorySetting
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.style.CompControlVariant
 import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import kotlin.math.max
 
 class CompCategory : CompControlTemplate {
@@ -36,7 +36,7 @@ class CompCategory : CompControlTemplate {
 
         val accentPulse = max(hoverAnimation.value, 0.25f + toggleAnimation.value * 0.25f)
         val baseOverlay =
-                ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), (hoverAnimation.value * 40).toInt())
+            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), (hoverAnimation.value * 40).toInt())
         nvg.drawRoundedRect(x, y, width, height, CATEGORY_CORNER_RADIUS, baseOverlay)
 
         val iconSize = 11f
@@ -45,9 +45,9 @@ class CompCategory : CompControlTemplate {
         val iconX = x + 4f
         val iconY = y + height / 2f - iconHeight / 2f
         val iconColor = ColorUtils.interpolateColor(
-                paletteColors.getFontColor(ColorType.NORMAL),
-                ColorUtils.applyAlpha(accentColor.getColor1(), 240),
-                (accentPulse * 0.35f).toDouble()
+            paletteColors.getFontColor(ColorType.NORMAL),
+            ColorUtils.applyAlpha(accentColor.getColor1(), 240),
+            (accentPulse * 0.35f).toDouble()
         )
         nvg.drawText(icon, iconX, iconY, iconColor, iconSize, Fonts.LEGACYICON)
 
@@ -56,9 +56,9 @@ class CompCategory : CompControlTemplate {
         val titleHeight = nvg.getTextHeight(setting.name, titleSize, Fonts.MEDIUM)
         val titleY = y + height / 2f - titleHeight / 2f
         val titleColor = ColorUtils.interpolateColor(
-                paletteColors.getFontColor(ColorType.DARK),
-                ColorUtils.applyAlpha(accentColor.getColor2(), 230),
-                (accentPulse * 0.25f).toDouble()
+            paletteColors.getFontColor(ColorType.DARK),
+            ColorUtils.applyAlpha(accentColor.getColor2(), 230),
+            (accentPulse * 0.25f).toDouble()
         )
         nvg.drawText(setting.name, titleX, titleY, titleColor, titleSize, Fonts.MEDIUM)
 

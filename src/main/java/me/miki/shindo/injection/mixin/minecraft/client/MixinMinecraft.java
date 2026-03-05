@@ -56,6 +56,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Shadow
     private static int debugFPS;
     @Shadow
+    private final Timer timer = new Timer(20.0F);
+    @Shadow
     public int displayWidth;
     @Shadow
     public int displayHeight;
@@ -85,8 +87,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Shadow
     private ResourcePackRepository mcResourcePackRepository;
     @Shadow
-    private final Timer timer = new Timer(20.0F);
-    @Shadow
     private Session session;
     @Shadow
     private int leftClickCounter;
@@ -99,6 +99,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private Entity renderViewEntity;
     @Shadow
     private boolean enableGLErrorChecking;
+
     @Overwrite
     public static int getDebugFPS() {
 
@@ -189,6 +190,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public void preShutdown(CallbackInfo ci) {
         Shindo.getInstance().stop();
     }
+
     @Redirect(method = "shutdownMinecraftApplet", at = @At(value = "INVOKE", target = "Ljava/lang/System;exit(I)V", remap = false))
     private void ignoreGcCall(int i) {
         try {
@@ -317,6 +319,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public void postRenderTick(CallbackInfo ci) {
         new EventRenderTick().call();
     }
+
     @Overwrite
     public int getLimitFramerate() {
 
@@ -337,6 +340,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
         return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
+
     @Overwrite
     public boolean isFramerateLimitBelowMax() {
 
@@ -391,6 +395,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
             this.entityRenderer.getMapItemRenderer().clearLoadedMaps();
         }
     }
+
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setGameIcon(CallbackInfo c) {
         if (Util.getOSType() == Util.EnumOS.OSX) {
@@ -465,8 +470,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     }
 
     @Override
-    public void setSession(Session session) {
-        this.session = session;
+    public void setSession(Object session) {
+        this.session = (Session) session;
     }
 
     @Override
@@ -619,8 +624,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     }
 
     @Override
-    public void setMcResourcePackRepository(ResourcePackRepository repo) {
-        this.mcResourcePackRepository = repo;
+    public void setMcResourcePackRepository(Object repo) {
+        this.mcResourcePackRepository = (ResourcePackRepository) repo;
     }
 }
 

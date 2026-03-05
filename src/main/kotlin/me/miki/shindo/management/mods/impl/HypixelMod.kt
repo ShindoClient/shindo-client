@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.event.impl.EventSendChat
 import me.miki.shindo.management.event.impl.EventSendPacket
@@ -133,7 +133,7 @@ class HypixelMod :
             return
         }
 
-        val message = event.message
+        val message = event.getMessage()
 
         if (message.startsWith("/play")) {
             val mode: HypixelGameMode? = HypixelGameMode.getModeByCommand(message)
@@ -150,8 +150,8 @@ class HypixelMod :
             return
         }
 
-        if (event.packet is S2FPacketSetSlot) {
-            val slotPacket = event.packet as S2FPacketSetSlot
+        if (event.getPacket() is S2FPacketSetSlot) {
+            val slotPacket = event.getPacket() as S2FPacketSetSlot
             val stack = slotPacket.func_149174_e()
 
             if (stack != null && stack.item == Items.paper &&
@@ -163,8 +163,8 @@ class HypixelMod :
             }
         }
 
-        if (event.packet is S02PacketChat) {
-            val chatPacket = event.packet as S02PacketChat
+        if (event.getPacket() is S02PacketChat) {
+            val chatPacket = event.getPacket() as S02PacketChat
             val chatMessage = chatPacket.chatComponent.unformattedText
 
             if (antiLSetting) {
@@ -181,8 +181,8 @@ class HypixelMod :
             }
         }
 
-        if (event.packet is S45PacketTitle) {
-            val titlePacket = event.packet as S45PacketTitle
+        if (event.getPacket() is S45PacketTitle) {
+            val titlePacket = event.getPacket() as S45PacketTitle
 
             if (titlePacket.message != null) {
                 val title = titlePacket.message.formattedText
@@ -209,8 +209,8 @@ class HypixelMod :
             return
         }
 
-        if (event.packet is C0EPacketClickWindow) {
-            val packet = event.packet as C0EPacketClickWindow
+        if (event.getPacket() is C0EPacketClickWindow) {
+            val packet = event.getPacket() as C0EPacketClickWindow
             val itemname: String
 
             if (packet.clickedItem == null) {

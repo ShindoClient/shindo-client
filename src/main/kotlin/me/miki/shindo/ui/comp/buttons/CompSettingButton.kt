@@ -109,39 +109,39 @@ class CompSettingButton : CompControlTemplate {
         val descriptionY = titleY + 13f
 
         val title = nvgInstance.getLimitText(
-                titleSupplier.invoke(),
-                TEXT_TITLE_SIZE,
-                Fonts.MEDIUM,
-                availableTextWidth.coerceAtLeast(48f)
+            titleSupplier.invoke(),
+            TEXT_TITLE_SIZE,
+            Fonts.MEDIUM,
+            availableTextWidth.coerceAtLeast(48f)
         )
         var description = descriptionSupplier.invoke()
         description = if (!"null".equals(description, ignoreCase = true)) {
             nvgInstance.getLimitText(
-                    description,
-                    TEXT_DESCRIPTION_SIZE,
-                    Fonts.REGULAR,
-                    availableTextWidth.coerceAtLeast(48f)
+                description,
+                TEXT_DESCRIPTION_SIZE,
+                Fonts.REGULAR,
+                availableTextWidth.coerceAtLeast(48f)
             )
         } else {
             ""
         }
 
         nvgInstance.drawText(
-                title,
-                x + paddingLeft,
-                titleY,
-                paletteColors.getFontColor(ColorType.DARK),
-                TEXT_TITLE_SIZE,
-                Fonts.MEDIUM
+            title,
+            x + paddingLeft,
+            titleY,
+            paletteColors.getFontColor(ColorType.DARK),
+            TEXT_TITLE_SIZE,
+            Fonts.MEDIUM
         )
         if (description.isNotEmpty()) {
             nvgInstance.drawText(
-                    description,
-                    x + paddingLeft,
-                    descriptionY,
-                    paletteColors.getFontColor(ColorType.NORMAL),
-                    TEXT_DESCRIPTION_SIZE,
-                    Fonts.REGULAR
+                description,
+                x + paddingLeft,
+                descriptionY,
+                paletteColors.getFontColor(ColorType.NORMAL),
+                TEXT_DESCRIPTION_SIZE,
+                Fonts.REGULAR
             )
         }
 
@@ -150,12 +150,12 @@ class CompSettingButton : CompControlTemplate {
             if (!status.isNullOrEmpty()) {
                 val statusY = y + height - paddingVertical + 4f
                 nvgInstance.drawText(
-                        status,
-                        x + paddingLeft,
-                        statusY,
-                        statusColorSupplier!!.invoke(),
-                        TEXT_STATUS_SIZE,
-                        Fonts.MEDIUM
+                    status,
+                    x + paddingLeft,
+                    statusY,
+                    statusColorSupplier!!.invoke(),
+                    TEXT_STATUS_SIZE,
+                    Fonts.MEDIUM
                 )
             }
         }

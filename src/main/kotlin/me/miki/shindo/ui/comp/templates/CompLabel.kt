@@ -3,10 +3,11 @@ package me.miki.shindo.ui.comp.templates
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import java.awt.Color
+
 open class CompLabel(
-        x: Float = 0f,
-        y: Float = 0f,
-        text: String = ""
+    x: Float = 0f,
+    y: Float = 0f,
+    text: String = ""
 ) : CompDisplay(x, y) {
 
     private var text: String = text
@@ -80,12 +81,12 @@ open class CompLabel(
         if (shadow) {
             val shadowCol = shadowColor ?: Color(0, 0, 0, 100)
             nvgInstance.drawText(
-                    text,
-                    x + shadowOffset,
-                    getY() + shadowOffset,
-                    shadowCol,
-                    fontSize,
-                    font
+                text,
+                x + shadowOffset,
+                getY() + shadowOffset,
+                shadowCol,
+                fontSize,
+                font
             )
         }
 

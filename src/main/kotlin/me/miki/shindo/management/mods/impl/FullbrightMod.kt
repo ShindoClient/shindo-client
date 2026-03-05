@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventGamma
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -11,7 +11,7 @@ class FullbrightMod :
     Mod(TranslateText.FULLBRIGHT, TranslateText.FULLBRIGHT_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_FULLBRIGHT) {
     @EventTarget
     fun onGamma(event: EventGamma) {
-        event.gamma = 20f
+        event.setGamma(20f)
     }
 
     override fun onEnable() {

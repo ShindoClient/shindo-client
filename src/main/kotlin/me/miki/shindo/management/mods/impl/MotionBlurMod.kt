@@ -2,7 +2,7 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.injection.mixin.interfaces.client.shader.IMixinShaderGroup
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventShader
 import me.miki.shindo.management.event.impl.EventUpdateDisplay
 import me.miki.shindo.management.language.TranslateText

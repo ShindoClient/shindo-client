@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventClickMouse
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventTick
@@ -30,11 +30,11 @@ class CPSDisplayMod :
     @EventTarget
     fun onClickMouse(event: EventClickMouse) {
         if (Mouse.getEventButtonState()) {
-            if (event.button == 0) {
+            if (event.getButton() == 0) {
                 leftPresses.add(System.currentTimeMillis())
             }
 
-            if (event.button == 1) {
+            if (event.getButton() == 1) {
                 rightPresses.add(System.currentTimeMillis())
             }
         }

@@ -1,12 +1,10 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiNavigationHub
-import me.miki.shindo.ui.comp.layout.SettingsPanel.DensityMode
-import me.miki.shindo.ui.comp.layout.SettingsPanel.LayoutMode
 import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventPreRenderTick
 import me.miki.shindo.management.event.impl.EventToggleFullscreen
@@ -26,6 +24,7 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetti
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 import me.miki.shindo.ui.animation.GlobalAnimationSettings
+import me.miki.shindo.ui.comp.layout.SettingsPanel.LayoutMode
 import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -92,9 +91,6 @@ class InternalSettingsMod :
     @Property(type = PropertyType.COMBO, name = "Settings Layout")
     val settingsLayout: SettingsLayout = SettingsLayout.SINGLE_COLUMN
 
-    @Property(type = PropertyType.COMBO, name = "Settings Density")
-    val settingsDensity: SettingsDensity = SettingsDensity.AUTO
-
     @Property(type = PropertyType.COMBO, name = "Visual Preset")
     @JvmField
     val visualPreset: VisualPreset = VisualPreset.MODERN
@@ -106,11 +102,9 @@ class InternalSettingsMod :
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
     var notificationCorner: NotificationCorner = NotificationCorner.BOTTOM_RIGHT
+        get() = readEnumFromCombo(notificationCornerSetting, NotificationCorner.values(), field)
         set(corner) {
-            val combo = this.notificationCornerSetting
-            if (combo != null && corner.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions()[corner.ordinal])
-            }
+            writeEnumToCombo(this.notificationCornerSetting, corner)
             field = corner
         }
 
@@ -121,6 +115,7 @@ class InternalSettingsMod :
     private var fullscreenTime: Long = -1
     private var lastBorderlessState = false
     private var borderlessInitialized = false
+    private var lastModMenuOpenTime = 0L
 
     init {
         instance = this
@@ -133,8 +128,9 @@ class InternalSettingsMod :
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.keyCode == modMenuKeybindSetting) {
-            mc.displayGuiScreen(GuiNavigationHub(mc.currentScreen))
+        val keybind = getModMenuKeybindSetting()?.getKeyCode() ?: modMenuKeybindSetting
+        if (event.keyCode == keybind) {
+            mc.displayGuiScreen(Shindo.getInstance().shindoAPI.navigationHub)
         }
 
         if (event.keyCode == Keyboard.KEY_DOWN) {
@@ -174,14 +170,11 @@ class InternalSettingsMod :
     }
 
     fun getModuleLayout(): ModuleLayout {
-        return moduleLayout
+        return readEnumFromCombo(moduleLayoutSetting, ModuleLayout.values(), moduleLayout)
     }
 
     private val settingsLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "settingsLayout")
-
-    private val settingsDensitySetting: ComboSetting?
-        get() = getComboSetting(this, "settingsDensity")
 
     private val visualPresetSetting: ComboSetting?
         get() = getComboSetting(this, "visualPreset")
@@ -193,43 +186,23 @@ class InternalSettingsMod :
         get() = getComboSetting(this, "notificationCorner")
 
     var settingsLayoutMode: LayoutMode?
-        get() = if (settingsLayout == SettingsLayout.COMPACT_GRID)
-            LayoutMode.DOUBLE_COLUMN
-        else
-            LayoutMode.SINGLE_COLUMN
-        set(mode) {
-            val target =
-                if (mode == LayoutMode.DOUBLE_COLUMN)
-                    SettingsLayout.COMPACT_GRID
-                else
-                    SettingsLayout.SINGLE_COLUMN
-            val combo = this.settingsLayoutSetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions()[target.ordinal])
-            }
-        }
-
-    var settingsDensityMode: DensityMode?
-        get() = when (settingsDensity) {
-            SettingsDensity.COMPACT -> DensityMode.COMPACT
-            SettingsDensity.COMFORTABLE -> DensityMode.COMFORTABLE
-            SettingsDensity.AUTO -> DensityMode.AUTO
+        get() = when (readEnumFromCombo(settingsLayoutSetting, SettingsLayout.values(), settingsLayout)) {
+            SettingsLayout.DOUBLE_COLUMN -> LayoutMode.DOUBLE_COLUMN
+            SettingsLayout.ADAPTIVE_GRID -> LayoutMode.STAGGERED_COLUMNS
+            else -> LayoutMode.SINGLE_COLUMN
         }
         set(mode) {
             val target = when (mode) {
-                DensityMode.COMPACT -> SettingsDensity.COMPACT
-                DensityMode.COMFORTABLE -> SettingsDensity.COMFORTABLE
-                else -> SettingsDensity.AUTO
+                LayoutMode.DOUBLE_COLUMN -> SettingsLayout.DOUBLE_COLUMN
+                LayoutMode.STAGGERED_COLUMNS -> SettingsLayout.ADAPTIVE_GRID
+                else -> SettingsLayout.SINGLE_COLUMN
             }
-            val combo = this.settingsDensitySetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions()[target.ordinal])
-            }
+            writeEnumToCombo(this.settingsLayoutSetting, target)
         }
 
     var moduleGridColumns: Int
         get() {
-            if (Objects.requireNonNull<ModuleLayout?>(moduleLayout) == ModuleLayout.TWO_COLUMNS) {
+            if (Objects.requireNonNull<ModuleLayout?>(getModuleLayout()) == ModuleLayout.TWO_COLUMNS) {
                 return 2
             }
             return 1
@@ -237,30 +210,21 @@ class InternalSettingsMod :
         set(columns) {
             val normalized = max(1, min(columns, 2))
             val target = if (normalized == 2) ModuleLayout.TWO_COLUMNS else ModuleLayout.SINGLE_COLUMN
-            val combo = this.moduleLayoutSetting
-            if (combo != null && target.ordinal < combo.getOptions().size) {
-                combo.setOption(combo.getOptions()[target.ordinal])
-            }
+            writeEnumToCombo(this.moduleLayoutSetting, target)
         }
 
     fun getVisualPreset(): VisualPreset {
-        return visualPreset
+        return readEnumFromCombo(visualPresetSetting, VisualPreset.values(), visualPreset)
     }
 
     fun setVisualPreset(preset: VisualPreset?) {
         val target = preset ?: VisualPreset.MODERN
-        val combo = this.visualPresetSetting
-        if (combo != null && target.ordinal < combo.getOptions().size) {
-            combo.setOption(combo.getOptions()[target.ordinal])
-        }
+        writeEnumToCombo(this.visualPresetSetting, target)
     }
 
     fun setModuleLayout(layout: ModuleLayout?) {
         val target = layout ?: ModuleLayout.SINGLE_COLUMN
-        val combo = this.moduleLayoutSetting
-        if (combo != null && target.ordinal < combo.getOptions().size) {
-            combo.setOption(combo.getOptions()[target.ordinal])
-        }
+        writeEnumToCombo(this.moduleLayoutSetting, target)
     }
 
     val modThemeSetting: ComboSetting?
@@ -290,6 +254,24 @@ class InternalSettingsMod :
     fun getSoundsUISetting(): BooleanSetting? = getBooleanSetting(this, "soundsUISetting")
 
     fun getTextureOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "textureOptimizationSetting")
+
+    private fun <T : Enum<T>> readEnumFromCombo(combo: ComboSetting?, values: Array<T>, fallback: T): T {
+        if (combo == null) {
+            return fallback
+        }
+        val selected = combo.getOption() ?: return fallback
+        val index = combo.getOptions().indexOf(selected)
+        return if (index >= 0 && index < values.size) values[index] else fallback
+    }
+
+    private fun <T : Enum<T>> writeEnumToCombo(combo: ComboSetting?, value: T) {
+        if (combo == null) {
+            return
+        }
+        if (value.ordinal >= 0 && value.ordinal < combo.getOptions().size) {
+            combo.setOption(combo.getOptions()[value.ordinal])
+        }
+    }
 
     fun applyBorderlessOnStartup() {
         borderlessInitialized = true
@@ -379,7 +361,8 @@ class InternalSettingsMod :
 
     enum class SettingsLayout(displayName: String) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
-        COMPACT_GRID("Compact Grid");
+        DOUBLE_COLUMN("Double Column"),
+        ADAPTIVE_GRID("Adaptive Grid");
 
         private val displayName: String = displayName
 
@@ -389,16 +372,6 @@ class InternalSettingsMod :
     enum class ModuleLayout(displayName: String) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
         TWO_COLUMNS("Two Columns");
-
-        private val displayName: String = displayName
-
-        override fun getDisplayName(): String = displayName
-    }
-
-    enum class SettingsDensity(displayName: String) : PropertyEnum {
-        AUTO("Auto"),
-        COMPACT("Compact"),
-        COMFORTABLE("Comfortable");
 
         private val displayName: String = displayName
 

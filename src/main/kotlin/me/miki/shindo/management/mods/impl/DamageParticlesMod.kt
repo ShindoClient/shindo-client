@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventLivingUpdate
 import me.miki.shindo.management.event.impl.EventLoadWorld
 import me.miki.shindo.management.event.impl.EventRender3D
@@ -50,7 +50,7 @@ class DamageParticlesMod : Mod(
 
     @EventTarget
     fun onLivingUpdate(event: EventLivingUpdate) {
-        val entity = event.entity
+        val entity = event.getEntity()
 
         if (entity === this.mc.thePlayer) {
             return

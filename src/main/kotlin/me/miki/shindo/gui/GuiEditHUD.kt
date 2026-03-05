@@ -2,6 +2,8 @@ package me.miki.shindo.gui
 
 import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
+import me.miki.client_api.hud.HudLayoutService
+import me.miki.client_api.hud.AddonHudElement
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.event.impl.EventRender2D
@@ -111,6 +113,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                 Fonts.REGULAR
             )
 
+            // HUDs nativos (mods)
             for (m in mods) {
                 if (m.isToggled() && !m.isHide()) {
                     val topMost = mods.firstOrNull {
@@ -321,6 +324,43 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                     6.5f * m.getScale(),
                     2f,
                     palette.getBackgroundColor(ColorType.DARK, (m.animation.value * 255).toInt())
+                )
+            }
+
+            // HUDs de addons registrados via HudLayoutService
+            val hudLayoutService = Shindo.getInstance().serviceRegistry.get(HudLayoutService::class)
+            val addonHuds: List<AddonHudElement> = hudLayoutService?.getAll() ?: emptyList()
+
+            for (hud in addonHuds) {
+                if (!hud.isVisible()) continue
+
+                val hudX = hud.x.toInt()
+                val hudY = hud.y.toInt()
+                val hudWidth = hud.width.toInt().coerceAtLeast(10)
+                val hudHeight = hud.height.toInt().coerceAtLeast(10)
+
+                val isInside = MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    hudX,
+                    hudY,
+                    hudWidth,
+                    hudHeight
+                )
+
+                if (isInside && Mouse.isButtonDown(0)) {
+                    hud.x = mouseX.toFloat().coerceIn(0f, sr.scaledWidth - hudWidth.toFloat())
+                    hud.y = mouseY.toFloat().coerceIn(0f, sr.scaledHeight - hudHeight.toFloat())
+                }
+
+                // Apenas desenha uma borda simples para feedback de posição; o conteúdo
+                // real é desenhado pelo próprio HUD durante o render normal.
+                nvg.drawRect(
+                    hud.x,
+                    hud.y,
+                    hud.width,
+                    hud.height,
+                    Color(255, 255, 255, if (isInside) 120 else 60)
                 )
             }
         })

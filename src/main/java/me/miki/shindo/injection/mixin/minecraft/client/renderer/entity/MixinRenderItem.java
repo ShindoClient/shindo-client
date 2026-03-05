@@ -30,6 +30,7 @@ public abstract class MixinRenderItem {
 
     @Shadow
     public abstract void renderModel(IBakedModel model, int color);
+
     @Overwrite
     private void renderEffect(IBakedModel model) {
         int color = -8372020;

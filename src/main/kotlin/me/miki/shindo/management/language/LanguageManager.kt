@@ -39,6 +39,20 @@ class LanguageManager {
 
     fun getCurrentLanguage(): Language = currentLanguage
 
+    /**
+     * Retorna o texto traduzido para a chave, ou a chave se não houver tradução.
+     */
+    fun getText(key: String): String = translateMap[key] ?: key
+
+    /**
+     * Traduz com parâmetros (substitui {0}, {1}, etc).
+     */
+    fun getText(key: String, vararg args: Any): String {
+        var template = getText(key)
+        args.forEachIndexed { i, arg -> template = template.replace("{$i}", arg.toString()) }
+        return template
+    }
+
     fun setCurrentLanguage(lang: Language) {
         currentLanguage = lang
         loadMap(translateMap, lang.getId())

@@ -1,11 +1,9 @@
 package me.miki.shindo.injection.mixin.minecraft.entity;
 
 import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer;
 import me.miki.shindo.management.event.impl.EventLivingUpdate;
 import me.miki.shindo.management.mods.impl.SlowSwingMod;
 import me.miki.shindo.management.settings.impl.NumberSetting;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -53,13 +51,6 @@ public abstract class MixinEntityLivingBase extends Entity implements IMixinEnti
     private void mouseDelayFix(float partialTicks, CallbackInfoReturnable<Vec3> cir) {
         if ((EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
             cir.setReturnValue(super.getLook(partialTicks));
-        }
-    }
-
-    @Inject(method = "setRotationYawHead", at = @At("HEAD"))
-    private void onSetRotationYawHead(float yawHead, CallbackInfo ci) {
-        if ((Object) this instanceof EntityOtherPlayerMP && this instanceof IMixinEntityPlayer) {
-            ((IMixinEntityPlayer) this).getPlayerDataSamples().setRotationYawHead(yawHead);
         }
     }
 

@@ -1,9 +1,9 @@
 package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import java.awt.Color
 
 class CompMainMenuTextBox : CompTextBoxBase {
@@ -74,11 +74,11 @@ class CompMainMenuTextBox : CompTextBoxBase {
             val reversedText = StringBuilder(drawText).reverse().toString()
 
             addX =
-                    getWidth() - nvgInstance.getTextWidth(
-                            reversedText.substring(outTextSize - selectionEnd),
-                            halfHeight,
-                            Fonts.REGULAR
-                    ) - halfHeight - 5
+                getWidth() - nvgInstance.getTextWidth(
+                    reversedText.substring(outTextSize - selectionEnd),
+                    halfHeight,
+                    Fonts.REGULAR
+                ) - halfHeight - 5
         }
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 4f, backgroundColor)
@@ -97,11 +97,11 @@ class CompMainMenuTextBox : CompTextBoxBase {
 
             if (selectionWidth != 0f) {
                 nvgInstance.drawRect(
-                        getX() + offset + addX - 1,
-                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                        selectionWidth,
-                        nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR),
-                        Color(0, 135, 247)
+                    getX() + offset + addX - 1,
+                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
+                    selectionWidth,
+                    nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR),
+                    Color(0, 135, 247)
                 )
             }
         }
@@ -110,40 +110,40 @@ class CompMainMenuTextBox : CompTextBoxBase {
 
         if (icon != null && title != null) {
             nvgInstance.drawText(
-                    icon!!,
-                    getX() + 5,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                    fontColor,
-                    halfHeight,
-                    Fonts.LEGACYICON
+                icon!!,
+                getX() + 5,
+                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
+                fontColor,
+                halfHeight,
+                Fonts.LEGACYICON
             )
 
             if (rawText.isEmpty()) {
                 nvgInstance.save()
                 nvgInstance.translate(animation.value * 8 - 8, 0f)
                 nvgInstance.drawText(
-                        title!!,
-                        getX() + 16,
-                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(
-                                drawText,
-                                halfHeight,
-                                Fonts.REGULAR
-                        ) / 2) + 1,
-                        ColorUtils.applyAlpha(fontColor, (animation.value * 255).toInt()),
+                    title!!,
+                    getX() + 16,
+                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(
+                        drawText,
                         halfHeight,
                         Fonts.REGULAR
+                    ) / 2) + 1,
+                    ColorUtils.applyAlpha(fontColor, (animation.value * 255).toInt()),
+                    halfHeight,
+                    Fonts.REGULAR
                 )
                 nvgInstance.restore()
             }
         }
 
         nvgInstance.drawText(
-                drawText,
-                getX() + addX,
-                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2) + 1,
-                fontColor,
-                halfHeight,
-                Fonts.REGULAR
+            drawText,
+            getX() + addX,
+            getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2) + 1,
+            fontColor,
+            halfHeight,
+            Fonts.REGULAR
         )
 
         if (timer.delay(600)) {
@@ -151,11 +151,11 @@ class CompMainMenuTextBox : CompTextBoxBase {
 
             if (focused && cursorPosition == selectionEnd) {
                 nvgInstance.drawRect(
-                        getX() + addX + position,
-                        getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                        0.7f,
-                        10f,
-                        fontColor
+                    getX() + addX + position,
+                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
+                    0.7f,
+                    10f,
+                    fontColor
                 )
             }
 

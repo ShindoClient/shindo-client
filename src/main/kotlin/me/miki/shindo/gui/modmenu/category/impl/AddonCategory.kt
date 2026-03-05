@@ -3,6 +3,14 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.category.list.ModMenuListCardLayoutSpec
+import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
+import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageRenderContext
+import me.miki.shindo.gui.modmenu.category.impl.addon.AddonCategoryRenderer
+import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
+import me.miki.shindo.gui.modmenu.render.ModMenuListCardLayout
+import me.miki.shindo.gui.modmenu.render.ModMenuSettingsOverlayRenderer
+import me.miki.shindo.gui.modmenu.style.ModMenuMotion
 import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.ui.comp.chips.FilterChip
 import me.miki.shindo.ui.comp.layout.SettingsPanel
@@ -20,251 +28,85 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.management.addons.FailedAddonEntry
 import me.miki.shindo.utils.SearchUtils
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
+import me.miki.shindo.utils.TextUtils
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
 
-class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true) {
+class AddonCategory(parent: GuiModMenu) :
+    Category(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true),
+    ModMenuListPageContract {
 
     private val settingScroll = Scroll()
     private val settingsPanel = SettingsPanel()
     private val addonCardCache = ArrayList<AddonCard>()
     private val typeChips = ArrayList<FilterChip>()
     private val noColour = Color(0, 0, 0, 0)
+    private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
     private var currentType: AddonType = AddonType.ALL
-    private var openSetting = false
-    private var settingAnimation: Animation = SmoothStepAnimation(260, 1.0)
     private var currentAddon: Addon? = null
     private var contentHeight = 0f
+    private val resetSpinAnimation = SimpleAnimation(0f)
+    private var resetSpinTarget = 0f
+    private var currentLayoutColumns = 1
 
     override fun initGui() {
         currentType = AddonType.ALL
-        openSetting = false
-        settingAnimation = SmoothStepAnimation(260, 1.0)
-        settingAnimation.setValue(1.0)
+        detailTransition.reset()
+        resetSpinAnimation.value = 0f
+        resetSpinTarget = 0f
+        currentAddon = null
         settingsPanel.clear()
     }
 
     override fun initCategory() {
         scroll.resetAll()
-        openSetting = false
-        settingAnimation = SmoothStepAnimation(260, 1.0)
-        settingAnimation.setValue(1.0)
+        detailTransition.reset()
+        resetSpinAnimation.value = 0f
+        resetSpinTarget = 0f
+        currentAddon = null
         settingsPanel.clear()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
-        val addonManager: AddonManager = instance.addonManager
         val colorManager: ColorManager = instance.colorManager
         val palette: ColorPalette = colorManager.getPalette()
         val accentColor: AccentColor = colorManager.getCurrentColor()
 
         val scrollValue = scroll.getValue()
+        currentLayoutColumns = 1
 
-        settingAnimation.setDirection(if (openSetting) Direction.BACKWARDS else Direction.FORWARDS)
-
-        if (settingAnimation.isDone(Direction.FORWARDS)) {
+        detailTransition.update {
             setCanClose(true)
             currentAddon = null
             settingsPanel.clear()
         }
 
         nvg.save()
-        nvg.translate(-(600f - (settingAnimation.getValue().toFloat() * 600f)), 0f)
+        nvg.translate(detailTransition.getListTranslateX(), 0f)
 
         nvg.save()
         nvg.translate(0f, scrollValue)
 
-        val chipOffset = drawTypeChips(nvg, palette, accentColor, scrollValue, mouseX, mouseY)
-        rebuildAddonCards(addonManager, chipOffset)
-
-        for (card in addonCardCache) {
-            val cardY = getY() + card.y
-            val iconSize = LIST_ICON_SIZE
-            val iconX = card.x + LIST_ICON_LEFT_PADDING
-            val iconY = cardY + (card.height - iconSize) / 2f
-
-            val hasSettings = addonManager.getSettingByAddon(card.addon) != null
-            val toggleWidth = LIST_TOGGLE_WIDTH
-            val toggleHeight = LIST_TOGGLE_HEIGHT
-            val toggleX = card.x + card.width - toggleWidth - 18f
-            val toggleY = cardY + (card.height - toggleHeight) / 2f
-            val settingsX = toggleX - LIST_TOGGLE_GAP - SETTINGS_SIZE
-            val settingsY = cardY + (card.height - SETTINGS_SIZE) / 2f
-
-            card.hasSettings = hasSettings
-            card.settingsX = settingsX
-            card.settingsY = settingsY + scrollValue
-            card.toggleX = toggleX
-            card.toggleY = toggleY + scrollValue
-            card.toggleWidth = toggleWidth
-            card.toggleHeight = toggleHeight
-
-            val textSpacing = 10f
-            val textX = iconX + iconSize + textSpacing
-            val textRight = if (hasSettings) settingsX - LIST_TOGGLE_GAP else toggleX - LIST_TOGGLE_GAP
-            val textWidth = max(80f, textRight - textX)
-
-            val hovered =
-                MouseUtils.isInside(mouseX, mouseY, card.x, cardY + scrollValue, card.width, card.height) &&
-                        !MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            settingsX,
-                            settingsY + scrollValue,
-                            SETTINGS_SIZE,
-                            SETTINGS_SIZE
-                        ) &&
-                        !MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            toggleX,
-                            toggleY + scrollValue,
-                            toggleWidth,
-                            toggleHeight
-                        )
-
-
-            card.addon.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 16.0)
-            val hoverProgress = card.addon.hoverAnimation.value
-
-            val settingsHover = MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                settingsX,
-                settingsY + scrollValue,
-                SETTINGS_SIZE,
-                SETTINGS_SIZE
-            )
-
-            card.addon.settingsHoverAnimation.setAnimation(if (settingsHover) 1.0f else 0.0f, 18.0)
-
-            val settingsHoverAnimation = card.addon.settingsHoverAnimation.value
-
-            val overlayAlpha = (18 + (hoverProgress * 26)).toInt()
-            val fillAlpha = (220 + (hoverProgress * 32)).toInt()
-            val outlineAlpha = (hoverProgress * 220).toInt()
-
-            nvg.drawRoundedRect(
-                card.x,
-                cardY,
-                card.width,
-                card.height,
-                8f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), fillAlpha)
-            )
-
-            nvg.drawGradientRoundedRect(
-                card.x,
-                cardY,
-                card.width,
-                card.height,
-                8f,
-                ColorUtils.applyAlpha(accentColor.getColor1(), overlayAlpha),
-                ColorUtils.applyAlpha(accentColor.getColor2(), overlayAlpha)
-            )
-
-            if (outlineAlpha > 0) {
-                nvg.drawOutlineRoundedRect(
-                    card.x,
-                    cardY,
-                    card.width,
-                    card.height,
-                    8f,
-                    1.0f,
-                    ColorUtils.applyAlpha(accentColor.getColor2(), outlineAlpha)
-                )
-            }
-
-            card.addon.animation.setAnimation(if (card.addon.isToggled()) 1.0f else 0.0f, 16.0)
-            val toggleProgress = card.addon.animation.value
-
-            val icon = card.addon.icon
-            if (icon.isNotEmpty()) {
-                nvg.drawCenteredText(
-                    icon,
-                    iconX + iconSize / 2f,
-                    iconY + iconSize / 2f - LIST_ICON_FONT_OFFSET,
-                    palette.getFontColor(ColorType.DARK),
-                    LIST_ICON_FONT_SIZE,
-                    Fonts.LEGACYICON
-                )
-            }
-
-            val name = nvg.getLimitText(card.addon.name, 11.5f, Fonts.MEDIUM, textWidth)
-            nvg.drawText(name, textX, cardY + 14f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)
-
-            val description = nvg.getLimitText(card.addon.getDescription(), 8.5f, Fonts.REGULAR, textWidth)
-            nvg.drawText(
-                description,
-                textX,
-                cardY + 26f,
-                palette.getFontColor(ColorType.NORMAL),
-                8.5f,
-                Fonts.REGULAR
-            )
-
-            if (hasSettings) {
-                nvg.drawRoundedRect(
-                    settingsX,
-                    settingsY,
-                    SETTINGS_SIZE,
-                    SETTINGS_SIZE,
-                    5f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 180)
-                )
-
-                nvg.drawCenteredText(
-                    LegacyIcon.SETTINGS,
-                    settingsX + SETTINGS_SIZE / 2f - 1f,
-                    settingsY + SETTINGS_SIZE / 2f - 6f,
-                    palette.getFontColor(ColorType.DARK),
-                    14f,
-                    Fonts.LEGACYICON
-                )
-
-                nvg.drawGradientOutlineRoundedRect(
-                    settingsX,
-                    settingsY,
-                    SETTINGS_SIZE,
-                    SETTINGS_SIZE,
-                    5f,
-                    1.0f,
-                    ColorUtils.applyAlpha(accentColor.getColor1(), (settingsHoverAnimation * 255).toInt()),
-                    ColorUtils.applyAlpha(accentColor.getColor2(), (settingsHoverAnimation * 255).toInt())
-                )
-            }
-
-            val toggleRadius = toggleHeight / 2f
-            val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
-            nvg.drawRoundedRect(toggleX, toggleY, toggleWidth, toggleHeight, toggleRadius, toggleBase)
-
-            if (toggleProgress > 0f) {
-                nvg.drawGradientRoundedRect(
-                    toggleX,
-                    toggleY,
-                    toggleWidth,
-                    toggleHeight,
-                    toggleRadius,
-                    ColorUtils.applyAlpha(accentColor.getColor1(), (toggleProgress * 255).toInt()),
-                    ColorUtils.applyAlpha(accentColor.getColor2(), (toggleProgress * 255).toInt())
-                )
-            }
-
-            val knobSize = toggleHeight - 6f
-            val knobX = toggleX + 3f + toggleProgress * (toggleWidth - knobSize - 6f)
-            val knobY = toggleY + 3f
-            nvg.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
-        }
+        val listContext = ModMenuListPageRenderContext(
+            nvg = nvg,
+            palette = palette,
+            accent = accentColor,
+            mouseX = mouseX,
+            mouseY = mouseY,
+            partialTicks = partialTicks,
+            scrollOffset = scrollValue
+        )
+        val topFiltersBottom = drawTopFilters(listContext)
+        rebuildFilteredEntries(topFiltersBottom)
+        drawEntryCards(listContext, resolveCardLayoutSpec())
 
         nvg.restore()
 
@@ -288,93 +130,19 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         nvg.restore()
 
         nvg.save()
-        nvg.translate(settingAnimation.getValue().toFloat() * 600f, 0f)
+        nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
 
-        val activeAddon = currentAddon
-        if (activeAddon != null) {
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    getX().toFloat(),
-                    getY().toFloat(),
-                    getWidth().toFloat(),
-                    getHeight().toFloat()
-                )
-            ) {
-                settingScroll.onScroll()
-                settingScroll.onAnimation()
-            }
-
-            applySettingsPanelPreferences()
-
-            val headerX = getX() + 15f
-            val headerY = getY() + 15f
-            val headerWidth = getWidth() - 30f
-            val headerHeight = getHeight() - 30f
-
-            nvg.drawShadow(headerX, headerY, headerWidth, headerHeight, 12f, 7)
-            nvg.drawRoundedRect(
-                headerX,
-                headerY,
-                headerWidth,
-                headerHeight,
-                12f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+        if (isDetailsLayerOpen()) {
+            val detailContext = ModMenuListPageRenderContext(
+                nvg = nvg,
+                palette = palette,
+                accent = accentColor,
+                mouseX = mouseX,
+                mouseY = mouseY,
+                partialTicks = partialTicks,
+                scrollOffset = settingScroll.getValue()
             )
-            nvg.drawRoundedRect(
-                headerX + 1f,
-                headerY + 1f,
-                headerWidth - 2f,
-                headerHeight - 2f,
-                11f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
-            )
-
-            nvg.drawText(
-                LegacyIcon.CHEVRON_LEFT,
-                headerX + 10,
-                headerY + 8,
-                palette.getFontColor(ColorType.DARK),
-                13f,
-                Fonts.LEGACYICON
-            )
-            nvg.drawText(
-                activeAddon.name,
-                headerX + 27,
-                headerY + 9,
-                palette.getFontColor(ColorType.DARK),
-                13f,
-                Fonts.MEDIUM
-            )
-            nvg.drawText(
-                LegacyIcon.REFRESH,
-                headerX + headerWidth - 24,
-                headerY + 7.5f,
-                palette.getFontColor(ColorType.DARK),
-                13f,
-                Fonts.LEGACYICON
-            )
-
-            val contentX = getX() + 25f
-            val contentY = headerY + 32f
-            val contentWidth = getWidth() - 50f
-            val viewportHeight2 = headerHeight - 47f
-
-            nvg.save()
-            nvg.scissor(headerX + 5f, contentY - 5f, headerWidth - 10f, viewportHeight2 + 10f)
-            settingsPanel.draw(
-                mouseX,
-                mouseY,
-                partialTicks,
-                contentX,
-                contentY,
-                contentWidth,
-                viewportHeight2,
-                nvg,
-                palette,
-                settingScroll
-            )
-            nvg.restore()
+            drawDetailsLayer(detailContext)
         }
 
         nvg.restore()
@@ -387,7 +155,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         val instance = Shindo.getInstance()
         val addonManager = instance.addonManager
 
-        if (!openSetting && mouseButton == 0) {
+        if (detailTransition.isListInteractive() && mouseButton == 0) {
             for (chip in typeChips) {
                 if (chip.contains(mouseX, mouseY)) {
                     chip.click()
@@ -396,10 +164,21 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             }
         }
 
-        if (!openSetting) {
+        if (detailTransition.isListInteractive()) {
 
             for (card in addonCardCache) {
                 val cardY = getY() + card.y + scroll.getValue()
+                val controlLayout = ModMenuListCardLayout.build(
+                    cardX = card.x,
+                    cardY = cardY,
+                    cardWidth = card.width,
+                    cardHeight = card.height,
+                    settingsSize = SETTINGS_SIZE,
+                    settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
+                    toggleWidth = LIST_TOGGLE_WIDTH,
+                    toggleHeight = LIST_TOGGLE_HEIGHT,
+                    settingsGap = LIST_TOGGLE_GAP
+                )
 
                 if (!MouseUtils.isInside(mouseX, mouseY, card.x, cardY, card.width, card.height)) {
                     continue
@@ -412,54 +191,43 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
                         getY().toFloat(),
                         getWidth().toFloat(),
                         getHeight().toFloat()
-                    ) && mouseButton == 0
+                ) && mouseButton == 0
                 ) {
-                    val settingsX = card.settingsX
-                    val settingsY = card.settingsY
-                    val toggleX = card.toggleX
-                    val toggleY = card.toggleY
+                    val addon = card.addon
 
-                    if (MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            settingsX,
-                            settingsY,
-                            SETTINGS_SIZE,
-                            SETTINGS_SIZE
-                        ) && !openSetting
-                    ) {
-                        val settings: ArrayList<Setting>? = addonManager.getSettingByAddon(card.addon)
+                    if (!card.isFailed && addon != null && controlLayout.isSettingsHit(mouseX, mouseY) && detailTransition.isListInteractive()) {
+                        val settings: ArrayList<Setting>? = addonManager.getSettingByAddon(addon)
                         if (settings != null) {
                             settingsPanel.buildEntries(settings)
                             settingScroll.resetAll()
-                            currentAddon = card.addon
-                            openSetting = true
+                            currentAddon = addon
+                            detailTransition.open()
                             setCanClose(false)
                         }
                         continue
                     }
 
-                    if (MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            toggleX,
-                            toggleY,
-                            card.toggleWidth,
-                            card.toggleHeight
-                        )
-                    ) {
-                        card.addon.toggle()
+                    if (!card.isFailed && addon != null && addon.showToggle && controlLayout.isToggleHit(mouseX, mouseY)) {
+                        addon.toggle()
                     }
                     continue
                 }
             }
         }
 
-        if (openSetting && settingAnimation.isDone(Direction.BACKWARDS)) {
+        if (detailTransition.isDetailsInteractive()) {
             applySettingsPanelPreferences()
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + 22f, getY() + 20f, 18f, 18f) && mouseButton == 0) {
-                openSetting = false
-                settingsPanel.clear()
+            val overlayLayout = ModMenuSettingsOverlayRenderer.computeLayout(
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            )
+
+            val backX = overlayLayout.panelX + 10f
+            val backY = overlayLayout.headerIconY
+            if (MouseUtils.isInside(mouseX, mouseY, backX - 3f, backY - 3f, 20f, 20f) && mouseButton == 0) {
+                detailTransition.close()
                 return
             }
             val x = getX() - 32
@@ -467,28 +235,18 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             val width = getWidth() + 32
             val height = getHeight() + 31
             if (!MouseUtils.isInside(mouseX, mouseY, x - 5f, y - 5f, width + 10f, height + 10f) && mouseButton == 0) {
-                openSetting = false
-                settingsPanel.clear()
+                detailTransition.close()
                 return
             }
-
-            this.getX() + 15f
-            val headerY = this.getY() + 15f
-            this.getWidth() - 30f
-            val headerHeight = this.getHeight() - 30f
-            val contentX = this.getX() + 25f
-            val contentY = headerY + 32f
-            val contentWidth = this.getWidth() - 50f
-            val viewportHeight = headerHeight - 47f
 
             if (settingsPanel.mouseClicked(
                     mouseX,
                     mouseY,
                     mouseButton,
-                    contentX,
-                    contentY,
-                    contentWidth,
-                    viewportHeight,
+                    overlayLayout.contentX,
+                    overlayLayout.contentY,
+                    overlayLayout.contentWidth,
+                    overlayLayout.contentHeight,
                     settingScroll
                 )
             ) {
@@ -498,47 +256,285 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
             if (MouseUtils.isInside(
                     mouseX,
                     mouseY,
-                    this.getX() + this.getWidth() - 41f,
-                    this.getY() + 21f,
+                    overlayLayout.panelX + overlayLayout.panelWidth - 26f,
+                    overlayLayout.headerIconY,
                     16f,
                     16f
                 ) && mouseButton == 0
             ) {
                 settingsPanel.resetSettings()
+                resetSpinTarget += 360f
             }
         }
 
-        if (openSetting && mouseButton == 3) {
-            openSetting = false
-            settingsPanel.clear()
+        if (isDetailsLayerOpen() && mouseButton == 3) {
+            detailTransition.close()
         }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (currentAddon != null) {
+        if (currentAddon != null && detailTransition.isDetailsInteractive()) {
             applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (currentAddon != null) {
+        if (currentAddon != null && detailTransition.isDetailsInteractive()) {
             applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
         }
 
-        if (openSetting && keyCode == Keyboard.KEY_ESCAPE) {
-            openSetting = false
-            settingsPanel.clear()
+        if (isDetailsLayerOpen() && keyCode == Keyboard.KEY_ESCAPE) {
+            detailTransition.close()
             return
         }
 
-        if (!openSetting) {
+        if (detailTransition.isListInteractive()) {
             scroll.onKey(keyCode)
             if (keyCode != Keyboard.KEY_DOWN && keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_ESCAPE) {
                 getSearchBox().setFocused(true)
             }
         }
+    }
+
+    override fun drawTopFilters(context: ModMenuListPageRenderContext): Float {
+        return drawTypeChips(
+            nvg = context.nvg,
+            palette = context.palette,
+            accentColor = context.accent,
+            scrollOffset = context.scrollOffset,
+            mouseX = context.mouseX,
+            mouseY = context.mouseY
+        )
+    }
+
+    override fun rebuildFilteredEntries(topFiltersBottom: Float) {
+        rebuildAddonCards(Shindo.getInstance().addonManager, topFiltersBottom)
+    }
+
+    override fun resolveCardLayoutSpec(): ModMenuListCardLayoutSpec {
+        if (addonCardCache.isNotEmpty()) {
+            val first = addonCardCache[0]
+            return ModMenuListCardLayoutSpec(
+                columns = 1,
+                cardWidth = first.width,
+                cardHeight = first.height,
+                spacingX = 0f,
+                spacingY = 14f
+            )
+        }
+
+        return ModMenuListCardLayoutSpec(
+            columns = 1,
+            cardWidth = getWidth() - 30f,
+            cardHeight = LIST_CARD_HEIGHT,
+            spacingX = 0f,
+            spacingY = 14f
+        )
+    }
+
+    override fun drawEntryCards(context: ModMenuListPageRenderContext, layout: ModMenuListCardLayoutSpec) {
+        if (addonCardCache.isEmpty()) {
+            context.nvg.drawCenteredText(
+                TranslateText.NONE.getText(),
+                getX() + getWidth() / 2f,
+                getY() + 86f,
+                context.palette.getFontColor(ColorType.NORMAL),
+                10f,
+                Fonts.REGULAR
+            )
+            return
+        }
+
+        val addonManager = Shindo.getInstance().addonManager
+
+        for (card in addonCardCache) {
+            val addon = card.addon
+            val cardY = getY() + card.y
+            val isExternal = !card.isFailed && addon != null && addon.isBuiltIn.not()
+            val indicatorWidth = if (isExternal || card.isFailed) LOAD_INDICATOR_WIDTH else 0f
+            val iconX = card.x + indicatorWidth + LIST_ICON_LEFT_PADDING
+            val iconY = cardY + (card.height - LIST_ICON_SIZE) / 2f
+
+            val showToggleForCard = !card.isFailed && addon != null && addon.showToggle
+            val hasSettings = !card.isFailed && addon != null && addonManager.getSettingByAddon(addon) != null
+            val controlLayout = ModMenuListCardLayout.build(
+                cardX = card.x,
+                cardY = cardY,
+                cardWidth = card.width,
+                cardHeight = card.height,
+                settingsSize = SETTINGS_SIZE,
+                settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
+                toggleWidth = LIST_TOGGLE_WIDTH,
+                toggleHeight = LIST_TOGGLE_HEIGHT,
+                settingsGap = LIST_TOGGLE_GAP
+            )
+            val hitboxLayout = controlLayout.withOffset(context.scrollOffset)
+
+            card.hasSettings = hasSettings
+
+            val textX = iconX + LIST_ICON_SIZE + 10f
+            val textRight = when {
+                card.isFailed -> card.x + card.width - 18f
+                hasSettings -> controlLayout.settingsX - LIST_TOGGLE_GAP
+                showToggleForCard -> controlLayout.toggleX - LIST_TOGGLE_GAP
+                else -> card.x + card.width - 18f
+            }
+            val textWidth = max(80f, textRight - textX)
+
+            val hovered = hitboxLayout.isBodyHit(
+                context.mouseX,
+                context.mouseY,
+                card.x,
+                cardY + context.scrollOffset,
+                card.width,
+                card.height
+            )
+
+            val hoverProgress = if (card.isFailed || addon == null) {
+                0f
+            } else {
+                addon.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
+                addon.hoverAnimation.value
+            }
+
+            val settingsHover = hasSettings && hitboxLayout.isSettingsHit(context.mouseX, context.mouseY)
+            if (!card.isFailed && addon != null) {
+                addon.settingsHoverAnimation.setAnimation(if (settingsHover) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
+            }
+            val settingsHoverAnimation = if (card.isFailed || addon == null) 0f else addon.settingsHoverAnimation.value
+
+            AddonCategoryRenderer.drawCardShell(
+                nvg = context.nvg,
+                palette = context.palette,
+                accent = context.accent,
+                x = card.x,
+                y = cardY,
+                width = card.width,
+                height = card.height,
+                hoverProgress = hoverProgress,
+                indicatorWidth = indicatorWidth,
+                failed = card.isFailed
+            )
+
+            if (card.isFailed) {
+                val failedName = context.nvg.getLimitText(
+                    TextUtils.stripUnicodeAccents(card.failedEntry!!.jarFileName),
+                    11.5f,
+                    Fonts.MEDIUM,
+                    textWidth
+                )
+                val failedDesc = context.nvg.getLimitText("Falhou ao carregar", 8.5f, Fonts.REGULAR, textWidth)
+                AddonCategoryRenderer.drawFailedText(
+                    nvg = context.nvg,
+                    palette = context.palette,
+                    textX = textX,
+                    cardY = cardY,
+                    failedName = failedName,
+                    failedDescription = failedDesc
+                )
+                continue
+            }
+
+            if (addon == null) {
+                continue
+            }
+            addon.animation.setAnimation(if (addon.isToggled()) 1.0f else 0.0f, ModMenuMotion.CARD_TOGGLE_SPEED)
+            val toggleProgress = addon.animation.value
+
+            val safeName = TextUtils.stripUnicodeAccents(addon.name)
+            val name = context.nvg.getLimitText(safeName, 11.5f, Fonts.MEDIUM, textWidth)
+            val safeDesc = TextUtils.stripUnicodeAccents(addon.getDescription())
+            val description = context.nvg.getLimitText(safeDesc, 8.5f, Fonts.REGULAR, textWidth)
+            AddonCategoryRenderer.drawAddonIdentity(
+                nvg = context.nvg,
+                palette = context.palette,
+                icon = addon.icon,
+                iconCenterX = iconX + LIST_ICON_SIZE / 2f,
+                iconCenterY = iconY + LIST_ICON_SIZE / 2f - LIST_ICON_FONT_OFFSET,
+                name = name,
+                textX = textX,
+                cardY = cardY,
+                description = description,
+                builtIn = addon.isBuiltIn
+            )
+
+            AddonCategoryRenderer.drawCardControls(
+                nvg = context.nvg,
+                palette = context.palette,
+                accent = context.accent,
+                hasSettings = hasSettings,
+                settingsX = controlLayout.settingsX,
+                settingsY = controlLayout.settingsY,
+                settingsSize = SETTINGS_SIZE,
+                settingsHoverProgress = settingsHoverAnimation,
+                showToggle = showToggleForCard,
+                toggleX = controlLayout.toggleX,
+                toggleY = controlLayout.toggleY,
+                toggleWidth = controlLayout.toggleWidth,
+                toggleHeight = controlLayout.toggleHeight,
+                toggleProgress = toggleProgress
+            )
+        }
+    }
+
+    override fun isDetailsLayerOpen(): Boolean {
+        return currentAddon != null
+    }
+
+    override fun drawDetailsLayer(context: ModMenuListPageRenderContext) {
+        val activeAddon = currentAddon ?: return
+
+        if (detailTransition.isDetailsInteractive() && MouseUtils.isInside(
+                context.mouseX,
+                context.mouseY,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat()
+            )
+        ) {
+            settingScroll.onScroll()
+            settingScroll.onAnimation()
+        }
+
+        applySettingsPanelPreferences()
+        ModMenuSettingsOverlayRenderer.drawBackdrop(
+            nvg = context.nvg,
+            palette = context.palette,
+            viewportX = getX().toFloat(),
+            viewportY = getY().toFloat(),
+            viewportWidth = getWidth().toFloat(),
+            viewportHeight = getHeight().toFloat()
+        )
+        val layout = ModMenuSettingsOverlayRenderer.computeLayout(
+            getX().toFloat(),
+            getY().toFloat(),
+            getWidth().toFloat(),
+            getHeight().toFloat()
+        )
+
+        resetSpinAnimation.setAnimation(resetSpinTarget, 20.0)
+        ModMenuSettingsOverlayRenderer.drawChrome(
+            nvg = context.nvg,
+            palette = context.palette,
+            layout = layout,
+            title = TextUtils.stripUnicodeAccents(activeAddon.name),
+            resetRotation = resetSpinAnimation.value,
+            mouseX = context.mouseX,
+            mouseY = context.mouseY
+        )
+        ModMenuSettingsOverlayRenderer.drawSettingsPanel(
+            nvg = context.nvg,
+            palette = context.palette,
+            panel = settingsPanel,
+            layout = layout,
+            scroll = settingScroll,
+            mouseX = context.mouseX,
+            mouseY = context.mouseY,
+            partialTicks = context.partialTicks
+        )
     }
 
 
@@ -571,7 +567,7 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
             val active = type == currentType
             val hovered =
-                !openSetting && MouseUtils.isInside(
+                detailTransition.isListInteractive() && MouseUtils.isInside(
                     mouseX,
                     mouseY,
                     currentX,
@@ -626,6 +622,13 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
         )
     }
 
+    private fun filterFailedAddon(failed: FailedAddonEntry): Boolean {
+        return getSearchBox().getText().isNotEmpty() && !SearchUtils.isSimilar(
+            failed.jarFileName,
+            getSearchBox().getText()
+        )
+    }
+
     private fun collectVisibleAddons(addonManager: AddonManager): ArrayList<Addon> {
         val visible = ArrayList<Addon>()
         for (addon in addonManager.addons) {
@@ -637,25 +640,24 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
     }
 
     private data class AddonCard(
-        val addon: Addon,
+        val addon: Addon?,
+        val failedEntry: FailedAddonEntry?,
         val x: Float,
         val y: Float,
         val width: Float,
         val height: Float,
-        var toggleX: Float = 0f,
-        var toggleY: Float = 0f,
-        var toggleWidth: Float = 0f,
-        var toggleHeight: Float = 0f,
-        var settingsX: Float = 0f,
-        var settingsY: Float = 0f,
         var hasSettings: Boolean = false
-    )
+    ) {
+        val isFailed: Boolean get() = failedEntry != null
+    }
 
     private fun applySettingsPanelPreferences() {
         val settings = InternalSettingsMod.instance
-        settingsPanel.setStyle(ADDON_SETTINGS_PANEL_STYLE)
-        settingsPanel.setLayoutMode(settings.settingsLayoutMode)
-        settingsPanel.setDensityMode(settings.settingsDensityMode)
+        ModMenuSettingsOverlayRenderer.configureSettingsPanel(
+            panel = settingsPanel,
+            panelStyle = ADDON_SETTINGS_PANEL_STYLE,
+            layoutMode = settings.settingsLayoutMode
+        )
     }
 
     private fun rebuildAddonCards(addonManager: AddonManager, startOffset: Float) {
@@ -669,11 +671,18 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
         for (addon in addonManager.addons) {
             if (filterAddon(addon)) continue
-
             val cardX = getX() + 15f
-            addonCardCache.add(AddonCard(addon, cardX, rowY, availableWidth, cardHeight))
-
+            addonCardCache.add(AddonCard(addon, null, cardX, rowY, availableWidth, cardHeight))
             rowY += cardHeight + spacingY
+        }
+
+        if (currentType == AddonType.ALL) {
+            for (failed in addonManager.failedAddons) {
+                if (filterFailedAddon(failed)) continue
+                val cardX = getX() + 15f
+                addonCardCache.add(AddonCard(null, failed, cardX, rowY, availableWidth, cardHeight))
+                rowY += cardHeight + spacingY
+            }
         }
 
         if (addonCardCache.isEmpty()) {
@@ -683,17 +692,17 @@ class AddonCategory(parent: GuiModMenu) : Category(parent, TranslateText.ADDONS,
 
         val last = addonCardCache[addonCardCache.size - 1]
         val lastBottom = last.y + last.height
-
-        contentHeight = max(0f, lastBottom - 13F)
-
+        contentHeight = max(0f, lastBottom - 13f)
     }
 
     private companion object {
         const val TYPE_CHIP_GAP = 8f
+        const val LOAD_INDICATOR_WIDTH = 4f
         const val LIST_CARD_HEIGHT = 51.84f
         const val LIST_TOGGLE_WIDTH = 44f
         const val LIST_TOGGLE_HEIGHT = 18f
         const val LIST_TOGGLE_GAP = 6f
+        const val ADDON_SETTINGS_PADDING = 18f
         const val LIST_ICON_SIZE = 26f
         const val LIST_ICON_LEFT_PADDING = 20f
         const val LIST_ICON_FONT_SIZE = 24f

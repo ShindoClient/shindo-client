@@ -1,6 +1,6 @@
 package me.miki.shindo.management.notification
 
-import me.miki.shindo.management.event.EventTarget
+import me.miki.client_api.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderNotification
 import java.util.concurrent.LinkedBlockingQueue
 

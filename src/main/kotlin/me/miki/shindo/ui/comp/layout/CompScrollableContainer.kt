@@ -7,10 +7,10 @@ import me.miki.shindo.utils.mouse.Scroll
 import kotlin.math.max
 
 open class CompScrollableContainer(
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = 0f,
-        height: Float = 0f
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
 ) : CompSurfaceTemplate(x, y, width, height) {
 
     data class ScrollViewport(val x: Float, val y: Float, val width: Float, val height: Float)
@@ -19,9 +19,10 @@ open class CompScrollableContainer(
     private var innerPadding = 18f
     private var contentHeight = 0f
     private var scrollbarGutter = 12f
+    private var themeScrollbarOnly = false
     private var contentRenderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)? = null
     private var contentRendererWithViewport: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)? =
-            null
+        null
     private var lastViewport = ScrollViewport(0f, 0f, 0f, 0f)
 
     init {
@@ -50,6 +51,11 @@ open class CompScrollableContainer(
         return this
     }
 
+    fun setThemeScrollbarOnly(enabled: Boolean): CompScrollableContainer {
+        themeScrollbarOnly = enabled
+        return this
+    }
+
     fun getInnerPadding(): Float = innerPadding
 
     fun getScroll(): Scroll = scroll
@@ -66,14 +72,14 @@ open class CompScrollableContainer(
     }
 
     fun setContentRenderer(
-            renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
+        renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
     ): CompScrollableContainer {
         contentRenderer = renderer
         return this
     }
 
     fun setContentRendererWithViewport(
-            renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)?
+        renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)?
     ): CompScrollableContainer {
         contentRendererWithViewport = renderer
         return this
@@ -86,11 +92,11 @@ open class CompScrollableContainer(
     }
 
     fun render(
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float,
-            contentHeight: Float,
-            renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        contentHeight: Float,
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
     ) {
         setContentHeight(contentHeight)
         setContentRenderer(renderer)
@@ -98,11 +104,11 @@ open class CompScrollableContainer(
     }
 
     fun renderWithViewport(
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float,
-            contentHeight: Float,
-            renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        contentHeight: Float,
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
     ) {
         setContentHeight(contentHeight)
         setContentRendererWithViewport(renderer)
@@ -130,7 +136,15 @@ open class CompScrollableContainer(
 
         updateScrollBounds(viewport.height)
 
-        if (scroll.maxScroll > 0f && MouseUtils.isInside(mouseX, mouseY, fullViewport.x, fullViewport.y, fullViewport.width, fullViewport.height)) {
+        if (scroll.maxScroll > 0f && MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                fullViewport.x,
+                fullViewport.y,
+                fullViewport.width,
+                fullViewport.height
+            )
+        ) {
             scroll.onScroll()
         }
         scroll.onAnimation()
@@ -147,24 +161,25 @@ open class CompScrollableContainer(
         nvg.restore()
 
         nvg.drawScrollbar(
-                fullViewport.x,
-                fullViewport.y,
-                fullViewport.width,
-                fullViewport.height,
-                contentHeight,
-                scrollValue,
-                palette,
-                accent,
-                24f
+            fullViewport.x,
+            fullViewport.y,
+            fullViewport.width,
+            fullViewport.height,
+            contentHeight,
+            scrollValue,
+            palette,
+            accent,
+            24f,
+            !themeScrollbarOnly
         )
     }
 
     protected open fun drawScrollableContent(
-            mouseX: Int,
-            mouseY: Int,
-            partialTicks: Float,
-            scrollValue: Float,
-            viewport: ScrollViewport
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        scrollValue: Float,
+        viewport: ScrollViewport
     ) {
         drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue)
     }

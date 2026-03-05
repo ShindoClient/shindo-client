@@ -30,6 +30,7 @@ public abstract class MixinLayerHeldItem {
     public MixinLayerHeldItem(RendererLivingEntity<?> rendererLivingEntity) {
         this.livingEntityRenderer = rendererLivingEntity;
     }
+
     @Overwrite
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float f, float g, float partialTicks, float h, float i, float j, float scale) {
 

@@ -1068,7 +1068,8 @@ class NanoVGManager {
         scrollValue: Float,
         palette: ColorPalette,
         accent: AccentColor,
-        minHandleHeight: Float
+        minHandleHeight: Float,
+        useAccentHandle: Boolean = true
     ) {
         val viewportHeight = max(0f, baseHeight)
         val viewportWidth = max(0f, baseWidth)
@@ -1104,15 +1105,26 @@ class NanoVGManager {
         val scrollProgress = if (maxScroll <= 0f) 0f else scrollOffset / maxScroll
         val handleY = trackY + (trackHeight - handleHeight) * scrollProgress
 
-        drawGradientRoundedRect(
-            trackX - 1f,
-            handleY,
-            trackWidth + 2f,
-            handleHeight,
-            3f,
-            ColorUtils.applyAlpha(accent.getColor1(), 190),
-            ColorUtils.applyAlpha(accent.getColor2(), 190)
-        )
+        if (useAccentHandle) {
+            drawGradientRoundedRect(
+                trackX - 1f,
+                handleY,
+                trackWidth + 2f,
+                handleHeight,
+                3f,
+                ColorUtils.applyAlpha(accent.getColor1(), 190),
+                ColorUtils.applyAlpha(accent.getColor2(), 190)
+            )
+        } else {
+            drawRoundedRect(
+                trackX - 1f,
+                handleY,
+                trackWidth + 2f,
+                handleHeight,
+                3f,
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
+            )
+        }
     }
 
     fun drawContainer(x: Float, y: Float, width: Float, height: Float, radius: Float, palette: ColorPalette) {
