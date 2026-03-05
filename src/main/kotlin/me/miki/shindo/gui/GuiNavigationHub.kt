@@ -39,8 +39,12 @@ class GuiNavigationHub() : GuiScreen(), IShindoScreen {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvg = Shindo.getInstance().nanoVGManager ?: return
         val progress = introAnimation.getValueFloat().coerceIn(0f, 1f)
-        nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
-        drawNanoVG(nvg, mouseX, mouseY, progress)
+
+
+        nvg.setupAndDraw ( Runnable {
+            nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
+            drawNanoVG(nvg, mouseX, mouseY, progress)
+        })
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

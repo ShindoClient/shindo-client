@@ -152,19 +152,12 @@ class ShindoAPI {
 
         try {
             val sessionType = session.sessionType
-            if (sessionType != null && (sessionType.equals(Session.Type.MOJANG) || sessionType.equals(Session.Type.LEGACY))) {
+            val token = session.token
+            if (sessionType != null && (sessionType.equals(Session.Type.MOJANG) || sessionType.equals(Session.Type.LEGACY)) && token.isNotEmpty()) {
                 return AccountType.MICROSOFT
             }
         } catch (e: Exception) {
             ShindoLogger.error("An error occurred while trying to get the session type", e)
-        }
-
-        try {
-            val token = session.token
-            if (token.isNotEmpty()) {
-                return AccountType.MICROSOFT
-            }
-        } catch (e: Exception) {
             ShindoLogger.error("An error occurred while trying to get the token", e)
         }
 
