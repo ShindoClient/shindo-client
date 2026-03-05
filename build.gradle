@@ -44,17 +44,16 @@ minecraft {
     tweakClass = "me.miki.shindo.injection.mixin.ShindoTweaker"
     mappings = "stable_22"
 
-    // JVM args do runClient
     clientJvmArgs = [
-            "-Xmx4G",                    // máximo de memória
-            "-Xms1G",                    // inicialização
-            "-XX:+UseG1GC",              // G1GC
+            "-Xmx4G",
+            "-Xms1G",
+            "-XX:+UseG1GC",
             "-XX:MaxGCPauseMillis=200",
-            "-Dorg.lwjgl.util.Debug=true",      // LWJGL verbose
+            "-Dorg.lwjgl.util.Debug=true",
             "-Dorg.lwjgl.util.DebugLevel=DEBUG",
-            "-Dlog4j.debug=true",        // log4j debug
-            "-Dminecraft.applet.TargetDirectory=run", // força pasta run
-            "-Dshindo.debug=true"        // flag custom para o client usar internamente
+            "-Dlog4j.debug=true",
+            "-Dminecraft.applet.TargetDirectory=run",
+            "-Dshindo.debug=true"
     ]
 }
 
@@ -177,7 +176,6 @@ runClient {
     ]
 }
 
-// --- JAR buildado ---
 jar {
     dependsOn configurations.embed
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
