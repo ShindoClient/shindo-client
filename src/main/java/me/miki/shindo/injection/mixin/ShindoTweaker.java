@@ -1,6 +1,9 @@
 package me.miki.shindo.injection.mixin;
 
+//import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import me.miki.shindo.injection.transformer.LwjglTransformer;
+//import me.miki.shindo.injection.transformer.MixinExtrasFixer;
+//import me.miki.shindo.injection.transformer.SpongeForgeFixer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -49,8 +52,11 @@ public class ShindoTweaker implements ITweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
 
         classLoader.registerTransformer(LwjglTransformer.class.getName());
+//        classLoader.registerTransformer(SpongeForgeFixer.class.getName());
+//        classLoader.registerTransformer(MixinExtrasFixer.class.getName());
 
         MixinBootstrap.init();
+//        MixinExtrasBootstrap.init();
 
         MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
         Mixins.addConfiguration("mixins.shindo.json");
