@@ -2,14 +2,12 @@ package me.miki.shindo
 
 import me.miki.shindo.addon.api.hud.HudLayoutService
 import me.miki.shindo.addon.api.hypixel.HypixelApiProvider
-import me.miki.shindo.addon.api.scoreboard.ScoreboardService
 import me.miki.shindo.addon.api.server.ServerInfoService
 import me.miki.shindo.addon.api.settings.AddonSettingsService
 import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
 import me.miki.shindo.addon.runtime.hud.AddonHudLayoutServiceImpl
 import me.miki.shindo.api.hypixel.HypixelApiProviderImpl
-import me.miki.shindo.api.scoreboard.ScoreboardServiceImpl
 import me.miki.shindo.api.server.ServerInfoServiceImpl
 import me.miki.shindo.addon.runtime.services.ClientServiceRegistry
 import me.miki.shindo.addon.runtime.settings.AddonSettingsServiceImpl
@@ -166,7 +164,6 @@ class Shindo private constructor() {
 
         serviceRegistry = ClientServiceRegistry().apply {
             register(HypixelApiProvider::class, HypixelApiProviderImpl())
-            register(ScoreboardService::class, ScoreboardServiceImpl())
             register(HudLayoutService::class, AddonHudLayoutServiceImpl())
             register(ServerInfoService::class, ServerInfoServiceImpl())
             register(AddonSettingsService::class, AddonSettingsServiceImpl())
