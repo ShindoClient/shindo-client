@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.mainmenu.impl.welcome
 
+import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
@@ -61,6 +62,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
+        Blur.drawBlur(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f);
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
         nvg.drawCenteredText("Choose a theme", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
         nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)

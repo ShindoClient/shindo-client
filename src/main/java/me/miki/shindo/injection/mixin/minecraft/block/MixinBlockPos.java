@@ -13,66 +13,105 @@ public class MixinBlockPos extends Vec3i {
         super(xIn, yIn, zIn);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos up() {
         return new BlockPos(this.getX(), this.getY() + 1, this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos up(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX(), this.getY() + offset, this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos down() {
         return new BlockPos(this.getX(), this.getY() - 1, this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos down(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX(), this.getY() - offset, this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos north() {
         return new BlockPos(this.getX(), this.getY(), this.getZ() - 1);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos north(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX(), this.getY(), this.getZ() - offset);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos south() {
         return new BlockPos(this.getX(), this.getY(), this.getZ() + 1);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos south(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX(), this.getY(), this.getZ() + offset);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos west() {
         return new BlockPos(this.getX() - 1, this.getY(), this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos west(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX() - offset, this.getY(), this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos east() {
         return new BlockPos(this.getX() + 1, this.getY(), this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos east(int offset) {
         return offset == 0 ? (BlockPos) (Object) this : new BlockPos(this.getX() + offset, this.getY(), this.getZ());
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public BlockPos offset(EnumFacing direction) {
         return new BlockPos(this.getX() + direction.getFrontOffsetX(), this.getY() + direction.getFrontOffsetY(), this.getZ() + direction.getFrontOffsetZ());

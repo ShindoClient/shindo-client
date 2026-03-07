@@ -381,15 +381,7 @@ open class HUDMod : Mod {
         }
         if (isModern) {
             nvg?.drawRoundedRect(x, y, lastWidth, lastHeight, radius, Color(0, 0, 0, 110))
-            nvg?.drawOutlineRoundedRect(
-                x - 0.5f,
-                y - 0.5f,
-                lastWidth + 1,
-                lastHeight + 1,
-                radius + 0.5f,
-                0.7f,
-                Color(255, 255, 255, 110)
-            )
+            nvg?.drawOutlineRoundedRect(x, y, lastWidth, lastHeight, radius, .5f, Color(255, 255, 255, 80))
         }
     }
 
@@ -445,9 +437,15 @@ open class HUDMod : Mod {
     }
 
     fun drawCenteredText(text: String, addX: Float, addY: Float, size: Float, font: Font, color: Color) {
+
+        var addY2: Float = addY
+        if (font == Fonts.MOJANGLES) {
+            addY2 = addY - 1F;
+        }
+
         val nvg = Shindo.getInstance().nanoVGManager
         val lastSize = size * scale
-        nvg?.drawCenteredText(text, x + (addX * scale), y + (addY * scale), color, lastSize, font)
+        nvg?.drawCenteredText(text, x + (addX * scale), y + (addY2 * scale), color, lastSize, font)
     }
 
     fun drawCenteredText(text: String, addX: Float, addY: Float, size: Float, font: Font) {

@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.injection.mixin.interfaces.client.gui.IMixinGuiIngame
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinGuiIngame
 import me.miki.shindo.management.event.impl.EventRenderPlayerStats
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
@@ -30,12 +30,12 @@ class AppleSkinMod :
     @EventTarget
     fun onRenderPlayerStats(event: EventRenderPlayerStats?) {
         val scaledResolution = ScaledResolution(mc)
-        val stats = mc.thePlayer.getFoodStats()
+        val stats = mc.thePlayer.foodStats
 
         val right = scaledResolution.scaledWidth / 2 + 91
         val top = scaledResolution.scaledHeight - 39
 
-        this.generateHungerBarOffsets(right, 0, (mc.ingameGUI as IMixinGuiIngame).`client$getUpdateCounter`())
+        this.generateHungerBarOffsets(right, 0, (mc.ingameGUI as IMixinGuiIngame).updateCounter)
 
         this.drawSaturationOverlay(0f, stats.saturationLevel, 0, stats.foodLevel, right, top, 1.0f)
 
@@ -96,13 +96,13 @@ class AppleSkinMod :
 
         val preferFoodBars = 10
 
-        val stats = mc.thePlayer.getFoodStats()
+        val stats = mc.thePlayer.foodStats
 
         val saturationLevel = stats.saturationLevel
         val foodLevel = stats.foodLevel
 
         val shouldAnimatedFood =
-            saturationLevel <= 0.0f && (mc.ingameGUI as IMixinGuiIngame).`client$getUpdateCounter`() % (foodLevel * 3 + 1) == 0
+            saturationLevel <= 0.0f && (mc.ingameGUI as IMixinGuiIngame).updateCounter % (foodLevel * 3 + 1) == 0
 
         if (foodBarOffsets.size != preferFoodBars) {
             foodBarOffsets.setSize(preferFoodBars)

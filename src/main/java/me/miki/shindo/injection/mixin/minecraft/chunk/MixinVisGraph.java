@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.chunk;
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.chunk.IMixinVisGraph;
+import me.miki.shindo.injection.interfaces.IMixinVisGraph;
 import net.minecraft.client.renderer.chunk.VisGraph;
 import net.minecraft.util.EnumFacing;
 import org.spongepowered.asm.mixin.Mixin;

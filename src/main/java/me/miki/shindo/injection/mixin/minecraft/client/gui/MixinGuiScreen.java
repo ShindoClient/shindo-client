@@ -48,6 +48,9 @@ public abstract class MixinGuiScreen {
         Sound.play(Sounds.SHINDO_AUDIO_CLICK, true);
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public void handleKeyboardInput() throws IOException {
         char c = Keyboard.getEventCharacter();

@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.world;
 
-import me.miki.shindo.injection.mixin.interfaces.world.IMixinWorld;
+import me.miki.shindo.injection.interfaces.IMixinWorld;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import me.miki.shindo.utils.EnumFacings;
@@ -65,7 +65,7 @@ public abstract class MixinWorld implements IMixinWorld {
     }
 
     @Override
-    public boolean client$isLoaded(int x, int z, boolean allowEmpty) {
+    public boolean isLoaded(int x, int z, boolean allowEmpty) {
         return isChunkLoaded(x, z, allowEmpty);
     }
 

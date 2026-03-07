@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.event.impl.EventSendChat
 import me.miki.shindo.management.event.impl.EventSendPacket

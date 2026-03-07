@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixins;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,10 +84,33 @@ public class ShindoTweaker implements ITweaker {
     @SuppressWarnings("unchecked")
     private void unlockLwjgl() {
         try {
-            Field transformerExceptions = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
-            transformerExceptions.setAccessible(true);
-            Object o = transformerExceptions.get(Launch.classLoader);
-            ((Set<String>) o).remove("org.lwjgl.");
+            Field classLoaderExceptionsField = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
+            classLoaderExceptionsField.setAccessible(true);
+
+            Set<String> classLoaderExceptions = (Set<String>) classLoaderExceptionsField.get(Launch.classLoader);
+            if (classLoaderExceptions == null || classLoaderExceptions.isEmpty()) {
+                return;
+            }
+
+            Set<String> removed = new LinkedHashSet<>();
+            for (String excludedPackage : new ArrayList<>(classLoaderExceptions)) {
+                if (excludedPackage == null) {
+                    continue;
+                }
+
+                if ("org.lwjgl.".equals(excludedPackage)
+                    || excludedPackage.startsWith("me.miki.shindo.injection.mixin")
+                    || excludedPackage.startsWith("me.miki.shindo.injection.interfaces")
+                    || excludedPackage.startsWith("me.miki.shindo.injection.mixin.accessors")) {
+                    if (classLoaderExceptions.remove(excludedPackage)) {
+                        removed.add(excludedPackage);
+                    }
+                }
+            }
+
+            if (!removed.isEmpty() && Boolean.getBoolean("shindo.debug")) {
+                System.out.println("[ShindoTweaker] Removed classloader exclusions: " + removed);
+            }
         } catch (NoSuchFieldException | IllegalAccessException e) {
         }
     }

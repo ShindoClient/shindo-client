@@ -1,9 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventPlayerHeadRotation
-import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -18,16 +17,12 @@ class MouseStrokesMod :
     private var lastMouseY = 0f
 
     @EventTarget
-    fun onRender2D(event: EventRender2D) {
-        val nvg = getInstance().nanoVGManager
+    fun onRender2D(event: EventNVG) {
+        val calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * event.partialTicks))
+        val calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * event.partialTicks))
 
-        nvg!!.setupAndDraw(Runnable {
-            val calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * event.getPartialTicks()))
-            val calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * event.getPartialTicks()))
-
-            this.drawBackground(58f, 58f)
-            this.drawRoundedRect(calculatedMouseX + 28 - 3.5f, calculatedMouseY + 28 - 3.5f, 9f, 9f, (9 / 2).toFloat())
-        })
+        this.drawBackground(58f, 58f)
+        this.drawRoundedRect(calculatedMouseX + 28 - 3.5f, calculatedMouseY + 28 - 3.5f, 9f, 9f, (9 / 2).toFloat())
 
         this.setWidth(58)
         this.setHeight(58)

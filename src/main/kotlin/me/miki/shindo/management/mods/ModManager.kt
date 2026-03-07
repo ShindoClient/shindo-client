@@ -114,6 +114,7 @@ class ModManager {
         registerMod(SoundSubtitlesMod())
         registerMod(SpeedometerMod())
         registerMod(StopwatchMod())
+        registerMod(SuperHeroFxMod())
         registerMod(TabEditorMod())
         registerMod(TaplookMod())
         registerMod(TargetIndicatorMod())

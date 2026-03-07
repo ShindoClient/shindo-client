@@ -2,10 +2,11 @@ package me.miki.shindo.gui
 
 import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
-import me.miki.client_api.hud.HudLayoutService
-import me.miki.client_api.hud.AddonHudElement
+import me.miki.shindo.addon.api.hud.HudLayoutService
+import me.miki.shindo.addon.api.hud.AddonHudElement
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderNotification
 import me.miki.shindo.management.language.TranslateText
@@ -32,6 +33,8 @@ import kotlin.math.min
 class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen {
 
     private val mods: ArrayList<HUDMod> = ArrayList(Shindo.getInstance().modManager.getHudMods())
+    private val addonDraggingOffsets = HashMap<String, Pair<Int, Int>>()
+    private val addonDraggingIds = HashSet<String>()
     private var localMouseX = -1
     private var localMouseY = -1
     private lateinit var introAnimation: Animation
@@ -327,17 +330,27 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                 )
             }
 
-            // HUDs de addons registrados via HudLayoutService
+
             val hudLayoutService = Shindo.getInstance().serviceRegistry.get(HudLayoutService::class)
             val addonHuds: List<AddonHudElement> = hudLayoutService?.getAll() ?: emptyList()
+            val topMostAddon = addonHuds.firstOrNull { hud ->
+                hud.isVisible() && MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    hud.x.toInt(),
+                    hud.y.toInt(),
+                    hud.getScaledWidth().toInt().coerceAtLeast(10),
+                    hud.getScaledHeight().toInt().coerceAtLeast(10)
+                )
+            }
 
             for (hud in addonHuds) {
                 if (!hud.isVisible()) continue
 
                 val hudX = hud.x.toInt()
                 val hudY = hud.y.toInt()
-                val hudWidth = hud.width.toInt().coerceAtLeast(10)
-                val hudHeight = hud.height.toInt().coerceAtLeast(10)
+                val hudWidth = hud.getScaledWidth().toInt().coerceAtLeast(10)
+                val hudHeight = hud.getScaledHeight().toInt().coerceAtLeast(10)
 
                 val isInside = MouseUtils.isInside(
                     mouseX,
@@ -346,23 +359,142 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                     hudY,
                     hudWidth,
                     hudHeight
-                )
+                ) && topMostAddon?.id == hud.id
 
-                if (isInside && Mouse.isButtonDown(0)) {
-                    hud.x = mouseX.toFloat().coerceIn(0f, sr.scaledWidth - hudWidth.toFloat())
-                    hud.y = mouseY.toFloat().coerceIn(0f, sr.scaledHeight - hudHeight.toFloat())
+                var layoutChanged = false
+
+                if (isInside) {
+                    val dWheel = Mouse.getDWheel()
+                    if (dWheel != 0) {
+                        val scaleChange = if (shift) 0.02f else 0.1f
+                        val oldScale = hud.scale
+                        val targetScale = if (dWheel > 0) oldScale + scaleChange else oldScale - scaleChange
+                        hud.scale = targetScale.coerceIn(hud.minScale(), hud.maxScale())
+                        if (oldScale != hud.scale) {
+                            layoutChanged = true
+                        }
+                    }
                 }
 
-                // Apenas desenha uma borda simples para feedback de posição; o conteúdo
-                // real é desenhado pelo próprio HUD durante o render normal.
-                nvg.drawRect(
+                if (hud.id in addonDraggingIds && hud.isDraggable()) {
+                    val dragOffset = addonDraggingOffsets[hud.id] ?: Pair(0, 0)
+                    val oldX = hud.x
+                    val oldY = hud.y
+                    hud.x = (mouseX + dragOffset.first).toFloat()
+                    hud.y = (mouseY + dragOffset.second).toFloat()
+                    if (oldX != hud.x || oldY != hud.y) {
+                        layoutChanged = true
+                    }
+                }
+
+                val maxX = (sr.scaledWidth - hud.getScaledWidth()).coerceAtLeast(0f)
+                val maxY = (sr.scaledHeight - hud.getScaledHeight()).coerceAtLeast(0f)
+                val clampedX = hud.x.coerceIn(0f, maxX)
+                val clampedY = hud.y.coerceIn(0f, maxY)
+                if (clampedX != hud.x || clampedY != hud.y) {
+                    hud.x = clampedX
+                    hud.y = clampedY
+                    layoutChanged = true
+                }
+
+                val snapRange = 5f
+                if (canSnap) {
+                    val centerX = hud.x + (hud.getScaledWidth() / 2f)
+                    val centerY = hud.y + (hud.getScaledHeight() / 2f)
+
+                    if (MathUtils.isInRange(centerX, halfScreenWidth - snapRange, halfScreenWidth + snapRange)) {
+                        hud.x = halfScreenWidth - (hud.getScaledWidth() / 2f)
+                        layoutChanged = true
+                    }
+
+                    if (MathUtils.isInRange(centerY, halfScreenHeight - snapRange, halfScreenHeight + snapRange)) {
+                        hud.y = halfScreenHeight - (hud.getScaledHeight() / 2f)
+                        layoutChanged = true
+                    }
+                }
+
+                if (canSnap && hud.id in addonDraggingIds && !shift) {
+                    for (nativeMod in mods) {
+                        if (!nativeMod.isToggled() || nativeMod.isHide()) continue
+                        val nativeX = nativeMod.getX().toFloat()
+                        val nativeY = nativeMod.getY().toFloat()
+                        val nativeW = nativeMod.getWidth().toFloat()
+                        val nativeH = nativeMod.getHeight().toFloat()
+
+                        if (MathUtils.isInRange(hud.x, nativeX - snapRange, nativeX + snapRange)) {
+                            nvg.drawRect(nativeX, 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            hud.x = nativeX
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.y, nativeY - snapRange, nativeY + snapRange)) {
+                            nvg.drawRect(0f, nativeY, sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            hud.y = nativeY
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.x + hud.getScaledWidth(), nativeX + nativeW - snapRange, nativeX + nativeW + snapRange)) {
+                            nvg.drawRect(nativeX + nativeW, 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            hud.x = nativeX + nativeW - hud.getScaledWidth()
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.y + hud.getScaledHeight(), nativeY + nativeH - snapRange, nativeY + nativeH + snapRange)) {
+                            nvg.drawRect(0f, nativeY + nativeH, sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            hud.y = nativeY + nativeH - hud.getScaledHeight()
+                            layoutChanged = true
+                        }
+                    }
+
+                    for (other in addonHuds) {
+                        if (!other.isVisible() || other.id == hud.id) continue
+                        val ox = other.x
+                        val oy = other.y
+                        val ow = other.getScaledWidth()
+                        val oh = other.getScaledHeight()
+
+                        if (MathUtils.isInRange(hud.x, ox - snapRange, ox + snapRange)) {
+                            nvg.drawRect(ox, 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            hud.x = ox
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.y, oy - snapRange, oy + snapRange)) {
+                            nvg.drawRect(0f, oy, sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            hud.y = oy
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.x + hud.getScaledWidth(), ox + ow - snapRange, ox + ow + snapRange)) {
+                            nvg.drawRect(ox + ow, 0f, 0.5f, sr.scaledHeight.toFloat(), Color(217, 60, 255))
+                            hud.x = ox + ow - hud.getScaledWidth()
+                            layoutChanged = true
+                        }
+
+                        if (MathUtils.isInRange(hud.y + hud.getScaledHeight(), oy + oh - snapRange, oy + oh + snapRange)) {
+                            nvg.drawRect(0f, oy + oh, sr.scaledWidth.toFloat(), 0.5f, Color(217, 60, 255))
+                            hud.y = oy + oh - hud.getScaledHeight()
+                            layoutChanged = true
+                        }
+                    }
+                }
+
+                if (layoutChanged) {
+                    hud.onLayoutChanged()
+                }
+
+                nvg.drawOutlineRoundedRect(
                     hud.x,
                     hud.y,
-                    hud.width,
-                    hud.height,
-                    Color(255, 255, 255, if (isInside) 120 else 60)
+                    hud.getScaledWidth(),
+                    hud.getScaledHeight(),
+                    6f,
+                    1.5f,
+                    Color(255, 255, 255, if (isInside) 130 else 70)
                 )
             }
+
+            EventNVG(partialTicks).call();
         })
 
         EventRender2D(partialTicks).call()
@@ -409,12 +541,53 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
             }
         }
 
+        val hudLayoutService = Shindo.getInstance().serviceRegistry.get(HudLayoutService::class)
+        val addonHuds: List<AddonHudElement> = hudLayoutService?.getAll() ?: emptyList()
+        val topMostAddon = addonHuds.firstOrNull { hud ->
+            hud.isVisible() && MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                hud.x.toInt(),
+                hud.y.toInt(),
+                hud.getScaledWidth().toInt().coerceAtLeast(10),
+                hud.getScaledHeight().toInt().coerceAtLeast(10)
+            )
+        }
+
+        for (hud in addonHuds) {
+            if (!hud.isVisible()) continue
+
+            val isInside = MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                hud.x.toInt(),
+                hud.y.toInt(),
+                hud.getScaledWidth().toInt().coerceAtLeast(10),
+                hud.getScaledHeight().toInt().coerceAtLeast(10)
+            ) && topMostAddon?.id == hud.id
+
+            if (!isInside) continue
+
+            if (mouseButton == 0 && hud.isDraggable()) {
+                canSnap = true
+                addonDraggingIds.add(hud.id)
+                addonDraggingOffsets[hud.id] = Pair((hud.x - mouseX).toInt(), (hud.y - mouseY).toInt())
+            }
+
+            if (mouseButton == 2) {
+                hud.scale = 1.0f
+                hud.onLayoutChanged()
+            }
+        }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         for (m in mods) {
             m.setDragging(false)
         }
+        addonDraggingIds.clear()
+        addonDraggingOffsets.clear()
+        canSnap = false
 
         try {
             super.mouseClicked(mouseX, mouseY, mouseButton)

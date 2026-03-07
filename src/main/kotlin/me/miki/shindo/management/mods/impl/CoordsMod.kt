@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
@@ -20,13 +21,13 @@ class CoordsMod :
     private val iconSetting = true
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
+    fun onRender2D(event: EventNVG?) {
         val nvg = getInstance().nanoVGManager
 
         if (design == Design.SIMPLE) {
             this.draw()
         } else {
-            nvg!!.setupAndDraw(Runnable { drawNanoVG() })
+            drawNanoVG()
         }
     }
 

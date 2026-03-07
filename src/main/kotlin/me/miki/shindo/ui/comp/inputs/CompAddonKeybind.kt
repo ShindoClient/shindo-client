@@ -1,6 +1,6 @@
 package me.miki.shindo.ui.comp.inputs
 
-import me.miki.shindo.api.compat.ApiCompConfigOwner
+import me.miki.shindo.addon.runtime.bridge.ApiCompConfigOwner
 import me.miki.shindo.management.settings.impl.KeybindSetting
 import me.miki.shindo.ui.comp.Comp
 

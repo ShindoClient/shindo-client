@@ -14,6 +14,7 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,12 +26,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderItem.class)
 public abstract class MixinRenderItem {
 
+    @Final
     @Shadow
     private TextureManager textureManager;
 
     @Shadow
-    public abstract void renderModel(IBakedModel model, int color);
+    protected abstract void renderModel(IBakedModel model, int color);
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     private void renderEffect(IBakedModel model) {
         int color = -8372020;

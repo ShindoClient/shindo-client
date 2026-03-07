@@ -1,7 +1,7 @@
 package me.miki.shindo.injection.mixin.minecraft.network;
 
 import me.miki.shindo.hooks.ServerDataHook;
-import me.miki.shindo.injection.mixin.interfaces.client.multiplayer.IMixinServerList;
+import me.miki.shindo.injection.interfaces.IMixinServerList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;

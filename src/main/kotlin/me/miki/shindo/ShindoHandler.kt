@@ -1,6 +1,6 @@
 package me.miki.shindo
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.profile.Profile

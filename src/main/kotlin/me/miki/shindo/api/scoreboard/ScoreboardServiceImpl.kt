@@ -1,6 +1,6 @@
 package me.miki.shindo.api.scoreboard
 
-import me.miki.client_api.scoreboard.ScoreboardService
+import me.miki.shindo.addon.api.scoreboard.ScoreboardService
 import net.minecraft.client.Minecraft
 import net.minecraft.scoreboard.ScoreObjective
 

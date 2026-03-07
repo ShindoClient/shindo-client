@@ -14,6 +14,9 @@ public class MixinModelBox {
     @Shadow
     private TexturedQuad[] quadList;
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public void render(WorldRenderer renderer, float scale) {
 
@@ -29,8 +32,8 @@ public class MixinModelBox {
     }
 
     private void draw(WorldRenderer renderer, float scale) {
-        for (int i = 0; i < this.quadList.length; ++i) {
-            this.quadList[i].draw(renderer, scale);
+        for (TexturedQuad texturedQuad : this.quadList) {
+            texturedQuad.draw(renderer, scale);
         }
     }
 }

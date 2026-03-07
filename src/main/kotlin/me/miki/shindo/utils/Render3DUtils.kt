@@ -1,13 +1,14 @@
 package me.miki.shindo.utils
 
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinRenderManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Timer
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -153,9 +154,9 @@ object Render3DUtils {
         var ry = y
         var rz = z
         val renderManager = mc.renderManager as IMixinRenderManager
-        rx -= renderManager.getRenderPosX()
-        ry -= renderManager.getRenderPosY()
-        rz -= renderManager.getRenderPosZ()
+        rx -= renderManager.renderPosX
+        ry -= renderManager.renderPosY
+        rz -= renderManager.renderPosZ
         return Vec3(rx, ry, rz)
     }
 
@@ -180,13 +181,13 @@ object Render3DUtils {
         val renderManager = mc.renderManager as IMixinRenderManager
 
         val x =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosX()
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosX
         val y =
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosY() + sin(
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosY + sin(
                 System.currentTimeMillis() / 2e2
             ) + 1
         val z =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (mixinMc.getTimer() as net.minecraft.util.Timer).renderPartialTicks - renderManager.getRenderPosZ()
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosZ
 
         var angle = 0f
         val increment = (Math.PI * 2 / 64.0).toFloat()
@@ -246,9 +247,9 @@ object Render3DUtils {
                 var draw = true
 
                 val renderManager = mc.renderManager as IMixinRenderManager
-                val x = v.xCoord - renderManager.getRenderPosX()
-                val y = v.yCoord - renderManager.getRenderPosY()
-                val z = v.zCoord - renderManager.getRenderPosZ()
+                val x = v.xCoord - renderManager.renderPosX
+                val y = v.yCoord - renderManager.renderPosY
+                val z = v.zCoord - renderManager.renderPosZ
 
                 val distanceFromPlayer = mc.thePlayer.getDistance(v.xCoord, v.yCoord - 1, v.zCoord)
                 var quality = (distanceFromPlayer * 4 + 10).toInt()

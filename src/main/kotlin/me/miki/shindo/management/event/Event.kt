@@ -1,6 +1,6 @@
 package me.miki.shindo.management.event
 
-import me.miki.client_api.event.IEvent
+import me.miki.shindo.addon.api.event.IEvent
 import me.miki.shindo.Shindo
 import java.lang.reflect.InvocationTargetException
 import java.util.HashSet

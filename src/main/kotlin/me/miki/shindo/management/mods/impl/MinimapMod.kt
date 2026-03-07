@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventLoadWorld
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -10,9 +10,9 @@ import me.miki.shindo.management.mods.impl.minimap.ChunkAtlas
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
+import me.miki.shindo.ui.animation.screen.ScreenStencil
 import me.miki.shindo.utils.GlUtils.startTranslate
 import me.miki.shindo.utils.GlUtils.stopTranslate
-import me.miki.shindo.ui.animation.screen.ScreenStencil
 import me.miki.shindo.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+
 
 class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION, LegacyIcon.MOD_MINIMAP) {
     @Property(
@@ -53,36 +54,30 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
     }
 
     @EventTarget
+    fun onRenderNVG(event: EventNVG) {
+        val width: Int = widthSetting
+        val height: Int = heightSetting
+        event.renderer()
+            .drawShadow(getX().toFloat(), getY().toFloat(), width * getScale(), height * getScale(), 6 * getScale())
+    }
+
+    @EventTarget
     fun onRender2D(event: EventRender2D) {
-        val nvg = getInstance().nanoVGManager
-        val width = widthSetting
-        val height = heightSetting
-
-        nvg!!.setupAndDraw(Runnable {
-            nvg.drawShadow(
-                this.getX().toFloat(),
-                this.getY().toFloat(),
-                width * this.getScale(),
-                height * this.getScale(),
-                6 * this.getScale()
-            )
-        })
-
+        val width: Int = widthSetting
+        val height: Int = heightSetting
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
-
         stencil.wrap(
             Runnable { drawMap(event.getPartialTicks()) },
-            this.getX().toFloat(),
-            this.getY().toFloat(),
-            width * this.getScale(),
-            height * this.getScale(),
-            6 * this.getScale(),
+            getX().toFloat(),
+            getY().toFloat(),
+            width * getScale(),
+            height * getScale(),
+            6 * getScale(),
             alphaSetting.toFloat()
         )
-
-        this.setWidth(width)
-        this.setHeight(height)
+        setWidth(width)
+        setHeight(height)
     }
 
     private fun drawMap(partialTicks: Float) {

@@ -134,7 +134,7 @@ dependencies {
     embed files("libs/lwjgl-shindo.jar")
     embed files("libs/lwjgl-shindo-natives.jar")
 
-    embed 'me.miki:shindo-client-api:1.1.2'
+    // Addon API agora é nativa do client (package me.miki.shindo.addon.api).
     embed 'me.miki:viashindo:1.0.0'
 
 }

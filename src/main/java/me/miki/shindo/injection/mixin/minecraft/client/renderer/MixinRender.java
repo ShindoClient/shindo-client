@@ -32,6 +32,9 @@ public abstract class MixinRender<T extends Entity> {
     @Shadow
     public abstract FontRenderer getFontRendererFromRenderManager();
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {
 

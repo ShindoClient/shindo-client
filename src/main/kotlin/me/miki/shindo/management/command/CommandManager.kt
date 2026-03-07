@@ -3,7 +3,7 @@ package me.miki.shindo.management.command
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.command.impl.ScreenshotCommand
 import me.miki.shindo.management.command.impl.TranslateCommand
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventSendChat
 
 class CommandManager {

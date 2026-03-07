@@ -1,5 +1,6 @@
 package me.miki.shindo.gui.mainmenu.impl
 
+import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
@@ -69,6 +70,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         scroll.onScroll()
         scroll.onAnimation()
 
+        Blur.drawBlur(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f);
         nvg!!.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, panelColor)
         nvg.drawCenteredText(TranslateText.SELECT_BACKGROUND.getText(), acX + (acWidth / 2f), acY + 8f, Color.WHITE, 14f, Fonts.SEMIBOLD)
 

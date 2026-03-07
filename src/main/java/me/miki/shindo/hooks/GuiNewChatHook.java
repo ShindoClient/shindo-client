@@ -1,6 +1,7 @@
 package me.miki.shindo.hooks;
 
-import me.miki.shindo.injection.mixin.interfaces.client.gui.IMixinChatLine;
+
+import me.miki.shindo.injection.interfaces.IMixinChatLine;
 import me.miki.shindo.utils.ColorUtils;
 import me.miki.shindo.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,7 @@ public class GuiNewChatHook {
 
         IMixinChatLine hook = (IMixinChatLine) line;
 
-        Object playerInfo = hook.client$getPlayerInfo();
+        Object playerInfo = hook.getPlayerInfo();
         NetworkPlayerInfo networkPlayerInfo = playerInfo instanceof NetworkPlayerInfo ? (NetworkPlayerInfo) playerInfo : null;
 
         actualX += networkPlayerInfo != null ? 10f : 0;

@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -20,10 +20,6 @@ class InventoryDisplayMod : HUDMod(
         var startX = this.getX() + 6
         var startY = this.getY() + 22
         var index = 0
-
-        val nvg = getInstance().nanoVGManager
-
-        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
 
         startScale(this.getX().toFloat(), this.getY().toFloat(), this.getScale())
 
@@ -57,7 +53,8 @@ class InventoryDisplayMod : HUDMod(
         stopScale()
     }
 
-    private fun drawNanoVG() {
+    @EventTarget
+    fun drawNanoVG(event: EventNVG?) {
         this.drawBackground(188f, 82f)
         this.drawText("Inventory", 5.5f, 6f, 10.5f, getHudFont(1))
         this.drawRect(0f, 17.5f, 188f, 1f)

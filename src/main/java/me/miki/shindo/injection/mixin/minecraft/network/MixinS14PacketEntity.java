@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.network;
 
-import me.miki.shindo.injection.mixin.interfaces.network.IMixinS14PacketEntity;
+import me.miki.shindo.injection.interfaces.IMixinS14PacketEntity;
 import net.minecraft.network.play.server.S14PacketEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

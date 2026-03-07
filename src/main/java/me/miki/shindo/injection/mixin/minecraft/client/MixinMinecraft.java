@@ -1,13 +1,14 @@
 package me.miki.shindo.injection.mixin.minecraft.client;
 
+import eu.shoroa.contrib.animation.Animate;
 import eu.shoroa.contrib.render.Blur;
 import eu.shoroa.contrib.util.Time;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiBetterResourcePacks;
 import me.miki.shindo.gui.GuiGameMenu;
 import me.miki.shindo.gui.GuiSplashScreen;
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft;
-import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
+import me.miki.shindo.injection.interfaces.IMixinEntityLivingBase;
+import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.addons.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
@@ -77,8 +78,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public GuiScreen currentScreen;
     @Shadow
     public EntityRenderer entityRenderer;
-    @Unique
-    long lastFrame = client$getCurrentTime();
     @Shadow
     private boolean running;
     @Shadow
@@ -100,6 +99,9 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Shadow
     private boolean enableGLErrorChecking;
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public static int getDebugFPS() {
 
@@ -320,6 +322,9 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         new EventRenderTick().call();
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public int getLimitFramerate() {
 
@@ -341,6 +346,9 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public boolean isFramerateLimitBelowMax() {
 
@@ -408,6 +416,25 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     private void optimizedWorldSwapping() {
     }
 
+    long lastFrame = getCurrentTime();
+
+    private long getCurrentTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
+
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/lang/System;nanoTime()J"))
+    private void setDelta(CallbackInfo ci) {
+        long currentTime = getCurrentTime();
+        long deltaTimeMillis = currentTime - lastFrame;
+        lastFrame = currentTime;
+
+        float deltaTimeSeconds = deltaTimeMillis / 1000.0f;
+
+        if (deltaTimeSeconds > 0 && deltaTimeSeconds < 0.1f) {
+            Animate.DELTA = deltaTimeSeconds;
+        }
+    }
+
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/stream/IStream;func_152935_j()V"))
     private void skipTwitchCode1(IStream instance) {
     }
@@ -470,8 +497,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     }
 
     @Override
-    public void setSession(Object session) {
-        this.session = (Session) session;
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     @Override
@@ -493,7 +520,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public Entity getRenderViewEntity() {
         return renderViewEntity;
     }
-
 
     @Override
     public boolean isRunning() {
@@ -624,8 +650,8 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     }
 
     @Override
-    public void setMcResourcePackRepository(Object repo) {
-        this.mcResourcePackRepository = (ResourcePackRepository) repo;
+    public void setMcResourcePackRepository(ResourcePackRepository repo) {
+        this.mcResourcePackRepository = repo;
     }
 }
 

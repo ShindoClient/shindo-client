@@ -9,7 +9,11 @@ import me.miki.shindo.management.nanovg.asset.NVGAsset
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.FontManager
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.types.CircQueue
+import me.miki.shindo.types.Rect
+import me.miki.shindo.types.Size
 import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.MathUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -19,35 +23,95 @@ import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
+import org.lwjgl.system.MemoryUtil
 import java.awt.Color
+import java.awt.Dimension
 import java.io.File
+import java.nio.FloatBuffer
+import java.nio.IntBuffer
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
+
 class NanoVGManager {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
+
+    private val f4Buff: FloatBuffer = MemoryUtil.memAllocFloat(4)
+    private val i1buff1: IntBuffer = MemoryUtil.memAllocInt(1)
+    private val i1buff2: IntBuffer = MemoryUtil.memAllocInt(1)
+    private val f1Buff1: FloatBuffer = MemoryUtil.memAllocFloat(1)
+    private val f1Buff2: FloatBuffer = MemoryUtil.memAllocFloat(1)
+
+    private val colorQueue = CircQueue(NVGColor.calloc(), NVGColor.calloc(), NVGColor.calloc(), NVGColor.calloc())
+    private val paintQueue = CircQueue(NVGPaint.calloc(), NVGPaint.calloc(), NVGPaint.calloc(), NVGPaint.calloc())
+
+    private var nvg: Long = 0
     private val colorCache: HashMap<Int, NVGColor> = HashMap()
-    private val nvg: Long = NanoVGGL2.nvgCreate(NanoVGGL2.NVG_ANTIALIAS)
-    private val fontManager: FontManager
-    val assetManager: AssetManager
+
+    private var fontManager: FontManager? = null
+    private var assetManager: AssetManager? = null
 
     init {
+        nvg = NanoVGGL2.nvgCreate(NanoVGGL2.NVG_ANTIALIAS or NanoVGGL2.NVG_STENCIL_STROKES)
+
         if (nvg == 0L) {
             ShindoLogger.error("Failed to create NanoVG context")
             mc.shutdown()
         }
 
         fontManager = FontManager()
-        fontManager.init(nvg)
+        fontManager!!.init(nvg)
+
         assetManager = AssetManager()
     }
 
-    @JvmOverloads
+
+    fun destroy() {
+        NanoVGGL2.nvgDelete(nvg)
+        for (i in 0..3) {
+            colorQueue.poll().free()
+            paintQueue.poll().free()
+        }
+        MemoryUtil.memFree(f4Buff)
+        MemoryUtil.memFree(i1buff1)
+        MemoryUtil.memFree(i1buff2)
+        MemoryUtil.memFree(f1Buff1)
+        MemoryUtil.memFree(f1Buff2)
+    }
+
+    fun getColor(r: Float, g: Float, b: Float, a: Float): NVGColor {
+        val nvgColor = colorQueue.poll()
+        nvgColor.r(r)
+        nvgColor.g(g)
+        nvgColor.b(b)
+        nvgColor.a(a)
+        return nvgColor
+    }
+
+    fun getColor(color: Int): NVGColor {
+        return getColor(
+            (color shr 16 and 0xFF) / 255f, (color shr 8 and 0xFF) / 255f, (color and 0xFF) / 255f,
+            (color shr 24 and 0xFF) / 255f
+        )
+    }
+
+    private fun getAvailablePaint(): NVGPaint {
+        return paintQueue.poll()
+    }
+
+    fun imageSize(imageId: Int, src: Size) {
+        NanoVG.nvgImageSize(nvg, imageId, i1buff1, i1buff2)
+        src[i1buff1[0].toFloat()] = i1buff2[0].toFloat()
+    }
+
+
     fun setupAndDraw(task: Runnable, scale: Boolean = true) {
+
         val sr = ScaledResolution(mc)
+
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         NanoVG.nvgBeginFrame(nvg, mc.displayWidth.toFloat(), mc.displayHeight.toFloat(), 1f)
 
@@ -66,56 +130,57 @@ class NanoVGManager {
         setupAndDraw(Runnable { task() })
     }
 
-
-    @JvmOverloads
-    fun beginFrame(scale: Boolean = true) {
-        val sr = ScaledResolution(mc)
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-        NanoVG.nvgBeginFrame(nvg, mc.displayWidth.toFloat(), mc.displayHeight.toFloat(), 1f)
-        if (scale) {
-            NanoVG.nvgScale(nvg, sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat())
-        }
-    }
-
-    fun endFrame() {
-        GL11.glDisable(GL11.GL_ALPHA_TEST)
-        NanoVG.nvgEndFrame(nvg)
-        GL11.glPopAttrib()
+    fun setupAndDraw(task: Runnable?) {
+        setupAndDraw(task!!, true)
     }
 
     fun drawAlphaBar(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color) {
-        val bg = NVGPaint.create()
+        drawAlphaBar(x, y, width, height, radius, color.rgb)
+    }
 
+    fun drawAlphaBar(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
         val nvgColor = getColor(color)
-        val nvgColor2 = getColor(Color(0, 0, 0, 0))
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x, y, x + width, y, nvgColor2, nvgColor, bg))
+        val nvgColor2 = getColor(0)
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x, y, x + width, y, nvgColor2, nvgColor, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
     }
 
     fun drawHSBBox(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color) {
+        drawHSBBox(x, y, width, height, radius, color.rgb)
+    }
+
+    fun drawHSBBox(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int) {
         drawRoundedRect(x, y, width, height, radius, color)
-
-        val bg = NVGPaint.create()
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-        val nvgColor = getColor(Color.WHITE)
-        val nvgColor2 = getColor(Color(0, 0, 0, 0))
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x + 8, y + 8, x + width, y, nvgColor, nvgColor2, bg))
+        val nvgColor = getColor(-1)
+        val nvgColor2 = getColor(0)
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x + 8, y + 8, x + width, y, nvgColor, nvgColor2, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
-
-        val bg2 = NVGPaint.create()
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-        val nvgColor3 = getColor(Color(0, 0, 0, 0))
-        val nvgColor4 = getColor(Color.BLACK)
-
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x + 8, y + 8, x, y + height, nvgColor3, nvgColor4, bg2))
+        val nvgColor3 = getColor(0)
+        val nvgColor4 = getColor(-0x1000000)
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x + 8, y + 8, x, y + height, nvgColor3, nvgColor4, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
     }
 
     fun drawRect(x: Float, y: Float, width: Float, height: Float, color: Color) {
+        drawRect(x, y, width, height, color.rgb)
+    }
+
+    fun drawRect(x: Float, y: Float, width: Float, height: Float, color: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRect(nvg, x, y, width, height)
         val nvgColor = getColor(color)
@@ -124,11 +189,23 @@ class NanoVGManager {
     }
 
     fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Color) {
+        drawRoundedRect(x, y, width, height, radius, color.rgb)
+    }
+
+    fun drawRoundedRect(x: Float, y: Float, width: Float, height: Float, radius: Float, color: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
         val nvgColor = getColor(color)
         NanoVG.nvgFillColor(nvg, nvgColor)
         NanoVG.nvgFill(nvg)
+    }
+
+    fun drawRoundedRect(rect: Rect, radius: Float, color: Int) {
+        drawRoundedRect(rect.x, rect.y, rect.width, rect.height, radius, color)
+    }
+
+    fun drawRoundedRect(rect: Rect, radius: Float, color: Color) {
+        drawRoundedRect(rect.x, rect.y, rect.width, rect.height, radius, color)
     }
 
     fun drawRoundedRectVarying(
@@ -141,6 +218,30 @@ class NanoVGManager {
         bottomLeftRadius: Float,
         bottomRightRadius: Float,
         color: Color
+    ) {
+        drawRoundedRectVarying(
+            x,
+            y,
+            width,
+            height,
+            topLeftRadius,
+            topRightRadius,
+            bottomLeftRadius,
+            bottomRightRadius,
+            color.rgb
+        )
+    }
+
+    fun drawRoundedRectVarying(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        topLeftRadius: Float,
+        topRightRadius: Float,
+        bottomLeftRadius: Float,
+        bottomRightRadius: Float,
+        color: Int
     ) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRectVarying(
@@ -160,61 +261,66 @@ class NanoVGManager {
     }
 
     fun drawVerticalGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Color, color2: Color) {
-        val bg = NVGPaint.create()
+        drawVerticalGradientRect(x, y, width, height, color1.rgb, color2.rgb)
+    }
+
+    fun drawVerticalGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Int, color2: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRect(nvg, x, y, width, height)
-
         val nvgColor1 = getColor(color1)
         val nvgColor2 = getColor(color2)
-
         NanoVG.nvgFillColor(nvg, nvgColor1)
         NanoVG.nvgFillColor(nvg, nvgColor2)
-
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x, y, x, y + height, nvgColor1, nvgColor2, bg))
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x, y, x, y + height, nvgColor1, nvgColor2, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
     }
 
+
     fun drawHorizontalGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Color, color2: Color) {
-        val bg = NVGPaint.create()
+        drawHorizontalGradientRect(x, y, width, height, color1.rgb, color2.rgb)
+    }
+
+    fun drawHorizontalGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Int, color2: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRect(nvg, x, y, width, height)
-
         val nvgColor1 = getColor(color1)
         val nvgColor2 = getColor(color2)
-
         NanoVG.nvgFillColor(nvg, nvgColor1)
         NanoVG.nvgFillColor(nvg, nvgColor2)
-
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x, y, x + width, y, nvgColor1, nvgColor2, bg))
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x, y, x + width, y, nvgColor1, nvgColor2, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
     }
 
     fun drawGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Color, color2: Color) {
-        val bg = NVGPaint.create()
+        drawGradientRect(x, y, width, height, color1.rgb, color2.rgb)
+    }
 
-        val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
+    fun drawGradientRect(x: Float, y: Float, width: Float, height: Float, color1: Int, color2: Int) {
+        val tick = System.currentTimeMillis() % 3600 / 570f
         val max = width.coerceAtLeast(height)
-
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRect(nvg, x, y, width, height)
-
         val nvgColor1 = getColor(color1)
         val nvgColor2 = getColor(color2)
-
         NanoVG.nvgFillColor(nvg, nvgColor1)
         NanoVG.nvgFillColor(nvg, nvgColor2)
-
         NanoVG.nvgFillPaint(
             nvg,
             NanoVG.nvgLinearGradient(
                 nvg,
-                x + width / 2 - (max / 2) * MathUtils.cos(tick),
-                y + height / 2 - (max / 2) * MathUtils.sin(tick),
-                x + width / 2 + (max / 2) * MathUtils.cos(tick),
-                y + height / 2 + (max + 2f) * MathUtils.sin(tick),
+                x + width / 2 - max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 - max / 2 * MathUtils.sin(tick.toDouble()),
+                x + width / 2 + max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 + (max + 2f) * MathUtils.sin(tick.toDouble()),
                 nvgColor1,
                 nvgColor2,
-                bg
+                getAvailablePaint()
             )
         )
         NanoVG.nvgFill(nvg)
@@ -229,31 +335,37 @@ class NanoVGManager {
         color1: Color,
         color2: Color
     ) {
-        val bg = NVGPaint.create()
+        drawGradientRoundedRect(x, y, width, height, radius, color1.rgb, color2.rgb)
+    }
 
-        val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
+    fun drawGradientRoundedRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        color1: Int,
+        color2: Int
+    ) {
+        val tick = System.currentTimeMillis() % 3600 / 570f
         val max = width.coerceAtLeast(height)
-
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-
         val nvgColor1 = getColor(color1)
         val nvgColor2 = getColor(color2)
-
         NanoVG.nvgFillColor(nvg, nvgColor1)
         NanoVG.nvgFillColor(nvg, nvgColor2)
-
         NanoVG.nvgFillPaint(
             nvg,
             NanoVG.nvgLinearGradient(
                 nvg,
-                x + width / 2 - (max / 2) * MathUtils.cos(tick),
-                y + height / 2 - (max / 2) * MathUtils.sin(tick),
-                x + width / 2 + (max / 2) * MathUtils.cos(tick),
-                y + height / 2 + (max + 2f) * MathUtils.sin(tick),
+                x + width / 2 - max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 - max / 2 * MathUtils.sin(tick.toDouble()),
+                x + width / 2 + max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 + (max + 2f) * MathUtils.sin(tick.toDouble()),
                 nvgColor1,
                 nvgColor2,
-                bg
+                getAvailablePaint()
             )
         )
         NanoVG.nvgFill(nvg)
@@ -268,12 +380,36 @@ class NanoVGManager {
         strokeWidth: Float,
         color: Color
     ) {
+        drawOutlineRoundedRect(x, y, width, height, radius, strokeWidth, color.rgb)
+    }
+
+    fun drawOutlineRoundedRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        strokeWidth: Float,
+        color: Int
+    ) {
+        var radius = radius
+        if (radius < 0.5f) {
+            radius = 0.5f
+        }
         val nvgColor = getColor(color)
         NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgRoundedRect(
+            nvg,
+            x - strokeWidth / 2f,
+            y - strokeWidth / 2f,
+            width + strokeWidth,
+            height + strokeWidth,
+            radius + strokeWidth / 2f
+        )
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
-        NanoVG.nvgStrokeColor(nvg, nvgColor)
-        NanoVG.nvgStroke(nvg)
+        NanoVG.nvgPathWinding(nvg, NanoVG.NVG_HOLE)
+        NanoVG.nvgFillColor(nvg, nvgColor)
+        NanoVG.nvgFill(nvg)
     }
 
     fun drawGradientOutlineRoundedRect(
@@ -286,115 +422,93 @@ class NanoVGManager {
         color1: Color,
         color2: Color
     ) {
-        val bg = NVGPaint.create()
-
-        val tick: Double = (System.currentTimeMillis() % 3600 / 570f).toDouble()
-        val max = width.coerceAtLeast(height)
-
-        NanoVG.nvgBeginPath(nvg)
-        NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-
-        val nvgColor1 = getColor(color1)
-        val nvgColor2 = getColor(color2)
-
-        NanoVG.nvgFillColor(nvg, nvgColor1)
-        NanoVG.nvgFillColor(nvg, nvgColor2)
-
-        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
-        NanoVG.nvgStrokePaint(
-            nvg,
-            NanoVG.nvgLinearGradient(
-                nvg,
-                x + width / 2 - (max / 2) * MathUtils.cos(tick),
-                y + height / 2 - (max / 2) * MathUtils.sin(tick),
-                x + width / 2 + (max / 2) * MathUtils.cos(tick),
-                y + height / 2 + (max + 2f) * MathUtils.sin(tick),
-                nvgColor1,
-                nvgColor2,
-                bg
-            )
-        )
-        NanoVG.nvgStroke(nvg)
+        drawGradientOutlineRoundedRect(x, y, width, height, radius, strokeWidth, color1.rgb, color2.rgb)
     }
 
-    fun drawRadialRoundedRect(
+    fun drawGradientOutlineRoundedRect(
         x: Float,
         y: Float,
         width: Float,
         height: Float,
         radius: Float,
-        centerColor: Color,
-        edgeColor: Color
+        strokeWidth: Float,
+        color1: Int,
+        color2: Int
     ) {
-        val paint = NVGPaint.create()
-
-        val cx = x + width / 2f
-        val cy = y + height / 2f
-
-        val inner = 4f
-        val outer = width.coerceAtLeast(height)
-
-        val c1 = getColor(centerColor)
-        val c2 = getColor(edgeColor)
-
+        val tick = System.currentTimeMillis() % 3600 / 570f
+        val max = width.coerceAtLeast(height)
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-
-        NanoVG.nvgFillPaint(
+        val nvgColor1 = getColor(color1)
+        val nvgColor2 = getColor(color2)
+        NanoVG.nvgFillColor(nvg, nvgColor1)
+        NanoVG.nvgFillColor(nvg, nvgColor2)
+        NanoVG.nvgStrokeWidth(nvg, strokeWidth)
+        NanoVG.nvgStrokePaint(
             nvg,
-            NanoVG.nvgRadialGradient(
+            NanoVG.nvgLinearGradient(
                 nvg,
-                cx,
-                cy,
-                inner,
-                outer,
-                c1,
-                c2,
-                paint
+                x + width / 2 - max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 - max / 2 * MathUtils.sin(tick.toDouble()),
+                x + width / 2 + max / 2 * MathUtils.cos(tick.toDouble()),
+                y + height / 2 + (max + 2f) * MathUtils.sin(tick.toDouble()),
+                nvgColor1,
+                nvgColor2,
+                getAvailablePaint()
             )
         )
-
-        NanoVG.nvgFill(nvg)
+        NanoVG.nvgStroke(nvg)
     }
 
     fun drawArrow(x: Float, y: Float, size: Float, angle: Float, color: Color) {
+        drawArrow(x, y, size, angle, color.rgb)
+    }
+
+    fun drawArrow(x: Float, y: Float, size: Float, angle: Float, color: Int) {
         save()
-
         NanoVG.nvgBeginPath(nvg)
-
         val offsetX = (size * cos(Math.toRadians(angle.toDouble()))).toFloat()
         val offsetY = (size * sin(Math.toRadians(angle.toDouble()))).toFloat()
-
         val diffX = x + offsetX / 2
         val diffY = y + offsetY / 2
-
         NanoVG.nvgTranslate(nvg, diffX, diffY)
         NanoVG.nvgRotate(nvg, Math.toRadians(angle.toDouble()).toFloat())
-
         NanoVG.nvgMoveTo(nvg, -size, -size / 2)
         NanoVG.nvgLineTo(nvg, 0f, 0f)
         NanoVG.nvgLineTo(nvg, -size, size / 2)
-
         NanoVG.nvgStrokeWidth(nvg, 0.8f)
         NanoVG.nvgStrokeColor(nvg, getColor(color))
         NanoVG.nvgStroke(nvg)
-
         restore()
     }
 
+
     fun drawShadow(x: Float, y: Float, width: Float, height: Float, radius: Float, strength: Int) {
-        var alpha = 1
-        var f = strength.toFloat()
-        while (f > 0f) {
-            drawOutlineRoundedRect(x - f / 2, y - f / 2, width + f, height + f, radius + 2, f, Color(0, 0, 0, alpha))
-            alpha += 2
-            f -= 1f
-        }
+        val bg = getAvailablePaint()
+        NanoVG.nvgBoxGradient(
+            nvg,
+            x,
+            y,
+            width,
+            height,
+            radius,
+            (strength * 2).toFloat(),
+            getColor(0x32000000),
+            getColor(0),
+            bg
+        )
+        NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgRect(nvg, x - strength, y - strength, width + strength * 2, height + strength * 2)
+        NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+        NanoVG.nvgPathWinding(nvg, NanoVG.NVG_HOLE)
+        NanoVG.nvgFillPaint(nvg, bg)
+        NanoVG.nvgFill(nvg)
     }
 
     fun drawShadow(x: Float, y: Float, width: Float, height: Float, radius: Float) {
         drawShadow(x, y, width, height, radius, 7)
     }
+
 
     fun drawGradientShadow(
         x: Float,
@@ -405,44 +519,52 @@ class NanoVGManager {
         color1: Color,
         color2: Color
     ) {
+        drawGradientShadow(x, y, width, height, radius, color1.rgb, color2.rgb)
+    }
+
+    fun drawGradientShadow(x: Float, y: Float, width: Float, height: Float, radius: Float, color1: Int, color2: Int) {
         var alpha = 1
-        var f = 10f
-        while (f > 0f) {
+        for (f in 10 downTo 1) {
             drawGradientOutlineRoundedRect(
                 x - f / 2,
                 y - f / 2,
                 width + f,
                 height + f,
                 radius + 2,
-                f,
-                ColorUtils.applyAlpha(color1, alpha),
-                ColorUtils.applyAlpha(color2, alpha)
+                f.toFloat(),
+                applyAlpha(color1, alpha),
+                applyAlpha(color2, alpha)
             )
             alpha += 3
-            f -= 1f
         }
     }
 
     fun drawRoundedGlow(x: Float, y: Float, width: Float, height: Float, radius: Float, color1: Color, strength: Int) {
+        drawRoundedGlow(x, y, width, height, radius, color1.rgb, strength)
+    }
+
+    fun drawRoundedGlow(x: Float, y: Float, width: Float, height: Float, radius: Float, color1: Int, strength: Int) {
         var alpha = 1
-        var f = strength.toFloat()
-        while (f > 0f) {
+        for (f in strength downTo 1) {
             drawGradientOutlineRoundedRect(
                 x - f / 2,
                 y - f / 2,
                 width + f,
                 height + f,
                 radius + 2,
-                f,
-                ColorUtils.applyAlpha(color1, alpha),
-                ColorUtils.applyAlpha(color1, alpha)
+                f.toFloat(),
+                applyAlpha(color1, alpha),
+                applyAlpha(color1, alpha)
             )
             alpha += 2
-            f -= 1f
         }
     }
 
     fun drawCircle(x: Float, y: Float, radius: Float, color: Color) {
+        drawCircle(x, y, radius, color.rgb)
+    }
+
+    fun drawCircle(x: Float, y: Float, radius: Float, color: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgCircle(nvg, x, y, radius)
         val nvgColor = getColor(color)
@@ -459,17 +581,16 @@ class NanoVGManager {
         strokeWidth: Float,
         color: Color
     ) {
-        val nvgColor = getColor(color)
+        drawArc(x, y, radius, startAngle, endAngle, strokeWidth, color.rgb)
+    }
 
+    fun drawArc(x: Float, y: Float, radius: Float, startAngle: Float, endAngle: Float, strokeWidth: Float, color: Int) {
+        val nvgColor = getColor(color)
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgArc(
-            nvg,
-            x,
-            y,
-            radius,
+            nvg, x, y, radius,
             Math.toRadians(startAngle.toDouble()).toFloat(),
-            Math.toRadians(endAngle.toDouble()).toFloat(),
-            NanoVG.NVG_CW
+            Math.toRadians(endAngle.toDouble()).toFloat(), NanoVG.NVG_CW
         )
         NanoVG.nvgStrokeWidth(nvg, strokeWidth)
         NanoVG.nvgStrokeColor(nvg, nvgColor)
@@ -477,18 +598,20 @@ class NanoVGManager {
     }
 
     fun drawGradientCircle(x: Float, y: Float, radius: Float, color1: Color, color2: Color) {
-        val bg = NVGPaint.create()
+        drawGradientCircle(x, y, radius, color1.rgb, color2.rgb)
+    }
 
+    fun drawGradientCircle(x: Float, y: Float, radius: Float, color1: Int, color2: Int) {
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgCircle(nvg, x, y, radius)
-
         val nvgColor1 = getColor(color1)
         val nvgColor2 = getColor(color2)
-
         NanoVG.nvgFillColor(nvg, nvgColor1)
         NanoVG.nvgFillColor(nvg, nvgColor2)
-
-        NanoVG.nvgFillPaint(nvg, NanoVG.nvgLinearGradient(nvg, x, y, radius, radius, nvgColor1, nvgColor2, bg))
+        NanoVG.nvgFillPaint(
+            nvg,
+            NanoVG.nvgLinearGradient(nvg, x, y, radius, radius, nvgColor1, nvgColor2, getAvailablePaint())
+        )
         NanoVG.nvgFill(nvg)
     }
 
@@ -497,59 +620,88 @@ class NanoVGManager {
     }
 
     fun drawText(text: String, x: Float, y: Float, color: Color, size: Float, font: Font) {
-        val textY = y + size / 2
+        drawText(text, x, y, color.rgb, size, font)
+    }
 
+    fun drawText(text: String, x: Float, y: Float, color: Int, size: Float, font: Font) {
+        var y = y
+        y += size / 2
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
         NanoVG.nvgTextAlign(nvg, NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE)
-
         val nvgColor = getColor(color)
-
         NanoVG.nvgFillColor(nvg, nvgColor)
-        NanoVG.nvgText(nvg, x, textY, text)
+        NanoVG.nvgText(nvg, x, y, text)
     }
 
-    fun drawFormattedText(text: String, x: Float, y: Float, defaultColor: Color, size: Float, font: Font) {
-        var cursorX = x
-        var currentColor = defaultColor
-        var bold = false
-        var italic = false
+    fun drawBlurredText(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Color,
+        blurRadius: Float,
+        size: Float,
+        align: Int,
+        font: Font
+    ) {
+        drawBlurredText(text, x, y, color.rgb, blurRadius, size, align, font)
+    }
 
-        var i = 0
-        while (i < text.length) {
-            val c = text[i]
-            if (c == 'õ' && i + 1 < text.length) {
-                when (val code = Character.toLowerCase(text[++i])) {
-                    in '0'..'f' -> {
-                        currentColor = getColorByCode(code)
-                        bold = false
-                        italic = false
-                    }
-
-                    'l' -> bold = true
-                    'o' -> italic = true
-                    'r' -> {
-                        currentColor = defaultColor
-                        bold = false
-                        italic = false
-                    }
-                }
-                i++
-                continue
-            }
-
-            val styledFont = getFontWithStyle(font, bold, italic)
-            val s = c.toString()
-            drawText(s, cursorX, y, currentColor, size, styledFont)
-            cursorX += getTextWidth(s, size, styledFont)
-            i++
-        }
+    fun drawBlurredText(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Int,
+        blurRadius: Float,
+        size: Float,
+        align: Int,
+        font: Font
+    ) {
+//        y += size / 2;
+        NanoVG.nvgBeginPath(nvg)
+        NanoVG.nvgFontBlur(nvg, blurRadius)
+        NanoVG.nvgFontSize(nvg, size)
+        NanoVG.nvgFontFace(nvg, font.name)
+        NanoVG.nvgTextAlign(nvg, align)
+        val nvgColor = getColor(color)
+        NanoVG.nvgFillColor(nvg, nvgColor)
+        NanoVG.nvgText(nvg, x, y, text)
+        NanoVG.nvgFontBlur(nvg, 0f)
     }
 
     fun drawTextGlowing(text: String, x: Float, y: Float, color: Color, blurRadius: Float, size: Float, font: Font) {
-        drawTextGlowingBg(text, x, y, color, size, blurRadius, font)
+        drawTextGlowing(text, x, y, color.rgb, blurRadius, size, font)
+    }
+
+    fun drawTextGlowing(text: String, x: Float, y: Float, color: Int, blurRadius: Float, size: Float, font: Font) {
+        drawTextGlowingBg(text, x, y, color, size, blurRadius, NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE, font)
         drawText(text, x, y, color, size, font)
+    }
+
+    fun drawCenteredTextGlowing(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Color,
+        blurRadius: Float,
+        size: Float,
+        font: Font
+    ) {
+        drawCenteredTextGlowing(text, x, y, color.rgb, blurRadius, size, font)
+    }
+
+    fun drawCenteredTextGlowing(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Int,
+        blurRadius: Float,
+        size: Float,
+        font: Font
+    ) {
+        drawTextGlowingBg(text, x, y, color, size, blurRadius, NanoVG.NVG_ALIGN_CENTER or NanoVG.NVG_ALIGN_MIDDLE, font)
+        drawCenteredText(text, x, y, color, size, font)
     }
 
     private fun drawTextGlowingBg(
@@ -559,358 +711,117 @@ class NanoVGManager {
         color: Color,
         size: Float,
         blurRadius: Float,
+        align: Int,
         font: Font
     ) {
-        val textY = y + size / 2
+        drawTextGlowingBg(text, x, y, color.rgb, size, blurRadius, align, font)
+    }
 
+    private fun drawTextGlowingBg(
+        text: String,
+        x: Float,
+        y: Float,
+        color: Int,
+        size: Float,
+        blurRadius: Float,
+        align: Int,
+        font: Font
+    ) {
+        var y = y
+        y += size / 2
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
-        NanoVG.nvgTextAlign(nvg, NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE)
+        NanoVG.nvgTextAlign(nvg, align)
         val nvgColor = getColor(color)
         NanoVG.nvgFillColor(nvg, nvgColor)
         save()
         fontBlur(blurRadius)
-        NanoVG.nvgText(nvg, x, textY, text)
+        NanoVG.nvgText(nvg, x, y, text)
         restore()
     }
 
-    fun drawTextBox(text: String, x: Float, y: Float, maxWidth: Float, color: Color, size: Float, font: Font) {
-        val textY = y + size / 2
 
+    fun drawTextBox(text: String, x: Float, y: Float, maxWidth: Float, color: Color, size: Float, font: Font) {
+        drawTextBox(text, x, y, maxWidth, color.rgb, size, font)
+    }
+
+    fun drawTextBox(text: String, x: Float, y: Float, maxWidth: Float, color: Int, size: Float, font: Font) {
+        var y = y
+        y += size / 2
         NanoVG.nvgBeginPath(nvg)
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
         NanoVG.nvgTextAlign(nvg, NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE)
         val nvgColor = getColor(color)
-
         NanoVG.nvgFillColor(nvg, nvgColor)
-        NanoVG.nvgTextBox(nvg, x, textY, maxWidth, text)
+        NanoVG.nvgTextBox(nvg, x, y, maxWidth, text)
     }
 
+
     fun drawCenteredText(text: String, x: Float, y: Float, color: Color, size: Float, font: Font) {
+        drawCenteredText(text, x, y, color.rgb, size, font)
+    }
+
+    fun drawCenteredText(text: String, x: Float, y: Float, color: Int, size: Float, font: Font) {
         val textWidth = getTextWidth(text, size, font)
         drawText(text, x - (textWidth / 2f), y, color, size, font)
     }
 
     fun getTextWidth(text: String, size: Float, font: Font): Float {
-        val bounds = FloatArray(4)
-
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
-        NanoVG.nvgTextBounds(nvg, 0f, 0f, text, bounds)
+        NanoVG.nvgTextBounds(nvg, 0f, 0f, text, f4Buff)
         NanoVG.nvgTextAlign(nvg, NanoVG.NVG_ALIGN_LEFT or NanoVG.NVG_ALIGN_MIDDLE)
-
-        return bounds[2] - bounds[0]
+        return f4Buff[2] - f4Buff[0]
     }
 
     fun getTextHeight(text: String, size: Float, font: Font): Float {
-        val bounds = FloatArray(4)
-
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
-        NanoVG.nvgTextBounds(nvg, 0f, 0f, text, bounds)
-
-        return bounds[3] - bounds[1]
+        NanoVG.nvgTextBounds(nvg, 0f, 0f, text, f4Buff)
+        return f4Buff[3] - f4Buff[1]
     }
 
     fun getTextBoxHeight(text: String, size: Float, font: Font, maxWidth: Float): Float {
-        val bounds = FloatArray(4)
-
         NanoVG.nvgFontSize(nvg, size)
         NanoVG.nvgFontFace(nvg, font.name)
-        NanoVG.nvgTextBoxBounds(nvg, 0f, 0f, maxWidth, text, bounds)
-
-        return bounds[3] - bounds[1]
+        NanoVG.nvgTextBoxBounds(nvg, 0f, 0f, maxWidth, text, f4Buff)
+        return f4Buff[3] - f4Buff[1]
     }
 
-    fun getLimitText(inputText: String, fontSize: Float, font: Font, width: Float): String {
-        if (width <= 0f) {
-            return ""
-        }
+    fun getLimitText(inputText: String, fontSize: Float, font: Font?, width: Float): String {
         var text = inputText
         var isInRange = false
         var isRemoved = false
-
         while (!isInRange) {
-            if (text.isEmpty()) {
-                isInRange = true
-                continue
-            }
-            if (getTextWidth(text, fontSize, font) > width) {
-                text = text.dropLast(1)
+            if (getTextWidth(text, fontSize, font!!) > width) {
+                text = text.substring(0, text.length - 1)
                 isRemoved = true
             } else {
                 isInRange = true
             }
         }
-
-        if (!isRemoved) {
-            return text
-        }
-
-        var withEllipsis = "$text..."
-        while (withEllipsis.isNotEmpty() && getTextWidth(withEllipsis, fontSize, font) > width) {
-            text = if (text.isNotEmpty()) text.dropLast(1) else ""
-            withEllipsis = "$text..."
-            if (text.isEmpty()) {
-                break
-            }
-        }
-
-        return if (withEllipsis.isEmpty()) "..." else withEllipsis
+        return text + if (isRemoved) "..." else ""
     }
 
-    fun drawSvg(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, color: Color) {
-        if (assetManager.loadSvg(nvg, location, width, height)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getSvg(location, width, height)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
-
-            imagePaint.innerColor(getColor(color))
-            imagePaint.outerColor(getColor(color))
-
-            NanoVG.nvgRect(nvg, x, y, width, height)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
-
-    fun drawImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float) {
-        if (assetManager.loadImage(nvg, location)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getImage(location)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
-
-            NanoVG.nvgRect(nvg, x, y, width, height)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
 
     fun getImageSize(location: ResourceLocation): java.awt.Dimension? {
-        if (!assetManager.loadImage(nvg, location)) {
+        if (!assetManager!!.loadImage(nvg, location)) {
             return null
         }
-        val asset: NVGAsset = assetManager.getImageAsset(location) ?: return null
-        return java.awt.Dimension(asset.width, asset.height)
+        val asset: NVGAsset = assetManager!!.getImageAsset(location) ?: return null
+        return Dimension(asset.width, asset.height)
     }
 
     fun getImageSize(file: File): java.awt.Dimension? {
-        if (!assetManager.loadImage(nvg, file)) {
+        if (!assetManager!!.loadImage(nvg, file)) {
             return null
         }
-        val asset: NVGAsset = assetManager.getImageAsset(file) ?: return null
-        return java.awt.Dimension(asset.width, asset.height)
+        val asset: NVGAsset = assetManager!!.getImageAsset(file) ?: return null
+        return Dimension(asset.width, asset.height)
     }
 
-    fun drawImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, alpha: Int) {
-        if (assetManager.loadImage(nvg, location)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getImage(location)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha.toFloat(), imagePaint)
-
-            NanoVG.nvgRect(nvg, x, y, width, height)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
-
-    fun drawImage(file: File, x: Float, y: Float, width: Float, height: Float) {
-        if (assetManager.loadImage(nvg, file)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getImage(file)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
-
-            NanoVG.nvgRect(nvg, x, y, width, height)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
-
-    fun drawImage(texture: Int, x: Float, y: Float, width: Float, height: Float, alpha: Float) {
-        if (assetManager.loadImage(nvg, texture, width, height)) {
-            val image = assetManager.getImage(texture)
-
-            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf(-height.toInt()))
-            val p = NVGPaint.calloc()
-
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, p)
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgRect(nvg, x, y, width, height)
-            NanoVG.nvgFillPaint(nvg, p)
-            NanoVG.nvgFill(nvg)
-            NanoVG.nvgClosePath(nvg)
-
-            p.free()
-        }
-    }
-
-    fun drawImage(texture: Int, x: Float, y: Float, width: Float, height: Float) {
-        drawImage(texture, x, y, width, height, 1.0f)
-    }
-
-    fun drawRoundedImage(texture: Int, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
-        if (assetManager.loadImage(nvg, texture, width, height)) {
-            val image = assetManager.getImage(texture)
-
-            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf(-height.toInt()))
-            val p = NVGPaint.calloc()
-
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, p)
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-            NanoVG.nvgFillPaint(nvg, p)
-            NanoVG.nvgFill(nvg)
-            NanoVG.nvgClosePath(nvg)
-
-            p.free()
-        }
-    }
-
-    fun drawRoundedImage(texture: Int, x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        drawRoundedImage(texture, x, y, width, height, radius, 1.0f)
-    }
-
-    fun drawPlayerHead(
-        location: ResourceLocation?,
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        radius: Float,
-        alpha: Float
-    ) {
-        if (location == null || mc.textureManager.getTexture(location) == null) {
-            return
-        }
-
-        val texture = mc.textureManager.getTexture(location).glTextureId
-        if (assetManager.loadImage(nvg, texture, width, height)) {
-            val image = assetManager.getImage(texture)
-
-            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf(-height.toInt()))
-            val p = NVGPaint.calloc()
-
-            val sizeMultiplier = 8f
-
-            NanoVG.nvgImagePattern(
-                nvg,
-                x - width / 4 * sizeMultiplier / 2,
-                y - height / 4 * sizeMultiplier / 2,
-                width * sizeMultiplier,
-                height * sizeMultiplier,
-                0f,
-                image,
-                alpha,
-                p
-            )
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-            NanoVG.nvgFillPaint(nvg, p)
-            NanoVG.nvgFill(nvg)
-            NanoVG.nvgClosePath(nvg)
-
-            NanoVG.nvgImagePattern(
-                nvg,
-                x - width * 3.25f * sizeMultiplier / 2,
-                y - height / 4 * sizeMultiplier / 2,
-                width * sizeMultiplier,
-                height * sizeMultiplier,
-                0f,
-                image,
-                alpha,
-                p
-            )
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-            NanoVG.nvgFillPaint(nvg, p)
-            NanoVG.nvgFill(nvg)
-            NanoVG.nvgClosePath(nvg)
-
-            p.free()
-        }
-    }
-
-    fun drawPlayerHead(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        drawPlayerHead(location, x, y, width, height, radius, 1.0f)
-    }
-
-    fun drawRoundedImage(
-        location: ResourceLocation,
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        radius: Float,
-        alpha: Float
-    ) {
-        if (assetManager.loadImage(nvg, location)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getImage(location)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, imagePaint)
-
-            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
-
-    fun drawRoundedImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        drawRoundedImage(location, x, y, width, height, radius, 1.0f)
-    }
-
-    fun drawRoundedImage(file: File, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
-        if (assetManager.loadImage(nvg, file)) {
-            val imagePaint = NVGPaint.calloc()
-            val image = assetManager.getImage(file)
-
-            NanoVG.nvgBeginPath(nvg)
-            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, imagePaint)
-
-            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
-            NanoVG.nvgFillPaint(nvg, imagePaint)
-            NanoVG.nvgFill(nvg)
-
-            imagePaint.free()
-        }
-    }
-
-    fun drawRoundedImage(file: File, x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        drawRoundedImage(file, x, y, width, height, radius, 1.0f)
-    }
-
-    fun loadImage(file: File) {
-        assetManager.loadImage(nvg, file)
-    }
-
-    fun loadImage(location: ResourceLocation) {
-        assetManager.loadImage(nvg, location)
-    }
-
-    fun scale(x: Float, y: Float, scale: Float) {
-        scale(x, y, scale, scale)
-    }
 
     fun scale(x: Float, y: Float, scaleX: Float, scaleY: Float) {
         NanoVG.nvgTranslate(nvg, x, y)
@@ -918,42 +829,27 @@ class NanoVGManager {
         NanoVG.nvgTranslate(nvg, -x, -y)
     }
 
-    fun scale(x: Float, y: Float, width: Float, height: Float, scale: Float) {
-        val centerX = x + width / 2f
-        val centerY = y + height / 2f
-        scale(centerX, centerY, scale, scale)
-    }
 
-    fun rotate(x: Float, y: Float, width: Float, height: Float, angle: Float) {
-        val centerX = x + width / 2f
-        val centerY = y + height / 2f
-        rotateAt(centerX, centerY, angle)
-    }
-
-    fun rotateAt(x: Float, y: Float, angleRadians: Float) {
+    fun scale(x: Float, y: Float, scale: Float) {
         NanoVG.nvgTranslate(nvg, x, y)
-        NanoVG.nvgRotate(nvg, angleRadians)
+        NanoVG.nvgScale(nvg, scale, scale)
         NanoVG.nvgTranslate(nvg, -x, -y)
     }
 
-    fun rotateDegrees(x: Float, y: Float, width: Float, height: Float, angleDegrees: Float) {
-        rotate(x, y, width, height, Math.toRadians(angleDegrees.toDouble()).toFloat())
+    fun scale(x: Float, y: Float, width: Float, height: Float, scale: Float) {
+        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2)
+        NanoVG.nvgScale(nvg, scale, scale)
+        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2)
     }
 
-    fun rotateDegreesAt(x: Float, y: Float, angleDegrees: Float) {
-        rotateAt(x, y, Math.toRadians(angleDegrees.toDouble()).toFloat())
+    fun rotate(x: Float, y: Float, width: Float, height: Float, angle: Float) {
+        NanoVG.nvgTranslate(nvg, (x + (x + width)) / 2, (y + (y + height)) / 2)
+        NanoVG.nvgRotate(nvg, angle)
+        NanoVG.nvgTranslate(nvg, -(x + (x + width)) / 2, -(y + (y + height)) / 2)
     }
 
     fun translate(x: Float, y: Float) {
         NanoVG.nvgTranslate(nvg, x, y)
-    }
-
-    fun translateX(x: Float) {
-        translate(x, 0f)
-    }
-
-    fun translateY(y: Float) {
-        translate(0f, y)
     }
 
     fun setAlpha(alpha: Float) {
@@ -980,6 +876,21 @@ class NanoVGManager {
         NanoVG.nvgRestore(nvg)
     }
 
+
+    fun rotateAt(x: Float, y: Float, angleRadians: Float) {
+        NanoVG.nvgTranslate(nvg, x, y)
+        NanoVG.nvgRotate(nvg, angleRadians)
+        NanoVG.nvgTranslate(nvg, -x, -y)
+    }
+
+    fun rotateDegrees(x: Float, y: Float, width: Float, height: Float, angleDegrees: Float) {
+        rotate(x, y, width, height, Math.toRadians(angleDegrees.toDouble()).toFloat())
+    }
+
+    fun rotateDegreesAt(x: Float, y: Float, angleDegrees: Float) {
+        rotateAt(x, y, Math.toRadians(angleDegrees.toDouble()).toFloat())
+    }
+
     inline fun withState(block: () -> Unit) {
         save()
         try {
@@ -989,74 +900,219 @@ class NanoVGManager {
         }
     }
 
-    inline fun withTranslation(x: Float, y: Float, block: () -> Unit) {
-        withState {
-            translate(x, y)
-            block()
+    fun drawSvg(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, color: Color) {
+        drawSvg(location, x, y, width, height, color.rgb)
+    }
+
+    fun drawSvg(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, color: Int) {
+        if (assetManager!!.loadSvg(nvg, location!!, width, height)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getSvg(location, width, height)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
+            imagePaint.innerColor(getColor(color))
+            imagePaint.outerColor(getColor(color))
+            NanoVG.nvgRect(nvg, x, y, width, height)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
         }
     }
 
-    inline fun withScale(x: Float, y: Float, scale: Float, block: () -> Unit) {
-        withState {
-            scale(x, y, scale)
-            block()
+    fun drawImage(location: ResourceLocation, rect: Rect) {
+        drawImage(location, rect.x, rect.y, rect.width, rect.height)
+    }
+
+    fun drawImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float) {
+        if (assetManager!!.loadImage(nvg, location)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getImage(location)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
+            NanoVG.nvgRect(nvg, x, y, width, height)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
         }
     }
 
-    inline fun withScale(x: Float, y: Float, scaleX: Float, scaleY: Float, block: () -> Unit) {
-        withState {
-            scale(x, y, scaleX, scaleY)
-            block()
+    fun drawImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, alpha: Int) {
+        if (assetManager!!.loadImage(nvg, location)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getImage(location)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha.toFloat(), imagePaint)
+            NanoVG.nvgRect(nvg, x, y, width, height)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
+        }
+    }
+    fun drawImage(file: File, rect: Rect) {
+        drawImage(file, rect.x, rect.y, rect.width, rect.height)
+    }
+
+    fun drawImage(file: File, x: Float, y: Float, width: Float, height: Float) {
+        if (assetManager!!.loadImage(nvg, file)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getImage(file)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, 1f, imagePaint)
+            NanoVG.nvgRect(nvg, x, y, width, height)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
         }
     }
 
-    inline fun withScale(x: Float, y: Float, width: Float, height: Float, scale: Float, block: () -> Unit) {
-        withState {
-            scale(x, y, width, height, scale)
-            block()
+    fun drawImage(texture: Int, x: Float, y: Float, width: Float, height: Float, alpha: Float, flags: Int) {
+        if (assetManager!!.loadImage(nvg, texture, width, height, flags)) {
+            val image = assetManager!!.getImage(texture)
+            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf((-height).toInt()))
+            val p = getAvailablePaint()
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, p)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgRect(nvg, x, y, width, height)
+            NanoVG.nvgFillPaint(nvg, p)
+            NanoVG.nvgFill(nvg)
+            NanoVG.nvgClosePath(nvg)
         }
     }
 
-    inline fun withRotationAt(x: Float, y: Float, angleRadians: Float, block: () -> Unit) {
-        withState {
-            rotateAt(x, y, angleRadians)
-            block()
+    fun drawImage(texture: Int, x: Float, y: Float, width: Float, height: Float, alpha: Float) {
+        drawImage(texture, x, y, width, height, alpha, 0)
+    }
+
+    fun drawImage(texture: Int, x: Float, y: Float, width: Float, height: Float) {
+        drawImage(texture, x, y, width, height, 1.0f)
+    }
+
+    fun drawRoundedImage(texture: Int, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
+        if (assetManager!!.loadImage(nvg, texture, width, height)) {
+            val image = assetManager!!.getImage(texture)
+            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf((-height).toInt()))
+            val p = getAvailablePaint()
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, p)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+            NanoVG.nvgFillPaint(nvg, p)
+            NanoVG.nvgFill(nvg)
+            NanoVG.nvgClosePath(nvg)
         }
     }
 
-    inline fun withRotation(x: Float, y: Float, width: Float, height: Float, angleRadians: Float, block: () -> Unit) {
-        withState {
-            rotate(x, y, width, height, angleRadians)
-            block()
+    fun drawRoundedImage(texture: Int, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+        drawRoundedImage(texture, x, y, width, height, radius, 1.0f)
+    }
+
+
+    fun drawPlayerHead(
+        location: ResourceLocation?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        alpha: Float
+    ) {
+        if (location == null || mc.textureManager.getTexture(location) == null) {
+            return
+        }
+        val texture = mc.textureManager.getTexture(location).glTextureId
+        if (assetManager!!.loadImage(nvg, texture, width, height)) {
+            val image = assetManager!!.getImage(texture)
+            NanoVG.nvgImageSize(nvg, image, intArrayOf(width.toInt()), intArrayOf((-height).toInt()))
+            val p = getAvailablePaint()
+            val sizeMultiplier = 8f
+            NanoVG.nvgImagePattern(
+                nvg,
+                x - width / 4 * sizeMultiplier / 2,
+                y - height / 4 * sizeMultiplier / 2,
+                width * sizeMultiplier,
+                height * sizeMultiplier,
+                0f,
+                image,
+                alpha,
+                p
+            )
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+            NanoVG.nvgFillPaint(nvg, p)
+            NanoVG.nvgFill(nvg)
+            NanoVG.nvgClosePath(nvg)
+            NanoVG.nvgImagePattern(
+                nvg,
+                x - width * 3.25f * sizeMultiplier / 2,
+                y - height / 4 * sizeMultiplier / 2,
+                width * sizeMultiplier,
+                height * sizeMultiplier,
+                0f,
+                image,
+                alpha,
+                p
+            )
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+            NanoVG.nvgFillPaint(nvg, p)
+            NanoVG.nvgFill(nvg)
+            NanoVG.nvgClosePath(nvg)
         }
     }
 
-    inline fun withRotationDegrees(x: Float, y: Float, width: Float, height: Float, angleDegrees: Float, block: () -> Unit) {
-        withState {
-            rotateDegrees(x, y, width, height, angleDegrees)
-            block()
+    fun drawPlayerHead(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+        drawPlayerHead(location, x, y, width, height, radius, 1.0f)
+    }
+
+    fun drawRoundedImage(
+        location: ResourceLocation?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        alpha: Float
+    ) {
+        if (assetManager!!.loadImage(nvg, location!!)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getImage(location)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, imagePaint)
+            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
         }
     }
 
-    inline fun withAlpha(alpha: Float, block: () -> Unit) {
-        withState {
-            setAlpha(alpha)
-            block()
+    fun drawRoundedImage(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+        drawRoundedImage(location, x, y, width, height, radius, 1.0f)
+    }
+
+    fun drawRoundedImage(file: File?, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
+        if (assetManager!!.loadImage(nvg, file!!)) {
+            val imagePaint = getAvailablePaint()
+            val image = assetManager!!.getImage(file)
+            NanoVG.nvgBeginPath(nvg)
+            NanoVG.nvgImagePattern(nvg, x, y, width, height, 0f, image, alpha, imagePaint)
+            NanoVG.nvgRoundedRect(nvg, x, y, width, height, radius)
+            NanoVG.nvgFillPaint(nvg, imagePaint)
+            NanoVG.nvgFill(nvg)
         }
     }
 
-    inline fun withScissor(x: Float, y: Float, width: Float, height: Float, block: () -> Unit) {
-        withState {
-            scissor(x, y, width, height)
-            block()
-        }
+    fun drawRoundedImage(file: File?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+        drawRoundedImage(file, x, y, width, height, radius, 1.0f)
     }
 
-    inline fun withIntersectScissor(x: Float, y: Float, width: Float, height: Float, block: () -> Unit) {
-        withState {
-            intersectScissor(x, y, width, height)
-            block()
-        }
+    fun loadImage(file: File?) {
+        assetManager!!.loadImage(nvg, file!!)
+    }
+
+    fun loadImage(location: ResourceLocation?) {
+        assetManager!!.loadImage(nvg, location!!)
+    }
+
+    fun getAssetManager(): AssetManager? {
+        return assetManager
+    }
+
+    fun getContext(): Long {
+        return nvg
     }
 
     fun drawScrollbar(
@@ -1127,26 +1183,6 @@ class NanoVGManager {
         }
     }
 
-    fun drawContainer(x: Float, y: Float, width: Float, height: Float, radius: Float, palette: ColorPalette) {
-        drawShadow(x, y, width, height, radius, 7)
-        drawRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            radius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
-        )
-        drawRoundedRect(
-            x + 1f,
-            y + 1f,
-            width - 2f,
-            height - 2f,
-            radius - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
-        )
-    }
-
     fun getColor(color: Color?): NVGColor {
         val safeColor = color ?: Color.RED
         colorCache[safeColor.rgb]?.let { return it }
@@ -1163,88 +1199,6 @@ class NanoVGManager {
         return nvgColor
     }
 
-    fun getContext(): Long {
-        return nvg
-    }
-
-    fun getColorByCode(code: Char): Color {
-        return when (Character.toLowerCase(code)) {
-            '0' -> Color(0, 0, 0)
-            '1' -> Color(0, 0, 170)
-            '2' -> Color(0, 170, 0)
-            '3' -> Color(0, 170, 170)
-            '4' -> Color(170, 0, 0)
-            '5' -> Color(170, 0, 170)
-            '6' -> Color(255, 170, 0)
-            '7' -> Color(170, 170, 170)
-            '8' -> Color(85, 85, 85)
-            '9' -> Color(85, 85, 255)
-            'a' -> Color(85, 255, 85)
-            'b' -> Color(85, 255, 255)
-            'c' -> Color(255, 85, 85)
-            'd' -> Color(255, 85, 255)
-            'e' -> Color(255, 255, 85)
-            'f' -> Color(255, 255, 255)
-            else -> Color.WHITE
-        }
-    }
-
-    fun getFontWithStyle(base: Font, bold: Boolean, italic: Boolean): Font {
-        return if (bold && italic) {
-            Fonts.SEMIBOLD
-        } else if (bold) {
-            Fonts.MEDIUM
-        } else if (italic) {
-            Fonts.REGULAR
-        } else {
-            base
-        }
-    }
-
-    fun drawSettingSurface(
-        palette: ColorPalette,
-        accent: AccentColor,
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        radius: Float,
-        hoverProgress: Float
-    ) {
-        val overlayAlpha = (18 + hoverProgress * 26).toInt()
-        val fillAlpha = (180 + hoverProgress * 32).toInt()
-        val outlineAlpha = (hoverProgress * 160).toInt()
-
-        drawRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            radius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), fillAlpha)
-        )
-        drawGradientRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            radius,
-            ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
-            ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
-        )
-
-        if (outlineAlpha > 0) {
-            drawOutlineRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                radius,
-                1.0f,
-                ColorUtils.applyAlpha(accent.getColor2(), outlineAlpha)
-            )
-        }
-    }
 
     fun drawDivider(
         x: Float,
@@ -1435,45 +1389,5 @@ class NanoVGManager {
         val iconWidth = getTextWidth(icon, size, iconFont)
         val iconHeight = getTextHeight(icon, size, iconFont)
         drawText(icon, x - iconWidth / 2, y - iconHeight / 2, color, size, iconFont)
-    }
-
-    fun drawStripedRect(
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        stripeWidth: Float,
-        angle: Float,
-        color1: Color,
-        color2: Color
-    ) {
-        withRotationAt(x + width / 2f, y + height / 2f, Math.toRadians(angle.toDouble()).toFloat()) {
-            val diagonal = kotlin.math.sqrt((width * width + height * height).toDouble()).toFloat()
-            var currentX = x - diagonal
-            while (currentX < x + width + diagonal) {
-                drawRect(currentX, y, stripeWidth, height, color1)
-                currentX += stripeWidth * 2
-            }
-
-            currentX = x - diagonal + stripeWidth
-            while (currentX < x + width + diagonal) {
-                drawRect(currentX, y, stripeWidth, height, color2)
-                currentX += stripeWidth * 2
-            }
-        }
-    }
-
-    fun drawGlassRect(
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        radius: Float,
-        color: Color,
-        blurAmount: Float = 0.3f
-    ) {
-        val glassColor = ColorUtils.applyAlpha(color, (255 * (1f - blurAmount)).toInt())
-        drawRoundedRect(x, y, width, height, radius, glassColor)
-        drawOutlineRoundedRect(x, y, width, height, radius, 1f, ColorUtils.applyAlpha(Color.WHITE, 50))
     }
 }

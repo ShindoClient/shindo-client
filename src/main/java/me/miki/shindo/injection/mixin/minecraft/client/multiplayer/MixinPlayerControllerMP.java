@@ -38,6 +38,9 @@ public class MixinPlayerControllerMP {
         this.netClientHandler = netClientHandler;
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public void resetBlockRemoving() {
 

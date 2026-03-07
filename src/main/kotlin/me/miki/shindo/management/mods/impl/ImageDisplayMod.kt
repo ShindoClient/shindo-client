@@ -2,7 +2,8 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -39,13 +40,8 @@ class ImageDisplayMod :
     private var prevImage: File? = null
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
+    fun onRender2D(event: EventNVG?) {
 
-        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
-    }
-
-    private fun drawNanoVG() {
         if (imageFile != null && imageFile != prevImage) {
             prevImage = imageFile
             try {
@@ -61,13 +57,13 @@ class ImageDisplayMod :
 
             if (width > 500 || height > 500) {
                 if ((width < 1000 || height < 1000)) {
-                    width = width / 2
-                    height = height / 2
+                    width /= 2
+                    height /= 2
                 }
 
                 if ((width > 1000 || height > 1000)) {
-                    width = width / 3
-                    height = height / 3
+                    width /= 3
+                    height /= 3
                 }
             }
 

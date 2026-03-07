@@ -5,17 +5,17 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.profile.mainmenu.impl.Background
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
+import me.miki.shindo.management.profile.mainmenu.impl.PanoramaBackground
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.file.FileUtils
 import net.minecraft.util.ResourceLocation
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 class BackgroundManager {
 
@@ -34,10 +34,7 @@ class BackgroundManager {
         backgrounds.add(DefaultBackground(0, TranslateText.BUTTERFLY, ResourceLocation("shindo/mainmenu/background-butterfly.png")))
         backgrounds.add(DefaultBackground(1, TranslateText.NIGHT, ResourceLocation("shindo/mainmenu/background-night.png")))
         backgrounds.add(DefaultBackground(2, TranslateText.DOLPHIN, ResourceLocation("shindo/mainmenu/background-dolphin.png")))
-
-        val shaderDir = File(fileManager.shindoDir, "shaders")
-        if (!shaderDir.exists()) fileManager.createDir(shaderDir)
-
+        backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
         backgrounds.add(DefaultBackground(999, TranslateText.ADD, null))
 
         val removeImages = load()
@@ -122,7 +119,7 @@ class BackgroundManager {
 
     fun removeCustomBackground(cusBackground: CustomBackground) {
         Shindo.getInstance().nanoVGManager?.let { nvg ->
-            nvg.assetManager.removeImage(nvg.getContext(), cusBackground.getImage())
+            nvg.getAssetManager()!!.removeImage(nvg.getContext(), cusBackground.getImage())
         }
         backgrounds.remove(cusBackground)
         removeBackgrounds.add(cusBackground)

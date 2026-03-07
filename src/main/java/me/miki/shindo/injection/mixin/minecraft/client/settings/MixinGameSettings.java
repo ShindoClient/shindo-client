@@ -11,8 +11,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class MixinGameSettings {
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public static boolean isKeyDown(KeyBinding key) {

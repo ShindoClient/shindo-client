@@ -203,30 +203,15 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             Fonts.LEGACYICON
         )
 
-        shopFocusAnimation.setAnimation(
+        skinFocusAnimation.setAnimation(
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f,
             16
         )
 
         nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
         nvg.drawCenteredText(
-            LegacyIcon.SHOPPING,
-            sr.scaledWidth - 78f + 4.5f,
-            9.5f,
-            Color(255 - (shopFocusAnimation.value * 200).toInt(), 255, 255),
-            15f,
-            Fonts.LEGACYICON
-        )
-
-        skinFocusAnimation.setAnimation(
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 112f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16
-        )
-
-        nvg.drawRoundedRect(sr.scaledWidth - 112f, 6f, 22f, 22f, 4f, controlColor)
-        nvg.drawCenteredText(
             LegacyIcon.SKIN,
-            sr.scaledWidth - 104f + 3.5f,
+            sr.scaledWidth - 78f + 4.5f,
             9.5f,
             Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255),
             15f,
@@ -294,12 +279,9 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             }
 
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) {
-                setCurrentScene(getSceneByClass(ShopScene::class.java))
-            }
-
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 112f, 6f, 22f, 22f)) {
                 setCurrentScene(getSceneByClass(SkinScene::class.java))
             }
+
         }
 
         currentScene?.mouseClicked(mouseX, mouseY, mouseButton)

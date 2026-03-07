@@ -1,7 +1,7 @@
 package me.miki.shindo.injection.mixin.minecraft.client.model;
 
 import com.google.common.collect.Maps;
-import me.miki.shindo.injection.mixin.interfaces.client.model.IMixinModelBase;
+import me.miki.shindo.injection.interfaces.IMixinModelBase;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.TextureOffset;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.injection.mixin.interfaces.network.IMixinS14PacketEntity
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinS14PacketEntity
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.event.impl.EventUpdate
@@ -60,10 +60,10 @@ class PlayerPredicatorMod : Mod(
             val s14PacketEntity = packet
             val iS14PacketEntity = s14PacketEntity as IMixinS14PacketEntity
 
-            if (iS14PacketEntity.getEntityId() == target!!.entityId) {
-                realTargetPosition.x += iS14PacketEntity.getPosX() / 32.0
-                realTargetPosition.y += iS14PacketEntity.getPosY() / 32.0
-                realTargetPosition.z += iS14PacketEntity.getPosZ() / 32.0
+            if (iS14PacketEntity.entityId == target!!.entityId) {
+                realTargetPosition.x += iS14PacketEntity.posX / 32.0
+                realTargetPosition.y += iS14PacketEntity.posY / 32.0
+                realTargetPosition.z += iS14PacketEntity.posZ / 32.0
             }
         } else if (packet is S18PacketEntityTeleport) {
             val s18PacketEntityTeleport = packet

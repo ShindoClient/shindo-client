@@ -2,7 +2,7 @@ package me.miki.shindo.management.addons.rpo.repository
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.IResourcePack
 import net.minecraft.client.resources.ResourcePackRepository
@@ -116,19 +116,19 @@ class ResourcePackRepositoryCustom(
             val mc = Minecraft.getMinecraft()
 
             try {
-                val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
-                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as net.minecraft.client.resources.ResourcePackRepository
+                val fileResourcepacks = (mc as IMixinMinecraft).fileResourcepacks
+                val originalRepo = (mc as IMixinMinecraft).mcResourcePackRepository as net.minecraft.client.resources.ResourcePackRepository
 
                 val customRepo = ResourcePackRepositoryCustom(
                     fileResourcepacks,
                     File(mc.mcDataDir, "server-resource-packs"),
-                    (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack,
+                    (mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack,
                     originalRepo.rprMetadataSerializer,
                     mc.gameSettings,
                     enabledPacks
                 )
 
-                (mc as IMixinMinecraft).setMcResourcePackRepository(customRepo)
+                (mc as IMixinMinecraft).mcResourcePackRepository = customRepo
             } catch (t: Throwable) {
                 throw RuntimeException("Failed to override resource pack repository", t)
             }

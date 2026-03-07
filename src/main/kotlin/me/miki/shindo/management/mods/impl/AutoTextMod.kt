@@ -2,7 +2,7 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.gui.GuiAutoTextManager
 import me.miki.shindo.management.autotext.AutoTextManager
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod

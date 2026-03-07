@@ -1,10 +1,10 @@
 package me.miki.shindo.api.hypixel
 
 import com.google.gson.JsonObject
-import me.miki.client_api.hypixel.HypixelApiProvider
-import me.miki.client_api.hypixel.PitEvent
-import me.miki.client_api.hypixel.PitItem
-import me.miki.client_api.hypixel.PitPlayerStats
+import me.miki.shindo.addon.api.hypixel.HypixelApiProvider
+import me.miki.shindo.addon.api.hypixel.PitEvent
+import me.miki.shindo.addon.api.hypixel.PitItem
+import me.miki.shindo.addon.api.hypixel.PitPlayerStats
 import me.miki.shindo.Shindo
 import me.miki.shindo.libs.hypixel.client.HypixelHttpClient
 import me.miki.shindo.libs.hypixel.exceptions.HypixelApiException

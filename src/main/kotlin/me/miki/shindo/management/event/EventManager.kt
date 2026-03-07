@@ -1,6 +1,6 @@
 package me.miki.shindo.management.event
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.addon.api.event.EventTarget as AddonEventTarget
 import java.lang.reflect.Method
 import java.util.HashMap
 
@@ -26,7 +26,8 @@ class EventManager {
 
     private fun register(method: Method, o: Any) {
         val clazz = method.parameterTypes[0]
-        val methodData = Data(o, method, method.getAnnotation(EventTarget::class.java).value)
+        val priority = getPriority(method)
+        val methodData = Data(o, method, priority)
 
         if (!methodData.target.isAccessible) {
             methodData.target.isAccessible = true
@@ -111,7 +112,7 @@ class EventManager {
     }
 
     private fun isMethodBad(method: Method): Boolean {
-        return method.parameterTypes.size != 1 || !method.isAnnotationPresent(EventTarget::class.java)
+        return method.parameterTypes.size != 1 || !isEventTargetMethod(method)
     }
 
     private fun isMethodBad(method: Method, clazz: Class<out Event>): Boolean {
@@ -128,5 +129,24 @@ class EventManager {
 
     fun shutdown() {
         REGISTRY_MAP.clear()
+    }
+
+    private fun isEventTargetMethod(method: Method): Boolean {
+        return method.isAnnotationPresent(EventTarget::class.java)
+            || method.isAnnotationPresent(AddonEventTarget::class.java)
+    }
+
+    private fun getPriority(method: Method): Byte {
+        val internal = method.getAnnotation(EventTarget::class.java)
+        if (internal != null) {
+            return internal.value
+        }
+
+        val addon = method.getAnnotation(AddonEventTarget::class.java)
+        if (addon != null) {
+            return addon.value
+        }
+
+        return 2
     }
 }

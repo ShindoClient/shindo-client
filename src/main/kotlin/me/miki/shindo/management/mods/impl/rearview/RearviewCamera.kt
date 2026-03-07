@@ -1,10 +1,11 @@
 package me.miki.shindo.management.mods.impl.rearview
 
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.entity.Entity
 import org.lwjgl.opengl.ARBFramebufferObject
 import org.lwjgl.opengl.GL11
 import java.nio.IntBuffer
@@ -12,9 +13,9 @@ import java.nio.IntBuffer
 class RearviewCamera {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
-    private val mirrorFBO: Int
-    val texture: Int
-    private val mirrorDepth: Int
+    private val mirrorFBO: Int = ARBFramebufferObject.glGenFramebuffers()
+    val texture: Int = GL11.glGenTextures()
+    private val mirrorDepth: Int = GL11.glGenTextures()
     private val mirrorRenderGlobal: RenderGlobalHelper
     private var renderEndNanoTime: Long = 0
     private var fov: Float
@@ -24,9 +25,6 @@ class RearviewCamera {
     private var lockCamera: Boolean
 
     init {
-        mirrorFBO = ARBFramebufferObject.glGenFramebuffers()
-        this.texture = GL11.glGenTextures()
-        mirrorDepth = GL11.glGenTextures()
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
@@ -49,36 +47,29 @@ class RearviewCamera {
     }
 
     fun updateMirror() {
-        val w: Int
-        val h: Int
         val y: Float
         val py: Float
         val p: Float
         val pp: Float
-        val hide: Boolean
-        val view: Int
-        val limit: Int
         var endTime: Long = 0
-
-        val currentScreen: GuiScreen?
 
         if (!this.firstUpdate) {
             mc.renderGlobal.loadRenderers()
             this.firstUpdate = true
         }
 
-        w = mc.displayWidth
-        h = mc.displayHeight
-        val rve = (mc as IMixinMinecraft).getRenderViewEntity() as net.minecraft.entity.Entity
+        val w: Int = mc.displayWidth
+        val h: Int = mc.displayHeight
+        val rve = (mc as IMixinMinecraft).renderViewEntity as Entity
         y = rve.rotationYaw
         py = rve.prevRotationYaw
         p = rve.rotationPitch
         pp = rve.prevRotationPitch
-        hide = mc.gameSettings.hideGUI
-        view = mc.gameSettings.thirdPersonView
-        limit = mc.gameSettings.limitFramerate
+        val hide: Boolean = mc.gameSettings.hideGUI
+        val view: Int = mc.gameSettings.thirdPersonView
+        val limit: Int = mc.gameSettings.limitFramerate
         fov = mc.gameSettings.fovSetting
-        currentScreen = mc.currentScreen
+        val currentScreen: GuiScreen? = mc.currentScreen
 
         switchToFB()
 
@@ -110,7 +101,7 @@ class RearviewCamera {
 
         GL11.glPushAttrib(272393)
 
-        mc.entityRenderer.renderWorld(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks, System.nanoTime())
+        mc.entityRenderer.renderWorld(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks, System.nanoTime())
         mc.entityRenderer.setupOverlayRendering()
 
         if (limit != 0) {

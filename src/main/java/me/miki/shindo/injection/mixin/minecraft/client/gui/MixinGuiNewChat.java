@@ -108,7 +108,7 @@ public abstract class MixinGuiNewChat extends Gui {
     }
 
     /**
-     * @author
+     * @author MikiDevAHM
      */
     @Overwrite
     public void printChatMessage(IChatComponent component) {

@@ -35,8 +35,7 @@ public class MixinC08PacketPlayerBlockPlacement {
     private float facingZ;
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public void readPacketData(PacketBuffer buf) throws IOException {
@@ -52,8 +51,7 @@ public class MixinC08PacketPlayerBlockPlacement {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public void writePacketData(PacketBuffer buf) throws IOException {

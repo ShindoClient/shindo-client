@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl.skin3d.layers
 
 import com.google.common.collect.Sets
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
+import me.miki.shindo.injection.interfaces.IMixinEntityPlayer
+import me.miki.shindo.injection.interfaces.IMixinRenderPlayer
 import me.miki.shindo.management.mods.impl.Skin3DMod
 import me.miki.shindo.utils.SkinUtils
 import me.miki.shindo.utils.SkinUtils.hasCustomSkin
@@ -15,12 +15,8 @@ import net.minecraft.init.Items
 import net.minecraft.item.Item
 
 class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : LayerRenderer<AbstractClientPlayer?> {
-    private val thinArms: Boolean
+    private val thinArms: Boolean = (playerRenderer as IMixinRenderPlayer).hasThinArms()
     private val hideHeadLayers: MutableSet<Item?> = Sets.newHashSet<Item?>(Items.skull)
-
-    init {
-        thinArms = (playerRenderer as IMixinRenderPlayer).hasThinArms()
-    }
 
     override fun doRenderLayer(
         player: AbstractClientPlayer?,
@@ -52,7 +48,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
 
         val settings = player as IMixinEntityPlayer
 
-        if (settings.getHeadLayers() == null && !setupModel(player, settings)) {
+        if (settings.headLayers == null && !setupModel(player, settings)) {
             return
         }
 
@@ -70,11 +66,11 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
     }
 
     fun renderCustomHelmet(settings: IMixinEntityPlayer, abstractClientPlayer: AbstractClientPlayer, deltaTick: Float) {
-        if (settings.getHeadLayers() == null) {
+        if (settings.headLayers == null) {
             return
         }
 
-        if (playerRenderer.getMainModel().bipedHead.isHidden) {
+        if (playerRenderer.mainModel.bipedHead.isHidden) {
             return
         }
 
@@ -86,12 +82,12 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
             GlStateManager.translate(0.0f, 0.2f, 0.0f)
         }
 
-        playerRenderer.getMainModel().bipedHead.postRender(0.0625f)
+        playerRenderer.mainModel.bipedHead.postRender(0.0625f)
         GlStateManager.scale(0.0625, 0.0625, 0.0625)
         GlStateManager.scale(voxelSize, voxelSize, voxelSize)
 
         val tintRed = abstractClientPlayer.hurtTime > 0 || abstractClientPlayer.deathTime > 0
-        settings.getHeadLayers().render(tintRed)
+        settings.headLayers.render(tintRed)
         GlStateManager.popMatrix()
     }
 

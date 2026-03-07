@@ -12,6 +12,9 @@ public class MixinModelPlayer extends ModelBiped {
     @Shadow
     private boolean smallArms;
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public void postRenderArm(float scale) {
         if (this.smallArms) {

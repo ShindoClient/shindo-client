@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
@@ -26,11 +27,11 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
     private val df: DateFormat = SimpleDateFormat("HH:mm a", Locale.US)
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
+    fun onRender2D(event: EventNVG?) {
         if (design == Design.SIMPLE) {
             this.draw()
         } else {
-            getInstance().nanoVGManager!!.setupAndDraw(Runnable { this.drawNanoVG() })
+            this.drawNanoVG()
         }
     }
 

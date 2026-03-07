@@ -31,8 +31,12 @@ object Fonts {
     @JvmField
     val UNIFONT = Font("unifont", ResourceLocation(PATH + "unifont/unifont.otf"))
 
+    @JvmField
+    val BANGERS = Font("bangers", ResourceLocation(PATH + "Bangers.ttf"))
+
+
     @JvmStatic
     fun getFonts(): ArrayList<Font> {
-        return ArrayList(Arrays.asList(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
+        return ArrayList(listOf(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
     }
 }

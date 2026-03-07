@@ -1,3 +1,8 @@
+/*
+ * Nanovg Blur
+ * © Shoroa 2026, All Rights Reserved
+ */
+
 package eu.shoroa.contrib.render;
 
 import eu.shoroa.contrib.shader.UIShader;
@@ -7,6 +12,7 @@ import me.miki.shindo.management.language.TranslateText;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.settings.impl.ComboSetting;
 import me.miki.shindo.management.settings.impl.combo.Option;
+import me.miki.shindo.types.Rect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;
@@ -21,10 +27,12 @@ import java.io.IOException;
 
 public class Blur {
     private static final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
-    private static final Minecraft mc = Minecraft.getMinecraft();
+
     private static Framebuffer fboHalf = new Framebuffer(Minecraft.getMinecraft().displayWidth / 2, Minecraft.getMinecraft().displayHeight / 2, false);
     private static Framebuffer fboQuart = new Framebuffer(Minecraft.getMinecraft().displayWidth / 4, Minecraft.getMinecraft().displayHeight / 4, false);
     private static Framebuffer fboEighth = new Framebuffer(Minecraft.getMinecraft().displayWidth / 8, Minecraft.getMinecraft().displayHeight / 8, false);
+
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static int nvgImage = -1;
 
     public static void init() {
@@ -76,11 +84,13 @@ public class Blur {
     }
 
     public static void render() {
+        render(InternalSettingsMod.instance.getBlurStrengthSetting().getValueFloat());
+    }
+
+    public static void render(float strength) {
         if (nvgImage == -1) {
             nvgImage = nvgImageFromHandle(fboHalf.framebufferTexture, mc.displayWidth, mc.displayHeight);
         }
-
-        float settingStrength = InternalSettingsMod.instance.getBlurStrengthSetting().getValueFloat();
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -94,7 +104,7 @@ public class Blur {
         shader.attach();
         shader.uniform(Uniform.makeInt("uTex", 0));
         shader.uniform(Uniform.makeVec2("uResolution", mc.displayWidth, mc.displayHeight));
-        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * settingStrength / 4f));
+        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * strength / 4f));
         shader.rect(0f, 0f, sr.getScaledWidth(), sr.getScaledHeight());
         shader.detach();
 
@@ -105,7 +115,7 @@ public class Blur {
         shader.attach();
         shader.uniform(Uniform.makeInt("uTex", 0));
         shader.uniform(Uniform.makeVec2("uResolution", mc.displayWidth / 2f, mc.displayHeight / 2f));
-        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * settingStrength / 2f));
+        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * strength / 2f));
         shader.rect(0f, 0f, sr.getScaledWidth(), sr.getScaledHeight());
         shader.detach();
 
@@ -116,7 +126,7 @@ public class Blur {
         shader.attach();
         shader.uniform(Uniform.makeInt("uTex", 0));
         shader.uniform(Uniform.makeVec2("uResolution", mc.displayWidth / 4f, mc.displayHeight / 4f));
-        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * settingStrength));
+        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * strength));
         shader.rect(0f, 0f, sr.getScaledWidth(), sr.getScaledHeight());
         shader.detach();
 
@@ -127,7 +137,7 @@ public class Blur {
         shader.attach();
         shader.uniform(Uniform.makeInt("uTex", 0));
         shader.uniform(Uniform.makeVec2("uResolution", mc.displayWidth / 8f, mc.displayHeight / 8f));
-        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * settingStrength));
+        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * strength));
         shader.rect(0f, 0f, sr.getScaledWidth(), sr.getScaledHeight());
         shader.detach();
 
@@ -138,7 +148,7 @@ public class Blur {
         shader.attach();
         shader.uniform(Uniform.makeInt("uTex", 0));
         shader.uniform(Uniform.makeVec2("uResolution", mc.displayWidth / 4f, mc.displayHeight / 4f));
-        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * settingStrength / 2));
+        shader.uniform(Uniform.makeFloat("uRadius", 0.5f * strength / 2));
         shader.rect(0f, 0f, sr.getScaledWidth(), sr.getScaledHeight());
         shader.detach();
 
@@ -169,6 +179,10 @@ public class Blur {
         NanoVG.nvgClosePath(ctx);
 
         paint.free();
+    }
+
+    public static void drawBlur(Rect rect, float radius) {
+        drawBlur(rect.x, rect.y, rect.width, rect.height, radius);
     }
 
     public static void drawBlur(Runnable r) {

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.security.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.security.SecurityFeature
 import net.minecraft.network.play.server.S48PacketResourcePackSend

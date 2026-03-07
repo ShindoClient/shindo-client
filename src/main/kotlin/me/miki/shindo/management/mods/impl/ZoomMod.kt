@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventScrollMouse
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.event.impl.EventZoomFov

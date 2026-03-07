@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderExpBar
 import me.miki.shindo.management.event.impl.EventRenderTooltip
@@ -46,15 +47,18 @@ class ModernHotbarMod :
     }
 
     @EventTarget
+    fun onRenderNVG(event: EventNVG) {
+        drawNanoVG(event.renderer())
+    }
+
+    @EventTarget
     fun onRender2D(event: EventRender2D) {
-        val nvg = getInstance().nanoVGManager
         val sr = ScaledResolution(mc)
         val currentDesign = design
         if (this.isEditing()) {
             return
         }
 
-        nvg!!.setupAndDraw(Runnable { drawNanoVG(nvg) })
 
         if (mc.renderViewEntity is EntityPlayer) {
             val entityplayer = mc.renderViewEntity as EntityPlayer

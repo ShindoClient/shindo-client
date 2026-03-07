@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinRenderManager
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderTick
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity
 import me.miki.shindo.management.event.impl.EventTick

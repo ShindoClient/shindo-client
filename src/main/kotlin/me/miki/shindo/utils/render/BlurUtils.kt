@@ -1,13 +1,14 @@
 package me.miki.shindo.utils.render
 
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.shindo.injection.mixin.interfaces.client.shader.IMixinShaderGroup
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinShaderGroup
 import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Timer
 
 object BlurUtils {
 
@@ -57,7 +58,7 @@ object BlurUtils {
         lastScaleHeight = factor3
 
         val mixinShader = shader as IMixinShaderGroup
-        val shaders = mixinShader.getListShaders()
+        val shaders = mixinShader.listShaders
 
         shaders[0].shaderManager.getShaderUniform("BlurXY")
             .set(x * (sr.scaleFactor / 2.0f), (factor3 - height) * (sr.scaleFactor / 2.0f))
@@ -70,7 +71,7 @@ object BlurUtils {
         shaders[0].shaderManager.getShaderUniform("Radius").set(radius)
         shaders[1].shaderManager.getShaderUniform("Radius").set(radius)
 
-        shader.loadShaderGroup(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
+        shader.loadShaderGroup(((mc as IMixinMinecraft).timer as Timer).renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
     }
 }

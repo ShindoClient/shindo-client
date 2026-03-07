@@ -21,8 +21,7 @@ public class MixinBaseAttribute {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public int hashCode() {

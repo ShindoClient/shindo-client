@@ -1,7 +1,7 @@
 package me.miki.shindo.injection.mixin.minecraft.shader;
 
 import com.google.common.collect.Lists;
-import me.miki.shindo.injection.mixin.interfaces.client.shader.IMixinShaderGroup;
+import me.miki.shindo.injection.interfaces.IMixinShaderGroup;
 import net.minecraft.client.shader.Shader;
 import net.minecraft.client.shader.ShaderGroup;
 import org.spongepowered.asm.mixin.Final;

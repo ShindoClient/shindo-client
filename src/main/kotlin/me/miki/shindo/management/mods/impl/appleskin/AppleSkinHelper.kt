@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl.appleskin
 
-import me.miki.shindo.injection.mixin.interfaces.item.IMixinItemFood
+import me.miki.shindo.injection.interfaces.IMixinItemFood
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
@@ -23,7 +23,7 @@ object AppleSkinHelper {
         val food = stack.item as ItemFood
 
         if (food.getPotionEffect(stack) != null) {
-            return Potion.potionTypes[(food as IMixinItemFood).`client$getPotionID`()].isBadEffect
+            return Potion.potionTypes[(food as IMixinItemFood).potionID].isBadEffect
         }
 
         return false

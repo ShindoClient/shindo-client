@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl.minimap
 
-import me.miki.shindo.injection.mixin.interfaces.world.IMixinWorld
+import me.miki.shindo.injection.interfaces.IMixinWorld
 import net.minecraft.block.material.MapColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GLAllocation
@@ -293,7 +293,7 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
             return null
         }
 
-        if (!(world as IMixinWorld).`client$isLoaded`(x, z, true)) {
+        if (!(world as IMixinWorld).isLoaded(x, z, true)) {
             return null
         }
 

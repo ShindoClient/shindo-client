@@ -1,9 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinRenderManager
 import me.miki.shindo.management.event.impl.EventJump
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.event.impl.EventUpdate
@@ -65,21 +65,21 @@ class JumpCircleMod : Mod(
 
                 val pos = circle.pos()
                 val x: Double =
-                    cos(Math.toRadians(i.toDouble())) * createAnimation(1.0 - circle.getAnimation(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)) * 0.7
+                    cos(Math.toRadians(i.toDouble())) * createAnimation(1.0 - circle.getAnimation(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)) * 0.7
                 val z: Double =
-                    sin(Math.toRadians(i.toDouble())) * createAnimation(1.0 - circle.getAnimation(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)) * 0.7
+                    sin(Math.toRadians(i.toDouble())) * createAnimation(1.0 - circle.getAnimation(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)) * 0.7
                 GL11.glColor4d(
                     red.toDouble(),
                     green.toDouble(),
                     blue.toDouble(),
-                    0.6 * circle.getAnimation(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
+                    0.6 * circle.getAnimation(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)
                 )
                 GL11.glVertex3d(pos.xCoord + x, pos.yCoord + 0.2, pos.zCoord + z)
                 GL11.glColor4d(
                     red.toDouble(),
                     green.toDouble(),
                     blue.toDouble(),
-                    0.2 * circle.getAnimation(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
+                    0.2 * circle.getAnimation(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)
                 )
                 GL11.glVertex3d(pos.xCoord + x * 1.4, pos.yCoord + 0.2, pos.zCoord + z * 1.4)
                 i += 5
@@ -113,9 +113,9 @@ class JumpCircleMod : Mod(
 
         fun pos(): Vec3 {
             return Vec3(
-                this.vector.xCoord - (mc.renderManager as IMixinRenderManager).getRenderPosX(),
-                this.vector.yCoord - (mc.renderManager as IMixinRenderManager).getRenderPosY(),
-                this.vector.zCoord - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
+                this.vector.xCoord - (mc.renderManager as IMixinRenderManager).renderPosX,
+                this.vector.yCoord - (mc.renderManager as IMixinRenderManager).renderPosY,
+                this.vector.zCoord - (mc.renderManager as IMixinRenderManager).renderPosZ
             )
         }
     }

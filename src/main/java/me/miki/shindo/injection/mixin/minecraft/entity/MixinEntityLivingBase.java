@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.entity;
 
-import me.miki.shindo.injection.mixin.interfaces.entity.IMixinEntityLivingBase;
+import me.miki.shindo.injection.interfaces.IMixinEntityLivingBase;
 import me.miki.shindo.management.event.impl.EventLivingUpdate;
 import me.miki.shindo.management.mods.impl.SlowSwingMod;
 import me.miki.shindo.management.settings.impl.NumberSetting;

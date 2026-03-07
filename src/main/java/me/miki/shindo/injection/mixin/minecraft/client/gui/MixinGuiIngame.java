@@ -1,9 +1,10 @@
 package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
 import eu.shoroa.contrib.render.Blur;
+import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiEditHUD;
 import me.miki.shindo.gui.modmenu.GuiModMenu;
-import me.miki.shindo.injection.mixin.interfaces.client.gui.IMixinGuiIngame;
+import me.miki.shindo.injection.interfaces.IMixinGuiIngame;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.AnimationsMod;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
@@ -81,12 +82,12 @@ public abstract class MixinGuiIngame implements IMixinGuiIngame {
 
         new EventRenderDamageTint(partialTicks).call();
 
-        if (!(mc.currentScreen instanceof GuiEditHUD)) {
+        if(!(mc.currentScreen instanceof GuiEditHUD)) {
+            Shindo.getInstance().getNanoVGManager().setupAndDraw(() -> new EventNVG(partialTicks).call());
             new EventRender2D(partialTicks).call();
-
-            if (!(mc.currentScreen instanceof GuiModMenu)) {
-                new EventRenderNotification().call();
-            }
+        }
+        if(!(mc.currentScreen instanceof GuiModMenu)) {
+            new EventRenderNotification().call();
         }
     }
 
@@ -205,7 +206,7 @@ public abstract class MixinGuiIngame implements IMixinGuiIngame {
     }
 
     @Override
-    public int client$getUpdateCounter() {
+    public int getUpdateCounter() {
         return updateCounter;
     }
 }

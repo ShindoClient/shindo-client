@@ -1,12 +1,10 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.rearview.RearviewCamera
-import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
@@ -74,27 +72,22 @@ class RearviewMod :
     }
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
+    fun onRender2D(event: EventNVG) {
 
-        nvg!!.setupAndDraw(Runnable { drawNanoVG(nvg) })
-    }
-
-    private fun drawNanoVG(nvg: NanoVGManager) {
         val width = (rearviewWidthSetting * this.getScale()).toInt()
         val height = (rearviewHeightSetting * this.getScale()).toInt()
 
         rearviewCamera.setFov(fovSetting.toFloat())
         rearviewCamera.setLockCamera(lockCameraSetting)
 
-        nvg.drawShadow(
+        event.renderer().drawShadow(
             this.getX().toFloat(),
             this.getY().toFloat(),
             width.toFloat(),
             height.toFloat(),
             6 * this.getScale()
         )
-        nvg.drawRoundedImage(
+        event.renderer().drawRoundedImage(
             rearviewCamera.texture,
             this.getX().toFloat(),
             (this.getY() + height).toFloat(),

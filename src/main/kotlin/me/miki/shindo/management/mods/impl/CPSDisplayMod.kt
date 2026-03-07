@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventClickMouse
-import me.miki.shindo.management.event.impl.EventRender2D
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
@@ -23,7 +23,7 @@ class CPSDisplayMod :
     private val iconSetting = true
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
+    fun onRender2D(event: EventNVG?) {
         this.draw()
     }
 

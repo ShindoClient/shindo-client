@@ -1,9 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.client_api.event.EventTarget
-import me.miki.shindo.management.event.impl.EventRender2D
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventSwitchTexture
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -35,15 +34,12 @@ class PackDisplayMod :
     }
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val instance = getInstance()
-        val nvg = instance.nanoVGManager
-
+    fun onRender2D(event: EventNVG) {
         if (pack == null) {
             pack = this.getCurrentPack()
         }
 
-        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
+        this.drawNanoVG()
     }
 
     private fun drawNanoVG() {
@@ -81,14 +77,13 @@ class PackDisplayMod :
     }
 
     private fun loadTexture() {
-        var dynamicTexture: DynamicTexture?
-        try {
-            dynamicTexture = DynamicTexture(getCurrentPack()!!.packImage)
+        val dynamicTexture: DynamicTexture? = try {
+            DynamicTexture(getCurrentPack()!!.packImage)
         } catch (e: Exception) {
             try {
-                dynamicTexture = DynamicTexture(((mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack).packImage)
+                DynamicTexture(((mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack).packImage)
             } catch (e1: IOException) {
-                dynamicTexture = TextureUtil.missingTexture
+                TextureUtil.missingTexture
             }
         }
 
@@ -96,10 +91,10 @@ class PackDisplayMod :
     }
 
     private fun getCurrentPack(): IResourcePack? {
-        if (!packs.isEmpty()) {
-            return packs.get(packs.size - 1)!!.resourcePack
+        if (packs.isNotEmpty()) {
+            return packs[packs.size - 1]!!.resourcePack
         }
-        return (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack
+        return (mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack
     }
 }
 

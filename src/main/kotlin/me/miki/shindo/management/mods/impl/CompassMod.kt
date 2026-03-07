@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
@@ -13,6 +14,7 @@ import me.miki.shindo.ui.animation.screen.ScreenStencil
 import net.minecraft.util.MathHelper
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color
+
 
 class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION, LegacyIcon.MOD_COMPASS) {
     private val stencil = ScreenStencil()
@@ -33,23 +35,26 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
     )
     private val widthSetting = 180
 
+
+    @EventTarget
+    fun onRenderNVG(event: EventNVG?) {
+        if (design == Design.SIMPLE) {
+            draw()
+        } else {
+            this.drawBackground(widthSetting.toFloat(), 29f)
+        }
+    }
+
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
-
-        if (design == Design.SIMPLE) {
-            this.draw()
-        } else {
-            nvg!!.setupAndDraw(Runnable {
-                this.drawBackground(widthSetting.toFloat(), 29f)
-            })
+        if (design == Design.FANCY) {
             stencil.wrap(
-                Runnable { drawNanoVG() },
-                this.getX().toFloat(),
-                this.getY().toFloat(),
-                this.getWidth().toFloat(),
-                this.getHeight().toFloat(),
-                6 * this.getScale()
+                this::drawNanoVG,
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat(),
+                6 * getScale()
             )
         }
     }

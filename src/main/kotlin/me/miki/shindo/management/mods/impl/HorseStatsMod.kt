@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -15,13 +16,8 @@ class HorseStatsMod :
     private val df = DecimalFormat("0.0")
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
+    fun onRender2D(event: EventNVG?) {
 
-        nvg!!.setupAndDraw(Runnable { drawNanoVG() })
-    }
-
-    private fun drawNanoVG() {
         var speed = "Speed: 0.0 b/s"
         var jump = "Jump: 0.0 Blocks"
 

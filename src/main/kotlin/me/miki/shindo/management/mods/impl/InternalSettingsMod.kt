@@ -1,9 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo
-import me.miki.shindo.gui.GuiNavigationHub
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventPreRenderTick
@@ -139,7 +138,7 @@ class InternalSettingsMod :
                 val max = combo.getOptions().size
                 var modeIndex = combo.getOptions().indexOf(combo.getOption())
                 modeIndex = if (modeIndex > 0) modeIndex - 1 else max - 1
-                combo.setOption(combo.getOptions().get(modeIndex))
+                combo.setOption(combo.getOptions()[modeIndex])
             }
         }
     }

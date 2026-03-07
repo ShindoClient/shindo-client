@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl.skin3d.layers
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
+import me.miki.shindo.injection.interfaces.IMixinEntityPlayer
+import me.miki.shindo.injection.interfaces.IMixinRenderPlayer
 import me.miki.shindo.management.mods.impl.Skin3DMod
 import me.miki.shindo.management.mods.impl.skin3d.render.CustomizableModelPart
 import me.miki.shindo.utils.SkinUtils
@@ -16,18 +16,17 @@ import net.minecraft.entity.player.EnumPlayerModelParts
 import java.util.function.Supplier
 
 class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<AbstractClientPlayer?> {
-    private val thinArms: Boolean
+    private val thinArms: Boolean = (playerRenderer as IMixinRenderPlayer).hasThinArms()
     private val bodyLayers: MutableList<Layer> = ArrayList<Layer>()
 
     init {
-        thinArms = (playerRenderer as IMixinRenderPlayer).hasThinArms()
         bodyLayers.add(
             Layer(
                 0,
                 false,
                 EnumPlayerModelParts.LEFT_PANTS_LEG,
                 Shape.LEGS,
-                Supplier { playerRenderer.getMainModel().bipedLeftLeg })
+                Supplier { playerRenderer.mainModel.bipedLeftLeg })
         )
         bodyLayers.add(
             Layer(
@@ -35,7 +34,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 false,
                 EnumPlayerModelParts.RIGHT_PANTS_LEG,
                 Shape.LEGS,
-                Supplier { playerRenderer.getMainModel().bipedRightLeg })
+                Supplier { playerRenderer.mainModel.bipedRightLeg })
         )
         bodyLayers.add(
             Layer(
@@ -43,7 +42,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 false,
                 EnumPlayerModelParts.LEFT_SLEEVE,
                 if (thinArms) Shape.ARMS_SLIM else Shape.ARMS,
-                Supplier { playerRenderer.getMainModel().bipedLeftArm })
+                Supplier { playerRenderer.mainModel.bipedLeftArm })
         )
         bodyLayers.add(
             Layer(
@@ -51,7 +50,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 true,
                 EnumPlayerModelParts.RIGHT_SLEEVE,
                 if (thinArms) Shape.ARMS_SLIM else Shape.ARMS,
-                Supplier { playerRenderer.getMainModel().bipedRightArm })
+                Supplier { playerRenderer.mainModel.bipedRightArm })
         )
         bodyLayers.add(
             Layer(
@@ -59,7 +58,7 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                 false,
                 EnumPlayerModelParts.JACKET,
                 Shape.BODY,
-                Supplier { playerRenderer.getMainModel().bipedBody })
+                Supplier { playerRenderer.mainModel.bipedBody })
         )
     }
 
@@ -90,11 +89,11 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
 
         val settings = player as IMixinEntityPlayer
 
-        if (settings.getSkinLayers() == null && !setupModel(player, settings)) {
+        if (settings.skinLayers == null && !setupModel(player, settings)) {
             return
         }
 
-        renderLayers(player, settings.getSkinLayers(), deltaTick)
+        renderLayers(player, settings.skinLayers, deltaTick)
     }
 
     private fun setupModel(abstractClientPlayerEntity: AbstractClientPlayer, settings: IMixinEntityPlayer): Boolean {
@@ -139,10 +138,10 @@ class BodyLayerFeatureRenderer(playerRenderer: RenderPlayer) : LayerRenderer<Abs
                     layers[layer.layersId]!!.x = 0.499f * 16f
                 }
 
-                if (layer.shape == Shape.BODY) {
-                    widthScaling = skinMod.getBodyVoxelWidthSize()
+                widthScaling = if (layer.shape == Shape.BODY) {
+                    skinMod.getBodyVoxelWidthSize()
                 } else {
-                    widthScaling = skinMod.getBaseVoxelSize()
+                    skinMod.getBaseVoxelSize()
                 }
 
                 if (layer.mirrored) {

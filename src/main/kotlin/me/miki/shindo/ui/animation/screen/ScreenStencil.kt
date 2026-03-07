@@ -10,6 +10,7 @@ import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
 import org.lwjgl3.BufferUtils
+import kotlin.reflect.KFunction
 
 open class ScreenStencil : ScreenEffect {
 
@@ -78,6 +79,9 @@ open class ScreenStencil : ScreenEffect {
 
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float) =
         wrap(task, x, y, width, height, radius, 1f)
+
+    fun wrap(task: KFunction<Unit>, x: Float, y: Float, width: Float, height: Float, radius: Float) =
+        wrap(task as Runnable, x, y, width, height, radius, 1f)
 
     override fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return

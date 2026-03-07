@@ -24,8 +24,7 @@ public class MixinNBTTagString {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public String toString() {

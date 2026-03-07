@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinRenderManager
 import me.miki.shindo.management.event.impl.EventLivingUpdate
 import me.miki.shindo.management.event.impl.EventLoadWorld
 import me.miki.shindo.management.event.impl.EventRender3D
@@ -57,19 +57,18 @@ class DamageParticlesMod : Mod(
         }
 
         if (!healthMap.containsKey(entity)) {
-            healthMap.put(entity, entity.health)
+            healthMap[entity] = entity.health
         }
 
-        val before: Float = healthMap.get(entity)!!
+        val before: Float = healthMap[entity]!!
         val after = entity.health
 
         if (before != after) {
-            val text: String?
 
-            if ((before - after) < 0) {
-                text = EnumChatFormatting.GREEN.toString() + "" + roundToPlace((before - after) * -1, 1)
+            val text: String = if ((before - after) < 0) {
+                EnumChatFormatting.GREEN.toString() + "" + roundToPlace((before - after) * -1, 1)
             } else {
-                text = EnumChatFormatting.YELLOW.toString() + "" + roundToPlace((before - after), 1)
+                EnumChatFormatting.YELLOW.toString() + "" + roundToPlace((before - after), 1)
             }
 
             val location = LocationUtils(entity)
@@ -82,16 +81,16 @@ class DamageParticlesMod : Mod(
             particles.add(Particle(location, text))
 
             healthMap.remove(entity)
-            healthMap.put(entity, entity.health)
+            healthMap[entity] = entity.health
         }
     }
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
         for (particle in this.particles) {
-            val x = particle.location.x - (mc.renderManager as IMixinRenderManager).getRenderPosX()
-            val y = particle.location.y - (mc.renderManager as IMixinRenderManager).getRenderPosY()
-            val z = particle.location.z - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
+            val x = particle.location.x - (mc.renderManager as IMixinRenderManager).renderPosX
+            val y = particle.location.y - (mc.renderManager as IMixinRenderManager).renderPosY
+            val z = particle.location.z - (mc.renderManager as IMixinRenderManager).renderPosZ
 
             GlStateManager.pushMatrix()
 

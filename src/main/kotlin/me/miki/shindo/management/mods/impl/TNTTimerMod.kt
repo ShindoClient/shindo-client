@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderTNT
 import me.miki.shindo.management.language.TranslateText
@@ -32,7 +33,7 @@ class TNTTimerMod :
     private val partialTicks = 0f
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
+    fun onRender2D(event: EventNVG) {
         if (displayMode == DisplayMode.HUD) {
             this.draw()
             this.setCategory(ModCategory.HUD)

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.injection.mixin.interfaces.client.shader.IMixinShaderGroup
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinShaderGroup
 import me.miki.shindo.management.event.impl.EventShader
 import me.miki.shindo.management.event.impl.EventUpdateDisplay
 import me.miki.shindo.management.language.TranslateText
@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.util.function.Consumer
 
+@Suppress("unused", "UNUSED_PARAMETER")
 class MotionBlurMod : Mod(
     TranslateText.MOTION_BLUR,
     TranslateText.MOTION_BLUR_DESCRIPTION,
@@ -68,7 +69,7 @@ class MotionBlurMod : Mod(
 
             if (groupBlur != amountSetting.toFloat() || !loaded) {
                 loaded = true
-                (group as IMixinShaderGroup).getListShaders().forEach(Consumer { shader: Shader? ->
+                (group as IMixinShaderGroup).listShaders.forEach(Consumer { shader: Shader? ->
                     shader!!.shaderManager.getShaderUniform("BlurFactor")?.set(amountSetting.toFloat())
                 })
                 groupBlur = amountSetting.toFloat()

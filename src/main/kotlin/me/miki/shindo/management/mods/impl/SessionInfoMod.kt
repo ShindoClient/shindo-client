@@ -1,10 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventJoinServer
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventReceivePacket
-import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.font.Fonts
@@ -22,13 +21,8 @@ class SessionInfoMod :
     private var startTime: Long = 0
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
+    fun onRender2D(event: EventNVG?) {
 
-        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
-    }
-
-    private fun drawNanoVG() {
         val time: String?
 
         if (mc.isSingleplayer) {

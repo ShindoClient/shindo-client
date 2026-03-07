@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl.rearview
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderGlobal
+import me.miki.shindo.injection.interfaces.IMixinRenderGlobal
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderGlobal
 
@@ -30,8 +30,8 @@ class RenderGlobalHelper {
 
     fun switchTo() {
         if (orig == null) orig = mc.renderGlobal
-        val origWorld = (orig as IMixinRenderGlobal).getWorldClient() as net.minecraft.client.multiplayer.WorldClient
-        val rgWorld = (rg as IMixinRenderGlobal).getWorldClient() as net.minecraft.client.multiplayer.WorldClient
+        val origWorld = (orig as IMixinRenderGlobal).worldClient as net.minecraft.client.multiplayer.WorldClient
+        val rgWorld = (rg as IMixinRenderGlobal).worldClient as net.minecraft.client.multiplayer.WorldClient
         if (origWorld !== rgWorld) {
             rg!!.setWorldAndLoadRenderers(origWorld)
             this.settings

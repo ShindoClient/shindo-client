@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.block;
 
-import me.miki.shindo.injection.mixin.interfaces.block.properties.ICachedHashcode;
+import me.miki.shindo.injection.interfaces.ICachedHashcode;
 import net.minecraft.block.properties.PropertyHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -20,6 +20,9 @@ public class MixinPropertyHelper implements ICachedHashcode {
         this.cachedHashcode = this.hashCode();
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public int hashCode() {
         return this.cachedHashcode;

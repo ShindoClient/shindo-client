@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
@@ -18,7 +18,7 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
-import java.util.*
+
 
 class PotionStatusMod :
     HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, LegacyIcon.MOD_POTION_STATUS) {
@@ -38,11 +38,12 @@ class PotionStatusMod :
     }
 
     @EventTarget
+    fun onRenderNVG(event: EventNVG) {
+        drawNanoVG(event.renderer())
+    }
+
+    @EventTarget
     fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
-
-        nvg!!.setupAndDraw(Runnable { drawNanoVG(nvg) })
-
         if (!potions!!.isEmpty()) {
             val ySize = if (compact) 22 else 23
             var offsetY = 16

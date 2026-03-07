@@ -18,8 +18,7 @@ public abstract class MixinLazyLoadBase<T> {
     protected abstract T load();
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
      */
     @Overwrite
     public T getValue() {

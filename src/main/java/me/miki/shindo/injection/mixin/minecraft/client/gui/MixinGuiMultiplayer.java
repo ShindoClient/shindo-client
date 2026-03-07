@@ -2,7 +2,7 @@ package me.miki.shindo.injection.mixin.minecraft.client.gui;
 
 import me.miki.shindo.gui.GuiFixConnecting;
 import me.miki.shindo.hooks.ServerDataHook;
-import me.miki.shindo.injection.mixin.interfaces.client.multiplayer.IMixinServerList;
+import me.miki.shindo.injection.interfaces.IMixinServerList;
 import me.miki.shindo.management.mods.impl.ViaVersionMod;
 import me.miki.shindo.viaversion.ViaShindo;
 import net.minecraft.client.gui.*;
@@ -40,11 +40,17 @@ public class MixinGuiMultiplayer extends GuiScreen {
         }
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     private void connectToServer(ServerData server) {
         mc.displayGuiScreen(new GuiFixConnecting(this, mc, server));
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public void selectServer(int index) {
         this.serverListSelector.setSelectedSlotIndex(index);
@@ -68,6 +74,9 @@ public class MixinGuiMultiplayer extends GuiScreen {
         }
     }
 
+    /**
+     * @author MikiDevAHM
+     */
     @Overwrite
     public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_) {
         return p_175392_2_ > ((IMixinServerList) savedServerList).getFeaturedServerCount();

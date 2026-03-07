@@ -1,7 +1,7 @@
 package me.miki.shindo.ui.comp.inputs
 
-import me.miki.client_api.render.AddonColor
-import me.miki.shindo.api.compat.ApiCompConfigOwner
+import me.miki.shindo.addon.api.render.AddonColor
+import me.miki.shindo.addon.runtime.bridge.ApiCompConfigOwner
 import me.miki.shindo.management.settings.impl.ColorSetting
 import me.miki.shindo.ui.comp.Comp
 import java.awt.Color

@@ -1,19 +1,18 @@
 package me.miki.shindo
 
-import me.miki.client_api.hud.HudLayoutService
-import me.miki.client_api.hypixel.HypixelApiProvider
-import me.miki.client_api.server.ServerInfoService
-import me.miki.client_api.scoreboard.ScoreboardService
-import me.miki.client_api.settings.AddonSettingsService
+import me.miki.shindo.addon.api.hud.HudLayoutService
+import me.miki.shindo.addon.api.hypixel.HypixelApiProvider
+import me.miki.shindo.addon.api.scoreboard.ScoreboardService
+import me.miki.shindo.addon.api.server.ServerInfoService
+import me.miki.shindo.addon.api.settings.AddonSettingsService
 import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
-import me.miki.shindo.api.hud.AddonHudLayoutServiceImpl
+import me.miki.shindo.addon.runtime.hud.AddonHudLayoutServiceImpl
 import me.miki.shindo.api.hypixel.HypixelApiProviderImpl
-import me.miki.shindo.api.server.ServerInfoServiceImpl
 import me.miki.shindo.api.scoreboard.ScoreboardServiceImpl
-import me.miki.shindo.api.settings.AddonSettingsServiceImpl
-import me.miki.shindo.api.services.ClientServiceRegistry
-import me.miki.shindo.gui.GuiNavigationHub
+import me.miki.shindo.api.server.ServerInfoServiceImpl
+import me.miki.shindo.addon.runtime.services.ClientServiceRegistry
+import me.miki.shindo.addon.runtime.settings.AddonSettingsServiceImpl
 import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.AddonManager
@@ -52,6 +51,7 @@ import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.ClickEffects
 import me.miki.shindo.ui.layout.UILayoutManager
 import me.miki.shindo.utils.OptifineUtils
+import me.miki.shindo.utils.render.EntityProjection
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
@@ -70,8 +70,6 @@ class Shindo private constructor() {
     private var started: Boolean = false
 
     var updateNeeded: Boolean = false
-
-
 
     lateinit var fileManager: FileManager
         private set
@@ -212,6 +210,7 @@ class Shindo private constructor() {
         discordStats = DiscordStats().also { it.check() }
         update = Update().also { it.check() }
 
+        eventManager.register(EntityProjection.getInstance());
         eventManager.register(ShindoHandler())
 
         InternalSettingsMod.instance.setToggled(true)

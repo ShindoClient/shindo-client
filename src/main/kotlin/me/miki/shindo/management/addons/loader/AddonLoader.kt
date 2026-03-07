@@ -1,18 +1,14 @@
 package me.miki.shindo.management.addons.loader
 
-import me.miki.client_api.AddonMetadata
-import me.miki.client_api.AddonType as ApiAddonType
-import me.miki.client_api.ShindoAddon
-import me.miki.client_api.ShindoAddonContext
+import me.miki.shindo.addon.api.AddonMetadata
+import me.miki.shindo.addon.api.AddonType as ApiAddonType
+import me.miki.shindo.addon.api.ShindoAddon
 import me.miki.shindo.Shindo
-import me.miki.shindo.api.compat.ShindoAddonContextImpl
+import me.miki.shindo.addon.runtime.bridge.ShindoAddonContextImpl
 import me.miki.shindo.logger.ShindoLogger
-import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonManager
-import me.miki.shindo.management.addons.AddonType
 import me.miki.shindo.management.file.FileManager
 import java.io.File
-import java.net.URL
 import java.net.URLClassLoader
 import java.util.Properties
 import java.util.jar.JarFile
@@ -43,12 +39,11 @@ object AddonLoader {
 
         val jarFiles = addonsDir.listFiles { f -> f.isFile && f.name.endsWith(".jar") } ?: return
 
-        val context: ShindoAddonContext = ShindoAddonContextImpl(Shindo.getInstance().serviceRegistry)
         val parentClassLoader = AddonLoader::class.java.classLoader
 
         for (jarFile in jarFiles) {
             try {
-                loadAddonFromJar(jarFile, parentClassLoader, addonManager, context)
+                loadAddonFromJar(jarFile, parentClassLoader, addonManager)
             } catch (e: Throwable) {
                 e.printStackTrace()
                 ShindoLogger.error("[ADDON] Nao foi possivel carregar ${jarFile.name}: ${e.message ?: e.toString()}", e)
@@ -57,7 +52,7 @@ object AddonLoader {
         }
     }
 
-    private fun loadAddonFromJar(jarFile: File, parentClassLoader: ClassLoader, addonManager: AddonManager, context: ShindoAddonContext) {
+    private fun loadAddonFromJar(jarFile: File, parentClassLoader: ClassLoader, addonManager: AddonManager) {
         JarFile(jarFile).use { jar ->
             val entry = jar.getJarEntry(ADDON_PROPERTIES)
                 ?: throw IllegalStateException("$ADDON_PROPERTIES não encontrado no JAR")
@@ -81,7 +76,8 @@ object AddonLoader {
                 val apiAddon = addonClass.getDeclaredConstructor().newInstance()
 
                 val metadata = parseMetadata(props, apiAddon.getMetadata())
-                val wrapper = ExternalAddonWrapper(apiAddon, metadata)
+                val context = ShindoAddonContextImpl(metadata.id, Shindo.getInstance().serviceRegistry)
+                val wrapper = ExternalAddonWrapper(apiAddon, metadata, context)
                 addonManager.registerAddon(wrapper)
 
                 apiAddon.onLoad(context)
@@ -107,9 +103,4 @@ object AddonLoader {
         return AddonMetadata(id, version, name, description, icon, type, author, showToggle)
     }
 
-    private fun mapType(apiType: ApiAddonType): AddonType = when (apiType) {
-        ApiAddonType.RENDER -> AddonType.RENDER
-        ApiAddonType.QOL -> AddonType.QOL
-        ApiAddonType.OTHER -> AddonType.OTHER
-    }
 }

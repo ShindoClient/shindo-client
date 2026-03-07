@@ -1,6 +1,6 @@
 package me.miki.shindo.utils
 
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer
+import me.miki.shindo.injection.interfaces.IMixinEntityPlayer
 import me.miki.shindo.management.mods.impl.skin3d.opengl.NativeImage
 import me.miki.shindo.management.mods.impl.skin3d.render.CustomizableModelPart
 import me.miki.shindo.management.mods.impl.skin3d.render.SolidPixelWrapper
@@ -27,11 +27,7 @@ object SkinUtils {
     private fun getTexture(resource: ResourceLocation): NativeImage? {
         val skin = NativeImage(64, 64, false)
         val textureManager: TextureManager = Minecraft.getMinecraft().textureManager
-        val abstractTexture: ITextureObject? = textureManager.getTexture(resource)
-
-        if (abstractTexture == null) {
-            return null
-        }
+        val abstractTexture: ITextureObject = textureManager.getTexture(resource) ?: return null
 
         GlStateManager.bindTexture(abstractTexture.glTextureId)
         skin.downloadTexture(0, false)

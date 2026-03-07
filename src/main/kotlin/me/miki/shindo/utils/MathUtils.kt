@@ -35,6 +35,15 @@ object MathUtils {
     }
 
     @JvmStatic
+    fun interpolateARGB(start: Int, end: Int, progress: Float): Int {
+        val a = interpolateInt(start shr 24 and 0xFF, end shr 24 and 0xFF, progress.toDouble())
+        val r = interpolateInt(start shr 16 and 0xFF, end shr 16 and 0xFF, progress.toDouble())
+        val g = interpolateInt(start shr 8 and 0xFF, end shr 8 and 0xFF, progress.toDouble())
+        val b = interpolateInt(start and 0xFF, end and 0xFF, progress.toDouble())
+        return a shl 24 or (r shl 16) or (g shl 8) or b
+    }
+
+    @JvmStatic
     fun isInRange(value: Float, min: Float, max: Float): Boolean = value > min && value < max
 
     @JvmStatic

@@ -43,7 +43,6 @@ bin/
 .DS_Store
 
 # Shindo private Stuff
-/src/main/kotlin/me/miki/shindo/ui/comp/README.md
 AGENTS.md
 docs/
 implement/

@@ -1,7 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.Shindo.Companion.getInstance
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
@@ -34,13 +35,7 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
 
 
     @EventTarget
-    fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
-
-        nvg!!.setupAndDraw(Runnable { drawNanoVG() })
-    }
-
-    private fun drawNanoVG() {
+    fun onRender2D(event: EventNVG?) {
         val instance = getInstance()
         val currentColor = instance.colorManager.getCurrentColor()
 

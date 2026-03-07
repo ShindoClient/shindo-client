@@ -1,7 +1,8 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
 import me.miki.shindo.api.roles.RoleVisuals;
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer;
+import me.miki.shindo.injection.interfaces.IMixinRenderEntity;
+import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventHitOverlay;
 import me.miki.shindo.management.event.impl.EventRendererLivingEntity;
 import me.miki.shindo.management.mods.impl.FreelookMod;
@@ -31,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.UUID;
 
 @Mixin(RendererLivingEntity.class)
-public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
+public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> implements IMixinRenderEntity {
 
     @Unique
     private float red;
@@ -234,6 +235,11 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
     @ModifyConstant(method = "setBrightness", constant = @Constant(floatValue = 0.3F, ordinal = 0))
     public float setBrightnessAlpha(float original) {
         return alpha;
+    }
+
+    @Override
+    public ResourceLocation entityTexture(Entity entity) {
+        return getEntityTexture((T) entity);
     }
 
 }

@@ -1,6 +1,5 @@
 package me.miki.shindo.injection.mixin.minecraft.entity.player;
-
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer;
+import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
 import me.miki.shindo.management.event.impl.EventAttackEntity;
 import me.miki.shindo.management.event.impl.EventJump;
 import me.miki.shindo.management.mods.impl.skin3d.render.CustomizableModelPart;

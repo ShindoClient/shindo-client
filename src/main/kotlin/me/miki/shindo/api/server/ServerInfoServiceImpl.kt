@@ -1,6 +1,6 @@
 package me.miki.shindo.api.server
 
-import me.miki.client_api.server.ServerInfoService
+import me.miki.shindo.addon.api.server.ServerInfoService
 import me.miki.shindo.utils.ServerUtils
 
 /**

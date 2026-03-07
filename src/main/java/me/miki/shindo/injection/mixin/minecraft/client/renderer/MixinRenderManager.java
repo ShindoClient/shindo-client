@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer;
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager;
+import me.miki.shindo.injection.interfaces.IMixinRenderManager;
 import me.miki.shindo.management.event.impl.EventRenderHitbox;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -55,12 +55,6 @@ public abstract class MixinRenderManager implements IMixinRenderManager {
     @Override
     public double getRenderPosZ() {
         return this.renderPosZ;
-    }
-
-
-    @Override
-    public RenderPlayer getPlayerRenderer() {
-        return this.playerRenderer;
     }
 }
 

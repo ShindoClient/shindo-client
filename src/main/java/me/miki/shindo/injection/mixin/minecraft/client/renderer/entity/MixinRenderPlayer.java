@@ -1,7 +1,7 @@
 package me.miki.shindo.injection.mixin.minecraft.client.renderer.entity;
 
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.entity.IMixinRenderPlayer;
-import me.miki.shindo.injection.mixin.interfaces.entity.player.IMixinEntityPlayer;
+import me.miki.shindo.injection.interfaces.IMixinEntityPlayer;
+import me.miki.shindo.injection.interfaces.IMixinRenderPlayer;
 import me.miki.shindo.management.event.impl.EventRenderPlayer;
 import me.miki.shindo.management.mods.impl.Skin3DMod;
 import me.miki.shindo.management.mods.impl.skin3d.layers.BodyLayerFeatureRenderer;

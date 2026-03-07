@@ -1,9 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.gui.GuiWaypoint
-import me.miki.shindo.injection.mixin.interfaces.client.renderer.IMixinRenderManager
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinRenderManager
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
@@ -37,9 +37,9 @@ class WaypointMod :
 
                 val tagName = wy.getName() + " [" + distance.toInt() + "m]"
 
-                var x = wy.getX() - (mc.renderManager as IMixinRenderManager).getRenderPosX()
-                var y = 2.0 + wy.getY() - (mc.renderManager as IMixinRenderManager).getRenderPosY()
-                var z = wy.getZ() - (mc.renderManager as IMixinRenderManager).getRenderPosZ()
+                var x = wy.getX() - (mc.renderManager as IMixinRenderManager).renderPosX
+                var y = 2.0 + wy.getY() - (mc.renderManager as IMixinRenderManager).renderPosY
+                var z = wy.getZ() - (mc.renderManager as IMixinRenderManager).renderPosZ
 
                 if (distance > renderDistance) {
                     x = x / distance * renderDistance

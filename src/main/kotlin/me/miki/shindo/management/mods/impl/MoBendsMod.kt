@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.injection.mixin.interfaces.client.IMixinMinecraft
-import me.miki.client_api.event.EventTarget
+import me.miki.shindo.management.event.EventTarget
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.management.event.impl.EventPreRenderTick
 import me.miki.shindo.management.event.impl.EventRenderPlayer
 import me.miki.shindo.management.event.impl.EventTick
@@ -49,7 +49,7 @@ class MoBendsMod :
         }
 
         for (i in Data_Player.dataList.indices) {
-            Data_Player.dataList[i].update(((mc as IMixinMinecraft).getTimer() as net.minecraft.util.Timer).renderPartialTicks)
+            Data_Player.dataList[i].update(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)
         }
     }
 
