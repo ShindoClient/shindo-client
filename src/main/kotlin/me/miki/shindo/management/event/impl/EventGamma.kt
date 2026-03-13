@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,9 +18,9 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventGamma(private var _gamma: Float) : Event(), IEventGamma {
-    override fun getGamma(): Float = _gamma
-    override fun setGamma(gamma: Float) {
+class EventGamma(private var _gamma: Float) : Event(){
+    fun getGamma(): Float = _gamma
+    fun setGamma(gamma: Float) {
         _gamma = gamma
     }
 }

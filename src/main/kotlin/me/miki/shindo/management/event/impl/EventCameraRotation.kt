@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -24,7 +23,7 @@ class EventCameraRotation(
     @JvmField var pitch: Float,
     @JvmField var roll: Float,
     @JvmField var thirdPersonDistance: Float
-) : Event(), IEventCameraRotation {
+) : Event(){
     fun getYaw(): Float = yaw
     fun setYaw(yaw: Float) {
         this.yaw = yaw

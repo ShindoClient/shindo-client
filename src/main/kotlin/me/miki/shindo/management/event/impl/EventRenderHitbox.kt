@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -26,12 +25,12 @@ class EventRenderHitbox(
     private val _z: Double,
     private val _entityYaw: Float,
     private val _partialTicks: Float
-) : Event(), IEventRenderHitbox {
-    override fun getEntity(): Entity = _entity
-    override fun getX(): Double = _x
-    override fun getY(): Double = _y
-    override fun getZ(): Double = _z
-    override fun getEntityYaw(): Float = _entityYaw
-    override fun getPartialTicks(): Float = _partialTicks
+) : Event(){
+    fun getEntity(): Entity = _entity
+    fun getX(): Double = _x
+    fun getY(): Double = _y
+    fun getZ(): Double = _z
+    fun getEntityYaw(): Float = _entityYaw
+    fun getPartialTicks(): Float = _partialTicks
 }
 

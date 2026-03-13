@@ -1,16 +1,7 @@
 package me.miki.shindo
 
-import me.miki.shindo.addon.api.hud.HudLayoutService
-import me.miki.shindo.addon.api.hypixel.HypixelApiProvider
-import me.miki.shindo.addon.api.server.ServerInfoService
-import me.miki.shindo.addon.api.settings.AddonSettingsService
 import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
-import me.miki.shindo.addon.runtime.hud.AddonHudLayoutServiceImpl
-import me.miki.shindo.api.hypixel.HypixelApiProviderImpl
-import me.miki.shindo.api.server.ServerInfoServiceImpl
-import me.miki.shindo.addon.runtime.services.ClientServiceRegistry
-import me.miki.shindo.addon.runtime.settings.AddonSettingsServiceImpl
 import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.addons.AddonManager
@@ -136,9 +127,6 @@ class Shindo private constructor() {
     lateinit var shindoAPI: ShindoAPI
         private set
 
-    lateinit var serviceRegistry: ClientServiceRegistry
-        private set
-
     fun hasStarted(): Boolean = started
 
     fun start() {
@@ -161,13 +149,6 @@ class Shindo private constructor() {
         fileManager = FileManager()
         languageManager = LanguageManager()
         eventManager = EventManager()
-
-        serviceRegistry = ClientServiceRegistry().apply {
-            register(HypixelApiProvider::class, HypixelApiProviderImpl())
-            register(HudLayoutService::class, AddonHudLayoutServiceImpl())
-            register(ServerInfoService::class, ServerInfoServiceImpl())
-            register(AddonSettingsService::class, AddonSettingsServiceImpl())
-        }
 
         downloadManager = DownloadManager()
         modManager = ModManager()
@@ -261,6 +242,5 @@ class Shindo private constructor() {
         fun getInstance(): Shindo = instance
     }
 }
-
 
 

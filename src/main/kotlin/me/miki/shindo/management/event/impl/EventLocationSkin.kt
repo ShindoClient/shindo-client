@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,12 +18,12 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventLocationSkin(private val _playerInfo: NetworkPlayerInfo) : Event(), IEventLocationSkin {
+class EventLocationSkin(private val _playerInfo: NetworkPlayerInfo) : Event(){
     private var _skin: ResourceLocation? = null
 
-    override fun getPlayerInfo(): NetworkPlayerInfo = _playerInfo
-    override fun getSkin(): ResourceLocation? = _skin
-    override fun setSkin(skin: Any?) {
+    fun getPlayerInfo(): NetworkPlayerInfo = _playerInfo
+    fun getSkin(): ResourceLocation? = _skin
+    fun setSkin(skin: Any?) {
         _skin = skin as? ResourceLocation
     }
 }

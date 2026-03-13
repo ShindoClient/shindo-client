@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,9 +18,9 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventReceiveChat(private var _message: IChatComponent) : Event(), IEventReceiveChat {
-    override fun getMessage(): IChatComponent = _message
-    override fun setMessage(message: Any) {
+class EventReceiveChat(private var _message: IChatComponent) : Event(){
+    fun getMessage(): IChatComponent = _message
+    fun setMessage(message: Any) {
         _message = message as IChatComponent
     }
 }

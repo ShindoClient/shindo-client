@@ -1,6 +1,5 @@
 package me.miki.shindo.management.addons.config
 
-import me.miki.shindo.addon.api.config.IAddonConfigStorage
 import java.util.concurrent.ConcurrentHashMap
 
 /**

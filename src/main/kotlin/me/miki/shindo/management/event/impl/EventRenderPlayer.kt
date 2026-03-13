@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -25,7 +24,7 @@ class EventRenderPlayer(
     private val _y: Double,
     private val _z: Double,
     private val _partialTicks: Float
-) : Event(), IEventRenderPlayer {
+) : Event(){
     fun getEntity(): Entity = _entity
     fun getX(): Double = _x
     fun getY(): Double = _y

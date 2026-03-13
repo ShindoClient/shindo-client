@@ -1,11 +1,10 @@
 package me.miki.shindo.management.event
 
-import me.miki.shindo.addon.api.event.IEvent
 import me.miki.shindo.Shindo
 import java.lang.reflect.InvocationTargetException
 import java.util.HashSet
 
-abstract class Event : IEvent {
+abstract class Event {
 
     private var cancelled: Boolean = false
 
@@ -61,9 +60,9 @@ abstract class Event : IEvent {
         return this
     }
 
-    override fun isCancelled(): Boolean = cancelled
+    fun isCancelled(): Boolean = cancelled
 
-    override fun setCancelled(cancelled: Boolean) {
+    fun setCancelled(cancelled: Boolean) {
         this.cancelled = cancelled
     }
 }

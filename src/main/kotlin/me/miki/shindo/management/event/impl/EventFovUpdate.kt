@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -22,12 +21,12 @@ import java.util.ArrayList
 class EventFovUpdate(
     private val _entity: AbstractClientPlayer,
     private var _fov: Float
-) : Event(), IEventFovUpdate {
-    override fun getFov(): Float = _fov
-    override fun setFov(fov: Float) {
+) : Event(){
+    fun getFov(): Float = _fov
+    fun setFov(fov: Float) {
         _fov = fov
     }
 
-    override fun getEntity(): AbstractClientPlayer = _entity
+    fun getEntity(): AbstractClientPlayer = _entity
 }
 

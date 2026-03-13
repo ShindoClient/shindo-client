@@ -116,19 +116,19 @@ class ResourcePackRepositoryCustom(
             val mc = Minecraft.getMinecraft()
 
             try {
-                val fileResourcepacks = (mc as IMixinMinecraft).fileResourcepacks
-                val originalRepo = (mc as IMixinMinecraft).mcResourcePackRepository as net.minecraft.client.resources.ResourcePackRepository
+                val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
+                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as net.minecraft.client.resources.ResourcePackRepository
 
                 val customRepo = ResourcePackRepositoryCustom(
                     fileResourcepacks,
                     File(mc.mcDataDir, "server-resource-packs"),
-                    (mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack,
+                    (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack,
                     originalRepo.rprMetadataSerializer,
                     mc.gameSettings,
                     enabledPacks
                 )
 
-                (mc as IMixinMinecraft).mcResourcePackRepository = customRepo
+                (mc as IMixinMinecraft).setMcResourcePackRepository(customRepo)
             } catch (t: Throwable) {
                 throw RuntimeException("Failed to override resource pack repository", t)
             }
@@ -152,4 +152,3 @@ class ResourcePackRepositoryCustom(
         }
     }
 }
-

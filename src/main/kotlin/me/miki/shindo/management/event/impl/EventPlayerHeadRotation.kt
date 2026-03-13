@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -22,8 +21,8 @@ import java.util.ArrayList
 class EventPlayerHeadRotation(
     private val _yaw: Float,
     private val _pitch: Float
-) : Event(), IEventPlayerHeadRotation {
-    override fun getYaw(): Float = _yaw
-    override fun getPitch(): Float = _pitch
+) : Event(){
+    fun getYaw(): Float = _yaw
+    fun getPitch(): Float = _pitch
 }
 

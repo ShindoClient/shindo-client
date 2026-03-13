@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -25,11 +24,11 @@ class EventRendererLivingEntity(
     private val _x: Double,
     private val _y: Double,
     private val _z: Double
-) : Event(), IEventRendererLivingEntity {
-    override fun getRenderer(): RendererLivingEntity<EntityLivingBase> = _renderer
-    override fun getEntity(): Entity = _entity
-    override fun getX(): Double = _x
-    override fun getY(): Double = _y
-    override fun getZ(): Double = _z
+) : Event(){
+    fun getRenderer(): RendererLivingEntity<EntityLivingBase> = _renderer
+    fun getEntity(): Entity = _entity
+    fun getX(): Double = _x
+    fun getY(): Double = _y
+    fun getZ(): Double = _z
 }
 

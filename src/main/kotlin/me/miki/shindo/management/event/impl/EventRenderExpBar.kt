@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,5 +18,4 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventRenderExpBar : Event(), IEventRenderExpBar
-
+class EventRenderExpBar : Event()

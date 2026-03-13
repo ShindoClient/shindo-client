@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,9 +18,9 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventSendPacket(private var _packet: Packet<*>) : Event(), IEventSendPacket {
-    override fun getPacket(): Packet<*> = _packet
-    override fun setPacket(packet: Any) {
+class EventSendPacket(private var _packet: Packet<*>) : Event(){
+    fun getPacket(): Packet<*> = _packet
+    fun setPacket(packet: Any) {
         _packet = packet as Packet<*>
     }
 }

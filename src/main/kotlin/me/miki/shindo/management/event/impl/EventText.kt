@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -19,12 +18,12 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import java.util.ArrayList
 
-class EventText(private val _text: String) : Event(), IEventText {
+class EventText(private val _text: String) : Event(){
     private var _outputText: String = _text
 
-    override fun getText(): String = _text
-    override fun getOutputText(): String = _outputText
-    override fun setOutputText(text: String) {
+    fun getText(): String = _text
+    fun getOutputText(): String = _outputText
+    fun setOutputText(text: String) {
         _outputText = text
     }
 

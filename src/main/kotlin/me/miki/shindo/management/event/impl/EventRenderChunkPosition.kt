@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -22,12 +21,12 @@ import java.util.ArrayList
 class EventRenderChunkPosition(
     private val _renderChunk: RenderChunk,
     private var _blockPos: BlockPos
-) : Event(), IEventRenderChunkPosition {
-    override fun getBlockPos(): BlockPos = _blockPos
-    override fun setBlockPos(blockPos: Any) {
+) : Event(){
+    fun getBlockPos(): BlockPos = _blockPos
+    fun setBlockPos(blockPos: Any) {
         _blockPos = blockPos as BlockPos
     }
 
-    override fun getRenderChunk(): RenderChunk = _renderChunk
+    fun getRenderChunk(): RenderChunk = _renderChunk
 }
 

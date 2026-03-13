@@ -1,6 +1,5 @@
 package me.miki.shindo.management.event.impl
 
-import me.miki.shindo.addon.api.event.*
 import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -25,14 +24,14 @@ class EventPlaySound(
     private var _pitch: Float,
     private var _originalVolume: Float,
     private var _originalPitch: Float
-) : Event(), IEventPlaySound {
-    override fun getVolume(): Float = _volume
-    override fun setVolume(volume: Float) {
+) : Event(){
+    fun getVolume(): Float = _volume
+    fun setVolume(volume: Float) {
         _volume = volume
     }
 
-    override fun getPitch(): Float = _pitch
-    override fun setPitch(pitch: Float) {
+    fun getPitch(): Float = _pitch
+    fun setPitch(pitch: Float) {
         _pitch = pitch
     }
 
@@ -46,6 +45,6 @@ class EventPlaySound(
         _originalPitch = originalPitch
     }
 
-    override fun getSoundName(): String = _soundName
+    fun getSoundName(): String = _soundName
 }
 
