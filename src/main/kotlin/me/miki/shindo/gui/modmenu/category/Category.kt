@@ -15,7 +15,8 @@ import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.Minecraft
 
 open class Category(
-    private val parent: GuiModMenu,
+    @JvmField
+    val parent: GuiModMenu,
     private val nameTranslate: TranslateText,
     private val icon: String,
     private val showSearchBox: Boolean,

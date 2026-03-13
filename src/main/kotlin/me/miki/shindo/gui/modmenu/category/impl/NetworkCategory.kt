@@ -518,8 +518,20 @@ class NetworkCategory(parent: GuiModMenu) :
                 FORM_BUTTON_WIDTH,
                 FORM_BUTTON_HEIGHT,
                 6f,
-                ColorUtils.applyAlpha(accent.getInterpolateColor(), if (saveHovered) 230 else 188)
+                if (saveHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
             )
+
+            if (saveHovered) {
+                nvg.drawOutlineRoundedRect(
+                    saveX,
+                    buttonY,
+                    FORM_BUTTON_WIDTH,
+                    FORM_BUTTON_HEIGHT,
+                    6f,
+                    1f,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
+                )
+            }
             nvg.drawCenteredText("Save", saveX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
 
             nvg.restore()

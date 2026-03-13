@@ -2,6 +2,8 @@
 
 package me.miki.extensions.addons
 
+import me.miki.shindo.management.addons.AddonManager
+
 /**
  * TODO: Implement AddonManager extension helpers.
  *

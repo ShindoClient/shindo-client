@@ -84,12 +84,17 @@ class ProfileManager {
                 load(defaultFile)
             }
 
-            defaultProfile = buildProfileFromFile(defaultFile, DEFAULT_ID)
-            defaultProfile?.let {
-                profiles.add(it)
-                ShindoLogger.info("Default profile added to list: ${it.name}")
-            } ?: run {
-                ShindoLogger.error("Failed to build default profile!")
+            val builtDefault = buildProfileFromFile(defaultFile, DEFAULT_ID)
+            if (builtDefault != null) {
+                defaultProfile = builtDefault
+                profiles.add(builtDefault)
+                ShindoLogger.info("Default profile added to list: ${builtDefault.name}")
+            } else {
+                ShindoLogger.warn("Failed to build default profile, falling back to placeholder entry")
+                val fallback = Profile(DEFAULT_ID, "", defaultFile, ProfileIcon.GRASS, null, ProfileType.ALL, null)
+                defaultProfile = fallback
+                profiles.add(fallback)
+                ShindoLogger.info("Default profile placeholder added to list: ${fallback.name}")
             }
 
             var id = 0

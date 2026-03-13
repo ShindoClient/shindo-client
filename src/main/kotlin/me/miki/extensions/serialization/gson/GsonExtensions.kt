@@ -11,7 +11,7 @@ import com.google.gson.JsonParser
  * Parses JSON using a reified type and returns null on any parse error.
  */
 inline fun <reified T> Gson.fromJsonOrNull(json: String?): T? {
-    if (json == null || json.isBlank()) return null
+    if (json.isNullOrBlank()) return null
     return try {
         fromJson(json, T::class.java)
     } catch (ignored: Throwable) {

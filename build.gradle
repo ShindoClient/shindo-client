@@ -3,12 +3,21 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url = "https://maven.minecraftforge.net" }
-        maven { url = "https://repo.spongepowered.org/maven" }
-        maven { url = "https://jitpack.io" }
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net"
+//            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+            url = 'https://jitpack.io'
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1.3'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
@@ -43,18 +52,7 @@ minecraft {
     runDir = "run"
     tweakClass = "me.miki.shindo.injection.mixin.ShindoTweaker"
     mappings = "stable_22"
-
-    clientJvmArgs = [
-            "-Xmx4G",
-            "-Xms1G",
-            "-XX:+UseG1GC",
-            "-XX:MaxGCPauseMillis=200",
-            "-Dorg.lwjgl.util.Debug=true",
-            "-Dorg.lwjgl.util.DebugLevel=DEBUG",
-            "-Dlog4j.debug=true",
-            "-Dminecraft.applet.TargetDirectory=run",
-            "-Dshindo.debug=true"
-    ]
+    makeObfSourceJar = false
 }
 
 repositories {
@@ -75,9 +73,6 @@ repositories {
     maven {
         name "SpongePowered"
         url "https://repo.spongepowered.org/maven/"
-    }
-    maven {
-        url 'https://maven.cleanroommc.com'
     }
     maven {
         url 'https://maven.cleanroommc.com'
@@ -128,7 +123,7 @@ dependencies {
     embed "com.google.code.gson:gson:2.13.1"
 
     // Other Libs
-    embed 'com.github.ClydoNetwork:MicrosoftAuthenticator:0cf2b9be2e'
+    //embed 'com.github.ClydoNetwork:MicrosoftAuthenticator:0cf2b9be2e'
     embed "org.joml:joml:1.10.5"
 
     embed files("libs/lwjgl-shindo.jar")
@@ -158,22 +153,6 @@ processResources {
         from("src/main/resources")
         into("build/classes/main")
     }
-}
-
-task extractShindoNatives(type: Copy) {
-    from(zipTree('libs/lwjgl-shindo-natives.jar'))
-    into("$buildDir/natives")
-}
-
-runClient {
-    dependsOn extractShindoNatives
-    workingDir = file("run")
-    jvmArgs += [
-            "-Djava.library.path=$buildDir/natives",
-            "-Djna.library.path=$buildDir/natives",
-            "-Dorg.lwjgl.openal.libname=openal",
-            "-Xmx4G"
-    ]
 }
 
 jar {
