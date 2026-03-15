@@ -20,7 +20,7 @@ class FloatAnimation(
     /**
      * Current value without allocating; respects global animation scaling via the base class.
      */
-    fun getValue(): Float {
+    fun getFloatValue(): Float {
         val progress = getValueFloat() // base outputs 0..1
         return (startValue + (endValue - startValue) * progress)
     }

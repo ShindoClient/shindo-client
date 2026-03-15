@@ -13,7 +13,7 @@ import java.nio.FloatBuffer
  * Internal helper that caches NanoVG framebuffer resources to avoid per-frame allocations.
  * Not part of the public API; only used by screen animation effects.
  */
-internal open class ScreenFramebufferBase {
+open class ScreenFramebufferBase {
     protected val mc: Minecraft = Minecraft.getMinecraft()
     protected var fbWidth: Int = 0
     protected var fbHeight: Int = 0

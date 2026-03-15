@@ -17,8 +17,8 @@ class Vector2fAnimation(
     private val animX = FloatAnimation(durationMs, startX, endX, easing)
     private val animY = FloatAnimation(durationMs, startY, endY, easing)
 
-    fun getX(): Float = animX.getValue()
-    fun getY(): Float = animY.getValue()
+    fun getX(): Float = animX.getFloatValue()
+    fun getY(): Float = animY.getFloatValue()
 
     fun isDoneX(): Boolean = animX.isDone()
     fun isDoneY(): Boolean = animY.isDone()

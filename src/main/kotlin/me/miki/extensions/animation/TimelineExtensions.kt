@@ -31,7 +31,7 @@ fun Animation.delayedStart(delayMs: Long): Boolean {
     val s = state(this)
     if (!s.started) {
         s.delayMs = delayMs
-        if (s.delayTimer.delay(delayMs, true)) {
+        if (s.delayTimer.delay(delayMs.toFloat(), true)) {
             s.started = true
             reset()
         }

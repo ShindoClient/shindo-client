@@ -49,7 +49,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
     fun onRender2D(event: EventRender2D?) {
         if (design == Design.FANCY) {
             stencil.wrap(
-                this::drawNanoVG,
+                Runnable { drawNanoVG() },
                 getX().toFloat(),
                 getY().toFloat(),
                 getWidth().toFloat(),
