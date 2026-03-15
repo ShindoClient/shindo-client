@@ -3,24 +3,16 @@ package me.miki.shindo.ui.animation.screen
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.ui.animation.GlobalAnimationSettings
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
-import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
-import org.lwjgl3.BufferUtils
-import java.nio.FloatBuffer
 
-open class ScreenAnimation : ScreenEffect {
+open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
 
-    private val mc: Minecraft = Minecraft.getMinecraft()
-    private var fbWidth: Int = 0
-    private var fbHeight: Int = 0
-    private var fb: NVGLUFramebuffer? = null
-
+    /**
+     * Renders [task] into an offscreen framebuffer and plays a scale/alpha animation before compositing.
+     */
     fun wrap(
         glRender: Runnable?,
         task: Runnable,
@@ -42,26 +34,14 @@ open class ScreenAnimation : ScreenEffect {
             return
         }
 
-        if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
-            close()
-        }
+        ensureFramebuffer(nvg, mc.displayWidth, mc.displayHeight)
 
-        if (fb == null) {
-            fbWidth = mc.displayWidth
-            fbHeight = mc.displayHeight
-            fb = NanoVGGL2.nvgluCreateFramebuffer(nvg.getContext(), mc.displayWidth, mc.displayHeight, 0)
-        }
-
-        NanoVGGL2.nvgluBindFramebuffer(nvg.getContext(), fb)
-        GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight)
-
-        val floaty: FloatBuffer = BufferUtils.createFloatBuffer(16)
+        val floaty = snapshotClearColor()
         GlStateManager.enableTexture2D()
-        GL11.glGetFloat(GL11.GL_COLOR_CLEAR_VALUE, floaty)
 
         GL11.glClearColor(0f, 0f, 0f, 0f)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
-        GL11.glClearColor(floaty.get(0), floaty.get(1), floaty.get(2), floaty.get(3))
+        restoreClearColor(floaty)
 
         nvg.setupAndDraw(Runnable {
             nvg.resetScissor()
@@ -77,7 +57,6 @@ open class ScreenAnimation : ScreenEffect {
             nvg.setAlpha(alphaProgress.coerceAtMost(1.0f))
             nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
 
-            val paint = NVGPaint.create()
             NanoVG.nvgBeginPath(nvg.getContext())
 
             if (stencil) {
@@ -96,7 +75,7 @@ open class ScreenAnimation : ScreenEffect {
                     0f,
                     fb!!.image(),
                     1f,
-                    paint
+                    sharedPaint
                 )
             )
             NanoVG.nvgFill(nvg.getContext())
@@ -201,9 +180,6 @@ open class ScreenAnimation : ScreenEffect {
 
     override fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
-        fb?.let {
-            NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
-            fb = null
-        }
+        disposeFramebuffer(nvg)
     }
 }

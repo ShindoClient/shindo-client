@@ -2,6 +2,12 @@ package me.miki.shindo.ui.animation
 
 import me.miki.shindo.utils.TimerUtils
 
+/**
+ * Core timeline that advances from 0.0 to [endPoint] over [duration] milliseconds.
+ *
+ * Duration is scaled by [GlobalAnimationSettings.animationScale] whenever a value is read;
+ * when animations are globally disabled the value jumps immediately to the target.
+ */
 abstract class Animation {
 
     var duration: Int
@@ -26,15 +32,21 @@ abstract class Animation {
         setDirection(direction)
     }
 
+    /** Returns true when finished in the specified [dir]. */
     fun isDone(dir: Direction): Boolean = isDone() && this.direction == dir
 
-    fun getLinearOutput(): Double = 1 - (timer.elapsedTime.toDouble() / duration) * endPoint
+    /** Linear progress based on scaled duration (ignores easing). */
+    fun getLinearOutput(): Double {
+        val durationMs = scaledDuration().coerceAtLeast(1L).toDouble()
+        return 1 - (timer.elapsedTime.toDouble() / durationMs) * endPoint
+    }
 
     fun reset() {
         timer.reset()
     }
 
-    fun isDone(): Boolean = timer.delay(duration.toLong())
+    /** Returns true when the scaled duration has elapsed. */
+    fun isDone(): Boolean = timer.delay(scaledDuration())
 
     fun changeDirection() {
         setDirection(direction.opposite())
@@ -42,35 +54,45 @@ abstract class Animation {
 
     protected open fun correctOutput(): Boolean = false
 
+    /** Current eased value respecting direction, scaling, and global disable flag. */
     fun getValue(): Double {
         if (!GlobalAnimationSettings.enabled) {
             return if (direction == Direction.FORWARDS) endPoint else 0.0
         }
+        val durationMs = scaledDuration().coerceAtLeast(1L)
+        val elapsed = timer.elapsedTime.coerceAtMost(durationMs)
         return if (direction == Direction.FORWARDS) {
-            if (isDone()) endPoint else getEquation(timer.elapsedTime.toDouble()) * endPoint
+            if (timer.delay(durationMs)) endPoint else getEquation(elapsed.toDouble(), durationMs) * endPoint
         } else {
-            if (isDone()) 0.0
+            if (timer.delay(durationMs)) 0.0
             else if (correctOutput()) {
-                val revTime = duration.coerceIn(0, duration) - timer.elapsedTime
-                getEquation(revTime.toDouble()) * endPoint
+                val revTime = durationMs - elapsed
+                getEquation(revTime.toDouble(), durationMs) * endPoint
             } else {
-                (1 - getEquation(timer.elapsedTime.toDouble())) * endPoint
+                (1 - getEquation(elapsed.toDouble(), durationMs)) * endPoint
             }
         }
     }
 
+    /**
+     * Jumps to a specific progress [value] (0..1) while keeping elapsed time coherent for future calls.
+     */
     fun setValue(value: Double) {
         if (value in 0.0..1.0) {
             endPoint = value
-            val elapsedTime = ((1 - value) * duration).toLong()
-            timer.lastMs = System.currentTimeMillis() - (duration - elapsedTime.coerceAtMost(duration.toLong()))
+            val durationMs = scaledDuration().coerceAtLeast(1L)
+            val elapsedTime = ((1 - value) * durationMs).toLong()
+            timer.lastMs = System.currentTimeMillis() - (durationMs - elapsedTime.coerceAtMost(durationMs))
         }
     }
 
+    /** Changes animation direction while preserving elapsed time across scaled duration. */
     fun setDirection(dir: Direction) {
         if (direction != dir) {
             direction = dir
-            timer.lastMs = System.currentTimeMillis() - (duration - timer.elapsedTime.coerceAtMost(duration.toLong()))
+            val durationMs = scaledDuration().coerceAtLeast(1L)
+            timer.lastMs =
+                System.currentTimeMillis() - (durationMs - timer.elapsedTime.coerceAtMost(durationMs))
         }
     }
 
@@ -79,4 +101,9 @@ abstract class Animation {
     fun getValueInt(): Int = getValue().toInt()
 
     protected abstract fun getEquation(x: Double): Double
+
+    private fun getEquation(x: Double, durationMs: Long): Double =
+        getEquation(x * duration / durationMs.toDouble())
+
+    private fun scaledDuration(): Long = GlobalAnimationSettings.scaleDuration(duration.toLong())
 }

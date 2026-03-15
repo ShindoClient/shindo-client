@@ -2,54 +2,33 @@ package me.miki.shindo.ui.animation.screen
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
-import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
-import org.lwjgl3.BufferUtils
-import kotlin.reflect.KFunction
 
-open class ScreenStencil : ScreenEffect {
+open class ScreenStencil : ScreenFramebufferBase(), ScreenEffect {
 
-    private val mc: Minecraft = Minecraft.getMinecraft()
-    private var fbWidth = 0
-    private var fbHeight = 0
-    private var fb: NVGLUFramebuffer? = null
-
+    /**
+     * Draws [task] into an offscreen framebuffer and re-composites it through a rounded-rect stencil.
+     */
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float = 1f) {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         val factor = sr.scaleFactor
 
-        if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
-            close()
-        }
+        ensureFramebuffer(nvg, mc.displayWidth, mc.displayHeight)
 
-        if (fb == null) {
-            fbWidth = mc.displayWidth
-            fbHeight = mc.displayHeight
-            fb = NanoVGGL2.nvgluCreateFramebuffer(nvg.getContext(), mc.displayWidth, mc.displayHeight, 0)
-        }
-
-        NanoVGGL2.nvgluBindFramebuffer(nvg.getContext(), fb)
-        GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight)
-
-        val floaty = BufferUtils.createFloatBuffer(16)
-        GL11.glGetFloat(GL11.GL_COLOR_CLEAR_VALUE, floaty)
-
+        val floaty = snapshotClearColor()
+        NanoVG.nvgBeginPath(nvg.getContext())
         GL11.glClearColor(0f, 0f, 0f, 0f)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
-        GL11.glClearColor(floaty.get(0), floaty.get(1), floaty.get(2), floaty.get(3))
+        restoreClearColor(floaty)
 
         nvg.setupAndDraw(task)
 
         mc.framebuffer.bindFramebuffer(true)
 
         nvg.setupAndDraw(Runnable {
-            val paint = NVGPaint.create()
             NanoVG.nvgGlobalAlpha(nvg.getContext(), alpha)
             NanoVG.nvgBeginPath(nvg.getContext())
             NanoVG.nvgRoundedRect(
@@ -70,7 +49,7 @@ open class ScreenStencil : ScreenEffect {
                     0f,
                     fb!!.image(),
                     1f,
-                    paint
+                    sharedPaint
                 )
             )
             NanoVG.nvgFill(nvg.getContext())
@@ -80,14 +59,8 @@ open class ScreenStencil : ScreenEffect {
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float) =
         wrap(task, x, y, width, height, radius, 1f)
 
-    fun wrap(task: KFunction<Unit>, x: Float, y: Float, width: Float, height: Float, radius: Float) =
-        wrap(task as Runnable, x, y, width, height, radius, 1f)
-
     override fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
-        fb?.let {
-            NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
-            fb = null
-        }
+        disposeFramebuffer(nvg)
     }
 }

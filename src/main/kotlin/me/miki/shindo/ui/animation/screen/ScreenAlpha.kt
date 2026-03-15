@@ -2,43 +2,24 @@ package me.miki.shindo.ui.animation.screen
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
-import net.minecraft.client.Minecraft
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
-import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
-import org.lwjgl3.BufferUtils
 
-open class ScreenAlpha : ScreenEffect {
+open class ScreenAlpha : ScreenFramebufferBase(), ScreenEffect {
 
-    private val mc: Minecraft = Minecraft.getMinecraft()
-    private var fbWidth = 0
-    private var fbHeight = 0
-    private var fb: NVGLUFramebuffer? = null
-
+    /**
+     * Renders [task] offscreen and composites it with an alpha fade using cached buffers.
+     */
     fun wrap(task: Runnable, alphaProgress: Float) {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
 
-        if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
-            close()
-        }
+        ensureFramebuffer(nvg, mc.displayWidth, mc.displayHeight)
 
-        if (fb == null) {
-            fbWidth = mc.displayWidth
-            fbHeight = mc.displayHeight
-            fb = NanoVGGL2.nvgluCreateFramebuffer(nvg.getContext(), mc.displayWidth, mc.displayHeight, 0)
-        }
-
-        NanoVGGL2.nvgluBindFramebuffer(nvg.getContext(), fb)
-        GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight)
-
-        val floaty = BufferUtils.createFloatBuffer(16)
-        GL11.glGetFloat(GL11.GL_COLOR_CLEAR_VALUE, floaty)
+        val floaty = snapshotClearColor()
 
         GL11.glClearColor(0f, 0f, 0f, 0f)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
-        GL11.glClearColor(floaty.get(0), floaty.get(1), floaty.get(2), floaty.get(3))
+        restoreClearColor(floaty)
 
         nvg.setupAndDraw(task)
 
@@ -47,7 +28,6 @@ open class ScreenAlpha : ScreenEffect {
         nvg.setupAndDraw(Runnable {
             nvg.setAlpha(alphaProgress.coerceAtMost(1.0f))
 
-            val paint = NVGPaint.create()
             NanoVG.nvgBeginPath(nvg.getContext())
             NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
             NanoVG.nvgFillPaint(
@@ -60,7 +40,7 @@ open class ScreenAlpha : ScreenEffect {
                     0f,
                     fb!!.image(),
                     1f,
-                    paint
+                    sharedPaint
                 )
             )
             NanoVG.nvgFill(nvg.getContext())
@@ -69,9 +49,6 @@ open class ScreenAlpha : ScreenEffect {
 
     override fun close() {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
-        fb?.let {
-            NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), it)
-            fb = null
-        }
+        disposeFramebuffer(nvg)
     }
 }
