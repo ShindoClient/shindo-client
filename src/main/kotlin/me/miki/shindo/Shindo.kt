@@ -188,7 +188,7 @@ class Shindo private constructor() {
         discordStats = DiscordStats().also { it.check() }
         update = Update().also { it.check() }
 
-        eventManager.register(EntityProjection.getInstance());
+        eventManager.register(EntityProjection.getInstance())
         eventManager.register(ShindoHandler())
 
         InternalSettingsMod.instance.setToggled(true)

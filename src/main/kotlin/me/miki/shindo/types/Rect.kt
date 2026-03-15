@@ -1,6 +1,5 @@
 package me.miki.shindo.types
 
-import kotlin.jvm.JvmOverloads
 import kotlin.math.max
 import kotlin.math.min
 
@@ -8,10 +7,13 @@ class Rect @JvmOverloads constructor(x: Float = 0f, y: Float = 0f, width: Float 
 
     @JvmField
     var x = 0f
+
     @JvmField
     var y = 0f
+
     @JvmField
     var width = 0f
+
     @JvmField
     var height = 0f
     operator fun set(x: Float, y: Float, w: Float, h: Float): Rect {

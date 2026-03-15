@@ -3,6 +3,7 @@ package me.miki.shindo.libs.hypixel.client
 import com.google.gson.JsonObject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+
 object HypixelCache {
 
     private data class CachedData(
@@ -22,17 +23,21 @@ object HypixelCache {
 
         return cached.data
     }
+
     fun cachePlayerData(uuid: String, data: JsonObject) {
         playerDataCache[uuid] = CachedData(data, System.currentTimeMillis())
     }
+
     fun clearCache() {
         playerDataCache.clear()
     }
+
     fun cleanExpired() {
         val now = System.currentTimeMillis()
         playerDataCache.entries.removeIf { (_, cached) ->
             now - cached.timestamp > CACHE_EXPIRY
         }
     }
+
     fun getCacheSize(): Int = playerDataCache.size
 }

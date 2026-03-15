@@ -5,12 +5,12 @@ import me.miki.shindo.gui.modmenu.category.section.CategorySectionCursor
 import me.miki.shindo.gui.modmenu.category.section.CategorySectionRenderer
 import me.miki.shindo.gui.modmenu.category.section.CategorySectionSpec
 import me.miki.shindo.gui.modmenu.category.section.CategorySectionStyle
-import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.color.palette.ColorPalette
+import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.ui.animation.value.ColorAnimation
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.Minecraft
 

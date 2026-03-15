@@ -2,9 +2,9 @@ package me.miki.shindo.ui.comp.inputs
 
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.settings.impl.NumberSetting
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.MathUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import kotlin.math.roundToInt
 
@@ -71,42 +71,42 @@ class CompSlider : Comp {
 
         animation.setAnimation(valueWidth.toFloat(), 16.0)
         val hovered = MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX() - 6,
-                getY() - 3,
-                trackWidth + 12,
-                trackHeight * trackHeight
+            mouseX,
+            mouseY,
+            getX() - 6,
+            getY() - 3,
+            trackWidth + 12,
+            trackHeight * trackHeight
         )
         draggingAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 16.0)
 
         nvgInstance.drawRoundedRect(
-                getX(),
-                getY(),
-                trackWidth,
-                trackHeight,
-                2f,
-                palette.getBackgroundColor(me.miki.shindo.management.color.palette.ColorType.NORMAL)
+            getX(),
+            getY(),
+            trackWidth,
+            trackHeight,
+            2f,
+            palette.getBackgroundColor(me.miki.shindo.management.color.palette.ColorType.NORMAL)
         )
         nvgInstance.drawGradientRoundedRect(
-                getX(),
-                getY(),
-                animation.value,
-                trackHeight,
-                2f,
-                accentColor.getColor1(),
-                accentColor.getColor2()
+            getX(),
+            getY(),
+            animation.value,
+            trackHeight,
+            2f,
+            accentColor.getColor1(),
+            accentColor.getColor2()
         )
 
         if (circle) {
             nvgInstance.drawGradientRoundedRect(
-                    getX() + animation.value - 6,
-                    getY() - 2,
-                    8f,
-                    8f,
-                    4f,
-                    accentColor.getColor1(),
-                    accentColor.getColor2()
+                getX() + animation.value - 6,
+                getY() - 2,
+                8f,
+                8f,
+                4f,
+                accentColor.getColor1(),
+                accentColor.getColor2()
             )
         }
 
@@ -120,15 +120,15 @@ class CompSlider : Comp {
                 String.format("%.2f", setting.getValue())
             }
             nvgInstance.drawText(
-                    display,
-                    getX() + animation.value - nvgInstance.getTextWidth(display, 7f, Fonts.REGULAR) / 2,
-                    getY() - 10,
-                    palette.getFontColor(
-                            me.miki.shindo.management.color.palette.ColorType.NORMAL,
-                            (draggingAnimation.value * 255).toInt()
-                    ),
-                    7f,
-                    Fonts.REGULAR
+                display,
+                getX() + animation.value - nvgInstance.getTextWidth(display, 7f, Fonts.REGULAR) / 2,
+                getY() - 10,
+                palette.getFontColor(
+                    me.miki.shindo.management.color.palette.ColorType.NORMAL,
+                    (draggingAnimation.value * 255).toInt()
+                ),
+                7f,
+                Fonts.REGULAR
             )
 
             nvgInstance.restore()
@@ -141,13 +141,13 @@ class CompSlider : Comp {
         val trackWidth = getWidth()
         val trackHeight = getHeight()
         if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        getX() - 6,
-                        getY() - 3,
-                        trackWidth + 12,
-                        trackHeight * trackHeight
-                ) && mouseButton == 0
+                mouseX,
+                mouseY,
+                getX() - 6,
+                getY() - 3,
+                trackWidth + 12,
+                trackHeight * trackHeight
+            ) && mouseButton == 0
         ) {
             dragging = true
         }

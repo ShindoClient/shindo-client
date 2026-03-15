@@ -2,8 +2,6 @@ package me.miki.shindo.libs.mixintrace
 
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 import org.spongepowered.asm.mixin.transformer.ClassInfo
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.util.function.Consumer
 
 object MixinTraceUtil {

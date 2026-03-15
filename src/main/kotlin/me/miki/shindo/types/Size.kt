@@ -1,8 +1,5 @@
 package me.miki.shindo.types
 
-import kotlin.jvm.JvmOverloads
-import java.lang.SafeVarargs
-
 class Size @JvmOverloads constructor(width: Float = 0f, height: Float = 0f) {
     var width = 0f
     var height = 0f

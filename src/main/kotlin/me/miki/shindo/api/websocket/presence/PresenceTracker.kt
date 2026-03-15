@@ -13,6 +13,7 @@ class PresenceTracker {
                 val acct = if (payload.has("accountType")) payload.get("accountType").asString else "OFFLINE"
                 online[uuid] = PresenceUser(uuid, name, acct, System.currentTimeMillis())
             }
+
             "user.leave" -> {
                 val uuid = payload.get("uuid").asString
                 online.remove(uuid)

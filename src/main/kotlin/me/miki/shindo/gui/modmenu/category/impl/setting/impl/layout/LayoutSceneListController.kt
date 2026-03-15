@@ -45,8 +45,8 @@ class LayoutSceneListController {
         val entrySpacing = 10f
 
         val contentHeight = listPadding * 2f +
-            controllers.size * entryHeight +
-            max(0, controllers.size - 1) * entrySpacing
+                controllers.size * entryHeight +
+                max(0, controllers.size - 1) * entrySpacing
         scroll.maxScroll = max(0f, contentHeight - baseHeight)
 
         if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)) {

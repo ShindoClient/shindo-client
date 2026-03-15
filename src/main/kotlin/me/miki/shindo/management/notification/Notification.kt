@@ -7,12 +7,12 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
 import me.miki.shindo.ui.animation.screen.ScreenAlpha
+import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.utils.TimerUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
@@ -33,7 +33,11 @@ class Notification {
         this.type = type
     }
 
-    constructor(title: TranslateText, message: TranslateText, type: NotificationType) : this(title.getText(), message.getText(), type)
+    constructor(title: TranslateText, message: TranslateText, type: NotificationType) : this(
+        title.getText(),
+        message.getText(),
+        type
+    )
 
     constructor(title: TranslateText, message: String, type: NotificationType) : this(title.getText(), message, type)
 

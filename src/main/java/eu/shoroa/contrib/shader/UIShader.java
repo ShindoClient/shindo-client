@@ -20,8 +20,9 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 public final class UIShader {
+    private final String vSrc;
+    private final String fSrc;
     private int pid, vid, fid;
-    private String vSrc, fSrc;
     private VBO vbo;
 
     private FloatBuffer vertexBuffer;

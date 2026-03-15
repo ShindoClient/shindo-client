@@ -3,7 +3,6 @@ package me.miki.shindo.gui.mainmenu.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
-import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -17,14 +16,15 @@ import me.miki.shindo.management.skin.Skin
 import me.miki.shindo.management.skin.SkinManager
 import me.miki.shindo.management.skin.SkinPreviewRenderer
 import me.miki.shindo.management.skin.SkinType
-import me.miki.shindo.ui.comp.inputs.CompMainMenuTextBox
-import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseInOutCirc
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.animation.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.inputs.CompMainMenuTextBox
+import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.gui.ScaledResolution
@@ -476,7 +476,10 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val buttonX = cardX + 12
         val buttonY = cardY + CARD_HEIGHT - buttonHeight - 8
         val buttonColor =
-            if (selected) ColorUtils.applyAlpha(accent.getColor1(), 220) else palette.getBackgroundColor(ColorType.NORMAL)
+            if (selected) ColorUtils.applyAlpha(
+                accent.getColor1(),
+                220
+            ) else palette.getBackgroundColor(ColorType.NORMAL)
         nvg.drawRoundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 6f, buttonColor)
         nvg.drawCenteredText(
             if (selected) tx(TranslateText.SKIN_BUTTON_SELECTED) else tx(TranslateText.SKIN_BUTTON_USE),
@@ -592,7 +595,10 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             formState.usernameField.setPosition(formX + inset, currentY, formWidth - (inset * 2f), 22F)
             formState.usernameField.setBackgroundColor(palette.getBackgroundColor(ColorType.DARK))
             formState.usernameField.setFontColor(Color.WHITE)
-            formState.usernameField.setEmptyText(LegacyIcon.USER, TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.getText())
+            formState.usernameField.setEmptyText(
+                LegacyIcon.USER,
+                TranslateText.SKIN_FIELD_USERNAME_PLACEHOLDER.getText()
+            )
             formState.usernameField.draw(mouseX, mouseY, 0f)
         } else {
             formState.uuidField.setPosition(formX + inset, currentY, formWidth - (inset * 2f), 22F)

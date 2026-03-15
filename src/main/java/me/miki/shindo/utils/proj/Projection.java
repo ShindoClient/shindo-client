@@ -7,7 +7,8 @@ import org.lwjgl.util.glu.GLU;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class Projection {
+public enum Projection {
+    ;
     public static FloatBuffer MODELVIEW;
     public static FloatBuffer PROJECTION;
     public static IntBuffer VIEWPORT;

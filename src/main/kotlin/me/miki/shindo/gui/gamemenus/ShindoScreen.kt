@@ -44,7 +44,7 @@ open class ShindoScreen(manager: MenuManager, menuName: String) {
     }
 
     init {
-        this.menuManager = manager;
-        this.menuName = menuName;
+        this.menuManager = manager
+        this.menuName = menuName
     }
 }

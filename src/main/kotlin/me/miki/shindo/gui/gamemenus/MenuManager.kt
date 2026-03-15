@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 import java.io.IOException
-import java.util.*
 
 class MenuManager : GuiScreen() {
     private var currentView: ShindoScreen
@@ -31,7 +30,7 @@ class MenuManager : GuiScreen() {
         val sr = ScaledResolution(mc)
         val instance: Shindo = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
-        val isFirstLogin: Boolean = instance.shindoAPI.isFirstLogin()
+        instance.shindoAPI.isFirstLogin()
         backgroundsHandler.draw(sr, instance, nvg, partialTicks)
         nvg.setupAndDraw(Runnable { drawNanoVG(sr, instance, nvg, mouseX, mouseY) })
         if (currentView != null) {
@@ -56,9 +55,9 @@ class MenuManager : GuiScreen() {
 
     private fun drawMenuButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {}
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val sr = ScaledResolution(mc)
+        ScaledResolution(mc)
         val instance: Shindo = Shindo.getInstance()
-        val nvg: NanoVGManager = instance.nanoVGManager!!
+        instance.nanoVGManager!!
         val isFirstLogin: Boolean = instance.shindoAPI.isFirstLogin()
         if (mouseButton == 0 && !isFirstLogin) {
 

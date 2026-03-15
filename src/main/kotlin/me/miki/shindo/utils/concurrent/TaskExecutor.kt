@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
+
 object TaskExecutor {
     @JvmStatic
     fun <T> runAsync(
@@ -16,6 +17,7 @@ object TaskExecutor {
         val future = CompletableFuture.supplyAsync(Supplier { task() }, executor)
         return future
     }
+
     @JvmStatic
     fun <T> runAsync(
         type: ThreadPoolType,
@@ -24,6 +26,7 @@ object TaskExecutor {
     ): CompletableFuture<T> {
         return runAsync(type, priority) { task.get() }
     }
+
     @JvmStatic
     fun runAsync(
         type: ThreadPoolType = ThreadPoolType.GENERAL,
@@ -33,6 +36,7 @@ object TaskExecutor {
         val executor = ThreadPoolManager.getExecutor(type)
         return CompletableFuture.runAsync(task, executor)
     }
+
     @JvmStatic
     fun runOnMainThread(task: Runnable): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
@@ -60,6 +64,7 @@ object TaskExecutor {
 
         return future
     }
+
     @JvmStatic
     fun <T> runOnMainThread(task: () -> T): CompletableFuture<T> {
         val future = CompletableFuture<T>()
@@ -85,6 +90,7 @@ object TaskExecutor {
 
         return future
     }
+
     @JvmStatic
     fun schedule(
         type: ThreadPoolType = ThreadPoolType.SCHEDULED,
@@ -95,6 +101,7 @@ object TaskExecutor {
         val executor = ThreadPoolManager.getScheduledExecutor()
         return executor.schedule(task, delay, unit)
     }
+
     @JvmStatic
     fun scheduleAtFixedRate(
         type: ThreadPoolType = ThreadPoolType.SCHEDULED,
@@ -107,16 +114,19 @@ object TaskExecutor {
         return executor.scheduleAtFixedRate(task, initialDelay, period, unit)
     }
 }
+
 fun <T> CompletableFuture<T>.thenOnMainThread(action: (T) -> Unit): CompletableFuture<T> {
     return this.thenCompose { result ->
         TaskExecutor.runOnMainThread { action(result) }.thenApply { result }
     }
 }
+
 fun <T> CompletableFuture<T>.whenCompleteOnMainThread(action: (T?, Throwable?) -> Unit): CompletableFuture<T> {
     return this.whenComplete { result, exception ->
         TaskExecutor.runOnMainThread { action(result, exception) }
     }
 }
+
 fun <T> CompletableFuture<T>.onErrorOnMainThread(action: (Throwable) -> Unit): CompletableFuture<T> {
     return this.exceptionally { exception ->
         TaskExecutor.runOnMainThread { action(exception) }

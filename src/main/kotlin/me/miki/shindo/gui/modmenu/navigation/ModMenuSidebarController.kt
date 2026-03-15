@@ -99,6 +99,7 @@ class ModMenuSidebarController {
                     hoverColor,
                     hoverAnimation.value.toDouble()
                 )
+
                 else -> normalColor
             }
             val iconColor = category.getTextColorAnimation().getColor(targetColor, 18)

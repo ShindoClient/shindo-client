@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.file.FileUtils
 import java.io.File
@@ -49,7 +48,8 @@ class ScreenshotManager {
                     output.add(JsonUtils.getStringProperty(rObj, "Screenshot", "null").toString())
                 }
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
         return output
     }
 
@@ -71,7 +71,8 @@ class ScreenshotManager {
                 jsonObject.add("Remove Screenshots", jsonArray)
                 gson.toJson(jsonObject, writer)
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 
     fun loadScreenshots() {

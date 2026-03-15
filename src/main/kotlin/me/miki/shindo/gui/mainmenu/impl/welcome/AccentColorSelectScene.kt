@@ -8,11 +8,11 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.curve.DecelerateAnimation
 import me.miki.shindo.ui.animation.screen.ScreenAlpha
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -69,12 +69,19 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
 
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
-        Blur.drawBlur(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f);
+        Blur.drawBlur(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f)
         nvg!!.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
         nvg.drawCenteredText("Choose a accent color", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
         nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)
 
-        nvg.drawRoundedImage(ResourceLocation("shindo/backgrounds/example-vertical.png"), x + width - 108f, y + 40f, 96f, 96f, 6f)
+        nvg.drawRoundedImage(
+            ResourceLocation("shindo/backgrounds/example-vertical.png"),
+            x + width - 108f,
+            y + 40f,
+            96f,
+            96f,
+            6f
+        )
         drawExampleHud(x + width - 96f, y + 70.5f, currentColor)
 
         scroll.onScroll()
@@ -85,11 +92,26 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         nvg.translate(0f, scroll.getValue())
 
         for (color in colorManager.getColors()) {
-            nvg.drawGradientRoundedRect(x + offsetX + 10f, y + offsetY + 40f, 32f, 32f, 6f, color.getColor1(), color.getColor2())
+            nvg.drawGradientRoundedRect(
+                x + offsetX + 10f,
+                y + offsetY + 40f,
+                32f,
+                32f,
+                6f,
+                color.getColor1(),
+                color.getColor2()
+            )
 
             color.getAnimation().setAnimation(if (color == currentColor) 1.0f else 0.0f, 16)
 
-            nvg.drawCenteredText(LegacyIcon.CHECK, x + offsetX + 10f + (32 / 2f), y + offsetY + 48f, Color(255, 255, 255, (color.getAnimation().value * 255).toInt()), 16f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(
+                LegacyIcon.CHECK,
+                x + offsetX + 10f + (32 / 2f),
+                y + offsetY + 48f,
+                Color(255, 255, 255, (color.getAnimation().value * 255).toInt()),
+                16f,
+                Fonts.LEGACYICON
+            )
 
             offsetX += 40
 
@@ -120,7 +142,8 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         for (color in colorManager.getColors()) {
             if (MouseUtils.isInside(mouseX, mouseY, x.toFloat(), y + 28f, width.toFloat(), height - 28f)
                 && MouseUtils.isInside(mouseX, mouseY, x + offsetX + 10f, y + offsetY + 40f, 32f, 32f)
-                && mouseButton == 0) {
+                && mouseButton == 0
+            ) {
                 currentColor = color
             }
 
@@ -146,7 +169,15 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         val width = 71f
         val height = 34f
 
-        nvg!!.drawGradientRoundedRect(x, y, width, height, 5f, ColorUtils.applyAlpha(accentColor.getColor1(), 220), ColorUtils.applyAlpha(accentColor.getColor2(), 220))
+        nvg!!.drawGradientRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            5f,
+            ColorUtils.applyAlpha(accentColor.getColor1(), 220),
+            ColorUtils.applyAlpha(accentColor.getColor2(), 220)
+        )
 
         nvg.drawText("X: 190", x + 3.9f, y + 3.9f, Color.WHITE, 6.42f, Fonts.REGULAR)
         nvg.drawText("Y: 60", x + 3.9f, y + 10.9f, Color.WHITE, 6.42f, Fonts.REGULAR)

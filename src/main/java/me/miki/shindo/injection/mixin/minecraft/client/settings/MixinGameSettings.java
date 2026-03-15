@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GameSettings.class)
-public class MixinGameSettings {
+public enum MixinGameSettings {
+    ;
 
     /**
      * @author MikiDevAHM

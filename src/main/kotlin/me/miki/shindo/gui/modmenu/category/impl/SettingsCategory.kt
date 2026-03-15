@@ -7,11 +7,11 @@ import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingSceneTransitionCoordinator
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.*
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
-import me.miki.shindo.ui.comp.buttons.CompSceneButton
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.ui.comp.buttons.CompSceneButton
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.ScrollInputGuard
@@ -135,28 +135,28 @@ class SettingsCategory(parent: GuiModMenu) :
                     height = baseHeight,
                     translateX = sceneTranslateX,
                     translateY = 0f,
-                layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_SCENE,
-                tag = "settings_scene_content"
-            ) {
-                nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
-                nvg.drawRoundedRect(
-                    baseX + 10f,
-                    baseY + 8f,
-                    baseWidth - 20f,
-                    baseHeight - 16f,
-                    12f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190)
-                )
-                nvg.drawGradientRoundedRect(
-                    baseX + 10f,
-                    baseY + 8f,
-                    baseWidth - 20f,
-                    baseHeight - 16f,
-                    12f,
-                    ColorUtils.applyAlpha(accent.getColor1(), 24),
-                    ColorUtils.applyAlpha(accent.getColor2(), 24)
-                )
-                scene.drawScreen(mouseX, mouseY, partialTicks)
+                    layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_SCENE,
+                    tag = "settings_scene_content"
+                ) {
+                    nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
+                    nvg.drawRoundedRect(
+                        baseX + 10f,
+                        baseY + 8f,
+                        baseWidth - 20f,
+                        baseHeight - 16f,
+                        12f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190)
+                    )
+                    nvg.drawGradientRoundedRect(
+                        baseX + 10f,
+                        baseY + 8f,
+                        baseWidth - 20f,
+                        baseHeight - 16f,
+                        12f,
+                        ColorUtils.applyAlpha(accent.getColor1(), 24),
+                        ColorUtils.applyAlpha(accent.getColor2(), 24)
+                    )
+                    scene.drawScreen(mouseX, mouseY, partialTicks)
 
                     val headerScene = (scene as? LayoutScene)?.getActiveSubScene() ?: scene
                     val headerX = getX() + 18f

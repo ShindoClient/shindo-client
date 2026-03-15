@@ -5,6 +5,7 @@ import org.lwjgl.Sys
 import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
+
 object BrowserUtils {
 
     @JvmStatic

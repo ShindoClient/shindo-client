@@ -24,7 +24,14 @@ object ModMenuListCardLayout {
             return MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight)
         }
 
-        fun isBodyHit(mouseX: Int, mouseY: Int, cardX: Float, cardY: Float, cardWidth: Float, cardHeight: Float): Boolean {
+        fun isBodyHit(
+            mouseX: Int,
+            mouseY: Int,
+            cardX: Float,
+            cardY: Float,
+            cardWidth: Float,
+            cardHeight: Float
+        ): Boolean {
             return MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight) &&
                     !isSettingsHit(mouseX, mouseY) &&
                     !isToggleHit(mouseX, mouseY)

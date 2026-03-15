@@ -8,7 +8,6 @@ import me.miki.shindo.management.cosmetic.CosmeticRoleTextMapper
 import me.miki.shindo.management.cosmetic.cape.impl.Cape
 import me.miki.shindo.management.cosmetic.cape.impl.CustomCape
 import me.miki.shindo.management.cosmetic.cape.impl.NormalCape
-import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.utils.ImageUtils
@@ -16,9 +15,8 @@ import me.miki.shindo.utils.file.FileUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
-import java.awt.image.BufferedImage
 import java.io.File
-import java.util.UUID
+import java.util.*
 import javax.imageio.ImageIO
 
 class CapeManager {
@@ -70,7 +68,13 @@ class CapeManager {
         add("Kitty", "cartoon/kitty-sample.png", "cartoon/kitty.png", CapeCategory.CARTOON, Role.DIAMOND)
         add("Lost World", "cartoon/lostworld-sample.png", "cartoon/lostworld.png", CapeCategory.CARTOON, Role.DIAMOND)
         add("Mountain", "cartoon/mountain-sample.png", "cartoon/mountain.png", CapeCategory.CARTOON, Role.DIAMOND)
-        add("Stargazing Girl", "cartoon/stargazinggirl-sample.png", "cartoon/stargazinggirl.png", CapeCategory.CARTOON, Role.DIAMOND)
+        add(
+            "Stargazing Girl",
+            "cartoon/stargazinggirl-sample.png",
+            "cartoon/stargazinggirl.png",
+            CapeCategory.CARTOON,
+            Role.DIAMOND
+        )
         add("Stellagate", "cartoon/stellagate-sample.png", "cartoon/stellagate.png", CapeCategory.CARTOON, Role.DIAMOND)
 
         currentCape = getCapeByName(InternalSettingsMod.instance.capeConfigName!!)
@@ -133,10 +137,24 @@ class CapeManager {
 
     private fun add(name: String, samplePath: String, capePath: String, category: CapeCategory, requiredRole: Role) {
         val cosmeticPath = "shindo/cosmetics/cape/"
-        capes.add(NormalCape(name, ResourceLocation(cosmeticPath + samplePath), ResourceLocation(cosmeticPath + capePath), category, requiredRole))
+        capes.add(
+            NormalCape(
+                name,
+                ResourceLocation(cosmeticPath + samplePath),
+                ResourceLocation(cosmeticPath + capePath),
+                category,
+                requiredRole
+            )
+        )
     }
 
-    private fun addCustomCape(name: String, sample: File, cape: ResourceLocation, category: CapeCategory, requiredRole: Role) {
+    private fun addCustomCape(
+        name: String,
+        sample: File,
+        cape: ResourceLocation,
+        category: CapeCategory,
+        requiredRole: Role
+    ) {
         capes.add(CustomCape(name, sample, cape, category, requiredRole))
     }
 

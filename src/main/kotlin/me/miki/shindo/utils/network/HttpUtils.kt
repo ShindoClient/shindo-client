@@ -7,12 +7,7 @@ import me.miki.shindo.utils.network.okhttp.HttpResponseData
 import me.miki.shindo.utils.network.okhttp.OkHttpClientPool
 import me.miki.shindo.utils.network.okhttp.OkHttpRequestUtils
 import me.miki.shindo.utils.network.okhttp.OkHttpResponseUtils
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.UnsupportedEncodingException
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLDecoder
@@ -146,7 +141,10 @@ object HttpUtils {
     }
 
     @JvmStatic
-    @Deprecated("Legacy API. Prefer HttpUtils.get()/postJsonRaw()", ReplaceWith("HttpUtils.get(url, null, userAgent, timeout)"))
+    @Deprecated(
+        "Legacy API. Prefer HttpUtils.get()/postJsonRaw()",
+        ReplaceWith("HttpUtils.get(url, null, userAgent, timeout)")
+    )
     fun setupConnection(url: String, userAgent: String, timeout: Int, useCaches: Boolean): HttpURLConnection? {
         return try {
             val connection = URL(PunycodeUtils.punycode(url)).openConnection() as HttpURLConnection

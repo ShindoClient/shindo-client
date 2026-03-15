@@ -1,4 +1,5 @@
 package me.miki.shindo.utils.concurrent
+
 enum class TaskPriority(val value: Int) {
     CRITICAL(100),
     HIGH(75),

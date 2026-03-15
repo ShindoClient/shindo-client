@@ -25,14 +25,13 @@ import org.lwjgl.opengl.GL13;
 
 import java.io.IOException;
 
-public class Blur {
+public enum Blur {
+    ;
     private static final UIShader shader = new UIShader("shindo/shaders/vertex.vert", "shindo/shaders/blur.frag");
-
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static Framebuffer fboHalf = new Framebuffer(Minecraft.getMinecraft().displayWidth / 2, Minecraft.getMinecraft().displayHeight / 2, false);
     private static Framebuffer fboQuart = new Framebuffer(Minecraft.getMinecraft().displayWidth / 4, Minecraft.getMinecraft().displayHeight / 4, false);
     private static Framebuffer fboEighth = new Framebuffer(Minecraft.getMinecraft().displayWidth / 8, Minecraft.getMinecraft().displayHeight / 8, false);
-
-    private static final Minecraft mc = Minecraft.getMinecraft();
     private static int nvgImage = -1;
 
     public static void init() {

@@ -3,7 +3,6 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
-import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.Mod

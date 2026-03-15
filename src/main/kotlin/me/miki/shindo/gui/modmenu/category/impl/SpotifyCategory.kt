@@ -36,7 +36,6 @@ import java.net.URI
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.ArrayList
 
 class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTIFY, LegacyIcon.SPOTIFY, true, true),
     TrackInfoCallback {
@@ -989,7 +988,14 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
                 val isCurrentLine = i == currentLineIndex
                 val isHovered =
-                    MouseUtils.isInside(mouseX, mouseY, getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat())
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        getX() + 20f,
+                        currentY,
+                        getWidth() - 40f,
+                        lineHeights[i].toFloat()
+                    )
 
                 if (isHovered) {
                     currentHighlightedLyricIndex = i
@@ -1004,7 +1010,12 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
                     nvg.drawRoundedRect(
                         getX() + 20f, currentY, getWidth() - 40f, lineHeights[i].toFloat(), 4f,
-                        Color(accentColor.getColor1().red, accentColor.getColor1().green, accentColor.getColor1().blue, 30)
+                        Color(
+                            accentColor.getColor1().red,
+                            accentColor.getColor1().green,
+                            accentColor.getColor1().blue,
+                            30
+                        )
                     )
                 } else if (isHovered) {
                     lineColor = palette.getFontColor(ColorType.DARK)

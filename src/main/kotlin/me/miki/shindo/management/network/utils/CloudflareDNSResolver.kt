@@ -1,7 +1,7 @@
 package me.miki.shindo.management.network.utils
 
-import me.miki.shindo.management.network.interfaces.IDNSResolver
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.network.interfaces.IDNSResolver
 import java.net.InetAddress
 
 /**

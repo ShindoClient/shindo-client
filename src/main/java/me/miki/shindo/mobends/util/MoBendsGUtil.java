@@ -2,7 +2,8 @@ package me.miki.shindo.mobends.util;
 
 import org.lwjgl.util.vector.Vector3f;
 
-public class MoBendsGUtil {
+public enum MoBendsGUtil {
+    ;
 
     public static float max(float argNum, float argMax) {
         if (argNum > argMax) {

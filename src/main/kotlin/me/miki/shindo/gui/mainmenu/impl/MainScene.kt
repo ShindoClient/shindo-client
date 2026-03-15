@@ -8,8 +8,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiOptions
@@ -63,7 +63,15 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 )
             ) 1.0f else 0.0f, 16.0
         )
-        drawMenuButton(nvg, centerX, yPos, width, height, TranslateText.SINGLEPLAYER.getText(), singlePlayerAnimation.value)
+        drawMenuButton(
+            nvg,
+            centerX,
+            yPos,
+            width,
+            height,
+            TranslateText.SINGLEPLAYER.getText(),
+            singlePlayerAnimation.value
+        )
 
         multiplayerAnimation.setAnimation(
             if (MouseUtils.isInside(

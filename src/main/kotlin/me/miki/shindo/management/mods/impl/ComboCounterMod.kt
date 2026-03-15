@@ -1,7 +1,10 @@
 package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.management.event.EventTarget
-import me.miki.shindo.management.event.impl.*
+import me.miki.shindo.management.event.impl.EventAttackEntity
+import me.miki.shindo.management.event.impl.EventDamageEntity
+import me.miki.shindo.management.event.impl.EventNVG
+import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.nanovg.font.LegacyIcon

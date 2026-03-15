@@ -8,12 +8,12 @@ data class DNSConfig(
      * Endereço IP do servidor DNS primário
      */
     val primaryDNS: String,
-    
+
     /**
      * Endereço IP do servidor DNS secundário (opcional)
      */
     val secondaryDNS: String? = null,
-    
+
     /**
      * Nome amigável do servidor DNS
      */

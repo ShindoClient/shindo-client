@@ -1,7 +1,7 @@
 package me.miki.shindo
 
-import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.gui.modmenu.GuiModMenu
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.profile.Profile
 import me.miki.shindo.management.skin.Skin
@@ -17,6 +17,7 @@ class ShindoHandler {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val instance: Shindo = Shindo.getInstance()
+
     @EventTarget
     fun onTick(event: EventTick) {
         OptifineUtils.disableFastRender()
@@ -24,7 +25,7 @@ class ShindoHandler {
 
     @EventTarget
     fun onJoinServer(event: EventJoinServer) {
-        for (p: Profile in  instance.profileManager.profiles) {
+        for (p: Profile in instance.profileManager.profiles) {
             val serverIp = p.serverIp ?: return
             if (serverIp.isNotEmpty() && StringUtils.containsIgnoreCase(event.getIp(), serverIp)) {
                 instance.modManager.disableAll()

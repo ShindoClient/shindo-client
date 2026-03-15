@@ -18,7 +18,7 @@ class MainMenuClassic(manager: MenuManager) : ShindoScreen(manager, "Main Menu")
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance: Shindo = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
-        nvg.setupAndDraw(Runnable{ drawNanoVG(nvg, instance) })
+        nvg.setupAndDraw(Runnable { drawNanoVG(nvg, instance) })
     }
 
     private fun drawNanoVG(nvg: NanoVGManager, shindoInstance: Shindo) {
@@ -50,7 +50,14 @@ class MainMenuClassic(manager: MenuManager) : ShindoScreen(manager, "Main Menu")
             9.5f,
             Fonts.REGULAR
         )
-        nvg.drawRoundedRect(sr.scaledWidth / 2f - 180f / 2f, yPos + 26f * 2f, 180f, 20f, 4.5f, this.getBackgroundColor())
+        nvg.drawRoundedRect(
+            sr.scaledWidth / 2f - 180f / 2f,
+            yPos + 26f * 2f,
+            180f,
+            20f,
+            4.5f,
+            this.getBackgroundColor()
+        )
         nvg.drawCenteredText(
             TranslateText.SETTINGS.getText(),
             sr.scaledWidth / 2f,

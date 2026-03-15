@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class AutoTextManager {
@@ -78,7 +78,8 @@ class AutoTextManager {
                 for (element in array) {
                     if (!element.isJsonObject) continue
                     val obj = element.asJsonObject
-                    val id = JsonUtils.getStringProperty(obj, "id", UUID.randomUUID().toString().replace("-", "")) ?: continue
+                    val id = JsonUtils.getStringProperty(obj, "id", UUID.randomUUID().toString().replace("-", ""))
+                        ?: continue
                     val name = JsonUtils.getStringProperty(obj, "name", "") ?: ""
                     val text = JsonUtils.getStringProperty(obj, "textOrCommand", "") ?: ""
                     val keyCode = JsonUtils.getIntProperty(obj, "keyCode", Keyboard.KEY_NONE)

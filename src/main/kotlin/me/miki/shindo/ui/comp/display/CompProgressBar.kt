@@ -126,7 +126,8 @@ class CompProgressBar(
                 (textAnimation.value * 255).toInt().coerceIn(0, 255)
             )
             val textSize = 8f
-            val textHeight = nvgInstance.getTextHeight(text, textSize, me.miki.shindo.management.nanovg.font.Fonts.REGULAR)
+            val textHeight =
+                nvgInstance.getTextHeight(text, textSize, me.miki.shindo.management.nanovg.font.Fonts.REGULAR)
             nvgInstance.drawCenteredText(
                 text,
                 getX() + getWidth() / 2f,

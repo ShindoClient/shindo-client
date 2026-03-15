@@ -68,8 +68,14 @@ class CompComboBox : Comp {
         hoverAnimation.setAnimation(if (containerHovered) 1.0f else 0.0f, 14.0)
         leftHoverAnimation.setAnimation(if (leftHovered) 1.0f else 0.0f, 14.0)
         rightHoverAnimation.setAnimation(if (rightHovered) 1.0f else 0.0f, 14.0)
-        leftPressAnimation.setAnimation(if (leftPressAnimation.value > 0.08f) leftPressAnimation.value * 0.84f else 0.0f, 16.0)
-        rightPressAnimation.setAnimation(if (rightPressAnimation.value > 0.08f) rightPressAnimation.value * 0.84f else 0.0f, 16.0)
+        leftPressAnimation.setAnimation(
+            if (leftPressAnimation.value > 0.08f) leftPressAnimation.value * 0.84f else 0.0f,
+            16.0
+        )
+        rightPressAnimation.setAnimation(
+            if (rightPressAnimation.value > 0.08f) rightPressAnimation.value * 0.84f else 0.0f,
+            16.0
+        )
 
         val baseBg = CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, paletteColors, accentColor)
         val hoverBg = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accentColor)
@@ -87,7 +93,10 @@ class CompComboBox : Comp {
             controlHeight,
             5f,
             1f,
-            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), (74 + hoverAnimation.value * 68f).toInt())
+            ColorUtils.applyAlpha(
+                paletteColors.getFontColor(ColorType.NORMAL),
+                (74 + hoverAnimation.value * 68f).toInt()
+            )
         )
 
         drawSideButton(
@@ -173,7 +182,15 @@ class CompComboBox : Comp {
             leftPressAnimation.value = 1f
             val nextIndex = if (currentIndex > 0) currentIndex - 1 else max - 1
             setting.setOption(options[nextIndex])
-        } else if (MouseUtils.isInside(mouseX, mouseY, x + controlWidth - BUTTON_SIZE, y, BUTTON_SIZE, CONTROL_HEIGHT)) {
+        } else if (MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                x + controlWidth - BUTTON_SIZE,
+                y,
+                BUTTON_SIZE,
+                CONTROL_HEIGHT
+            )
+        ) {
             changeAnimation.value = 0f
             changeDirection = -1
             rightPressAnimation.value = 1f

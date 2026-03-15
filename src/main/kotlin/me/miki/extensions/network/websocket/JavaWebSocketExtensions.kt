@@ -36,7 +36,7 @@ fun WebSocketClient.sendJson(gson: Gson, payload: Any): Boolean {
 /**
  * Closes websocket without propagating errors.
  */
-fun WebSocketClient.closeQuietly(code: Int = 1000, reason: String = "normal"): Unit {
+fun WebSocketClient.closeQuietly(code: Int = 1000, reason: String = "normal") {
     try {
         close(code, reason)
     } catch (ignored: Throwable) {

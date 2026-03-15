@@ -15,7 +15,8 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class FixedSoundEngine {
+public enum FixedSoundEngine {
+    ;
 
     private final static Minecraft mc = Minecraft.getMinecraft();
 

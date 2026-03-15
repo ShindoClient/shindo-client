@@ -2,6 +2,7 @@ package me.miki.shindo.utils.concurrent
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+
 object ThreadPoolManager {
 
     private val ioPool: ThreadPoolExecutor
@@ -81,6 +82,7 @@ object ThreadPoolManager {
             }
         )
     }
+
     @JvmStatic
     fun getExecutor(type: ThreadPoolType): ExecutorService = when (type) {
         ThreadPoolType.IO -> ioPool
@@ -89,8 +91,10 @@ object ThreadPoolManager {
         ThreadPoolType.SCHEDULED -> scheduledPool
         ThreadPoolType.GENERAL -> generalPool
     }
+
     @JvmStatic
     fun getScheduledExecutor(): ScheduledExecutorService = scheduledPool
+
     @JvmStatic
     fun getPoolStats(type: ThreadPoolType): PoolStats {
         val executor = getExecutor(type) as? ThreadPoolExecutor ?: return PoolStats(0, 0, 0, 0)
@@ -101,6 +105,7 @@ object ThreadPoolManager {
             completedTaskCount = executor.completedTaskCount.toInt()
         )
     }
+
     @JvmStatic
     fun getAllStats(): Map<ThreadPoolType, PoolStats> {
         val stats = LinkedHashMap<ThreadPoolType, PoolStats>()
@@ -109,6 +114,7 @@ object ThreadPoolManager {
         }
         return stats
     }
+
     @JvmStatic
     fun shutdown() {
         ioPool.shutdown()
@@ -117,6 +123,7 @@ object ThreadPoolManager {
         scheduledPool.shutdown()
         generalPool.shutdown()
     }
+
     @JvmStatic
     fun shutdownNow() {
         ioPool.shutdownNow()
@@ -125,6 +132,7 @@ object ThreadPoolManager {
         scheduledPool.shutdownNow()
         generalPool.shutdownNow()
     }
+
     data class PoolStats(
         val activeCount: Int,
         val poolSize: Int,

@@ -6,7 +6,6 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.java.games.input.ControllerEnvironment
 import net.java.games.input.Mouse
-import kotlin.jvm.Volatile
 
 class RawInputMod :
     Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT) {

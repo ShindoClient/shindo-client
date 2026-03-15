@@ -20,5 +20,6 @@ abstract class QuickPlay(
         commands.clear()
         commands.addAll(list)
     }
+
     fun getIcon(): ResourceLocation = icon
 }

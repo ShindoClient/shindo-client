@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.injection.interfaces.IMixinShaderGroup
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.event.EventTarget
-import me.miki.shindo.injection.interfaces.IMixinShaderGroup
 import me.miki.shindo.management.event.impl.EventShader
 import me.miki.shindo.management.event.impl.EventUpdateDisplay
 import me.miki.shindo.management.language.TranslateText
@@ -12,8 +12,8 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.management.sound.Sounds
 import me.miki.shindo.management.sound.Sound.Companion.play
+import me.miki.shindo.management.sound.Sounds
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.shader.Shader
 import net.minecraft.client.shader.ShaderGroup

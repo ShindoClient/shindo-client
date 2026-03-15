@@ -5,7 +5,7 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.ui.animation.value.SimpleAnimation
-import java.util.Locale
+import java.util.*
 
 open class Addon(
     val name: String,
@@ -59,7 +59,7 @@ open class Addon(
             this.toggled = false
             return
         }
-        
+
         this.toggled = toggled
         if (toggled) {
             onEnable()

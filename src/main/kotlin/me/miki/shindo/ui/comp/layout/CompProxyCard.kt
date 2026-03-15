@@ -39,7 +39,14 @@ class CompProxyCard : Comp() {
         nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, base)
         nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, 1f, borderColor)
         if (active) {
-            nvg.drawRoundedRect(getX() + 10f, getY() + 13f, 3f, getHeight() - 26f, 1.5f, ColorUtils.applyAlpha(accent.getInterpolateColor(), 188))
+            nvg.drawRoundedRect(
+                getX() + 10f,
+                getY() + 13f,
+                3f,
+                getHeight() - 26f,
+                1.5f,
+                ColorUtils.applyAlpha(accent.getInterpolateColor(), 188)
+            )
         }
 
         nvg.drawText(

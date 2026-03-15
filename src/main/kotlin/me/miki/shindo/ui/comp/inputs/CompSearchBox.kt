@@ -10,7 +10,6 @@ import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.mouse.MouseUtils
-import java.awt.Color
 
 class CompSearchBox : CompTextBoxBase {
     private val timer = TimerUtils()
@@ -55,10 +54,19 @@ class CompSearchBox : CompTextBoxBase {
         for (c in text.toCharArray()) {
             resultText += c
 
-            if (nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) + textInset + textPaddingEnd > getWidth()) {
+            if (nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) + textInset + textPaddingEnd > getWidth()
+            ) {
                 outTextSize++
 
-                addX = getWidth() - nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) - textInset - textPaddingEnd
+                addX = getWidth() - nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) - textInset - textPaddingEnd
             }
         }
 
@@ -77,7 +85,8 @@ class CompSearchBox : CompTextBoxBase {
         focusAnimation.setAnimation(if (focused) 1.0f else 0.0f, 16.0)
 
         val baseBackground = CompStyleResolver.resolveControlBase(CompControlVariant.GHOST, paletteColors, accentColors)
-        val hoverBackground = CompStyleResolver.resolveControlHover(CompControlVariant.GHOST, paletteColors, accentColors)
+        val hoverBackground =
+            CompStyleResolver.resolveControlHover(CompControlVariant.GHOST, paletteColors, accentColors)
         val shellColor = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
         val focusTint = ColorUtils.applyAlpha(accentColors.getColor1(), 128)
         val background = ColorUtils.interpolateColor(shellColor, focusTint, (focusAnimation.value * 0.22f).toDouble())
@@ -133,7 +142,8 @@ class CompSearchBox : CompTextBoxBase {
             maxOf(hoverAnimation.value, focusAnimation.value).toDouble()
         )
         val iconSize = (halfHeight + 0.5f).coerceAtLeast(8f)
-        val iconY = getY() + getHeight() / 2f - nvgInstance.getTextHeight(LegacyIcon.SEARCH, iconSize, Fonts.LEGACYICON) / 2f
+        val iconY =
+            getY() + getHeight() / 2f - nvgInstance.getTextHeight(LegacyIcon.SEARCH, iconSize, Fonts.LEGACYICON) / 2f
 
         nvgInstance.drawText(
             LegacyIcon.SEARCH,

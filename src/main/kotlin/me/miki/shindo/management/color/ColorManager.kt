@@ -58,12 +58,17 @@ class ColorManager {
 
     fun getColors(): ArrayList<AccentColor> = colors
     fun getCurrentColor(): AccentColor = currentColor
-    fun setCurrentColor(c: AccentColor) { currentColor = c }
+    fun setCurrentColor(c: AccentColor) {
+        currentColor = c
+    }
 
     fun getColorByName(name: String): AccentColor =
         colors.firstOrNull { it.getName() == name } ?: getColorByName("Default")
 
     fun getTheme(): Theme = theme
-    fun setTheme(t: Theme) { theme = t }
+    fun setTheme(t: Theme) {
+        theme = t
+    }
+
     fun getPalette(): ColorPalette = palette
 }

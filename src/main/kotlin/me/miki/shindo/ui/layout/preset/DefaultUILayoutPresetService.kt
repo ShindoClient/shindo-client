@@ -1,10 +1,6 @@
 package me.miki.shindo.ui.layout.preset
 
-import me.miki.shindo.ui.layout.interfaces.UILayoutAppearanceIntegration
-import me.miki.shindo.ui.layout.interfaces.UILayoutPresetRepository
-import me.miki.shindo.ui.layout.interfaces.UILayoutPresetResolver
-import me.miki.shindo.ui.layout.interfaces.UILayoutPresetService
-import me.miki.shindo.ui.layout.interfaces.UILayoutStateGateway
+import me.miki.shindo.ui.layout.interfaces.*
 import me.miki.shindo.ui.layout.model.UILayoutPreset
 
 class DefaultUILayoutPresetService(

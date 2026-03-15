@@ -29,8 +29,7 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.io.File
-import java.util.LinkedHashMap
-import java.util.UUID
+import java.util.*
 
 private typealias PreviewRenderer = (NanoVGManager, Float, Float, Float, Float) -> Unit
 
@@ -111,9 +110,44 @@ class CosmeticsCategory(parent: GuiModMenu) :
             y = drawCategoryChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
             y += CATEGORY_BLOCK_GAP
             y = when (activeSection) {
-                CosmeticSection.CAPES -> drawCapeGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
-                CosmeticSection.WINGS -> drawWingGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
-                CosmeticSection.BANDANAS -> drawBandanaGrid(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, searchQuery, mouseX, mouseY)
+                CosmeticSection.CAPES -> drawCapeGrid(
+                    nvg,
+                    palette,
+                    accent,
+                    contentX,
+                    contentWidth,
+                    y,
+                    scrollOffset,
+                    searchQuery,
+                    mouseX,
+                    mouseY
+                )
+
+                CosmeticSection.WINGS -> drawWingGrid(
+                    nvg,
+                    palette,
+                    accent,
+                    contentX,
+                    contentWidth,
+                    y,
+                    scrollOffset,
+                    searchQuery,
+                    mouseX,
+                    mouseY
+                )
+
+                CosmeticSection.BANDANAS -> drawBandanaGrid(
+                    nvg,
+                    palette,
+                    accent,
+                    contentX,
+                    contentWidth,
+                    y,
+                    scrollOffset,
+                    searchQuery,
+                    mouseX,
+                    mouseY
+                )
             }
         }
 
@@ -163,7 +197,14 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 currentY += CategoryChipRenderer.CHIP_HEIGHT + SECTION_CHIP_GAP
             }
 
-            val hovered = MouseUtils.isInside(mouseX, mouseY, currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
+            val hovered = MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                currentX,
+                currentY + scrollOffset,
+                chipWidth,
+                CategoryChipRenderer.CHIP_HEIGHT
+            )
             CategoryChipRenderer.drawChip(
                 nvg,
                 palette,
@@ -212,7 +253,14 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 currentY += CategoryChipRenderer.CHIP_HEIGHT + CATEGORY_CHIP_GAP
             }
 
-            val hovered = MouseUtils.isInside(mouseX, mouseY, currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
+            val hovered = MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                currentX,
+                currentY + scrollOffset,
+                chipWidth,
+                CategoryChipRenderer.CHIP_HEIGHT
+            )
             CategoryChipRenderer.drawChip(
                 nvg,
                 palette,
@@ -504,7 +552,15 @@ class CosmeticsCategory(parent: GuiModMenu) :
             val badgeSize = 16f
             val badgeX = x + width - badgeSize - 6f
             val badgeY = y + 6f
-            nvg.drawGradientRoundedRect(badgeX, badgeY, badgeSize, badgeSize, 5.5f, accent.getColor1(), accent.getColor2())
+            nvg.drawGradientRoundedRect(
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                5.5f,
+                accent.getColor1(),
+                accent.getColor2()
+            )
             nvg.drawCenteredText(
                 LegacyIcon.CHECK,
                 badgeX + badgeSize / 2f,
@@ -516,7 +572,14 @@ class CosmeticsCategory(parent: GuiModMenu) :
         }
 
         if (!unlocked) {
-            nvg.drawRoundedRect(x, y, width, height, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 205))
+            nvg.drawRoundedRect(
+                x,
+                y,
+                width,
+                height,
+                12f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 205)
+            )
             nvg.drawCenteredText(
                 LegacyIcon.LOCK,
                 x + width / 2f,
@@ -628,53 +691,166 @@ class CosmeticsCategory(parent: GuiModMenu) :
         }
     }
 
-    private fun drawWingConceptPreview(nvg: NanoVGManager, x: Float, y: Float, width: Float, height: Float, label: String) {
+    private fun drawWingConceptPreview(
+        nvg: NanoVGManager,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        label: String
+    ) {
         val palette = Shindo.getInstance().colorManager.getPalette()
         val accent = Shindo.getInstance().colorManager.getCurrentColor()
 
         val tone = if (label.hashCode() % 2 == 0) accent.getColor1() else accent.getColor2()
-        nvg.drawRoundedRect(x, y, width, height, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215))
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            6f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215)
+        )
 
         val centerX = x + width / 2f
         val bodyWidth = width * 0.12f
         val wingWidth = width * 0.34f
         val wingHeight = height * 0.22f
 
-        nvg.drawRoundedRect(centerX - bodyWidth / 2f, y + height * 0.19f, bodyWidth, height * 0.62f, 4f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240))
-        nvg.drawRoundedRect(centerX - bodyWidth / 2f - wingWidth, y + height * 0.24f, wingWidth, wingHeight, 5f, ColorUtils.applyAlpha(tone, 185))
-        nvg.drawRoundedRect(centerX + bodyWidth / 2f, y + height * 0.24f, wingWidth, wingHeight, 5f, ColorUtils.applyAlpha(tone, 185))
-        nvg.drawRoundedRect(centerX - bodyWidth / 2f - wingWidth * 0.85f, y + height * 0.56f, wingWidth * 0.85f, wingHeight * 0.78f, 5f, ColorUtils.applyAlpha(accent.getColor2(), 170))
-        nvg.drawRoundedRect(centerX + bodyWidth / 2f, y + height * 0.56f, wingWidth * 0.85f, wingHeight * 0.78f, 5f, ColorUtils.applyAlpha(accent.getColor2(), 170))
+        nvg.drawRoundedRect(
+            centerX - bodyWidth / 2f,
+            y + height * 0.19f,
+            bodyWidth,
+            height * 0.62f,
+            4f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240)
+        )
+        nvg.drawRoundedRect(
+            centerX - bodyWidth / 2f - wingWidth,
+            y + height * 0.24f,
+            wingWidth,
+            wingHeight,
+            5f,
+            ColorUtils.applyAlpha(tone, 185)
+        )
+        nvg.drawRoundedRect(
+            centerX + bodyWidth / 2f,
+            y + height * 0.24f,
+            wingWidth,
+            wingHeight,
+            5f,
+            ColorUtils.applyAlpha(tone, 185)
+        )
+        nvg.drawRoundedRect(
+            centerX - bodyWidth / 2f - wingWidth * 0.85f,
+            y + height * 0.56f,
+            wingWidth * 0.85f,
+            wingHeight * 0.78f,
+            5f,
+            ColorUtils.applyAlpha(accent.getColor2(), 170)
+        )
+        nvg.drawRoundedRect(
+            centerX + bodyWidth / 2f,
+            y + height * 0.56f,
+            wingWidth * 0.85f,
+            wingHeight * 0.78f,
+            5f,
+            ColorUtils.applyAlpha(accent.getColor2(), 170)
+        )
     }
 
-    private fun drawBandanaConceptPreview(nvg: NanoVGManager, x: Float, y: Float, width: Float, height: Float, label: String) {
+    private fun drawBandanaConceptPreview(
+        nvg: NanoVGManager,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        label: String
+    ) {
         val palette = Shindo.getInstance().colorManager.getPalette()
         val accent = Shindo.getInstance().colorManager.getCurrentColor()
 
         val tint = if (label.hashCode() % 2 == 0) accent.getColor2() else accent.getColor1()
-        nvg.drawRoundedRect(x, y, width, height, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215))
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            6f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215)
+        )
 
         val centerX = x + width / 2f
         val headY = y + height * 0.34f
         val headRadius = kotlin.math.min(width, height) * 0.16f
-        nvg.drawCircle(centerX, headY, headRadius, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240))
+        nvg.drawCircle(
+            centerX,
+            headY,
+            headRadius,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240)
+        )
 
         val stripY = headY - headRadius * 0.25f
         val stripHeight = headRadius * 0.55f
-        nvg.drawGradientRoundedRect(centerX - width * 0.30f, stripY, width * 0.60f, stripHeight, 4f, ColorUtils.applyAlpha(tint, 210), ColorUtils.applyAlpha(accent.getColor2(), 190))
-        nvg.drawRoundedRect(centerX + width * 0.21f, stripY + stripHeight * 0.12f, width * 0.13f, height * 0.20f, 3f, ColorUtils.applyAlpha(tint, 175))
-        nvg.drawRoundedRect(centerX + width * 0.31f, stripY + stripHeight * 0.34f, width * 0.11f, height * 0.16f, 3f, ColorUtils.applyAlpha(accent.getColor1(), 165))
+        nvg.drawGradientRoundedRect(
+            centerX - width * 0.30f,
+            stripY,
+            width * 0.60f,
+            stripHeight,
+            4f,
+            ColorUtils.applyAlpha(tint, 210),
+            ColorUtils.applyAlpha(accent.getColor2(), 190)
+        )
+        nvg.drawRoundedRect(
+            centerX + width * 0.21f,
+            stripY + stripHeight * 0.12f,
+            width * 0.13f,
+            height * 0.20f,
+            3f,
+            ColorUtils.applyAlpha(tint, 175)
+        )
+        nvg.drawRoundedRect(
+            centerX + width * 0.31f,
+            stripY + stripHeight * 0.34f,
+            width * 0.11f,
+            height * 0.16f,
+            3f,
+            ColorUtils.applyAlpha(accent.getColor1(), 165)
+        )
     }
 
     private fun defaultPreview(): PreviewRenderer {
         return { nvg, px, py, width, height ->
             val palette = Shindo.getInstance().colorManager.getPalette()
-            nvg.drawRoundedRect(px, py, width, height, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
-            nvg.drawCenteredText("-", px + width / 2f, py + height / 2f - 5f, palette.getFontColor(ColorType.NORMAL), 11f, Fonts.SEMIBOLD)
+            nvg.drawRoundedRect(
+                px,
+                py,
+                width,
+                height,
+                6f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+            )
+            nvg.drawCenteredText(
+                "-",
+                px + width / 2f,
+                py + height / 2f - 5f,
+                palette.getFontColor(ColorType.NORMAL),
+                11f,
+                Fonts.SEMIBOLD
+            )
         }
     }
 
-    private fun drawImagePreview(nvg: NanoVGManager, location: ResourceLocation?, file: File?, x: Float, y: Float, width: Float, height: Float, radius: Float): Boolean {
+    private fun drawImagePreview(
+        nvg: NanoVGManager,
+        location: ResourceLocation?,
+        file: File?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float
+    ): Boolean {
         val size = if (location != null) nvg.getImageSize(location) else nvg.getImageSize(file ?: return false)
         if (size == null || size.width <= 0 || size.height <= 0) {
             return false
@@ -702,15 +878,25 @@ class CosmeticsCategory(parent: GuiModMenu) :
     }
 
     private fun isCapeVisible(cape: Cape, searchQuery: String): Boolean =
-        (activeCapeCategory == CapeCategory.ALL || cape.getCategory() == activeCapeCategory) && matchesSearch(cape.getName(), searchQuery)
+        (activeCapeCategory == CapeCategory.ALL || cape.getCategory() == activeCapeCategory) && matchesSearch(
+            cape.getName(),
+            searchQuery
+        )
 
     private fun isWingVisible(wing: Wing, searchQuery: String): Boolean =
-        (activeWingCategory == WingCategory.ALL || wing.getCategory() == activeWingCategory) && matchesSearch(wing.getName(), searchQuery)
+        (activeWingCategory == WingCategory.ALL || wing.getCategory() == activeWingCategory) && matchesSearch(
+            wing.getName(),
+            searchQuery
+        )
 
     private fun isBandanaVisible(bandana: Bandana, searchQuery: String): Boolean =
-        (activeBandanaCategory == BandanaCategory.ALL || bandana.getCategory() == activeBandanaCategory) && matchesSearch(bandana.getName(), searchQuery)
+        (activeBandanaCategory == BandanaCategory.ALL || bandana.getCategory() == activeBandanaCategory) && matchesSearch(
+            bandana.getName(),
+            searchQuery
+        )
 
-    private fun matchesSearch(value: String, query: String): Boolean = query.isEmpty() || SearchUtils.isSimilar(value, query)
+    private fun matchesSearch(value: String, query: String): Boolean =
+        query.isEmpty() || SearchUtils.isSimilar(value, query)
 
     private fun getRequirementText(role: Role, mapper: (Role) -> TranslateText?): String {
         if (role == Role.MEMBER) {
@@ -741,9 +927,14 @@ class CosmeticsCategory(parent: GuiModMenu) :
 
     private fun getActiveCategoryOptions(): List<ChipOption> {
         return when (activeSection) {
-            CosmeticSection.CAPES -> CapeCategory.values().map { ChipOption(it.getName(), it == activeCapeCategory, Runnable { activeCapeCategory = it }) }
-            CosmeticSection.WINGS -> WingCategory.values().map { ChipOption(it.getName(), it == activeWingCategory, Runnable { activeWingCategory = it }) }
-            CosmeticSection.BANDANAS -> BandanaCategory.values().map { ChipOption(it.getName(), it == activeBandanaCategory, Runnable { activeBandanaCategory = it }) }
+            CosmeticSection.CAPES -> CapeCategory.values()
+                .map { ChipOption(it.getName(), it == activeCapeCategory, Runnable { activeCapeCategory = it }) }
+
+            CosmeticSection.WINGS -> WingCategory.values()
+                .map { ChipOption(it.getName(), it == activeWingCategory, Runnable { activeWingCategory = it }) }
+
+            CosmeticSection.BANDANAS -> BandanaCategory.values()
+                .map { ChipOption(it.getName(), it == activeBandanaCategory, Runnable { activeBandanaCategory = it }) }
         }
     }
 

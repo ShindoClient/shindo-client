@@ -78,6 +78,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     public GuiScreen currentScreen;
     @Shadow
     public EntityRenderer entityRenderer;
+    long lastFrame = getCurrentTime();
     @Shadow
     private boolean running;
     @Shadow
@@ -415,8 +416,6 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
     @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V"))
     private void optimizedWorldSwapping() {
     }
-
-    long lastFrame = getCurrentTime();
 
     private long getCurrentTime() {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();

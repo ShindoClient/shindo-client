@@ -9,7 +9,6 @@ import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.mouse.MouseUtils
-import java.awt.Color
 
 class CompModTextBox : CompTextBoxBase {
     private val setting: TextSetting
@@ -54,9 +53,18 @@ class CompModTextBox : CompTextBoxBase {
         for (c in text.toCharArray()) {
             resultText += c
 
-            if (nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) + textInset + textPaddingEnd > getWidth()) {
+            if (nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) + textInset + textPaddingEnd > getWidth()
+            ) {
                 outTextSize++
-                addX = getWidth() - nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) - textInset - textPaddingEnd
+                addX = getWidth() - nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) - textInset - textPaddingEnd
             }
         }
 
@@ -73,11 +81,14 @@ class CompModTextBox : CompTextBoxBase {
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
         focusAnimation.setAnimation(if (focused && enabled) 1.0f else 0.0f, 16.0)
 
-        val baseBackground = CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, paletteColors, accentColor)
-        val hoverBackground = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accentColor)
+        val baseBackground =
+            CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, paletteColors, accentColor)
+        val hoverBackground =
+            CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accentColor)
         val shellColor = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
         val focusTint = ColorUtils.applyAlpha(accentColor.getColor1(), 106)
-        var backgroundColor = ColorUtils.interpolateColor(shellColor, focusTint, (focusAnimation.value * 0.18f).toDouble())
+        var backgroundColor =
+            ColorUtils.interpolateColor(shellColor, focusTint, (focusAnimation.value * 0.18f).toDouble())
         if (!enabled) {
             backgroundColor = ColorUtils.applyAlpha(backgroundColor, 116)
         }

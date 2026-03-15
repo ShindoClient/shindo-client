@@ -39,6 +39,7 @@ object Multithreading {
     fun runAsync(runnable: Runnable) {
         TaskExecutor.runAsync(ThreadPoolType.GENERAL, TaskPriority.NORMAL, runnable)
     }
+
     fun runAsync(task: () -> Unit): CompletableFuture<Void> {
         return TaskExecutor.runAsync(ThreadPoolType.GENERAL, TaskPriority.NORMAL, Runnable { task() })
     }

@@ -18,13 +18,17 @@ class Log4jSecurity : SecurityFeature() {
             is S29PacketSoundEffect -> {
                 if (pattern.matcher(pkt.soundName).matches()) event.setCancelled(true)
             }
+
             is S02PacketChat -> {
                 val component = pkt.chatComponent
-                if (pattern.matcher(component.unformattedText).matches() || pattern.matcher(component.formattedText).matches()) {
+                if (pattern.matcher(component.unformattedText).matches() || pattern.matcher(component.formattedText)
+                        .matches()
+                ) {
                     event.setCancelled(true)
                 }
             }
-            else -> { }
+
+            else -> {}
         }
     }
 

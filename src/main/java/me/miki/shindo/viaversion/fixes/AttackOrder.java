@@ -7,7 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 
-public class AttackOrder {
+public enum AttackOrder {
+    ;
 
     private final static Minecraft mc = Minecraft.getMinecraft();
 

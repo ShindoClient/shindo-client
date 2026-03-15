@@ -11,7 +11,7 @@ fun Mod.getModByTranslateKey(key: String): Mod? {
     return Shindo.getInstance().modManager.getModByTranslateKey(key)
 }
 
-fun Mod.getSettingsByMod (mod: Mod): ArrayList<Setting>? {
+fun Mod.getSettingsByMod(mod: Mod): ArrayList<Setting>? {
     return Shindo.getInstance().modManager.getSettingsByMod(mod)
 }
 

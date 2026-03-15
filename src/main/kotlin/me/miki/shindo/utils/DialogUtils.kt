@@ -40,7 +40,12 @@ object DialogUtils {
     }
 
     @JvmStatic
-    fun confirmDanger(title: String, message: String, confirmLabel: String = "Delete", cancelLabel: String = "Cancel"): Boolean {
+    fun confirmDanger(
+        title: String,
+        message: String,
+        confirmLabel: String = "Delete",
+        cancelLabel: String = "Cancel"
+    ): Boolean {
         val options = arrayOf(confirmLabel, cancelLabel)
         val result = JOptionPane.showOptionDialog(
             null,
@@ -56,7 +61,12 @@ object DialogUtils {
     }
 
     @JvmStatic
-    fun confirmRetry(title: String, message: String, retryLabel: String = "Retry", cancelLabel: String = "Cancel"): Boolean {
+    fun confirmRetry(
+        title: String,
+        message: String,
+        retryLabel: String = "Retry",
+        cancelLabel: String = "Cancel"
+    ): Boolean {
         val options = arrayOf(retryLabel, cancelLabel)
         val result = JOptionPane.showOptionDialog(
             null,

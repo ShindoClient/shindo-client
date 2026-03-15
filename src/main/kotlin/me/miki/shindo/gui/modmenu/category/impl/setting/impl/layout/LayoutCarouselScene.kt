@@ -102,12 +102,21 @@ abstract class LayoutCarouselScene(
         val previewLabelY = previewY + previewHeight - previewLabelHeight - previewLabelInset
 
         previousBounds = Rect(x + sidePadding, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
-        nextBounds = Rect(x + width - sidePadding - navSize, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
+        nextBounds =
+            Rect(x + width - sidePadding - navSize, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
 
         drawNavButton(nvg, palette, previousBounds, LegacyIcon.CHEVRON_LEFT, previousBounds!!.contains(mouseX, mouseY))
         drawNavButton(nvg, palette, nextBounds, LegacyIcon.CHEVRON_RIGHT, nextBounds!!.contains(mouseX, mouseY))
 
-        LayoutSceneRenderer.drawPreviewSurface(nvg, palette, previewX, previewY, previewWidth, previewHeight, LayoutSceneStyle.PREVIEW_RADIUS)
+        LayoutSceneRenderer.drawPreviewSurface(
+            nvg,
+            palette,
+            previewX,
+            previewY,
+            previewWidth,
+            previewHeight,
+            LayoutSceneStyle.PREVIEW_RADIUS
+        )
         nvg.drawRoundedRect(
             previewX + 1f,
             previewY + 1f,

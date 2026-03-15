@@ -98,7 +98,14 @@ object AddonCategoryRenderer {
         builtIn: Boolean
     ) {
         if (icon.isNotEmpty()) {
-            nvg.drawCenteredText(icon, iconCenterX, iconCenterY, palette.getFontColor(ColorType.DARK), 24f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(
+                icon,
+                iconCenterX,
+                iconCenterY,
+                palette.getFontColor(ColorType.DARK),
+                24f,
+                Fonts.LEGACYICON
+            )
         }
 
         nvg.drawText(name, textX, cardY + 14f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)

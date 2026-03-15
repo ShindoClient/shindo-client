@@ -112,8 +112,23 @@ class NetworkCategory(parent: GuiModMenu) :
             val pageChipBottom = drawPageChips(nvg, palette, accent, contentMouseX, mouseY)
 
             when (currentPage) {
-                NetworkPage.GENERAL -> drawGeneralPage(nvg, palette, accent, networkManager, pageChipBottom + SECTION_SPACING)
-                NetworkPage.PROXY -> drawProxyPage(nvg, palette, accent, networkManager, contentMouseX, mouseY, pageChipBottom + SECTION_SPACING)
+                NetworkPage.GENERAL -> drawGeneralPage(
+                    nvg,
+                    palette,
+                    accent,
+                    networkManager,
+                    pageChipBottom + SECTION_SPACING
+                )
+
+                NetworkPage.PROXY -> drawProxyPage(
+                    nvg,
+                    palette,
+                    accent,
+                    networkManager,
+                    contentMouseX,
+                    mouseY,
+                    pageChipBottom + SECTION_SPACING
+                )
             }
             nvg.restore()
         }
@@ -316,7 +331,14 @@ class NetworkCategory(parent: GuiModMenu) :
             1f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
         )
-        nvg.drawRoundedRect(x + 10f, y + 13f, 3f, height - 26f, 1.5f, ColorUtils.applyAlpha(accent.getInterpolateColor(), 178))
+        nvg.drawRoundedRect(
+            x + 10f,
+            y + 13f,
+            3f,
+            height - 26f,
+            1.5f,
+            ColorUtils.applyAlpha(accent.getInterpolateColor(), 178)
+        )
         nvg.drawText(title, x + 16f, y + 18f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         nvg.drawText(
             nvg.getLimitText(value, 11f, Fonts.SEMIBOLD, width - 32f),
@@ -450,7 +472,14 @@ class NetworkCategory(parent: GuiModMenu) :
             nvg.save()
             nvg.translate(panelOffsetX, 0f)
             nvg.drawShadow(panelX, panelY, panelWidth, panelHeight, 12f, 7)
-            nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
+            nvg.drawRoundedRect(
+                panelX,
+                panelY,
+                panelWidth,
+                panelHeight,
+                12f,
+                palette.getBackgroundColor(ColorType.DARK)
+            )
             nvg.drawOutlineRoundedRect(
                 panelX,
                 panelY,
@@ -478,13 +507,27 @@ class NetworkCategory(parent: GuiModMenu) :
             nameBox.setDefaultText("Proxy name")
             nameBox.draw(panelMouseX, mouseY, partialTicks)
 
-            nvg.drawText("Primary DNS", panelX + 24f, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            nvg.drawText(
+                "Primary DNS",
+                panelX + 24f,
+                fieldStartY + 42f,
+                palette.getFontColor(ColorType.DARK),
+                11f,
+                Fonts.MEDIUM
+            )
             primaryDNSBox.setPosition(panelX + 24f, fieldStartY + 62f, fieldWidth, 20f)
             primaryDNSBox.setDefaultText("1.1.1.1")
             primaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
 
             val secondColumnX = panelX + 24f + fieldWidth + 30f
-            nvg.drawText("Secondary DNS", secondColumnX, fieldStartY + 42f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            nvg.drawText(
+                "Secondary DNS",
+                secondColumnX,
+                fieldStartY + 42f,
+                palette.getFontColor(ColorType.DARK),
+                11f,
+                Fonts.MEDIUM
+            )
             secondaryDNSBox.setPosition(secondColumnX, fieldStartY + 62f, fieldWidth, 20f)
             secondaryDNSBox.setDefaultText("Optional")
             secondaryDNSBox.draw(panelMouseX, mouseY, partialTicks)
@@ -493,8 +536,10 @@ class NetworkCategory(parent: GuiModMenu) :
             val cancelX = panelX + panelWidth - FORM_BUTTON_WIDTH * 2f - 30f
             val saveX = panelX + panelWidth - FORM_BUTTON_WIDTH - 20f
 
-            val cancelHovered = MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
-            val saveHovered = MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+            val cancelHovered =
+                MouseUtils.isInside(panelMouseX, mouseY, cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
+            val saveHovered =
+                MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
             nvg.drawRoundedRect(
                 cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
                 if (cancelHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
@@ -510,7 +555,14 @@ class NetworkCategory(parent: GuiModMenu) :
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
                 )
             }
-            nvg.drawCenteredText("Cancel", cancelX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+            nvg.drawCenteredText(
+                "Cancel",
+                cancelX + FORM_BUTTON_WIDTH / 2f,
+                buttonY + FORM_BUTTON_HEIGHT / 2f,
+                palette.getFontColor(ColorType.NORMAL),
+                10f,
+                Fonts.MEDIUM
+            )
 
             nvg.drawRoundedRect(
                 saveX,
@@ -532,7 +584,14 @@ class NetworkCategory(parent: GuiModMenu) :
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
                 )
             }
-            nvg.drawCenteredText("Save", saveX + FORM_BUTTON_WIDTH / 2f, buttonY + FORM_BUTTON_HEIGHT / 2f, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
+            nvg.drawCenteredText(
+                "Save",
+                saveX + FORM_BUTTON_WIDTH / 2f,
+                buttonY + FORM_BUTTON_HEIGHT / 2f,
+                palette.getFontColor(ColorType.NORMAL),
+                10f,
+                Fonts.MEDIUM
+            )
 
             nvg.restore()
         }

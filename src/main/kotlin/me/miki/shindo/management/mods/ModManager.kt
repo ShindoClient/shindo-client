@@ -5,6 +5,7 @@ import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
+
 class ModManager {
 
     private val mods = ArrayList<Mod>()

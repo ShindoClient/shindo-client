@@ -3,18 +3,14 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.category.impl.module.ModuleCategoryRenderer
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListCardLayoutSpec
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageRenderContext
-import me.miki.shindo.gui.modmenu.category.impl.module.ModuleCategoryRenderer
 import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuListCardLayout
 import me.miki.shindo.gui.modmenu.render.ModMenuSettingsOverlayRenderer
 import me.miki.shindo.gui.modmenu.style.ModMenuMotion
-import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
-import me.miki.shindo.ui.comp.chips.FilterChip
-import me.miki.shindo.ui.comp.layout.SettingsPanel
-import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -28,8 +24,12 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
+import me.miki.shindo.ui.comp.layout.SettingsPanel
+import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
+import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
@@ -421,7 +421,10 @@ class ModuleCategory(parent: GuiModMenu) :
             val hoverProgress = card.mod.hoverAnimation.value
 
             val settingsHover = hitboxLayout.isSettingsHit(context.mouseX, context.mouseY)
-            card.mod.settingsHoverAnimation.setAnimation(if (settingsHover) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
+            card.mod.settingsHoverAnimation.setAnimation(
+                if (settingsHover) 1.0f else 0.0f,
+                ModMenuMotion.CARD_HOVER_SPEED
+            )
             val settingsHoverAnimation = card.mod.settingsHoverAnimation.value
 
             card.mod.animation.setAnimation(if (card.mod.isToggled()) 1.0f else 0.0f, ModMenuMotion.CARD_TOGGLE_SPEED)

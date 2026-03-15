@@ -1,6 +1,6 @@
 package me.miki.shindo.utils
 
-import java.util.Locale
+import java.util.*
 
 object OSUtils {
 

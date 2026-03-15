@@ -3,15 +3,7 @@ package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAreaController
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAreaScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneInputController
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneListController
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneStateCoordinator
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutModulesScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutNotificationsScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSettingsScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutVisualScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.*
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText

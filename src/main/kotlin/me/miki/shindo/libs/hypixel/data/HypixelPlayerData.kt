@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import me.miki.shindo.libs.hypixel.client.HypixelHttpClient
 import me.miki.shindo.libs.hypixel.exceptions.HypixelApiException
 import java.util.*
+
 class HypixelPlayerData(
     uuid: UUID,
     useCache: Boolean = true
@@ -47,25 +48,31 @@ class HypixelPlayerData(
         }),
         useCache
     )
+
     fun getPlayerData(): JsonObject = playerData
     fun getDisplayName(): String? {
         return playerData.get("displayname")?.asString
     }
+
     fun getPlayerName(): String? {
         return playerData.get("playername")?.asString ?: getDisplayName()
     }
+
     fun isOnline(): Boolean {
         return playerData.get("lastLogin")?.asLong?.let { lastLogin ->
             val lastLogout = playerData.get("lastLogout")?.asLong ?: 0L
             lastLogin > lastLogout
         } ?: false
     }
+
     fun getLastLogin(): Long {
         return playerData.get("lastLogin")?.asLong ?: 0L
     }
+
     fun getLastLogout(): Long {
         return playerData.get("lastLogout")?.asLong ?: 0L
     }
+
     fun isHidingFromAPI(): Boolean {
         return playerData.get("settings")?.asJsonObject?.get("apiDisabled")?.asBoolean ?: false
     }

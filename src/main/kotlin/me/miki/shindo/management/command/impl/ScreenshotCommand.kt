@@ -2,7 +2,6 @@ package me.miki.shindo.management.command.impl
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.command.Command
-import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.utils.transferable.FileTransferable
 import net.minecraft.util.ChatComponentText
 import java.awt.Desktop
@@ -26,10 +25,12 @@ class ScreenshotCommand : Command("screenshot") {
                     e.printStackTrace()
                 }
             }
+
             "copy" -> {
                 val selection = FileTransferable(file)
                 Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, null)
             }
+
             "del" -> {
                 file.delete()
                 mc.ingameGUI.chatGUI.printChatMessage(ChatComponentText("${args[1]} has been deleted"))

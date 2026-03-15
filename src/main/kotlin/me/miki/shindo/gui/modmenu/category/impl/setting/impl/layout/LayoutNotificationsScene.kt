@@ -79,7 +79,8 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         val target = if (dragActive) {
             val rawX = (mouseX - dragOffsetX).coerceIn(areaX, areaX + areaWidth - cardWidth)
             val rawY = (mouseY - dragOffsetY).coerceIn(areaY, areaY + areaHeight - cardHeight)
-            val nearest = findNearestAnchorType(rawX + cardWidth / 2f, rawY + cardHeight / 2f, anchors, cardWidth, cardHeight)
+            val nearest =
+                findNearestAnchorType(rawX + cardWidth / 2f, rawY + cardHeight / 2f, anchors, cardWidth, cardHeight)
             highlightedAnchor = nearest
             val nearestPoint = anchors[nearest] ?: NotificationPoint(rawX, rawY)
             val dx = nearestPoint.x - rawX
@@ -207,7 +208,10 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
                 cardHeight,
                 6f,
                 borderWidth,
-                ColorUtils.applyAlpha(if (selected || highlighted) accent.getColor1() else accent.getColor2(), borderAlpha)
+                ColorUtils.applyAlpha(
+                    if (selected || highlighted) accent.getColor1() else accent.getColor2(),
+                    borderAlpha
+                )
             )
             nvg.drawRoundedRect(
                 anchor.x + 3f,

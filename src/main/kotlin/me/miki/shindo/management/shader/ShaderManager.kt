@@ -10,8 +10,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.util.Calendar
-import java.util.HashMap
+import java.util.*
 
 class ShaderManager {
 
@@ -107,22 +106,34 @@ class ShaderManager {
         }
     }
 
-    private fun setShaderUniforms(shaderId: Int, x: Float, y: Float, width: Float, height: Float, sr: ScaledResolution) {
+    private fun setShaderUniforms(
+        shaderId: Int,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        sr: ScaledResolution
+    ) {
         val currentTime = (System.currentTimeMillis() % 100000) / 1000f
         GL20.glGetUniformLocation(shaderId, "time").takeIf { it != -1 }?.let { GL20.glUniform1f(it, currentTime) }
         GL20.glGetUniformLocation(shaderId, "iTime").takeIf { it != -1 }?.let { GL20.glUniform1f(it, currentTime) }
-        GL20.glGetUniformLocation(shaderId, "resolution").takeIf { it != -1 }?.let { GL20.glUniform2f(it, width, height) }
-        GL20.glGetUniformLocation(shaderId, "iResolution").takeIf { it != -1 }?.let { GL20.glUniform3f(it, width, height, 1f) }
+        GL20.glGetUniformLocation(shaderId, "resolution").takeIf { it != -1 }
+            ?.let { GL20.glUniform2f(it, width, height) }
+        GL20.glGetUniformLocation(shaderId, "iResolution").takeIf { it != -1 }
+            ?.let { GL20.glUniform3f(it, width, height, 1f) }
         GL20.glGetUniformLocation(shaderId, "mouse").takeIf { it != -1 }?.let { GL20.glUniform2f(it, 0.5f, 0.5f) }
-        GL20.glGetUniformLocation(shaderId, "iMouse").takeIf { it != -1 }?.let { GL20.glUniform4f(it, width * 0.5f, height * 0.5f, 0f, 0f) }
-        GL20.glGetUniformLocation(shaderId, "iFrame").takeIf { it != -1 }?.let { GL20.glUniform1i(it, (currentTime * 60).toInt()) }
+        GL20.glGetUniformLocation(shaderId, "iMouse").takeIf { it != -1 }
+            ?.let { GL20.glUniform4f(it, width * 0.5f, height * 0.5f, 0f, 0f) }
+        GL20.glGetUniformLocation(shaderId, "iFrame").takeIf { it != -1 }
+            ?.let { GL20.glUniform1i(it, (currentTime * 60).toInt()) }
         GL20.glGetUniformLocation(shaderId, "iDate").takeIf { it != -1 }?.let { loc ->
             val cal = Calendar.getInstance()
             cal.timeInMillis = System.currentTimeMillis()
             val year = cal.get(Calendar.YEAR).toFloat()
             val month = (cal.get(Calendar.MONTH) + 1).toFloat()
             val day = cal.get(Calendar.DAY_OF_MONTH).toFloat()
-            val secondsInDay = (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)).toFloat()
+            val secondsInDay =
+                (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)).toFloat()
             GL20.glUniform4f(loc, year, month, day, secondsInDay)
         }
     }
@@ -148,14 +159,14 @@ class ShaderManager {
 
     private fun getDefaultFragmentShader(): String =
         "#version 120\n" +
-            "uniform float time;\n" +
-            "uniform vec2 resolution;\n" +
-            "varying vec2 fragCoord;\n" +
-            "void main() {\n" +
-            "    vec2 uv = fragCoord;\n" +
-            "    vec3 color = vec3(0.5 + 0.5 * cos(time + uv.xyx + vec3(0, 2, 4)));\n" +
-            "    gl_FragColor = vec4(color, 1.0);\n" +
-            "}"
+                "uniform float time;\n" +
+                "uniform vec2 resolution;\n" +
+                "varying vec2 fragCoord;\n" +
+                "void main() {\n" +
+                "    vec2 uv = fragCoord;\n" +
+                "    vec3 color = vec3(0.5 + 0.5 * cos(time + uv.xyx + vec3(0, 2, 4)));\n" +
+                "    gl_FragColor = vec4(color, 1.0);\n" +
+                "}"
 
     private fun createShaderProgram(vertexSource: String, fragmentSource: String): Int {
         val vertexShader = compileShader(GL20.GL_VERTEX_SHADER, vertexSource)
@@ -205,14 +216,14 @@ class ShaderManager {
 
     companion object {
         private const val DEFAULT_VERTEX_SHADER = "#version 120\n" +
-            "attribute vec2 position;\n" +
-            "varying vec2 fragCoord;\n" +
-            "varying vec2 vTexCoord;\n" +
-            "uniform vec2 resolution;\n" +
-            "void main() {\n" +
-            "    fragCoord = (position * 0.5 + 0.5);\n" +
-            "    vTexCoord = fragCoord;\n" +
-            "    gl_Position = vec4(position, 0.0, 1.0);\n" +
-            "}"
+                "attribute vec2 position;\n" +
+                "varying vec2 fragCoord;\n" +
+                "varying vec2 vTexCoord;\n" +
+                "uniform vec2 resolution;\n" +
+                "void main() {\n" +
+                "    fragCoord = (position * 0.5 + 0.5);\n" +
+                "    vTexCoord = fragCoord;\n" +
+                "    gl_Position = vec4(position, 0.0, 1.0);\n" +
+                "}"
     }
 }

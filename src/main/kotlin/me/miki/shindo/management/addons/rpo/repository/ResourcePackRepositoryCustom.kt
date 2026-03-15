@@ -117,7 +117,7 @@ class ResourcePackRepositoryCustom(
 
             try {
                 val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
-                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as net.minecraft.client.resources.ResourcePackRepository
+                val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as ResourcePackRepository
 
                 val customRepo = ResourcePackRepositoryCustom(
                     fileResourcepacks,

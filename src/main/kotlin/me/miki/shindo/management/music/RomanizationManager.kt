@@ -18,6 +18,7 @@ open class RomanizationManager {
             isDaemon = true
         }
     }
+
     fun containsJapaneseCharacters(text: String?): Boolean {
         if (text.isNullOrEmpty()) return false
         for (c in text) {

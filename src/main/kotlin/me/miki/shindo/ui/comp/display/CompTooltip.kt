@@ -105,7 +105,10 @@ class CompTooltip(
         val paletteColors = palette
 
         val alpha = (fadeAnimation.value * 255).toInt()
-        val bgColor = backgroundColor ?: ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.DARK), (alpha * 0.92f).toInt())
+        val bgColor = backgroundColor ?: ColorUtils.applyAlpha(
+            paletteColors.getBackgroundColor(ColorType.DARK),
+            (alpha * 0.92f).toInt()
+        )
         val txtColor = textColor ?: ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), alpha)
 
         if (shadow) {

@@ -1,9 +1,9 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo
 import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.event.impl.EventPreRenderTick
 import me.miki.shindo.management.event.impl.EventToggleFullscreen
@@ -42,7 +42,13 @@ class InternalSettingsMod :
     @JvmField
     var blurSetting = false
 
-    @Property(type = PropertyType.NUMBER, translate = TranslateText.BLUR_STRENGTH, min = 10.0, max = 20.0, current = 1.0)
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.BLUR_STRENGTH,
+        min = 10.0,
+        max = 20.0,
+        current = 1.0
+    )
     @JvmField
     var blurStrengthSetting = 1.0
 
@@ -84,7 +90,6 @@ class InternalSettingsMod :
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION)
     @JvmField
     var textureOptimizationSetting = true
-
 
 
     @Property(type = PropertyType.COMBO, name = "Settings Layout")

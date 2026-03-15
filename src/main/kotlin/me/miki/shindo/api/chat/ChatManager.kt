@@ -3,9 +3,7 @@ package me.miki.shindo.api.chat
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.api.websocket.message.MessageType
-import net.minecraft.client.Minecraft
-import java.util.Collections
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -52,6 +50,7 @@ class ChatManager {
                     friends.add(ChatFriend(uuid, name))
                 }
             }
+
             MessageType.CHAT_FRIEND_REQUESTS -> {
                 requests.clear()
                 if (!payload.has("requests") || !payload.get("requests").isJsonArray) return@handleMessage
@@ -65,6 +64,7 @@ class ChatManager {
                     requests.add(ChatRequest(uuid, name))
                 }
             }
+
             MessageType.CHAT_MESSAGE -> {
                 val fromUuid = payload.get("fromUuid")?.asString ?: return
                 val fromName = payload.get("fromName")?.asString ?: "Unknown"
@@ -75,34 +75,42 @@ class ChatManager {
                 val otherUuid = if (fromUuid == selfUuid) toUuid else fromUuid
                 messagesByFriend.getOrPut(otherUuid) { Collections.synchronizedList(mutableListOf()) }.add(msg)
             }
+
             MessageType.CHAT_FRIEND_ACCEPT_OK -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingAccept.remove(requestId)?.invoke()
             }
+
             MessageType.CHAT_FRIEND_ACCEPT_ERROR -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingAccept.remove(requestId)?.invoke()
             }
+
             MessageType.CHAT_FRIEND_REMOVE_OK -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingRemove.remove(requestId)?.invoke()
             }
+
             MessageType.CHAT_FRIEND_REMOVE_ERROR -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingRemove.remove(requestId)?.invoke()
             }
+
             MessageType.CHAT_MESSAGE_SEND_OK -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingSendMessage.remove(requestId)?.invoke(MessageSendResult.Success)
             }
+
             MessageType.CHAT_MESSAGE_ERROR -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingSendMessage.remove(requestId)?.invoke(MessageSendResult.Error(null))
             }
+
             MessageType.CHAT_FRIEND_REQUEST_OK, MessageType.CHAT_FRIEND_REQUEST_ERROR -> {
                 val requestId = payload.get("requestId")?.asString ?: return
                 pendingRequestFriend.remove(requestId)?.invoke()
             }
+
             else -> {}
         }
     }

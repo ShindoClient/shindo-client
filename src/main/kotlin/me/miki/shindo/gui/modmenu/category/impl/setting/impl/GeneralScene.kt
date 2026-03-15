@@ -10,12 +10,12 @@ import me.miki.shindo.ui.comp.inputs.CompKeybind
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 
 class GeneralScene(parent: SettingsCategory) :
-        SettingScene(
-                parent,
-                TranslateText.GENERAL,
-                TranslateText.GENERAL_DESCRIPTION,
-                me.miki.shindo.management.nanovg.font.LegacyIcon.LIST
-        ) {
+    SettingScene(
+        parent,
+        TranslateText.GENERAL,
+        TranslateText.GENERAL_DESCRIPTION,
+        me.miki.shindo.management.nanovg.font.LegacyIcon.LIST
+    ) {
 
     private lateinit var container: CompScrollableContainer
     private lateinit var modMenuKeybind: CompKeybind
@@ -28,73 +28,79 @@ class GeneralScene(parent: SettingsCategory) :
     override fun initGui() {
         val settingsMod = InternalSettingsMod.instance
         modMenuKeybind = CompKeybind(
-                75f,
-                settingsMod.getModMenuKeybindSetting()
-                        ?: throw IllegalStateException("Mod menu keybind setting missing")
+            75f,
+            settingsMod.getModMenuKeybindSetting()
+                ?: throw IllegalStateException("Mod menu keybind setting missing")
         )
         clickEffectSetting = CompToggleButton(
-                settingsMod.getClickEffectsSetting()
-                        ?: throw IllegalStateException("Click effect setting missing")
+            settingsMod.getClickEffectsSetting()
+                ?: throw IllegalStateException("Click effect setting missing")
         )
         soundsUISetting = CompToggleButton(
-                settingsMod.getSoundsUISetting()
-                        ?: throw IllegalStateException("UI sounds setting missing")
+            settingsMod.getSoundsUISetting()
+                ?: throw IllegalStateException("UI sounds setting missing")
         )
         mcFontSetting = CompToggleButton(
-                settingsMod.mCHUDFont
-                        ?: throw IllegalStateException("MC font setting missing")
+            settingsMod.mCHUDFont
+                ?: throw IllegalStateException("MC font setting missing")
         )
         borderlessSetting = CompToggleButton(
-                settingsMod.getBorderlessFullscreenSetting()
-                        ?: throw IllegalStateException("Borderless fullscreen setting missing")
+            settingsMod.getBorderlessFullscreenSetting()
+                ?: throw IllegalStateException("Borderless fullscreen setting missing")
         )
 
         container = CompScrollableContainer()
-                .setScrollbarGutter(14f)
-                .setThemeScrollbarOnly(true)
+            .setScrollbarGutter(14f)
+            .setThemeScrollbarOnly(true)
 
         settingCards.clear()
         settingCards.add(
-                CompSettingButton(
-                        0f,
-                        { TranslateText.OPEN_MOD_MENU.getText() },
-                        { TranslateText.OPEN_MOD_MENU_DESCRIPTION.getText() })
-                        .trailing(modMenuKeybind)
+            CompSettingButton(
+                0f,
+                { TranslateText.OPEN_MOD_MENU.getText() },
+                { TranslateText.OPEN_MOD_MENU_DESCRIPTION.getText() })
+                .trailing(modMenuKeybind)
         )
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.CLICK_EFFECT.getText() }, { TranslateText.CLICK_EFFECT_DESCRIPTION.getText() })
-                        .trailing(clickEffectSetting)
-                        .onClickAction {
-                            val setting = clickEffectSetting.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                        }
+            CompSettingButton(
+                0f,
+                { TranslateText.CLICK_EFFECT.getText() },
+                { TranslateText.CLICK_EFFECT_DESCRIPTION.getText() })
+                .trailing(clickEffectSetting)
+                .onClickAction {
+                    val setting = clickEffectSetting.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                }
         )
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.UI_SOUNDS.getText() }, { TranslateText.UI_SOUNDS_DESCRIPTION.getText() })
-                        .trailing(soundsUISetting)
-                        .onClickAction {
-                            val setting = soundsUISetting.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                        }
+            CompSettingButton(
+                0f,
+                { TranslateText.UI_SOUNDS.getText() },
+                { TranslateText.UI_SOUNDS_DESCRIPTION.getText() })
+                .trailing(soundsUISetting)
+                .onClickAction {
+                    val setting = soundsUISetting.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                }
         )
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.MC_FONT.getText() }, { TranslateText.MC_FONT_DESCRIPTION.getText() })
-                        .trailing(mcFontSetting)
-                        .onClickAction {
-                            val setting = mcFontSetting.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                        }
+            CompSettingButton(0f, { TranslateText.MC_FONT.getText() }, { TranslateText.MC_FONT_DESCRIPTION.getText() })
+                .trailing(mcFontSetting)
+                .onClickAction {
+                    val setting = mcFontSetting.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                }
         )
         settingCards.add(
-                CompSettingButton(
-                        0f,
-                        { TranslateText.BORDERLESS_FULSCREEN.getText() },
-                        { TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION.getText() })
-                        .trailing(borderlessSetting)
-                        .onClickAction {
-                            val setting = borderlessSetting.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                        }
+            CompSettingButton(
+                0f,
+                { TranslateText.BORDERLESS_FULSCREEN.getText() },
+                { TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION.getText() })
+                .trailing(borderlessSetting)
+                .onClickAction {
+                    val setting = borderlessSetting.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                }
         )
     }
 
@@ -116,7 +122,12 @@ class GeneralScene(parent: SettingsCategory) :
         val cardCount = settingCards.size
         val totalContentHeight = padding * 2f + cardCount * cardHeight + kotlin.math.max(0, cardCount - 1) * cardSpacing
 
-        container.renderWithViewport(mouseX, mouseY, partialTicks, totalContentHeight) { mouseXInner, mouseYInner, partialInner, scrollValue, viewport ->
+        container.renderWithViewport(
+            mouseX,
+            mouseY,
+            partialTicks,
+            totalContentHeight
+        ) { mouseXInner, mouseYInner, partialInner, scrollValue, viewport ->
             var currentY = viewport.y + padding + scrollValue
             val cardWidth = viewport.width - 10f
 

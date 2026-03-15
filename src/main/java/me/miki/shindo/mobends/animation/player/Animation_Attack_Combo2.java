@@ -9,7 +9,8 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.util.vector.Vector3f;
 
-public class Animation_Attack_Combo2 {
+public enum Animation_Attack_Combo2 {
+    ;
 
     public static void animate(EntityPlayer player, ModelBendsPlayer model, Data_Player data) {
         if (data.ticksAfterPunch < 0.5f) {

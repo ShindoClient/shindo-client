@@ -1,6 +1,5 @@
 package me.miki.shindo.management.mods.impl
 
-import com.google.common.base.Predicate
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import me.miki.shindo.Shindo.Companion.getInstance

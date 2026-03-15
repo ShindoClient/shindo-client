@@ -1,6 +1,8 @@
 package eu.shoroa.contrib.util;
 
-public class ShMath {
+public enum ShMath {
+    ;
+
     public static float interpolate(float a, float b, float delta) {
         return a + (b - a) * delta;
     }

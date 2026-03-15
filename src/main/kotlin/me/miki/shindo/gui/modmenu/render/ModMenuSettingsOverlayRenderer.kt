@@ -1,15 +1,15 @@
 package me.miki.shindo.gui.modmenu.render
 
+import me.miki.shindo.gui.modmenu.style.ModMenuSettingsOverlayStyle
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.ui.comp.layout.SettingsPanel
+import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.Scroll
-import me.miki.shindo.gui.modmenu.style.ModMenuSettingsOverlayStyle
 
 /**
  * Shared renderer/layout helper for ModMenu settings overlays.
@@ -88,7 +88,12 @@ object ModMenuSettingsOverlayRenderer {
         mouseX: Int,
         mouseY: Int
     ) {
-        val backHovered = isHeaderActionHovered(mouseX, mouseY, layout.panelX + ModMenuSettingsOverlayStyle.HEADER_BACK_X, layout.headerIconY)
+        val backHovered = isHeaderActionHovered(
+            mouseX,
+            mouseY,
+            layout.panelX + ModMenuSettingsOverlayStyle.HEADER_BACK_X,
+            layout.headerIconY
+        )
         val resetHovered = isHeaderActionHovered(mouseX, mouseY, layout.resetIconX, layout.resetIconY)
 
         nvg.drawShadow(layout.panelX, layout.panelY, layout.panelWidth, layout.panelHeight, 12f, 7)

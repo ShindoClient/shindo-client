@@ -12,8 +12,8 @@ import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
-import me.miki.shindo.management.sound.Sounds
 import me.miki.shindo.management.sound.Sound.Companion.play
+import me.miki.shindo.management.sound.Sounds
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import java.util.*

@@ -7,18 +7,11 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
 import java.time.Duration
-import java.util.Arrays
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
-import java.util.function.BiConsumer
+import java.util.*
+import java.util.concurrent.*
 import java.util.function.Supplier
 import javax.imageio.ImageIO
+
 class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
 
     private val cacheDir: File = File(fileManager.musicDir, CACHE_DIR)
@@ -122,7 +115,7 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
 
     private fun isValidCacheFile(file: File): Boolean =
         file.exists() &&
-            System.currentTimeMillis() - file.lastModified() < CACHE_DURATION.toMillis()
+                System.currentTimeMillis() - file.lastModified() < CACHE_DURATION.toMillis()
 
     private fun performMaintenance() {
         try {

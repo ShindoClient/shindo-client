@@ -1,11 +1,6 @@
 package me.miki.shindo.management.security
 
-import me.miki.shindo.management.security.impl.DemoSecurity
-import me.miki.shindo.management.security.impl.ExplosionSecurity
-import me.miki.shindo.management.security.impl.Log4jSecurity
-import me.miki.shindo.management.security.impl.ParticleSecurity
-import me.miki.shindo.management.security.impl.ResourcePackSecurity
-import me.miki.shindo.management.security.impl.TeleportSecurity
+import me.miki.shindo.management.security.impl.*
 
 class SecurityFeatureManager {
 

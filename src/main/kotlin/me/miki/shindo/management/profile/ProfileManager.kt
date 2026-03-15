@@ -854,12 +854,14 @@ class ProfileManager {
                 NetworkManager.ProxyType.CLOUDFLARE -> {
                     networkManager.enableCloudflareProxy()
                 }
+
                 NetworkManager.ProxyType.CUSTOM -> {
                     val activeProxyId = JsonUtils.getStringProperty(networkJson, "ActiveCustomProxyId", "null")
                     if (activeProxyId != null) {
                         networkManager.enableCustomProxy(activeProxyId)
                     }
                 }
+
                 NetworkManager.ProxyType.SYSTEM_DEFAULT -> {
                     networkManager.disableAllProxies()
                 }

@@ -10,10 +10,10 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.PlayerHeadUtils
-import me.miki.shindo.ui.animation.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -64,7 +64,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         BlurUtils.drawBlurScreen(20f)
         val instance = Shindo.getInstance()
-        val chatManager = instance.chatManager
+        instance.chatManager
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.colorManager.getPalette()
         val accent = instance.colorManager.getCurrentColor()
@@ -93,7 +93,14 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), java.awt.Color(0, 0, 0, 140))
         nvg.drawShadow(x, y, menuWidth, menuHeight, 12f)
         nvg.drawRoundedRect(x, y, menuWidth, menuHeight, 10f, palette.getBackgroundColor(ColorType.NORMAL))
-        nvg.drawRoundedRect(x + 1f, y + 1f, menuWidth - 2f, menuHeight - 2f, 9f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235))
+        nvg.drawRoundedRect(
+            x + 1f,
+            y + 1f,
+            menuWidth - 2f,
+            menuHeight - 2f,
+            9f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235)
+        )
 
         val chatManager = Shindo.getInstance().chatManager
         friendEntries.clear()
@@ -130,7 +137,13 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             13f,
             Fonts.SEMIBOLD
         )
-        nvg.drawRect(leftX + 14f, leftHeaderY + 16f, leftWidth - 28f, 1f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80))
+        nvg.drawRect(
+            leftX + 14f,
+            leftHeaderY + 16f,
+            leftWidth - 28f,
+            1f,
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80)
+        )
 
         val addY = leftHeaderY + 24f
         addFriendBox.setDefaultText(TranslateText.CHAT_ADD_FRIEND_PLACEHOLDER.getText())
@@ -280,7 +293,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
 
         if (mouseButton == 0) {
             for (request in requestEntries) {
-                if (MouseUtils.isInside(mouseX, mouseY, request.acceptX, request.acceptY, request.acceptW, request.acceptH)) {
+                if (MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        request.acceptX,
+                        request.acceptY,
+                        request.acceptW,
+                        request.acceptH
+                    )
+                ) {
                     chatManager.acceptFriendRequest(request.request.uuid) { }
                     return
                 }
@@ -337,7 +358,14 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
 
     private fun drawUnavailable(nvg: NanoVGManager, palette: ColorPalette) {
         val text = TranslateText.CHAT_FEATURE_UNAVAILABLE.getText()
-        nvg.drawCenteredText(text, x + menuWidth / 2f, y + menuHeight / 2f, palette.getFontColor(ColorType.NORMAL), 12f, Fonts.MEDIUM)
+        nvg.drawCenteredText(
+            text,
+            x + menuWidth / 2f,
+            y + menuHeight / 2f,
+            palette.getFontColor(ColorType.NORMAL),
+            12f,
+            Fonts.MEDIUM
+        )
     }
 
     private fun drawPanel(nvg: NanoVGManager, x: Float, y: Float, width: Float, height: Float, palette: ColorPalette) {
@@ -365,9 +393,19 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         mouseY: Int
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 200) else ColorUtils.applyAlpha(accent.getColor1(), 160)
+        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 200) else ColorUtils.applyAlpha(
+            accent.getColor1(),
+            160
+        )
         nvg.drawRoundedRect(x, y, width, height, 6f, bg)
-        nvg.drawCenteredText(icon, x + width / 2f, y + height / 2f - 4f, palette.getFontColor(ColorType.DARK), 10f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(
+            icon,
+            x + width / 2f,
+            y + height / 2f - 4f,
+            palette.getFontColor(ColorType.DARK),
+            10f,
+            Fonts.LEGACYICON
+        )
     }
 
     private fun drawRequestRow(
@@ -399,7 +437,10 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         val acceptX = x + width - acceptW - 8f
         val acceptY = y + (height - acceptH) / 2f
         val acceptHovered = MouseUtils.isInside(mouseX, mouseY, acceptX, acceptY, acceptW, acceptH)
-        val acceptBg = if (acceptHovered) ColorUtils.applyAlpha(accent.getColor1(), 210) else ColorUtils.applyAlpha(accent.getColor1(), 170)
+        val acceptBg = if (acceptHovered) ColorUtils.applyAlpha(
+            accent.getColor1(),
+            210
+        ) else ColorUtils.applyAlpha(accent.getColor1(), 170)
         nvg.drawRoundedRect(acceptX, acceptY, acceptW, acceptH, 6f, acceptBg)
         nvg.drawCenteredText(
             TranslateText.CHAT_ACCEPT.getText(),
@@ -444,14 +485,28 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
                 8f,
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200)
             )
-            nvg.drawCenteredText(LegacyIcon.USER, x + 20f, y + 12f, palette.getFontColor(ColorType.DARK), 10f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(
+                LegacyIcon.USER,
+                x + 20f,
+                y + 12f,
+                palette.getFontColor(ColorType.DARK),
+                10f,
+                Fonts.LEGACYICON
+            )
         }
 
         val textX = x + 40f
         val label = nvg.getLimitText(friend.name, 10f, Fonts.MEDIUM, width - 70f)
         nvg.drawText(label, textX, y + 14f, palette.getFontColor(ColorType.DARK), 10f, Fonts.MEDIUM)
 
-        nvg.drawRoundedRect(x + width - 28f, y + 9f, 18f, 18f, 6f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200))
+        nvg.drawRoundedRect(
+            x + width - 28f,
+            y + 9f,
+            18f,
+            18f,
+            6f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200)
+        )
         nvg.drawCenteredText(LegacyIcon.TRASH, x + width - 19f, y + 13f, palette.getMaterialRed(), 9f, Fonts.LEGACYICON)
     }
 
@@ -473,7 +528,13 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
 
         val headerText = selectedFriend?.name ?: TranslateText.CHAT_SELECT_FRIEND.getText()
         nvg.drawText(headerText, x + 16f, headerY, palette.getFontColor(ColorType.DARK), 13f, Fonts.SEMIBOLD)
-        nvg.drawRect(x + 16f, headerY + 18f, width - 32f, 1f, ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80))
+        nvg.drawRect(
+            x + 16f,
+            headerY + 18f,
+            width - 32f,
+            1f,
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80)
+        )
 
         val inputHeight = 28f
         val inputY = y + height - inputHeight - 14f
@@ -566,9 +627,19 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         mouseY: Int
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 210) else ColorUtils.applyAlpha(accent.getColor1(), 170)
+        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 210) else ColorUtils.applyAlpha(
+            accent.getColor1(),
+            170
+        )
         nvg.drawRoundedRect(x, y, width, height, 6f, bg)
-        nvg.drawCenteredText(label, x + width / 2f, y + height / 2f - 4f, palette.getFontColor(ColorType.DARK), 9.5f, Fonts.MEDIUM)
+        nvg.drawCenteredText(
+            label,
+            x + width / 2f,
+            y + height / 2f - 4f,
+            palette.getFontColor(ColorType.DARK),
+            9.5f,
+            Fonts.MEDIUM
+        )
     }
 
     private fun requestFriend() {

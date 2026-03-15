@@ -176,7 +176,7 @@ class UILayoutManager(
                 selectedSupplier = {
                     val preset = stateGateway.readState().visualPreset
                     preset == InternalSettingsMod.VisualPreset.MODERN ||
-                        preset == InternalSettingsMod.VisualPreset.CLASSIC
+                            preset == InternalSettingsMod.VisualPreset.CLASSIC
                 }
             )
         )

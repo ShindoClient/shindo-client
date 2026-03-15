@@ -6,6 +6,7 @@ import me.miki.shindo.libs.hypixel.exceptions.HypixelApiException
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.utils.network.HttpUtils
 import me.miki.shindo.utils.network.UserAgents
+
 object HypixelHttpClient {
 
     private const val BASE_URL = "https://api.hypixel.net"
@@ -18,9 +19,11 @@ object HypixelHttpClient {
     fun setApiKey(key: String?) {
         apiKey = key
     }
+
     fun hasApiKey(): Boolean {
         return !apiKey.isNullOrBlank()
     }
+
     fun get(endpoint: String, requireApiKey: Boolean = true): JsonObject? {
         if (requireApiKey && !hasApiKey()) {
             throw HypixelApiException(HypixelApiException.INVALID_API_KEY)
@@ -72,9 +75,11 @@ object HypixelHttpClient {
             throw HypixelApiException("Request failed: ${e.message}", e)
         }
     }
+
     fun getPlayerData(uuid: String): JsonObject? {
         return get("/player?uuid=$uuid")
     }
+
     fun getPlayerDataCached(uuid: String): JsonObject? {
         return HypixelCache.getPlayerData(uuid) ?: run {
             val data = getPlayerData(uuid)

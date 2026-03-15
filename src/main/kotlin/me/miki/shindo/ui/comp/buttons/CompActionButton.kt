@@ -56,7 +56,15 @@ class CompActionButton(
                 if (enabled) (180 + (hoverAnimation.value * 50f).toInt()) else 98
             )
             nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), getRadius(), background)
-            nvgInstance.drawGradientRoundedRect(getX(), getY(), getWidth(), getHeight(), getRadius(), gradientStart, gradientEnd)
+            nvgInstance.drawGradientRoundedRect(
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                getRadius(),
+                gradientStart,
+                gradientEnd
+            )
         } else {
             nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), getRadius(), background)
         }

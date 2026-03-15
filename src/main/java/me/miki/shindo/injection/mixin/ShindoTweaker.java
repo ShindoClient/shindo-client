@@ -1,9 +1,8 @@
 package me.miki.shindo.injection.mixin;
 
 //import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+
 import me.miki.shindo.injection.transformer.LwjglTransformer;
-//import me.miki.shindo.injection.transformer.MixinExtrasFixer;
-//import me.miki.shindo.injection.transformer.SpongeForgeFixer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -99,9 +98,9 @@ public class ShindoTweaker implements ITweaker {
                 }
 
                 if ("org.lwjgl.".equals(excludedPackage)
-                    || excludedPackage.startsWith("me.miki.shindo.injection.mixin")
-                    || excludedPackage.startsWith("me.miki.shindo.injection.interfaces")
-                    || excludedPackage.startsWith("me.miki.shindo.injection.mixin.accessors")) {
+                        || excludedPackage.startsWith("me.miki.shindo.injection.mixin")
+                        || excludedPackage.startsWith("me.miki.shindo.injection.interfaces")
+                        || excludedPackage.startsWith("me.miki.shindo.injection.mixin.accessors")) {
                     if (classLoaderExceptions.remove(excludedPackage)) {
                         removed.add(excludedPackage);
                     }

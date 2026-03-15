@@ -1,7 +1,7 @@
 package me.miki.shindo.utils.render;
 
-import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.Shindo;
+import me.miki.shindo.management.event.EventTarget;
 import me.miki.shindo.management.event.impl.EventRender3D;
 import me.miki.shindo.types.Rect;
 import me.miki.shindo.utils.proj.Projection;
@@ -16,11 +16,9 @@ import java.util.Map;
 import static me.miki.shindo.utils.proj.Projection.VIEWPORT;
 
 public class EntityProjection {
-    private static EntityProjection instance;
-
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static final float SMOOTHING_FACTOR = 0.85f;
-
+    private static EntityProjection instance;
     private final Map<Entity, Rect> positionMap = new HashMap<>();
 
     public EntityProjection() {

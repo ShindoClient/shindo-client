@@ -3,8 +3,6 @@ package eu.shoroa.contrib.animation;
 import static java.lang.Math.*;
 
 public interface Easing {
-    float ease(float t);
-
     Easing LINEAR = t -> t;
     Easing SINE_IN = t -> (float) (-1 * cos(t * (PI / 2)) + 1);
     Easing SINE_OUT = t -> (float) sin(t * (PI / 2));
@@ -33,4 +31,6 @@ public interface Easing {
     Easing ELASTIC_IN = t -> (float) (-pow(2f, 10 * t - 10) * sin((t * 10 - 10.75) * (PI * 2) / 3));
     Easing ELASTIC_OUT = t -> (float) (pow(2f, -10f * t) * sin((t * 10 - 0) * (PI * 2) / 3) + 1);
     Easing ELASTIC_IN_OUT = t -> t < 0.5f ? (float) (-(pow(2f, 20 * t - 10) * sin((20 * t - 11.125f) * (PI * 2) / 4.5f)) / 2) : (float) ((pow(2f, -20 * t + 10) * sin((20 * t - 11.125f) * (PI * 2) / 4.5f)) / 2);
+
+    float ease(float t);
 }

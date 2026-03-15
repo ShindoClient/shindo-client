@@ -5,8 +5,6 @@ import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
 import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
-import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
-import me.miki.shindo.ui.comp.chips.FilterChip
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -18,20 +16,21 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.profile.*
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
 import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.IOUtils
+import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
-import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.io.IOException
-import java.util.EnumMap
-import java.util.Locale
+import java.util.*
 
 class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true) {
 
@@ -157,180 +156,202 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 }
 
                 val hovered =
-                    detailTransition.isListInteractive() && MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
+                    detailTransition.isListInteractive() && MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        cardX,
+                        cardY + scrollValue,
+                        cardWidth,
+                        CARD_HEIGHT
+                    )
 
-            val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
-            val borderColor = when {
-                isActive -> ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 186)
-                hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 124)
-                else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
+                val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
+                val borderColor = when {
+                    isActive -> ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 186)
+                    hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 124)
+                    else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
+                }
+
+                nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10f, 6)
+                nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
+                nvg.drawOutlineRoundedRect(
+                    cardX,
+                    cardY,
+                    cardWidth,
+                    CARD_HEIGHT,
+                    12f,
+                    if (isActive) 1.5f else 1f,
+                    borderColor
+                )
+
+                if (isActive) {
+                    nvg.drawRoundedRect(
+                        cardX + 10f,
+                        cardY + 14f,
+                        3f,
+                        CARD_HEIGHT - 28f,
+                        1.5f,
+                        ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 188)
+                    )
+                }
+
+                if (isCreateCard) {
+                    nvg.drawCenteredText(
+                        LegacyIcon.PLUS,
+                        cardX + cardWidth / 2f,
+                        cardY + CARD_HEIGHT / 2f - 16f,
+                        palette.getFontColor(ColorType.DARK),
+                        24f,
+                        Fonts.LEGACYICON
+                    )
+                    nvg.drawCenteredText(
+                        TranslateText.ADD_PROFILE.getText(),
+                        cardX + cardWidth / 2f,
+                        cardY + CARD_HEIGHT / 2f + 6f,
+                        palette.getFontColor(ColorType.DARK),
+                        9.5f,
+                        Fonts.MEDIUM
+                    )
+                    continue
+                }
+
+                val iconX = cardX + 16f
+                val iconY = cardY + (CARD_HEIGHT - ICON_SIZE) / 2f
+
+                if (profile.customIcon != null) {
+                    nvg.drawRoundedImage(profile.customIcon!!, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
+                } else if (profile.icon != null) {
+                    nvg.drawRoundedImage(profile.icon.icon, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
+                } else {
+                    nvg.drawRoundedRect(
+                        iconX,
+                        iconY,
+                        ICON_SIZE,
+                        ICON_SIZE,
+                        9f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
+                    )
+                    nvg.drawCenteredText(
+                        LegacyIcon.PLUS,
+                        iconX + ICON_SIZE / 2f,
+                        iconY + ICON_SIZE / 2f,
+                        palette.getFontColor(ColorType.DARK),
+                        14f,
+                        Fonts.LEGACYICON
+                    )
+                }
+
+                val textX = iconX + ICON_SIZE + 14f
+                val textWidth = cardWidth - (textX - cardX) - 24f
+                var profileName = profile.name.ifEmpty { if (isDefault) "Default" else "Profile" }
+                profileName = nvg.getLimitText(profileName, 12f, Fonts.MEDIUM, textWidth)
+                nvg.drawText(profileName, textX, cardY + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
+
+                var serverInfo = if (profile.serverIp == null || profile.serverIp!!.isEmpty()) {
+                    TranslateText.AUTO_LOAD.getText() + ": " + TranslateText.NONE.getText()
+                } else {
+                    TranslateText.SERVER_IP.getText() + ": " + profile.serverIp
+                }
+
+                serverInfo = nvg.getLimitText(serverInfo, 8.5f, Fonts.REGULAR, textWidth)
+                nvg.drawText(
+                    serverInfo,
+                    textX,
+                    cardY + 36f,
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220),
+                    8.5f,
+                    Fonts.REGULAR
+                )
+
+                if (!isDefault) {
+                    val starSize = 18f
+                    val startX = cardX + cardWidth - starSize - 18f
+                    val startY = cardY + 10f
+
+                    profile.starAnimation.setAnimation(if (profile.type == ProfileType.FAVORITE) 1.0f else 0.0f, 16.0)
+
+                    nvg.drawRoundedRect(
+                        startX,
+                        startY - 1f,
+                        starSize,
+                        starSize,
+                        5f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                    )
+
+                    val starY = startY + starSize + 10f
+                    nvg.drawRoundedRect(
+                        startX,
+                        starY - 1f,
+                        starSize,
+                        starSize,
+                        5f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                    )
+                    nvg.drawCenteredText(
+                        LegacyIcon.STAR,
+                        startX + starSize / 2f - 0.5f,
+                        starY + 3f,
+                        palette.getFontColor(ColorType.NORMAL),
+                        10f,
+                        Fonts.LEGACYICON
+                    )
+                    nvg.drawCenteredText(
+                        LegacyIcon.STAR_FILL,
+                        startX + starSize / 2f,
+                        starY + 3f,
+                        ColorUtils.applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()),
+                        10f,
+                        Fonts.LEGACYICON
+                    )
+
+                    val deleteY = starY + starSize + 10f
+                    nvg.drawRoundedRect(
+                        startX,
+                        deleteY - 1f,
+                        starSize,
+                        starSize,
+                        5f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                    )
+                    nvg.drawCenteredText(
+                        LegacyIcon.TRASH,
+                        startX + starSize / 2f - 0.5f,
+                        deleteY + 3f,
+                        palette.getMaterialRed(),
+                        10f,
+                        Fonts.LEGACYICON
+                    )
+                } else {
+                    val checkSize = 18f
+                    val checkX = cardX + cardWidth - checkSize - 18f
+                    val checkY = cardY + 10f
+
+                    nvg.drawRoundedRect(
+                        checkX,
+                        checkY - 1f,
+                        checkSize,
+                        checkSize,
+                        5f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                    )
+                }
+
+                if (isActive) {
+                    val checkSize = 18f
+                    val checkX = cardX + cardWidth - checkSize - 18f
+                    val checkY = cardY + 10f
+
+                    nvg.drawCenteredText(
+                        LegacyIcon.CHECK,
+                        checkX + checkSize / 2f - 0.5f,
+                        checkY + 3f,
+                        palette.getFontColor(ColorType.DARK),
+                        10f,
+                        Fonts.LEGACYICON
+                    )
+                }
             }
-
-            nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10f, 6)
-            nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
-            nvg.drawOutlineRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, if (isActive) 1.5f else 1f, borderColor)
-
-            if (isActive) {
-                nvg.drawRoundedRect(cardX + 10f, cardY + 14f, 3f, CARD_HEIGHT - 28f, 1.5f, ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 188))
-            }
-
-            if (isCreateCard) {
-                nvg.drawCenteredText(
-                    LegacyIcon.PLUS,
-                    cardX + cardWidth / 2f,
-                    cardY + CARD_HEIGHT / 2f - 16f,
-                    palette.getFontColor(ColorType.DARK),
-                    24f,
-                    Fonts.LEGACYICON
-                )
-                nvg.drawCenteredText(
-                    TranslateText.ADD_PROFILE.getText(),
-                    cardX + cardWidth / 2f,
-                    cardY + CARD_HEIGHT / 2f + 6f,
-                    palette.getFontColor(ColorType.DARK),
-                    9.5f,
-                    Fonts.MEDIUM
-                )
-                continue
-            }
-
-            val iconX = cardX + 16f
-            val iconY = cardY + (CARD_HEIGHT - ICON_SIZE) / 2f
-
-            if (profile.customIcon != null) {
-                nvg.drawRoundedImage(profile.customIcon!!, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
-            } else if (profile.icon != null) {
-                nvg.drawRoundedImage(profile.icon.icon, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
-            } else {
-                nvg.drawRoundedRect(
-                    iconX,
-                    iconY,
-                    ICON_SIZE,
-                    ICON_SIZE,
-                    9f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
-                )
-                nvg.drawCenteredText(
-                    LegacyIcon.PLUS,
-                    iconX + ICON_SIZE / 2f,
-                    iconY + ICON_SIZE / 2f,
-                    palette.getFontColor(ColorType.DARK),
-                    14f,
-                    Fonts.LEGACYICON
-                )
-            }
-
-            val textX = iconX + ICON_SIZE + 14f
-            val textWidth = cardWidth - (textX - cardX) - 24f
-            var profileName = profile.name.ifEmpty { if (isDefault) "Default" else "Profile" }
-            profileName = nvg.getLimitText(profileName, 12f, Fonts.MEDIUM, textWidth)
-            nvg.drawText(profileName, textX, cardY + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
-
-            var serverInfo = if (profile.serverIp == null || profile.serverIp!!.isEmpty()) {
-                TranslateText.AUTO_LOAD.getText() + ": " + TranslateText.NONE.getText()
-            } else {
-                TranslateText.SERVER_IP.getText() + ": " + profile.serverIp
-            }
-
-            serverInfo = nvg.getLimitText(serverInfo, 8.5f, Fonts.REGULAR, textWidth)
-            nvg.drawText(
-                serverInfo,
-                textX,
-                cardY + 36f,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220),
-                8.5f,
-                Fonts.REGULAR
-            )
-
-            if (!isDefault) {
-                val starSize = 18f
-                val startX = cardX + cardWidth - starSize - 18f
-                val startY = cardY + 10f
-
-                profile.starAnimation.setAnimation(if (profile.type == ProfileType.FAVORITE) 1.0f else 0.0f, 16.0)
-
-                nvg.drawRoundedRect(
-                    startX,
-                    startY - 1f,
-                    starSize,
-                    starSize,
-                    5f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                )
-
-                val starY = startY + starSize + 10f
-                nvg.drawRoundedRect(
-                    startX,
-                    starY - 1f,
-                    starSize,
-                    starSize,
-                    5f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                )
-                nvg.drawCenteredText(
-                    LegacyIcon.STAR,
-                    startX + starSize / 2f - 0.5f,
-                    starY + 3f,
-                    palette.getFontColor(ColorType.NORMAL),
-                    10f,
-                    Fonts.LEGACYICON
-                )
-                nvg.drawCenteredText(
-                    LegacyIcon.STAR_FILL,
-                    startX + starSize / 2f,
-                    starY + 3f,
-                    ColorUtils.applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()),
-                    10f,
-                    Fonts.LEGACYICON
-                )
-
-                val deleteY = starY + starSize + 10f
-                nvg.drawRoundedRect(
-                    startX,
-                    deleteY - 1f,
-                    starSize,
-                    starSize,
-                    5f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                )
-                nvg.drawCenteredText(
-                    LegacyIcon.TRASH,
-                    startX + starSize / 2f - 0.5f,
-                    deleteY + 3f,
-                    palette.getMaterialRed(),
-                    10f,
-                    Fonts.LEGACYICON
-                )
-            } else {
-                val checkSize = 18f
-                val checkX = cardX + cardWidth - checkSize - 18f
-                val checkY = cardY + 10f
-
-                nvg.drawRoundedRect(
-                    checkX,
-                    checkY - 1f,
-                    checkSize,
-                    checkSize,
-                    5f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                )
-            }
-
-            if (isActive) {
-                val checkSize = 18f
-                val checkX = cardX + cardWidth - checkSize - 18f
-                val checkY = cardY + 10f
-
-                nvg.drawCenteredText(
-                    LegacyIcon.CHECK,
-                    checkX + checkSize / 2f - 0.5f,
-                    checkY + 3f,
-                    palette.getFontColor(ColorType.DARK),
-                    10f,
-                    Fonts.LEGACYICON
-                )
-            }
-        }
         }
 
         nvg.restore()
@@ -415,7 +436,14 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 tileBase = ColorUtils.darken(tileBase, pressAlpha * 0.12f)
             }
             nvg.drawRoundedRect(iconSelectorX, iconSelectorY, iconTileSize, iconTileSize, 8f, tileBase)
-            nvg.drawRoundedImage(icon.icon, iconSelectorX + 1f, iconSelectorY + 1f, iconTileSize - 2f, iconTileSize - 2f, 7f)
+            nvg.drawRoundedImage(
+                icon.icon,
+                iconSelectorX + 1f,
+                iconSelectorY + 1f,
+                iconTileSize - 2f,
+                iconTileSize - 2f,
+                7f
+            )
             nvg.drawOutlineRoundedRect(
                 iconSelectorX,
                 iconSelectorY,
@@ -425,7 +453,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 if (selected) 1.6f else 1f,
                 ColorUtils.applyAlpha(
                     if (selected || hovered) accentColor.getInterpolateColor() else palette.getFontColor(ColorType.NORMAL),
-                    ((if (selected) 206f else if (hovered) 156f else 104f) + activeAlpha * 18f + hoverAlpha * 10f).toInt().coerceIn(0, 255)
+                    ((if (selected) 206f else if (hovered) 156f else 104f) + activeAlpha * 18f + hoverAlpha * 10f).toInt()
+                        .coerceIn(0, 255)
                 )
             )
 
@@ -453,7 +482,14 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         nvg.drawRoundedRect(customTileX, customTileY, iconTileSize, iconTileSize, 8f, customBase)
 
         if (selectedCustomIcon != null) {
-            nvg.drawRoundedImage(selectedCustomIcon!!, customTileX + 1f, customTileY + 1f, iconTileSize - 2f, iconTileSize - 2f, 7f)
+            nvg.drawRoundedImage(
+                selectedCustomIcon!!,
+                customTileX + 1f,
+                customTileY + 1f,
+                iconTileSize - 2f,
+                iconTileSize - 2f,
+                7f
+            )
         } else {
             nvg.drawCenteredText(
                 LegacyIcon.PLUS,
@@ -473,8 +509,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             8f,
             if (useCustomIcon) 1.6f else 1.2f,
             ColorUtils.applyAlpha(
-                if (useCustomIcon || customHovered) accentColor.getInterpolateColor() else palette.getFontColor(ColorType.NORMAL),
-                if (useCustomIcon) (220f + customHover * 20f).toInt().coerceIn(0, 255) else if (customHovered) 154 else 100
+                if (useCustomIcon || customHovered) accentColor.getInterpolateColor() else palette.getFontColor(
+                    ColorType.NORMAL
+                ),
+                if (useCustomIcon) (220f + customHover * 20f).toInt()
+                    .coerceIn(0, 255) else if (customHovered) 154 else 100
             )
         )
 
@@ -523,7 +562,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         importButtonH = 20f
         importButtonX = panelX + panelWidth - importButtonW - 30f
         importButtonY = importFieldY + 20f
-        val importHovered = MouseUtils.isInside(mouseX, mouseY, importButtonX, importButtonY, importButtonW, importButtonH)
+        val importHovered =
+            MouseUtils.isInside(mouseX, mouseY, importButtonX, importButtonY, importButtonW, importButtonH)
         nvg.drawRoundedRect(
             importButtonX,
             importButtonY,
@@ -557,7 +597,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val createButtonHeight = 20f
         val createButtonX = panelX + panelWidth - createButtonWidth - 30f
         val createButtonY = panelY + panelHeight - createButtonHeight - 20f
-        val createHovered = MouseUtils.isInside(mouseX, mouseY, createButtonX, createButtonY, createButtonWidth, createButtonHeight)
+        val createHovered =
+            MouseUtils.isInside(mouseX, mouseY, createButtonX, createButtonY, createButtonWidth, createButtonHeight)
 
         nvg.drawRoundedRect(
             createButtonX,
@@ -579,7 +620,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         nvg.drawCenteredText(
             TranslateText.CREATE.getText(),
             createButtonX + createButtonWidth / 2f,
-            createButtonY + (createButtonHeight / 2f) - 4f - (nvg.getTextHeight(TranslateText.CREATE.getText(), 10f, Fonts.REGULAR) / 2f),
+            createButtonY + (createButtonHeight / 2f) - 4f - (nvg.getTextHeight(
+                TranslateText.CREATE.getText(),
+                10f,
+                Fonts.REGULAR
+            ) / 2f),
             palette.getFontColor(ColorType.DARK),
             10f,
             Fonts.REGULAR

@@ -9,10 +9,10 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils.setColor
 import me.miki.shindo.utils.Render3DUtils.drawFillBox
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderGlobal

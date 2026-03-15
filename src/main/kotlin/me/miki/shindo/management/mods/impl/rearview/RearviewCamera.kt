@@ -101,7 +101,10 @@ class RearviewCamera {
 
         GL11.glPushAttrib(272393)
 
-        mc.entityRenderer.renderWorld(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks, System.nanoTime())
+        mc.entityRenderer.renderWorld(
+            ((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks,
+            System.nanoTime()
+        )
         mc.entityRenderer.setupOverlayRendering()
 
         if (limit != 0) {

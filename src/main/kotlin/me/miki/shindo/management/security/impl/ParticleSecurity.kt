@@ -17,7 +17,8 @@ class ParticleSecurity : SecurityFeature() {
             particles -= 6
             particles = minOf(particles, 150)
             if (particles > 100 || pkt.particleCount < 1 || kotlin.math.abs(pkt.particleCount) > 20 ||
-                pkt.particleSpeed < 0f || pkt.particleSpeed > 1000f) {
+                pkt.particleSpeed < 0f || pkt.particleSpeed > 1000f
+            ) {
                 event.setCancelled(true)
             }
         }

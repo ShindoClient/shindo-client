@@ -31,7 +31,8 @@ class MessageHandler(private val presenceTracker: PresenceTracker?) {
             MessageType.USER_JOIN,
             MessageType.USER_LEAVE,
             MessageType.USER_ROLES -> presenceTracker.handleMessage(type.wireType, payload)
-            else -> { }
+
+            else -> {}
         }
     }
 }

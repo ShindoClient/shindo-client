@@ -82,11 +82,11 @@ public abstract class MixinGuiIngame implements IMixinGuiIngame {
 
         new EventRenderDamageTint(partialTicks).call();
 
-        if(!(mc.currentScreen instanceof GuiEditHUD)) {
+        if (!(mc.currentScreen instanceof GuiEditHUD)) {
             Shindo.getInstance().getNanoVGManager().setupAndDraw(() -> new EventNVG(partialTicks).call());
             new EventRender2D(partialTicks).call();
         }
-        if(!(mc.currentScreen instanceof GuiModMenu)) {
+        if (!(mc.currentScreen instanceof GuiModMenu)) {
             new EventRenderNotification().call();
         }
     }

@@ -319,7 +319,15 @@ open class HUDMod : Mod {
         if (isNormal || isVanilla || isShadow || isDark || isLight || isModern) {
             nvg?.drawShadow(x, y, lastWidth, lastHeight, radius - 0.75f)
         } else if (isGlow || isVanillaGlow) {
-            nvg?.drawGradientShadow(x, y, lastWidth, lastHeight, radius, currentColor.getColor1(), currentColor.getColor2())
+            nvg?.drawGradientShadow(
+                x,
+                y,
+                lastWidth,
+                lastHeight,
+                radius,
+                currentColor.getColor1(),
+                currentColor.getColor2()
+            )
         } else if (isOutline || isOutlineGlow) {
             if (isOutline) {
                 nvg?.drawShadow(x - 2, y - 2, lastWidth + 4, lastHeight + 4, radius + 2)
@@ -440,7 +448,7 @@ open class HUDMod : Mod {
 
         var addY2: Float = addY
         if (font == Fonts.MOJANGLES) {
-            addY2 = addY - 1F;
+            addY2 = addY - 1F
         }
 
         val nvg = Shindo.getInstance().nanoVGManager

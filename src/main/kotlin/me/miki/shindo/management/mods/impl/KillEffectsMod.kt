@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.Shindo
 import me.miki.shindo.injection.interfaces.IMixinRenderManager
+import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventLoadWorld
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.event.impl.EventTick

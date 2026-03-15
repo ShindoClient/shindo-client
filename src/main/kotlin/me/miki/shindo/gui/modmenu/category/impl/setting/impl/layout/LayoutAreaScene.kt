@@ -167,7 +167,18 @@ abstract class LayoutAreaScene(
                 height = panelHeight,
                 intersect = true
             ) {
-                drawPreview(nvg, palette, accent, contentX, cursorY, contentWidth, previewHeight, mouseX, mouseY, partialTicks)
+                drawPreview(
+                    nvg,
+                    palette,
+                    accent,
+                    contentX,
+                    cursorY,
+                    contentWidth,
+                    previewHeight,
+                    mouseX,
+                    mouseY,
+                    partialTicks
+                )
             }
             return
         }
@@ -187,7 +198,18 @@ abstract class LayoutAreaScene(
             height = panelHeight,
             intersect = true
         ) {
-            drawPreview(nvg, palette, accent, contentX, cursorY, contentWidth, previewHeight, mouseX, mouseY, partialTicks)
+            drawPreview(
+                nvg,
+                palette,
+                accent,
+                contentX,
+                cursorY,
+                contentWidth,
+                previewHeight,
+                mouseX,
+                mouseY,
+                partialTicks
+            )
         }
 
         selector.setBounds(contentX, selectorY, contentWidth, selectorHeight)

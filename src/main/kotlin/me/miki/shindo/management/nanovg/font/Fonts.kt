@@ -1,7 +1,6 @@
 package me.miki.shindo.management.nanovg.font
 
 import net.minecraft.util.ResourceLocation
-import java.util.*
 
 object Fonts {
 

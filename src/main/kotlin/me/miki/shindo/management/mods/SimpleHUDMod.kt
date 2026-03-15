@@ -22,7 +22,7 @@ open class SimpleHUDMod : HUDMod {
 
     fun draw() {
         val instance = Shindo.getInstance()
-        val nvg = instance.nanoVGManager
+        instance.nanoVGManager
         val icon = getIcon()
         val hasIcon = icon != null
         val addX = if (hasIcon) (getTextWidth(icon ?: "", 9.5f, Fonts.LEGACYICON)!! + 4) else 0f

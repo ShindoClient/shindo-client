@@ -4,12 +4,7 @@ package me.miki.extensions.settings
 
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.config.ConfigOwner
-import me.miki.shindo.management.settings.impl.BooleanSetting
-import me.miki.shindo.management.settings.impl.ColorSetting
-import me.miki.shindo.management.settings.impl.ComboSetting
-import me.miki.shindo.management.settings.impl.KeybindSetting
-import me.miki.shindo.management.settings.impl.NumberSetting
-import me.miki.shindo.management.settings.impl.TextSetting
+import me.miki.shindo.management.settings.impl.*
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getSetting
 

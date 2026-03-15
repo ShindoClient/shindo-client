@@ -62,7 +62,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
-        Blur.drawBlur(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f);
+        Blur.drawBlur(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f)
         nvg.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 8f, panelColor)
         nvg.drawCenteredText("Choose a theme", x + (width / 2f), y + 10f, Color.WHITE, 16f, Fonts.MEDIUM)
         nvg.drawRect(x.toFloat(), y + 27f, width.toFloat(), 1f, Color.WHITE)
@@ -80,9 +80,25 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             drawModMenuExample(x + offsetX + 14f, y + 42f, theme)
             nvg.save()
             nvg.setAlpha(theme.getAnimation().value)
-            nvg.drawGradientOutlineRoundedRect(x + offsetX + 14f, y + 42f, 90f, 56f, 6f, 1f, currentColor.getColor1(), currentColor.getColor2())
+            nvg.drawGradientOutlineRoundedRect(
+                x + offsetX + 14f,
+                y + 42f,
+                90f,
+                56f,
+                6f,
+                1f,
+                currentColor.getColor1(),
+                currentColor.getColor2()
+            )
             nvg.restore()
-            nvg.drawCenteredText(theme.getName(), x + offsetX + 14f + (90 / 2f), y + 104f, Color.WHITE, 9.5f, Fonts.REGULAR)
+            nvg.drawCenteredText(
+                theme.getName(),
+                x + offsetX + 14f + (90 / 2f),
+                y + 104f,
+                Color.WHITE,
+                9.5f,
+                Fonts.REGULAR
+            )
 
             offsetX += 102
             index++

@@ -134,14 +134,17 @@ open class PanoramaBackgroundRenderer : AbstractBackground() {
                 pitch = MathHelper.sin(time / 400.0f) * 25.0f + 20.0f
                 yaw = -(time * 0.1f)
             }
+
             PanoramaMode.FLAT_SPIN -> {
                 pitch = 20.0f
                 yaw = -(time * 0.1f)
             }
+
             PanoramaMode.STATIONARY -> {
                 pitch = 20.0f
                 yaw = 0.0f
             }
+
             PanoramaMode.REACTIVE -> {
                 val currentTime = System.currentTimeMillis()
                 val deltaTime = (currentTime - lastFrameTime) / 1000.0f
@@ -151,6 +154,7 @@ open class PanoramaBackgroundRenderer : AbstractBackground() {
                 yaw = lastYaw
                 pitch = lastPitch
             }
+
             else -> {
                 pitch = 0.0f
                 yaw = 0.0f

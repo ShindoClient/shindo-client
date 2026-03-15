@@ -26,7 +26,10 @@ class ResourcePackSecurity : SecurityFeature() {
         val uri = URI(url)
         val scheme = uri.scheme
         val isLevelProtocol = "level" == scheme
-        if ("http" != scheme && "https" != scheme && !isLevelProtocol) throw java.net.URISyntaxException(url, "Wrong protocol")
+        if ("http" != scheme && "https" != scheme && !isLevelProtocol) throw java.net.URISyntaxException(
+            url,
+            "Wrong protocol"
+        )
         val decoded = URLDecoder.decode(url.substring("level://".length), StandardCharsets.UTF_8.name())
         if (isLevelProtocol && (decoded.contains("..") || !decoded.endsWith("/resources.zip"))) {
             throw java.net.URISyntaxException(decoded, "Invalid levelstorage resource pack path")

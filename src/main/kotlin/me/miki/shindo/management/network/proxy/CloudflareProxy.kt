@@ -1,15 +1,12 @@
 package me.miki.shindo.management.network.proxy
 
+import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.network.interfaces.IDNSProxy
 import me.miki.shindo.management.network.utils.CloudflareDNSResolver
 import me.miki.shindo.management.network.utils.DNSConfig
 import me.miki.shindo.management.network.utils.DNSResolver
-import me.miki.shindo.logger.ShindoLogger
 import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.net.ProxySelector
-import java.util.*
 
 /**
  * Proxy DNS usando Cloudflare (1.1.1.1)
@@ -39,11 +36,11 @@ class CloudflareProxy(
 
         try {
             ShindoLogger.info("[CloudflareProxy] Enabling Cloudflare DNS proxy (${config.primaryDNS})")
-            
+
             // Em Java, não podemos alterar diretamente o DNS do sistema sem permissões especiais.
             // O que podemos fazer é configurar um ProxySelector customizado ou usar o resolvedor customizado.
             // Por enquanto, apenas marcamos como ativo e usamos o resolvedor Cloudflare quando necessário.
-            
+
             active = true
             ShindoLogger.info("[CloudflareProxy] Cloudflare DNS proxy enabled successfully")
         } catch (e: Exception) {
@@ -59,12 +56,12 @@ class CloudflareProxy(
 
         try {
             ShindoLogger.info("[CloudflareProxy] Disabling Cloudflare DNS proxy")
-            
+
             // Restaura o proxy selector original se tivermos alterado
             if (originalProxySelector != null) {
                 ProxySelector.setDefault(originalProxySelector)
             }
-            
+
             active = false
             ShindoLogger.info("[CloudflareProxy] Cloudflare DNS proxy disabled successfully")
         } catch (e: Exception) {

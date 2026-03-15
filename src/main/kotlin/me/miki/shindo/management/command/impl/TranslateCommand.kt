@@ -24,7 +24,13 @@ class TranslateCommand : Command("translate") {
         Multithreading.runAsync {
             try {
                 mc.ingameGUI.chatGUI.printChatMessage(
-                    ChatComponentText(EnumChatFormatting.GREEN.toString() + "[Translate] " + EnumChatFormatting.WHITE + Translator.translate(message, Translator.AUTO_DETECT, to))
+                    ChatComponentText(
+                        EnumChatFormatting.GREEN.toString() + "[Translate] " + EnumChatFormatting.WHITE + Translator.translate(
+                            message,
+                            Translator.AUTO_DETECT,
+                            to
+                        )
+                    )
                 )
             } catch (e: Exception) {
                 ShindoLogger.error("Failed translate", e)

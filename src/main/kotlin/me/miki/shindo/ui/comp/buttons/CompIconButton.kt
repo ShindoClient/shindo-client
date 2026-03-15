@@ -77,11 +77,13 @@ class CompIconButton : CompControlTemplate {
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
         pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f, 16.0)
 
-        val baseBackground = overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
+        val baseBackground =
+            overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
         val hoverBackground = overrideBackground?.let { ColorUtils.lighten(it, 0.08f) }
             ?: CompStyleResolver.resolveControlHover(getVariant(), paletteColors, accentColors)
 
-        var drawBackground = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
+        var drawBackground =
+            ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
         if (pressAnimation.value > 0.08f) {
             drawBackground = ColorUtils.darken(drawBackground, pressAnimation.value * 0.18f)
         }

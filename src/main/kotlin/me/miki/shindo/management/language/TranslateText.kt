@@ -2,7 +2,7 @@ package me.miki.shindo.management.language
 
 enum class TranslateText(
     private val key: String
-    ) {
+) {
     ACCELERATION_MULTIPLIER("text.accelerationmultiplier"),
     ACCENT_COLOR("text.accentcolor"),
     ACCUM("text.accum"),
@@ -870,6 +870,9 @@ enum class TranslateText(
     private var text: String? = null
 
     fun getText(): String = text ?: "null"
-    fun setText(value: String?) { text = value }
+    fun setText(value: String?) {
+        text = value
+    }
+
     fun getKey(): String = key
 }

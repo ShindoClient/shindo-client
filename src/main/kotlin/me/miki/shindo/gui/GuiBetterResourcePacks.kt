@@ -12,7 +12,6 @@ import net.minecraft.client.resources.ResourcePackRepository.Entry
 import org.lwjgl.input.Keyboard
 import java.io.File
 import java.util.Locale
-import java.util.*
 
 class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen),
     IShindoScreen {

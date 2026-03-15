@@ -9,7 +9,8 @@ import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class GuiNewChatHook {
+public enum GuiNewChatHook {
+    ;
 
     private static final Minecraft mc = Minecraft.getMinecraft();
 

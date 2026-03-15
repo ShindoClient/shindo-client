@@ -1,7 +1,6 @@
 package me.miki.shindo.management.event
 
 import java.lang.reflect.Method
-import java.util.HashMap
 
 class EventManager {
 

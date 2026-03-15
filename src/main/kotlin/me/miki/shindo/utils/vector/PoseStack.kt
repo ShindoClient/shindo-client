@@ -1,4 +1,5 @@
 package me.miki.shindo.utils.vector
+
 class PoseStack {
     private val poseStack: MutableList<Pose> = mutableListOf(identityPose())
 

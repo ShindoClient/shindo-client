@@ -2,7 +2,6 @@ package me.miki.shindo.management.event
 
 import me.miki.shindo.Shindo
 import java.lang.reflect.InvocationTargetException
-import java.util.HashSet
 
 abstract class Event {
 

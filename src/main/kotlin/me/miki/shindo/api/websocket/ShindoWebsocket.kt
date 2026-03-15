@@ -177,10 +177,12 @@ class ShindoWebsocket(
                 send(MessageType.PING, JsonObject())
                 return
             }
+
             MessageType.SERVER_VERIFY -> {
                 send(MessageType.PING, JsonObject())
                 return
             }
+
             else -> {}
         }
 

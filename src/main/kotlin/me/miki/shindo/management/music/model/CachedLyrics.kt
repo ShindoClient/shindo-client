@@ -1,4 +1,5 @@
 package me.miki.shindo.management.music.model
+
 internal data class CachedLyrics(
     val lyrics: LyricsResponse,
     val timestamp: Long = System.currentTimeMillis()

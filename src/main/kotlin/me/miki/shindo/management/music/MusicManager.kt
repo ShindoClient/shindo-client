@@ -21,19 +21,11 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.net.InetSocketAddress
-import java.net.URI
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.Collections
-import java.util.Properties
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionException
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
+import java.util.*
+import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Supplier
+
 class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     private val albumArtCache = AlbumArtCache(fileManager)
@@ -236,7 +228,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         return searchCache.computeIfAbsent(
             query!!
         ) { q: String? ->
-            throttleRequest("search",
+            throttleRequest(
+                "search",
                 Supplier {
                     CompletableFuture.supplyAsync {
                         try {
@@ -280,7 +273,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         return playlistCache.computeIfAbsent(
             "search:$query"
         ) { q: String? ->
-            throttleRequest("search_playlist",
+            throttleRequest(
+                "search_playlist",
                 Supplier {
                     CompletableFuture.supplyAsync {
                         try {
@@ -464,7 +458,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             if (!isPlaying && currentVolume == 100) {
                 fetchAndUpdateVolume()
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
         return currentVolume
     }
 
@@ -670,7 +665,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                     }
                 }
             } catch (e: Exception) {
-                ShindoLogger.error("Error during position sync: ${e.message}")
+                error("Error during position sync: ${e.message}")
             }
         }
 
@@ -733,7 +728,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         return playlistCache.computeIfAbsent(
             cacheKey
         ) { k: String? ->
-            throttleRequest("playlists",
+            throttleRequest(
+                "playlists",
                 Supplier<CompletableFuture<List<PlaylistSimplified>>> {
                     CompletableFuture.supplyAsync {
                         try {

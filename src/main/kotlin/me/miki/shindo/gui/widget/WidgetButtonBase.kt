@@ -5,7 +5,8 @@ import eu.shoroa.contrib.animation.Easing
 import me.miki.shindo.management.nanovg.NanoVGManager
 import java.util.function.Supplier
 
-abstract class WidgetButtonBase(x: Float, y: Float, width: Float, height: Float, private val onClick: Runnable) : Widget(x, y, width, height) {
+abstract class WidgetButtonBase(x: Float, y: Float, width: Float, height: Float, private val onClick: Runnable) :
+    Widget(x, y, width, height) {
     private var wasClicked = false
     protected var isHovered = false
 

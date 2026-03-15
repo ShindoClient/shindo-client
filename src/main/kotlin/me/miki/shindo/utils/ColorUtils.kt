@@ -45,10 +45,10 @@ object ColorUtils {
 
     @JvmStatic
     fun interpolateColor(from: Color, to: Color, delta: Double): Color {
-        val red = MathUtils.interpolateInt(from.red, to.red, delta)
-        val green = MathUtils.interpolateInt(from.green, to.green, delta)
-        val blue = MathUtils.interpolateInt(from.blue, to.blue, delta)
-        val alpha = MathUtils.interpolateInt(from.alpha, to.alpha, delta)
+        val red = interpolateInt(from.red, to.red, delta)
+        val green = interpolateInt(from.green, to.green, delta)
+        val blue = interpolateInt(from.blue, to.blue, delta)
+        val alpha = interpolateInt(from.alpha, to.alpha, delta)
         return Color(red, green, blue, alpha)
     }
 

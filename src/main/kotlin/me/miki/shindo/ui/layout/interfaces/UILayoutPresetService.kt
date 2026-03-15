@@ -16,6 +16,7 @@ interface UILayoutPresetService {
         description: String,
         includeAppearance: Boolean
     ): UILayoutPreset
+
     fun removeCustomPreset(id: String): Boolean
 }
 

@@ -3,7 +3,6 @@ package me.miki.shindo.ui.comp.layout
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
@@ -22,7 +21,6 @@ import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
-import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
@@ -204,7 +202,14 @@ class SettingsPanel {
             if (section.hasHeader()
                 && section.category != null
                 && isVisible(section.headerY, section.headerHeight, contentY, viewportBottom)
-                && MouseUtils.isInside(mouseX, mouseY, section.headerX, section.headerY, section.headerWidth, section.headerHeight)
+                && MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    section.headerX,
+                    section.headerY,
+                    section.headerWidth,
+                    section.headerHeight
+                )
             ) {
                 if (mouseButton == 0) {
                     section.category.toggle()
@@ -220,7 +225,15 @@ class SettingsPanel {
                 if (positioned.height <= 0.5f) continue
                 val animatedY = resolveAnimatedEntryY(section, positioned)
                 if (!isVisible(animatedY, positioned.height, contentY, viewportBottom)) continue
-                if (!MouseUtils.isInside(mouseX, mouseY, positioned.x, animatedY, positioned.width, positioned.height)) continue
+                if (!MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        positioned.x,
+                        animatedY,
+                        positioned.width,
+                        positioned.height
+                    )
+                ) continue
                 positioned.entry.comp.mouseClicked(mouseX, mouseY, mouseButton)
                 return true
             }

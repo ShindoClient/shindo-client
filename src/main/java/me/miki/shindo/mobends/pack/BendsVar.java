@@ -2,7 +2,8 @@ package me.miki.shindo.mobends.pack;
 
 import me.miki.shindo.mobends.data.MoBends_EntityData;
 
-public class BendsVar {
+public enum BendsVar {
+    ;
     public static MoBends_EntityData tempData;
 
     public static float getGlobalVar(String name) {

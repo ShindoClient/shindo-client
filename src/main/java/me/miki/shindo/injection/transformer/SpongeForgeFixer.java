@@ -6,7 +6,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.*;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -227,7 +227,7 @@ public class SpongeForgeFixer implements IClassTransformer, Opcodes {
         method.visitVarInsn(ASTORE, 3);
         Label loopLabel = new Label();
         method.visitLabel(loopLabel);
-        method.visitFrame(F_APPEND, 1, new Object[] { "java/util/Iterator" }, 0, null);
+        method.visitFrame(F_APPEND, 1, new Object[]{"java/util/Iterator"}, 0, null);
         method.visitVarInsn(ALOAD, 3);
         method.visitMethodInsn(INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
         Label endLabel1 = new Label();
@@ -248,7 +248,7 @@ public class SpongeForgeFixer implements IClassTransformer, Opcodes {
         Label frameLabel = new Label();
         method.visitJumpInsn(GOTO, frameLabel);
         method.visitLabel(elseLabel);
-        method.visitFrame(F_APPEND, 1, new Object[] { "java/lang/Object" }, 0, null);
+        method.visitFrame(F_APPEND, 1, new Object[]{"java/lang/Object"}, 0, null);
         method.visitVarInsn(ALOAD, 0);
         method.visitVarInsn(ALOAD, 1);
         method.visitVarInsn(ALOAD, 2);

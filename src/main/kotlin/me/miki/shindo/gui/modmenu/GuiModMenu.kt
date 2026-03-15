@@ -5,8 +5,8 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.gui.IShindoScreen
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.impl.*
+import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.navigation.ModMenuCategoryTransitionCoordinator
 import me.miki.shindo.gui.modmenu.navigation.ModMenuSidebarController
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
@@ -23,12 +23,12 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.comp.buttons.CompIconButton
-import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseBackIn
 import me.miki.shindo.ui.animation.screen.ScreenAnimation
+import me.miki.shindo.ui.comp.buttons.CompIconButton
+import me.miki.shindo.ui.comp.inputs.CompSearchBox
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -287,7 +287,9 @@ class GuiModMenu(
 
         scroll.onAnimation()
 
-        if (!transitionRunning && !isOverlayInputLocked() && currentCategory.isShowSearchBox() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(
+        if (!transitionRunning && !isOverlayInputLocked() && currentCategory.isShowSearchBox() && Keyboard.isKeyDown(
+                Keyboard.KEY_LCONTROL
+            ) && Keyboard.isKeyDown(
                 Keyboard.KEY_F
             )
         ) {

@@ -34,7 +34,14 @@ object ShaderBackgroundRenderer {
         renderFallbackBackground(nvg, shaderFile, x, y, width, height)
     }
 
-    private fun renderFallbackBackground(nvg: NanoVGManager, shaderFile: File?, x: Float, y: Float, width: Float, height: Float) {
+    private fun renderFallbackBackground(
+        nvg: NanoVGManager,
+        shaderFile: File?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
+    ) {
         val shaderName = (shaderFile?.name ?: "default").toLowerCase()
         val time = (System.currentTimeMillis() % 10000) / 1000f
 
@@ -44,6 +51,7 @@ object ShaderBackgroundRenderer {
                 val color2 = ColorUtils.getRainbow((time * 100 + 180).toInt(), 10.0, 255)
                 nvg.drawGradientRoundedRect(x, y, width, height, 5f, color1, color2)
             }
+
             shaderName.contains("wave") || shaderName.contains("ocean") -> {
                 val blue1 = clampColor((128 + 50 * kotlin.math.sin(time.toDouble())).toInt())
                 val green1 = clampColor((64 + 30 * kotlin.math.cos(time.toDouble())).toInt())
@@ -51,12 +59,14 @@ object ShaderBackgroundRenderer {
                 val color2 = Color(0, green1, 200)
                 nvg.drawGradientRoundedRect(x, y, width, height, 5f, color1, color2)
             }
+
             shaderName.contains("fire") || shaderName.contains("flame") -> {
                 val green = clampColor((100 + 50 * kotlin.math.sin(time * 2)).toInt())
                 val color1 = Color(255, green, 0)
                 val color2 = Color(200, 50, 0)
                 nvg.drawGradientRoundedRect(x, y, width, height, 5f, color1, color2)
             }
+
             else -> {
                 val r1 = clampFloat((0.5 + 0.3 * kotlin.math.sin(time * 0.5)).toFloat())
                 val g1 = clampFloat((0.5 + 0.3 * kotlin.math.sin((time * 0.7 + 2))).toFloat())

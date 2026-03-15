@@ -1,9 +1,8 @@
 package me.miki.shindo.management.network
 
-import me.miki.shindo.management.network.proxy.CloudflareProxy
-import me.miki.shindo.management.network.proxy.CustomProxy
-import me.miki.shindo.management.network.utils.DNSConfig
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.network.proxy.CloudflareProxy
+import me.miki.shindo.management.network.utils.DNSConfig
 import java.net.InetAddress
 
 /**
@@ -14,7 +13,7 @@ import java.net.InetAddress
 class NetworkManager {
 
     val proxyManager = ProxyManager()
-    
+
     private var cloudflareProxy: CloudflareProxy? = null
     private var enabled = false
     private var activeProxyType: ProxyType = ProxyType.SYSTEM_DEFAULT
@@ -40,7 +39,7 @@ class NetworkManager {
     fun enableCloudflareProxy() {
         // Desativa qualquer proxy customizado ativo
         proxyManager.setActiveProxy(null)
-        
+
         if (enabled && activeProxyType == ProxyType.CLOUDFLARE) {
             ShindoLogger.warn("[NetworkManager] Cloudflare proxy is already enabled")
             return
@@ -158,6 +157,7 @@ class NetworkManager {
                 val proxy = proxyManager.getActiveProxy()
                 "${proxy?.name} (${proxy?.getDNSAddress()})"
             }
+
             ProxyType.SYSTEM_DEFAULT -> "System Default"
         }
     }

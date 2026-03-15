@@ -1,10 +1,10 @@
 package me.miki.shindo.management.network.proxy
 
+import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.network.interfaces.IDNSProxy
 import me.miki.shindo.management.network.utils.CloudflareDNSResolver
 import me.miki.shindo.management.network.utils.DNSConfig
 import me.miki.shindo.management.network.utils.DNSResolver
-import me.miki.shindo.logger.ShindoLogger
 import java.net.InetAddress
 import java.util.*
 

@@ -1,7 +1,6 @@
 package me.miki.shindo.management.skin
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
@@ -17,10 +16,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.Base64
-import java.util.Collections
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
@@ -73,7 +69,13 @@ class SkinManager {
     }
 
     @Throws(IOException::class)
-    fun addSkin(name: String, type: SkinType, favorite: Boolean, sourceImage: BufferedImage, profileUuid: String?): Skin =
+    fun addSkin(
+        name: String,
+        type: SkinType,
+        favorite: Boolean,
+        sourceImage: BufferedImage,
+        profileUuid: String?
+    ): Skin =
         synchronized(ioLock) {
             val sanitizedName = sanitizeName(name)
             validateName(sanitizedName, null)
@@ -90,7 +92,13 @@ class SkinManager {
         }
 
     @Throws(IOException::class)
-    fun updateSkin(skin: Skin?, newName: String, newType: SkinType, replacement: BufferedImage?, newProfileUuid: String?) {
+    fun updateSkin(
+        skin: Skin?,
+        newName: String,
+        newType: SkinType,
+        replacement: BufferedImage?,
+        newProfileUuid: String?
+    ) {
         if (skin == null) return
         synchronized(ioLock) {
             val sanitizedName = sanitizeName(newName)
@@ -163,13 +171,14 @@ class SkinManager {
         val properties = sessionProfile.getAsJsonArray("properties")
         if (properties.size() == 0) throw IOException("Não foi possível carregar a skin")
         val encoded = properties.get(0).asJsonObject.get("value").asString
-        val payload = gson.fromJson(String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8), JsonObject::class.java)
+        val payload =
+            gson.fromJson(String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8), JsonObject::class.java)
         val textures = payload.getAsJsonObject("textures") ?: throw IOException("Skin não encontrada para este UUID")
         if (!textures.has("SKIN")) throw IOException("Skin não encontrada para este UUID")
         val skinObject = textures.getAsJsonObject("SKIN")
         val slim = skinObject.has("metadata") &&
-            skinObject.getAsJsonObject("metadata").has("model") &&
-            "slim".equals(skinObject.getAsJsonObject("metadata").get("model").asString, ignoreCase = true)
+                skinObject.getAsJsonObject("metadata").has("model") &&
+                "slim".equals(skinObject.getAsJsonObject("metadata").get("model").asString, ignoreCase = true)
         val skinUrl = skinObject.get("url").asString
         val image = ImageIO.read(URL(skinUrl)) ?: throw IOException("Não foi possível baixar a skin")
         return DownloadedSkin(normalizeSkin(image), if (slim) SkinType.SLIM else SkinType.DEFAULT, normalizedUuid)
@@ -187,7 +196,8 @@ class SkinManager {
                         for (element in skinArray) {
                             if (!element.isJsonObject) continue
                             val entry = element.asJsonObject
-                            val id = JsonUtils.getStringProperty(entry, "id", UUID.randomUUID().toString().replace("-", ""))
+                            val id =
+                                JsonUtils.getStringProperty(entry, "id", UUID.randomUUID().toString().replace("-", ""))
                             val name = JsonUtils.getStringProperty(entry, "name", "Skin")
                             val fileName = JsonUtils.getStringProperty(entry, "file", "$id.png")
                             val typeId = JsonUtils.getIntProperty(entry, "type", SkinType.DEFAULT.id)
@@ -197,7 +207,15 @@ class SkinManager {
                             if (!file.exists()) continue
                             try {
                                 val texture = registerTexture(file, id.toString())
-                                val skin = Skin(id.toString(), name.toString(), fileName.toString(), SkinType.getTypeById(typeId), favorite, texture, profileUuid)
+                                val skin = Skin(
+                                    id.toString(),
+                                    name.toString(),
+                                    fileName.toString(),
+                                    SkinType.getTypeById(typeId),
+                                    favorite,
+                                    texture,
+                                    profileUuid
+                                )
                                 skins.add(skin)
                             } catch (io: IOException) {
                                 ShindoLogger.error("Falha ao carregar a skin $name", io)
@@ -267,7 +285,11 @@ class SkinManager {
         val trimmed = name!!.trim()
         for (skin in skins) {
             if (skin === ignore) continue
-            if (skin.name.equals(trimmed, ignoreCase = true)) throw IllegalArgumentException("Já existe uma skin com esse nome")
+            if (skin.name.equals(
+                    trimmed,
+                    ignoreCase = true
+                )
+            ) throw IllegalArgumentException("Já existe uma skin com esse nome")
         }
     }
 
@@ -301,7 +323,7 @@ class SkinManager {
     @Throws(IOException::class)
     private fun <T> runOnRenderThread(task: () -> T): T {
         val mc = Minecraft.getMinecraft()
-        if (mc.isCallingFromMinecraftThread()) {
+        if (mc.isCallingFromMinecraftThread) {
             return try {
                 task()
             } catch (e: IOException) {

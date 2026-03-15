@@ -77,9 +77,18 @@ open class CompTextBox : CompTextBoxBase {
 
         for (c in text.toCharArray()) {
             resultText += c
-            if (nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) + textInset + textPaddingEnd > getWidth()) {
+            if (nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) + textInset + textPaddingEnd > getWidth()
+            ) {
                 outTextSize++
-                addX = getWidth() - nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) - textInset - textPaddingEnd
+                addX = getWidth() - nvgInstance.getTextWidth(
+                    resultText,
+                    halfHeight,
+                    Fonts.REGULAR
+                ) - textInset - textPaddingEnd
             }
         }
 
@@ -101,7 +110,8 @@ open class CompTextBox : CompTextBoxBase {
         val hoverBackground = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accent)
         val surfaceColor = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
         val focusTint = ColorUtils.applyAlpha(accent.getColor1(), 110)
-        var backgroundColor = ColorUtils.interpolateColor(surfaceColor, focusTint, (focusAnimation.value * 0.18f).toDouble())
+        var backgroundColor =
+            ColorUtils.interpolateColor(surfaceColor, focusTint, (focusAnimation.value * 0.18f).toDouble())
         if (!enabled) {
             backgroundColor = ColorUtils.applyAlpha(backgroundColor, 118)
         }
@@ -112,7 +122,8 @@ open class CompTextBox : CompTextBoxBase {
         val errorOutline = Color(227, 92, 92, 218)
         val mixedOutline = ColorUtils.interpolateColor(idleOutline, hoverOutline, hoverAnimation.value.toDouble())
         val focusMixedOutline = ColorUtils.interpolateColor(mixedOutline, focusOutline, focusAnimation.value.toDouble())
-        var outlineColor = ColorUtils.interpolateColor(focusMixedOutline, errorOutline, validationAnimation.value.toDouble())
+        var outlineColor =
+            ColorUtils.interpolateColor(focusMixedOutline, errorOutline, validationAnimation.value.toDouble())
         if (!enabled) {
             outlineColor = ColorUtils.applyAlpha(outlineColor, 96)
         }

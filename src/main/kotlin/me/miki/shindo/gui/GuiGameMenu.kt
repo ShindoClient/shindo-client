@@ -49,8 +49,8 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         BlurUtils.drawBlurScreen(20F)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
-        Gui.drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0x8C000000.toInt());
-        Blur.render(10f);
+        drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0x8C000000.toInt())
+        Blur.render(10f)
         screenAnimation.wrap(
             Runnable { drawNanoVG(nvg) },
             x.toFloat(),
@@ -105,7 +105,7 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
     }
 
     private fun drawButton(nvg: NanoVGManager, text: String, icon: String, offset: Float) {
-        Blur.drawBlur(x.toFloat(), y + offset, menuWidth.toFloat() , 22f, 6f);
+        Blur.drawBlur(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f)
         nvg.drawRoundedRect(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f, Color(230, 230, 230, 80))
         val startX = (nvg.getTextWidth(text, 9.5f, Fonts.MEDIUM) + 14) / 2
         nvg.drawText(icon, centre - startX, y + offset + 6.5f, Color.WHITE, 9.5f, Fonts.LEGACYICON)

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.ServerUtils
@@ -33,17 +32,20 @@ class WaypointManager {
                 val jsonArray = JsonUtils.getArrayProperty(jsonObject, "Waypoints") ?: return
                 for (element in jsonArray) {
                     val wObj = gson.fromJson(element, JsonObject::class.java)
-                    waypoints.add(Waypoint(
-                        JsonUtils.getStringProperty(wObj, "World", "").toString(),
-                        JsonUtils.getStringProperty(wObj, "Name", "").toString(),
-                        JsonUtils.getDoubleProperty(wObj, "X", 0.0),
-                        JsonUtils.getDoubleProperty(wObj, "Y", 0.0),
-                        JsonUtils.getDoubleProperty(wObj, "Z", 0.0),
-                        ColorUtils.getColorByInt(JsonUtils.getIntProperty(wObj, "Color", 0))
-                    ))
+                    waypoints.add(
+                        Waypoint(
+                            JsonUtils.getStringProperty(wObj, "World", "").toString(),
+                            JsonUtils.getStringProperty(wObj, "Name", "").toString(),
+                            JsonUtils.getDoubleProperty(wObj, "X", 0.0),
+                            JsonUtils.getDoubleProperty(wObj, "Y", 0.0),
+                            JsonUtils.getDoubleProperty(wObj, "Z", 0.0),
+                            ColorUtils.getColorByInt(JsonUtils.getIntProperty(wObj, "Color", 0))
+                        )
+                    )
                 }
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 
     fun save() {
@@ -67,7 +69,8 @@ class WaypointManager {
                 jsonObject.add("Waypoints", jsonArray)
                 gson.toJson(jsonObject, writer)
             }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 
     fun getWorld(): String {

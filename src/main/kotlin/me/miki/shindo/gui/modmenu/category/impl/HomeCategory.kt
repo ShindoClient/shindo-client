@@ -674,9 +674,10 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     controlSpacing = controlSpacing
                 )) {
                     HomeCategoryInputController.MusicControlAction.PREVIOUS -> {
-                    musicManager.previousTrack()
-                    return
+                        musicManager.previousTrack()
+                        return
                     }
+
                     HomeCategoryInputController.MusicControlAction.TOGGLE_PLAYBACK -> {
                         if (musicManager.isPlaying()) {
                             musicManager.pause()
@@ -685,10 +686,12 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                         }
                         return
                     }
+
                     HomeCategoryInputController.MusicControlAction.NEXT -> {
                         musicManager.nextTrack()
                         return
                     }
+
                     null -> {
                         // no-op
                     }

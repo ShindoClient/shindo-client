@@ -13,7 +13,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiNavigationHub() : GuiScreen(), IShindoScreen {
+class GuiNavigationHub : GuiScreen(), IShindoScreen {
 
     private data class IconButton(val icon: String, val action: () -> Unit)
 
@@ -41,7 +41,7 @@ class GuiNavigationHub() : GuiScreen(), IShindoScreen {
         val progress = introAnimation.getValueFloat().coerceIn(0f, 1f)
 
 
-        nvg.setupAndDraw ( Runnable {
+        nvg.setupAndDraw(Runnable {
             nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
             drawNanoVG(nvg, mouseX, mouseY, progress)
         })
@@ -97,7 +97,14 @@ class GuiNavigationHub() : GuiScreen(), IShindoScreen {
                 4f,
                 if (hovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45)
             )
-            nvg.drawCenteredText(button.icon, buttonX + (iconSize / 2f), rowY + 6.5f, Color.WHITE, 9.5f, Fonts.LEGACYICON)
+            nvg.drawCenteredText(
+                button.icon,
+                buttonX + (iconSize / 2f),
+                rowY + 6.5f,
+                Color.WHITE,
+                9.5f,
+                Fonts.LEGACYICON
+            )
         }
     }
 

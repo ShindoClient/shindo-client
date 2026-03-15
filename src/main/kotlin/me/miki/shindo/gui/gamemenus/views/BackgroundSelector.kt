@@ -30,7 +30,7 @@ class BackgroundSelector(parent: MenuManager) : ShindoScreen(parent, "Select Bac
         val sr = ScaledResolution(mc)
         val instance: Shindo = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
-        nvg.setupAndDraw(Runnable{ drawNanoVG(mouseX, mouseY, sr, instance, nvg) })
+        nvg.setupAndDraw(Runnable { drawNanoVG(mouseX, mouseY, sr, instance, nvg) })
     }
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
@@ -120,7 +120,14 @@ class BackgroundSelector(parent: MenuManager) : ShindoScreen(parent, "Select Bac
                         )
                     ) 1.0f else 0.0f, 16
                 )
-                nvg.drawRoundedImage(cusBackground.getImage(), acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
+                nvg.drawRoundedImage(
+                    cusBackground.getImage(),
+                    acX + 11f + offsetX,
+                    acY + 35f + offsetY,
+                    102.5f,
+                    57.5f,
+                    6f
+                )
                 nvg.drawText(
                     LegacyIcon.TRASH,
                     acX + offsetX + 100f,

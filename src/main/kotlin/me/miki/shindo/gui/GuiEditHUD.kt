@@ -11,10 +11,10 @@ import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.GuiScreen

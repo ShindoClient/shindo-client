@@ -1,7 +1,7 @@
 package me.miki.shindo.management.color
 
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
 enum class Theme(
@@ -19,8 +19,22 @@ enum class Theme(
     DARK_PURPLE(4, "Dark Purple", Color(44, 14, 72), Color(53, 24, 90), Color(234, 226, 252), Color(194, 186, 212)),
     SEA(5, "Sea", Color(203, 224, 255), Color(190, 216, 238), Color(32, 32, 32), Color(106, 106, 106)),
     SAKURA(6, "Sakura", Color(255, 191, 178), Color(255, 223, 226), Color(35, 35, 35), Color(80, 80, 80)),
-    CATPPUCCIN_MOCHA(7, "Catppuccin Mocha", Color(49, 50, 68), Color(30, 30, 46), Color(205, 214, 244), Color(245, 194, 231)),
-    CATPPUCCIN_LATTE(8, "Catppuccin Latte", Color(230, 233, 239), Color(239, 241, 245), Color(76, 79, 105), Color(140, 143, 161)),
+    CATPPUCCIN_MOCHA(
+        7,
+        "Catppuccin Mocha",
+        Color(49, 50, 68),
+        Color(30, 30, 46),
+        Color(205, 214, 244),
+        Color(245, 194, 231)
+    ),
+    CATPPUCCIN_LATTE(
+        8,
+        "Catppuccin Latte",
+        Color(230, 233, 239),
+        Color(239, 241, 245),
+        Color(76, 79, 105),
+        Color(140, 143, 161)
+    ),
     BIRD(9, "Twoot twoot", Color(25, 40, 52), Color(20, 32, 43), Color(255, 255, 255), Color(136, 153, 171)),
     CALIFORNIA(10, "California", Color(22, 22, 25), Color(0, 0, 0), Color(230, 230, 230), Color(130, 130, 130)),
     LAVENDER(11, "Lavender", Color(228, 229, 241), Color(250, 250, 250), Color(72, 75, 105), Color(147, 148, 165)),

@@ -1,7 +1,7 @@
 package me.miki.shindo.management.color
 
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
 class AccentColor(

@@ -10,7 +10,7 @@ import me.miki.shindo.ui.comp.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 
 class PerformanceScene(parent: SettingsCategory) :
-        SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
+    SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
 
     private lateinit var container: CompScrollableContainer
     private lateinit var textureOptimizationToggle: CompToggleButtonWithRestart
@@ -20,25 +20,25 @@ class PerformanceScene(parent: SettingsCategory) :
         val settingsMod = InternalSettingsMod.instance
 
         textureOptimizationToggle = CompToggleButtonWithRestart(
-                settingsMod.getTextureOptimizationSetting()
-                        ?: throw IllegalStateException("Texture optimization setting missing"),
-                requiresRestart = true
+            settingsMod.getTextureOptimizationSetting()
+                ?: throw IllegalStateException("Texture optimization setting missing"),
+            requiresRestart = true
         )
 
         container = CompScrollableContainer()
-                .setThemeScrollbarOnly(true)
+            .setThemeScrollbarOnly(true)
         settingCards.clear()
         settingCards.add(
-                CompSettingButton(
-                        0f,
-                        { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION.getText() },
-                        { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION_DESCRIPTION.getText() })
-                        .trailing(textureOptimizationToggle)
-                        .onClick {
-                            val setting = textureOptimizationToggle.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                            textureOptimizationToggle.setShowWarning(true)
-                        }
+            CompSettingButton(
+                0f,
+                { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION.getText() },
+                { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION_DESCRIPTION.getText() })
+                .trailing(textureOptimizationToggle)
+                .onClick {
+                    val setting = textureOptimizationToggle.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                    textureOptimizationToggle.setShowWarning(true)
+                }
         )
     }
 
@@ -60,7 +60,12 @@ class PerformanceScene(parent: SettingsCategory) :
         val cardCount = settingCards.size
         val totalContentHeight = padding * 2f + cardCount * cardHeight + kotlin.math.max(0, cardCount - 1) * cardSpacing
 
-        container.render(mouseX, mouseY, partialTicks, totalContentHeight) { mouseXInner, mouseYInner, partialInner, scrollValue ->
+        container.render(
+            mouseX,
+            mouseY,
+            partialTicks,
+            totalContentHeight
+        ) { mouseXInner, mouseYInner, partialInner, scrollValue ->
             var currentY = baseY + padding + scrollValue
             val cardWidth = baseWidth - 28f
 

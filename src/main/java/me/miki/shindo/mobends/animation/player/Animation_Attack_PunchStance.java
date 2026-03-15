@@ -5,7 +5,8 @@ import me.miki.shindo.mobends.client.model.entity.ModelBendsPlayer;
 import me.miki.shindo.mobends.data.Data_Player;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class Animation_Attack_PunchStance {
+public enum Animation_Attack_PunchStance {
+    ;
 
     public static void animate(EntityPlayer player, ModelBendsPlayer model, Data_Player data) {
         if (!(data.motion.x == 0 & data.motion.z == 0)) {

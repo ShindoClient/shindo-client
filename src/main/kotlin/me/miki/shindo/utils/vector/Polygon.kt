@@ -1,4 +1,5 @@
 package me.miki.shindo.utils.vector
+
 class Polygon(
     vertices: Array<Vertex>,
     u1: Float,

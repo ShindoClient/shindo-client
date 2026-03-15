@@ -1,4 +1,5 @@
 package me.miki.shindo.management.music.model
+
 internal data class CachedRomanization(
     val romanized: String,
     val timestamp: Long = System.currentTimeMillis()

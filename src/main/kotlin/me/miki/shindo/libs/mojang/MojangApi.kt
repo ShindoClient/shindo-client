@@ -9,6 +9,7 @@ import me.miki.shindo.utils.network.UserAgents
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
+
 object MojangApi {
 
     private const val NAME_TO_UUID_URL = "https://api.mojang.com/users/profiles/minecraft/"
@@ -55,6 +56,7 @@ object MojangApi {
             throw MojangApiException("Failed to get UUID: ${e.message}", e)
         }
     }
+
     fun uuidToName(uuid: UUID): String {
 
         uuidToNameCache[uuid]?.let { return it }
@@ -83,6 +85,7 @@ object MojangApi {
             throw MojangApiException("Failed to get name: ${e.message}", e)
         }
     }
+
     private fun formatUUID(uuidWithoutDashes: String): UUID {
         return if (uuidWithoutDashes.length == 32) {
             UUID.fromString(
@@ -96,10 +99,12 @@ object MojangApi {
             UUID.fromString(uuidWithoutDashes)
         }
     }
+
     fun clearCache() {
         nameToUuidCache.clear()
         uuidToNameCache.clear()
     }
+
     data class NameUuidData(
         val name: String,
         val uuid: UUID

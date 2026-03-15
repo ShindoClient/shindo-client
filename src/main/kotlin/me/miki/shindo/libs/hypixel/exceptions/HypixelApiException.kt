@@ -1,4 +1,5 @@
 package me.miki.shindo.libs.hypixel.exceptions
+
 class HypixelApiException(message: String, cause: Throwable? = null) : Exception(message, cause) {
 
     companion object {

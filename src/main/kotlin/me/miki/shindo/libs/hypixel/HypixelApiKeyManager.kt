@@ -4,6 +4,7 @@ import me.miki.shindo.libs.hypixel.client.HypixelHttpClient
 import me.miki.shindo.logger.ShindoLogger
 import java.io.File
 import java.util.*
+
 object HypixelApiKeyManager {
 
     private const val API_KEY_FILE = "hypixel_api_key.properties"
@@ -21,6 +22,7 @@ object HypixelApiKeyManager {
             null
         }
     }
+
     fun setApiKey(key: String?) {
         if (key.isNullOrBlank()) {
             HypixelHttpClient.setApiKey(null)
@@ -41,9 +43,11 @@ object HypixelApiKeyManager {
             ShindoLogger.error("[HypixelAPI] Failed to save API key", e)
         }
     }
+
     fun hasApiKey(): Boolean {
         return !getApiKey().isNullOrBlank()
     }
+
     fun initialize() {
         val key = getApiKey()
         if (key != null) {
@@ -53,6 +57,7 @@ object HypixelApiKeyManager {
             ShindoLogger.info("[HypixelAPI] No API key found, some features may be limited")
         }
     }
+
     fun validateApiKey(key: String?): Boolean {
         if (key.isNullOrBlank()) return false
 

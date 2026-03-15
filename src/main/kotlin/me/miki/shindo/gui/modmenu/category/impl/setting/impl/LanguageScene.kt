@@ -15,13 +15,13 @@ import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
-import java.util.Locale
+import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
 class LanguageScene(parent: SettingsCategory) :
-        SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
+    SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
 
     private lateinit var container: CompScrollableContainer
     private val languages = Language.values()
@@ -29,8 +29,8 @@ class LanguageScene(parent: SettingsCategory) :
 
     override fun initGui() {
         container = CompScrollableContainer()
-                .setScrollbarGutter(14f)
-                .setThemeScrollbarOnly(true)
+            .setScrollbarGutter(14f)
+            .setThemeScrollbarOnly(true)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -55,7 +55,12 @@ class LanguageScene(parent: SettingsCategory) :
         val totalContentHeight = calculateTotalContentHeight(estimatedGrid)
 
         languageCards.clear()
-        container.renderWithViewport(mouseX, mouseY, partialTicks, totalContentHeight) { innerMouseX, innerMouseY, _, scrollValue, viewport ->
+        container.renderWithViewport(
+            mouseX,
+            mouseY,
+            partialTicks,
+            totalContentHeight
+        ) { innerMouseX, innerMouseY, _, scrollValue, viewport ->
             val contentX = viewport.x + OUTER_PADDING
             val contentY = viewport.y + OUTER_PADDING
             val contentWidth = max(0f, viewport.width - OUTER_PADDING * 2f)
@@ -70,22 +75,23 @@ class LanguageScene(parent: SettingsCategory) :
                 val column = index % grid.columns
                 val cardX = contentX + column * (grid.cardWidth + ROW_GAP)
                 val cardY = cardsStartY + row * (grid.cardHeight + ROW_GAP) + scrollValue
-                val hovered = MouseUtils.isInside(innerMouseX, innerMouseY, cardX, cardY, grid.cardWidth, grid.cardHeight)
+                val hovered =
+                    MouseUtils.isInside(innerMouseX, innerMouseY, cardX, cardY, grid.cardWidth, grid.cardHeight)
                 val selected = language == selectedLanguage
 
                 language.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 16.0)
 
                 drawLanguageCard(
-                        nvg,
-                        palette,
-                        accent,
-                        language,
-                        cardX,
-                        cardY,
-                        grid.cardWidth,
-                        grid.cardHeight,
-                        hovered,
-                        selected
+                    nvg,
+                    palette,
+                    accent,
+                    language,
+                    cardX,
+                    cardY,
+                    grid.cardWidth,
+                    grid.cardHeight,
+                    hovered,
+                    selected
                 )
 
                 languageCards.add(LanguageCard(language, cardX, cardY, grid.cardWidth, grid.cardHeight))
@@ -131,30 +137,37 @@ class LanguageScene(parent: SettingsCategory) :
     }
 
     private fun drawLanguageCard(
-            nvg: NanoVGManager,
-            palette: ColorPalette,
-            accent: AccentColor,
-            language: Language,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float,
-            hovered: Boolean,
-            selected: Boolean
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accent: AccentColor,
+        language: Language,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        hovered: Boolean,
+        selected: Boolean
     ) {
         val progress = language.getAnimation().value
         val baseAlpha = if (hovered || selected) 210 else 178
         val overlayAlpha = 24 + (progress * 44f).toInt()
 
-        nvg.drawRoundedRect(x, y, width, height, CARD_RADIUS, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), baseAlpha))
+        nvg.drawRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            CARD_RADIUS,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), baseAlpha)
+        )
         nvg.drawGradientRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                CARD_RADIUS,
-                ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
-                ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
+            x,
+            y,
+            width,
+            height,
+            CARD_RADIUS,
+            ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
+            ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
         )
 
         val borderColor = if (selected) {
@@ -168,12 +181,12 @@ class LanguageScene(parent: SettingsCategory) :
 
         if (selected) {
             nvg.drawRoundedRect(
-                    x + 6f,
-                    y + 8f,
-                    3f,
-                    max(12f, height - 16f),
-                    2f,
-                    ColorUtils.applyAlpha(accent.getInterpolateColor(), (110 + progress * 120f).toInt())
+                x + 6f,
+                y + 8f,
+                3f,
+                max(12f, height - 16f),
+                2f,
+                ColorUtils.applyAlpha(accent.getInterpolateColor(), (110 + progress * 120f).toInt())
             )
         }
 
@@ -183,12 +196,12 @@ class LanguageScene(parent: SettingsCategory) :
         val mediaY = y + (height - mediaHeight) / 2f
 
         nvg.drawRoundedRect(
-                mediaX,
-                mediaY,
-                mediaWidth,
-                mediaHeight,
-                7f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 188)
+            mediaX,
+            mediaY,
+            mediaWidth,
+            mediaHeight,
+            7f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 188)
         )
         drawFlag(nvg, language.getFlag(), mediaX + 4f, mediaY + 4f, mediaWidth - 8f, mediaHeight - 8f)
 
@@ -205,51 +218,61 @@ class LanguageScene(parent: SettingsCategory) :
         val codeY = y + 11f
 
         nvg.drawRoundedRect(
-                codeX,
-                codeY,
-                codeWidth,
-                13f,
-                6f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198)
+            codeX,
+            codeY,
+            codeWidth,
+            13f,
+            6f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198)
         )
-        nvg.drawCenteredText(localeCode, codeX + codeWidth / 2f, (codeY +  8f) - codeHeight / 2f , palette.getFontColor(ColorType.DARK), 7.4f, Fonts.MEDIUM)
+        nvg.drawCenteredText(
+            localeCode,
+            codeX + codeWidth / 2f,
+            (codeY + 8f) - codeHeight / 2f,
+            palette.getFontColor(ColorType.DARK),
+            7.4f,
+            Fonts.MEDIUM
+        )
 
         if (selected || hovered) {
             nvg.drawText(
-                    LegacyIcon.CHECK,
-                    x + width - 20f,
-                    y + height - 18f,
-                    ColorUtils.applyAlpha(accent.getInterpolateColor(), if (selected) (80 + progress * 175f).toInt() else 130),
-                    12f,
-                    Fonts.LEGACYICON
+                LegacyIcon.CHECK,
+                x + width - 20f,
+                y + height - 18f,
+                ColorUtils.applyAlpha(
+                    accent.getInterpolateColor(),
+                    if (selected) (80 + progress * 175f).toInt() else 130
+                ),
+                12f,
+                Fonts.LEGACYICON
             )
         }
     }
 
     private fun drawFlag(
-            nvg: NanoVGManager,
-            flag: ResourceLocation,
-            x: Float,
-            y: Float,
-            width: Float,
-            height: Float
+        nvg: NanoVGManager,
+        flag: ResourceLocation,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float
     ) {
         nvg.drawRoundedImage(flag, x, y, width, height, 5f)
     }
 
     private data class GridMetrics(
-            val columns: Int,
-            val cardWidth: Float,
-            val cardHeight: Float,
-            val rows: Int
+        val columns: Int,
+        val cardWidth: Float,
+        val cardHeight: Float,
+        val rows: Int
     )
 
     private data class LanguageCard(
-            val language: Language,
-            val x: Float,
-            val y: Float,
-            val width: Float,
-            val height: Float
+        val language: Language,
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float
     )
 
     companion object {

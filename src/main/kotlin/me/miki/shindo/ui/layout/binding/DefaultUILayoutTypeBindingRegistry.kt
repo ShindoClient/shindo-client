@@ -4,7 +4,7 @@ import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.ui.layout.interfaces.UILayoutTypeBinding
 import me.miki.shindo.ui.layout.interfaces.UILayoutTypeBindingRegistry
-import java.util.EnumMap
+import java.util.*
 
 class DefaultUILayoutTypeBindingRegistry(
     bindings: List<UILayoutTypeBinding>

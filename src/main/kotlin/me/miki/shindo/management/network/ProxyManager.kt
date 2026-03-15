@@ -1,7 +1,7 @@
 package me.miki.shindo.management.network
 
-import me.miki.shindo.management.network.proxy.CustomProxy
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.network.proxy.CustomProxy
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**

@@ -2,7 +2,6 @@ package me.miki.shindo.ui.layout.preset
 
 import me.miki.shindo.ui.layout.interfaces.UILayoutPresetRepository
 import me.miki.shindo.ui.layout.model.UILayoutPreset
-import java.util.LinkedHashMap
 
 /**
  * In-memory repository with built-in presets and custom extension support.

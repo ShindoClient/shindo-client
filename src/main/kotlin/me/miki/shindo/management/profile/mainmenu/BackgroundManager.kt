@@ -31,9 +31,27 @@ class BackgroundManager {
         if (!bgCacheDir.exists()) fileManager.createDir(bgCacheDir)
         if (!dataJson.exists()) fileManager.createFile(dataJson)
 
-        backgrounds.add(DefaultBackground(0, TranslateText.BUTTERFLY, ResourceLocation("shindo/mainmenu/background-butterfly.png")))
-        backgrounds.add(DefaultBackground(1, TranslateText.NIGHT, ResourceLocation("shindo/mainmenu/background-night.png")))
-        backgrounds.add(DefaultBackground(2, TranslateText.DOLPHIN, ResourceLocation("shindo/mainmenu/background-dolphin.png")))
+        backgrounds.add(
+            DefaultBackground(
+                0,
+                TranslateText.BUTTERFLY,
+                ResourceLocation("shindo/mainmenu/background-butterfly.png")
+            )
+        )
+        backgrounds.add(
+            DefaultBackground(
+                1,
+                TranslateText.NIGHT,
+                ResourceLocation("shindo/mainmenu/background-night.png")
+            )
+        )
+        backgrounds.add(
+            DefaultBackground(
+                2,
+                TranslateText.DOLPHIN,
+                ResourceLocation("shindo/mainmenu/background-dolphin.png")
+            )
+        )
         backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
         backgrounds.add(DefaultBackground(999, TranslateText.ADD, null))
 
@@ -127,6 +145,9 @@ class BackgroundManager {
     }
 
     fun getCurrentBackground(): Background? = currentBackground
-    fun setCurrentBackground(bg: Background?) { currentBackground = bg }
+    fun setCurrentBackground(bg: Background?) {
+        currentBackground = bg
+    }
+
     fun getBackgrounds(): CopyOnWriteArrayList<Background> = backgrounds
 }

@@ -155,7 +155,8 @@ class CompToggleButtonWithRestart : CompControlTemplate {
         if (warningVisible) {
             val warningSize = 11f
             val warningX = x - 14f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
-            val warningY = y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
+            val warningY =
+                y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
             val warningAlpha = (warningAnimation.value * 255).toInt().coerceIn(0, 255)
             val warningColor = ColorUtils.applyAlpha(Color(255, 189, 64), warningAlpha)
 
@@ -196,8 +197,8 @@ class CompToggleButtonWithRestart : CompControlTemplate {
     override fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
         val warningWidth = if (requiresRestart && warningAnimation.value > 0.01f) 18f else 0f
         return mouseX >= getX() - warningWidth &&
-            mouseX <= getX() + getWidth() &&
-            mouseY >= getY() &&
-            mouseY <= getY() + getHeight()
+                mouseX <= getX() + getWidth() &&
+                mouseY >= getY() &&
+                mouseY <= getY() + getHeight()
     }
 }

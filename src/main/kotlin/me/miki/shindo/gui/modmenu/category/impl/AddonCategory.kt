@@ -3,21 +3,18 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
+import me.miki.shindo.gui.modmenu.category.impl.addon.AddonCategoryRenderer
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListCardLayoutSpec
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageRenderContext
-import me.miki.shindo.gui.modmenu.category.impl.addon.AddonCategoryRenderer
 import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuListCardLayout
 import me.miki.shindo.gui.modmenu.render.ModMenuSettingsOverlayRenderer
 import me.miki.shindo.gui.modmenu.style.ModMenuMotion
-import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
-import me.miki.shindo.ui.comp.chips.FilterChip
-import me.miki.shindo.ui.comp.layout.SettingsPanel
-import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.addons.AddonType
+import me.miki.shindo.management.addons.FailedAddonEntry
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -28,10 +25,13 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.management.addons.FailedAddonEntry
+import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
+import me.miki.shindo.ui.comp.chips.FilterChip
+import me.miki.shindo.ui.comp.layout.SettingsPanel
+import me.miki.shindo.ui.comp.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.utils.TextUtils
-import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
@@ -191,11 +191,15 @@ class AddonCategory(parent: GuiModMenu) :
                         getY().toFloat(),
                         getWidth().toFloat(),
                         getHeight().toFloat()
-                ) && mouseButton == 0
+                    ) && mouseButton == 0
                 ) {
                     val addon = card.addon
 
-                    if (!card.isFailed && addon != null && controlLayout.isSettingsHit(mouseX, mouseY) && detailTransition.isListInteractive()) {
+                    if (!card.isFailed && addon != null && controlLayout.isSettingsHit(
+                            mouseX,
+                            mouseY
+                        ) && detailTransition.isListInteractive()
+                    ) {
                         val settings: ArrayList<Setting>? = addonManager.getSettingByAddon(addon)
                         if (settings != null) {
                             settingsPanel.buildEntries(settings)
@@ -207,7 +211,11 @@ class AddonCategory(parent: GuiModMenu) :
                         continue
                     }
 
-                    if (!card.isFailed && addon != null && addon.showToggle && controlLayout.isToggleHit(mouseX, mouseY)) {
+                    if (!card.isFailed && addon != null && addon.showToggle && controlLayout.isToggleHit(
+                            mouseX,
+                            mouseY
+                        )
+                    ) {
                         addon.toggle()
                     }
                     continue
@@ -401,7 +409,10 @@ class AddonCategory(parent: GuiModMenu) :
 
             val settingsHover = hasSettings && hitboxLayout.isSettingsHit(context.mouseX, context.mouseY)
             if (!card.isFailed && addon != null) {
-                addon.settingsHoverAnimation.setAnimation(if (settingsHover) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
+                addon.settingsHoverAnimation.setAnimation(
+                    if (settingsHover) 1.0f else 0.0f,
+                    ModMenuMotion.CARD_HOVER_SPEED
+                )
             }
             val settingsHoverAnimation = if (card.isFailed || addon == null) 0f else addon.settingsHoverAnimation.value
 

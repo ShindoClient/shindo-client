@@ -79,6 +79,7 @@ object FileUtils {
 
     @JvmStatic
     fun isImageFile(file: File): Boolean = isImageFile(file.name)
+
     @JvmStatic
     fun openFolderAtPath(folder: File) {
         val absolutePath = folder.absolutePath

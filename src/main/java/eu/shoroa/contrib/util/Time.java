@@ -1,6 +1,7 @@
 package eu.shoroa.contrib.util;
 
-public strictfp class Time {
+public strictfp enum Time {
+    ;
     private static float delta;
 
     public static float getDelta() {

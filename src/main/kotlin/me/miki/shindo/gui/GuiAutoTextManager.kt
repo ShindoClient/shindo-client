@@ -75,7 +75,14 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
     private fun drawContent(nvg: NanoVGManager, mouseX: Int, mouseY: Int, partialTicks: Float) {
         nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
         nvg.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f)
-        nvg.drawRoundedRect(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 10f, Color(28, 28, 28, 225))
+        nvg.drawRoundedRect(
+            x.toFloat(),
+            y.toFloat(),
+            menuWidth.toFloat(),
+            menuHeight.toFloat(),
+            10f,
+            Color(28, 28, 28, 225)
+        )
         nvg.drawRoundedRect(x + 1f, y + 1f, menuWidth - 2f, menuHeight - 2f, 9f, Color(40, 40, 40, 220))
 
         nvg.drawText(TranslateText.AUTO_TEXT.getText(), x + 10f, y + 10f, Color.WHITE, 13f, Fonts.MEDIUM)
@@ -83,7 +90,14 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
         val addX = x + menuWidth - 30f
         val addY = y + 7f
         val addHovered = MouseUtils.isInside(mouseX, mouseY, addX, addY, 20f, 20f)
-        nvg.drawRoundedRect(addX, addY, 20f, 20f, 5f, if (addHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45))
+        nvg.drawRoundedRect(
+            addX,
+            addY,
+            20f,
+            20f,
+            5f,
+            if (addHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45)
+        )
         nvg.drawCenteredText(LegacyIcon.PLUS, addX + 10f, addY + 6.5f, Color.WHITE, 9.5f, Fonts.LEGACYICON)
 
         val listX = x + 8f
@@ -176,8 +190,22 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoS
         val actionHovered = MouseUtils.isInside(mouseX, mouseY, actionX, actionY, actionSize, actionSize)
         val deleteHovered = MouseUtils.isInside(mouseX, mouseY, deleteX, deleteY, deleteSize, deleteSize)
 
-        nvg.drawRoundedRect(actionX, actionY, actionSize, actionSize, 4f, if (actionHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45))
-        nvg.drawRoundedRect(deleteX, deleteY, deleteSize, deleteSize, 4f, if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70))
+        nvg.drawRoundedRect(
+            actionX,
+            actionY,
+            actionSize,
+            actionSize,
+            4f,
+            if (actionHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45)
+        )
+        nvg.drawRoundedRect(
+            deleteX,
+            deleteY,
+            deleteSize,
+            deleteSize,
+            4f,
+            if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70)
+        )
         nvg.drawCenteredText(
             if (card.editing) LegacyIcon.CHECK else LegacyIcon.PENCIL,
             actionX + actionSize / 2f,

@@ -22,7 +22,7 @@ import me.miki.shindo.utils.mouse.Scroll
 import kotlin.math.max
 
 class AppearanceScene(parent: SettingsCategory) :
-        SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
+    SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
 
     private val contentScroll = Scroll()
 
@@ -61,7 +61,7 @@ class AppearanceScene(parent: SettingsCategory) :
         }
 
         accentColorSelector = CompAccentColorSelector(
-                accentColors = colorManager.getColors()
+            accentColors = colorManager.getColors()
         ).apply {
             setSelectedColor(colorManager.getCurrentColor())
             setOnColorSelected { accent ->
@@ -70,45 +70,45 @@ class AppearanceScene(parent: SettingsCategory) :
         }
 
         themeTitle = CompLabel(0f, 0f, TranslateText.THEME.getText())
-                .setFontSize(12.5f)
+            .setFontSize(12.5f)
 
         accentTitle = CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.getText())
-                .setFontSize(12.5f)
+            .setFontSize(12.5f)
 
         settingCards.clear()
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.HUD_THEME.getText() }, { TranslateText.STYLE.getText() })
-                        .trailing(modTheme)
+            CompSettingButton(0f, { TranslateText.HUD_THEME.getText() }, { TranslateText.STYLE.getText() })
+                .trailing(modTheme)
         )
 
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.UI_BLUR.getText() }, { TranslateText.SMOOTH.getText() })
-                        .trailing(uiBlur)
-                        .onClickAction {
-                            val setting = uiBlur.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                        }
+            CompSettingButton(0f, { TranslateText.UI_BLUR.getText() }, { TranslateText.SMOOTH.getText() })
+                .trailing(uiBlur)
+                .onClickAction {
+                    val setting = uiBlur.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                }
         )
 
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.BLUR_STRENGTH.getText() }, { TranslateText.SMOOTH.getText() })
-                        .trailing(blurStrength)
-                        .onClickAction {
-                            if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
-                                val setting = blurStrength.getSetting()
-                                setting.setValue(setting.getValue())
-                            }
-                        }
+            CompSettingButton(0f, { TranslateText.BLUR_STRENGTH.getText() }, { TranslateText.SMOOTH.getText() })
+                .trailing(blurStrength)
+                .onClickAction {
+                    if (InternalSettingsMod.instance.getBlurSetting()?.isToggled() == true) {
+                        val setting = blurStrength.getSetting()
+                        setting.setValue(setting.getValue())
+                    }
+                }
         )
 
         settingCards.add(
-                CompSettingButton(0f, { TranslateText.ANIMATION.getText() }, { TranslateText.SMOOTH.getText() })
-                        .trailing(clientAnimations)
-                        .onClickAction {
-                            val setting = clientAnimations.getSetting()
-                            setting.setToggled(!setting.isToggled())
-                            GlobalAnimationSettings.enabled = setting.isToggled()
-                        }
+            CompSettingButton(0f, { TranslateText.ANIMATION.getText() }, { TranslateText.SMOOTH.getText() })
+                .trailing(clientAnimations)
+                .onClickAction {
+                    val setting = clientAnimations.getSetting()
+                    setting.setToggled(!setting.isToggled())
+                    GlobalAnimationSettings.enabled = setting.isToggled()
+                }
         )
 
         contentScroll.resetAll()
@@ -137,20 +137,20 @@ class AppearanceScene(parent: SettingsCategory) :
         val containerRadius = 12f
         nvg.drawShadow(baseX, baseY, baseWidth, baseHeight, containerRadius, 7)
         nvg.drawRoundedRect(
-                baseX,
-                baseY,
-                baseWidth,
-                baseHeight,
-                containerRadius,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+            baseX,
+            baseY,
+            baseWidth,
+            baseHeight,
+            containerRadius,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
         )
         nvg.drawRoundedRect(
-                baseX + 1f,
-                baseY + 1f,
-                baseWidth - 2f,
-                baseHeight - 2f,
-                containerRadius - 1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            baseX + 1f,
+            baseY + 1f,
+            baseWidth - 2f,
+            baseHeight - 2f,
+            containerRadius - 1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
         )
 
         val top = baseY + OUTER_PADDING
@@ -163,26 +163,27 @@ class AppearanceScene(parent: SettingsCategory) :
         cardY = accentSectionY + accentHeight + 10f
         cardWidth = sectionWidth
 
-        val contentHeight = OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f + ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING * 2
+        val contentHeight =
+            OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f + ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING * 2
         contentScroll.maxScroll = max(0f, contentHeight - baseHeight)
 
         if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight) &&
-                !MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        baseX + OUTER_PADDING,
-                        themeSectionY + contentScroll.getValue(),
-                        sectionWidth,
-                        themeHeight
-                ) &&
-                !MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        baseX + OUTER_PADDING,
-                        accentSectionY + contentScroll.getValue(),
-                        sectionWidth,
-                        accentHeight
-                )
+            !MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                baseX + OUTER_PADDING,
+                themeSectionY + contentScroll.getValue(),
+                sectionWidth,
+                themeHeight
+            ) &&
+            !MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                baseX + OUTER_PADDING,
+                accentSectionY + contentScroll.getValue(),
+                sectionWidth,
+                accentHeight
+            )
         ) {
             contentScroll.onScroll()
         }
@@ -195,11 +196,11 @@ class AppearanceScene(parent: SettingsCategory) :
         val controlsScreenY = cardY + verticalScroll
 
         ModMenuClipCoordinator.withClip(
-                nvg = nvg,
-                x = baseX,
-                y = baseY,
-                width = baseWidth,
-                height = baseHeight
+            nvg = nvg,
+            x = baseX,
+            y = baseY,
+            width = baseWidth,
+            height = baseHeight
         ) {
             themeTitle.setX(baseX + OUTER_PADDING)
             themeTitle.setY(themeScreenY - 26f)
@@ -219,16 +220,16 @@ class AppearanceScene(parent: SettingsCategory) :
         }
 
         nvg.drawScrollbar(
-                baseX,
-                baseY,
-                baseWidth,
-                baseHeight,
-                contentHeight,
-                verticalScroll,
-                palette,
-                currentAccent,
-                30f,
-                false
+            baseX,
+            baseY,
+            baseWidth,
+            baseHeight,
+            contentHeight,
+            verticalScroll,
+            palette,
+            currentAccent,
+            30f,
+            false
         )
     }
 

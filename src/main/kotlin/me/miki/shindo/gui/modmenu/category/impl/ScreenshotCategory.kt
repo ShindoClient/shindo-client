@@ -13,8 +13,8 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.screenshot.Screenshot
 import me.miki.shindo.management.screenshot.ScreenshotManager
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard

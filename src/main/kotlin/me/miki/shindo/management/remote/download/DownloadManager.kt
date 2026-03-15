@@ -1,6 +1,5 @@
 package me.miki.shindo.management.remote.download
 
-import me.miki.shindo.Shindo
 import me.miki.shindo.management.remote.download.file.DownloadFile
 import me.miki.shindo.management.remote.download.file.DownloadZipFile
 import me.miki.shindo.utils.Multithreading
@@ -31,6 +30,7 @@ class DownloadManager {
                         outputFile.delete()
                     }
                 }
+
                 else -> {
                     val outputFile = File(df.outputDir, df.fileName)
                     if (outputFile.length() != df.size) HttpUtils.downloadFile(df.url, outputFile)
@@ -50,6 +50,7 @@ class DownloadManager {
                         return
                     }
                 }
+
                 else -> {
                     val outputFile = File(df.outputDir, df.fileName)
                     if (outputFile.length() != df.size) {

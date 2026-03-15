@@ -8,7 +8,7 @@ import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.utils.network.HttpUtils
 import net.minecraft.client.Minecraft
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -46,12 +46,14 @@ class BroadcastManager {
                 val severity = payload.get("severity")?.asString ?: "info"
                 enqueue(title, message, mapSeverity(severity))
             }
+
             MessageType.BROADCAST_TOKEN_OK -> {
                 val token = payload.get("token")?.asString ?: return
                 val expires = payload.get("expiresIn")?.asLong ?: 0L
                 storeBroadcastToken(token, expires)
             }
-            else -> { }
+
+            else -> {}
         }
     }
 

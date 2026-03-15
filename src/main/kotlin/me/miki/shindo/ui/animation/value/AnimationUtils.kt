@@ -13,9 +13,11 @@ object AnimationUtils {
             diff > speed -> {
                 currentVar = if (currentVar - add > target) (currentVar - add).toFloat() else target
             }
+
             diff < -speed -> {
                 currentVar = if (currentVar + add < target) (currentVar + add).toFloat() else target
             }
+
             else -> {
                 if (abs(currentVar - target) < 0.03f) currentVar = target
             }

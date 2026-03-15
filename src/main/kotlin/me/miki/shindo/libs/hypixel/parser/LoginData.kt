@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import me.miki.shindo.libs.hypixel.data.HypixelPlayerData
 import java.text.SimpleDateFormat
 import java.util.*
+
 class LoginData(private val playerData: HypixelPlayerData) {
 
     private val data: JsonObject = playerData.getPlayerData()
@@ -47,9 +48,11 @@ class LoginData(private val playerData: HypixelPlayerData) {
             else -> displayName
         }
     }
+
     fun getDisplayName(): String {
         return playerData.getDisplayName() ?: "Unknown"
     }
+
     fun getRank(): String {
         val rank = data.get("rank")?.asString
         if (rank != null && rank != "NORMAL") return rank
@@ -62,9 +65,11 @@ class LoginData(private val playerData: HypixelPlayerData) {
 
         return "NORMAL"
     }
+
     fun getPlusColor(): String? {
         return data.get("rankPlusColor")?.asString
     }
+
     fun isOnline(): Boolean = playerData.isOnline()
     fun isHidingFromAPI(): Boolean = playerData.isHidingFromAPI()
     fun getLastLogout(): Long = playerData.getLastLogout()
@@ -78,6 +83,7 @@ class LoginData(private val playerData: HypixelPlayerData) {
             "Last logout"
         }
     }
+
     fun getLatestActivityTime(): Long {
         val lastLogin = playerData.getLastLogin()
         val lastLogout = playerData.getLastLogout()
@@ -88,6 +94,7 @@ class LoginData(private val playerData: HypixelPlayerData) {
             lastLogout
         }
     }
+
     fun formatTimeSince(timestamp: Long): String {
         val diff = System.currentTimeMillis() - timestamp
         val days = diff / (24 * 3600 * 1000)
@@ -100,6 +107,7 @@ class LoginData(private val playerData: HypixelPlayerData) {
             else -> "${minutes}m"
         }
     }
+
     fun formatLocalTime(timestamp: Long): String {
         val date = Date(timestamp)
         val format = SimpleDateFormat("MM/dd/yyyy HH:mm")

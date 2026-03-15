@@ -16,11 +16,11 @@ import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer
-import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseInOutCirc
 import me.miki.shindo.ui.animation.screen.ScreenAnimation
+import me.miki.shindo.utils.Multithreading
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -45,8 +45,16 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        screenAnimation.wrap(Runnable { drawNanoVG(mouseX, mouseY, sr, instance, nvg) }, 0, 0, sr.scaledWidth, sr.scaledHeight, 2f - introAnimation.getValueFloat(),
-            introAnimation.getValueFloat().coerceAtMost(1f), false)
+        screenAnimation.wrap(
+            Runnable { drawNanoVG(mouseX, mouseY, sr, instance, nvg) },
+            0,
+            0,
+            sr.scaledWidth,
+            sr.scaledHeight,
+            2f - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f),
+            false
+        )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
@@ -70,9 +78,16 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         scroll.onScroll()
         scroll.onAnimation()
 
-        Blur.drawBlur(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f);
+        Blur.drawBlur(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f)
         nvg!!.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, panelColor)
-        nvg.drawCenteredText(TranslateText.SELECT_BACKGROUND.getText(), acX + (acWidth / 2f), acY + 8f, Color.WHITE, 14f, Fonts.SEMIBOLD)
+        nvg.drawCenteredText(
+            TranslateText.SELECT_BACKGROUND.getText(),
+            acX + (acWidth / 2f),
+            acY + 8f,
+            Color.WHITE,
+            14f,
+            Fonts.SEMIBOLD
+        )
 
         nvg.save()
         nvg.scissor(acX.toFloat(), acY + 25f, acWidth.toFloat(), acHeight - 25f)
@@ -86,7 +101,15 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             val itemHeight = 57.5f
 
             if (isSelected) {
-                nvg.drawGradientShadow(itemX - 1, itemY - 1, itemWidth + 2, itemHeight + 2, 7f, Color(255, 255, 255, 180), Color(255, 255, 255, 180))
+                nvg.drawGradientShadow(
+                    itemX - 1,
+                    itemY - 1,
+                    itemWidth + 2,
+                    itemHeight + 2,
+                    7f,
+                    Color(255, 255, 255, 180),
+                    Color(255, 255, 255, 180)
+                )
                 nvg.drawRoundedRect(itemX - 1, itemY - 1, itemWidth + 2, itemHeight + 2, 7f, Color(255, 255, 255, 180))
             }
 
@@ -97,7 +120,14 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             if (bg is DefaultBackground) {
                 if (bg.getId() == 999) {
                     nvg.drawRoundedRect(acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f, Color.BLACK)
-                    nvg.drawCenteredText(LegacyIcon.PLUS, acX + 10f + offsetX + (102.5f / 2), acY + 42.5f + offsetY, Color.WHITE, 26f, Fonts.LEGACYICON)
+                    nvg.drawCenteredText(
+                        LegacyIcon.PLUS,
+                        acX + 10f + offsetX + (102.5f / 2),
+                        acY + 42.5f + offsetY,
+                        Color.WHITE,
+                        26f,
+                        Fonts.LEGACYICON
+                    )
                 } else {
                     nvg.drawRoundedImage(bg.getImage()!!, acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
                 }
@@ -105,12 +135,27 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
             if (bg is CustomBackground) {
                 bg.getTrashAnimation().setAnimation(
-                    if (MouseUtils.isInside(mouseX, mouseY, acX + 11f + offsetX, acY + 35f + offsetY + scroll.getValue(), 102.5f, 57.5f)) 1.0f else 0.0f,
+                    if (MouseUtils.isInside(
+                            mouseX,
+                            mouseY,
+                            acX + 11f + offsetX,
+                            acY + 35f + offsetY + scroll.getValue(),
+                            102.5f,
+                            57.5f
+                        )
+                    ) 1.0f else 0.0f,
                     16
                 )
 
                 nvg.drawRoundedImage(bg.getImage(), acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
-                nvg.drawText(LegacyIcon.TRASH, acX + offsetX + 100f, acY + 38f + offsetY, palette.getMaterialRed((bg.getTrashAnimation().value * 255).toInt()), 10f, Fonts.LEGACYICON)
+                nvg.drawText(
+                    LegacyIcon.TRASH,
+                    acX + offsetX + 100f,
+                    acY + 38f + offsetY,
+                    palette.getMaterialRed((bg.getTrashAnimation().value * 255).toInt()),
+                    10f,
+                    Fonts.LEGACYICON
+                )
             }
 
             if (bg is ShaderBackground) {
@@ -124,8 +169,25 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 )
             }
 
-            nvg.drawRoundedRectVarying(acX + offsetX + 11f, acY + offsetY + 76.5f, 102.5f, 16f, 0f, 0f, 6f, 6f, controlColor)
-            nvg.drawCenteredText(bg.getName()!!, acX + offsetX + 11f + (102.5f / 2), acY + offsetY + 80f, Color.WHITE, 10f, Fonts.REGULAR)
+            nvg.drawRoundedRectVarying(
+                acX + offsetX + 11f,
+                acY + offsetY + 76.5f,
+                102.5f,
+                16f,
+                0f,
+                0f,
+                6f,
+                6f,
+                controlColor
+            )
+            nvg.drawCenteredText(
+                bg.getName()!!,
+                acX + offsetX + 11f + (102.5f / 2),
+                acY + offsetY + 80f,
+                Color.WHITE,
+                10f,
+                Fonts.REGULAR
+            )
 
             offsetX += 115
 
@@ -159,7 +221,8 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         var index = 1
 
         if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat())
-            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)) {
+            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)
+        ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
 
@@ -178,7 +241,10 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                                     FileUtils.copyFile(file, destFile)
                                     backgroundManager.addCustomBackground(destFile)
                                 } catch (e: IOException) {
-                                    ShindoLogger.error("An error occurred while copying the background file: " + file.name, e)
+                                    ShindoLogger.error(
+                                        "An error occurred while copying the background file: " + file.name,
+                                        e
+                                    )
                                 }
                             }
                         }
@@ -187,7 +253,15 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     }
                 }
 
-                if (bg is CustomBackground && MouseUtils.isInside(mouseX, mouseY, acX + offsetX + 98f, acY + 35.5f + offsetY, 14f, 14f)) {
+                if (bg is CustomBackground && MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        acX + offsetX + 98f,
+                        acY + 35.5f + offsetY,
+                        14f,
+                        14f
+                    )
+                ) {
                     if (backgroundManager.getCurrentBackground() == bg) {
                         backgroundManager.setCurrentBackground(backgroundManager.getBackgroundById(0))
                     }

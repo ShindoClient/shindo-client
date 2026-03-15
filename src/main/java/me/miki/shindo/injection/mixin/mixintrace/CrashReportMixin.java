@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CrashReport.class)
 abstract class CrashReportMixin {
-    @Shadow private StackTraceElement[] stacktrace;
+    @Shadow
+    private StackTraceElement[] stacktrace;
 
     @Inject(
             method = "getSectionsInStringBuilder",

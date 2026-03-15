@@ -1,8 +1,6 @@
 package me.miki.shindo.management.remote.changelog
 
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.utils.JsonUtils

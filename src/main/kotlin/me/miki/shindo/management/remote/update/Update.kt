@@ -15,7 +15,8 @@ class Update {
     fun check() {
         try {
             Multithreading.runAsync { checkUpdates() }
-        } catch (_: Exception) { }
+        } catch (_: Exception) {
+        }
     }
 
     fun checkForUpdates() {

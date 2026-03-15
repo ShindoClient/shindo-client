@@ -8,11 +8,9 @@ import org.lwjgl.system.MemoryUtil
 import java.awt.Color
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.Locale
-import java.util.HashMap
+import java.util.*
 
 class SkinPreviewRenderer {
 
@@ -52,7 +50,12 @@ class SkinPreviewRenderer {
         NanoVG.nvgSave(vg)
         NanoVG.nvgTranslate(vg, x, y)
         NanoVG.nvgScale(vg, scale, scale)
-        if (background != null && background.alpha > 0) drawBackground(vg, background, imageWidth.toFloat(), imageHeight.toFloat())
+        if (background != null && background.alpha > 0) drawBackground(
+            vg,
+            background,
+            imageWidth.toFloat(),
+            imageHeight.toFloat()
+        )
         val paint = NVGPaint.calloc()
         try {
             NanoVG.nvgBeginPath(vg)
@@ -137,7 +140,13 @@ class SkinPreviewRenderer {
     private fun drawBackground(vg: Long, color: Color, width: Float, height: Float) {
         val nvgColor = NVGColor.calloc()
         try {
-            NanoVG.nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
+            NanoVG.nvgRGBA(
+                color.red.toByte(),
+                color.green.toByte(),
+                color.blue.toByte(),
+                color.alpha.toByte(),
+                nvgColor
+            )
             NanoVG.nvgBeginPath(vg)
             NanoVG.nvgRoundedRect(vg, 0f, 0f, width, height, 6f)
             NanoVG.nvgFillColor(vg, nvgColor)
@@ -150,7 +159,13 @@ class SkinPreviewRenderer {
     private fun drawBorder(vg: Long, color: Color, width: Float, height: Float) {
         val nvgColor = NVGColor.calloc()
         try {
-            NanoVG.nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
+            NanoVG.nvgRGBA(
+                color.red.toByte(),
+                color.green.toByte(),
+                color.blue.toByte(),
+                color.alpha.toByte(),
+                nvgColor
+            )
             NanoVG.nvgBeginPath(vg)
             NanoVG.nvgRoundedRect(vg, 0f, 0f, width, height, 6f)
             NanoVG.nvgStrokeColor(vg, nvgColor)

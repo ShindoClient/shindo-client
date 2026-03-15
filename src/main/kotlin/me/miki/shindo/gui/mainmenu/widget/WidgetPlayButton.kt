@@ -9,7 +9,8 @@ import me.miki.shindo.types.Color
 import org.lwjgl.nanovg.NanoVG
 
 
-class WidgetPlayButton(text: TranslateText, x: Float, y: Float, width: Float, height: Float, onClick: Runnable) : WidgetButtonBase(x, y, width, height, onClick) {
+class WidgetPlayButton(text: TranslateText, x: Float, y: Float, width: Float, height: Float, onClick: Runnable) :
+    WidgetButtonBase(x, y, width, height, onClick) {
     private val text: TranslateText
     private val COLOR: Color = Color(0x78E0E0E0)
 

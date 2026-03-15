@@ -12,7 +12,6 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.types.CircQueue
 import me.miki.shindo.types.Rect
 import me.miki.shindo.types.Size
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.MathUtils
 import net.minecraft.client.Minecraft
@@ -806,7 +805,7 @@ class NanoVGManager {
     }
 
 
-    fun getImageSize(location: ResourceLocation): java.awt.Dimension? {
+    fun getImageSize(location: ResourceLocation): Dimension? {
         if (!assetManager!!.loadImage(nvg, location)) {
             return null
         }
@@ -814,7 +813,7 @@ class NanoVGManager {
         return Dimension(asset.width, asset.height)
     }
 
-    fun getImageSize(file: File): java.awt.Dimension? {
+    fun getImageSize(file: File): Dimension? {
         if (!assetManager!!.loadImage(nvg, file)) {
             return null
         }
@@ -945,6 +944,7 @@ class NanoVGManager {
             NanoVG.nvgFill(nvg)
         }
     }
+
     fun drawImage(file: File, rect: Rect) {
         drawImage(file, rect.x, rect.y, rect.width, rect.height)
     }
@@ -1152,7 +1152,7 @@ class NanoVGManager {
             trackWidth,
             trackHeight,
             2f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 130)
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 130)
         )
 
         val visibleRatio = (viewportHeight / contentHeight.coerceAtLeast(1f)).coerceIn(0f, 1f)
@@ -1168,8 +1168,8 @@ class NanoVGManager {
                 trackWidth + 2f,
                 handleHeight,
                 3f,
-                ColorUtils.applyAlpha(accent.getColor1(), 190),
-                ColorUtils.applyAlpha(accent.getColor2(), 190)
+                applyAlpha(accent.getColor1(), 190),
+                applyAlpha(accent.getColor2(), 190)
             )
         } else {
             drawRoundedRect(
@@ -1178,7 +1178,7 @@ class NanoVGManager {
                 trackWidth + 2f,
                 handleHeight,
                 3f,
-                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
+                applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
             )
         }
     }
@@ -1331,13 +1331,13 @@ class NanoVGManager {
         val innerHeight = (height - borderWidth).coerceAtLeast(0f)
         val innerRadius = (radius - inset).coerceAtLeast(0f)
         drawOutlineRoundedRect(
-                x + inset,
-                y + inset,
-                innerWidth,
-                innerHeight,
-                innerRadius,
-                borderWidth,
-                color
+            x + inset,
+            y + inset,
+            innerWidth,
+            innerHeight,
+            innerRadius,
+            borderWidth,
+            color
         )
     }
 
@@ -1359,7 +1359,7 @@ class NanoVGManager {
                 width + f,
                 height + f,
                 radius + f / 2,
-                ColorUtils.applyAlpha(color, alpha)
+                applyAlpha(color, alpha)
             )
             alpha += 5
             f -= 0.5f

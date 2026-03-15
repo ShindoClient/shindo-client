@@ -176,7 +176,10 @@ class CompDropdown : Comp {
                         width - 4f,
                         optionHeight,
                         4f,
-                        ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), (hoverAnim.value * 178f).toInt())
+                        ColorUtils.applyAlpha(
+                            paletteColors.getBackgroundColor(ColorType.NORMAL),
+                            (hoverAnim.value * 178f).toInt()
+                        )
                     )
                 }
 
@@ -185,7 +188,8 @@ class CompDropdown : Comp {
                 } else {
                     paletteColors.getFontColor(ColorType.NORMAL)
                 }
-                val optionText = nvgInstance.getLimitText(option.name, 8f, Fonts.REGULAR, (width - 20f).coerceAtLeast(20f))
+                val optionText =
+                    nvgInstance.getLimitText(option.name, 8f, Fonts.REGULAR, (width - 20f).coerceAtLeast(20f))
                 val optionTextHeight = nvgInstance.getTextHeight(optionText, 8f, Fonts.REGULAR)
                 nvgInstance.drawText(
                     optionText,

@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.event.EventTarget
-import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.management.event.impl.EventPreRenderTick
 import me.miki.shindo.management.event.impl.EventToggleFullscreen
 import me.miki.shindo.management.language.TranslateText
