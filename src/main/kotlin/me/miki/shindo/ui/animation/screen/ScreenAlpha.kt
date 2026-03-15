@@ -5,6 +5,9 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.opengl.GL11
 
+/**
+ * Simple alpha-only screen transition that reuses framebuffer resources from [ScreenFramebufferBase].
+ */
 open class ScreenAlpha : ScreenFramebufferBase(), ScreenEffect {
 
     /**
@@ -21,7 +24,7 @@ open class ScreenAlpha : ScreenFramebufferBase(), ScreenEffect {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         restoreClearColor(floaty)
 
-        nvg.setupAndDraw(task)
+        nvg.setupAndDraw(task) // NanoVG requires a Runnable; single allocation per wrap call.
 
         mc.framebuffer.bindFramebuffer(true)
 
@@ -44,7 +47,7 @@ open class ScreenAlpha : ScreenFramebufferBase(), ScreenEffect {
                 )
             )
             NanoVG.nvgFill(nvg.getContext())
-        }, false)
+        }, false) // Runnable allocation each call; kept for API compatibility.
     }
 
     override fun close() {

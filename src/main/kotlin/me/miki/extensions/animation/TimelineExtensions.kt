@@ -18,6 +18,7 @@ private data class TimelineState(
 
 private enum class RepeatMode { None, Forever, Counted }
 
+// One WeakHashMap entry per animation; allocated on first use, then reused across frames.
 private val timelineStore = WeakHashMap<Animation, TimelineState>()
 
 private fun state(anim: Animation): TimelineState =

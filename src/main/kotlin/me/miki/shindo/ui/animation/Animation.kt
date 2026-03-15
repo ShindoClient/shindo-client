@@ -52,6 +52,10 @@ abstract class Animation {
         setDirection(direction.opposite())
     }
 
+    /**
+     * Override to adapt backwards output for non-symmetric easings.
+     * Default keeps the forward equation and mirrors it instead of recomputing.
+     */
     protected open fun correctOutput(): Boolean = false
 
     /** Current eased value respecting direction, scaling, and global disable flag. */
@@ -96,8 +100,10 @@ abstract class Animation {
         }
     }
 
+    /** Convenience float accessor to avoid boxing a Double each frame. */
     fun getValueFloat(): Float = getValue().toFloat()
 
+    /** Convenience int accessor for callers that need integer coordinates. */
     fun getValueInt(): Int = getValue().toInt()
 
     protected abstract fun getEquation(x: Double): Double

@@ -24,6 +24,7 @@ open class ColorAnimation {
         val b = animation[2].value.toInt()
         val a = animation[3].value.toInt()
         if (cachedColor.red != r || cachedColor.green != g || cachedColor.blue != b || cachedColor.alpha != a) {
+            // New Color instance each frame while channels change (immutable Color API); acceptable because the cached reference prevents extra allocations when values stabilize.
             cachedColor = Color(r, g, b, a)
         }
         return cachedColor

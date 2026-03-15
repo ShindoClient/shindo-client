@@ -8,6 +8,10 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.opengl.GL11
 
+/**
+ * Framebuffer-backed screen effect that scales and fades rendered content using NanoVG.
+ * Intended for UI transitions; caches framebuffer/paint in the base class to minimize allocations.
+ */
 open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
 
     /**
@@ -25,7 +29,7 @@ open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
         stencil: Boolean
     ) {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
-        val sr = ScaledResolution(mc)
+        val sr = ScaledResolution(mc) // Allocates per call; ScaledResolution lacks reuse hooks and is relatively cheap.
         val factor = sr.scaleFactor
 
         if (!GlobalAnimationSettings.enabled) {
@@ -47,7 +51,7 @@ open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
             nvg.resetScissor()
             task.run()
             nvg.resetScissor()
-        })
+        }) // Runnable allocated per invocation; unavoidable given NanoVG callback signature.
         glRender?.run()
 
         mc.framebuffer.bindFramebuffer(true)
@@ -80,7 +84,7 @@ open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
             )
             NanoVG.nvgFill(nvg.getContext())
             nvg.resetScissor()
-        }, false)
+        }, false) // Runnable allocation per wrap call; retained to satisfy NanoVG API.
     }
 
     fun wrap(

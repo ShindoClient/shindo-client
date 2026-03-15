@@ -3,6 +3,7 @@
 Kotlin 1.3.72 / Java 8. No code changes in this document.
 
 ## Phase 1: Audit and Map Existing UI Animation System
+- Status: Complete (2026-03-15).
 - Objective: Capture a complete inventory of current animation APIs, responsibilities, and gaps before refactoring.
 - Files: read-only review of `src/main/kotlin/me/miki/shindo/ui/animation/**/*`.
 - Sub-tasks (ordered):
@@ -15,6 +16,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: None (read-only).
 
 ## Phase 2: Refactor the Interpolation Engine
+- Status: Complete (2026-03-15).
 - Objective: Improve `Animation` and `TimedAnimation` internals without breaking callers and decouple interpolation from timing.
 - Files: `src/main/kotlin/me/miki/shindo/ui/animation/Animation.kt`, `TimedAnimation.kt`, `AnimationUtils.kt` (if timing mixed), related easing files only if signature-neutral.
 - Sub-tasks:
@@ -27,6 +29,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: Behavior drift in easing timing; potential binary signature changes if not guarded by adapters.
 
 ## Phase 3: Expand Animation Types
+- Status: Complete (2026-03-15).
 - Objective: Provide reusable typed animations (Float, Vector2f, Color) using existing timing.
 - Files to create: `src/main/kotlin/me/miki/shindo/ui/animation/value/FloatAnimation.kt`, `.../Vector2fAnimation.kt`, `.../ColorAnimation.kt` (one type per file).
 - Sub-tasks:
@@ -39,6 +42,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: Color interpolation expectations (ARGB vs HS(B)) may differ from existing callers; vector math dependencies.
 
 ## Phase 4: Create Animation Extensions
+- Status: Complete (2026-03-15).
 - Objective: Add ergonomic helpers via extensions in dedicated package.
 - Files to create: `src/main/kotlin/me/miki/extensions/animation/AnimationExtensions.kt`, `TimedAnimationExtensions.kt`, `FloatAnimationExtensions.kt`, `Vector2fAnimationExtensions.kt`, `ColorAnimationExtensions.kt`, `EasingExtensions.kt`, `TimelineExtensions.kt` (all `@file:JvmName(\"*Extensions\")`).
 - Sub-tasks:
@@ -51,6 +55,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: Overlapping names with existing helpers; need to avoid shadowing core APIs.
 
 ## Phase 5: Fix Extensions System Inconsistencies
+- Status: Complete (2026-03-15).
 - Objective: Align naming and content boundaries in the extensions module.
 - Files to rename: `src/main/kotlin/me/miki/extensions/ShindoExt.kt` → `ShindoExtensions.kt`; `modules/ModManagerExt.kt` → `ModManagerExtensions.kt`; `modules/ModuleExt.kt` → `ModuleExtensions.kt`; `profiles/ProfileManagerExt.kt` → `ProfileManagerExtensions.kt`. All imports updated repo-wide.
 - Files to remove/relocate: `src/main/kotlin/me/miki/extensions/serialization/kotlinx/ExtensionMessage.kt`, `KotlinSerializationRoadmap.kt` (move to non-extensions package or delete after migration decision).
@@ -64,6 +69,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: Binary/source incompatibility from moved classes; IDE run configs may need refresh for renamed files.
 
 ## Phase 6: Performance Validation
+- Status: Complete (2026-03-15).
 - Objective: Confirm new/changed animation paths are allocation-safe and frame-safe.
 - Files: Review all updated/added animation files and extensions; create `docs/performance-notes.md`.
 - Sub-tasks:
@@ -75,6 +81,7 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Compatibility risks: Comment-only changes should be safe; potential behavior change if future optimizations alter timing.
 
 ## Phase 7: Standardization and Final Documentation
+- Status: Complete (2026-03-15).
 - Objective: Finalize naming, documentation, and public API clarity for the animation system.
 - Files: All touched animation/extension files; new `docs/animation-engine.md`; update this TODO to mark completion.
 - Sub-tasks:

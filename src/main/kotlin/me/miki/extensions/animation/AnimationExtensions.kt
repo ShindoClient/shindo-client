@@ -9,8 +9,10 @@ import me.miki.shindo.ui.animation.TimedAnimation
 /**
  * Extension helpers for [Animation] timelines.
  */
+/** True when direction is forwards. */
 fun Animation.isForwards(): Boolean = direction == Direction.FORWARDS
 
+/** True when direction is backwards. */
 fun Animation.isBackwards(): Boolean = direction == Direction.BACKWARDS
 
 /**

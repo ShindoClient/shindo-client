@@ -24,6 +24,7 @@ open class ScreenFramebufferBase {
     protected fun ensureFramebuffer(nvg: NanoVGManager, width: Int, height: Int) {
         if (fb == null || fbWidth != width || fbHeight != height) {
             disposeFramebuffer(nvg)
+            // Framebuffer is only recreated when the window size changes, avoiding per-frame GL allocations.
             fb = NanoVGGL2.nvgluCreateFramebuffer(nvg.getContext(), width, height, 0)
             fbWidth = width
             fbHeight = height

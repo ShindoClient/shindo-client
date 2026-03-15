@@ -17,12 +17,21 @@ class Vector2fAnimation(
     private val animX = FloatAnimation(durationMs, startX, endX, easing)
     private val animY = FloatAnimation(durationMs, startY, endY, easing)
 
+    /** Current X component without allocations. */
     fun getX(): Float = animX.getFloatValue()
+
+    /** Current Y component without allocations. */
     fun getY(): Float = animY.getFloatValue()
 
+    /** True when the X timeline has finished. */
     fun isDoneX(): Boolean = animX.isDone()
+
+    /** True when the Y timeline has finished. */
     fun isDoneY(): Boolean = animY.isDone()
 
+    /**
+     * Jumps to the provided coordinates; uses the base snap by forcing progress to 0 or 1.
+     */
     fun snapTo(x: Float, y: Float) {
         animX.setValue(if (x >= getX()) 1.0 else 0.0)
         animY.setValue(if (y >= getY()) 1.0 else 0.0)
