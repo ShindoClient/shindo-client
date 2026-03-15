@@ -20,6 +20,14 @@ class Vector2fAnimation(
     fun getX(): Float = animX.getValue()
     fun getY(): Float = animY.getValue()
 
+    fun isDoneX(): Boolean = animX.isDone()
+    fun isDoneY(): Boolean = animY.isDone()
+
+    fun snapTo(x: Float, y: Float) {
+        animX.setValue(if (x >= getX()) 1.0 else 0.0)
+        animY.setValue(if (y >= getY()) 1.0 else 0.0)
+    }
+
     /**
      * True when both component animations have completed.
      */

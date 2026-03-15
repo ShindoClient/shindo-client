@@ -16,7 +16,8 @@ fun Float.easeInOutCubic(): Float = EasingFunctions.inOutCubic(this.toDouble(), 
 fun Float.easeInOutSine(): Float = EasingFunctions.inOutSine(this.toDouble(), 1).toFloat()
 fun Float.easeOutExpo(): Float = EasingFunctions.outExpo(this.toDouble(), 1).toFloat()
 fun Float.easeInBack(easeAmount: Float = 1.7f): Float = EasingFunctions.backIn(this.toDouble(), 1, easeAmount).toFloat()
-fun Float.easeOutBack(easeAmount: Float = 1.7f): Float = EasingFunctions.outQuad(this.toDouble(), 1).toFloat() // fallback; outBack not available
+fun Float.easeOutBack(easeAmount: Float = 1.7f): Float = EasingFunctions.outBack(this.toDouble(), 1, easeAmount.toDouble()).toFloat()
+fun Float.easeInOutBack(easeAmount: Float = 1.7f): Float = EasingFunctions.inOutBack(this.toDouble(), 1, easeAmount.toDouble()).toFloat()
 
 fun Double.easeInQuad(): Double = EasingFunctions.inQuad(this, 1)
 fun Double.easeOutQuad(): Double = EasingFunctions.outQuad(this, 1)
@@ -27,4 +28,5 @@ fun Double.easeInOutCubic(): Double = EasingFunctions.inOutCubic(this, 1)
 fun Double.easeInOutSine(): Double = EasingFunctions.inOutSine(this, 1)
 fun Double.easeOutExpo(): Double = EasingFunctions.outExpo(this, 1)
 fun Double.easeInBack(easeAmount: Float = 1.7f): Double = EasingFunctions.backIn(this, 1, easeAmount)
-fun Double.easeOutBack(easeAmount: Float = 1.7f): Double = EasingFunctions.outQuad(this, 1) // fallback; outBack not available
+fun Double.easeOutBack(easeAmount: Float = 1.7f): Double = EasingFunctions.outBack(this, 1, easeAmount.toDouble())
+fun Double.easeInOutBack(easeAmount: Float = 1.7f): Double = EasingFunctions.inOutBack(this, 1, easeAmount.toDouble())

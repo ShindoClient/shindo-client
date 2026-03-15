@@ -143,4 +143,31 @@ object EasingFunctions {
         return 2.0.pow(-10 * if (reallyElastic) sqrt(x1) else x1) *
                 sin((x1 - el / 4) * (2 * Math.PI / el)) + 1
     }
+
+    /**
+     * Back easing (overshoot) for the second half of the curve.
+     */
+    fun outBack(elapsed: Double, duration: Int, easeAmount: Double = 1.70158): Double {
+        val t = elapsed / duration
+        val c1 = easeAmount
+        val c3 = c1 + 1
+        val t1 = t - 1
+        return 1 + c3 * t1.pow(3) + c1 * t1.pow(2)
+    }
+
+    /**
+     * Symmetric in/out back easing with configurable overshoot.
+     */
+    fun inOutBack(elapsed: Double, duration: Int, easeAmount: Double = 1.70158): Double {
+        val t = elapsed / duration
+        val c1 = easeAmount
+        val c2 = c1 * 1.525
+        return if (t < 0.5) {
+            val twoT = 2 * t
+            (twoT.pow(2) * ((c2 + 1) * twoT - c2)) / 2
+        } else {
+            val twoT = 2 * t - 2
+            (twoT.pow(2) * ((c2 + 1) * twoT + c2) + 2) / 2
+        }
+    }
 }
