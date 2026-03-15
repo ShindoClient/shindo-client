@@ -7,6 +7,39 @@ import kotlin.math.sqrt
 
 object EasingFunctions {
 
+    private val customEasings = mutableMapOf<String, (Double, Int) -> Double>()
+
+    /**
+     * Registers a named easing curve so callers can extend easing behaviour without touching this file.
+     */
+    fun registerCustomEasing(name: String, equation: (Double, Int) -> Double) {
+        customEasings[name] = equation
+    }
+
+    /**
+     * Removes a previously registered custom easing curve by [name].
+     */
+    fun unregisterCustomEasing(name: String) {
+        customEasings.remove(name)
+    }
+
+    /**
+     * Executes a registered custom easing or falls back to [linear] when the name is unknown.
+     */
+    fun customEasing(
+        name: String,
+        elapsed: Double,
+        duration: Int,
+        fallback: ((Double, Int) -> Double)? = null
+    ): Double {
+        val easing = customEasings[name]
+        return if (easing != null) {
+            easing(elapsed, duration)
+        } else {
+            fallback?.invoke(elapsed, duration) ?: linear(elapsed, duration)
+        }
+    }
+
     fun linear(elapsed: Double, duration: Int): Double = elapsed / duration
 
     fun smoothStep(elapsed: Double, duration: Int): Double {

@@ -1,5 +1,8 @@
 package me.miki.shindo.ui.animation.value
 
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.AnimationComponent
+
 /**
  * Animates a 2D vector using two [FloatAnimation] instances.
  *
@@ -13,7 +16,7 @@ class Vector2fAnimation(
     endX: Float,
     endY: Float,
     easing: (elapsed: Double, duration: Int) -> Double
-) {
+): AnimationComponent {
     private val animX = FloatAnimation(durationMs, startX, endX, easing)
     private val animY = FloatAnimation(durationMs, startY, endY, easing)
 
@@ -41,4 +44,9 @@ class Vector2fAnimation(
      * True when both component animations have completed.
      */
     fun isDone(): Boolean = animX.isDone() && animY.isDone()
+
+    override fun forEachTimeline(action: (Animation) -> Unit) {
+        action(animX)
+        action(animY)
+    }
 }

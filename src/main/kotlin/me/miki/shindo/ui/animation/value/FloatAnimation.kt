@@ -1,5 +1,7 @@
 package me.miki.shindo.ui.animation.value
 
+import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.AnimationComponent
 import me.miki.shindo.ui.animation.TimedAnimation
 
 /**
@@ -15,7 +17,7 @@ class FloatAnimation(
     private val startValue: Float,
     private val endValue: Float,
     easing: (elapsed: Double, duration: Int) -> Double
-) : TimedAnimation(durationMs, 1.0, easing) {
+) : TimedAnimation(durationMs, 1.0, easing), AnimationComponent {
 
     /**
      * Current value without allocating; respects global animation scaling via the base class.
@@ -23,5 +25,9 @@ class FloatAnimation(
     fun getFloatValue(): Float {
         val progress = getValueFloat() // base outputs 0..1
         return (startValue + (endValue - startValue) * progress)
+    }
+
+    override fun forEachTimeline(action: (Animation) -> Unit) {
+        action(this)
     }
 }

@@ -93,6 +93,18 @@ Kotlin 1.3.72 / Java 8. No code changes in this document.
 - Acceptance criteria: `animation-engine.md` present with hook/timing description; all public APIs documented; TODO updated with completion markers; no unchecked TODOs remain in prior phases.
 - Compatibility risks: Documentation-only; low risk unless naming changes are proposed during this pass.
 
+## Phase 8: Future Expansion Hooks
+- Status: Complete (2026-03-15).
+- Objective: Provide open/closed extension points for animations and easings so future contributors avoid modifying the core files.
+- Files: `src/main/kotlin/me/miki/shindo/ui/animation/AnimationComponent.kt`, `src/main/kotlin/me/miki/shindo/ui/animation/EasingFunctions.kt`, `docs/animation-engine.md`.
+- Sub-tasks:
+  1) Create an interface that exposes animation timelines for grouped types (`AnimationComponent`).
+  2) Add a registry for custom easing functions in `EasingFunctions`.
+  3) Document the expansion hooks and usage patterns in `docs/animation-engine.md`.
+- Depends on: Phases 1–7.
+- Acceptance criteria: External animation types can implement `AnimationComponent`, easings registered via `EasingFunctions.registerCustomEasing`, documentation updated.
+- Compatibility risks: Conservative; new APIs do not change existing behavior but expand extension surface.
+
 ## Phase 1 Findings
 - `src/main/kotlin/me/miki/shindo/ui/animation/Animation.kt` — Public abstract class `Animation` (constructors with duration/endPoint/direction); methods `isDone(dir)`, `getLinearOutput`, `reset`, `isDone`, `changeDirection`, `getValue`, `setValue`, `setDirection`, `getValueFloat/Int`; abstract `getEquation`. Uses `TimerUtils` (`reset`, `delay`, `elapsedTime`) to track elapsed milliseconds; per-frame risk: repeated `System.currentTimeMillis()` in `setValue/setDirection` and branching only; no allocations. Limitations: reverse-direction math uses endPoint and `correctOutput` flag; duration not scaled via `GlobalAnimationSettings.animationScale`; uses millis not partialTicks.
 - `TimedAnimation.kt` — Public open class extending `Animation`, constructor takes `(ms, endPoint, (elapsed,duration)->Double)` and overrides `getEquation`; calls `reset()` in init. Uses `TimerUtils` from base. No allocations. Limitation: lambda passed at construction could allocate per instance but not per frame.

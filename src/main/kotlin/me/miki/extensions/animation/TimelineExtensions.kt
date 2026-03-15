@@ -3,6 +3,7 @@
 package me.miki.extensions.animation
 
 import me.miki.shindo.ui.animation.Animation
+import me.miki.shindo.ui.animation.AnimationComponent
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.utils.TimerUtils
 import java.util.WeakHashMap
@@ -93,4 +94,12 @@ fun Animation.tickTimeline() {
             }
         }
     }
+}
+
+/**
+ * Drives each timeline contained in [AnimationComponent] in the same polling pass.
+ * This adapts grouped animations to existing timeline utilities without touching their implementations.
+ */
+fun AnimationComponent.tickTimelines() {
+    forEachTimeline { it.tickTimeline() }
 }
