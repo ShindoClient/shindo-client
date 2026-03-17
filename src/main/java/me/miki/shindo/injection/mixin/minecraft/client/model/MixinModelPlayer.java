@@ -14,6 +14,7 @@ public class MixinModelPlayer extends ModelBiped {
 
     /**
      * @author MikiDevAHM
+     * @reason Adjust arm rotation point for small arms variant (1.8 compatibility)
      */
     @Overwrite
     public void postRenderArm(float scale) {

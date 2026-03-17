@@ -40,6 +40,7 @@ public class MixinPlayerControllerMP {
 
     /**
      * @author MikiDevAHM
+     * @reason Properly send ABORT_DESTROY_BLOCK packet and reset block breaking state
      */
     @Overwrite
     public void resetBlockRemoving() {

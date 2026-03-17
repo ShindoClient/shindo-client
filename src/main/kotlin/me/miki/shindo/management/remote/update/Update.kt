@@ -2,8 +2,10 @@ package me.miki.shindo.management.remote.update
 
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
+import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.utils.JsonUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.network.HttpUtils
 
 class Update {
@@ -14,8 +16,9 @@ class Update {
 
     fun check() {
         try {
-            Multithreading.runAsync { checkUpdates() }
-        } catch (_: Exception) {
+            TaskExecutor.runAsync(ThreadPoolType.NETWORK) { checkUpdates() }
+        } catch (e: Exception) {
+            ShindoLogger.error("Update.check", e)
         }
     }
 

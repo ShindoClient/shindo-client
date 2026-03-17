@@ -71,7 +71,7 @@ object FileExtractor {
             when {
                 name.endsWith(".zip") -> unzip(file, dest)
                 name.endsWith(".7z") -> un7zip(file, dest)
-                else -> println("[WARN] Tipo de arquivo não suportado: $name")
+                else -> ShindoLogger.warn("Tipo de arquivo não suportado: $name")
             }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to extract file: ${file.name}", e)

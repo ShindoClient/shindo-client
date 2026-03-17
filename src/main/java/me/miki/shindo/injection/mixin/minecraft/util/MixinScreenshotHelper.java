@@ -66,8 +66,8 @@ public class MixinScreenshotHelper {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
+     * @reason Delegate screenshot file naming to AsyncScreenshots for async screenshot handling
      */
     @Overwrite
     private static File getTimestampedPNGFileForDirectory(File gameDirectory) {

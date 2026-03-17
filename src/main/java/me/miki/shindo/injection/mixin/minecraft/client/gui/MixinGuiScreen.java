@@ -4,7 +4,6 @@ import me.miki.shindo.Shindo;
 import me.miki.shindo.management.mods.impl.InternalSettingsMod;
 import me.miki.shindo.management.sound.Sound;
 import me.miki.shindo.management.sound.Sounds;
-import me.miki.shindo.utils.helper.ResolutionHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
@@ -50,6 +49,7 @@ public abstract class MixinGuiScreen {
 
     /**
      * @author MikiDevAHM
+     * @reason Improve keyboard input handling to properly forward key events
      */
     @Overwrite
     public void handleKeyboardInput() throws IOException {
@@ -66,7 +66,6 @@ public abstract class MixinGuiScreen {
     @Inject(method = "handleInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleKeyboardInput()V"), cancellable = true)
     private void checkScreen(CallbackInfo ci) {
         if ((Object) this != this.mc.currentScreen) {
-            ResolutionHelper.setScaleOverride(-1);
             ci.cancel();
         }
     }

@@ -1,6 +1,9 @@
 package me.miki.shindo.utils
 
 import me.miki.shindo.Shindo
+import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
@@ -28,19 +31,19 @@ object PlayerHeadUtils {
         }
 
         if (pending.putIfAbsent(key, true) == null) {
-            Multithreading.runAsync(Runnable {
+            TaskExecutor.runAsync(ThreadPoolType.NETWORK) {
                 try {
                     val skin = Shindo.getInstance().skinManager.downloadSkinByUsername(rawName)
                     val texture = registerTexture(skin.image, "head-$key")
                     if (texture != null) {
                         cache[key] = texture
                     }
-                } catch (_: Exception) {
-
+                } catch (e: Exception) {
+                    ShindoLogger.error("PlayerHeadUtils.getOrRequest", e)
                 } finally {
                     pending.remove(key)
                 }
-            })
+            }
         }
 
         return null

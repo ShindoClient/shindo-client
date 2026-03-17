@@ -40,8 +40,8 @@ public class MixinWorldInfo {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
+     * @reason Override world time when TimeChangerMod is active to provide custom time of day
      */
     @Overwrite
     public long getWorldTime() {

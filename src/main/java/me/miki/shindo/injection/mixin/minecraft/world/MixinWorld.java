@@ -117,8 +117,8 @@ public abstract class MixinWorld implements IMixinWorld {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
+     * @reason Use FixedSoundEngine to handle block breaking sounds correctly for ViaVersion
      */
     @Overwrite
     public boolean destroyBlock(BlockPos pos, boolean dropBlock) {

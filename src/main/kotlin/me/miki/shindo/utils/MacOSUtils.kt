@@ -1,5 +1,6 @@
 package me.miki.shindo.utils
 
+import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.util.Util
 import java.awt.Image
 import javax.imageio.ImageIO
@@ -18,10 +19,10 @@ object MacOSUtils {
                 val iconImage = ImageIO.read(iconStream)
                 appClass.getMethod("setDockIconImage", Image::class.java).invoke(application, iconImage)
             } catch (e: Exception) {
-                System.err.println("[ MacOS Utils ] Error setting dock icon: ${e.message}")
+                ShindoLogger.error("[ MacOS Utils ] Error setting dock icon: ${e.message}")
             }
         } else {
-            System.err.println("[ MacOS Utils ] Icon file could not be found")
+            ShindoLogger.error("[ MacOS Utils ] Icon file could not be found")
         }
     }
 }

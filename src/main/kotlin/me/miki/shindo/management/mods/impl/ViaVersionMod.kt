@@ -4,7 +4,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.utils.Multithreading.runAsync
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.viaversion.ViaShindo
 import me.miki.viashindo.ViaLoadingBase
 import me.miki.viashindo.protocolinfo.ProtocolInfo
@@ -28,10 +29,10 @@ class ViaVersionMod : Mod(
 
         if (!this.isLoaded) {
             this.isLoaded = true
-            runAsync(Runnable {
+            TaskExecutor.runAsync(ThreadPoolType.GENERAL) {
                 ViaShindo.create()
                 ViaShindo.getInstance().initAsyncSlider()
-            })
+            }
         }
     }
 

@@ -1,5 +1,6 @@
-.gradle
-.claude
+.gradle/
+.claude/
+.codex/
 build/
 run/
 !gradle/wrapper/gradle-wrapper.jar

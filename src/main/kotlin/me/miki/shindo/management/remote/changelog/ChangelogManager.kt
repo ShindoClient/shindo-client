@@ -4,7 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.utils.JsonUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.network.HttpUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -13,7 +14,7 @@ class ChangelogManager {
     private val changelogs = CopyOnWriteArrayList<Changelog>()
 
     init {
-        Multithreading.runAsync { loadChangelog() }
+        TaskExecutor.runAsync(ThreadPoolType.NETWORK) { loadChangelog() }
     }
 
     private fun loadChangelog() {

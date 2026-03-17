@@ -6,6 +6,7 @@
 package eu.shoroa.contrib.shader;
 
 import eu.shoroa.contrib.shader.uniform.*;
+import me.miki.shindo.logger.ShindoLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;
@@ -47,11 +48,11 @@ public final class UIShader {
         GL20.glValidateProgram(pid);
 
         if (GL20.glGetProgrami(pid, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
-            System.err.println("Failed to link program: " + GL20.glGetProgramInfoLog(pid, GL20.GL_INFO_LOG_LENGTH));
+            ShindoLogger.error("Failed to link program: " + GL20.glGetProgramInfoLog(pid, GL20.GL_INFO_LOG_LENGTH));
         }
 
         if (GL20.glGetProgrami(pid, GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE) {
-            System.err.println("Failed to validate program: " + GL20.glGetProgramInfoLog(pid, GL20.GL_INFO_LOG_LENGTH));
+            ShindoLogger.error("Failed to validate program: " + GL20.glGetProgramInfoLog(pid, GL20.GL_INFO_LOG_LENGTH));
         }
 
         GL20.glDeleteShader(vid);
@@ -64,7 +65,7 @@ public final class UIShader {
         GL20.glCompileShader(id);
 
         if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            System.err.println("Failed to compile shader: " + GL20.glGetShaderInfoLog(id, GL20.GL_INFO_LOG_LENGTH));
+            ShindoLogger.error("Failed to compile shader: " + GL20.glGetShaderInfoLog(id, GL20.GL_INFO_LOG_LENGTH));
         }
 
         return id;

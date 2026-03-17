@@ -3,7 +3,8 @@ package me.miki.shindo.management.command.impl
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.command.Command
 import me.miki.shindo.management.mods.impl.ChatTranslateMod
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.translate.Translator
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
@@ -21,7 +22,7 @@ class TranslateCommand : Command("translate") {
             ChatTranslateMod.Language.POLISH -> Translator.POLISH
         }
 
-        Multithreading.runAsync {
+        TaskExecutor.runAsync(ThreadPoolType.NETWORK) {
             try {
                 mc.ingameGUI.chatGUI.printChatMessage(
                     ChatComponentText(

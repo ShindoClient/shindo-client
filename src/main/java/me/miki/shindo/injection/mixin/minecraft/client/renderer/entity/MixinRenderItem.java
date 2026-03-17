@@ -35,6 +35,7 @@ public abstract class MixinRenderItem {
 
     /**
      * @author MikiDevAHM
+     * @reason Customize enchantment glint color and render logic for GlintColorMod & ShinyPotsMod
      */
     @Overwrite
     private void renderEffect(IBakedModel model) {

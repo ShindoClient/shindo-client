@@ -65,7 +65,7 @@ public class MixinEntity {
 
     /**
      * @author MikiDevAHM
-     * @reason
+     * @reason Custom squared distance calculation for performance optimization
      */
     @Overwrite
     public double getDistanceSq(double x, double y, double z) {
@@ -77,7 +77,7 @@ public class MixinEntity {
 
     /**
      * @author MikiDevAHM
-     * @reason
+     * @reason Custom distance-to-entity calculation for performance optimization
      */
     @Overwrite
     public float getDistanceToEntity(Entity entityIn) {

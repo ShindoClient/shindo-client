@@ -25,6 +25,7 @@ public class MixinNBTTagString {
 
     /**
      * @author MikiDevAHM
+     * @reason Cache formatted string to avoid repeated string operations
      */
     @Overwrite
     public String toString() {

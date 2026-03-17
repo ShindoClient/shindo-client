@@ -32,8 +32,8 @@ public class MixinVertexFormat {
     }
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
+     * @reason Cache hashcode for VertexFormat to improve rendering performance
      */
     @Overwrite(remap = false)
     public int hashCode() {

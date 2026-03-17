@@ -20,7 +20,8 @@ import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.easing.EaseInOutCirc
 import me.miki.shindo.ui.animation.screen.ScreenAnimation
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -230,7 +231,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             if (mouseButton == 0) {
                 if (MouseUtils.isInside(mouseX, mouseY, acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f)) {
                     if (bg.getId() == 999) {
-                        Multithreading.runAsync {
+                        TaskExecutor.runAsync(ThreadPoolType.IO) {
                             val file = FileUtils.selectImageFile()
                             val bgCacheDir = File(fileManager.cacheDir, "background")
 

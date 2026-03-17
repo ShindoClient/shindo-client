@@ -3,7 +3,8 @@ package me.miki.shindo.management.remote.discord
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.utils.JsonUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.network.HttpUtils
 
 class DiscordStats {
@@ -13,7 +14,7 @@ class DiscordStats {
         private set
 
     fun check() {
-        Multithreading.runAsync(Runnable { checkDiscordValues() })
+        TaskExecutor.runAsync(ThreadPoolType.NETWORK) { checkDiscordValues() }
     }
 
     fun checkDiscordValues() {

@@ -16,6 +16,7 @@ public class MixinModelBox {
 
     /**
      * @author MikiDevAHM
+     * @reason Manage GL_CULL_FACE state to ensure correct rendering of model boxes
      */
     @Overwrite
     public void render(WorldRenderer renderer, float scale) {

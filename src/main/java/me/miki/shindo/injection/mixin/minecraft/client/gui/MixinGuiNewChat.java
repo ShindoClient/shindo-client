@@ -109,6 +109,7 @@ public abstract class MixinGuiNewChat extends Gui {
 
     /**
      * @author MikiDevAHM
+     * @reason Implement compact chat mode to merge duplicate messages with counter
      */
     @Overwrite
     public void printChatMessage(IChatComponent component) {

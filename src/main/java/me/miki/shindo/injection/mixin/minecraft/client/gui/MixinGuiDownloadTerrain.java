@@ -11,6 +11,7 @@ public class MixinGuiDownloadTerrain extends GuiScreen {
 
     /**
      * @author MikiDevAHM
+     * @reason Trigger EventLoadWorld when terrain download screen initializes
      */
     @Overwrite
     public void initGui() {

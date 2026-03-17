@@ -22,6 +22,7 @@ public class MixinPropertyHelper implements ICachedHashcode {
 
     /**
      * @author MikiDevAHM
+     * @reason Cache hashcode to improve performance and avoid recomputation
      */
     @Overwrite
     public int hashCode() {

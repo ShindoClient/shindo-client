@@ -3,6 +3,7 @@ package me.miki.shindo.injection.mixin;
 //import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 
 import me.miki.shindo.injection.transformer.LwjglTransformer;
+import me.miki.shindo.logger.ShindoLogger;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -108,7 +109,7 @@ public class ShindoTweaker implements ITweaker {
             }
 
             if (!removed.isEmpty() && Boolean.getBoolean("shindo.debug")) {
-                System.out.println("[ShindoTweaker] Removed classloader exclusions: " + removed);
+                ShindoLogger.info("[ShindoTweaker] Removed classloader exclusions: " + removed);
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
         }

@@ -15,6 +15,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos up() {
@@ -23,6 +24,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos up(int offset) {
@@ -31,6 +33,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos down() {
@@ -39,6 +42,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos down(int offset) {
@@ -47,6 +51,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos north() {
@@ -55,6 +60,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos north(int offset) {
@@ -63,6 +69,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos south() {
@@ -71,6 +78,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos south(int offset) {
@@ -79,6 +87,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos west() {
@@ -87,6 +96,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos west(int offset) {
@@ -95,6 +105,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos east() {
@@ -103,6 +114,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos east(int offset) {
@@ -111,6 +123,7 @@ public class MixinBlockPos extends Vec3i {
 
     /**
      * @author MikiDevAHM
+     * @reason Overwrite to provide correct offset for Shindo's coordinate system
      */
     @Overwrite
     public BlockPos offset(EnumFacing direction) {

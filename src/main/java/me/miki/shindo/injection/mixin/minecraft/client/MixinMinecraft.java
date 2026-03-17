@@ -102,6 +102,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     /**
      * @author MikiDevAHM
+     * @reason Spoof FPS display value when FPS Spoofer mod is active
      */
     @Overwrite
     public static int getDebugFPS() {
@@ -325,6 +326,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     /**
      * @author MikiDevAHM
+     * @reason Enforce FPS limiter settings when FPS Limiter mod is active
      */
     @Overwrite
     public int getLimitFramerate() {
@@ -349,6 +351,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     /**
      * @author MikiDevAHM
+     * @respect flag if FPS limiter is forcing a lower cap than the game's maximum
      */
     @Overwrite
     public boolean isFramerateLimitBelowMax() {

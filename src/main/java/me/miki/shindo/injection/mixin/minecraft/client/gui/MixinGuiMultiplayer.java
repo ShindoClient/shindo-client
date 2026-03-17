@@ -42,6 +42,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     /**
      * @author MikiDevAHM
+     * @reason Replace direct connection with custom GuiFixConnecting to handle server connect properly
      */
     @Overwrite
     private void connectToServer(ServerData server) {
@@ -50,6 +51,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     /**
      * @author MikiDevAHM
+     * @reason Disable edit/delete for featured servers and update button states properly
      */
     @Overwrite
     public void selectServer(int index) {
@@ -76,6 +78,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     /**
      * @author MikiDevAHM
+     * @reason Check if server index is beyond featured servers (non-removable)
      */
     @Overwrite
     public boolean func_175392_a(ServerListEntryNormal p_175392_1_, int p_175392_2_) {

@@ -12,7 +12,8 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.sound.Sound
-import me.miki.shindo.utils.Multithreading.runAsync
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.RandomUtils.getRandomInt
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
@@ -146,7 +147,7 @@ class MechvibesMod :
     }
 
     private fun loadKeyboardSounds(type: String?) {
-        runAsync(Runnable {
+        TaskExecutor.runAsync(ThreadPoolType.IO) {
             for (keyCode in 0..255) {
                 if (keyCode == Keyboard.KEY_TAB) {
                     keyMap.put(Keyboard.KEY_TAB, SoundKey(type, "tab"))
@@ -185,11 +186,11 @@ class MechvibesMod :
 
                 keyMap.put(keyCode, SoundKey(type, getRandomInt(1, 5).toString()))
             }
-        })
+        }
     }
 
     private fun loadMouseSounds() {
-        runAsync(Runnable {
+        TaskExecutor.runAsync(ThreadPoolType.IO) {
             try {
                 mouseLeftSound.loadClip(ResourceLocation("shindo/mechvibes/mouse.wav"))
                 mouseRightSound.loadClip(ResourceLocation("shindo/mechvibes/mouse.wav"))
@@ -199,7 +200,7 @@ class MechvibesMod :
             mouseLeftSound.setVolume(mouseVolume.toFloat())
             mouseRightSound.setVolume(mouseVolume.toFloat())
             loaded = true
-        })
+        }
     }
 
     private enum class KeyType(val resourceFolder: String, private val translate: TranslateText) : PropertyEnum {

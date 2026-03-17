@@ -34,6 +34,7 @@ public abstract class MixinRender<T extends Entity> {
 
     /**
      * @author MikiDevAHM
+     * @reason Render entity nametags using freelook camera angles when FreelookMod is active
      */
     @Overwrite
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance) {

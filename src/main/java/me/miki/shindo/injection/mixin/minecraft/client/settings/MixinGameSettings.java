@@ -8,11 +8,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(GameSettings.class)
-public enum MixinGameSettings {
-    ;
+public class MixinGameSettings {
 
     /**
      * @author MikiDevAHM
+     * @reason Fixed key detection for keybind handling (support mouse buttons)
      */
     @Overwrite
     public static boolean isKeyDown(KeyBinding key) {

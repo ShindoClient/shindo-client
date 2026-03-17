@@ -24,7 +24,8 @@ import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.ui.comp.inputs.CompMainMenuTextBox
 import me.miki.shindo.utils.ColorUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import net.minecraft.client.gui.ScaledResolution
@@ -869,7 +870,7 @@ class SkinScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val editing = editingSkin
         val currentMode = formMode
 
-        Multithreading.runAsync {
+        TaskExecutor.runAsync(ThreadPoolType.IO) {
             try {
                 if (currentMode == FormMode.ADD) {
                     processAdd(manager, providedName, source, selectedType, username, uuid)

@@ -4,6 +4,7 @@ package me.miki.shindo.gui.gamemenus.views
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.gamemenus.MenuManager
 import me.miki.shindo.gui.gamemenus.ShindoScreen
+import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.TranslateText
@@ -14,7 +15,8 @@ import me.miki.shindo.management.profile.mainmenu.BackgroundManager
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -184,7 +186,7 @@ class BackgroundSelector(parent: MenuManager) : ShindoScreen(parent, "Select Bac
             if (mouseButton == 0) {
                 if (MouseUtils.isInside(mouseX, mouseY, acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f)) {
                     if (bg.getId() == 999) {
-                        Multithreading.runAsync {
+                        TaskExecutor.runAsync(ThreadPoolType.IO) {
                             val file: File = FileUtils.selectImageFile()!!
                             val bgCacheDir: File = File(fileManager.cacheDir, "background")
                             if (bgCacheDir.exists() && file.exists() && FileUtils.getExtension(file)
@@ -195,6 +197,7 @@ class BackgroundSelector(parent: MenuManager) : ShindoScreen(parent, "Select Bac
                                     FileUtils.copyFile(file, destFile)
                                     backgroundManager.addCustomBackground(destFile)
                                 } catch (e: IOException) {
+                                    ShindoLogger.error("BackgroundSelector.onMouseClicked", e)
                                 }
                             }
                         }

@@ -25,8 +25,8 @@ public abstract class MixinRenderEntityItem {
     protected abstract int func_177078_a(ItemStack stack);
 
     /**
-     * @author
-     * @reason
+     * @author MikiDevAHM
+     * @reason Delegate item entity rendering to RenderEntityItemHook for custom handling
      */
     @Overwrite
     private int func_177077_a(EntityItem itemIn, double p_177077_2_, double p_177077_4_, double p_177077_6_, float p_177077_8_, IBakedModel p_177077_9_) {

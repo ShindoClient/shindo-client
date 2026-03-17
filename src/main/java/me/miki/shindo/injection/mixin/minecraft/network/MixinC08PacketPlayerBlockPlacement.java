@@ -36,6 +36,7 @@ public class MixinC08PacketPlayerBlockPlacement {
 
     /**
      * @author MikiDevAHM
+     * @reason Adapt packet reading for ViaVersion protocol changes (1.11+ facing precision)
      */
     @Overwrite
     public void readPacketData(PacketBuffer buf) throws IOException {
@@ -52,6 +53,7 @@ public class MixinC08PacketPlayerBlockPlacement {
 
     /**
      * @author MikiDevAHM
+     * @reason Adapt packet writing for ViaVersion protocol changes (1.11+ facing precision)
      */
     @Overwrite
     public void writePacketData(PacketBuffer buf) throws IOException {

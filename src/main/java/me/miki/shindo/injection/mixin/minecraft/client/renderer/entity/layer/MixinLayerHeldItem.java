@@ -31,6 +31,10 @@ public abstract class MixinLayerHeldItem {
         this.livingEntityRenderer = rendererLivingEntity;
     }
 
+    /**
+     * @author MikiDevAHM
+     * @reason Customize held item rendering for sneak animation and block hit effects
+     */
     @Overwrite
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float f, float g, float partialTicks, float h, float i, float j, float scale) {
 

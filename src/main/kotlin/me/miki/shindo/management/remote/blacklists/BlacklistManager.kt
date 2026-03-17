@@ -3,7 +3,8 @@ package me.miki.shindo.management.remote.blacklists
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import me.miki.shindo.utils.JsonUtils
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.network.HttpUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -16,7 +17,7 @@ class BlacklistManager {
     }
 
     fun check() {
-        Multithreading.runAsync { loadBlacklists() }
+        TaskExecutor.runAsync(ThreadPoolType.NETWORK) { loadBlacklists() }
     }
 
     private fun loadBlacklists() {

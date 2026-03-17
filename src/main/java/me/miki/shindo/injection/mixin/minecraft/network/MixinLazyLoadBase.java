@@ -19,6 +19,7 @@ public abstract class MixinLazyLoadBase<T> {
 
     /**
      * @author MikiDevAHM
+     * @reason Thread-safe lazy initialization with double-checked locking pattern
      */
     @Overwrite
     public T getValue() {

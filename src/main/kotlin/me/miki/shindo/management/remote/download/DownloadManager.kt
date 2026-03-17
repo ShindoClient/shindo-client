@@ -2,7 +2,8 @@ package me.miki.shindo.management.remote.download
 
 import me.miki.shindo.management.remote.download.file.DownloadFile
 import me.miki.shindo.management.remote.download.file.DownloadZipFile
-import me.miki.shindo.utils.Multithreading
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.DirectoryUtils
 import me.miki.shindo.utils.file.FileExtractor
 import me.miki.shindo.utils.network.HttpUtils
@@ -14,7 +15,7 @@ class DownloadManager {
     private var downloaded = false
 
     init {
-        Multithreading.runAsync { startDownloads() }
+        TaskExecutor.runAsync(ThreadPoolType.NETWORK) { startDownloads() }
     }
 
     private fun startDownloads() {

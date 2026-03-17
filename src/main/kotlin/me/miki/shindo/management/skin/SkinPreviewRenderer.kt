@@ -1,5 +1,6 @@
 package me.miki.shindo.management.skin
 
+import me.miki.shindo.logger.ShindoLogger
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
@@ -34,7 +35,7 @@ class SkinPreviewRenderer {
         val imageHandle = try {
             getOrCreatePreviewImage(vg, normalizedUuid)
         } catch (e: IOException) {
-            System.err.println("SkinPreviewRenderer: Failed to fetch preview for $normalizedUuid (${e.message})")
+            ShindoLogger.error("SkinPreviewRenderer: Failed to fetch preview for $normalizedUuid (${e.message})")
             return
         }
         if (imageHandle <= 0) return

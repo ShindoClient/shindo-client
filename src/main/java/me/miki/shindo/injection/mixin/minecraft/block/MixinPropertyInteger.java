@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class MixinPropertyInteger {
     /**
      * @author MikiDevAHM
+     * @reason Cache hashcode to improve performance and avoid recomputation
      */
     @Overwrite
     public int hashCode() {

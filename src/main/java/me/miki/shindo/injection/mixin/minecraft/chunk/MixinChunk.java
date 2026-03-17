@@ -55,6 +55,7 @@ public class MixinChunk {
 
     /**
      * @author MikiDevAHM
+     * @reason Add bounds checking to prevent crashes when accessing out-of-bounds Y coordinates
      */
     @Overwrite
     public IBlockState getBlockState(BlockPos pos) {
