@@ -1,6 +1,7 @@
 package me.miki.shindo.ui.comp.templates
 
 import me.miki.shindo.ui.comp.style.CompStyleResolver
+import java.awt.Color
 
 open class CompSurfaceTemplate(
     x: Float = 0f,
@@ -22,7 +23,7 @@ open class CompSurfaceTemplate(
         }
     }
 
-    override fun resolveDefaultBackground(): java.awt.Color {
+    override fun resolveDefaultBackground(): Color {
         return CompStyleResolver.resolveSurfaceBackground(getSurfaceVariant(), palette, accent)
     }
 }

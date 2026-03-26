@@ -8,6 +8,8 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.buttons.CompSettingButton
 import me.miki.shindo.ui.comp.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
+import me.miki.shindo.ui.comp.layout.withSurfaceVariant
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 
 class PerformanceScene(parent: SettingsCategory) :
     SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
@@ -26,7 +28,7 @@ class PerformanceScene(parent: SettingsCategory) :
         )
 
         container = CompScrollableContainer()
-            .setThemeScrollbarOnly(true)
+            .withSurfaceVariant(CompSurfaceVariant.PANEL)
         settingCards.clear()
         settingCards.add(
             CompSettingButton(

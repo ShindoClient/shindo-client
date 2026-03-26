@@ -1,6 +1,8 @@
 package me.miki.shindo.ui.comp.selectors
 
+import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.Theme
+import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
@@ -48,8 +50,8 @@ class CompThemeSelector(
     }
 
     override fun getBackgroundColor(
-        paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
-        accentColors: me.miki.shindo.management.color.AccentColor
+        paletteColors: ColorPalette,
+        accentColors: AccentColor
     ): Color {
         return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 170)
     }

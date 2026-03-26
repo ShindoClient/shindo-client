@@ -108,15 +108,8 @@ class SettingsCategory(parent: GuiModMenu) :
                 layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_LIST,
                 tag = "settings_scene_list"
             ) {
-                nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
-                nvg.drawRoundedRect(
-                    baseX + 14f,
-                    baseY + 10f,
-                    baseWidth - 28f,
-                    baseHeight - 20f,
-                    12f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176)
-                )
+                //nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
+                //nvg.drawRoundedRect( baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176))
                 forEachSceneEntry(scrollValue) { entryScene, button, cardX, cardY, cardW, cardH ->
                     button.setBounds(cardX, cardY, cardW, cardH)
                     button.setActive(scene == entryScene && transitionCoordinator.isSceneVisible())
@@ -138,24 +131,9 @@ class SettingsCategory(parent: GuiModMenu) :
                     layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_SCENE,
                     tag = "settings_scene_content"
                 ) {
-                    nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
-                    nvg.drawRoundedRect(
-                        baseX + 10f,
-                        baseY + 8f,
-                        baseWidth - 20f,
-                        baseHeight - 16f,
-                        12f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190)
-                    )
-                    nvg.drawGradientRoundedRect(
-                        baseX + 10f,
-                        baseY + 8f,
-                        baseWidth - 20f,
-                        baseHeight - 16f,
-                        12f,
-                        ColorUtils.applyAlpha(accent.getColor1(), 24),
-                        ColorUtils.applyAlpha(accent.getColor2(), 24)
-                    )
+                    //nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
+                    //nvg.drawRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190) )
+                    //nvg.drawGradientRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(accent.getColor1(), 24), ColorUtils.applyAlpha(accent.getColor2(), 24))
                     scene.drawScreen(mouseX, mouseY, partialTicks)
 
                     val headerScene = (scene as? LayoutScene)?.getActiveSubScene() ?: scene

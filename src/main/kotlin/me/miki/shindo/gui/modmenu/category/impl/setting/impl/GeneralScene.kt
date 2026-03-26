@@ -4,17 +4,20 @@ import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
+import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.buttons.CompSettingButton
 import me.miki.shindo.ui.comp.buttons.CompToggleButton
 import me.miki.shindo.ui.comp.inputs.CompKeybind
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
+import me.miki.shindo.ui.comp.layout.withSurfaceVariant
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 
 class GeneralScene(parent: SettingsCategory) :
     SettingScene(
         parent,
         TranslateText.GENERAL,
         TranslateText.GENERAL_DESCRIPTION,
-        me.miki.shindo.management.nanovg.font.LegacyIcon.LIST
+        LegacyIcon.LIST
     ) {
 
     private lateinit var container: CompScrollableContainer
@@ -51,7 +54,7 @@ class GeneralScene(parent: SettingsCategory) :
 
         container = CompScrollableContainer()
             .setScrollbarGutter(14f)
-            .setThemeScrollbarOnly(true)
+            .withSurfaceVariant(CompSurfaceVariant.PANEL)
 
         settingCards.clear()
         settingCards.add(

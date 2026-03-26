@@ -1,5 +1,7 @@
 package me.miki.shindo.ui.comp.templates
 
+import me.miki.shindo.management.color.AccentColor
+import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
@@ -113,8 +115,8 @@ open class CompPanel(
     protected open fun beforeDrawPanel(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 
     protected open fun getBackgroundColor(
-        paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
-        accentColors: me.miki.shindo.management.color.AccentColor
+        paletteColors: ColorPalette,
+        accentColors: AccentColor
     ): Color? {
         return backgroundColor ?: resolveDefaultBackground()
     }

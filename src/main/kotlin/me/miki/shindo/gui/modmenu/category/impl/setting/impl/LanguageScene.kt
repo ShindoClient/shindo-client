@@ -12,6 +12,8 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
+import me.miki.shindo.ui.comp.layout.withSurfaceVariant
+import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
@@ -30,7 +32,7 @@ class LanguageScene(parent: SettingsCategory) :
     override fun initGui() {
         container = CompScrollableContainer()
             .setScrollbarGutter(14f)
-            .setThemeScrollbarOnly(true)
+            .withSurfaceVariant(CompSurfaceVariant.PANEL)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

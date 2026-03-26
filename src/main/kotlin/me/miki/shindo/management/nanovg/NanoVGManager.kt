@@ -1124,8 +1124,7 @@ class NanoVGManager {
         scrollValue: Float,
         palette: ColorPalette,
         accent: AccentColor,
-        minHandleHeight: Float,
-        useAccentHandle: Boolean = true
+        minHandleHeight: Float
     ) {
         val viewportHeight = max(0f, baseHeight)
         val viewportWidth = max(0f, baseWidth)
@@ -1161,7 +1160,6 @@ class NanoVGManager {
         val scrollProgress = if (maxScroll <= 0f) 0f else scrollOffset / maxScroll
         val handleY = trackY + (trackHeight - handleHeight) * scrollProgress
 
-        if (useAccentHandle) {
             drawGradientRoundedRect(
                 trackX - 1f,
                 handleY,
@@ -1171,16 +1169,6 @@ class NanoVGManager {
                 applyAlpha(accent.getColor1(), 190),
                 applyAlpha(accent.getColor2(), 190)
             )
-        } else {
-            drawRoundedRect(
-                trackX - 1f,
-                handleY,
-                trackWidth + 2f,
-                handleHeight,
-                3f,
-                applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
-            )
-        }
     }
 
     fun getColor(color: Color?): NVGColor {

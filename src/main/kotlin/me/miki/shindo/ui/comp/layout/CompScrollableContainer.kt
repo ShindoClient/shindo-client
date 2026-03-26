@@ -51,11 +51,6 @@ open class CompScrollableContainer(
         return this
     }
 
-    fun setThemeScrollbarOnly(enabled: Boolean): CompScrollableContainer {
-        themeScrollbarOnly = enabled
-        return this
-    }
-
     fun getInnerPadding(): Float = innerPadding
 
     fun getScroll(): Scroll = scroll
@@ -169,8 +164,7 @@ open class CompScrollableContainer(
             scrollValue,
             palette,
             accent,
-            24f,
-            !themeScrollbarOnly
+            24f
         )
     }
 
@@ -214,4 +208,9 @@ open class CompScrollableContainer(
         val boundedVisible = max(0f, visibleHeight)
         scroll.maxScroll = max(0f, contentHeight - boundedVisible)
     }
+}
+
+fun CompScrollableContainer.withSurfaceVariant(surfaceVariant: CompSurfaceVariant): CompScrollableContainer {
+    setSurfaceVariant(surfaceVariant)
+    return this
 }

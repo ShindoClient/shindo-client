@@ -228,8 +228,7 @@ class AppearanceScene(parent: SettingsCategory) :
             verticalScroll,
             palette,
             currentAccent,
-            30f,
-            false
+            30f
         )
     }
 
