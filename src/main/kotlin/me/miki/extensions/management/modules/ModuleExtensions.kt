@@ -1,6 +1,6 @@
 @file:JvmName("ModuleExtensions")
 
-package me.miki.extensions.modules
+package me.miki.extensions.management.modules
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.mods.Mod
@@ -14,4 +14,3 @@ fun Mod.getModByTranslateKey(key: String): Mod? {
 fun Mod.getSettingsByMod(mod: Mod): ArrayList<Setting>? {
     return Shindo.getInstance().modManager.getSettingsByMod(mod)
 }
-

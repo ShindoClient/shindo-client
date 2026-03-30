@@ -1,6 +1,6 @@
 @file:JvmName("OkHttpResponseExtensions")
 
-package me.miki.extensions.network.okhttp
+package me.miki.extensions.network.http.okhttp
 
 import okhttp3.Response
 

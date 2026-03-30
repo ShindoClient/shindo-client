@@ -1,6 +1,6 @@
 @file:JvmName("OkHttpClientExtensions")
 
-package me.miki.extensions.network.okhttp
+package me.miki.extensions.network.http.okhttp
 
 import okhttp3.OkHttpClient
 import okhttp3.Request

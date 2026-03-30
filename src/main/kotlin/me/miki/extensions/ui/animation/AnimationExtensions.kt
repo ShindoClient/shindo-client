@@ -1,10 +1,11 @@
 @file:JvmName("AnimationExtensions")
 
-package me.miki.extensions.animation
+package me.miki.extensions.ui.animation
 
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.Direction
 import me.miki.shindo.ui.animation.TimedAnimation
+import me.miki.shindo.ui.animation.value.SimpleAnimation
 
 /**
  * Extension helpers for [Animation] timelines.
@@ -50,3 +51,10 @@ fun Animation.resetBackwards() {
  * Marks whether a timed animation is currently running (not finished).
  */
 fun TimedAnimation.isRunning(): Boolean = !isDone()
+
+val SimpleAnimation.currentValue: Float
+    get() = value
+
+var SimpleAnimation.animation: Float
+    get() = value
+    set(target) = setAnimation(target)
