@@ -1,6 +1,6 @@
 @file:JvmName("AddonManagerExtensions")
 
-package me.miki.extensions.addons
+package me.miki.extensions.management.addons
 
 /**
  * TODO: Implement AddonManager extension helpers.

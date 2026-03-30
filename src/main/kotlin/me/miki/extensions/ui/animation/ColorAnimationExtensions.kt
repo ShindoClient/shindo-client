@@ -1,6 +1,6 @@
 @file:JvmName("ColorAnimationExtensions")
 
-package me.miki.extensions.animation
+package me.miki.extensions.ui.animation
 
 import me.miki.shindo.ui.animation.value.ColorAnimation
 import java.awt.Color

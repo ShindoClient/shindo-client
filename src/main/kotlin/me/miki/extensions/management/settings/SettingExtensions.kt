@@ -1,6 +1,6 @@
 @file:JvmName("SettingExtensions")
 
-package me.miki.extensions.settings
+package me.miki.extensions.management.settings
 
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.config.ConfigOwner
@@ -40,5 +40,4 @@ fun Setting.getKeybindSetting(owner: ConfigOwner, fieldName: String): KeybindSet
 fun Setting.getComboSetting(owner: ConfigOwner, fieldName: String): ComboSetting? {
     return getSetting(owner, fieldName, ComboSetting::class.java)
 }
-
 

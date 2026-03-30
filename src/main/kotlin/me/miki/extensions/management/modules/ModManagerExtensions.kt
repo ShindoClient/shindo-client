@@ -1,6 +1,6 @@
 @file:JvmName("ModManagerExtensions")
 
-package me.miki.extensions.modules
+package me.miki.extensions.management.modules
 
 /**
  * TODO: Implement ModManager extension helpers.

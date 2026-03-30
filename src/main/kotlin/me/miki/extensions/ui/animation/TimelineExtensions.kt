@@ -1,6 +1,6 @@
 @file:JvmName("TimelineExtensions")
 
-package me.miki.extensions.animation
+package me.miki.extensions.ui.animation
 
 import me.miki.shindo.ui.animation.Animation
 import me.miki.shindo.ui.animation.AnimationComponent

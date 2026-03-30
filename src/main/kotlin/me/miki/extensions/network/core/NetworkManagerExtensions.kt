@@ -1,6 +1,6 @@
 @file:JvmName("NetworkManagerExtensions")
 
-package me.miki.extensions.network
+package me.miki.extensions.network.core
 
 /**
  * TODO: Implement NetworkManager extension helpers.

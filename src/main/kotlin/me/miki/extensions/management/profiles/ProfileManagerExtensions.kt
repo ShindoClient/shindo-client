@@ -1,6 +1,6 @@
 @file:JvmName("ProfileManagerExtensions")
 
-package me.miki.extensions.profiles
+package me.miki.extensions.management.profiles
 
 /**
  * TODO: Implement Profile/ProfileManager extension helpers.

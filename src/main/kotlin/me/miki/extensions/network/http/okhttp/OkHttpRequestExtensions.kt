@@ -1,6 +1,6 @@
 @file:JvmName("OkHttpRequestExtensions")
 
-package me.miki.extensions.network.okhttp
+package me.miki.extensions.network.http.okhttp
 
 import okhttp3.MediaType
 import okhttp3.Request
