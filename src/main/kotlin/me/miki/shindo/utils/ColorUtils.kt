@@ -53,6 +53,18 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun transitionColor(from: Color, to: Color, state: Boolean): Color {
+        return  interpolateColor(from, to, if (state) 1.0 else 0.0)
+    }
+
+    @JvmStatic
+    fun transitionColor(from: Color, to: Color, state: Boolean, speed: Int, timer: TimerUtils): Color {
+        val elapsed = timer.elapsedTime.toDouble() / speed.coerceAtLeast(1)
+        val progress = elapsed.coerceIn(0.0, 1.0)
+        return interpolateColor(from, to, if (state) progress else 1.0 - progress)
+    }
+
+    @JvmStatic
     fun getHue(color: Color): Float = rgbToHsb(color)[0]
 
     @JvmStatic

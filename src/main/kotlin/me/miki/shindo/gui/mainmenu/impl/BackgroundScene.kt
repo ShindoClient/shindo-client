@@ -134,6 +134,17 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 }
             }
 
+            if (bg is ShaderBackground) {
+                ShaderBackgroundRenderer.renderShaderPreview(
+                    nvg,
+                    bg.getShaderFile(),
+                    acX + 11f + offsetX,
+                    acY + 35f + offsetY,
+                    102.5f,
+                    57.5f
+                )
+            }
+
             if (bg is CustomBackground) {
                 bg.getTrashAnimation().setAnimation(
                     if (MouseUtils.isInside(
@@ -156,17 +167,6 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     palette.getMaterialRed((bg.getTrashAnimation().value * 255).toInt()),
                     10f,
                     Fonts.LEGACYICON
-                )
-            }
-
-            if (bg is ShaderBackground) {
-                ShaderBackgroundRenderer.renderShaderPreview(
-                    nvg,
-                    bg.getShaderFile(),
-                    acX + 11f + offsetX,
-                    acY + 35f + offsetY,
-                    102.5f,
-                    57.5f
                 )
             }
 

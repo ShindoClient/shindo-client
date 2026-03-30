@@ -19,12 +19,13 @@ import me.miki.shindo.management.notification.NotificationType
 import org.apache.hc.core5.http.ParseException
 import java.io.File
 import java.io.IOException
-import java.io.OutputStream
 import java.net.InetSocketAddress
+import java.net.URL
 import java.util.*
 import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Supplier
+
 
 class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
@@ -35,10 +36,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     private val searchCache = ConcurrentHashMap<String, CompletableFuture<List<Track>>>()
     private val playlistCache = ConcurrentHashMap<String, CompletableFuture<List<PlaylistSimplified>>>()
 
-    private var clientId: String = ""
-    private var clientSecret: String = ""
-    private var hasCredentials: Boolean = false
-    private lateinit var spotifyApi: SpotifyApi
+    private var spotifyApi: SpotifyApi
     private var scheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var server: HttpServer? = null
     private var isAuthorized: Boolean = false
@@ -53,35 +51,19 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     init {
         initializeSchedulers()
-        loadCredentials()
-
-        if (hasCredentials) {
-            spotifyApi = SpotifyApi.Builder()
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRedirectUri(REDIRECT_URI)
-                .build()
-            loadTokens()
-            if (spotifyApi.accessToken != null) {
-                isAuthorized = true
-            } else {
-                try {
-                    startServer()
-                } catch (e: IOException) {
-                    ShindoLogger.error("Failed to start local server for Spotify authentication", e)
-                    Shindo.getInstance().notificationManager.post(
-                        TranslateText.SPOTIFY_AUTH,
-                        TranslateText.SPOTIFY_FAIL_BROWSER,
-                        NotificationType.ERROR
-                    )
-                }
-            }
+        spotifyApi = SpotifyApi.Builder()
+            .setRedirectUri(LOCAL_CALLBACK_URI)
+            .build()
+        loadTokens()
+        if (spotifyApi.accessToken != null) {
+            isAuthorized = true
             startPlaybackStateUpdater()
             scheduleTokenRefresh()
         } else {
-            spotifyApi = SpotifyApi.Builder().setRedirectUri(REDIRECT_URI).build()
+            try { startServer() } catch (e: IOException) {
+                ShindoLogger.error("Failed to start local callback server", e)
+            }
         }
-
         Runtime.getRuntime().addShutdownHook(Thread { cleanup() })
     }
 
@@ -94,53 +76,6 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         }
     }
 
-    private fun loadCredentials() {
-        clientId = "d94db01cef0743afa72e0869ffbb754d"
-        clientSecret = "19e88ba57df44b06b4f4a0aaac02c8a9"
-        hasCredentials = true
-        ShindoLogger.info("Loaded Spotify credentials")
-    }
-
-    fun saveCredentials(clientId: String, clientSecret: String) {
-        val credentialsFile = File(fileManager.musicDir, CREDENTIALS_FILE_NAME)
-        val props = Properties().apply {
-            setProperty("clientId", clientId)
-            setProperty("clientSecret", clientSecret)
-        }
-        try {
-            credentialsFile.outputStream().use { out -> props.store(out, "Spotify API Credentials") }
-            this.clientId = clientId
-            this.clientSecret = clientSecret
-            this.hasCredentials = true
-            spotifyApi = SpotifyApi.Builder()
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRedirectUri(REDIRECT_URI)
-                .build()
-            if (server == null) {
-                try {
-                    startServer()
-                } catch (e: IOException) {
-                    ShindoLogger.error("Failed to start local server for Spotify authentication", e)
-                    Shindo.getInstance().notificationManager.post(
-                        TranslateText.SPOTIFY_AUTH,
-                        TranslateText.SPOTIFY_FAIL_BROWSER,
-                        NotificationType.ERROR
-                    )
-                }
-            }
-            startPlaybackStateUpdater()
-            scheduleTokenRefresh()
-            ShindoLogger.info("Saved Spotify credentials")
-        } catch (e: IOException) {
-            ShindoLogger.error("Failed to save Spotify credentials", e)
-            Shindo.getInstance().notificationManager.post(
-                TranslateText.SPOTIFY_AUTH,
-                TranslateText.SPOTIFY_FAILED_TO_SAVE_CREDENTIALS,
-                NotificationType.ERROR
-            )
-        }
-    }
 
     private fun loadTokens() {
         val tokenFile = File(fileManager.musicDir, TOKEN_FILE_NAME)
@@ -189,40 +124,36 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun getAuthorizationCodeUri(): String {
-        val req = spotifyApi.authorizationCodeUri()
-            .scope("user-read-private user-read-email user-modify-playback-state user-read-playback-state")
-            .show_dialog(true)
-            .build()
-        return req.execute().toString()
+        return "$CDN_BASE_URL/api/spotify/login"
     }
 
     private fun requestAccessToken(code: String) {
         try {
-            val req = spotifyApi.authorizationCode(code).build()
-            val creds = req.execute()
-            spotifyApi.accessToken = creds.accessToken
-            spotifyApi.refreshToken = creds.refreshToken
-            isAuthorized = true
-            saveTokens()
-            Shindo.getInstance().notificationManager.post(
-                TranslateText.SPOTIFY_AUTH,
-                TranslateText.SPOTIFY_AUTH_TOKEN_RECEIVED,
-                NotificationType.SUCCESS
-            )
-        } catch (e: Exception) {
-            if (e is IOException || e is SpotifyWebApiException || e is ParseException) {
-                ShindoLogger.error("Failed to request access token", e)
-                Shindo.getInstance().notificationManager.post(
-                    TranslateText.SPOTIFY_AUTH,
-                    TranslateText.SPOTIFY_AUTH_FAILED,
-                    NotificationType.ERROR
-                )
+            // Chama o CDN que tem o secret e faz a troca
+            val url = URL("$CDN_BASE_URL/spotify/token?code=$code")
+            val connection = url.openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            if (connection.responseCode == 200) {
+                val response = connection.inputStream.bufferedReader().readText()
+                val json = JsonParser.parseString(response).asJsonObject
+                spotifyApi.accessToken = json.get("access_token").asString
+                spotifyApi.refreshToken = json.get("refresh_token")?.asString
+                isAuthorized = true
+                saveTokens()
+                ShindoLogger.info("Successfully obtained Spotify access token via CDN proxy")
+            } else {
+                error("CDN token exchange failed: ${connection.responseCode}")
             }
+        } catch (e: Exception) {
+            error("Failed to exchange code for token: ${e.message}")
         }
     }
 
     fun isAuthorized(): Boolean = isAuthorized
-    fun hasCredentials(): Boolean = hasCredentials
+    fun hasCredentials(): Boolean = true
 
     fun searchTracks(query: String?): CompletableFuture<List<Track>> {
         return searchCache.computeIfAbsent(
@@ -553,24 +484,33 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     private fun getActiveDeviceId(): String? {
-        return try {
+        try {
             val devices = spotifyApi.usersAvailableDevices.build().execute()
-                ?: return null
-            if (devices.isEmpty()) {
+            if (devices == null || devices.size == 0) {
                 ShindoLogger.warn("No Spotify devices found")
                 return null
             }
+
             for (device in devices) {
-                if (device.is_active) return device.id
+                if (device.is_active) {
+                    return device.id
+                }
             }
-            ShindoLogger.info("No active device found, using first available: ${devices[0].name}")
-            devices[0].id
-        } catch (e: Exception) {
-            if (e is IOException || e is SpotifyWebApiException || e is ParseException) {
-                ShindoLogger.error("Failed to get active device", e)
+
+            if (devices.size > 0) {
+                ShindoLogger.info("No active device found, using first available: " + devices[0].name)
+                return devices[0].id
             }
-            null
+
+            ShindoLogger.warn("No active device found")
+        } catch (e: IOException) {
+            ShindoLogger.error("Failed to get active device", e)
+        } catch (e: SpotifyWebApiException) {
+            ShindoLogger.error("Failed to get active device", e)
+        } catch (e: ParseException) {
+            ShindoLogger.error("Failed to get active device", e)
         }
+        return null
     }
 
     fun getAlbumArtUrl(track: Track?): String? {
@@ -679,23 +619,30 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun setTrackInfoCallback(callback: TrackInfoCallback?) {
         trackInfoCallback = callback
     }
-
     fun refreshAccessToken() {
+        val refreshToken = spotifyApi.refreshToken ?: run {
+            ShindoLogger.warn("No refresh token available"); return
+        }
         try {
-            val creds = spotifyApi.authorizationCodeRefresh().build().execute()
-            spotifyApi.accessToken = creds.accessToken
-            creds.refreshToken?.let { spotifyApi.refreshToken = it }
-            saveTokens()
-        } catch (e: Exception) {
-            if (e is IOException || e is SpotifyWebApiException || e is ParseException) {
-                ShindoLogger.error("Failed to refresh access token automatically", e)
+            val encoded = java.net.URLEncoder.encode(refreshToken, "UTF-8")
+            val connection = URL("$CDN_BASE_URL/api/spotify/refresh?refresh_token=$encoded")
+                .openConnection() as java.net.HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
+
+            if (connection.responseCode == 200) {
+                val json = JsonParser.parseString(connection.inputStream.bufferedReader().readText()).asJsonObject
+                spotifyApi.accessToken = json.get("access_token").asString
+                json.get("refresh_token")?.asString?.let { spotifyApi.refreshToken = it }
+                saveTokens()
+            } else {
+                error("CDN token refresh failed: ${connection.responseCode}")
                 isAuthorized = false
-                Shindo.getInstance().notificationManager.post(
-                    TranslateText.SPOTIFY_AUTH,
-                    TranslateText.SPOTIFY_AUTH_REFRESH_FAILED,
-                    NotificationType.ERROR
-                )
             }
+        } catch (e: Exception) {
+            error("Failed to refresh access token: ${e.message}")
+            isAuthorized = false
         }
     }
 
@@ -731,37 +678,37 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             throttleRequest(
                 "playlists",
                 Supplier<CompletableFuture<List<PlaylistSimplified>>> {
-                    CompletableFuture.supplyAsync {
-                        try {
-                            val allPlaylists: MutableList<PlaylistSimplified> =
-                                ArrayList()
-                            var offset = 0
-                            var hasMore = true
-                            while (hasMore && offset < 200) {
-                                val request =
-                                    spotifyApi.listOfCurrentUsersPlaylists
-                                        .limit(PLAYLIST_LIMIT)
-                                        .offset(offset)
-                                        .build()
-                                val batch = request.execute().items
-                                if (batch.isEmpty()) {
-                                    hasMore = false
-                                } else {
-                                    allPlaylists.addAll(listOf(*batch))
-                                    offset += batch.size
-                                    Thread.sleep(THROTTLE_DELAY)
-                                }
+                CompletableFuture.supplyAsync {
+                    try {
+                        val allPlaylists: MutableList<PlaylistSimplified> =
+                            ArrayList()
+                        var offset = 0
+                        var hasMore = true
+                        while (hasMore && offset < 200) {
+                            val request =
+                                spotifyApi.listOfCurrentUsersPlaylists
+                                    .limit(PLAYLIST_LIMIT)
+                                    .offset(offset)
+                                    .build()
+                            val batch = request.execute().items
+                            if (batch.isEmpty()) {
+                                hasMore = false
+                            } else {
+                                allPlaylists.addAll(listOf(*batch))
+                                offset += batch.size
+                                Thread.sleep(THROTTLE_DELAY)
                             }
-                            CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
-                            return@supplyAsync allPlaylists
-                        } catch (e: Exception) {
-                            error("Failed to fetch playlists", e)
-                            return@supplyAsync emptyList<PlaylistSimplified>()
-                        } finally {
-                            playlistCache.remove(cacheKey)
                         }
+                        CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
+                        return@supplyAsync allPlaylists
+                    } catch (e: Exception) {
+                        error("Failed to fetch playlists", e)
+                        return@supplyAsync emptyList<PlaylistSimplified>()
+                    } finally {
+                        playlistCache.remove(cacheKey)
                     }
-                })
+                }
+            })
         }
     }
 
@@ -844,23 +791,41 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     private inner class SpotifyCallbackHandler : HttpHandler {
         override fun handle(exchange: HttpExchange) {
-            val query = exchange.requestURI.query
             val response = "Authorization successful! You can close this window now."
             exchange.sendResponseHeaders(200, response.length.toLong())
-            val os: OutputStream = exchange.responseBody
-            os.write(response.toByteArray())
-            os.close()
-            if (query != null && query.startsWith("code=")) {
-                val code = query.substring(5)
-                CompletableFuture.runAsync { requestAccessToken(code) }
+            exchange.responseBody.use { it.write(response.toByteArray()) }
+
+            val query = exchange.requestURI.query ?: return
+            val params = query.split("&").associate {
+                val parts = it.split("=", limit = 2)
+                parts[0] to java.net.URLDecoder.decode(parts.getOrElse(1) { "" }, "UTF-8")
+            }
+
+            if (params.containsKey("error")) {
+                error("Spotify auth error: ${params["error"]}")
+                return
+            }
+
+            val accessToken = params["access_token"]
+            val refreshToken = params["refresh_token"]
+
+            if (!accessToken.isNullOrEmpty()) {
+                spotifyApi.accessToken = accessToken
+                spotifyApi.refreshToken = refreshToken
+                isAuthorized = true
+                saveTokens()
+                startPlaybackStateUpdater()
+                scheduleTokenRefresh()
+                ShindoLogger.info("Spotify authorization successful via CDN proxy")
             } else {
-                ShindoLogger.warn("Received callback without authorization code")
+                error("Callback received but no access_token found")
             }
         }
     }
 
     companion object {
-        private val REDIRECT_URI = SpotifyHttpManager.makeUri("http://127.0.0.1:8888/callback")
+        private const val CDN_BASE_URL = "https://cdn.shindoclient.com"
+        private val LOCAL_CALLBACK_URI = SpotifyHttpManager.makeUri("http://127.0.0.1:8888/callback")
         private const val TOKEN_FILE_NAME = "spotify_tokens.properties"
         private const val CREDENTIALS_FILE_NAME = "spotify_credentials.properties"
         private const val SEARCH_LIMIT = 30

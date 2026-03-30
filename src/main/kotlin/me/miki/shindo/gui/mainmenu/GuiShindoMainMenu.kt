@@ -34,7 +34,6 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
     private val scenes: ArrayList<MainMenuScene> = ArrayList()
 
     private val skinFocusAnimation = SimpleAnimation()
-    private val shopFocusAnimation = SimpleAnimation()
     private val backgroundSelectFocusAnimation = SimpleAnimation()
     private val closeFocusAnimation = SimpleAnimation()
 

@@ -9,7 +9,6 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.profile.mainmenu.impl.Background
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
-import me.miki.shindo.management.profile.mainmenu.impl.PanoramaBackground
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.file.FileUtils
 import net.minecraft.util.ResourceLocation
@@ -52,7 +51,7 @@ class BackgroundManager {
                 ResourceLocation("shindo/mainmenu/background-dolphin.png")
             )
         )
-        backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
+        //backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
         backgrounds.add(DefaultBackground(999, TranslateText.ADD, null))
 
         val removeImages = load()

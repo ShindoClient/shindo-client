@@ -36,19 +36,6 @@ object AddonCategoryRenderer {
             height = height,
             hoverProgress = hoverProgress
         )
-
-        if (hoverProgress > 0.01f) {
-            nvg.drawOutlineRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                8f,
-                1f,
-                ColorUtils.applyAlpha(Color.WHITE, (20 + hoverProgress * 60f).toInt())
-            )
-        }
-
         if (indicatorWidth > 0f) {
             val loadColor = if (failed) Color(200, 60, 60, 220) else Color(60, 180, 80, 220)
             nvg.drawRoundedRect(x, y, indicatorWidth, height, 4f, loadColor)

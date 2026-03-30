@@ -161,7 +161,7 @@ class GeneralScene(parent: SettingsCategory) :
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         container.keyTyped(typedChar, keyCode)
 
-        if (modMenuKeybind.isBinding) {
+        if (modMenuKeybind.isBinding()) {
             modMenuKeybind.keyTyped(typedChar, keyCode)
         }
         for (card in settingCards) {

@@ -1,5 +1,6 @@
 package me.miki.shindo.ui.comp.buttons
 
+import me.miki.shindo.gui.modmenu.style.ModMenuListCardStyle
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.value.SimpleAnimation
@@ -10,8 +11,6 @@ import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
 class CompToggleButton : CompControlTemplate {
-    private val hoverAnimation = SimpleAnimation()
-    private val pressAnimation = SimpleAnimation()
     private val toggleAnimation = SimpleAnimation()
 
     private val setting: BooleanSetting
@@ -53,82 +52,36 @@ class CompToggleButton : CompControlTemplate {
         val y = getY()
         val width = getWidth()
         val height = getHeight()
-        val enabled = isEnabled()
         val toggled = setting.isToggled()
-        val radius = height / 2f
-        val knobSize = (height - (4f * scale)).coerceAtLeast(8f * scale)
-        val knobInset = (height - knobSize) / 2f
-        val knobTravel = width - (knobInset * 2f) - knobSize
 
-        hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
-        pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.83f else 0.0f, 16.0)
         toggleAnimation.setAnimation(if (toggled) 1.0f else 0.0f, 16.0)
+        val progress = toggleAnimation.value
 
-        val baseTrack = CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, palette, accentColor)
-        val hoverTrack = CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, palette, accentColor)
-        var trackColor = ColorUtils.interpolateColor(baseTrack, hoverTrack, hoverAnimation.value.toDouble())
-        if (pressAnimation.value > 0.08f) {
-            trackColor = ColorUtils.darken(trackColor, pressAnimation.value * 0.16f)
-        }
-        if (!enabled) {
-            trackColor = ColorUtils.applyAlpha(trackColor, 116)
-        }
+        val toggleRadius = height / 2f
+        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), ModMenuListCardStyle.TOGGLE_BASE_ALPHA)
+        nvgInstance.drawRoundedRect(x, y, width, height, toggleRadius, toggleBase)
 
-        val activeGradientStart = ColorUtils.applyAlpha(
-            accentColor.getColor1(),
-            if (enabled) (80 + (toggleAnimation.value * 145f).toInt()) else 86
-        )
-        val activeGradientEnd = ColorUtils.applyAlpha(
-            accentColor.getColor2(),
-            if (enabled) (80 + (toggleAnimation.value * 145f).toInt()) else 86
-        )
-
-        val outlineIdle = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 34)
-        val outlineHover = ColorUtils.applyAlpha(accentColor.getColor1(), 98)
-        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.value.toDouble())
-        if (!enabled) {
-            outlineColor = ColorUtils.applyAlpha(outlineColor, 92)
+        if (progress > 0f) {
+            nvgInstance.drawGradientRoundedRect(
+                x,
+                y,
+                width,
+                height,
+                toggleRadius,
+                ColorUtils.applyAlpha(accentColor.getColor1(), (progress * 255).toInt()),
+                ColorUtils.applyAlpha(accentColor.getColor2(), (progress * 255).toInt())
+            )
         }
 
-        nvgInstance.drawRoundedRect(x, y, width, height, radius, trackColor)
-        nvgInstance.drawGradientRoundedRect(x, y, width, height, radius, activeGradientStart, activeGradientEnd)
-        nvgInstance.drawOutlineRoundedRect(x, y, width, height, radius, 1f, outlineColor)
+        val knobSize = height - 6
+        val knobX = x + 3 + progress * (width - knobSize - 6)
+        val knobY = y + 3
+        nvgInstance.drawRoundedRect(knobX, knobY, knobSize, knobSize, knobSize / 2f, Color.WHITE)
 
-        val knobX = x + knobInset + knobTravel * toggleAnimation.value
-        var knobColor = ColorUtils.interpolateColor(
-            palette.getBackgroundColor(ColorType.DARK),
-            Color.WHITE,
-            toggleAnimation.value.toDouble()
-        )
-        if (hoverAnimation.value > 0.0f) {
-            knobColor = ColorUtils.interpolateColor(knobColor, Color.WHITE, (hoverAnimation.value * 0.2f).toDouble())
-        }
-        if (!enabled) {
-            knobColor = ColorUtils.applyAlpha(knobColor, 144)
-        }
-
-        nvgInstance.drawRoundedRect(
-            knobX,
-            y + knobInset,
-            knobSize,
-            knobSize,
-            knobSize / 2f,
-            knobColor
-        )
-        nvgInstance.drawOutlineRoundedRect(
-            knobX,
-            y + knobInset,
-            knobSize,
-            knobSize,
-            knobSize / 2f,
-            1f,
-            ColorUtils.applyAlpha(Color.BLACK, if (enabled) 42 else 22)
-        )
     }
 
     override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton == 0 && isEnabled()) {
-            pressAnimation.value = 1.0f
             setting.setToggled(!setting.isToggled())
         }
     }

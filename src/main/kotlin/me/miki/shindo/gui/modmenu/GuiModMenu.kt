@@ -80,7 +80,7 @@ class GuiModMenu(
         categories.add(ProfileCategory(this))
 
         categories.add(ScreenshotCategory(this))
-        categories.add(NetworkCategory(this))
+        //categories.add(NetworkCategory(this))
         categories.add(SettingsCategory(this))
 
         currentCategory = getCategoryByClass(HomeCategory::class.java)

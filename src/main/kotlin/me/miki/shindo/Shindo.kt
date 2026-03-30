@@ -1,5 +1,7 @@
 package me.miki.shindo
 
+import me.miki.extensions.ExtensionLibrary
+import me.miki.extensions.manager.ExtensionManager
 import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
 import me.miki.shindo.injection.mixin.ShindoTweaker
@@ -65,6 +67,8 @@ class Shindo private constructor() {
     lateinit var languageManager: LanguageManager
         private set
     lateinit var eventManager: EventManager
+        private set
+    lateinit var extensionManager: ExtensionManager
         private set
     lateinit var downloadManager: DownloadManager
         private set
@@ -149,6 +153,9 @@ class Shindo private constructor() {
         fileManager = FileManager()
         languageManager = LanguageManager()
         eventManager = EventManager()
+        extensionManager = ExtensionManager().also {
+            ExtensionLibrary.bootstrap(it)
+        }
 
         downloadManager = DownloadManager()
         modManager = ModManager()
@@ -242,5 +249,3 @@ class Shindo private constructor() {
         fun getInstance(): Shindo = instance
     }
 }
-
-

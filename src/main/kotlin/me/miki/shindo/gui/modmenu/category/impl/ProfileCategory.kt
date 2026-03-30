@@ -14,12 +14,17 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.management.profile.*
+import me.miki.shindo.management.profile.Profile
+import me.miki.shindo.management.profile.ProfileIcon
+import me.miki.shindo.management.profile.ProfileManager
+import me.miki.shindo.management.profile.ProfileShareManager
+import me.miki.shindo.management.profile.ProfileType
 import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.chips.CategoryChipRenderer
 import me.miki.shindo.ui.comp.chips.FilterChip
 import me.miki.shindo.ui.comp.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
+import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.IOUtils
 import me.miki.shindo.utils.SearchUtils
 import me.miki.shindo.utils.concurrent.TaskExecutor
@@ -30,13 +35,12 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.io.IOException
-import java.util.*
+
 
 class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true) {
 
     private val nameBox = CompTextBox()
     private val serverIpBox = CompTextBox()
-    private val importCodeBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
     private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
     private var currentType = ProfileType.ALL
@@ -45,14 +49,12 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     private var useCustomIcon = false
     private var selectedCustomIcon: File? = null
     private var gridStartY = 0f
-    private var importButtonX = 0f
-    private var importButtonY = 0f
-    private var importButtonW = 0f
-    private var importButtonH = 0f
-    private val iconHoverAnimations = EnumMap<ProfileIcon, SimpleAnimation>(ProfileIcon::class.java)
-    private val iconPressAnimations = EnumMap<ProfileIcon, SimpleAnimation>(ProfileIcon::class.java)
+    //private var importButtonX = 0f
+    //private var importButtonY = 0f
+    //private var importButtonW = 0f
+    //private var importButtonH = 0f
     private val customIconHoverAnimation = SimpleAnimation()
-    private val customIconPressAnimation = SimpleAnimation()
+    private val createAnimation = SimpleAnimation()
 
     override fun initGui() {
         currentType = ProfileType.ALL
@@ -62,10 +64,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         useCustomIcon = false
         selectedCustomIcon = null
         gridStartY = 0f
-        iconHoverAnimations.clear()
-        iconPressAnimations.clear()
         customIconHoverAnimation.value = 0f
-        customIconPressAnimation.value = 0f
+        createAnimation.value = 0f
     }
 
     override fun initCategory() {
@@ -75,10 +75,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         useCustomIcon = false
         selectedCustomIcon = null
         gridStartY = 0f
-        iconHoverAnimations.clear()
-        iconPressAnimations.clear()
         customIconHoverAnimation.value = 0f
-        customIconPressAnimation.value = 0f
+        createAnimation.value = 0f
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -93,7 +91,6 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         detailTransition.update {
             nameBox.setText("")
             serverIpBox.setText("")
-            importCodeBox.setText("")
             setCanClose(true)
         }
 
@@ -165,14 +162,9 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         CARD_HEIGHT
                     )
 
-                val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
-                val borderColor = when {
-                    isActive -> ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 186)
-                    hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 124)
-                    else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 205)
-                }
+                val base = applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
 
-                nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 10f, 6)
+                nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, 6)
                 nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
                 nvg.drawOutlineRoundedRect(
                     cardX,
@@ -180,20 +172,10 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     cardWidth,
                     CARD_HEIGHT,
                     12f,
-                    if (isActive) 1.5f else 1f,
-                    borderColor
+                    1f,
+                    applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
                 )
 
-                if (isActive) {
-                    nvg.drawRoundedRect(
-                        cardX + 10f,
-                        cardY + 14f,
-                        3f,
-                        CARD_HEIGHT - 28f,
-                        1.5f,
-                        ColorUtils.applyAlpha(accentColor.getInterpolateColor(), 188)
-                    )
-                }
 
                 if (isCreateCard) {
                     nvg.drawCenteredText(
@@ -229,7 +211,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         ICON_SIZE,
                         ICON_SIZE,
                         9f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
                     )
                     nvg.drawCenteredText(
                         LegacyIcon.PLUS,
@@ -258,7 +240,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     serverInfo,
                     textX,
                     cardY + 36f,
-                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 220),
+                    applyAlpha(palette.getFontColor(ColorType.NORMAL), 220),
                     8.5f,
                     Fonts.REGULAR
                 )
@@ -276,7 +258,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         starSize,
                         starSize,
                         5f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
                     )
 
                     val starY = startY + starSize + 10f
@@ -286,7 +268,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         starSize,
                         starSize,
                         5f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
                     )
                     nvg.drawCenteredText(
                         LegacyIcon.STAR,
@@ -300,7 +282,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         LegacyIcon.STAR_FILL,
                         startX + starSize / 2f,
                         starY + 3f,
-                        ColorUtils.applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()),
+                        applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()),
                         10f,
                         Fonts.LEGACYICON
                     )
@@ -312,7 +294,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         starSize,
                         starSize,
                         5f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
                     )
                     nvg.drawCenteredText(
                         LegacyIcon.TRASH,
@@ -333,7 +315,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         checkSize,
                         checkSize,
                         5f,
-                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
                     )
                 }
 
@@ -388,7 +370,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             panelHeight,
             12f,
             1.1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
         )
 
         nvg.drawText(
@@ -416,26 +398,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         for (icon in ProfileIcon.values()) {
             val selected = !useCustomIcon && currentIcon == icon
             val hovered = MouseUtils.isInside(mouseX, mouseY, iconSelectorX, iconSelectorY, iconTileSize, iconTileSize)
-            val hoverAnimation = getIconHoverAnimation(icon)
-            val pressAnimation = getIconPressAnimation(icon)
             icon.animation.setAnimation(if (selected) 1.0f else 0.0f, 12.0)
-            hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 14.0)
-            pressAnimation.setAnimation(
-                if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f,
-                16.0
-            )
-            val activeAlpha = icon.animation.value
-            val hoverAlpha = hoverAnimation.value
-            val pressAlpha = pressAnimation.value
-
-            var tileBase = ColorUtils.applyAlpha(
-                palette.getBackgroundColor(ColorType.NORMAL),
-                (194f + hoverAlpha * 28f).toInt().coerceIn(0, 255)
-            )
-            if (pressAlpha > 0.08f) {
-                tileBase = ColorUtils.darken(tileBase, pressAlpha * 0.12f)
-            }
-            nvg.drawRoundedRect(iconSelectorX, iconSelectorY, iconTileSize, iconTileSize, 8f, tileBase)
             nvg.drawRoundedImage(
                 icon.icon,
                 iconSelectorX + 1f,
@@ -444,19 +407,18 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 iconTileSize - 2f,
                 7f
             )
-            nvg.drawOutlineRoundedRect(
-                iconSelectorX,
-                iconSelectorY,
-                iconTileSize,
-                iconTileSize,
-                8f,
-                if (selected) 1.6f else 1f,
-                ColorUtils.applyAlpha(
-                    if (selected || hovered) accentColor.getInterpolateColor() else palette.getFontColor(ColorType.NORMAL),
-                    ((if (selected) 206f else if (hovered) 156f else 104f) + activeAlpha * 18f + hoverAlpha * 10f).toInt()
-                        .coerceIn(0, 255)
-                )
-            )
+
+            if (selected || hovered) {
+                nvg.drawOutlineRoundedRect(
+                    iconSelectorX,
+                    iconSelectorY,
+                    iconTileSize,
+                    iconTileSize,
+                    8f,
+                    1.6f,
+                    palette.getFontColor(ColorType.NORMAL)
+                    )
+            }
 
             iconSelectorX += iconTileSize + iconSelectorGap
         }
@@ -465,22 +427,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val customTileY = panelY + 66f
         val customHovered = MouseUtils.isInside(mouseX, mouseY, customTileX, customTileY, iconTileSize, iconTileSize)
         customIconHoverAnimation.setAnimation(if (customHovered) 1.0f else 0.0f, 14.0)
-        customIconPressAnimation.setAnimation(
-            if (customIconPressAnimation.value > 0.08f) customIconPressAnimation.value * 0.82f else 0.0f,
-            16.0
-        )
+
         val customHover = customIconHoverAnimation.value
-        val customPress = customIconPressAnimation.value
 
-        var customBase = ColorUtils.applyAlpha(
-            palette.getBackgroundColor(ColorType.NORMAL),
-            (210f + customHover * 26f).toInt().coerceIn(0, 255)
-        )
-        if (customPress > 0.08f) {
-            customBase = ColorUtils.darken(customBase, customPress * 0.13f)
-        }
-        nvg.drawRoundedRect(customTileX, customTileY, iconTileSize, iconTileSize, 8f, customBase)
-
+        val customBase = applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), (210f + customHover * 26f).toInt().coerceIn(0, 255))
+        nvg.drawRoundedRect(customTileX, customTileY, 24f, 24f, 8f, customBase)
         if (selectedCustomIcon != null) {
             nvg.drawRoundedImage(
                 selectedCustomIcon!!,
@@ -501,21 +452,20 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             )
         }
 
-        nvg.drawOutlineRoundedRect(
-            customTileX,
-            customTileY,
-            iconTileSize,
-            iconTileSize,
-            8f,
-            if (useCustomIcon) 1.6f else 1.2f,
-            ColorUtils.applyAlpha(
-                if (useCustomIcon || customHovered) accentColor.getInterpolateColor() else palette.getFontColor(
-                    ColorType.NORMAL
-                ),
-                if (useCustomIcon) (220f + customHover * 20f).toInt()
-                    .coerceIn(0, 255) else if (customHovered) 154 else 100
+        if (customHovered) {
+            nvg.drawOutlineRoundedRect(
+                customTileX,
+                customTileY,
+                iconTileSize,
+                iconTileSize,
+                8f,
+                1.6f,
+                palette.getFontColor(
+                    ColorType.NORMAL)
             )
-        )
+        }
+
+
 
         val fieldStartY = panelY + 130f
         val fieldWidth = (panelWidth - 48f) / 2f - 15f
@@ -544,91 +494,16 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         serverIpBox.setDefaultText(TranslateText.SERVER_IP.getText())
         serverIpBox.draw(mouseX, mouseY, partialTicks)
 
-        val importFieldY = fieldStartY + 62f
-        val importFieldWidth = panelWidth - 48f - 90f
-        nvg.drawText(
-            TranslateText.PROFILE_IMPORT_CODE.getText(),
-            panelX + 24f,
-            importFieldY,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM
-        )
-        importCodeBox.setPosition(panelX + 24f, importFieldY + 20f, importFieldWidth, 20f)
-        importCodeBox.setDefaultText(TranslateText.PROFILE_IMPORT_CODE.getText())
-        importCodeBox.draw(mouseX, mouseY, partialTicks)
 
-        importButtonW = 80f
-        importButtonH = 20f
-        importButtonX = panelX + panelWidth - importButtonW - 30f
-        importButtonY = importFieldY + 20f
-        val importHovered =
-            MouseUtils.isInside(mouseX, mouseY, importButtonX, importButtonY, importButtonW, importButtonH)
-        nvg.drawRoundedRect(
-            importButtonX,
-            importButtonY,
-            importButtonW,
-            importButtonH,
-            8f,
-            if (importHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
-        )
-        if (importHovered) {
-            nvg.drawGradientOutlineRoundedRect(
-                importButtonX,
-                importButtonY,
-                importButtonW,
-                importButtonH,
-                8f,
-                1f,
-                ColorUtils.applyAlpha(accentColor.getColor1(), 148),
-                ColorUtils.applyAlpha(accentColor.getColor2(), 148)
-            )
-        }
-        nvg.drawCenteredText(
-            TranslateText.PROFILE_IMPORT.getText(),
-            importButtonX + importButtonW / 2f,
-            importButtonY + importButtonH / 2f - 4f,
-            palette.getFontColor(ColorType.DARK),
-            10f,
-            Fonts.REGULAR
-        )
 
-        val createButtonWidth = 80f
-        val createButtonHeight = 20f
-        val createButtonX = panelX + panelWidth - createButtonWidth - 30f
-        val createButtonY = panelY + panelHeight - createButtonHeight - 20f
-        val createHovered =
-            MouseUtils.isInside(mouseX, mouseY, createButtonX, createButtonY, createButtonWidth, createButtonHeight)
+        val createHovered = MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 124f, this.getY() + this.getHeight() - 44f, 100f, 21f)
+        createAnimation.setAnimation( if (createHovered) 1.0f else 0.0f, 12.0)
 
-        nvg.drawRoundedRect(
-            createButtonX,
-            createButtonY,
-            createButtonWidth,
-            createButtonHeight,
-            8f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+
+        nvg.drawRoundedRect(this.getX() + this.getWidth() - 124f, this.getY() + this.getHeight() - 44f, 100f, 21f, 6f,
+            ColorUtils.applyAlpha(if (createHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.NORMAL), (if (createHovered) 210 else 150) + createAnimation.value.toInt() * 20)
         )
-        nvg.drawGradientRoundedRect(
-            createButtonX,
-            createButtonY,
-            createButtonWidth,
-            createButtonHeight,
-            8f,
-            ColorUtils.applyAlpha(accentColor.getColor1(), if (createHovered) 198 else 156),
-            ColorUtils.applyAlpha(accentColor.getColor2(), if (createHovered) 198 else 156)
-        )
-        nvg.drawCenteredText(
-            TranslateText.CREATE.getText(),
-            createButtonX + createButtonWidth / 2f,
-            createButtonY + (createButtonHeight / 2f) - 4f - (nvg.getTextHeight(
-                TranslateText.CREATE.getText(),
-                10f,
-                Fonts.REGULAR
-            ) / 2f),
-            palette.getFontColor(ColorType.DARK),
-            10f,
-            Fonts.REGULAR
-        )
+        nvg.drawCenteredText(TranslateText.CREATE.getText(), this.getX() + this.getWidth() - 124f + 50f, this.getY() + this.getHeight() - 37.5F, palette.getFontColor(ColorType.DARK), 10f, Fonts.REGULAR)
 
         nvg.restore()
 
@@ -646,6 +521,9 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val scrollValue = scroll.getValue()
         val contentStartY = if (gridStartY > 0f) gridStartY else getY() + 56f
         val cardWidth = ((getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2f)
+
+
+
 
         if (openProfile && detailTransition.isDetailsInteractive()) {
             val panelX = getX() + 18f
@@ -668,7 +546,6 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                         iconTileSize
                     ) && mouseButton == 0
                 ) {
-                    getIconPressAnimation(icon).value = 1.0f
                     currentIcon = icon
                     useCustomIcon = false
                 }
@@ -687,7 +564,6 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     iconTileSize
                 ) && mouseButton == 0
             ) {
-                customIconPressAnimation.value = 1.0f
                 if (selectedCustomIcon != null && !useCustomIcon) {
                     useCustomIcon = true
                 } else {
@@ -697,12 +573,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
             nameBox.mouseClicked(mouseX, mouseY, mouseButton)
             serverIpBox.mouseClicked(mouseX, mouseY, mouseButton)
-            importCodeBox.mouseClicked(mouseX, mouseY, mouseButton)
 
-            val createButtonWidth = 80f
-            val createButtonHeight = 20f
-            val createButtonX = panelX + panelWidth - createButtonWidth - 30f
-            val createButtonY = panelY + panelHeight - createButtonHeight - 20f
+            val createButtonWidth = 100f
+            val createButtonHeight = 21f
+            val createButtonX = this.getX() + this.getWidth() - 124f
+            val createButtonY = this.getY() + this.getHeight() - 44f
 
             if (MouseUtils.isInside(
                     mouseX,
@@ -731,6 +606,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 }
             }
 
+            /*
             if (MouseUtils.isInside(
                     mouseX,
                     mouseY,
@@ -773,6 +649,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     }
                 }
             }
+
+            */
 
             if (!MouseUtils.isInside(
                     mouseX,
@@ -883,6 +761,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     }
                 }
 
+
+                /*
                 if (mouseButton == 1 && profile.id != 999) {
                     val shareManager = instance.profileShareManager
                     shareManager.requestShare(profile) { result ->
@@ -908,6 +788,8 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                     }
                     return
                 }
+
+                 */
             }
         }
 
@@ -920,7 +802,6 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         if (openProfile && detailTransition.isDetailsInteractive()) {
             nameBox.keyTyped(typedChar, keyCode)
             serverIpBox.keyTyped(typedChar, keyCode)
-            importCodeBox.keyTyped(typedChar, keyCode)
 
             if (keyCode == Keyboard.KEY_ESCAPE) {
                 closeProfilePanel(clearIconSelection = true)
@@ -945,14 +826,6 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             selectedCustomIcon = null
             useCustomIcon = false
         }
-    }
-
-    private fun getIconHoverAnimation(icon: ProfileIcon): SimpleAnimation {
-        return iconHoverAnimations.getOrPut(icon) { SimpleAnimation() }
-    }
-
-    private fun getIconPressAnimation(icon: ProfileIcon): SimpleAnimation {
-        return iconPressAnimations.getOrPut(icon) { SimpleAnimation() }
     }
 
     private fun drawTypeChips(
