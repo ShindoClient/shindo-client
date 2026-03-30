@@ -27,16 +27,14 @@ object ModMenuListCardRenderer {
         height: Float,
         hoverProgress: Float
     ) {
-        val fillAlpha = (198 + (hoverProgress * 22)).toInt()
-        val outlineAlpha = (84 + hoverProgress * 74f).toInt()
-
+        nvg.drawShadow(x, y, width, height, 8f, 7)
         nvg.drawRoundedRect(
             x,
             y,
             width,
             height,
             ModMenuListCardStyle.CARD_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), fillAlpha)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -44,8 +42,8 @@ object ModMenuListCardRenderer {
             width,
             height,
             ModMenuListCardStyle.CARD_RADIUS,
-            1.0f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), outlineAlpha)
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
         )
     }
 
@@ -68,21 +66,11 @@ object ModMenuListCardRenderer {
         )
         nvg.drawCenteredText(
             LegacyIcon.SETTINGS,
-            x + size / 2f - 1f,
-            y + size / 2f - 6f,
-            palette.getFontColor(ColorType.DARK),
+            x + (size / 2f),
+            y + 2f,
+            ColorUtils.interpolateColor(palette.getFontColor(ColorType.DARK),accent.getInterpolateColor(),hoverProgress.toDouble()),
             ModMenuListCardStyle.SETTINGS_ICON_SIZE,
             Fonts.LEGACYICON
-        )
-        nvg.drawGradientOutlineRoundedRect(
-            x,
-            y,
-            size,
-            size,
-            ModMenuListCardStyle.SETTINGS_RADIUS,
-            1.0f,
-            ColorUtils.applyAlpha(accent.getColor1(), (hoverProgress * 255).toInt()),
-            ColorUtils.applyAlpha(accent.getColor2(), (hoverProgress * 255).toInt())
         )
     }
 

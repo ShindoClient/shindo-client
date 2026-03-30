@@ -7,13 +7,14 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.SoundSetting
 import me.miki.shindo.ui.comp.Comp
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
 import me.miki.shindo.utils.mouse.MouseUtils
+import java.awt.Color
 import java.io.File
 import java.io.IOException
+
 
 class CompSoundSelect : Comp {
 
@@ -36,55 +37,28 @@ class CompSoundSelect : Comp {
         val accentColor = accent
         val paletteColors = palette
 
-        val name = soundSetting.getSound()?.name ?: TranslateText.NONE.getText()
-        val label = nvgInstance.getLimitText(name, 8.5f, Fonts.REGULAR, 96f)
-        val labelWidth = nvgInstance.getTextWidth(label, 8.5f, Fonts.REGULAR)
-        val x = getX()
-        val y = getY()
-        val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, 16f, 16f)
+        val name =
+            if (soundSetting.getSound() == null) TranslateText.NONE.getText() else soundSetting.getSound()!!.getName()
+        val nameWidth = nvgInstance.getTextWidth(name, 9f, Fonts.REGULAR)
 
-        nvgInstance.drawRoundedRect(
-            x - labelWidth - 8f,
-            y,
-            labelWidth + 6f,
+        nvgInstance.drawGradientRoundedRect(
+            this.getX(),
+            this.getY(),
+            16f,
             16f,
             4f,
-            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 176)
+            accentColor.getColor1(),
+            accentColor.getColor2()
         )
         nvgInstance.drawText(
-            label,
-            x - labelWidth - 5f,
-            y + 4f,
+            name,
+            this.getX() - nameWidth - 5,
+            this.getY() + 4,
             paletteColors.getFontColor(ColorType.DARK),
-            8.5f,
+            9f,
             Fonts.REGULAR
         )
-        nvgInstance.drawGradientRoundedRect(
-            x,
-            y,
-            16f,
-            16f,
-            4f,
-            ColorUtils.applyAlpha(accentColor.getColor1(), if (hovered) 210 else 168),
-            ColorUtils.applyAlpha(accentColor.getColor2(), if (hovered) 228 else 182)
-        )
-        nvgInstance.drawOutlineRoundedRect(
-            x,
-            y,
-            16f,
-            16f,
-            4f,
-            1f,
-            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), if (hovered) 160 else 118)
-        )
-        nvgInstance.drawCenteredText(
-            LegacyIcon.FOLDER,
-            x + 8,
-            y + 2.5f,
-            paletteColors.getFontColor(ColorType.DARK),
-            10f,
-            Fonts.LEGACYICON
-        )
+        nvgInstance.drawCenteredText(LegacyIcon.FOLDER, this.getX() + 8, this.getY() + 2.5f, Color.WHITE, 10f, Fonts.LEGACYICON)
 
         super.draw(mouseX, mouseY, partialTicks)
     }

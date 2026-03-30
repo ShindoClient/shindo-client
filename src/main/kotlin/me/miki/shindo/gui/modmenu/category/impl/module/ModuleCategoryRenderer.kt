@@ -10,9 +10,6 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
-/**
- * Dedicated renderer helper for module list cards.
- */
 object ModuleCategoryRenderer {
 
     fun drawCard(
@@ -55,31 +52,6 @@ object ModuleCategoryRenderer {
             height = height,
             hoverProgress = hoverProgress
         )
-
-        val activeIndicatorAlpha = (65 + toggleProgress * 150f).toInt().coerceIn(0, 255)
-        if (toggleProgress > 0.01f) {
-            nvg.drawGradientRoundedRect(
-                x + 2f,
-                y + 6f,
-                2f,
-                height - 12f,
-                1f,
-                ColorUtils.applyAlpha(accent.getColor1(), activeIndicatorAlpha),
-                ColorUtils.applyAlpha(accent.getColor2(), activeIndicatorAlpha)
-            )
-        }
-
-        if (hoverProgress > 0.01f) {
-            nvg.drawOutlineRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                8f,
-                1f,
-                ColorUtils.applyAlpha(Color.WHITE, (25 + hoverProgress * 65f).toInt())
-            )
-        }
 
         if (!icon.isNullOrEmpty()) {
             nvg.drawCenteredText(

@@ -163,22 +163,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             newsScroll.onAnimation()
             newsScroll.maxScroll = max((titleSize + subTitleSize + bodySize + 10F) - (newsHeight - 40F), 0F)
 
-            nvg.drawVerticalGradientRect(
-                leftX + INNER_PADDING,
-                topY + 20,
-                columnWidth - (INNER_PADDING * 2f),
-                8f,
-                palette.getBackgroundColor(ColorType.DARK),
-                noColour
-            )
-            nvg.drawVerticalGradientRect(
-                leftX + INNER_PADDING,
-                topY + newsHeight - 8,
-                columnWidth - (INNER_PADDING * 2f),
-                8f,
-                noColour,
-                palette.getBackgroundColor(ColorType.DARK)
-            )
+
         }
 
         var offsetChangelogY = 0
@@ -613,13 +598,14 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             joinButtonX = discordStartX + discordWidth - 60f,
             joinButtonY = discordStartY + BOTTOM_CARD_HEIGHT - 28f
         )
+
         nvg.drawRoundedRect(
             discordStartX + discordWidth - 60f,
             discordStartY + BOTTOM_CARD_HEIGHT - 28,
             52f,
             18f,
             9f,
-            if (joinHovered) ColorUtils.applyAlpha(currentColor.getColor1(), 220) else Color(114, 137, 214)
+            if (joinHovered) Color(64, 102, 232) else Color(114, 137, 214)
         )
         nvg.drawCenteredText(
             TranslateText.JOIN.getText() + " >",

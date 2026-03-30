@@ -13,7 +13,6 @@ open class SimpleAnimation {
 
     constructor()
 
-    @JvmOverloads
     constructor(initialValue: Float) {
         value = initialValue
         lastMS = System.currentTimeMillis()
@@ -33,7 +32,7 @@ open class SimpleAnimation {
         if (speedClamped > 28) speedClamped = 28.0
 
         val deltaValue = if (speedClamped != 0.0) abs(target - value) * 0.35f / (10.0 / speedClamped) else 0.0
-        value = calculateCompensation(target, value, deltaValue, delta).toFloat()
+        value = calculateCompensation(target, value, deltaValue, delta)
     }
 
     fun setAnimation(target: Float, speed: Int) {

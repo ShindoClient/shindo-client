@@ -2,6 +2,7 @@
 
 package me.miki.extensions
 
+import me.miki.extensions.manager.ExtensionManager
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.event.EventManager
@@ -60,5 +61,6 @@ fun Shindo.getLanguageManager(): LanguageManager {
     return Shindo.getInstance().languageManager
 }
 
-
-
+fun Shindo.getExtensionManager(): ExtensionManager {
+    return Shindo.getInstance().extensionManager
+}
