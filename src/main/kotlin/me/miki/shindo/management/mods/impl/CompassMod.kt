@@ -231,7 +231,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         this.setHeight(29)
     }
 
-    private fun renderMarker(x: Float, y: Float, color: Color?) {
+    private fun renderMarker(x: Float, y: Float, color: Color) {
         val nvg = getInstance().nanoVGManager
         val vg = nvg!!.getContext()
         val nvgColor = nvg.getColor(color)

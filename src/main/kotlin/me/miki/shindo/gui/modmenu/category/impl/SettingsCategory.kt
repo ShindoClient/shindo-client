@@ -30,8 +30,8 @@ class SettingsCategory(parent: GuiModMenu) :
         registerScene(AppearanceScene(this))
         registerScene(LanguageScene(this))
         registerScene(GeneralScene(this))
-        registerScene(LayoutScene(this))
-        registerScene(PerformanceScene(this))
+        //registerScene(LayoutScene(this))
+        //registerScene(PerformanceScene(this))
     }
 
     private fun registerScene(scene: SettingScene) {

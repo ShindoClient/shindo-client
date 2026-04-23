@@ -1,21 +1,22 @@
 package me.miki.shindo.ui.comp.inputs
 
+import me.miki.extensions.ui.graphics.nanovg.translate
+import me.miki.shindo.Shindo
+import me.miki.shindo.management.color.ColorManager
+import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
+import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.animation.value.SimpleAnimation
-import me.miki.shindo.ui.comp.style.CompControlVariant
-import me.miki.shindo.ui.comp.style.CompStyleResolver
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.utils.mouse.MouseUtils
+import java.awt.Color
+
 
 class CompSearchBox : CompTextBoxBase {
     private val timer = TimerUtils()
     private val searchAnimation = SimpleAnimation()
-    private val hoverAnimation = SimpleAnimation()
-    private val focusAnimation = SimpleAnimation()
 
     constructor(x: Float, y: Float, width: Float, height: Float) : super(x, y, width, height)
 
@@ -29,167 +30,116 @@ class CompSearchBox : CompTextBoxBase {
     }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = nvg
-        val paletteColors = palette
-        val accentColors = accent
+        val instance = Shindo.getInstance()
+        val nvg: NanoVGManager = instance.nanoVGManager!!
+        val colorManager: ColorManager = instance.colorManager
+        val palette: ColorPalette = colorManager.getPalette()
 
         val height = getHeight()
         val selectionEnd = this.getSelectionEnd()
         val cursorPosition = this.getCursorPosition()
         val text = this.getText()
         val focused = this.isFocused()
-        val hovered = MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
-        val textInset = 20f
-        val textPaddingEnd = 6f
 
         var addX = 0f
-        val halfHeight = (height * 0.5f).coerceAtLeast(8f)
-        val referenceText = if (text.isEmpty()) "A" else text
-        val textHeight = nvgInstance.getTextHeight(referenceText, halfHeight, Fonts.REGULAR)
-        val textY = getY() + (getHeight() / 2f) - (textHeight / 2f) + 0.5f
+        val halfHeight = height / 2f
 
         var outTextSize = 0
         var resultText = ""
 
-        for (c in text.toCharArray()) {
-            resultText += c
+        for (c in this.getText().toCharArray()) {
+            resultText += c.toString()
 
-            if (nvgInstance.getTextWidth(
-                    resultText,
-                    halfHeight,
-                    Fonts.REGULAR
-                ) + textInset + textPaddingEnd > getWidth()
-            ) {
+            if (nvg.getTextWidth(resultText, halfHeight, Fonts.REGULAR) + halfHeight + 5 > this.getWidth()) {
                 outTextSize++
 
-                addX = getWidth() - nvgInstance.getTextWidth(
-                    resultText,
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - textInset - textPaddingEnd
+                addX = this.getWidth() - nvg.getTextWidth(resultText, halfHeight, Fonts.REGULAR) - halfHeight - 5
             }
         }
 
         if (selectionEnd < outTextSize) {
-            val reversedText = StringBuilder(text).reverse().toString()
+            val reversedText = StringBuilder(this.getText()).reverse()
 
-            addX =
-                getWidth() - nvgInstance.getTextWidth(
-                    reversedText.substring(outTextSize - selectionEnd),
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - textInset - textPaddingEnd
+            addX = this.getWidth() - nvg.getTextWidth(
+                reversedText.toString().substring(outTextSize - selectionEnd),
+                halfHeight,
+                Fonts.REGULAR
+            ) - halfHeight - 5
         }
 
-        hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 16.0)
-        focusAnimation.setAnimation(if (focused) 1.0f else 0.0f, 16.0)
-
-        val baseBackground = CompStyleResolver.resolveControlBase(CompControlVariant.GHOST, paletteColors, accentColors)
-        val hoverBackground =
-            CompStyleResolver.resolveControlHover(CompControlVariant.GHOST, paletteColors, accentColors)
-        val shellColor = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
-        val focusTint = ColorUtils.applyAlpha(accentColors.getColor1(), 128)
-        val background = ColorUtils.interpolateColor(shellColor, focusTint, (focusAnimation.value * 0.22f).toDouble())
-        val idleOutline = ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 26)
-        val hoverOutline = ColorUtils.applyAlpha(accentColors.getColor1(), 72)
-        val focusOutline = ColorUtils.applyAlpha(accentColors.getColor1(), 150)
-        val mixedOutline = ColorUtils.interpolateColor(idleOutline, hoverOutline, hoverAnimation.value.toDouble())
-        val outlineColor = ColorUtils.interpolateColor(mixedOutline, focusOutline, focusAnimation.value.toDouble())
-
-        nvgInstance.drawRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
+        nvg.drawRoundedRect(
+            this.getX(),
+            this.getY(),
+            this.getWidth(),
+            this.getHeight(),
             6f,
-            background
-        )
-        nvgInstance.drawOutlineRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            6f,
-            1f,
-            outlineColor
+            palette.getBackgroundColor(ColorType.DARK)
         )
 
-        nvgInstance.save()
-        nvgInstance.scissor(getX() + 2, getY(), getWidth() - 4, getHeight())
+        nvg.save()
+        nvg.scissor(this.getX() + 1, this.getY(), this.getWidth() - 2, this.getHeight())
 
         if (cursorPosition != selectionEnd) {
-            val start = minOf(selectionEnd, cursorPosition)
-            val end = maxOf(selectionEnd, cursorPosition)
+            val start = if (selectionEnd > cursorPosition) cursorPosition else selectionEnd
+            val end = if (selectionEnd > cursorPosition) selectionEnd else cursorPosition
 
-            val selectionWidth = nvgInstance.getTextWidth(text.substring(start, end), halfHeight, Fonts.REGULAR)
-            val offset = nvgInstance.getTextWidth(text.substring(0, start), halfHeight, Fonts.REGULAR)
+            val selectionWidth = nvg.getTextWidth(this.getText().substring(start, end), halfHeight, Fonts.REGULAR)
+            val offset = nvg.getTextWidth(this.getText().substring(0, start), halfHeight, Fonts.REGULAR)
 
             if (selectionWidth != 0f) {
-                nvgInstance.drawRect(
-                    getX() + textInset + offset + addX,
-                    textY - 0.5f,
+                nvg.drawRect(
+                    this.getX() + 15 + offset + addX,
+                    this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
                     selectionWidth,
-                    textHeight + 1f,
-                    ColorUtils.applyAlpha(accentColors.getColor1(), 166)
+                    nvg.getTextHeight(text, halfHeight, Fonts.REGULAR),
+                    Color(0, 135, 247)
                 )
             }
         }
 
-        searchAnimation.setAnimation(if (!focused && text.isEmpty()) 1.0f else 0.0f, 16.0)
-        val iconColor = ColorUtils.interpolateColor(
-            paletteColors.getFontColor(ColorType.NORMAL, 168),
-            paletteColors.getFontColor(ColorType.NORMAL),
-            maxOf(hoverAnimation.value, focusAnimation.value).toDouble()
-        )
-        val iconSize = (halfHeight + 0.5f).coerceAtLeast(8f)
-        val iconY =
-            getY() + getHeight() / 2f - nvgInstance.getTextHeight(LegacyIcon.SEARCH, iconSize, Fonts.LEGACYICON) / 2f
+        searchAnimation.setAnimation(if (!focused && this.getText().isEmpty()) 1.0f else 0.0f, 16)
 
-        nvgInstance.drawText(
+        nvg.drawText(
             LegacyIcon.SEARCH,
-            getX() + 6f,
-            iconY,
-            iconColor,
-            iconSize,
+            this.getX() + 5,
+            this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
+            palette.getFontColor(ColorType.NORMAL),
+            halfHeight,
             Fonts.LEGACYICON
         )
 
-        if (text.isEmpty()) {
-            nvgInstance.save()
-            nvgInstance.translate(searchAnimation.value * 6f - 6f, 0f)
-            val placeholderAlpha = (searchAnimation.value * 206f).toInt().coerceIn(0, 206)
-            nvgInstance.drawText(
+        if (this.getText().isEmpty()) {
+            nvg.save()
+            nvg.translate((searchAnimation.value * 8) - 8, 0)
+            nvg.drawText(
                 TranslateText.SEARCH.getText(),
-                getX() + textInset,
-                textY,
-                paletteColors.getFontColor(ColorType.NORMAL, placeholderAlpha),
+                this.getX() + 16,
+                this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
+                palette.getFontColor(ColorType.NORMAL, (searchAnimation.value * 200).toInt()),
                 halfHeight,
                 Fonts.REGULAR
             )
-            nvgInstance.restore()
+            nvg.restore()
         }
 
-        nvgInstance.drawText(
-            text,
-            getX() + textInset + addX,
-            textY,
-            paletteColors.getFontColor(ColorType.DARK),
+        nvg.drawText(
+            this.getText(),
+            this.getX() + 16 + addX,
+            this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1,
+            palette.getFontColor(ColorType.NORMAL),
             halfHeight,
             Fonts.REGULAR
         )
 
         if (timer.delay(600)) {
-            val position =
-                nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
-                        nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
+            val position = nvg.getTextWidth(this.getText(), halfHeight, Fonts.REGULAR) - nvg.getTextWidth(
+                this.getText().substring(cursorPosition), halfHeight, Fonts.REGULAR
+            )
 
             if (focused && cursorPosition == selectionEnd) {
-                nvgInstance.drawRect(
-                    getX() + textInset + addX + position,
-                    textY - 0.5f,
-                    0.85f,
-                    textHeight + 1.25f,
-                    paletteColors.getFontColor(ColorType.DARK, 236)
+                nvg.drawRect(
+                    this.getX() + 16 + addX + position,
+                    this.getY() + (this.getHeight() / 2) - (nvg.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) - 0.5f, 0.7f, 10f, palette.getFontColor(ColorType.DARK)
                 )
             }
 
@@ -198,7 +148,6 @@ class CompSearchBox : CompTextBoxBase {
             }
         }
 
-        nvgInstance.restore()
-        super.draw(mouseX, mouseY, partialTicks)
+        nvg.restore()
     }
 }

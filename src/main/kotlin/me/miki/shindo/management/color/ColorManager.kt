@@ -69,6 +69,5 @@ class ColorManager {
     fun setTheme(t: Theme) {
         theme = t
     }
-
     fun getPalette(): ColorPalette = palette
 }

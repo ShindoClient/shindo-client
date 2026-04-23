@@ -7,7 +7,6 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
 object ModuleCategoryRenderer {

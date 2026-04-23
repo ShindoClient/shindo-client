@@ -45,7 +45,6 @@ bin/
 .DS_Store
 
 # Shindo private Stuff
-AGENTS.md
 docs/
 implement/
 scripts/

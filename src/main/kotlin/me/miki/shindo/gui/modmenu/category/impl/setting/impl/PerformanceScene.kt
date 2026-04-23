@@ -1,15 +1,17 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
+import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.buttons.CompSettingButton
 import me.miki.shindo.ui.comp.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
-import me.miki.shindo.ui.comp.layout.withSurfaceVariant
-import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.templates.PanelStyle
+import me.miki.shindo.utils.ColorUtils
 
 class PerformanceScene(parent: SettingsCategory) :
     SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
@@ -19,6 +21,9 @@ class PerformanceScene(parent: SettingsCategory) :
     private val settingCards = ArrayList<CompSettingButton>()
 
     override fun initGui() {
+        val instance = Shindo.getInstance()
+        val colorManager = instance.colorManager
+        val palette = colorManager.getPalette()
         val settingsMod = InternalSettingsMod.instance
 
         textureOptimizationToggle = CompToggleButtonWithRestart(
@@ -27,8 +32,13 @@ class PerformanceScene(parent: SettingsCategory) :
             requiresRestart = true
         )
 
-        container = CompScrollableContainer()
-            .withSurfaceVariant(CompSurfaceVariant.PANEL)
+        container = CompScrollableContainer().apply {
+            setScrollbarGutter(14f)
+            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
+            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
+            setShadowStrength(7)
+            setStyle(PanelStyle.PANEL)
+        }
         settingCards.clear()
         settingCards.add(
             CompSettingButton(

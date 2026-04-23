@@ -5,8 +5,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.comp.style.CompSurfaceVariant
-import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
+import me.miki.shindo.ui.comp.templates.CompPanel
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import kotlin.math.max
@@ -17,7 +16,7 @@ class CompVisualPresetSelector(
     y: Float = 0f,
     width: Float = 0f,
     height: Float = 116f
-) : CompSurfaceTemplate(x, y, width, height) {
+) : CompPanel(x, y, width, height) {
 
     data class Entry(val title: String, val subtitle: String)
 
@@ -32,9 +31,9 @@ class CompVisualPresetSelector(
     private val minCardWidth = 108f
 
     init {
-        setSurfaceVariant(CompSurfaceVariant.PANEL)
+        //setSurfaceVariant(CompSurfaceVariant.PANEL)
         setRadius(10f)
-        setBackgroundColor(null)
+        //setBackgroundColor(null)
     }
 
     fun setEntries(entries: List<Entry>): CompVisualPresetSelector {

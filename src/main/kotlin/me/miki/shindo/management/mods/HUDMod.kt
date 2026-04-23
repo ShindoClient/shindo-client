@@ -1,6 +1,5 @@
 package me.miki.shindo.management.mods
 
-import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.management.color.AccentColor
@@ -312,9 +311,6 @@ open class HUDMod : Mod {
         val x = this.x + (addX * scale)
         val y = this.y + (addY * scale)
 
-        if (isBlur) {
-            Blur.drawBlur(x, y, lastWidth, lastHeight, radius)
-        }
 
         if (isNormal || isVanilla || isShadow || isDark || isLight || isModern) {
             nvg?.drawShadow(x, y, lastWidth, lastHeight, radius - 0.75f)

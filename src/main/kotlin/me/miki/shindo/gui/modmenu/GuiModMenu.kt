@@ -41,12 +41,6 @@ import java.awt.Color
 import java.io.IOException
 import kotlin.math.min
 
-/**
- * Root ModMenu screen.
- *
- * This version keeps legacy category behavior but moves shell painting to
- * dedicated style/renderer classes for easier migration of each category UI.
- */
 class GuiModMenu(
     private val initialCategoryClass: Class<out Category>? = null,
     private val initialSearchText: String? = null
@@ -80,7 +74,6 @@ class GuiModMenu(
         categories.add(ProfileCategory(this))
 
         categories.add(ScreenshotCategory(this))
-        //categories.add(NetworkCategory(this))
         categories.add(SettingsCategory(this))
 
         currentCategory = getCategoryByClass(HomeCategory::class.java)
@@ -334,6 +327,7 @@ class GuiModMenu(
             palette.getBackgroundColor(ColorType.NORMAL)
         )
 
+
         if (blurEnabled) {
             Blur.drawBlur {
                 nvg.drawRoundedRectVarying(
@@ -373,6 +367,7 @@ class GuiModMenu(
                 palette.getBackgroundColor(ColorType.DARK)
             )
         }
+
 
         nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, accent.getColor1(), accent.getColor2())
         nvg.drawText(LegacyIcon.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.LEGACYICON)

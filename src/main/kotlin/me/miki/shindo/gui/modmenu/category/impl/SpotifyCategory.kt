@@ -14,6 +14,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.music.MusicManager
 import me.miki.shindo.management.music.TrackInfoCallback
+import me.miki.shindo.management.music.cache.AlbumArtCache
 import me.miki.shindo.management.music.model.LyricsLine
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
@@ -214,37 +215,90 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     private fun drawTrackEntry(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, track: Track, offsetY: Float, mouseX: Int, mouseY: Int) {
         val hovered = isEntryHovered(mouseX, mouseY, offsetY)
         drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
+        
+        // Get album art with proper null/placeholder checks
         val albumArtUrl = Shindo.getInstance().musicManager.getAlbumArtUrl(track)
-        if (albumArtUrl != null && File(albumArtUrl).exists()) nvg.drawRoundedImage(File(albumArtUrl), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-        else drawPlaceholderImage(nvg, offsetY)
+        val isValidImage = !albumArtUrl.isNullOrBlank() && 
+                        albumArtUrl != AlbumArtCache.PLACEHOLDER_PATH && 
+                        File(albumArtUrl).exists()
+        
+        if (isValidImage) {
+            try {
+                nvg.drawRoundedImage(File(albumArtUrl!!), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
+            } catch (e: Exception) {
+                drawPlaceholderImage(nvg, offsetY)
+            }
+        } else {
+            drawPlaceholderImage(nvg, offsetY)
+        }
+        
         val actionColor = if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL)
-        nvg.drawText(nvg.getLimitText(track.name, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        nvg.drawText(track.artists[0].name, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+        
+        // Safe null checks for track data
+        val safeName = track.name ?: "Unknown Track"
+        val safeArtist = track.artists?.getOrNull(0)?.name ?: "Unknown Artist"
+        
+        nvg.drawText(nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nvg.drawText(safeArtist, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         nvg.drawText(LegacyIcon.PLUS_SQUARE, getX() + getWidth() - 60f, getY() + offsetY + 15f, actionColor, 16f, Fonts.LEGACYICON)
     }
 
     private fun drawPlaylistEntry(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, playlist: PlaylistSimplified, offsetY: Float, mouseX: Int, mouseY: Int) {
         val hovered = isEntryHovered(mouseX, mouseY, offsetY)
         drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
+        
+        // Get image URL - returns cached path, placeholder marker, or null
         val imageUrl = Shindo.getInstance().musicManager.getPlaylistImageUrl(playlist)
-        if (imageUrl != null && File(imageUrl).exists()) nvg.drawRoundedImage(File(imageUrl), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-        else drawPlaceholderImage(nvg, offsetY)
-        nvg.drawText(nvg.getLimitText(playlist.name ?: "Untitled Playlist", 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-        nvg.drawText(playlist.owner?.displayName ?: "Unknown Artist", getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+        val isValidImage = !imageUrl.isNullOrBlank() && 
+                         imageUrl != AlbumArtCache.PLACEHOLDER_PATH && 
+                         File(imageUrl).exists()
+        
+        if (isValidImage) {
+            try {
+                nvg.drawRoundedImage(File(imageUrl!!), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
+            } catch (e: Exception) {
+                drawPlaceholderImage(nvg, offsetY)
+            }
+        } else {
+            drawPlaceholderImage(nvg, offsetY)
+        }
+        
+        // Safe null checks for playlist name and owner
+        val safeName = playlist.name ?: "Untitled Playlist"
+        val safeOwner = playlist.owner?.displayName ?: "Unknown Artist"
+        
+        nvg.drawText(nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nvg.drawText(safeOwner, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         nvg.drawText(LegacyIcon.PLAY, getX() + getWidth() - 60f, getY() + offsetY + 15f, if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
     }
 
     private fun drawUserPlaylists(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, mouseX: Int, mouseY: Int) {
-        val playlists = userPlaylists ?: return
+        val playlists = userPlaylists?.filterNotNull() ?: return
         var offsetY = 13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f
         for (playlist in playlists) {
+            if (playlist == null) continue
             val hovered = isEntryHovered(mouseX, mouseY, offsetY)
             drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
             val imageUrl = Shindo.getInstance().musicManager.getPlaylistImageUrl(playlist)
-            if (imageUrl != null && File(imageUrl).exists()) nvg.drawRoundedImage(File(imageUrl), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-            else drawPlaceholderImage(nvg, offsetY)
-            nvg.drawText(nvg.getLimitText(playlist.name ?: "Untitled Playlist", 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
-            nvg.drawText(playlist.owner?.displayName ?: "Unknown Artist", getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+            val isValidImage = !imageUrl.isNullOrBlank() && 
+                             imageUrl != AlbumArtCache.PLACEHOLDER_PATH && 
+                             File(imageUrl).exists()
+            if (isValidImage) {
+                try {
+                    nvg.drawRoundedImage(File(imageUrl), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
+                } catch (e: Exception) {
+                    drawPlaceholderImage(nvg, offsetY)
+                }
+            } else {
+                drawPlaceholderImage(nvg, offsetY)
+            }
+            
+            // Safe null checks
+            val safeName = playlist.name ?: "Untitled Playlist"
+            val safeOwner = playlist.owner?.displayName ?: "Unknown Owner"
+            
+            nvg.drawText(nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f), getX() + 63f, getY() + offsetY + 9f, palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+            nvg.drawText(safeOwner, getX() + 63f, getY() + offsetY + 25f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
             nvg.drawText(LegacyIcon.PLAY, getX() + getWidth() - 60f, getY() + offsetY + 15f, if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LEGACYICON)
             offsetY += 56f
         }
@@ -257,9 +311,10 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
 
     private fun drawEntryShell(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, offsetY: Float, hovered: Boolean) {
         val x = getX() + 15f; val y = getY() + offsetY; val w = getWidth() - 30f; val h = 46f
-        nvg.drawShadow(x, y, w, h, 8f, 5)
-        nvg.drawRoundedRect(x, y, w, h, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 226 else 206))
-        nvg.drawGradientRoundedRect(x, y, w, h, 8f, ColorUtils.applyAlpha(accentColor.getColor1(), if (hovered) 64 else 32), ColorUtils.applyAlpha(accentColor.getColor2(), if (hovered) 64 else 32))
+
+        nvg.drawShadow(x, y, w, h, 8f, 7)
+        nvg.drawRoundedRect(x, y, w, h, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220))
+        nvg.drawOutlineRoundedRect(x, y, w, h, 8f,1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210))
     }
 
     private fun isEntryHovered(mouseX: Int, mouseY: Int, offsetY: Float): Boolean =
@@ -269,17 +324,40 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
         nvg.drawRoundedRectVarying(getX().toFloat(), getY() + getHeight() - 46f, getWidth().toFloat(), 46f, 0f, 0f, 0f, 12f, palette.getBackgroundColor(ColorType.DARK))
         val currentTrack = musicManager.getCurrentTrack()
         val artY = getY() + getHeight() - 43f
+        
         if (currentTrack != null) {
+            // Get album art with proper checks
             val albumArtUrl = musicManager.getAlbumArtUrl(currentTrack)
-            if (albumArtUrl != null && File(albumArtUrl).exists()) nvg.drawRoundedImage(File(albumArtUrl), getX() + 4f, artY, 36f, 36f, 6f)
-            else { nvg.drawRoundedRect(getX() + 4f, artY, 36f, 36f, 6f, Color(50, 50, 50)); try { nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, artY, 36f, 36f, 6f) } catch (ignored: Exception) {} }
-            nvg.drawText(nvg.getLimitText(currentTrack.name, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 39f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
-            nvg.drawText(nvg.getLimitText(currentTrack.artists[0].name, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 27f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
+            val isValidImage = !albumArtUrl.isNullOrBlank() && 
+                               albumArtUrl != AlbumArtCache.PLACEHOLDER_PATH && 
+                               File(albumArtUrl).exists()
+            
+            if (isValidImage) {
+                try {
+                    nvg.drawRoundedImage(File(albumArtUrl), getX() + 4f, artY, 36f, 36f, 6f)
+                } catch (e: Exception) {
+                    drawControlBarPlaceholder(nvg, artY)
+                }
+            } else {
+                drawControlBarPlaceholder(nvg, artY)
+            }
+            
+            // Safe null checks
+            val safeName = currentTrack.name ?: "Unknown"
+            val safeArtist = currentTrack.artists?.getOrNull(0)?.name ?: "Unknown"
+            
+            nvg.drawText(nvg.getLimitText(safeName, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 39f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
+            nvg.drawText(nvg.getLimitText(safeArtist, 9f, Fonts.MEDIUM, 100f), getX() + 45f, getY() + getHeight() - 27f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         } else {
-            nvg.drawRoundedRect(getX() + 4f, artY, 36f, 36f, 6f, Color(50, 50, 50))
-            try { nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, artY, 36f, 36f, 6f) } catch (ignored: Exception) {}
+            drawControlBarPlaceholder(nvg, artY)
             nvg.drawText(TranslateText.NOTHING_IS_PLAYING.getText(), getX() + 45f, getY() + getHeight() - 33f, palette.getFontColor(ColorType.DARK), 9f, Fonts.MEDIUM)
         }
+    }
+
+    private fun drawControlBarPlaceholder(nvg: NanoVGManager, artY: Float) {
+        nvg.drawRoundedRect(getX() + 4f, artY, 36f, 36f, 6f, Color(50, 50, 50))
+        try { nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, artY, 36f, 36f, 6f) } 
+        catch (ignored: Exception) { /* ignore */ }
     }
 
     private fun drawPlaybackControls(nvg: NanoVGManager, palette: ColorPalette, musicManager: MusicManager) {
@@ -557,7 +635,11 @@ class SpotifyCategory(parent: GuiModMenu) : Category(parent, TranslateText.SPOTI
     }
 
     private fun updateScroll() {
-        scroll.maxScroll = ((searchResults?.size ?: 0) + (searchPlaylistResults?.size ?: 0) + (userPlaylists?.size ?: 0)) * 56f
+        val totalItems = (searchResults?.size ?: 0) + (searchPlaylistResults?.size ?: 0) + (userPlaylists?.size ?: 0)
+        val totalHeight = totalItems * 56f
+        val visibleHeight = getHeight() - 100f // Reserve space for controls
+        // maxScroll = total content - visible area (minimum 0)
+        scroll.maxScroll = maxOf(0f, totalHeight - visibleHeight)
     }
 
     private fun checkAndUpdateSearch() {

@@ -55,7 +55,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         scenes.add(MainScene(this))
         scenes.add(BackgroundScene(this))
         scenes.add(ShopScene(this))
-        scenes.add(SkinScene(this))
+        //scenes.add(SkinScene(this))
         scenes.add(UpdateScene(this))
         scenes.add(WelcomeMessageScene(this))
         scenes.add(LanguageSelectScene(this))
@@ -202,20 +202,10 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             Fonts.LEGACYICON
         )
 
-        skinFocusAnimation.setAnimation(
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16
-        )
+        //skinFocusAnimation.setAnimation( if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f, 16 )
 
-        nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
-        nvg.drawCenteredText(
-            LegacyIcon.SKIN,
-            sr.scaledWidth - 78f + 4.5f,
-            9.5f,
-            Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255),
-            15f,
-            Fonts.LEGACYICON
-        )
+        //nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
+        //nvg.drawCenteredText(LegacyIcon.SKIN, sr.scaledWidth - 78f + 4.5f, 9.5f, Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255), 15f, Fonts.LEGACYICON )
     }
 
     private fun drawSplashScreen(sr: ScaledResolution, nvg: NanoVGManager) {

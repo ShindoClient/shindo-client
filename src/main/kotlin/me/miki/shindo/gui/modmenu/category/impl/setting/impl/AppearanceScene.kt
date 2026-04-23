@@ -16,6 +16,7 @@ import me.miki.shindo.ui.comp.inputs.CompSlider
 import me.miki.shindo.ui.comp.selectors.CompAccentColorSelector
 import me.miki.shindo.ui.comp.selectors.CompThemeSelector
 import me.miki.shindo.ui.comp.templates.CompLabel
+import me.miki.shindo.ui.comp.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -47,6 +48,7 @@ class AppearanceScene(parent: SettingsCategory) :
     override fun initGui() {
         val instance = Shindo.getInstance()
         val colorManager = instance.colorManager
+        val palette = colorManager.getPalette()
 
         modTheme = CompComboBox(110f, requireNotNull(InternalSettingsMod.instance.modThemeSetting))
         uiBlur = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getBlurSetting()))
@@ -55,6 +57,10 @@ class AppearanceScene(parent: SettingsCategory) :
 
         themeSelector = CompThemeSelector().apply {
             setSelectedTheme(colorManager.getTheme())
+            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220))
+            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
+            setShadowStrength(7)
+            setStyle(PanelStyle.CARD)
             setOnThemeSelected { theme ->
                 colorManager.setTheme(theme)
             }
@@ -64,6 +70,10 @@ class AppearanceScene(parent: SettingsCategory) :
             accentColors = colorManager.getColors()
         ).apply {
             setSelectedColor(colorManager.getCurrentColor())
+            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220))
+            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
+            setShadowStrength(7)
+            setStyle(PanelStyle.CARD)
             setOnColorSelected { accent ->
                 colorManager.setCurrentColor(accent)
             }

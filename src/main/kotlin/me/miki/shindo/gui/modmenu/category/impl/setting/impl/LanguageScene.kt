@@ -14,9 +14,11 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.ui.comp.layout.withSurfaceVariant
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
+import java.awt.Color
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
@@ -151,46 +153,64 @@ class LanguageScene(parent: SettingsCategory) :
         selected: Boolean
     ) {
         val progress = language.getAnimation().value
-        val baseAlpha = if (hovered || selected) 210 else 178
-        val overlayAlpha = 24 + (progress * 44f).toInt()
 
+
+        nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7)
         nvg.drawRoundedRect(
             x,
             y,
             width,
             height,
             CARD_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), baseAlpha)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
         )
-        nvg.drawGradientRoundedRect(
+        nvg.drawOutlineRoundedRect(
             x,
             y,
             width,
             height,
             CARD_RADIUS,
-            ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
-            ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
         )
 
-        val borderColor = if (selected) {
-            ColorUtils.applyAlpha(accent.getColor2(), 190)
-        } else if (hovered) {
-            ColorUtils.applyAlpha(accent.getColor2(), 125)
-        } else {
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 188)
-        }
-        nvg.drawOutlineRoundedRect(x, y, width, height, CARD_RADIUS, 1.2f, borderColor)
-
         if (selected) {
+
+            val badgeX = x + width - 20f - 2
+            val badgeY = y + height - 18f - 2
+            val badgeSize = 16f
+
+            nvg.drawShadow(badgeX, badgeY, badgeSize, badgeSize, 5.5f, 7)
             nvg.drawRoundedRect(
-                x + 6f,
-                y + 8f,
-                3f,
-                max(12f, height - 16f),
-                2f,
-                ColorUtils.applyAlpha(accent.getInterpolateColor(), (110 + progress * 120f).toInt())
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                5.5f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
             )
+            nvg.drawOutlineRoundedRect(
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                5.5f,
+                1f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            )
+
+            nvg.drawText(
+                LegacyIcon.CHECK,
+                x + width - 20f,
+                y + height - 18f,
+                palette.getFontColor(ColorType.MID),
+                12f,
+                Fonts.LEGACYICON
+            )
+
         }
+
+
 
         val mediaHeight = max(34f, height - 22f)
         val mediaWidth = min(86f, max(56f, width * 0.28f))
@@ -202,10 +222,10 @@ class LanguageScene(parent: SettingsCategory) :
             mediaY,
             mediaWidth,
             mediaHeight,
-            7f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 188)
+            6.5f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 180)
         )
-        drawFlag(nvg, language.getFlag(), mediaX + 4f, mediaY + 4f, mediaWidth - 8f, mediaHeight - 8f)
+        drawFlag(nvg, language.getFlag(), mediaX + 1f, mediaY + 1f, mediaWidth - 2f, mediaHeight - 2f)
 
         val textX = mediaX + mediaWidth + 14f
         val rightPadding = 14f
@@ -236,19 +256,7 @@ class LanguageScene(parent: SettingsCategory) :
             Fonts.MEDIUM
         )
 
-        if (selected || hovered) {
-            nvg.drawText(
-                LegacyIcon.CHECK,
-                x + width - 20f,
-                y + height - 18f,
-                ColorUtils.applyAlpha(
-                    accent.getInterpolateColor(),
-                    if (selected) (80 + progress * 175f).toInt() else 130
-                ),
-                12f,
-                Fonts.LEGACYICON
-            )
-        }
+
     }
 
     private fun drawFlag(

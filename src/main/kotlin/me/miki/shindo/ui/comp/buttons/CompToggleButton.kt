@@ -5,7 +5,6 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.style.CompControlVariant
-import me.miki.shindo.ui.comp.style.CompStyleResolver
 import me.miki.shindo.ui.comp.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color

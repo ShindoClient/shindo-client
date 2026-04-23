@@ -33,6 +33,12 @@ object Fonts {
     @JvmField
     val BANGERS = Font("bangers", ResourceLocation(PATH + "Bangers.ttf"))
 
+    @JvmField
+    val ICON_OUTLINE: Font = Font("icon-outline", ResourceLocation(PATH + "icns/FluentSystemIcons-Regular.ttf"))
+
+    @JvmField
+    val ICON_FILLED: Font = Font("icon-filled", ResourceLocation(PATH + "icns/FluentSystemIcons-Filled.ttf"))
+
 
     @JvmStatic
     fun getFonts(): ArrayList<Font> {

@@ -13,10 +13,10 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.removeColorCode
-import me.miki.shindo.utils.concurrent.TaskExecutor
-import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.ServerUtils.isHypixel
 import me.miki.shindo.utils.TimerUtils
+import me.miki.shindo.utils.concurrent.TaskExecutor
+import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.network.play.client.C0EPacketClickWindow

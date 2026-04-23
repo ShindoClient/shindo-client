@@ -1,7 +1,6 @@
 package me.miki.shindo.ui.comp.layout
 
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.ui.comp.style.CompSurfaceVariant
 import me.miki.shindo.ui.comp.templates.CompPanel
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
@@ -20,7 +19,7 @@ class CompCard(
     private var showHeader: Boolean = false
 
     init {
-        setSurfaceVariant(CompSurfaceVariant.CARD)
+        //setSurfaceVariant(CompSurfaceVariant.CARD)
     }
 
     fun setHeader(text: String, height: Float = 30f): CompCard {

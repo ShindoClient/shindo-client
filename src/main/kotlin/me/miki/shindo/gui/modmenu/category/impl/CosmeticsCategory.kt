@@ -480,45 +480,25 @@ class CosmeticsCategory(parent: GuiModMenu) :
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y + scrollOffset, width, height)
         val overlayAlpha = if (selected) 74 else if (hovered) 48 else 30
 
-        nvg.drawShadow(x, y, width, height, 12f, 6)
+        nvg.drawShadow(x, y, width, height, 12f, 7)
         nvg.drawRoundedRect(
             x,
             y,
             width,
             height,
             12f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 232 else 218)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
         )
-        nvg.drawRoundedRect(
-            x + 1f,
-            y + 1f,
-            width - 2f,
-            height - 2f,
-            11f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (hovered) 236 else 224)
-        )
-        nvg.drawGradientRoundedRect(
-            x + 1f,
-            y + 1f,
-            width - 2f,
-            height - 2f,
-            11f,
-            ColorUtils.applyAlpha(accent.getColor1(), overlayAlpha),
-            ColorUtils.applyAlpha(accent.getColor2(), overlayAlpha)
+        nvg.drawOutlineRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            12f,
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
         )
 
-        if (selected || hovered) {
-            nvg.drawGradientOutlineRoundedRect(
-                x,
-                y,
-                width,
-                height,
-                12f,
-                if (selected) 1.8f else 1.1f,
-                ColorUtils.applyAlpha(accent.getColor1(), if (selected) 228 else 132),
-                ColorUtils.applyAlpha(accent.getColor2(), if (selected) 228 else 132)
-            )
-        }
 
         val previewX = x + 6f
         val previewY = y + 7f
@@ -533,6 +513,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             9f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
         )
+
         preview(nvg, previewX + 1.5f, previewY + 1.5f, previewWidth - 3f, previewHeight - 3f)
 
         nvg.drawText(title, x + 8f, y + height - 24f, palette.getFontColor(ColorType.DARK), 8.8f, Fonts.MEDIUM)
@@ -552,14 +533,24 @@ class CosmeticsCategory(parent: GuiModMenu) :
             val badgeSize = 16f
             val badgeX = x + width - badgeSize - 6f
             val badgeY = y + 6f
-            nvg.drawGradientRoundedRect(
+
+            nvg.drawShadow(badgeX, badgeY, badgeSize, badgeSize, 5.5f, 7)
+            nvg.drawRoundedRect(
                 badgeX,
                 badgeY,
                 badgeSize,
                 badgeSize,
                 5.5f,
-                accent.getColor1(),
-                accent.getColor2()
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            )
+            nvg.drawOutlineRoundedRect(
+                badgeX,
+                badgeY,
+                badgeSize,
+                badgeSize,
+                5.5f,
+                1f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
             )
             nvg.drawCenteredText(
                 LegacyIcon.CHECK,

@@ -1,7 +1,9 @@
 package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
+import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.font.LegacyIcon
@@ -11,6 +13,8 @@ import me.miki.shindo.ui.comp.inputs.CompKeybind
 import me.miki.shindo.ui.comp.layout.CompScrollableContainer
 import me.miki.shindo.ui.comp.layout.withSurfaceVariant
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.templates.PanelStyle
+import me.miki.shindo.utils.ColorUtils
 
 class GeneralScene(parent: SettingsCategory) :
     SettingScene(
@@ -29,7 +33,9 @@ class GeneralScene(parent: SettingsCategory) :
     private val settingCards = ArrayList<CompSettingButton>()
 
     override fun initGui() {
+
         val settingsMod = InternalSettingsMod.instance
+
         modMenuKeybind = CompKeybind(
             75f,
             settingsMod.getModMenuKeybindSetting()
@@ -53,8 +59,9 @@ class GeneralScene(parent: SettingsCategory) :
         )
 
         container = CompScrollableContainer()
-            .setScrollbarGutter(14f)
-            .withSurfaceVariant(CompSurfaceVariant.PANEL)
+            .setScrollbarGutter(14f).
+            withSurfaceVariant(CompSurfaceVariant.PANEL)
+
 
         settingCards.clear()
         settingCards.add(
