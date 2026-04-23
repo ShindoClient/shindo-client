@@ -88,16 +88,15 @@ class CompSettingButton : CompControlTemplate {
         val width = getWidth()
         val height = getHeight()
 
-        val base = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), if (hovered) 210 else 188)
-        val overlayStart = ColorUtils.applyAlpha(accentColors.getColor1(), if (hovered) 62 else 38)
-        val overlayEnd = ColorUtils.applyAlpha(accentColors.getColor2(), if (hovered) 62 else 38)
+        val base = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 220)
+        val overlay = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 210)
 
         if (drawShadow) {
-            nvgInstance.drawShadow(x, y, width, height, shadowRadius, shadowStrength.toInt())
+            nvgInstance.drawShadow(x, y, width, height, shadowRadius, 7)
         }
 
         nvgInstance.drawRoundedRect(x, y, width, height, DEFAULT_RADIUS, base)
-        nvgInstance.drawGradientRoundedRect(x, y, width, height, DEFAULT_RADIUS, overlayStart, overlayEnd)
+        nvgInstance.drawOutlineRoundedRect(x, y, width, height, DEFAULT_RADIUS, 1f,overlay)
 
         var availableTextWidth = width - paddingLeft - paddingRight
         trailingComp?.let {

@@ -5,9 +5,9 @@ import me.miki.shindo.management.file.FileManager
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
+import java.net.HttpURLConnection
 import java.net.URL
 import java.time.Duration
-import java.util.*
 import java.util.concurrent.*
 import java.util.function.Supplier
 import javax.imageio.ImageIO
@@ -17,7 +17,7 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     private val cacheDir: File = File(fileManager.musicDir, CACHE_DIR)
     private val inProgressDownloads = ConcurrentHashMap<String, CompletableFuture<String>>()
     private val downloadExecutor = ThreadPoolExecutor(
-        1, MAX_CONCURRENT_DOWNLOADS,
+        2, MAX_CONCURRENT_DOWNLOADS,
         60L, TimeUnit.SECONDS,
         LinkedBlockingQueue(),
         object : ThreadFactory {
@@ -37,10 +37,38 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
                 isDaemon = true
             }
         }
+    
+    // Placeholder image cached in memory to avoid loading from disk repeatedly
+    private var cachedPlaceholder: BufferedImage? = null
 
     init {
         initializeCache()
         scheduleMaintenance()
+        preloadPlaceholder()
+    }
+
+    private fun preloadPlaceholder() {
+        try {
+            // Try to load placeholder from resources, or create a simple gray one
+            cachedPlaceholder = createDefaultPlaceholder()
+        } catch (e: Exception) {
+            ShindoLogger.warn("Could not preload placeholder: ${e.message}")
+        }
+    }
+
+    private fun createDefaultPlaceholder(): BufferedImage {
+        val img = BufferedImage(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB)
+        val g = img.graphics
+        g.color = java.awt.Color(40, 40, 40)
+        g.fillRect(0, 0, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+        g.color = java.awt.Color(80, 80, 80)
+        val centerX = MAX_IMAGE_SIZE / 2
+        val centerY = MAX_IMAGE_SIZE / 2
+        g.fillOval(centerX - 30, centerY - 30, 60, 60)
+        g.color = java.awt.Color(60, 60, 60)
+        g.fillOval(centerX - 20, centerY - 20, 40, 40)
+        g.dispose()
+        return img
     }
 
     private fun initializeCache() {
@@ -57,25 +85,57 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun getCachedAlbumArtUrlAsync(id: String?, imageUrl: String?): CompletableFuture<String> {
+        if (imageUrl.isNullOrBlank()) {
+            return CompletableFuture.completedFuture(PLACEHOLDER_PATH)
+        }
         return inProgressDownloads.computeIfAbsent(id!!) { key: String? ->
             val cachedFile = getCacheFile(id)
             if (cachedFile.exists() && isValidCacheFile(cachedFile)) {
                 return@computeIfAbsent CompletableFuture.completedFuture(cachedFile.absolutePath)
             }
             CompletableFuture.supplyAsync(
-                Supplier { downloadAndCacheImage(id, imageUrl!!) },
+                Supplier { downloadAndCacheImage(id, imageUrl) },
                 downloadExecutor
             ).whenComplete { result: String?, ex: Throwable? ->
-                inProgressDownloads.remove(
-                    id
-                )
+                // Keep entry until fully processed
             }
         }
     }
 
+    /**
+     * Get cached album art path - returns placeholder path if not yet loaded or on failure.
+     * This method is NON-BLOCKING and returns immediately.
+     */
     fun getAlbumArt(imageUrl: String): String {
         val id = imageUrl.hashCode().toString()
-        return getCachedAlbumArtUrlAsync(id, imageUrl).join()
+        val cachedFile = getCacheFile(id)
+        
+        // Return cached file immediately if exists and valid
+        if (cachedFile.exists() && isValidCacheFile(cachedFile)) {
+            return cachedFile.absolutePath
+        }
+        
+        // Start async download, return placeholder for now
+        getCachedAlbumArtUrlAsync(id, imageUrl)
+        return PLACEHOLDER_PATH
+    }
+
+    /**
+     * Get album art asynchronously - use this for non-blocking UI updates.
+     * Returns a CompletableFuture that completes with the cached path or placeholder.
+     */
+    fun getAlbumArtAsync(imageUrl: String): CompletableFuture<String> {
+        val id = imageUrl.hashCode().toString()
+        return getCachedAlbumArtUrlAsync(id, imageUrl)
+    }
+
+    /**
+     * Check if image is ready (cached) - useful for UI to decide showing placeholder or cached image
+     */
+    fun isImageReady(imageUrl: String): Boolean {
+        val id = imageUrl.hashCode().toString()
+        val cachedFile = getCacheFile(id)
+        return cachedFile.exists() && isValidCacheFile(cachedFile)
     }
 
     fun cleanup() {
@@ -86,15 +146,30 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     private fun downloadAndCacheImage(id: String, imageUrl: String): String {
         val cacheFile = getCacheFile(id)
         return try {
-            val image = ImageIO.read(URL(imageUrl))
-                ?: throw java.io.IOException("Failed to read image from URL")
-            val resizedImage = resizeImage(image)
-            cacheFile.parentFile?.mkdirs()
-            ImageIO.write(resizedImage, "png", cacheFile)
+            val connection = URL(imageUrl).openConnection() as HttpURLConnection
+            connection.connectTimeout = CONNECT_TIMEOUT_MS
+            connection.readTimeout = READ_TIMEOUT_MS
+            connection.setRequestProperty("User-Agent", USER_AGENT)
+            
+            val responseCode = connection.responseCode
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw java.io.IOException("HTTP error: $responseCode")
+            }
+            
+            connection.inputStream.use { inputStream ->
+                val image = ImageIO.read(inputStream)
+                    ?: throw java.io.IOException("Failed to decode image")
+                
+                val resizedImage = resizeImage(image)
+                cacheFile.parentFile?.mkdirs()
+                ImageIO.write(resizedImage, "png", cacheFile)
+            }
+            
+            ShindoLogger.info("Cached album art: $id")
             cacheFile.absolutePath
         } catch (e: Exception) {
-            ShindoLogger.error("Failed to download and cache album art: $id", e)
-            imageUrl
+            ShindoLogger.warn("Failed to download album art: $id (${e.message})")
+            PLACEHOLDER_PATH
         }
     }
 
@@ -107,7 +182,10 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
             MAX_IMAGE_SIZE, MAX_IMAGE_SIZE,
             BufferedImage.TYPE_INT_ARGB
         )
-        outputImage.graphics.drawImage(resultingImage, 0, 0, null)
+        outputImage.graphics.apply {
+            drawImage(resultingImage, 0, 0, null)
+            dispose()
+        }
         return outputImage
     }
 
@@ -119,15 +197,17 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
 
     private fun performMaintenance() {
         try {
+            val files = cacheDir.listFiles() ?: return
             var totalSize = 0L
             val expiredFiles = mutableListOf<File>()
-            val files = cacheDir.listFiles() ?: return
+            val validFiles = mutableListOf<File>()
 
             for (file in files) {
-                if (!isValidCacheFile(file)) {
-                    expiredFiles.add(file)
-                } else {
+                if (isValidCacheFile(file)) {
+                    validFiles.add(file)
                     totalSize += file.length()
+                } else {
+                    expiredFiles.add(file)
                 }
             }
 
@@ -137,15 +217,17 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
                 }
             }
 
-            val maxBytes = MAX_CACHE_SIZE_MB * 1024 * 1024
+            // If over memory limit, remove oldest files
+            val maxBytes = MAX_CACHE_SIZE_MB * 1024L * 1024L
             if (totalSize > maxBytes) {
-                Arrays.sort(files) { a, b -> a.lastModified().compareTo(b.lastModified()) }
-                for (file in files) {
+                validFiles.sortBy { it.lastModified() }
+                for (file in validFiles) {
                     if (totalSize <= maxBytes) break
                     if (file.delete()) {
                         totalSize -= file.length()
                     }
                 }
+                ShindoLogger.info("Cache cleanup complete. Size: ${totalSize / 1024 / 1024}MB")
             }
         } catch (e: Exception) {
             ShindoLogger.error("Error during cache maintenance", e)
@@ -168,6 +250,12 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
         private const val MAX_IMAGE_SIZE = 300
         private const val CACHE_DIR = "album_art_cache"
         private val CACHE_DURATION = Duration.ofDays(30)
-        private const val MAX_CONCURRENT_DOWNLOADS = 3
+        private const val MAX_CONCURRENT_DOWNLOADS = 4
+        private const val CONNECT_TIMEOUT_MS = 8000
+        private const val READ_TIMEOUT_MS = 15000
+        private const val USER_AGENT = "Shindo/1.0"
+        
+        // Placeholder path - use special marker that UI recognizes
+        const val PLACEHOLDER_PATH = "__PLACEHOLDER__"
     }
 }

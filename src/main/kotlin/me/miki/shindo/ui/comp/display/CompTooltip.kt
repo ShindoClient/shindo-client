@@ -1,18 +1,19 @@
 package me.miki.shindo.ui.comp.display
 
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
+@Suppress("UNUSED")
 class CompTooltip(
-    text: String,
+    private var text: String,
     x: Float = 0f,
     y: Float = 0f
 ) : Comp(x, y) {
 
-    private var text: String = text
     private val fadeAnimation = SimpleAnimation()
     private var padding: Float = 8f
     private var fontSize: Float = 9f
@@ -116,15 +117,6 @@ class CompTooltip(
         }
 
         nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, bgColor)
-        nvgInstance.drawGradientRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            radius,
-            ColorUtils.applyAlpha(accent.getColor1(), (alpha * 0.28f).toInt()),
-            ColorUtils.applyAlpha(accent.getColor2(), (alpha * 0.20f).toInt())
-        )
         nvgInstance.drawOutlineRoundedRect(
             getX(),
             getY(),
@@ -142,7 +134,7 @@ class CompTooltip(
             getWidth() - padding * 2f,
             txtColor,
             fontSize,
-            me.miki.shindo.management.nanovg.font.Fonts.REGULAR
+            Fonts.REGULAR
         )
 
         super.draw(mouseX, mouseY, partialTicks)

@@ -5,7 +5,6 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.animation.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
-import me.miki.shindo.utils.mouse.MouseUtils
 
 
 open class CompTextBox : CompTextBoxBase {

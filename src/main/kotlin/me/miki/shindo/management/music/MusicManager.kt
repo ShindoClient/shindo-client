@@ -516,15 +516,13 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun getAlbumArtUrl(track: Track?): String? {
         val images = track?.album?.images ?: return null
         if (images.isEmpty()) return null
-        val imageUrl = images[0].url ?: return null
+        val imageUrl = images.getOrNull(0)?.url ?: return null
+        
+        // Non-blocking - uses cache if available, starts download otherwise
         return try {
-            albumArtCache.getCachedAlbumArtUrlAsync(track.id, imageUrl)
-                .get(800, TimeUnit.MILLISECONDS)
-        } catch (e: InterruptedException) {
-            Thread.currentThread().interrupt()
-            imageUrl
-        } catch (_: Exception) {
-            imageUrl
+            albumArtCache.getAlbumArt(imageUrl)
+        } catch (e: Exception) {
+            AlbumArtCache.PLACEHOLDER_PATH
         }
     }
 
@@ -762,12 +760,14 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun getPlaylistImageUrl(playlist: PlaylistSimplified?): String? {
         val images = playlist?.images ?: return null
         if (images.isEmpty()) return null
-        val imageUrl = images[0].url ?: return null
+        val imageUrl = images.getOrNull(0)?.url ?: return null
+        
+        // Safe call - getAlbumArt is now non-blocking
         return try {
             albumArtCache.getAlbumArt(imageUrl)
         } catch (e: Exception) {
-            ShindoLogger.warn("Using direct playlist image URL: ${e.message}")
-            imageUrl
+            ShindoLogger.warn("Album art error: ${e.message}")
+            AlbumArtCache.PLACEHOLDER_PATH
         }
     }
 

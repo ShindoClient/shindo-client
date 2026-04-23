@@ -12,9 +12,9 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.sound.Sound
+import me.miki.shindo.utils.RandomUtils.getRandomInt
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
-import me.miki.shindo.utils.RandomUtils.getRandomInt
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse

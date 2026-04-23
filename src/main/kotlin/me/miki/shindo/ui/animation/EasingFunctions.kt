@@ -1,5 +1,6 @@
 package me.miki.shindo.ui.animation
 
+import me.miki.shindo.ui.animation.EasingFunctions.linear
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin

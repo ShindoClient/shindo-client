@@ -70,15 +70,21 @@ class NanoVGManager {
 
     fun destroy() {
         NanoVGGL2.nvgDelete(nvg)
+
         for (i in 0..3) {
             colorQueue.poll().free()
             paintQueue.poll().free()
         }
+
         MemoryUtil.memFree(f4Buff)
         MemoryUtil.memFree(i1buff1)
         MemoryUtil.memFree(i1buff2)
         MemoryUtil.memFree(f1Buff1)
         MemoryUtil.memFree(f1Buff2)
+    }
+
+    fun getColor(color: Color): NVGColor {
+        return getColor(color.rgb)
     }
 
     fun getColor(r: Float, g: Float, b: Float, a: Float): NVGColor {
@@ -899,11 +905,11 @@ class NanoVGManager {
         }
     }
 
-    fun drawSvg(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, color: Color) {
+    fun drawSvg(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, color: Color) {
         drawSvg(location, x, y, width, height, color.rgb)
     }
 
-    fun drawSvg(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, color: Int) {
+    fun drawSvg(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, color: Int) {
         if (assetManager!!.loadSvg(nvg, location!!, width, height)) {
             val imagePaint = getAvailablePaint()
             val image = assetManager!!.getSvg(location, width, height)
@@ -1003,7 +1009,7 @@ class NanoVGManager {
 
 
     fun drawPlayerHead(
-        location: ResourceLocation?,
+        location: ResourceLocation,
         x: Float,
         y: Float,
         width: Float,
@@ -1011,7 +1017,7 @@ class NanoVGManager {
         radius: Float,
         alpha: Float
     ) {
-        if (location == null || mc.textureManager.getTexture(location) == null) {
+        if (mc.textureManager.getTexture(location) == null) {
             return
         }
         val texture = mc.textureManager.getTexture(location).glTextureId
@@ -1055,12 +1061,12 @@ class NanoVGManager {
         }
     }
 
-    fun drawPlayerHead(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+    fun drawPlayerHead(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, radius: Float) {
         drawPlayerHead(location, x, y, width, height, radius, 1.0f)
     }
 
     fun drawRoundedImage(
-        location: ResourceLocation?,
+        location: ResourceLocation,
         x: Float,
         y: Float,
         width: Float,
@@ -1068,7 +1074,7 @@ class NanoVGManager {
         radius: Float,
         alpha: Float
     ) {
-        if (assetManager!!.loadImage(nvg, location!!)) {
+        if (assetManager!!.loadImage(nvg, location)) {
             val imagePaint = getAvailablePaint()
             val image = assetManager!!.getImage(location)
             NanoVG.nvgBeginPath(nvg)
@@ -1079,12 +1085,12 @@ class NanoVGManager {
         }
     }
 
-    fun drawRoundedImage(location: ResourceLocation?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+    fun drawRoundedImage(location: ResourceLocation, x: Float, y: Float, width: Float, height: Float, radius: Float) {
         drawRoundedImage(location, x, y, width, height, radius, 1.0f)
     }
 
-    fun drawRoundedImage(file: File?, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
-        if (assetManager!!.loadImage(nvg, file!!)) {
+    fun drawRoundedImage(file: File, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float) {
+        if (assetManager!!.loadImage(nvg, file)) {
             val imagePaint = getAvailablePaint()
             val image = assetManager!!.getImage(file)
             NanoVG.nvgBeginPath(nvg)
@@ -1095,7 +1101,7 @@ class NanoVGManager {
         }
     }
 
-    fun drawRoundedImage(file: File?, x: Float, y: Float, width: Float, height: Float, radius: Float) {
+    fun drawRoundedImage(file: File, x: Float, y: Float, width: Float, height: Float, radius: Float) {
         drawRoundedImage(file, x, y, width, height, radius, 1.0f)
     }
 
@@ -1170,23 +1176,6 @@ class NanoVGManager {
                 applyAlpha(accent.getColor2(), 190)
             )
     }
-
-    fun getColor(color: Color?): NVGColor {
-        val safeColor = color ?: Color.RED
-        colorCache[safeColor.rgb]?.let { return it }
-
-        val nvgColor = NVGColor.create()
-        NanoVG.nvgRGBA(
-            safeColor.red.toByte(),
-            safeColor.green.toByte(),
-            safeColor.blue.toByte(),
-            safeColor.alpha.toByte(),
-            nvgColor
-        )
-        colorCache[safeColor.rgb] = nvgColor
-        return nvgColor
-    }
-
 
     fun drawDivider(
         x: Float,

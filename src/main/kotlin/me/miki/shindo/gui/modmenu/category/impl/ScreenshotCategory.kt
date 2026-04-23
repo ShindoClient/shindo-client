@@ -1,5 +1,7 @@
 package me.miki.shindo.gui.modmenu.category.impl
 
+import me.miki.extensions.ui.graphics.nanovg.drawRect
+import me.miki.extensions.ui.graphics.nanovg.drawRoundedRect
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
@@ -13,6 +15,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.screenshot.Screenshot
 import me.miki.shindo.management.screenshot.ScreenshotManager
 import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
@@ -131,32 +134,52 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 val alpha = (s.getSelectAnimation().value * 255).toInt()
 
                 if (offsetX + scroll.getValue() + 30 > 0 && offsetX + scroll.getValue() < this.getWidth() - 100) {
+                    nvg.drawShadow(
+                        this.getX() + offsetX + 62f,
+                        this.getY() + this.getHeight() - 36f,
+                        50f,
+                        23f,
+                        5f,
+                        7
+                    )
                     nvg.drawRoundedRect(
                         this.getX() + offsetX + 62f,
                         this.getY() + this.getHeight() - 36f,
-                        23f,
+                        50f,
                         23f,
                         5f,
-                        palette.getBackgroundColor(ColorType.NORMAL)
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                    )
+                    nvg.drawOutlineRoundedRect(
+                        this.getX() + offsetX + 62f,
+                        this.getY() + this.getHeight() - 36f,
+                        50f,
+                        23f,
+                        5f,
+                        1f,
+                        ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
                     )
 
-                    nvg.save()
-                    nvg.scale(this.getX() + offsetX + 62f, this.getY() + this.getHeight() - 31f, 0.07f)
-                    nvg.drawImage(
+
+
+                    //nvg.save()
+                    //nvg.scale(this.getX() + offsetX + 62f, this.getY() + this.getHeight() - 31f, 0.07f)
+                    nvg.drawRoundedImage(
                         s.getImage(),
-                        this.getX() + offsetX + 62f,
-                        this.getY() + this.getHeight() - 31f,
-                        16 * 20f,
-                        9 * 20f
+                        this.getX() + offsetX + 63f,
+                        this.getY() + this.getHeight() - 35f,
+                        48f,
+                        21f,
+                        5f
                     )
-                    nvg.restore()
+                    //nvg.restore()
 
                     s.getSelectAnimation().setAnimation(if (currentScreenshot == s) 1.0f else 0.0f, 16)
 
                     nvg.drawGradientOutlineRoundedRect(
                         this.getX() + offsetX + 62f,
                         this.getY() + this.getHeight() - 36f,
-                        23f,
+                        50f,
                         23f,
                         5f,
                         s.getSelectAnimation().value * 1.2f,
@@ -165,7 +188,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     )
                 }
 
-                offsetX += 27
+                offsetX += 54
                 index++
             }
 
@@ -173,14 +196,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
             nvg.restore()
 
             nvg.drawRect(
-                this.getX().toFloat(),
+                this.getX(),
                 this.getY() + this.getHeight() - 40f,
-                addX.toFloat(),
+                addX,
                 30f,
                 palette.getBackgroundColor(ColorType.NORMAL)
             )
             nvg.drawRect(
-                this.getX() + this.getWidth() - addX.toFloat(),
+                this.getX() + this.getWidth() - addX,
                 this.getY() + this.getHeight() - 40f,
                 addX - 14f,
                 30f,
@@ -202,12 +225,12 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 palette.getBackgroundColor(ColorType.DARK, (leftValue * 255).toInt())
             )
             nvg.drawText(
-                LegacyIcon.CHEVRON_LEFT,
+                "<",
                 this.getX() + 23f,
                 this.getY() + (this.getHeight() / 2) - 22f,
                 palette.getFontColor(ColorType.DARK, (leftValue * 255).toInt()),
                 9f,
-                Fonts.LEGACYICON
+                Fonts.SEMIBOLD
             )
 
             nvg.restore()
@@ -224,19 +247,19 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 palette.getBackgroundColor(ColorType.DARK, (rightValue * 255).toInt())
             )
             nvg.drawText(
-                LegacyIcon.CHEVRON_RIGHT,
+                ">",
                 this.getX() + this.getWidth() - 29f,
                 this.getY() + (this.getHeight() / 2) - 22f,
                 palette.getFontColor(ColorType.DARK, (rightValue * 255).toInt()),
                 9f,
-                Fonts.LEGACYICON
+                Fonts.SEMIBOLD
             )
 
             nvg.restore()
         } else {
             nvg.drawRoundedRect(
-                this.getX() + addX.toFloat(),
-                this.getY() + addY.toFloat(),
+                this.getX() + addX,
+                this.getY() + addY,
                 this.getWidth() - (addX * 2f),
                 this.getHeight() - (addY * 2f) - 38f,
                 6f,
@@ -308,7 +331,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     mouseY,
                     this.getX() + offsetX + 62f,
                     this.getY() + this.getHeight() - 36f,
-                    23f,
+                    50f,
                     23f
                 ) && mouseButton == 0 &&
                 MouseUtils.isInside(
@@ -323,7 +346,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 currentScreenshot = s
             }
 
-            offsetX += 27
+            offsetX += 54
         }
 
         if (inside && !trash && mouseButton == 0 && currentScreenshot != null) {

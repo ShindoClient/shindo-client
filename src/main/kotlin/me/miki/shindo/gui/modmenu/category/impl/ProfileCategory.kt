@@ -12,6 +12,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.management.nanovg.font.Icons
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.profile.Profile
@@ -35,28 +36,50 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.io.IOException
-
+import java.util.Locale
 
 class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true) {
+
+    // -------------------------------------------------------------------------
+    // State — create panel
+    // -------------------------------------------------------------------------
 
     private val nameBox = CompTextBox()
     private val serverIpBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
     private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
+
     private var currentType = ProfileType.ALL
-    private var openProfile = false
     private var currentIcon = ProfileIcon.COMMAND
+    private var openProfile = false
     private var useCustomIcon = false
     private var selectedCustomIcon: File? = null
     private var gridStartY = 0f
-    //private var importButtonX = 0f
-    //private var importButtonY = 0f
-    //private var importButtonW = 0f
-    //private var importButtonH = 0f
+
     private val customIconHoverAnimation = SimpleAnimation()
     private val createAnimation = SimpleAnimation()
 
-    override fun initGui() {
+    // -------------------------------------------------------------------------
+    // State — import overlay
+    // -------------------------------------------------------------------------
+
+    private val importCodeBox = CompTextBox()
+    private var showImportOverlay = false
+    private val importOverlayAnimation = SimpleAnimation()
+    private val importButtonAnimation = SimpleAnimation()
+
+    // =========================================================================
+    // Lifecycle
+    // =========================================================================
+
+    override fun initGui() = resetState()
+
+    override fun initCategory() {
+        scroll.resetAll()
+        resetState()
+    }
+
+    private fun resetState() {
         currentType = ProfileType.ALL
         currentIcon = ProfileIcon.COMMAND
         openProfile = false
@@ -66,24 +89,20 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         gridStartY = 0f
         customIconHoverAnimation.value = 0f
         createAnimation.value = 0f
+        showImportOverlay = false
+        importOverlayAnimation.value = 0f
+        importButtonAnimation.value = 0f
+        importCodeBox.setText("")
     }
 
-    override fun initCategory() {
-        scroll.resetAll()
-        openProfile = false
-        detailTransition.reset()
-        useCustomIcon = false
-        selectedCustomIcon = null
-        gridStartY = 0f
-        customIconHoverAnimation.value = 0f
-        createAnimation.value = 0f
-    }
+    // =========================================================================
+    // Rendering
+    // =========================================================================
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager!!
         val profileManager = instance.profileManager
-        val activeProfile = profileManager.activeProfile
         val colorManager = instance.colorManager
         val accentColor = colorManager.getCurrentColor()
         val palette = colorManager.getPalette()
@@ -95,738 +114,758 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         }
 
         val visibleProfiles = collectVisibleProfiles(profileManager)
-        val scrollValue = scroll.getValue()
+        val cardWidth = (getWidth() - CARD_HORIZONTAL_PADDING * 2 - CARD_COLUMN_GAP) / 2f
+        val chipBlockBottom = drawTypeChips(nvg, palette, accentColor, mouseX, mouseY)
+        val contentStartY = chipBlockBottom + 24f
+        val viewportHeight = getHeight() - (contentStartY - getY()) - 28f
+        gridStartY = contentStartY
 
         nvg.save()
         nvg.translate(detailTransition.getListTranslateX(), 0f)
 
-        val chipBlockBottom = drawTypeChips(nvg, palette, accentColor, mouseX, mouseY)
-        val contentStartY = chipBlockBottom + 24f
-        gridStartY = contentStartY
-        val cardWidth = ((getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2f)
-        val viewportHeight = getHeight() - (contentStartY - getY()) - 28f
+        handleScroll(mouseX, mouseY, contentStartY)
+        drawProfileGrid(nvg, palette, visibleProfiles, cardWidth, contentStartY, mouseX, mouseY)
+        drawFadeOverlays(nvg, palette)
+        drawImportButton(nvg, palette, accentColor, mouseX, mouseY)
 
-        if (detailTransition.isListInteractive() && MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX().toFloat(),
-                contentStartY - 6f,
-                getWidth().toFloat(),
-                getHeight() - (contentStartY - getY()) + 6f
-            )
-        ) {
+        nvg.restore()
+
+        drawCreatePanel(nvg, palette, accentColor, mouseX, mouseY, partialTicks)
+        drawImportOverlay(nvg, palette, accentColor, mouseX, mouseY, partialTicks)
+
+        scroll.maxScroll = computeMaxScroll(visibleProfiles.size, viewportHeight)
+    }
+
+    // -------------------------------------------------------------------------
+    // Grid
+    // -------------------------------------------------------------------------
+
+    private fun handleScroll(mouseX: Int, mouseY: Int, contentStartY: Float) {
+        if (!detailTransition.isListInteractive()) return
+        if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), contentStartY - 6f,
+                getWidth().toFloat(), getHeight() - (contentStartY - getY()) + 6f)) {
             scroll.onScroll()
             scroll.onAnimation()
         }
+    }
 
+    private fun drawProfileGrid(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        profiles: List<Profile>,
+        cardWidth: Float,
+        contentStartY: Float,
+        mouseX: Int,
+        mouseY: Int
+    ) {
+        val scrollValue = scroll.getValue()
         ModMenuClipCoordinator.withClipTranslate(
             nvg = nvg,
-            x = getX().toFloat(),
-            y = contentStartY - 6f,
-            width = getWidth().toFloat(),
-            height = getHeight() - (contentStartY - getY()) + 6f,
-            translateX = 0f,
-            translateY = scrollValue,
+            x = getX().toFloat(), y = contentStartY - 6f,
+            width = getWidth().toFloat(), height = getHeight() - (contentStartY - getY()) + 6f,
+            translateX = 0f, translateY = scrollValue,
             intersect = true
         ) {
-            for (i in visibleProfiles.indices) {
-                val profile = visibleProfiles[i]
-                val isCreateCard = profile.id == 999
-                val isDefault = profile.id == -1
-                var isActive = activeProfile != null && activeProfile == profile
-                if (!isActive && activeProfile != null && activeProfile.jsonFile != null && profile.jsonFile != null) {
-                    isActive = try {
-                        activeProfile.jsonFile.canonicalPath == profile.jsonFile.canonicalPath
-                    } catch (e: Exception) {
-                        activeProfile.jsonFile.absolutePath == profile.jsonFile.absolutePath
-                    }
-                }
+            profiles.forEachIndexed { i, profile ->
+                val cardX = getX() + CARD_HORIZONTAL_PADDING + (i % 2) * (cardWidth + CARD_COLUMN_GAP)
+                val cardY = contentStartY + (i / 2) * (CARD_HEIGHT + CARD_ROW_GAP)
+                if (cardY + scrollValue > getY() + getHeight() || cardY + scrollValue + CARD_HEIGHT < getY()) return@forEachIndexed
 
-                val column = i % 2
-                val row = i / 2
-
-                val cardX = getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP)
-                val cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP)
-
-                if (cardY + scrollValue > getY() + getHeight() || cardY + scrollValue + CARD_HEIGHT < getY()) {
-                    continue
-                }
-
-                val hovered =
-                    detailTransition.isListInteractive() && MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        cardX,
-                        cardY + scrollValue,
-                        cardWidth,
-                        CARD_HEIGHT
-                    )
-
-                val base = applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
-
-                nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, 6)
-                nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
-                nvg.drawOutlineRoundedRect(
-                    cardX,
-                    cardY,
-                    cardWidth,
-                    CARD_HEIGHT,
-                    12f,
-                    1f,
-                    applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
-                )
-
-
-                if (isCreateCard) {
-                    nvg.drawCenteredText(
-                        LegacyIcon.PLUS,
-                        cardX + cardWidth / 2f,
-                        cardY + CARD_HEIGHT / 2f - 16f,
-                        palette.getFontColor(ColorType.DARK),
-                        24f,
-                        Fonts.LEGACYICON
-                    )
-                    nvg.drawCenteredText(
-                        TranslateText.ADD_PROFILE.getText(),
-                        cardX + cardWidth / 2f,
-                        cardY + CARD_HEIGHT / 2f + 6f,
-                        palette.getFontColor(ColorType.DARK),
-                        9.5f,
-                        Fonts.MEDIUM
-                    )
-                    continue
-                }
-
-                val iconX = cardX + 16f
-                val iconY = cardY + (CARD_HEIGHT - ICON_SIZE) / 2f
-
-                if (profile.customIcon != null) {
-                    nvg.drawRoundedImage(profile.customIcon!!, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
-                } else if (profile.icon != null) {
-                    nvg.drawRoundedImage(profile.icon.icon, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
-                } else {
-                    nvg.drawRoundedRect(
-                        iconX,
-                        iconY,
-                        ICON_SIZE,
-                        ICON_SIZE,
-                        9f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200)
-                    )
-                    nvg.drawCenteredText(
-                        LegacyIcon.PLUS,
-                        iconX + ICON_SIZE / 2f,
-                        iconY + ICON_SIZE / 2f,
-                        palette.getFontColor(ColorType.DARK),
-                        14f,
-                        Fonts.LEGACYICON
-                    )
-                }
-
-                val textX = iconX + ICON_SIZE + 14f
-                val textWidth = cardWidth - (textX - cardX) - 24f
-                var profileName = profile.name.ifEmpty { if (isDefault) "Default" else "Profile" }
-                profileName = nvg.getLimitText(profileName, 12f, Fonts.MEDIUM, textWidth)
-                nvg.drawText(profileName, textX, cardY + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
-
-                var serverInfo = if (profile.serverIp == null || profile.serverIp!!.isEmpty()) {
-                    TranslateText.AUTO_LOAD.getText() + ": " + TranslateText.NONE.getText()
-                } else {
-                    TranslateText.SERVER_IP.getText() + ": " + profile.serverIp
-                }
-
-                serverInfo = nvg.getLimitText(serverInfo, 8.5f, Fonts.REGULAR, textWidth)
-                nvg.drawText(
-                    serverInfo,
-                    textX,
-                    cardY + 36f,
-                    applyAlpha(palette.getFontColor(ColorType.NORMAL), 220),
-                    8.5f,
-                    Fonts.REGULAR
-                )
-
-                if (!isDefault) {
-                    val starSize = 18f
-                    val startX = cardX + cardWidth - starSize - 18f
-                    val startY = cardY + 10f
-
-                    profile.starAnimation.setAnimation(if (profile.type == ProfileType.FAVORITE) 1.0f else 0.0f, 16.0)
-
-                    nvg.drawRoundedRect(
-                        startX,
-                        startY - 1f,
-                        starSize,
-                        starSize,
-                        5f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                    )
-
-                    val starY = startY + starSize + 10f
-                    nvg.drawRoundedRect(
-                        startX,
-                        starY - 1f,
-                        starSize,
-                        starSize,
-                        5f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                    )
-                    nvg.drawCenteredText(
-                        LegacyIcon.STAR,
-                        startX + starSize / 2f - 0.5f,
-                        starY + 3f,
-                        palette.getFontColor(ColorType.NORMAL),
-                        10f,
-                        Fonts.LEGACYICON
-                    )
-                    nvg.drawCenteredText(
-                        LegacyIcon.STAR_FILL,
-                        startX + starSize / 2f,
-                        starY + 3f,
-                        applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()),
-                        10f,
-                        Fonts.LEGACYICON
-                    )
-
-                    val deleteY = starY + starSize + 10f
-                    nvg.drawRoundedRect(
-                        startX,
-                        deleteY - 1f,
-                        starSize,
-                        starSize,
-                        5f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                    )
-                    nvg.drawCenteredText(
-                        LegacyIcon.TRASH,
-                        startX + starSize / 2f - 0.5f,
-                        deleteY + 3f,
-                        palette.getMaterialRed(),
-                        10f,
-                        Fonts.LEGACYICON
-                    )
-                } else {
-                    val checkSize = 18f
-                    val checkX = cardX + cardWidth - checkSize - 18f
-                    val checkY = cardY + 10f
-
-                    nvg.drawRoundedRect(
-                        checkX,
-                        checkY - 1f,
-                        checkSize,
-                        checkSize,
-                        5f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
-                    )
-                }
-
-                if (isActive) {
-                    val checkSize = 18f
-                    val checkX = cardX + cardWidth - checkSize - 18f
-                    val checkY = cardY + 10f
-
-                    nvg.drawCenteredText(
-                        LegacyIcon.CHECK,
-                        checkX + checkSize / 2f - 0.5f,
-                        checkY + 3f,
-                        palette.getFontColor(ColorType.DARK),
-                        10f,
-                        Fonts.LEGACYICON
-                    )
-                }
+                val hovered = detailTransition.isListInteractive() &&
+                        MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
+                drawCard(nvg, palette, profile, cardX, cardY, cardWidth, hovered)
             }
         }
+    }
 
-        nvg.restore()
-        nvg.drawVerticalGradientRect(
-            getX() + CARD_HORIZONTAL_PADDING,
-            getY() + 48f,
-            getWidth() - (CARD_HORIZONTAL_PADDING * 2),
-            14f,
-            palette.getBackgroundColor(ColorType.NORMAL),
-            Color(0, 0, 0, 0)
+    // -------------------------------------------------------------------------
+    // Card
+    // -------------------------------------------------------------------------
+
+    private fun drawCard(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        profile: Profile,
+        cardX: Float,
+        cardY: Float,
+        cardWidth: Float,
+        hovered: Boolean
+    ) {
+        val base = applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 214 else 194)
+        nvg.drawShadow(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, 6)
+        nvg.drawRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, base)
+        nvg.drawOutlineRoundedRect(cardX, cardY, cardWidth, CARD_HEIGHT, 12f, 1f,
+            applyAlpha(palette.getBackgroundColor(ColorType.MID), 210))
+
+        if (profile.id == SENTINEL_ID) {
+            drawCreateCard(nvg, palette, cardX, cardY, cardWidth)
+            return
+        }
+
+        drawCardIcon(nvg, palette, profile, cardX, cardY)
+        drawCardText(nvg, palette, profile, cardX, cardY, cardWidth)
+        drawCardActions(nvg, palette, profile, cardX, cardY, cardWidth)
+    }
+
+    private fun drawCreateCard(nvg: NanoVGManager, palette: ColorPalette, cardX: Float, cardY: Float, cardWidth: Float) {
+        nvg.drawCenteredText(LegacyIcon.PLUS, cardX + cardWidth / 2f, cardY + CARD_HEIGHT / 2f - 16f,
+            palette.getFontColor(ColorType.DARK), 24f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(TranslateText.ADD_PROFILE.getText(), cardX + cardWidth / 2f, cardY + CARD_HEIGHT / 2f + 6f,
+            palette.getFontColor(ColorType.DARK), 9.5f, Fonts.MEDIUM)
+    }
+
+    private fun drawCardIcon(nvg: NanoVGManager, palette: ColorPalette, profile: Profile, cardX: Float, cardY: Float) {
+        val iconX = cardX + 16f
+        val iconY = cardY + (CARD_HEIGHT - ICON_SIZE) / 2f
+        when {
+            profile.customIcon != null -> nvg.drawRoundedImage(profile.customIcon!!, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
+            profile.icon != null       -> nvg.drawRoundedImage(profile.icon.icon, iconX, iconY, ICON_SIZE, ICON_SIZE, 9f)
+            else -> {
+                nvg.drawRoundedRect(iconX, iconY, ICON_SIZE, ICON_SIZE, 9f,
+                    applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200))
+                nvg.drawCenteredText(LegacyIcon.PLUS, iconX + ICON_SIZE / 2f, iconY + ICON_SIZE / 2f,
+                    palette.getFontColor(ColorType.DARK), 14f, Fonts.LEGACYICON)
+            }
+        }
+    }
+
+    private fun drawCardText(nvg: NanoVGManager, palette: ColorPalette, profile: Profile, cardX: Float, cardY: Float, cardWidth: Float) {
+        val isDefault = profile.id == DEFAULT_ID
+        val textX = cardX + 16f + ICON_SIZE + 14f
+        val textWidth = cardWidth - (textX - cardX) - 24f
+
+        val name = nvg.getLimitText(
+            profile.name.ifEmpty { if (isDefault) "Default" else "Profile" },
+            12f, Fonts.MEDIUM, textWidth
         )
-        nvg.drawVerticalGradientRect(
-            getX() + CARD_HORIZONTAL_PADDING,
-            getY() + getHeight() - 16f,
-            getWidth() - (CARD_HORIZONTAL_PADDING * 2),
-            16f,
-            Color(0, 0, 0, 0),
-            palette.getBackgroundColor(ColorType.NORMAL)
+        nvg.drawText(name, textX, cardY + 20f, palette.getFontColor(ColorType.DARK), 12f, Fonts.MEDIUM)
+
+        val serverText = if (profile.serverIp.isNullOrEmpty()) {
+            "${TranslateText.AUTO_LOAD.getText()}: ${TranslateText.NONE.getText()}"
+        } else {
+            "${TranslateText.SERVER_IP.getText()}: ${profile.serverIp}"
+        }
+        nvg.drawText(nvg.getLimitText(serverText, 8.5f, Fonts.REGULAR, textWidth),
+            textX, cardY + 36f, applyAlpha(palette.getFontColor(ColorType.NORMAL), 220), 8.5f, Fonts.REGULAR)
+    }
+
+    /**
+     * Right-side action buttons (top → bottom):
+     *   [0] check  — active indicator (all profiles)
+     *   [1] star   — favorite toggle   (non-default only)
+     *   [2] delete                     (non-default only)
+     *   [3] share  — copy/share code   (non-default only)
+     */
+    private fun drawCardActions(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        profile: Profile,
+        cardX: Float,
+        cardY: Float,
+        cardWidth: Float
+    ) {
+        val isDefault = profile.id == DEFAULT_ID
+        val isActive = isActiveProfile(profile)
+        val btnSize = 18f
+        val gap = 8f
+        val btnX = cardX + cardWidth - btnSize - 18f
+        val checkY  = cardY + 10f
+        val starY   = checkY  + btnSize + gap
+        val deleteY = starY   + btnSize + gap
+        val shareY  = deleteY + btnSize + gap
+
+        // Check / active
+        nvg.drawRoundedRect(btnX, checkY - 1f, btnSize, btnSize, 5f,
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
+        if (isActive) {
+            nvg.drawCenteredText(LegacyIcon.CHECK, btnX + btnSize / 2f - 0.5f, checkY + 3f,
+                palette.getFontColor(ColorType.DARK), 10f, Fonts.LEGACYICON)
+        }
+
+        if (isDefault) return
+
+        // Star
+        profile.starAnimation.setAnimation(if (profile.type == ProfileType.FAVORITE) 1f else 0f, 16.0)
+        nvg.drawRoundedRect(btnX, starY - 1f, btnSize, btnSize, 5f,
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
+        nvg.drawCenteredText(LegacyIcon.STAR, btnX + btnSize / 2f - 0.5f, starY + 3f,
+            palette.getFontColor(ColorType.NORMAL), 10f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(LegacyIcon.STAR_FILL, btnX + btnSize / 2f, starY + 3f,
+            applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.value * 255).toInt()), 10f, Fonts.LEGACYICON)
+
+        // Delete
+        nvg.drawRoundedRect(btnX, deleteY - 1f, btnSize, btnSize, 5f,
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
+        nvg.drawCenteredText(LegacyIcon.TRASH, btnX + btnSize / 2f - 0.5f, deleteY + 3f,
+            palette.getMaterialRed(), 10f, Fonts.LEGACYICON)
+
+        // Share — filled icon if already shared (code exists), outline if not
+        val alreadyShared = !profile.shareCode.isNullOrBlank()
+        nvg.drawRoundedRect(btnX, shareY - 1f, btnSize, btnSize, 5f,
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
+        nvg.drawCenteredText(
+            if (alreadyShared) Icons.PREVIEW_LINK_24 else Icons.COPY_20,
+            btnX + btnSize / 2f - 0.5f, shareY + 3f,
+            if (alreadyShared) applyAlpha(palette.getFontColor(ColorType.DARK), 200)
+            else               applyAlpha(palette.getFontColor(ColorType.NORMAL), 170),
+            10f, Fonts.ICON_FILLED
         )
+    }
+
+    // -------------------------------------------------------------------------
+    // Fade overlays + import pill button
+    // -------------------------------------------------------------------------
+
+    private fun drawFadeOverlays(nvg: NanoVGManager, palette: ColorPalette) {
+        val bg = palette.getBackgroundColor(ColorType.NORMAL)
+        val transparent = Color(0, 0, 0, 0)
+        val paddedX = getX() + CARD_HORIZONTAL_PADDING
+        val paddedW = getWidth() - CARD_HORIZONTAL_PADDING * 2
+        nvg.drawVerticalGradientRect(paddedX, getY() + 48f, paddedW, 14f, bg, transparent)
+        nvg.drawVerticalGradientRect(paddedX, getY() + getHeight() - 32f, paddedW, 32f, transparent, bg)
+    }
+
+    /**
+     * Small pill button in the bottom-right corner of the list layer.
+     * Fades out when the import overlay is open.
+     */
+    private fun drawImportButton(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accentColor: AccentColor,
+        mouseX: Int,
+        mouseY: Int
+    ) {
+        val btnW = 72f; val btnH = 20f
+        val btnX = getX() + getWidth() - CARD_HORIZONTAL_PADDING - btnW
+        val btnY = getY() + getHeight() - 26f
+
+        val hovered = detailTransition.isListInteractive() && !showImportOverlay &&
+                MouseUtils.isInside(mouseX, mouseY, btnX, btnY, btnW, btnH)
+        importButtonAnimation.setAnimation(if (hovered) 1f else 0f, 12.0)
+        val t = importButtonAnimation.value
+
+        val bgAlpha = if (showImportOverlay) 60 else (130 + t * 80).toInt()
+        val bgColor = if (hovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.DARK)
+
+        nvg.drawRoundedRect(btnX, btnY, btnW, btnH, 6f, ColorUtils.applyAlpha(bgColor, bgAlpha))
+        nvg.drawOutlineRoundedRect(btnX, btnY, btnW, btnH, 6f, 1f,
+            applyAlpha(palette.getBackgroundColor(ColorType.MID), (160 + t * 60).toInt()))
+        nvg.drawCenteredText(Icons.CLIPBOARD_PASTE_24,btnX + 8.5f, btnY + btnH / 2f - 4f,
+            applyAlpha(palette.getFontColor(if (hovered) ColorType.DARK else ColorType.NORMAL),
+                if (showImportOverlay) 80 else 220),
+            8.5f, Fonts.ICON_FILLED)
+        nvg.drawCenteredText(
+            TranslateText.PROFILE_IMPORT.getText(),
+            btnX + btnW / 2f, btnY + btnH / 2f - 4f,
+            applyAlpha(palette.getFontColor(if (hovered) ColorType.DARK else ColorType.NORMAL),
+                if (showImportOverlay) 80 else 220),
+            8.5f, Fonts.MEDIUM
+        )
+    }
+
+    // -------------------------------------------------------------------------
+    // Create panel
+    // -------------------------------------------------------------------------
+
+    private fun drawCreatePanel(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accentColor: AccentColor,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
         nvg.save()
         nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
 
         val panelX = getX() + 18f
         val panelY = getY() + 15f
-        val panelWidth = getWidth() - 36f
-        val panelHeight = getHeight() - 30f
+        val panelW = getWidth() - 36f
+        val panelH = getHeight() - 30f
 
-        nvg.drawShadow(panelX, panelY, panelWidth, panelHeight, 12f, 7)
-        nvg.drawRoundedRect(panelX, panelY, panelWidth, panelHeight, 12f, palette.getBackgroundColor(ColorType.DARK))
-        nvg.drawOutlineRoundedRect(
-            panelX,
-            panelY,
-            panelWidth,
-            panelHeight,
-            12f,
-            1.1f,
-            applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
-        )
+        nvg.drawShadow(panelX, panelY, panelW, panelH, 12f, 7)
+        nvg.drawRoundedRect(panelX, panelY, panelW, panelH, 12f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawOutlineRoundedRect(panelX, panelY, panelW, panelH, 12f, 1.1f,
+            applyAlpha(palette.getBackgroundColor(ColorType.MID), 220))
 
-        nvg.drawText(
-            TranslateText.ADD_PROFILE.getText(),
-            panelX + 24f,
-            panelY + 20f,
-            palette.getFontColor(ColorType.DARK),
-            14f,
-            Fonts.SEMIBOLD
-        )
-        nvg.drawText(
-            TranslateText.ICON.getText(),
-            panelX + 24f,
-            panelY + 48f,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM
-        )
+        nvg.drawText(TranslateText.ADD_PROFILE.getText(), panelX + 24f, panelY + 20f,
+            palette.getFontColor(ColorType.DARK), 14f, Fonts.SEMIBOLD)
+        nvg.drawText(TranslateText.ICON.getText(), panelX + 24f, panelY + 48f,
+            palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
 
-        var iconSelectorX = panelX + 24f
-        val iconSelectorY = panelY + 66f
-        val iconSelectorGap = 12f
-        val iconTileSize = 24f
+        drawIconSelector(nvg, palette, panelX, panelY, panelW, mouseX, mouseY)
+        drawFormFields(nvg, palette, panelX, panelY, panelW, mouseX, mouseY, partialTicks)
+        drawCreateButton(nvg, palette, accentColor, mouseX, mouseY)
+
+        nvg.restore()
+    }
+
+    private fun drawIconSelector(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        panelX: Float,
+        panelY: Float,
+        panelW: Float,
+        mouseX: Int,
+        mouseY: Int
+    ) {
+        val iconY = panelY + 66f
+        val tileSize = 24f
+        val gap = 12f
+        var iconX = panelX + 24f
 
         for (icon in ProfileIcon.values()) {
             val selected = !useCustomIcon && currentIcon == icon
-            val hovered = MouseUtils.isInside(mouseX, mouseY, iconSelectorX, iconSelectorY, iconTileSize, iconTileSize)
-            icon.animation.setAnimation(if (selected) 1.0f else 0.0f, 12.0)
-            nvg.drawRoundedImage(
-                icon.icon,
-                iconSelectorX + 1f,
-                iconSelectorY + 1f,
-                iconTileSize - 2f,
-                iconTileSize - 2f,
-                7f
-            )
-
+            val hovered = MouseUtils.isInside(mouseX, mouseY, iconX, iconY, tileSize, tileSize)
+            icon.animation.setAnimation(if (selected) 1f else 0f, 12.0)
+            nvg.drawRoundedImage(icon.icon, iconX + 1f, iconY + 1f, tileSize - 2f, tileSize - 2f, 7f)
             if (selected || hovered) {
-                nvg.drawOutlineRoundedRect(
-                    iconSelectorX,
-                    iconSelectorY,
-                    iconTileSize,
-                    iconTileSize,
-                    8f,
-                    1.6f,
-                    palette.getFontColor(ColorType.NORMAL)
-                    )
+                nvg.drawOutlineRoundedRect(iconX, iconY, tileSize, tileSize, 8f, 1.6f,
+                    palette.getFontColor(ColorType.NORMAL))
             }
-
-            iconSelectorX += iconTileSize + iconSelectorGap
+            iconX += tileSize + gap
         }
 
-        val customTileX = panelX + panelWidth - iconTileSize - 24f
-        val customTileY = panelY + 66f
-        val customHovered = MouseUtils.isInside(mouseX, mouseY, customTileX, customTileY, iconTileSize, iconTileSize)
-        customIconHoverAnimation.setAnimation(if (customHovered) 1.0f else 0.0f, 14.0)
+        val customX = panelX + panelW - tileSize - 24f
+        val customHovered = MouseUtils.isInside(mouseX, mouseY, customX, iconY, tileSize, tileSize)
+        customIconHoverAnimation.setAnimation(if (customHovered) 1f else 0f, 14.0)
+        val hoverT = customIconHoverAnimation.value
 
-        val customHover = customIconHoverAnimation.value
-
-        val customBase = applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), (210f + customHover * 26f).toInt().coerceIn(0, 255))
-        nvg.drawRoundedRect(customTileX, customTileY, 24f, 24f, 8f, customBase)
+        nvg.drawRoundedRect(customX, iconY, tileSize, tileSize, 8f,
+            applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), (210f + hoverT * 26f).toInt().coerceIn(0, 255)))
         if (selectedCustomIcon != null) {
-            nvg.drawRoundedImage(
-                selectedCustomIcon!!,
-                customTileX + 1f,
-                customTileY + 1f,
-                iconTileSize - 2f,
-                iconTileSize - 2f,
-                7f
-            )
+            nvg.drawRoundedImage(selectedCustomIcon!!, customX + 1f, iconY + 1f, tileSize - 2f, tileSize - 2f, 7f)
         } else {
-            nvg.drawCenteredText(
-                LegacyIcon.PLUS,
-                customTileX + iconTileSize / 2f,
-                customTileY + iconTileSize / 2f - 6f + customHover * 0.25f,
-                palette.getFontColor(ColorType.DARK),
-                12f,
-                Fonts.LEGACYICON
-            )
+            nvg.drawCenteredText(LegacyIcon.PLUS, customX + tileSize / 2f, iconY + tileSize / 2f - 6f + hoverT * 0.25f,
+                palette.getFontColor(ColorType.DARK), 12f, Fonts.LEGACYICON)
         }
-
         if (customHovered) {
-            nvg.drawOutlineRoundedRect(
-                customTileX,
-                customTileY,
-                iconTileSize,
-                iconTileSize,
-                8f,
-                1.6f,
-                palette.getFontColor(
-                    ColorType.NORMAL)
-            )
+            nvg.drawOutlineRoundedRect(customX, iconY, tileSize, tileSize, 8f, 1.6f,
+                palette.getFontColor(ColorType.NORMAL))
         }
+    }
 
+    private fun drawFormFields(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        panelX: Float,
+        panelY: Float,
+        panelW: Float,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
+        val fieldY = panelY + 130f
+        val fieldW = (panelW - 48f) / 2f - 15f
+        val col2X = panelX + 24f + fieldW + 24f
 
-
-        val fieldStartY = panelY + 130f
-        val fieldWidth = (panelWidth - 48f) / 2f - 15f
-
-        nvg.drawText(
-            TranslateText.NAME.getText(),
-            panelX + 24f,
-            fieldStartY,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM
-        )
-        nameBox.setPosition(panelX + 24f, fieldStartY + 20f, fieldWidth, 20f)
+        nvg.drawText(TranslateText.NAME.getText(), panelX + 24f, fieldY,
+            palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        nameBox.setPosition(panelX + 24f, fieldY + 20f, fieldW, 20f)
         nameBox.setDefaultText(TranslateText.NAME.getText())
         nameBox.draw(mouseX, mouseY, partialTicks)
 
-        nvg.drawText(
-            TranslateText.SERVER_IP.getText(),
-            panelX + 24f + fieldWidth + 24f,
-            fieldStartY,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM
-        )
-        serverIpBox.setPosition(panelX + 24f + fieldWidth + 24f, fieldStartY + 20f, fieldWidth, 20f)
+        nvg.drawText(TranslateText.SERVER_IP.getText(), col2X, fieldY,
+            palette.getFontColor(ColorType.DARK), 11f, Fonts.MEDIUM)
+        serverIpBox.setPosition(col2X, fieldY + 20f, fieldW, 20f)
         serverIpBox.setDefaultText(TranslateText.SERVER_IP.getText())
         serverIpBox.draw(mouseX, mouseY, partialTicks)
-
-
-
-        val createHovered = MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 124f, this.getY() + this.getHeight() - 44f, 100f, 21f)
-        createAnimation.setAnimation( if (createHovered) 1.0f else 0.0f, 12.0)
-
-
-        nvg.drawRoundedRect(this.getX() + this.getWidth() - 124f, this.getY() + this.getHeight() - 44f, 100f, 21f, 6f,
-            ColorUtils.applyAlpha(if (createHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.NORMAL), (if (createHovered) 210 else 150) + createAnimation.value.toInt() * 20)
-        )
-        nvg.drawCenteredText(TranslateText.CREATE.getText(), this.getX() + this.getWidth() - 124f + 50f, this.getY() + this.getHeight() - 37.5F, palette.getFontColor(ColorType.DARK), 10f, Fonts.REGULAR)
-
-        nvg.restore()
-
-        val totalRows = kotlin.math.ceil(visibleProfiles.size / 2.0).toFloat()
-        val contentHeight = totalRows * CARD_HEIGHT + kotlin.math.max(0f, totalRows - 1) * CARD_ROW_GAP
-        scroll.maxScroll = kotlin.math.max(0f, contentHeight - viewportHeight)
     }
 
+    private fun drawCreateButton(nvg: NanoVGManager, palette: ColorPalette, accentColor: AccentColor, mouseX: Int, mouseY: Int) {
+        val btnX = getX() + getWidth() - 124f
+        val btnY = getY() + getHeight() - 44f
+        val hovered = MouseUtils.isInside(mouseX, mouseY, btnX, btnY, 100f, 21f)
+        createAnimation.setAnimation(if (hovered) 1f else 0f, 12.0)
+        val bgColor = if (hovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.NORMAL)
+        nvg.drawRoundedRect(btnX, btnY, 100f, 21f, 6f,
+            ColorUtils.applyAlpha(bgColor, (if (hovered) 210 else 150) + (createAnimation.value * 20).toInt()))
+        nvg.drawCenteredText(TranslateText.CREATE.getText(), btnX + 50f, btnY + 6.5f,
+            palette.getFontColor(ColorType.DARK), 10f, Fonts.REGULAR)
+    }
+
+    // -------------------------------------------------------------------------
+    // Import overlay
+    // -------------------------------------------------------------------------
+
+    /**
+     * Compact floating popup anchored to the bottom-right of the panel.
+     * Slides up from the import button with alpha animation.
+     *
+     * Layout:
+     *   ┌─────────────────────────────┐
+     *   │  ↓ Import profile    ×      │
+     *   │  [  XXXXXXXXXXXX  ] [✓]     │
+     *   └─────────────────────────────┘
+     */
+    private fun drawImportOverlay(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accentColor: AccentColor,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float
+    ) {
+        importOverlayAnimation.setAnimation(if (showImportOverlay) 1f else 0f, 14.0)
+        val t = importOverlayAnimation.value
+        if (t < 0.01f) return
+
+        val overlayW = 220f
+        val overlayH = 78f
+        val margin = 14f
+        val overlayX = getX() + getWidth() - CARD_HORIZONTAL_PADDING - overlayW
+        val anchorY = getY() + getHeight() - 32f          // aligns with import button
+        val overlayY = anchorY - overlayH - 6f + (1f - t) * 8f   // slides up
+
+        nvg.save()
+
+        nvg.drawShadow(overlayX, overlayY, overlayW, overlayH, 10f, 7)
+        nvg.drawRoundedRect(overlayX, overlayY, overlayW, overlayH, 10f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawOutlineRoundedRect(overlayX, overlayY, overlayW, overlayH, 10f, 1f,
+            applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
+
+        // Title
+        nvg.drawText(
+            "${LegacyIcon.DOWNLOAD}  ${TranslateText.PROFILE_IMPORT.getText()}",
+            overlayX + margin, overlayY + 14f,
+            palette.getFontColor(ColorType.DARK), 10f, Fonts.SEMIBOLD
+        )
+
+        // Close (×)
+        val closeX = overlayX + overlayW - margin - 8f
+        val closeHovered = MouseUtils.isInside(mouseX, mouseY, closeX - 5f, overlayY + 7f, 16f, 16f)
+        nvg.drawCenteredText(LegacyIcon.X, closeX, overlayY + 13f,
+            applyAlpha(palette.getFontColor(ColorType.NORMAL), if (closeHovered) 230 else 130),
+            9f, Fonts.LEGACYICON)
+
+        // Code input + confirm button on the same row
+        val confirmW = 36f
+        val inputW = overlayW - margin * 2 - confirmW - 6f
+        importCodeBox.setPosition(overlayX + margin, overlayY + 38f, inputW, 20f)
+        importCodeBox.setDefaultText("XXXXXXXXXXXX")
+        importCodeBox.draw(mouseX, mouseY, partialTicks)
+
+        val confirmX = overlayX + margin + inputW + 6f
+        val confirmY = overlayY + 38f
+        val code = importCodeBox.getText().trim().toUpperCase(Locale.ROOT)
+        val canConfirm = code.length == SHARE_CODE_LENGTH
+        val confirmHovered = canConfirm && MouseUtils.isInside(mouseX, mouseY, confirmX, confirmY, confirmW, 20f)
+
+        nvg.drawRoundedRect(confirmX, confirmY, confirmW, 20f, 6f,
+            applyAlpha(
+                if (confirmHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.NORMAL),
+                when { confirmHovered -> 210; canConfirm -> 170; else -> 70 }
+            )
+        )
+        nvg.drawCenteredText(LegacyIcon.CHECK, confirmX + confirmW / 2f, confirmY + 5f,
+            applyAlpha(palette.getFontColor(ColorType.DARK), if (canConfirm) 220 else 90),
+            10f, Fonts.LEGACYICON)
+
+        nvg.restore()
+    }
+
+    // =========================================================================
+    // Input
+    // =========================================================================
+
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val instance = Shindo.getInstance()
-        val profileManager = instance.profileManager
-        val modManager = instance.modManager
-        val fileManager = instance.fileManager
-
-        val scrollValue = scroll.getValue()
-        val contentStartY = if (gridStartY > 0f) gridStartY else getY() + 56f
-        val cardWidth = ((getWidth() - (CARD_HORIZONTAL_PADDING * 2) - CARD_COLUMN_GAP) / 2f)
-
-
-
-
-        if (openProfile && detailTransition.isDetailsInteractive()) {
-            val panelX = getX() + 18f
-            val panelY = getY() + 15f
-            val panelWidth = getWidth() - 36f
-            val panelHeight = getHeight() - 30f
-
-            var iconSelectorX = panelX + 24f
-            val iconSelectorY = panelY + 66f
-            val iconSelectorGap = 12f
-            val iconTileSize = 24f
-
-            for (icon in ProfileIcon.values()) {
-                if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        iconSelectorX,
-                        iconSelectorY,
-                        iconTileSize,
-                        iconTileSize
-                    ) && mouseButton == 0
-                ) {
-                    currentIcon = icon
-                    useCustomIcon = false
-                }
-                iconSelectorX += iconTileSize + iconSelectorGap
-            }
-
-            val customTileX = panelX + panelWidth - iconTileSize - 24f
-            val customTileY = panelY + 66f
-
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    customTileX,
-                    customTileY,
-                    iconTileSize,
-                    iconTileSize
-                ) && mouseButton == 0
-            ) {
-                if (selectedCustomIcon != null && !useCustomIcon) {
-                    useCustomIcon = true
-                } else {
-                    openCustomIconPicker()
-                }
-            }
-
-            nameBox.mouseClicked(mouseX, mouseY, mouseButton)
-            serverIpBox.mouseClicked(mouseX, mouseY, mouseButton)
-
-            val createButtonWidth = 100f
-            val createButtonHeight = 21f
-            val createButtonX = this.getX() + this.getWidth() - 124f
-            val createButtonY = this.getY() + this.getHeight() - 44f
-
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    createButtonX,
-                    createButtonY,
-                    createButtonWidth,
-                    createButtonHeight
-                ) && mouseButton == 0
-            ) {
-                if (nameBox.getText().isNotEmpty()) {
-                    val serverIp = serverIpBox.getText().ifEmpty { "" }
-                    val profileFile = File(fileManager.profileDir, nameBox.getText() + ".json")
-
-                    profileManager.save(
-                        profileFile,
-                        serverIp,
-                        ProfileType.ALL,
-                        currentIcon,
-                        if (useCustomIcon) selectedCustomIcon else null
-                    )
-                    profileManager.loadProfiles(false)
-
-                    closeProfilePanel(clearIconSelection = true)
-                    currentIcon = ProfileIcon.COMMAND
-                }
-            }
-
-            /*
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    importButtonX,
-                    importButtonY,
-                    importButtonW,
-                    importButtonH
-                ) && mouseButton == 0
-            ) {
-                val code = importCodeBox.getText().trim().toUpperCase(Locale.ROOT)
-                if (code.isNotEmpty()) {
-                    if (code.length != 12) {
-                        instance.notificationManager.post(
-                            TranslateText.PROFILE_NOTIFICATION_TITLE,
-                            TranslateText.PROFILE_IMPORT_FAILED,
-                            NotificationType.ERROR
-                        )
-                        return
-                    }
-                    val shareManager = instance.profileShareManager
-                    shareManager.requestFetch(code) { result ->
-                        when (result) {
-                            is ProfileShareManager.FetchResult.Success -> {
-                                instance.notificationManager.post(
-                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                    TranslateText.PROFILE_IMPORT_SUCCESS,
-                                    NotificationType.SUCCESS
-                                )
-                                importCodeBox.setText("")
-                            }
-
-                            is ProfileShareManager.FetchResult.Error -> {
-                                instance.notificationManager.post(
-                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                    TranslateText.PROFILE_IMPORT_FAILED,
-                                    NotificationType.ERROR
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            */
-
-            if (!MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    panelX - 6f,
-                    panelY - 6f,
-                    panelWidth + 12f,
-                    panelHeight + 12f
-                ) && mouseButton == 0
-            ) {
-                closeProfilePanel(clearIconSelection = true)
-            }
-        } else if (detailTransition.isListInteractive()) {
-            if (mouseButton == 0) {
-                for (chip in typeChips) {
-                    if (chip.contains(mouseX, mouseY)) {
-                        chip.click()
-                        return
-                    }
-                }
-            }
-
-            val visibleProfiles = collectVisibleProfiles(profileManager)
-            for (i in visibleProfiles.indices) {
-                val profile = visibleProfiles[i]
-                val column = i % 2
-                val row = i / 2
-
-                val cardX = getX() + CARD_HORIZONTAL_PADDING + column * (cardWidth + CARD_COLUMN_GAP)
-                val cardY = contentStartY + row * (CARD_HEIGHT + CARD_ROW_GAP) + scrollValue
-
-                if (!MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, CARD_HEIGHT)) {
-                    continue
-                }
-
-                if (mouseButton == 0) {
-                    if (profile.id == 999) {
-                        openProfilePanel()
-                        return
-                    }
-
-                    val isDefault = profile.id == -1
-                    val iconSize = 18f
-                    val iconX = cardX + cardWidth - iconSize - 18f
-                    val startY = cardY + 10f
-                    val starY = startY + iconSize + 10f
-                    val deleteY = starY + iconSize + 10f
-
-                    if (!isDefault && MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            iconX - 0.5f,
-                            starY + 3f,
-                            iconSize,
-                            iconSize
-                        )
-                    ) {
-                        if (profile.type == ProfileType.FAVORITE) {
-                            profile.type = ProfileType.ALL
-                        } else {
-                            profile.type = ProfileType.FAVORITE
-                        }
-                        profileManager.save(
-                            profile.jsonFile!!,
-                            profile.serverIp,
-                            profile.type,
-                            profile.icon,
-                            profile.customIcon
-                        )
-                        return
-                    }
-
-                    if (!isDefault && MouseUtils.isInside(
-                            mouseX,
-                            mouseY,
-                            iconX - 0.5f,
-                            deleteY + 3f,
-                            iconSize,
-                            iconSize
-                        )
-                    ) {
-                        val shareCode = profile.shareCode
-                        if (!shareCode.isNullOrBlank()) {
-                            instance.profileShareManager.requestUnshare(shareCode)
-                        }
-                        profileManager.delete(profile)
-                        profileManager.loadProfiles(false)
-                        return
-                    }
-
-                    if (profile.id != 999) {
-                        modManager.disableAll()
-                        val success = profileManager.load(profile.jsonFile)
-
-                        if (success) {
-                            instance.notificationManager.post(
-                                TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                TranslateText.PROFILE_LOADED,
-                                NotificationType.SUCCESS
-                            )
-                        } else {
-                            instance.notificationManager.post(
-                                TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                TranslateText.PROFILE_FAILED,
-                                NotificationType.ERROR
-                            )
-                        }
-                    }
-                }
-
-
-                /*
-                if (mouseButton == 1 && profile.id != 999) {
-                    val shareManager = instance.profileShareManager
-                    shareManager.requestShare(profile) { result ->
-                        when (result) {
-                            is ProfileShareManager.ShareResult.Success -> {
-                                profileManager.updateShareCode(profile, result.code)
-                                IOUtils.copyStringToClipboard(result.code)
-                                instance.notificationManager.post(
-                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                    TranslateText.PROFILE_SHARE_SUCCESS.getText() + ": " + result.code,
-                                    NotificationType.SUCCESS
-                                )
-                            }
-
-                            is ProfileShareManager.ShareResult.Error -> {
-                                instance.notificationManager.post(
-                                    TranslateText.PROFILE_NOTIFICATION_TITLE,
-                                    TranslateText.PROFILE_SHARE_FAILED,
-                                    NotificationType.ERROR
-                                )
-                            }
-                        }
-                    }
-                    return
-                }
-
-                 */
-            }
+        // Import overlay consumes clicks first when visible
+        if (importOverlayAnimation.value > 0.01f) {
+            if (handleImportOverlayClick(mouseX, mouseY, mouseButton)) return
         }
 
-        if (mouseButton == 3) {
+        if (openProfile && detailTransition.isDetailsInteractive()) {
+            handleCreatePanelClick(mouseX, mouseY, mouseButton)
+        } else if (detailTransition.isListInteractive()) {
+            handleListClick(mouseX, mouseY, mouseButton)
+        }
+
+        if (mouseButton == 3) closeProfilePanel(clearIconSelection = true)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (showImportOverlay) {
+            importCodeBox.keyTyped(typedChar, keyCode)
+            if (keyCode == Keyboard.KEY_ESCAPE) closeImportOverlay()
+            return
+        }
+
+        if (openProfile && detailTransition.isDetailsInteractive()) {
+            nameBox.keyTyped(typedChar, keyCode)
+            serverIpBox.keyTyped(typedChar, keyCode)
+            if (keyCode == Keyboard.KEY_ESCAPE) closeProfilePanel(clearIconSelection = true)
+        } else if (detailTransition.isListInteractive()) {
+            val isNavKey = keyCode == 0xD0 || keyCode == 0xC8 || keyCode == Keyboard.KEY_ESCAPE
+            if (!isNavKey) getSearchBox().setFocused(true)
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Import overlay clicks
+    // -------------------------------------------------------------------------
+
+    /** Returns true if the click was fully consumed by the overlay. */
+    private fun handleImportOverlayClick(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
+        if (mouseButton != 0) return false
+
+        val overlayW = 220f
+        val overlayH = 78f
+        val margin = 14f
+        val overlayX = getX() + getWidth() - CARD_HORIZONTAL_PADDING - overlayW
+        val anchorY = getY() + getHeight() - 32f
+        val overlayY = anchorY - overlayH - 6f
+
+        // Click outside → close and let click fall through
+        if (!MouseUtils.isInside(mouseX, mouseY, overlayX - 4f, overlayY - 4f, overlayW + 8f, overlayH + 8f)) {
+            closeImportOverlay()
+            return false
+        }
+
+        // Close button
+        val closeX = overlayX + overlayW - margin - 8f
+        if (MouseUtils.isInside(mouseX, mouseY, closeX - 5f, overlayY + 7f, 16f, 16f)) {
+            closeImportOverlay()
+            return true
+        }
+
+        // Confirm button
+        val confirmW = 36f
+        val inputW = overlayW - margin * 2 - confirmW - 6f
+        val confirmX = overlayX + margin + inputW + 6f
+        if (MouseUtils.isInside(mouseX, mouseY, confirmX, overlayY + 38f, confirmW, 20f)) {
+            onImportConfirm()
+            return true
+        }
+
+        importCodeBox.mouseClicked(mouseX, mouseY, mouseButton)
+        return true
+    }
+
+    private fun onImportConfirm() {
+        val instance = Shindo.getInstance()
+        val code = importCodeBox.getText().trim().toUpperCase(Locale.ROOT)
+        if (code.length != SHARE_CODE_LENGTH) return
+
+        instance.profileShareManager.requestFetch(code) { result ->
+            when (result) {
+                is ProfileShareManager.FetchResult.Success -> {
+                    instance.notificationManager.post(
+                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                        TranslateText.PROFILE_IMPORT_SUCCESS,
+                        NotificationType.SUCCESS
+                    )
+                    importCodeBox.setText("")
+                    closeImportOverlay()
+                }
+                is ProfileShareManager.FetchResult.Error -> {
+                    instance.notificationManager.post(
+                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                        TranslateText.PROFILE_IMPORT_FAILED,
+                        NotificationType.ERROR
+                    )
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Create panel clicks
+    // -------------------------------------------------------------------------
+
+    private fun handleCreatePanelClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (mouseButton != 0) return
+
+        val panelX = getX() + 18f
+        val panelY = getY() + 15f
+        val panelW = getWidth() - 36f
+        val panelH = getHeight() - 30f
+        val tileSize = 24f
+        val iconY = panelY + 66f
+
+        var iconX = panelX + 24f
+        for (icon in ProfileIcon.values()) {
+            if (MouseUtils.isInside(mouseX, mouseY, iconX, iconY, tileSize, tileSize)) {
+                currentIcon = icon; useCustomIcon = false
+            }
+            iconX += tileSize + 12f
+        }
+
+        val customX = panelX + panelW - tileSize - 24f
+        if (MouseUtils.isInside(mouseX, mouseY, customX, iconY, tileSize, tileSize)) {
+            if (selectedCustomIcon != null && !useCustomIcon) useCustomIcon = true
+            else openCustomIconPicker()
+        }
+
+        nameBox.mouseClicked(mouseX, mouseY, mouseButton)
+        serverIpBox.mouseClicked(mouseX, mouseY, mouseButton)
+
+        if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 124f, getY() + getHeight() - 44f, 100f, 21f)) {
+            onCreateProfile()
+        }
+
+        if (!MouseUtils.isInside(mouseX, mouseY, panelX - 6f, panelY - 6f, panelW + 12f, panelH + 12f)) {
             closeProfilePanel(clearIconSelection = true)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (openProfile && detailTransition.isDetailsInteractive()) {
-            nameBox.keyTyped(typedChar, keyCode)
-            serverIpBox.keyTyped(typedChar, keyCode)
+    private fun onCreateProfile() {
+        if (nameBox.getText().isEmpty()) return
+        val instance = Shindo.getInstance()
+        val profileFile = File(instance.fileManager.profileDir, "${nameBox.getText()}.json")
+        instance.profileManager.save(profileFile, serverIpBox.getText().ifEmpty { "" },
+            ProfileType.ALL, currentIcon, if (useCustomIcon) selectedCustomIcon else null)
+        instance.profileManager.loadProfiles(false)
+        closeProfilePanel(clearIconSelection = true)
+        currentIcon = ProfileIcon.COMMAND
+    }
 
-            if (keyCode == Keyboard.KEY_ESCAPE) {
-                closeProfilePanel(clearIconSelection = true)
+    // -------------------------------------------------------------------------
+    // List clicks
+    // -------------------------------------------------------------------------
+
+    private fun handleListClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (mouseButton == 0) {
+            val btnW = 72f; val btnH = 20f
+            val btnX = getX() + getWidth() - CARD_HORIZONTAL_PADDING - btnW
+            val btnY = getY() + getHeight() - 26f
+            if (MouseUtils.isInside(mouseX, mouseY, btnX, btnY, btnW, btnH)) {
+                openImportOverlay(); return
             }
-        } else if (detailTransition.isListInteractive()) {
-            if (keyCode != 0xD0 && keyCode != 0xC8 && keyCode != Keyboard.KEY_ESCAPE) {
-                getSearchBox().setFocused(true)
+            for (chip in typeChips) {
+                if (chip.contains(mouseX, mouseY)) { chip.click(); return }
+            }
+        }
+
+        val instance = Shindo.getInstance()
+        val profileManager = instance.profileManager
+        val scrollValue = scroll.getValue()
+        val contentStartY = if (gridStartY > 0f) gridStartY else getY() + 56f
+        val cardWidth = (getWidth() - CARD_HORIZONTAL_PADDING * 2 - CARD_COLUMN_GAP) / 2f
+        val visibleProfiles = collectVisibleProfiles(profileManager)
+
+        for (i in visibleProfiles.indices) {
+            val profile = visibleProfiles[i]
+            val cardX = getX() + CARD_HORIZONTAL_PADDING + (i % 2) * (cardWidth + CARD_COLUMN_GAP)
+            val cardY = contentStartY + (i / 2) * (CARD_HEIGHT + CARD_ROW_GAP) + scrollValue
+
+            if (!MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, CARD_HEIGHT)) continue
+            if (mouseButton != 0) continue
+            if (profile.id == SENTINEL_ID) { openProfilePanel(); return }
+
+            handleCardClick(instance, profileManager, profile, mouseX, mouseY, cardX, cardY, cardWidth)
+            return
+        }
+    }
+
+    private fun handleCardClick(
+        instance: Shindo,
+        profileManager: ProfileManager,
+        profile: Profile,
+        mouseX: Int,
+        mouseY: Int,
+        cardX: Float,
+        cardY: Float,
+        cardWidth: Float
+    ) {
+        val isDefault = profile.id == DEFAULT_ID
+        val btnSize = 18f
+        val gap = 8f
+        val btnX = cardX + cardWidth - btnSize - 18f
+        val checkY  = cardY + 10f
+        val starY   = checkY  + btnSize + gap
+        val deleteY = starY   + btnSize + gap
+        val shareY  = deleteY + btnSize + gap
+
+        if (!isDefault && MouseUtils.isInside(mouseX, mouseY, btnX - 0.5f, starY + 3f, btnSize, btnSize)) {
+            profile.type = if (profile.type == ProfileType.FAVORITE) ProfileType.ALL else ProfileType.FAVORITE
+            profileManager.save(profile.jsonFile!!, profile.serverIp, profile.type, profile.icon, profile.customIcon)
+            return
+        }
+
+        if (!isDefault && MouseUtils.isInside(mouseX, mouseY, btnX - 0.5f, deleteY + 3f, btnSize, btnSize)) {
+            profile.shareCode?.takeIf { it.isNotBlank() }?.let { instance.profileShareManager.requestUnshare(it) }
+            profileManager.delete(profile)
+            profileManager.loadProfiles(false)
+            return
+        }
+
+        if (!isDefault && MouseUtils.isInside(mouseX, mouseY, btnX - 0.5f, shareY + 3f, btnSize, btnSize)) {
+            onShareButtonClicked(instance, profileManager, profile)
+            return
+        }
+
+        val success = profileManager.load(profile.jsonFile)
+        instance.notificationManager.post(
+            TranslateText.PROFILE_NOTIFICATION_TITLE,
+            if (success) TranslateText.PROFILE_LOADED else TranslateText.PROFILE_FAILED,
+            if (success) NotificationType.SUCCESS else NotificationType.ERROR
+        )
+    }
+
+    private fun onShareButtonClicked(instance: Shindo, profileManager: ProfileManager, profile: Profile) {
+        val existingCode = profile.shareCode
+        if (!existingCode.isNullOrBlank()) {
+            IOUtils.copyStringToClipboard(existingCode)
+            instance.notificationManager.post(
+                TranslateText.PROFILE_NOTIFICATION_TITLE,
+                "${TranslateText.PROFILE_SHARE_SUCCESS.getText()}: $existingCode",
+                NotificationType.SUCCESS
+            )
+            return
+        }
+
+        instance.profileShareManager.requestShare(profile) { result ->
+            when (result) {
+                is ProfileShareManager.ShareResult.Success -> {
+                    profileManager.updateShareCode(profile, result.code)
+                    IOUtils.copyStringToClipboard(result.code)
+                    instance.notificationManager.post(
+                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                        "${TranslateText.PROFILE_SHARE_SUCCESS.getText()}: ${result.code}",
+                        NotificationType.SUCCESS
+                    )
+                }
+                is ProfileShareManager.ShareResult.Error -> {
+                    instance.notificationManager.post(
+                        TranslateText.PROFILE_NOTIFICATION_TITLE,
+                        TranslateText.PROFILE_SHARE_FAILED,
+                        NotificationType.ERROR
+                    )
+                }
             }
         }
     }
+
+    // =========================================================================
+    // Panel / overlay open-close
+    // =========================================================================
 
     private fun openProfilePanel() {
         openProfile = true
         detailTransition.open()
         setCanClose(false)
+        closeImportOverlay()
     }
 
     private fun closeProfilePanel(clearIconSelection: Boolean) {
         openProfile = false
         detailTransition.close()
-        if (clearIconSelection) {
-            selectedCustomIcon = null
-            useCustomIcon = false
-        }
+        if (clearIconSelection) { selectedCustomIcon = null; useCustomIcon = false }
     }
+
+    private fun openImportOverlay() {
+        showImportOverlay = true
+        importCodeBox.setText("")
+    }
+
+    private fun closeImportOverlay() {
+        showImportOverlay = false
+    }
+
+    // =========================================================================
+    // Chips
+    // =========================================================================
 
     private fun drawTypeChips(
         nvg: NanoVGManager,
@@ -836,115 +875,91 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         mouseY: Int
     ): Float {
         typeChips.clear()
-
         val startX = getX() + CARD_HORIZONTAL_PADDING
         val maxX = getX() + getWidth() - CARD_HORIZONTAL_PADDING
-        var currentX = startX
-        var currentY = getY() + 16f
-        var blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
+        var curX = startX; var curY = getY() + 16f
+        var blockBottom = curY + CategoryChipRenderer.CHIP_HEIGHT
 
         for (type in ProfileType.values()) {
             val label = type.name
-            val chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null)
-
-            if (currentX + chipWidth > maxX) {
-                currentX = startX
-                currentY += CategoryChipRenderer.CHIP_HEIGHT + CHIP_GAP
-                blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
+            val chipW = CategoryChipRenderer.computeWidth(nvg, label, null)
+            if (curX + chipW > maxX) {
+                curX = startX; curY += CategoryChipRenderer.CHIP_HEIGHT + CHIP_GAP
+                blockBottom = curY + CategoryChipRenderer.CHIP_HEIGHT
             }
 
             val active = type == currentType
-            val hovered = detailTransition.isListInteractive() && MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                currentX,
-                currentY,
-                chipWidth,
-                CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered = detailTransition.isListInteractive() &&
+                    MouseUtils.isInside(mouseX, mouseY, curX, curY, chipW, CategoryChipRenderer.CHIP_HEIGHT)
+            CategoryChipRenderer.drawChip(nvg, palette, accentColor, curX, curY, chipW, label, null, active, hovered)
 
-            CategoryChipRenderer.drawChip(
-                nvg,
-                palette,
-                accentColor,
-                currentX,
-                currentY,
-                chipWidth,
-                label,
-                null,
-                active,
-                hovered
-            )
-
-            val chip = FilterChip(Runnable {
-                if (currentType != type) {
-                    currentType = type
-                    scroll.resetAll()
-                }
-            })
-            chip.setBounds(currentX, currentY, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
+            val chip = FilterChip(Runnable { if (currentType != type) { currentType = type; scroll.resetAll() } })
+            chip.setBounds(curX, curY, chipW, CategoryChipRenderer.CHIP_HEIGHT)
             typeChips.add(chip)
-
-            currentX += chipWidth + CHIP_GAP
+            curX += chipW + CHIP_GAP
         }
 
         return blockBottom
     }
 
+    // =========================================================================
+    // Utilities
+    // =========================================================================
+
+    private fun isActiveProfile(profile: Profile): Boolean {
+        val active = Shindo.getInstance().profileManager.activeProfile ?: return false
+        if (active == profile) return true
+        val af = active.jsonFile ?: return false
+        val pf = profile.jsonFile ?: return false
+        return try { af.canonicalPath == pf.canonicalPath } catch (e: Exception) { af.absolutePath == pf.absolutePath }
+    }
+
+    private fun collectVisibleProfiles(profileManager: ProfileManager): List<Profile> =
+        profileManager.profiles.filter { it.id == SENTINEL_ID || !filter(it) }
+
+    private fun filter(profile: Profile): Boolean {
+        if (currentType == ProfileType.FAVORITE && profile.type != ProfileType.FAVORITE) return true
+        val query = getSearchBox().getText()
+        return query.isNotEmpty() && !SearchUtils.isSimilar(profile.name, query)
+    }
+
+    private fun computeMaxScroll(profileCount: Int, viewportHeight: Float): Float {
+        val rows = kotlin.math.ceil(profileCount / 2.0).toFloat()
+        val contentH = rows * CARD_HEIGHT + kotlin.math.max(0f, rows - 1) * CARD_ROW_GAP
+        return kotlin.math.max(0f, contentH - viewportHeight)
+    }
+
     private fun openCustomIconPicker() {
         TaskExecutor.runAsync(ThreadPoolType.IO) {
             val fileManager = Shindo.getInstance().fileManager
-
-            val file = FileUtils.selectImageFile()
+            val file = FileUtils.selectImageFile() ?: return@runAsync
             val iconDir = fileManager.profileIconDir
-
-            if (file != null && iconDir.exists() && file.exists() && FileUtils.getExtension(file) == "png") {
-                val destFile = File(iconDir, file.name)
-
-                try {
-                    FileUtils.copyFile(file, destFile)
-                    val previousIcon = selectedCustomIcon
-                    selectedCustomIcon = destFile
-                    useCustomIcon = true
-                    if (previousIcon != null && previousIcon.exists()) {
-                        previousIcon.delete()
-                    }
-                } catch (e: IOException) {
-                    ShindoLogger.error("Failed to copy custom profile icon", e)
-                }
+            if (!iconDir.exists() || !file.exists() || FileUtils.getExtension(file) != "png") return@runAsync
+            try {
+                val dest = File(iconDir, file.name)
+                FileUtils.copyFile(file, dest)
+                val prev = selectedCustomIcon
+                selectedCustomIcon = dest; useCustomIcon = true
+                prev?.takeIf { it.exists() }?.delete()
+            } catch (e: IOException) {
+                ShindoLogger.error("Failed to copy custom profile icon", e)
             }
         }
     }
 
-    private fun collectVisibleProfiles(profileManager: ProfileManager): ArrayList<Profile> {
-        val visible = ArrayList<Profile>()
-        for (profile in profileManager.profiles) {
-            if (profile.id == 999) {
-                visible.add(profile)
-                continue
-            }
-            if (!filter(profile)) {
-                visible.add(profile)
-            }
-        }
-        return visible
-    }
-
-    private fun filter(profile: Profile): Boolean {
-        if (currentType == ProfileType.FAVORITE && profile.type != ProfileType.FAVORITE) {
-            return true
-        }
-        return getSearchBox().getText().isNotEmpty() && !SearchUtils.isSimilar(profile.name, getSearchBox().getText())
-    }
+    // =========================================================================
+    // Constants
+    // =========================================================================
 
     private companion object {
-        private const val CARD_HORIZONTAL_PADDING = 18f
-        private const val CARD_COLUMN_GAP = 18f
-        private const val CARD_ROW_GAP = 14f
-        private const val CARD_HEIGHT = 94f
-        private const val ICON_SIZE = 44f
-        private const val CHIP_GAP = 8f
+        const val SENTINEL_ID = 999
+        const val DEFAULT_ID = -1
+        const val SHARE_CODE_LENGTH = 12
+        const val CARD_HORIZONTAL_PADDING = 18f
+        const val CARD_COLUMN_GAP = 18f
+        const val CARD_ROW_GAP = 14f
+        const val CARD_HEIGHT = 112f   // bumped from 94 to fit 4 action buttons (check/star/delete/share)
+        const val ICON_SIZE = 44f
+        const val CHIP_GAP = 8f
     }
 }
-
-

@@ -55,7 +55,7 @@ class Shindo private constructor() {
     val name: String = "Shindo"
     val version: String = "5.1.11"
     val author: String = "MikiDevAHM"
-    val verIdentifier: Int = 5111
+    val verIdentifier: Int = 5110
 
     var nanoVGManager: NanoVGManager? = null
     private var started: Boolean = false
@@ -213,7 +213,7 @@ class Shindo private constructor() {
         ShindoLogger.info("Stopping Shindo")
 
         started = false
-
+        nanoVGManager!!.destroy()
         profileManager.save()
         shindoAPI.stop()
 

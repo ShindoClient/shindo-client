@@ -1,11 +1,12 @@
 package me.miki.shindo.ui.comp.selectors
 
 import me.miki.shindo.management.color.AccentColor
+import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
-import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
+import me.miki.shindo.ui.comp.templates.CompPanel
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -18,7 +19,7 @@ class CompAccentColorSelector(
     width: Float = 0f,
     height: Float = 120f,
     accentColors: List<AccentColor>
-) : CompSurfaceTemplate(x, y, width, height) {
+) : CompPanel(x, y, width, height) {
 
     private val accentColorsList: List<AccentColor> = accentColors
     private val scroll = Scroll()
@@ -49,26 +50,20 @@ class CompAccentColorSelector(
     }
 
     override fun getBackgroundColor(
-        paletteColors: me.miki.shindo.management.color.palette.ColorPalette,
+        paletteColors: ColorPalette,
         accentColors: AccentColor
     ): Color {
-        return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 165)
+        return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 220)
+    }
+
+    override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color {
+        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
     }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val nvgInstance = nvg
         val paletteColors = palette
         val currentAccent = accent
-
-        nvgInstance.drawGradientRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            getRadius(),
-            ColorUtils.applyAlpha(currentAccent.getColor1(), 28),
-            ColorUtils.applyAlpha(currentAccent.getColor2(), 28)
-        )
 
         val innerX = getX() + innerPadding
         val innerY = getY() + innerPadding

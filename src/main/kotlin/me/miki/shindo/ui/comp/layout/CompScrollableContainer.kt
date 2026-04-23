@@ -1,9 +1,15 @@
 package me.miki.shindo.ui.comp.layout
 
+import me.miki.shindo.management.color.AccentColor
+import me.miki.shindo.management.color.palette.ColorPalette
+import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.style.CompSurfaceVariant
-import me.miki.shindo.ui.comp.templates.CompSurfaceTemplate
+import me.miki.shindo.ui.comp.templates.CompPanel
+import me.miki.shindo.ui.comp.templates.PanelStyle
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
+import java.awt.Color
 import kotlin.math.max
 
 open class CompScrollableContainer(
@@ -11,7 +17,7 @@ open class CompScrollableContainer(
     y: Float = 0f,
     width: Float = 0f,
     height: Float = 0f
-) : CompSurfaceTemplate(x, y, width, height) {
+) : CompPanel(x, y, width, height) {
 
     data class ScrollViewport(val x: Float, val y: Float, val width: Float, val height: Float)
 
@@ -26,7 +32,8 @@ open class CompScrollableContainer(
     private var lastViewport = ScrollViewport(0f, 0f, 0f, 0f)
 
     init {
-        setSurfaceVariant(CompSurfaceVariant.CARD)
+        setStyle(PanelStyle.PANEL)
+        setSurfaceVariant(CompSurfaceVariant.PANEL)
         setRadius(12f)
         setShadowStrength(7)
     }
@@ -110,6 +117,14 @@ open class CompScrollableContainer(
         draw(mouseX, mouseY, partialTicks)
     }
 
+    override fun getBackgroundColor(paletteColors: ColorPalette, accentColors: AccentColor): Color? {
+        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+    }
+
+    override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color? {
+        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+    }
+
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val fullViewport = calculateViewport()
         val needsScrollbar = contentHeight > fullViewport.height
@@ -180,6 +195,7 @@ open class CompScrollableContainer(
 
     @Deprecated("Use drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue, viewport).")
     protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) {
+
     }
 
     @Deprecated("Use setContentRenderer(...) or render(...).")
