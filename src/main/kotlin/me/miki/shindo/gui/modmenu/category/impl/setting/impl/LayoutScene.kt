@@ -3,7 +3,16 @@ package me.miki.shindo.gui.modmenu.category.impl.setting.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.*
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAreaController
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutAreaScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutModulesScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutNotificationsScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneInputController
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneListController
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSceneRenderer
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutSettingsScene
+import me.miki.shindo.gui.modmenu.category.impl.setting.impl.layout.LayoutVisualScene
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSlideTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
@@ -25,7 +34,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
 ) {
 
     private val controllers = ArrayList<LayoutAreaController>()
-    private val stateCoordinator = LayoutSceneStateCoordinator()
+    private val stateCoordinator = ModMenuSlideTransitionCoordinator()
     private val listController = LayoutSceneListController()
     private val inputController = LayoutSceneInputController()
 
@@ -67,7 +76,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             return
         }
 
-        stateCoordinator.onFrame()
+        stateCoordinator.update()
 
         val slide = stateCoordinator.getSlideOffset(baseWidth)
 
@@ -92,7 +101,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             )
             listController.drawList(
                 controllers = controllers,
-                activeController = stateCoordinator.getActiveController(),
+                activeController = stateCoordinator.getActiveScene() as? LayoutAreaController?,
                 mouseX = mouseX,
                 mouseY = mouseY,
                 partialTicks = partialTicks,
@@ -112,7 +121,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             translateX = slide,
             translateY = 0f
         ) {
-            stateCoordinator.getActiveScene()?.drawScreen(mouseX, mouseY, partialTicks)
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.drawScreen(mouseX, mouseY, partialTicks)
         }
     }
 
@@ -122,7 +131,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
         val baseWidth = width.toFloat()
         val baseHeight = contentHeight.toFloat()
 
-        if (!stateCoordinator.isSubSceneOpen() && inputController.isPrimaryClick(mouseButton)) {
+        if (!stateCoordinator.isSceneVisible() && inputController.isPrimaryClick(mouseButton)) {
             val selected = listController.findClickedController(mouseX, mouseY)
             if (selected != null) {
                 stateCoordinator.open(selected)
@@ -130,35 +139,35 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             }
         }
 
-        if (stateCoordinator.isChildInteractive()) {
-            stateCoordinator.getActiveScene()?.mouseClicked(mouseX, mouseY, mouseButton)
+        if (stateCoordinator.isSceneInteractive()) {
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseClicked(mouseX, mouseY, mouseButton)
         }
 
-        if (stateCoordinator.isSubSceneOpen() &&
+        if (stateCoordinator.isSceneVisible() &&
             inputController.isPrimaryClick(mouseButton) &&
             inputController.shouldCloseByOutsideClick(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)
         ) {
             stateCoordinator.close()
         }
 
-        if (stateCoordinator.isSubSceneOpen() && inputController.isBackMouseButton(mouseButton)) {
+        if (stateCoordinator.isSceneVisible() && inputController.isBackMouseButton(mouseButton)) {
             stateCoordinator.close()
         }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (stateCoordinator.isChildInteractive()) {
-            stateCoordinator.getActiveScene()?.mouseReleased(mouseX, mouseY, mouseButton)
+        if (stateCoordinator.isSceneInteractive()) {
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseReleased(mouseX, mouseY, mouseButton)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (stateCoordinator.isSubSceneOpen() && inputController.shouldCloseByEscape(keyCode)) {
+        if (stateCoordinator.isSceneVisible() && inputController.shouldCloseByEscape(keyCode)) {
             stateCoordinator.close()
             return
         }
-        if (stateCoordinator.isChildInteractive()) {
-            stateCoordinator.getActiveScene()?.keyTyped(typedChar, keyCode)
+        if (stateCoordinator.isSceneInteractive()) {
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.keyTyped(typedChar, keyCode)
         }
     }
 
@@ -166,13 +175,13 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
      * Compatibility helper used by [SettingsCategory] to control Escape behavior.
      */
     fun isSubSceneOpen(): Boolean {
-        return stateCoordinator.isSubSceneOpen()
+        return stateCoordinator.isSceneVisible()
     }
 
     /**
      * Compatibility helper used by [SettingsCategory] to show active sub-scene metadata.
      */
     fun getActiveSubScene(): LayoutAreaScene? {
-        return stateCoordinator.getActiveScene()
+        return (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene
     }
 }

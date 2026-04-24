@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.comp.Comp
 import me.miki.shindo.ui.comp.style.CompStyleResolver
-import me.miki.shindo.ui.comp.style.CompSurfaceVariant
+import me.miki.shindo.ui.comp.style.CompStyleResolver.CompSurfaceVariant
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 

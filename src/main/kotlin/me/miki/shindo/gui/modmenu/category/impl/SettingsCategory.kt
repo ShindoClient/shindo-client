@@ -4,7 +4,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
 import me.miki.shindo.gui.modmenu.category.impl.setting.SettingScene
-import me.miki.shindo.gui.modmenu.category.impl.setting.SettingSceneTransitionCoordinator
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSlideTransitionCoordinator
 import me.miki.shindo.gui.modmenu.category.impl.setting.impl.*
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
@@ -24,14 +24,15 @@ class SettingsCategory(parent: GuiModMenu) :
 
     private val scenes = arrayListOf<SettingScene>()
     private val sceneButtons = arrayListOf<CompSceneButton>()
-    private val transitionCoordinator = SettingSceneTransitionCoordinator()
+    private val transitionCoordinator = ModMenuSlideTransitionCoordinator()
+
+    override fun isAnySceneOpen(): Boolean = transitionCoordinator.isSceneVisible()
 
     init {
         registerScene(AppearanceScene(this))
         registerScene(LanguageScene(this))
         registerScene(GeneralScene(this))
-        //registerScene(LayoutScene(this))
-        //registerScene(PerformanceScene(this))
+        registerScene(LayoutScene(this))
     }
 
     private fun registerScene(scene: SettingScene) {
@@ -72,7 +73,7 @@ class SettingsCategory(parent: GuiModMenu) :
         val scrollValue = scroll.getValue()
 
         transitionCoordinator.update()
-        val scene = transitionCoordinator.getActiveScene()
+        val scene = transitionCoordinator.getActiveScene() as? SettingScene?
         if (transitionCoordinator.isListInteractive()) {
             setCanClose(true)
         }
@@ -205,7 +206,7 @@ class SettingsCategory(parent: GuiModMenu) :
         }
 
         if (transitionCoordinator.isSceneInteractive()) {
-            transitionCoordinator.getActiveScene()?.mouseClicked(mouseX, mouseY, mouseButton)
+            (transitionCoordinator.getActiveScene() as? SettingScene?)?.mouseClicked(mouseX, mouseY, mouseButton)
         }
 
         if (transitionCoordinator.isSceneVisible() &&
@@ -228,12 +229,12 @@ class SettingsCategory(parent: GuiModMenu) :
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (transitionCoordinator.isSceneInteractive()) {
-            transitionCoordinator.getActiveScene()?.mouseReleased(mouseX, mouseY, mouseButton)
+            (transitionCoordinator.getActiveScene() as? SettingScene?)?.mouseReleased(mouseX, mouseY, mouseButton)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        val activeScene = transitionCoordinator.getActiveScene()
+        val activeScene = transitionCoordinator.getActiveScene() as? SettingScene?
         if (activeScene != null && keyCode == Keyboard.KEY_ESCAPE) {
             val layoutScene = activeScene as? LayoutScene
             if (layoutScene == null || !layoutScene.isSubSceneOpen()) {
@@ -241,7 +242,7 @@ class SettingsCategory(parent: GuiModMenu) :
             }
         }
         if (transitionCoordinator.isSceneInteractive()) {
-            transitionCoordinator.getActiveScene()?.keyTyped(typedChar, keyCode)
+            (transitionCoordinator.getActiveScene() as? SettingScene?)?.keyTyped(typedChar, keyCode)
         }
     }
 

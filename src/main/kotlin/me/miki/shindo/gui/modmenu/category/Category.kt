@@ -86,6 +86,12 @@ open class Category(
         keyTyped(typedChar, keyCode)
     }
 
+    /**
+     * Returns true if any overlay scene is currently open.
+     * Used to lock input in GuiModMenu when scenes are open.
+     */
+    open fun isAnySceneOpen(): Boolean = false
+
     fun getName(): String {
         return nameTranslate.getText()
     }

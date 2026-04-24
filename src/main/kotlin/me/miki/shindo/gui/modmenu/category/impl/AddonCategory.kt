@@ -7,7 +7,7 @@ import me.miki.shindo.gui.modmenu.category.impl.addon.AddonCategoryRenderer
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListCardLayoutSpec
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageRenderContext
-import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSlideTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuListCardLayout
 import me.miki.shindo.gui.modmenu.render.ModMenuSettingsOverlayRenderer
 import me.miki.shindo.gui.modmenu.style.ModMenuMotion
@@ -47,7 +47,7 @@ class AddonCategory(parent: GuiModMenu) :
     private val addonCardCache = ArrayList<AddonCard>()
     private val typeChips = ArrayList<FilterChip>()
     private val noColour = Color(0, 0, 0, 0)
-    private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
+    private val detailTransition = ModMenuSlideTransitionCoordinator()
     private var currentType: AddonType = AddonType.ALL
     private var currentAddon: Addon? = null
     private var contentHeight = 0f
@@ -90,7 +90,7 @@ class AddonCategory(parent: GuiModMenu) :
         }
 
         nvg.save()
-        nvg.translate(detailTransition.getListTranslateX(), 0f)
+        nvg.translate(detailTransition.getEnterTranslateX(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         nvg.save()
         nvg.translate(0f, scrollValue)
@@ -130,7 +130,7 @@ class AddonCategory(parent: GuiModMenu) :
         nvg.restore()
 
         nvg.save()
-        nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
+        nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         if (isDetailsLayerOpen()) {
             val detailContext = ModMenuListPageRenderContext(
@@ -155,7 +155,7 @@ class AddonCategory(parent: GuiModMenu) :
         val instance = Shindo.getInstance()
         val addonManager = instance.addonManager
 
-        if (detailTransition.isListInteractive() && mouseButton == 0) {
+        if (detailTransition.isInteractive() && mouseButton == 0) {
             for (chip in typeChips) {
                 if (chip.contains(mouseX, mouseY)) {
                     chip.click()
@@ -164,7 +164,7 @@ class AddonCategory(parent: GuiModMenu) :
             }
         }
 
-        if (detailTransition.isListInteractive()) {
+        if (detailTransition.isInteractive()) {
 
             for (card in addonCardCache) {
                 val cardY = getY() + card.y + scroll.getValue()
@@ -198,7 +198,7 @@ class AddonCategory(parent: GuiModMenu) :
                     if (!card.isFailed && addon != null && controlLayout.isSettingsHit(
                             mouseX,
                             mouseY
-                        ) && detailTransition.isListInteractive()
+                        ) && detailTransition.isInteractive()
                     ) {
                         val settings: ArrayList<Setting>? = addonManager.getSettingByAddon(addon)
                         if (settings != null) {
@@ -223,7 +223,7 @@ class AddonCategory(parent: GuiModMenu) :
             }
         }
 
-        if (detailTransition.isDetailsInteractive()) {
+        if (detailTransition.isActive()) {
             applySettingsPanelPreferences()
             val overlayLayout = ModMenuSettingsOverlayRenderer.computeLayout(
                 getX().toFloat(),
@@ -281,14 +281,14 @@ class AddonCategory(parent: GuiModMenu) :
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (currentAddon != null && detailTransition.isDetailsInteractive()) {
+        if (currentAddon != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (currentAddon != null && detailTransition.isDetailsInteractive()) {
+        if (currentAddon != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
         }
@@ -298,7 +298,7 @@ class AddonCategory(parent: GuiModMenu) :
             return
         }
 
-        if (detailTransition.isListInteractive()) {
+        if (detailTransition.isInteractive()) {
             scroll.onKey(keyCode)
             if (keyCode != Keyboard.KEY_DOWN && keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_ESCAPE) {
                 getSearchBox().setFocused(true)
@@ -497,7 +497,7 @@ class AddonCategory(parent: GuiModMenu) :
     override fun drawDetailsLayer(context: ModMenuListPageRenderContext) {
         val activeAddon = currentAddon ?: return
 
-        if (detailTransition.isDetailsInteractive() && MouseUtils.isInside(
+        if (detailTransition.isActive() && MouseUtils.isInside(
                 context.mouseX,
                 context.mouseY,
                 getX().toFloat(),
@@ -578,7 +578,7 @@ class AddonCategory(parent: GuiModMenu) :
 
             val active = type == currentType
             val hovered =
-                detailTransition.isListInteractive() && MouseUtils.isInside(
+                detailTransition.isInteractive() && MouseUtils.isInside(
                     mouseX,
                     mouseY,
                     currentX,
