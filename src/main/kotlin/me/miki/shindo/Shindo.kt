@@ -55,7 +55,7 @@ class Shindo private constructor() {
     val name: String = "Shindo"
     val version: String = "5.1.11"
     val author: String = "MikiDevAHM"
-    val verIdentifier: Int = 5110
+    val verIdentifier: Int = 5111
 
     var nanoVGManager: NanoVGManager? = null
     private var started: Boolean = false

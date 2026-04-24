@@ -9,6 +9,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.io.File
+import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.file.Files
@@ -55,7 +56,7 @@ object IOUtils {
         return try {
             val bytes = org.apache.commons.io.IOUtils.toByteArray(mc.resourceManager.getResource(location).inputStream)
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
-            data.flip()
+            data.flip() as Buffer
             data
         } catch (e: Exception) {
             ShindoLogger.error("Failed to load resource", e)
@@ -68,7 +69,7 @@ object IOUtils {
         return try {
             val bytes = org.apache.commons.io.IOUtils.toByteArray(Files.newInputStream(file.toPath()))
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
-            data.flip()
+            data.flip() as Buffer
             data
         } catch (e: Exception) {
             ShindoLogger.error("Failed to load resource", e)

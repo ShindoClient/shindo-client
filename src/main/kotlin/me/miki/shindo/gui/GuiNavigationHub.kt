@@ -30,7 +30,7 @@ class GuiNavigationHub : GuiScreen(), IShindoScreen {
         iconButtons.clear()
         iconButtons.add(IconButton(LegacyIcon.MAP_PIN) { openNow(GuiWaypoint()) })
         iconButtons.add(IconButton(LegacyIcon.MOD_AUTO_TEXT) { openNow(GuiAutoTextManager(this)) })
-        iconButtons.add(IconButton(LegacyIcon.USERS) { openNow(GuiFriendsChat(this)) })
+        //iconButtons.add(IconButton(LegacyIcon.USERS) { openNow(GuiFriendsChat(this)) })
         iconButtons.add(IconButton(LegacyIcon.LAYOUT) { openNow(GuiEditHUD(false)) })
 
         introAnimation = EaseLiner(220, 1.0)

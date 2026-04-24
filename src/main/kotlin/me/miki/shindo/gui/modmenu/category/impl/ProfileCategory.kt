@@ -3,7 +3,8 @@ package me.miki.shindo.gui.modmenu.category.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.GuiModMenu
 import me.miki.shindo.gui.modmenu.category.Category
-import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSlideTransitionCoordinator
+import me.miki.shindo.gui.modmenu.style.ModMenuMotion
 import me.miki.shindo.gui.modmenu.render.ModMenuClipCoordinator
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
@@ -47,7 +48,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     private val nameBox = CompTextBox()
     private val serverIpBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
-    private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
+    private val detailTransition = ModMenuSlideTransitionCoordinator()
 
     private var currentType = ProfileType.ALL
     private var currentIcon = ProfileIcon.COMMAND
@@ -121,7 +122,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         gridStartY = contentStartY
 
         nvg.save()
-        nvg.translate(detailTransition.getListTranslateX(), 0f)
+        nvg.translate(detailTransition.getEnterTranslateX(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         handleScroll(mouseX, mouseY, contentStartY)
         drawProfileGrid(nvg, palette, visibleProfiles, cardWidth, contentStartY, mouseX, mouseY)
@@ -141,7 +142,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
     // -------------------------------------------------------------------------
 
     private fun handleScroll(mouseX: Int, mouseY: Int, contentStartY: Float) {
-        if (!detailTransition.isListInteractive()) return
+        if (!detailTransition.isInteractive()) return
         if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), contentStartY - 6f,
                 getWidth().toFloat(), getHeight() - (contentStartY - getY()) + 6f)) {
             scroll.onScroll()
@@ -171,7 +172,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
                 val cardY = contentStartY + (i / 2) * (CARD_HEIGHT + CARD_ROW_GAP)
                 if (cardY + scrollValue > getY() + getHeight() || cardY + scrollValue + CARD_HEIGHT < getY()) return@forEachIndexed
 
-                val hovered = detailTransition.isListInteractive() &&
+                val hovered = detailTransition.isInteractive() &&
                         MouseUtils.isInside(mouseX, mouseY, cardX, cardY + scrollValue, cardWidth, CARD_HEIGHT)
                 drawCard(nvg, palette, profile, cardX, cardY, cardWidth, hovered)
             }
@@ -340,7 +341,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         val btnX = getX() + getWidth() - CARD_HORIZONTAL_PADDING - btnW
         val btnY = getY() + getHeight() - 26f
 
-        val hovered = detailTransition.isListInteractive() && !showImportOverlay &&
+        val hovered = detailTransition.isInteractive() && !showImportOverlay &&
                 MouseUtils.isInside(mouseX, mouseY, btnX, btnY, btnW, btnH)
         importButtonAnimation.setAnimation(if (hovered) 1f else 0f, 12.0)
         val t = importButtonAnimation.value
@@ -377,7 +378,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         partialTicks: Float
     ) {
         nvg.save()
-        nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
+        nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         val panelX = getX() + 18f
         val panelY = getY() + 15f
@@ -575,9 +576,9 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             if (handleImportOverlayClick(mouseX, mouseY, mouseButton)) return
         }
 
-        if (openProfile && detailTransition.isDetailsInteractive()) {
+        if (openProfile && detailTransition.isActive()) {
             handleCreatePanelClick(mouseX, mouseY, mouseButton)
-        } else if (detailTransition.isListInteractive()) {
+        } else if (detailTransition.isInteractive()) {
             handleListClick(mouseX, mouseY, mouseButton)
         }
 
@@ -591,11 +592,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             return
         }
 
-        if (openProfile && detailTransition.isDetailsInteractive()) {
+        if (openProfile && detailTransition.isActive()) {
             nameBox.keyTyped(typedChar, keyCode)
             serverIpBox.keyTyped(typedChar, keyCode)
             if (keyCode == Keyboard.KEY_ESCAPE) closeProfilePanel(clearIconSelection = true)
-        } else if (detailTransition.isListInteractive()) {
+        } else if (detailTransition.isInteractive()) {
             val isNavKey = keyCode == 0xD0 || keyCode == 0xC8 || keyCode == Keyboard.KEY_ESCAPE
             if (!isNavKey) getSearchBox().setFocused(true)
         }
@@ -889,7 +890,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
             }
 
             val active = type == currentType
-            val hovered = detailTransition.isListInteractive() &&
+            val hovered = detailTransition.isInteractive() &&
                     MouseUtils.isInside(mouseX, mouseY, curX, curY, chipW, CategoryChipRenderer.CHIP_HEIGHT)
             CategoryChipRenderer.drawChip(nvg, palette, accentColor, curX, curY, chipW, label, null, active, hovered)
 

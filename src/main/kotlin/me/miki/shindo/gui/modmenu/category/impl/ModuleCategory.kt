@@ -7,7 +7,7 @@ import me.miki.shindo.gui.modmenu.category.impl.module.ModuleCategoryRenderer
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListCardLayoutSpec
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.category.list.ModMenuListPageRenderContext
-import me.miki.shindo.gui.modmenu.navigation.ModMenuDetailLayerTransitionCoordinator
+import me.miki.shindo.gui.modmenu.navigation.ModMenuSlideTransitionCoordinator
 import me.miki.shindo.gui.modmenu.render.ModMenuListCardLayout
 import me.miki.shindo.gui.modmenu.render.ModMenuSettingsOverlayRenderer
 import me.miki.shindo.gui.modmenu.style.ModMenuMotion
@@ -46,7 +46,7 @@ class ModuleCategory(parent: GuiModMenu) :
     private val moduleCardCache = ArrayList<ModuleCard>()
     private val categoryChips = ArrayList<FilterChip>()
     private val noColour = Color(0, 0, 0, 0)
-    private val detailTransition = ModMenuDetailLayerTransitionCoordinator()
+    private val detailTransition = ModMenuSlideTransitionCoordinator()
     private var currentCategory: ModCategory = ModCategory.ALL
     private var currentMod: Mod? = null
     private var moduleContentHeight = 0f
@@ -89,7 +89,7 @@ class ModuleCategory(parent: GuiModMenu) :
         }
 
         nvg.save()
-        nvg.translate(detailTransition.getListTranslateX(), 0f)
+        nvg.translate(detailTransition.getEnterTranslateX(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         nvg.save()
         nvg.translate(0f, scrollValue)
@@ -130,7 +130,7 @@ class ModuleCategory(parent: GuiModMenu) :
         nvg.restore()
 
         nvg.save()
-        nvg.translate(detailTransition.getDetailsTranslateX(), 0f)
+        nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         if (isDetailsLayerOpen()) {
             val detailContext = ModMenuListPageRenderContext(
@@ -155,7 +155,7 @@ class ModuleCategory(parent: GuiModMenu) :
         val instance = Shindo.getInstance()
         val modManager = instance.modManager
 
-        if (detailTransition.isListInteractive() && mouseButton == 0) {
+        if (detailTransition.isInteractive() && mouseButton == 0) {
             for (chip in categoryChips) {
                 if (chip.contains(mouseX, mouseY)) {
                     chip.click()
@@ -164,7 +164,7 @@ class ModuleCategory(parent: GuiModMenu) :
             }
         }
 
-        if (detailTransition.isListInteractive()) {
+        if (detailTransition.isInteractive()) {
             val iconLayout = false
             val cardStyle = getCardStyle(resolveModuleColumns())
 
@@ -208,7 +208,7 @@ class ModuleCategory(parent: GuiModMenu) :
                     }
 
                     if (!iconLayout) {
-                        if (controlLayout.isSettingsHit(mouseX, mouseY) && detailTransition.isListInteractive()) {
+                        if (controlLayout.isSettingsHit(mouseX, mouseY) && detailTransition.isInteractive()) {
                             val settings: ArrayList<Setting>? = modManager.getSettingsByMod(card.mod)
                             if (settings != null) {
                                 settingsPanel.buildEntries(settings)
@@ -229,7 +229,7 @@ class ModuleCategory(parent: GuiModMenu) :
             }
         }
 
-        if (detailTransition.isDetailsInteractive()) {
+        if (detailTransition.isActive()) {
             applySettingsPanelPreferences()
             val overlayLayout = ModMenuSettingsOverlayRenderer.computeLayout(
                 getX().toFloat(),
@@ -287,14 +287,14 @@ class ModuleCategory(parent: GuiModMenu) :
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (currentMod != null && detailTransition.isDetailsInteractive()) {
+        if (currentMod != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (currentMod != null && detailTransition.isDetailsInteractive()) {
+        if (currentMod != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
         }
@@ -304,7 +304,7 @@ class ModuleCategory(parent: GuiModMenu) :
             return
         }
 
-        if (detailTransition.isListInteractive()) {
+        if (detailTransition.isInteractive()) {
             scroll.onKey(keyCode)
             if (keyCode != Keyboard.KEY_DOWN && keyCode != Keyboard.KEY_UP && keyCode != Keyboard.KEY_ESCAPE) {
                 getSearchBox().setFocused(true)
@@ -473,7 +473,7 @@ class ModuleCategory(parent: GuiModMenu) :
     override fun drawDetailsLayer(context: ModMenuListPageRenderContext) {
         val activeMod = currentMod ?: return
 
-        if (detailTransition.isDetailsInteractive() && MouseUtils.isInside(
+        if (detailTransition.isActive() && MouseUtils.isInside(
                 context.mouseX,
                 context.mouseY,
                 getX().toFloat(),
@@ -622,7 +622,7 @@ class ModuleCategory(parent: GuiModMenu) :
             }
 
             val active = category == currentCategory
-            val hovered = detailTransition.isListInteractive() && MouseUtils.isInside(
+            val hovered = detailTransition.isInteractive() && MouseUtils.isInside(
                 mouseX,
                 mouseY,
                 currentX,

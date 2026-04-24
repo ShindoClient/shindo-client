@@ -571,7 +571,12 @@ class GuiModMenu(
     }
 
     private fun isOverlayInputLocked(): Boolean {
-        val listCategory = currentCategory as? ModMenuListPageContract ?: return false
-        return listCategory.isDetailsLayerOpen()
+        // Check list page details layer (AddonCategory, ModuleCategory)
+        (currentCategory as? ModMenuListPageContract)?.let {
+            if (it.isDetailsLayerOpen()) return true
+        }
+        // Check scene overlays (SettingsCategory, etc)
+        if (currentCategory.isAnySceneOpen()) return true
+        return false
     }
 }
