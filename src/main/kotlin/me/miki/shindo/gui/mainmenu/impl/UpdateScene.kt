@@ -43,7 +43,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             Fonts.REGULAR
         )
         nvg.drawCenteredText(
-            instance.version + " -> " + update.versionString,
+            instance.buildInfo.getSemver() + " -> " + update.versionString,
             acX + (acWidth / 2f),
             acY + 48f,
             Color.WHITE,
@@ -51,7 +51,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             Fonts.REGULAR
         )
         nvg.drawCenteredText(
-            instance.verIdentifier.toString() + " -> " + update.buildID,
+            instance.buildInfo.getBuildId() + " (" + instance.buildInfo.getType() + ") -> " + update.buildId + " (" + update.type + ")",
             acX + (acWidth / 2f),
             acY + 60f,
             Color.WHITE,

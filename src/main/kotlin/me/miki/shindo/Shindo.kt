@@ -40,6 +40,7 @@ import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
 import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.ClickEffects
+import me.miki.shindo.util.BuildInfo
 import me.miki.shindo.ui.layout.UILayoutManager
 import me.miki.shindo.utils.OptifineUtils
 import me.miki.shindo.utils.render.EntityProjection
@@ -51,11 +52,12 @@ import org.apache.commons.lang3.ArrayUtils
 class Shindo private constructor() {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
+    val buildInfo: BuildInfo = BuildInfo.DEFAULT
 
     val name: String = "Shindo"
-    val version: String = "5.1.11"
+    val version: String = buildInfo.semver
     val author: String = "MikiDevAHM"
-    val verIdentifier: Int = 5111
+    val verIdentifier: Int = buildInfo.build
 
     var nanoVGManager: NanoVGManager? = null
     private var started: Boolean = false

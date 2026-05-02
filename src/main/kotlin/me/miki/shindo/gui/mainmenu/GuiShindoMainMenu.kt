@@ -158,7 +158,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             9f,
             Fonts.REGULAR
         )
-        nvg.drawText("Shindo Client v" + instance.version, 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
+        nvg.drawText(instance.buildInfo.getDisplayString(), 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
     }
 
     private fun drawButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {
@@ -333,6 +333,4 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         return ColorUtils.applyAlpha(base, 235)
     }
 }
-
-
 
