@@ -12,7 +12,12 @@ jobs:
     steps:
       - name: Send Discord Components V2
         run: |
-          COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '.[] | "`" + (.id[0:7]) + "` " + .message' | sed ':a;N;$!ba;s/\n/\\n/g')
+          COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '
+            .[] |
+            "[`" + (.id[0:7]) + "`](" + .url + ") " + .message
+          ' | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          TIME=$(date +"%H:%M UTC")
 
           curl -X POST \
             -H "Content-Type: application/json" \
@@ -26,10 +31,11 @@ jobs:
                   \"components\": [
                     {
                       \"type\": 10,
-                      \"content\": \"### ${{ github.repository }}:${{ github.ref_name }}\"
+                      \"content\": \"### [${{ github.repository }}](https://github.com/${{ github.repository }})\"
                     },
                     {
                       \"type\": 14,
+                      \"spacing\": 2,
                       \"divider\": true
                     },
                     {
@@ -37,21 +43,13 @@ jobs:
                       \"content\": \"${COMMITS}\"
                     },
                     {
-                      \"type\": 1,
-                      \"components\": [
-                        {
-                          \"type\": 2,
-                          \"style\": 5,
-                          \"label\": \"Repository\",
-                          \"url\": \"https://github.com/${{ github.repository }}\"
-                        },
-                        {
-                          \"type\": 2,
-                          \"style\": 5,
-                          \"label\": \"Changes\",
-                          \"url\": \"${{ github.event.compare }}\"
-                        }
-                      ]
+                      \"type\": 14,
+                      \"spacing\": 2,
+                      \"divider\": true
+                    },
+                    {
+                      \"type\": 10,
+                      \"content\": \"-# ${TIME} • Feel free to report a bug or make a pull request\"
                     }
                   ]
                 }
