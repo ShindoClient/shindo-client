@@ -27,7 +27,6 @@ jobs:
               \"components\": [
                 {
                   \"type\": 17,
-                  \"accent_color\": 3092790,
                   \"components\": [
                     {
                       \"type\": 10,
