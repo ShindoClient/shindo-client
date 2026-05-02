@@ -1,0 +1,45 @@
+name: Discord Dev Updates
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord Components V2
+        run: |
+          COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '.[] | "`" + (.id[0:7]) + "` " + .message')
+
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            "${{ secrets.DISCORD_WEBHOOK }}?with_components=true" \
+            -d "{
+              \"flags\": 32768,
+              \"components\": [
+                {
+                  \"type\": 10,
+                  \"content\": \"# 🚀 ${{ github.repository }}:${{ github.ref_name }}\n${COMMITS}\"
+                },
+                {
+                  \"type\": 1,
+                  \"components\": [
+                    {
+                      \"type\": 2,
+                      \"style\": 5,
+                      \"label\": \"Open Repository\",
+                      \"url\": \"https://github.com/${{ github.repository }}\"
+                    },
+                    {
+                      \"type\": 2,
+                      \"style\": 5,
+                      \"label\": \"View Push\",
+                      \"url\": \"${{ github.event.compare }}\"
+                    }
+                  ]
+                }
+              ]
+            }"
