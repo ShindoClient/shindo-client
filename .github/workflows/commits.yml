@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Send Discord Components V2
         run: |
-          COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '.[] | "`" + (.id[0:7]) + "` " + .message')
+          COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '.[] | "`" + (.id[0:7]) + "` " + .message' | sed ':a;N;$!ba;s/\n/\\n/g')
 
           curl -X POST \
             -H "Content-Type: application/json" \
@@ -21,23 +21,37 @@ jobs:
               \"flags\": 32768,
               \"components\": [
                 {
-                  \"type\": 10,
-                  \"content\": \"# 🚀 ${{ github.repository }}:${{ github.ref_name }}\n${COMMITS}\"
-                },
-                {
-                  \"type\": 1,
+                  \"type\": 17,
+                  \"accent_color\": 3092790,
                   \"components\": [
                     {
-                      \"type\": 2,
-                      \"style\": 5,
-                      \"label\": \"Open Repository\",
-                      \"url\": \"https://github.com/${{ github.repository }}\"
+                      \"type\": 10,
+                      \"content\": \"### ${{ github.repository }}:${{ github.ref_name }}\"
                     },
                     {
-                      \"type\": 2,
-                      \"style\": 5,
-                      \"label\": \"View Push\",
-                      \"url\": \"${{ github.event.compare }}\"
+                      \"type\": 14,
+                      \"divider\": true
+                    },
+                    {
+                      \"type\": 10,
+                      \"content\": \"${COMMITS}\"
+                    },
+                    {
+                      \"type\": 1,
+                      \"components\": [
+                        {
+                          \"type\": 2,
+                          \"style\": 5,
+                          \"label\": \"Repository\",
+                          \"url\": \"https://github.com/${{ github.repository }}\"
+                        },
+                        {
+                          \"type\": 2,
+                          \"style\": 5,
+                          \"label\": \"Changes\",
+                          \"url\": \"${{ github.event.compare }}\"
+                        }
+                      ]
                     }
                   ]
                 }
