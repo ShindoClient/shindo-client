@@ -48,11 +48,7 @@ jobs:
                     },
                     {
                       \"type\": 10,
-                      \"content\": \"-# Feel free to report a bug or make a pull request\"
-                    },
-                    {
-                      \"type\": 10,
-                      \"content\": \"-# • ${TIME}\"
+                      \"content\": \"-# ${TIME} • by ShindoClient Team\"
                     }
                   ]
                 }
