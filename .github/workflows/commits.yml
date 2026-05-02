@@ -14,7 +14,10 @@ jobs:
         run: |
           COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '
             .[] |
-            "[`" + (.id[0:7]) + "`](" + .url + ") " + .message
+            "[`" + (.id[0:7]) + "`](" + .url + ") " +
+            .message +
+            " - " +
+            .author.name
           ' | sed ':a;N;$!ba;s/\n/\\n/g')
 
           TIME=$(date +"%H:%M UTC")
