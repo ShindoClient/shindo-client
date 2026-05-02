@@ -14,6 +14,31 @@ jobs:
         run: |
           COMMITS=$(printf '%s\n' '${{ toJson(github.event.commits) }}' | jq -r '
             .[] |
+            (
+            if (.message | startswith("feat:")) then
+            "✨ "
+            elif (.message | startswith("fix:")) then
+            "🔨 "
+            elif (.message | startswith("docs:")) then
+            "📚 "
+            elif (.message | startswith("refactor:")) then
+            "♻️ "
+            elif (.message | startswith("perf:")) then
+            "⚡ "
+            elif (.message | startswith("style:")) then
+            "🎨 "
+            elif (.message | startswith("test:")) then
+            "🧪 "
+            elif (.message | startswith("ci:")) then
+            "⚙️ "
+            elif (.message | startswith("build:")) then
+            "📦 "
+            elif (.message | startswith("chore:")) then
+            "🛠️ "
+            else
+            "• "
+            end
+            ) +
             "[`" + (.id[0:7]) + "`](" + .url + ") " +
             .message +
             " - " +
