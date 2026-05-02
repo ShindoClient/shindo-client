@@ -24,8 +24,8 @@ open class CompControlTemplate(
     private var variant: CompControlVariant = CompControlVariant.SECONDARY
 
     init {
-        Comp.setWidth(width)
-        Comp.setHeight(height)
+        setWidth(width)
+        setHeight(height)
     }
 
     fun setText(text: String?): CompControlTemplate {
@@ -56,17 +56,17 @@ open class CompControlTemplate(
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 16.0)
         pressAnimation.setAnimation(if (pressAnimation.value > 0.1f) pressAnimation.value * 0.84f else 0.0f, 16.0)
 
-        val base = CompStyleResolver.resolveControlBase(variant, Comp.palette, Comp.accent)
-        val hover = CompStyleResolver.resolveControlHover(variant, Comp.palette, Comp.accent)
+        val base = CompStyleResolver.resolveControlBase(variant, palette, accent)
+        val hover = CompStyleResolver.resolveControlHover(variant, palette, accent)
         val background = ColorUtils.interpolateColor(base, hover, hoverAnimation.value.toDouble())
         val pressed =
             if (pressAnimation.value > 0.1f) ColorUtils.darken(background, pressAnimation.value * 0.2f) else background
 
-        Comp.nvg.drawRoundedRect(
-            Comp.getX(),
-            Comp.getY(),
-            Comp.getWidth(),
-            Comp.getHeight(),
+        nvg.drawRoundedRect(
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
             radius,
             if (isEnabled()) pressed else ColorUtils.applyAlpha(pressed, 130)
         )
@@ -74,15 +74,15 @@ open class CompControlTemplate(
         val drawText = text
         if (!drawText.isNullOrEmpty()) {
             val color = if (isEnabled()) {
-                CompStyleResolver.resolveControlText(variant, Comp.palette)
+                CompStyleResolver.resolveControlText(variant, palette)
             } else {
-                Comp.palette.getFontColor(ColorType.NORMAL, 150)
+                palette.getFontColor(ColorType.NORMAL, 150)
             }
 
-            Comp.nvg.drawCenteredText(
+            nvg.drawCenteredText(
                 drawText,
-                Comp.getX() + Comp.getWidth() / 2f,
-                Comp.getY() + Comp.getHeight() / 2f - fontSize / 2f,
+                getX() + getWidth() / 2f,
+                getY() + getHeight() / 2f - fontSize / 2f,
                 color,
                 fontSize,
                 Fonts.REGULAR

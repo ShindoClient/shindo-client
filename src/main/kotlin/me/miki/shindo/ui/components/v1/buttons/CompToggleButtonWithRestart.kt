@@ -71,14 +71,14 @@ class CompToggleButtonWithRestart : CompControlTemplate {
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val nvgInstance = Comp.nvg
-        val accentColor = Comp.accent
-        val palette = Comp.palette
+        val nvgInstance = nvg
+        val accentColor = accent
+        val palette = palette
 
-        val x = Comp.getX()
-        val y = Comp.getY()
-        val width = Comp.getWidth()
-        val height = Comp.getHeight()
+        val x = getX()
+        val y = getY()
+        val width = getWidth()
+        val height = getHeight()
         val enabled = isEnabled()
         val toggled = setting.isToggled()
         val radius = height / 2f
@@ -155,9 +155,9 @@ class CompToggleButtonWithRestart : CompControlTemplate {
 
         if (warningVisible) {
             val warningSize = 11f
-            val warningX = x - 14f - Comp.nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
+            val warningX = x - 14f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
             val warningY =
-                y + (height / 2f) - Comp.nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
+                y + (height / 2f) - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, warningSize, Fonts.LEGACYICON) / 2f
             val warningAlpha = (warningAnimation.value * 255).toInt().coerceIn(0, 255)
             val warningColor = ColorUtils.applyAlpha(Color(255, 189, 64), warningAlpha)
 
@@ -197,9 +197,9 @@ class CompToggleButtonWithRestart : CompControlTemplate {
 
     override fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
         val warningWidth = if (requiresRestart && warningAnimation.value > 0.01f) 18f else 0f
-        return mouseX >= Comp.getX() - warningWidth &&
-                mouseX <= Comp.getX() + Comp.getWidth() &&
-                mouseY >= Comp.getY() &&
-                mouseY <= Comp.getY() + Comp.getHeight()
+        return mouseX >= getX() - warningWidth &&
+                mouseX <= getX() + getWidth() &&
+                mouseY >= getY() &&
+                mouseY <= getY() + getHeight()
     }
 }

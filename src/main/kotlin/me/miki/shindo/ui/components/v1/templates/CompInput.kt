@@ -15,8 +15,8 @@ abstract class CompInput<T>(
     private var onValueChanged: ((T?) -> Unit)? = null
 
     init {
-        Comp.setWidth(width)
-        Comp.setHeight(height)
+        setWidth(width)
+        setHeight(height)
     }
 
     fun isFocused(): Boolean = focused

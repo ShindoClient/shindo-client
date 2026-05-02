@@ -47,18 +47,18 @@ class CompCard(
     }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val accentColors = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val accentColors = accent
 
         if (showHeader && headerText != null) {
             val headerBg = headerColor ?: ColorUtils.applyAlpha(accentColors.getColor1(), 180)
             val headerTextColor = this.headerTextColor ?: paletteColors.getFontColor(ColorType.NORMAL)
 
             nvgInstance.drawRoundedRect(
-                Comp.getX(),
-                Comp.getY(),
-                Comp.getWidth(),
+                getX(),
+                getY(),
+                getWidth(),
                 headerHeight,
                 getRadius(),
                 headerBg
@@ -66,8 +66,8 @@ class CompCard(
 
             nvgInstance.drawText(
                 headerText!!,
-                Comp.getX() + 10f,
-                Comp.getY() + headerHeight / 2f,
+                getX() + 10f,
+                getY() + headerHeight / 2f,
                 headerTextColor,
                 10f,
                 Fonts.MEDIUM
@@ -75,6 +75,6 @@ class CompCard(
         }
     }
 
-    fun getContentY(): Float = if (showHeader) Comp.getY() + headerHeight else Comp.getY()
-    fun getContentHeight(): Float = if (showHeader) Comp.getHeight() - headerHeight else Comp.getHeight()
+    fun getContentY(): Float = if (showHeader) getY() + headerHeight else getY()
+    fun getContentHeight(): Float = if (showHeader) getHeight() - headerHeight else getHeight()
 }

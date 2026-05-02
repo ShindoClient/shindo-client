@@ -44,14 +44,14 @@ class CompToggleButton : CompControlTemplate {
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val nvgInstance = Comp.nvg
-        val accentColor = Comp.accent
-        val palette = Comp.palette
+        val nvgInstance = nvg
+        val accentColor = accent
+        val palette = palette
 
-        val x = Comp.getX()
-        val y = Comp.getY()
-        val width = Comp.getWidth()
-        val height = Comp.getHeight()
+        val x = getX()
+        val y = getY()
+        val width = getWidth()
+        val height = getHeight()
         val toggled = setting.isToggled()
 
         toggleAnimation.setAnimation(if (toggled) 1.0f else 0.0f, 16.0)

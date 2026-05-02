@@ -26,13 +26,13 @@ open class CompSeparator(
     init {
         when (orientation) {
             Orientation.HORIZONTAL -> {
-                Comp.setWidth(length)
-                Comp.setHeight(thickness)
+                setWidth(length)
+                setHeight(thickness)
             }
 
             Orientation.VERTICAL -> {
-                Comp.setWidth(thickness)
-                Comp.setHeight(length)
+                setWidth(thickness)
+                setHeight(length)
             }
         }
     }
@@ -40,8 +40,8 @@ open class CompSeparator(
     fun setThickness(thickness: Float): CompSeparator {
         this.thickness = thickness
         when (orientation) {
-            Orientation.HORIZONTAL -> Comp.setHeight(thickness)
-            Orientation.VERTICAL -> Comp.setWidth(thickness)
+            Orientation.HORIZONTAL -> setHeight(thickness)
+            Orientation.VERTICAL -> setWidth(thickness)
         }
         return this
     }
@@ -61,23 +61,23 @@ open class CompSeparator(
         this.orientation = orientation
         when (orientation) {
             Orientation.HORIZONTAL -> {
-                val length = Comp.getHeight()
-                Comp.setWidth(length)
-                Comp.setHeight(thickness)
+                val length = getHeight()
+                setWidth(length)
+                setHeight(thickness)
             }
 
             Orientation.VERTICAL -> {
-                val length = Comp.getWidth()
-                Comp.setWidth(thickness)
-                Comp.setHeight(length)
+                val length = getWidth()
+                setWidth(thickness)
+                setHeight(length)
             }
         }
         return this
     }
 
     override fun drawDisplay(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
+        val nvgInstance = nvg
+        val paletteColors = palette
 
         val finalColor = color ?: ColorUtils.applyAlpha(
             paletteColors.getBackgroundColor(ColorType.NORMAL),
@@ -89,10 +89,10 @@ open class CompSeparator(
             when (orientation) {
                 Orientation.HORIZONTAL -> {
                     nvgInstance.drawHorizontalGradientRect(
-                        Comp.getX(),
-                        Comp.getY(),
-                        Comp.getWidth(),
-                        Comp.getHeight(),
+                        getX(),
+                        getY(),
+                        getWidth(),
+                        getHeight(),
                         gradColor,
                         finalColor
                     )
@@ -100,17 +100,17 @@ open class CompSeparator(
 
                 Orientation.VERTICAL -> {
                     nvgInstance.drawVerticalGradientRect(
-                        Comp.getX(),
-                        Comp.getY(),
-                        Comp.getWidth(),
-                        Comp.getHeight(),
+                        getX(),
+                        getY(),
+                        getWidth(),
+                        getHeight(),
                         gradColor,
                         finalColor
                     )
                 }
             }
         } else {
-            nvgInstance.drawRect(Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight(), finalColor)
+            nvgInstance.drawRect(getX(), getY(), getWidth(), getHeight(), finalColor)
         }
     }
 }

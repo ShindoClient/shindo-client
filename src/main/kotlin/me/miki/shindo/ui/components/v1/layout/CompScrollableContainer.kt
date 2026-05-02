@@ -119,7 +119,7 @@ open class CompScrollableContainer(
     }
 
     override fun getBackgroundColor(paletteColors: ColorPalette, accentColors: AccentColor): Color? {
-        return ColorUtils.applyAlpha(Comp.palette.getBackgroundColor(ColorType.DARK), 210)
+        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
     }
 
     override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color? {
@@ -162,24 +162,24 @@ open class CompScrollableContainer(
 
         val scrollValue = scroll.getValue()
 
-        Comp.nvg.save()
-        Comp.nvg.scissor(viewport.x, viewport.y, viewport.width, viewport.height)
+        nvg.save()
+        nvg.scissor(viewport.x, viewport.y, viewport.width, viewport.height)
 
         drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue, viewport)
         contentRendererWithViewport?.invoke(mouseX, mouseY, partialTicks, scrollValue, viewport)
         contentRenderer?.invoke(mouseX, mouseY, partialTicks, scrollValue)
 
-        Comp.nvg.restore()
+        nvg.restore()
 
-        Comp.nvg.drawScrollbar(
+        nvg.drawScrollbar(
             fullViewport.x,
             fullViewport.y,
             fullViewport.width,
             fullViewport.height,
             contentHeight,
             scrollValue,
-            Comp.palette,
-            Comp.accent,
+            palette,
+            accent,
             24f
         )
     }
@@ -214,10 +214,10 @@ open class CompScrollableContainer(
     }
 
     private fun calculateViewport(): ScrollViewport {
-        val viewportX = Comp.getX() + innerPadding
-        val viewportY = Comp.getY() + innerPadding
-        val viewportWidth = max(0f, Comp.getWidth() - innerPadding * 2f)
-        val viewportHeight = max(0f, Comp.getHeight() - innerPadding * 2f)
+        val viewportX = getX() + innerPadding
+        val viewportY = getY() + innerPadding
+        val viewportWidth = max(0f, getWidth() - innerPadding * 2f)
+        val viewportHeight = max(0f, getHeight() - innerPadding * 2f)
         return ScrollViewport(viewportX, viewportY, viewportWidth, viewportHeight)
     }
 

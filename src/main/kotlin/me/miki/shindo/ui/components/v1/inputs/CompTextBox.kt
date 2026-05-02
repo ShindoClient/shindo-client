@@ -50,7 +50,7 @@ open class CompTextBox : CompTextBoxBase {
     }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
+        val nvgInstance = nvg
 
         val height = this.getHeight()
         val selectionEnd = this.getSelectionEnd()
@@ -65,7 +65,7 @@ open class CompTextBox : CompTextBoxBase {
         val halfHeight = (height * 0.5f).coerceAtLeast(8f)
         val referenceText = text.ifEmpty { "A" }
         val textHeight = nvgInstance.getTextHeight(referenceText, halfHeight, Fonts.REGULAR)
-        val textY = Comp.getY() + (Comp.getHeight() / 2f) - (textHeight / 2f) + 0.5f
+        val textY = getY() + (getHeight() / 2f) - (textHeight / 2f) + 0.5f
 
         var outTextSize = 0
         var resultText = ""
@@ -76,10 +76,10 @@ open class CompTextBox : CompTextBoxBase {
                     resultText,
                     halfHeight,
                     Fonts.REGULAR
-                ) + textInset + textPaddingEnd > Comp.getWidth()
+                ) + textInset + textPaddingEnd > getWidth()
             ) {
                 outTextSize++
-                addX = Comp.getWidth() - nvgInstance.getTextWidth(
+                addX = getWidth() - nvgInstance.getTextWidth(
                     resultText,
                     halfHeight,
                     Fonts.REGULAR
@@ -90,18 +90,18 @@ open class CompTextBox : CompTextBoxBase {
         if (selectionEnd < outTextSize) {
             val reversedText = StringBuilder(text).reverse().toString()
             addX =
-                Comp.getWidth() - nvgInstance.getTextWidth(
+                getWidth() - nvgInstance.getTextWidth(
                     reversedText.substring(outTextSize - selectionEnd),
                     halfHeight,
                     Fonts.REGULAR
                 ) - textInset - textPaddingEnd
         }
 
-        nvgInstance.drawRoundedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 6f, Comp.palette.getBackgroundColor(ColorType.NORMAL));
+        nvgInstance.drawRoundedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 6f, palette.getBackgroundColor(ColorType.NORMAL));
 
 
         nvgInstance.save()
-        nvgInstance.scissor(Comp.getX() + 2, Comp.getY(), Comp.getWidth() - 4, Comp.getHeight())
+        nvgInstance.scissor(getX() + 2, getY(), getWidth() - 4, getHeight())
 
         if (cursorPosition != selectionEnd) {
             val start = minOf(selectionEnd, cursorPosition)
@@ -112,11 +112,11 @@ open class CompTextBox : CompTextBoxBase {
 
             if (selectionWidth != 0f) {
                 nvgInstance.drawRect(
-                    Comp.getX() + textInset + offset + addX,
+                    getX() + textInset + offset + addX,
                     textY - 0.5f,
                     selectionWidth,
                     textHeight + 1f,
-                    ColorUtils.applyAlpha(Comp.accent.getColor1(), if (enabled) 160 else 94)
+                    ColorUtils.applyAlpha(accent.getColor1(), if (enabled) 160 else 94)
                 )
             }
         }
@@ -127,11 +127,11 @@ open class CompTextBox : CompTextBoxBase {
             nvgInstance.save()
             nvgInstance.translate((hintAnimation.value * 8f) - 8f, 0f)
             val hintAlpha = (hintAnimation.value * if (enabled) 200f else 140f).toInt().coerceIn(0, 255)
-            nvgInstance.drawText(defaultText!!, this.getX() + 5, this.getY() + (this.getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1, Comp.palette.getFontColor(ColorType.DARK,  hintAlpha), halfHeight, Fonts.REGULAR);
+            nvgInstance.drawText(defaultText!!, this.getX() + 5, this.getY() + (this.getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1, palette.getFontColor(ColorType.DARK,  hintAlpha), halfHeight, Fonts.REGULAR);
             nvgInstance.restore();
         }
 
-        nvgInstance.drawText(this.getText(), this.getX() + 5 + addX, this.getY() + (this.getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1, Comp.palette.getFontColor(ColorType.DARK), halfHeight, Fonts.REGULAR);
+        nvgInstance.drawText(this.getText(), this.getX() + 5 + addX, this.getY() + (this.getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2) + 1, palette.getFontColor(ColorType.DARK), halfHeight, Fonts.REGULAR);
 
 
         if (timer.delay(600)) {
@@ -143,7 +143,7 @@ open class CompTextBox : CompTextBoxBase {
                 nvgInstance.drawRect(
                     this.getX() + 5 + addX + position,
                     this.getY() + (this.getHeight() / 2) - (nvgInstance.getTextHeight(text, halfHeight, Fonts.REGULAR) / 2),
-                    0.7f, 10f, Comp.palette.getFontColor(ColorType.DARK)
+                    0.7f, 10f, palette.getFontColor(ColorType.DARK)
                 )
             }
 

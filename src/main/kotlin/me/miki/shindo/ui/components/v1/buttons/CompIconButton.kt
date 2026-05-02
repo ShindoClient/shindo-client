@@ -25,8 +25,8 @@ class CompIconButton : CompControlTemplate {
 
     constructor(x: Float, y: Float, size: Float, iconSupplier: () -> String?) : super(x, y) {
         this.iconSupplier = iconSupplier
-        Comp.setWidth(size)
-        Comp.setHeight(size)
+        setWidth(size)
+        setHeight(size)
         setVariant(CompControlVariant.GHOST)
     }
 
@@ -70,9 +70,9 @@ class CompIconButton : CompControlTemplate {
     override fun isEnabled(): Boolean = enabledSupplier?.invoke() ?: true
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val accentColors = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val accentColors = accent
         val enabled = isEnabled()
 
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
@@ -99,12 +99,12 @@ class CompIconButton : CompControlTemplate {
             outlineColor = ColorUtils.applyAlpha(outlineColor, 94)
         }
 
-        nvgInstance.drawRoundedRect(Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight(), radius, drawBackground)
+        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, drawBackground)
         nvgInstance.drawOutlineRoundedRect(
-            Comp.getX(),
-            Comp.getY(),
-            Comp.getWidth(),
-            Comp.getHeight(), radius, 1f, outlineColor)
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(), radius, 1f, outlineColor)
 
         val icon = iconSupplier.invoke()
         if (icon != null) {
@@ -122,8 +122,8 @@ class CompIconButton : CompControlTemplate {
             val drawSize = iconSize.coerceAtLeast(fontSize)
             val textHeight = nvgInstance.getTextHeight(icon, drawSize, Fonts.LEGACYICON)
             val textWidth = nvgInstance.getTextWidth(icon, drawSize, Fonts.LEGACYICON)
-            val iconX = Comp.getX() + Comp.getWidth() / 2f - textWidth / 2f
-            val iconY = Comp.getY() + Comp.getHeight() / 2f - textHeight / 2f
+            val iconX = getX() + getWidth() / 2f - textWidth / 2f
+            val iconY = getY() + getHeight() / 2f - textHeight / 2f
 
             nvgInstance.drawText(icon, iconX, iconY, iconColor, drawSize, Fonts.LEGACYICON)
         }

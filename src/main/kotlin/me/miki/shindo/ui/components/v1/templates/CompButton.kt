@@ -27,8 +27,8 @@ open class CompButton(
     private var variant: CompControlVariant = CompControlVariant.SECONDARY
 
     init {
-        Comp.setWidth(width)
-        Comp.setHeight(height)
+        setWidth(width)
+        setHeight(height)
     }
 
     fun setText(text: String?): CompButton {
@@ -74,9 +74,9 @@ open class CompButton(
     fun getRadius(): Float = radius
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val accentColors = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val accentColors = accent
 
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 14.0)
         clickAnimation.setAnimation(if (clickAnimation.value > 0.1f) clickAnimation.value * 0.85f else 0.0f, 16.0)
@@ -97,10 +97,10 @@ open class CompButton(
         }
 
         nvgInstance.drawRoundedRect(
-            Comp.getX(),
-            Comp.getY(),
-            Comp.getWidth(),
-            Comp.getHeight(),
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
             radius,
             if (isEnabled()) finalBgWithClick else ColorUtils.applyAlpha(finalBgWithClick, 120)
         )
@@ -112,10 +112,10 @@ open class CompButton(
                 paletteColors.getFontColor(ColorType.NORMAL, 150)
             }
 
-            val textY = Comp.getY() + Comp.getHeight() / 2f - fontSize / 2f
+            val textY = getY() + getHeight() / 2f - fontSize / 2f
             nvgInstance.drawCenteredText(
                 it,
-                Comp.getX() + Comp.getWidth() / 2f,
+                getX() + getWidth() / 2f,
                 textY,
                 finalTextColor,
                 fontSize,

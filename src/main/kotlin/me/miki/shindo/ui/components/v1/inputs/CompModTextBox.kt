@@ -28,17 +28,17 @@ class CompModTextBox : CompTextBoxBase {
     }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val accentColor = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val accentColor = accent
 
-        val height = Comp.getHeight()
+        val height = getHeight()
         val selectionEnd = this.getSelectionEnd()
         val cursorPosition = this.getCursorPosition()
         val text = this.getText()
         val enabled = this.isEnabled()
         val focused = this.isFocused()
-        val hovered = MouseUtils.isInside(mouseX, mouseY, Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight())
+        val hovered = MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
         val textInset = 6f
         val textPaddingEnd = 6f
 
@@ -46,7 +46,7 @@ class CompModTextBox : CompTextBoxBase {
         val halfHeight = (height * 0.5f).coerceAtLeast(8f)
         val referenceText = if (text.isEmpty()) "A" else text
         val textHeight = nvgInstance.getTextHeight(referenceText, halfHeight, Fonts.REGULAR)
-        val textY = Comp.getY() + (Comp.getHeight() / 2f) - (textHeight / 2f) + 0.5f
+        val textY = getY() + (getHeight() / 2f) - (textHeight / 2f) + 0.5f
 
         var outTextSize = 0
         var resultText = ""
@@ -58,10 +58,10 @@ class CompModTextBox : CompTextBoxBase {
                     resultText,
                     halfHeight,
                     Fonts.REGULAR
-                ) + textInset + textPaddingEnd > Comp.getWidth()
+                ) + textInset + textPaddingEnd > getWidth()
             ) {
                 outTextSize++
-                addX = Comp.getWidth() - nvgInstance.getTextWidth(
+                addX = getWidth() - nvgInstance.getTextWidth(
                     resultText,
                     halfHeight,
                     Fonts.REGULAR
@@ -72,7 +72,7 @@ class CompModTextBox : CompTextBoxBase {
         if (selectionEnd < outTextSize) {
             val reversedText = StringBuilder(text).reverse().toString()
             addX =
-                Comp.getWidth() - nvgInstance.getTextWidth(
+                getWidth() - nvgInstance.getTextWidth(
                     reversedText.substring(outTextSize - selectionEnd),
                     halfHeight,
                     Fonts.REGULAR
@@ -104,25 +104,25 @@ class CompModTextBox : CompTextBoxBase {
         }
 
         nvgInstance.drawRoundedRect(
-            Comp.getX(),
-            Comp.getY(),
-            Comp.getWidth(),
-            Comp.getHeight(),
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
             6f,
             backgroundColor
         )
         nvgInstance.drawOutlineRoundedRect(
-            Comp.getX(),
-            Comp.getY(),
-            Comp.getWidth(),
-            Comp.getHeight(),
+            getX(),
+            getY(),
+            getWidth(),
+            getHeight(),
             6f,
             1f,
             outlineColor
         )
 
         nvgInstance.save()
-        nvgInstance.scissor(Comp.getX() + 2, Comp.getY(), Comp.getWidth() - 4, Comp.getHeight())
+        nvgInstance.scissor(getX() + 2, getY(), getWidth() - 4, getHeight())
 
         if (cursorPosition != selectionEnd) {
             val start = minOf(selectionEnd, cursorPosition)
@@ -133,7 +133,7 @@ class CompModTextBox : CompTextBoxBase {
 
             if (selectionWidth != 0f) {
                 nvgInstance.drawRect(
-                    Comp.getX() + textInset + offset + addX,
+                    getX() + textInset + offset + addX,
                     textY - 0.5f,
                     selectionWidth,
                     textHeight + 1f,
@@ -149,7 +149,7 @@ class CompModTextBox : CompTextBoxBase {
         }
         nvgInstance.drawText(
             text,
-            Comp.getX() + textInset + addX,
+            getX() + textInset + addX,
             textY,
             textColor,
             halfHeight,
@@ -163,7 +163,7 @@ class CompModTextBox : CompTextBoxBase {
 
             if (enabled && focused && cursorPosition == selectionEnd) {
                 nvgInstance.drawRect(
-                    Comp.getX() + textInset + addX + position,
+                    getX() + textInset + addX + position,
                     textY - 0.5f,
                     0.85f,
                     textHeight + 1.25f,

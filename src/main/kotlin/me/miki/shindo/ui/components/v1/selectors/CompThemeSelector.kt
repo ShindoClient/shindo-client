@@ -33,8 +33,8 @@ class CompThemeSelector(
     private val innerPadding: Float = 18f
 
     init {
-        Comp.setWidth(width)
-        Comp.setHeight(height)
+        setWidth(width)
+        setHeight(height)
         setRadius(10f)
         setSurfaceVariant(CompSurfaceVariant.CARD)
         setBackgroundColor(null)
@@ -63,19 +63,19 @@ class CompThemeSelector(
 
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
-        Comp.palette
-        val accentColors = Comp.accent
+        val nvgInstance = nvg
+        palette
+        val accentColors = accent
 
-        val innerX = Comp.getX() + innerPadding
-        val innerY = Comp.getY() + innerPadding
-        val visibleWidth = Comp.getWidth() - innerPadding * 2f
-        val itemHeight = min(88f, Comp.getHeight() - innerPadding * 2f)
+        val innerX = getX() + innerPadding
+        val innerY = getY() + innerPadding
+        val visibleWidth = getWidth() - innerPadding * 2f
+        val itemHeight = min(88f, getHeight() - innerPadding * 2f)
 
         val totalWidth = themes.size * itemWidth + (themes.size - 1) * itemSpacing
         scroll.maxScroll = max(0f, totalWidth - visibleWidth)
 
-        if (MouseUtils.isInside(mouseX, mouseY, Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight())) {
+        if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) {
             scroll.onScroll()
         }
 
@@ -84,7 +84,7 @@ class CompThemeSelector(
         val scrollValue = scroll.getValue()
 
         nvgInstance.save()
-        nvgInstance.intersectScissor(Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight())
+        nvgInstance.intersectScissor(getX(), getY(), getWidth(), getHeight())
 
         var cardX = innerX + scrollValue
         for (theme in themes) {
@@ -150,14 +150,14 @@ class CompThemeSelector(
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!Comp.isVisible() || mouseButton != 0) {
+        if (!isVisible() || mouseButton != 0) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
         }
 
-        val innerX = Comp.getX() + innerPadding
-        val innerY = Comp.getY() + innerPadding
-        val itemHeight = min(88f, Comp.getHeight() - innerPadding * 2f)
+        val innerX = getX() + innerPadding
+        val innerY = getY() + innerPadding
+        val itemHeight = min(88f, getHeight() - innerPadding * 2f)
         val scrollValue = scroll.getValue()
 
         var cardX = innerX + scrollValue

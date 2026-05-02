@@ -27,8 +27,8 @@ class CompSettingButton : CompControlTemplate {
             super(x, y) {
         this.titleSupplier = titleSupplier
         this.descriptionSupplier = descriptionSupplier
-        Comp.setWidth(width)
-        Comp.setHeight(DEFAULT_HEIGHT)
+        setWidth(width)
+        setHeight(DEFAULT_HEIGHT)
         setVariant(CompControlVariant.GHOST)
     }
 
@@ -79,14 +79,14 @@ class CompSettingButton : CompControlTemplate {
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val accentColors = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val accentColors = accent
 
-        val x = Comp.getX()
-        val y = Comp.getY()
-        val width = Comp.getWidth()
-        val height = Comp.getHeight()
+        val x = getX()
+        val y = getY()
+        val width = getWidth()
+        val height = getHeight()
 
         val base = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 220)
         val overlay = ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.NORMAL), 210)
@@ -169,7 +169,7 @@ class CompSettingButton : CompControlTemplate {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!Comp.isVisible()) return
+        if (!isVisible()) return
 
         var insideTrailing = false
         trailingComp?.let {
@@ -186,13 +186,13 @@ class CompSettingButton : CompControlTemplate {
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!Comp.isVisible()) return
+        if (!isVisible()) return
         trailingComp?.mouseReleased(mouseX, mouseY, mouseButton)
         super.mouseReleased(mouseX, mouseY, mouseButton)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (!Comp.isVisible()) return
+        if (!isVisible()) return
         trailingComp?.keyTyped(typedChar, keyCode)
         super.keyTyped(typedChar, keyCode)
     }

@@ -33,8 +33,8 @@ class CompAccentColorSelector(
     private val itemHeight: Float = 76f
 
     init {
-        Comp.setWidth(width)
-        Comp.setHeight(height)
+        setWidth(width)
+        setHeight(height)
         setRadius(10f)
         setSurfaceVariant(CompSurfaceVariant.CARD)
         setBackgroundColor(null)
@@ -62,18 +62,18 @@ class CompAccentColorSelector(
     }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = Comp.nvg
-        val paletteColors = Comp.palette
-        val currentAccent = Comp.accent
+        val nvgInstance = nvg
+        val paletteColors = palette
+        val currentAccent = accent
 
-        val innerX = Comp.getX() + innerPadding
-        val innerY = Comp.getY() + innerPadding
-        val visibleWidth = Comp.getWidth() - innerPadding * 2f
+        val innerX = getX() + innerPadding
+        val innerY = getY() + innerPadding
+        val visibleWidth = getWidth() - innerPadding * 2f
 
         val totalWidth = accentColorsList.size * itemWidth + (accentColorsList.size - 1) * itemSpacing
         scroll.maxScroll = max(0f, totalWidth - visibleWidth)
 
-        if (MouseUtils.isInside(mouseX, mouseY, Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight())) {
+        if (MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) {
             scroll.onScroll()
         }
 
@@ -82,7 +82,7 @@ class CompAccentColorSelector(
         val scrollValue = scroll.getValue()
 
         nvgInstance.save()
-        nvgInstance.intersectScissor(Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight())
+        nvgInstance.intersectScissor(getX(), getY(), getWidth(), getHeight())
 
         var cardX = innerX + scrollValue
         for (accent in accentColorsList) {
@@ -151,13 +151,13 @@ class CompAccentColorSelector(
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!Comp.isVisible() || mouseButton != 0) {
+        if (!isVisible() || mouseButton != 0) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
         }
 
-        val innerX = Comp.getX() + innerPadding
-        val innerY = Comp.getY() + innerPadding
+        val innerX = getX() + innerPadding
+        val innerY = getY() + innerPadding
         val scrollValue = scroll.getValue()
 
         var cardX = innerX + scrollValue

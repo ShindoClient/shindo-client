@@ -73,24 +73,24 @@ class CompVisualPresetSelector(
             val hovered = MouseUtils.isInside(mouseX, mouseY, slot.x, slot.y, slot.width, slot.height)
 
             val base = ColorUtils.applyAlpha(
-                Comp.palette.getBackgroundColor(ColorType.NORMAL),
+                palette.getBackgroundColor(ColorType.NORMAL),
                 if (selected) 215 else if (hovered) 200 else 180
             )
-            Comp.nvg.drawRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, base)
+            nvg.drawRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, base)
             val borderColor = ColorUtils.applyAlpha(
-                Comp.palette.getFontColor(ColorType.NORMAL),
+                palette.getFontColor(ColorType.NORMAL),
                 if (selected) 136 else if (hovered) 98 else 70
             )
-            Comp.nvg.drawOutlineRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, 1f, borderColor)
+            nvg.drawOutlineRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, 1f, borderColor)
 
-            Comp.nvg.save()
-            Comp.nvg.intersectScissor(slot.x + 1f, slot.y + 1f, slot.width - 2f, slot.height - 2f)
+            nvg.save()
+            nvg.intersectScissor(slot.x + 1f, slot.y + 1f, slot.width - 2f, slot.height - 2f)
 
             val textWidth = slot.width - 12f
-            val title = Comp.nvg.getLimitText(entry.title, 9.5f, Fonts.MEDIUM, textWidth)
-            val subtitle = Comp.nvg.getLimitText(entry.subtitle, 8f, Fonts.REGULAR, textWidth)
-            Comp.nvg.drawText(title, slot.x + 6f, slot.y + 12f, Comp.palette.getFontColor(ColorType.DARK), 9.5f, Fonts.MEDIUM)
-            Comp.nvg.drawText(subtitle, slot.x + 6f, slot.y + 26f, Comp.palette.getFontColor(ColorType.NORMAL), 8f, Fonts.REGULAR)
+            val title = nvg.getLimitText(entry.title, 9.5f, Fonts.MEDIUM, textWidth)
+            val subtitle = nvg.getLimitText(entry.subtitle, 8f, Fonts.REGULAR, textWidth)
+            nvg.drawText(title, slot.x + 6f, slot.y + 12f, palette.getFontColor(ColorType.DARK), 9.5f, Fonts.MEDIUM)
+            nvg.drawText(subtitle, slot.x + 6f, slot.y + 26f, palette.getFontColor(ColorType.NORMAL), 8f, Fonts.REGULAR)
 
             val previewX = slot.x + 6f
             val previewY = slot.y + 38f
@@ -107,20 +107,20 @@ class CompVisualPresetSelector(
                     previewHeight,
                     selected,
                     hovered,
-                    Comp.nvg,
-                    Comp.palette,
-                    Comp.accent
+                    nvg,
+                    palette,
+                    accent
                 )
             } else {
                 drawMiniPreview(previewX, previewY, previewWidth, previewHeight, slot.index, selected)
             }
 
-            Comp.nvg.restore()
+            nvg.restore()
         }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!Comp.isVisible() || mouseButton != 0 || entries.isEmpty()) {
+        if (!isVisible() || mouseButton != 0 || entries.isEmpty()) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
         }
@@ -142,7 +142,7 @@ class CompVisualPresetSelector(
     private fun computeSlots(): List<CardSlot> {
         if (entries.isEmpty()) return emptyList()
 
-        val availableWidth = max(0f, Comp.getWidth() - contentPadding * 2f)
+        val availableWidth = max(0f, getWidth() - contentPadding * 2f)
         val columns = resolveColumns(availableWidth, entries.size)
         val rows = ((entries.size + columns - 1) / columns).coerceAtLeast(1)
 
@@ -151,16 +151,16 @@ class CompVisualPresetSelector(
         } else {
             max(minCardWidth, (availableWidth - gap * (columns - 1)) / columns)
         }
-        val availableHeight = max(72f, Comp.getHeight() - contentPadding * 2f)
+        val availableHeight = max(72f, getHeight() - contentPadding * 2f)
         val cardHeight = max(34f, (availableHeight - gap * (rows - 1)) / rows)
 
         val slots = ArrayList<CardSlot>(entries.size)
         var index = 0
         for (row in 0 until rows) {
-            val y = Comp.getY() + contentPadding + row * (cardHeight + gap)
+            val y = getY() + contentPadding + row * (cardHeight + gap)
             val rowCount = min(columns, entries.size - index)
             val rowWidth = rowCount * cardWidth + max(0, rowCount - 1) * gap
-            var x = Comp.getX() + contentPadding + (availableWidth - rowWidth) / 2f
+            var x = getX() + contentPadding + (availableWidth - rowWidth) / 2f
             for (column in 0 until rowCount) {
                 slots.add(CardSlot(index, x, y, cardWidth, cardHeight))
                 x += cardWidth + gap
@@ -185,13 +185,13 @@ class CompVisualPresetSelector(
         selected: Boolean
     ) {
         if (width <= 8f || height <= 8f) return
-        Comp.nvg.drawRoundedRect(
+        nvg.drawRoundedRect(
             x,
             y,
             width,
             height,
             4f,
-            ColorUtils.applyAlpha(Comp.palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150)
         )
         val columns = if (index % 2 == 0) 1 else 2
         val rows = if (index % 3 == 0) 3 else 2
@@ -205,26 +205,26 @@ class CompVisualPresetSelector(
                 val blockY = y + cardGap + row * (cardHeight + cardGap)
                 val activeBlock = (row + column + index) % max(1, rows + columns) == 0
 
-                Comp.nvg.drawRoundedRect(
+                nvg.drawRoundedRect(
                     blockX,
                     blockY,
                     cardWidth,
                     cardHeight,
                     3f,
                     ColorUtils.applyAlpha(
-                        if (activeBlock) Comp.accent.getColor1() else Comp.palette.getBackgroundColor(ColorType.MID),
+                        if (activeBlock) accent.getColor1() else palette.getBackgroundColor(ColorType.MID),
                         if (activeBlock && selected) 190 else if (activeBlock) 150 else 175
                     )
                 )
 
                 val lineWidth = max(6f, cardWidth - 8f)
-                Comp.nvg.drawRoundedRect(
+                nvg.drawRoundedRect(
                     blockX + 4f,
                     blockY + 4f,
                     lineWidth,
                     3f,
                     1.5f,
-                    ColorUtils.applyAlpha(Comp.palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175)
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175)
                 )
             }
         }

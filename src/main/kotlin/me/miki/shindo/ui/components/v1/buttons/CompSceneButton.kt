@@ -21,7 +21,7 @@ class CompSceneButton(
 
     init {
         setVariant(CompControlVariant.GHOST)
-        Comp.setHeight(DEFAULT_HEIGHT)
+        setHeight(DEFAULT_HEIGHT)
     }
 
     fun setActive(active: Boolean): CompSceneButton {
@@ -30,62 +30,62 @@ class CompSceneButton(
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val x = Comp.getX()
-        val y = Comp.getY()
-        val width = Comp.getWidth()
-        val height = Comp.getHeight()
+        val x = getX()
+        val y = getY()
+        val width = getWidth()
+        val height = getHeight()
 
         val iconX = x + ICON_MARGIN
         val iconY = y + (height - ICON_SIZE) / 2f
 
-        Comp.nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7)
-        Comp.nvg.drawRoundedRect(
+        nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7)
+        nvg.drawRoundedRect(
             x,
             y,
             width,
             height,
             CARD_RADIUS,
-            ColorUtils.applyAlpha(Comp.palette.getBackgroundColor(ColorType.DARK), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
         )
-        Comp.nvg.drawOutlineRoundedRect(
+        nvg.drawOutlineRoundedRect(
             x,
             y,
             width,
             height,
             CARD_RADIUS,
             1f,
-            ColorUtils.applyAlpha(Comp.palette.getBackgroundColor(ColorType.MID), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
         )
         //nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY + 19.5F, this.getWidth() - 30, 1F, 0, new Color(255, 200, 10));
-        Comp.nvg.drawCenteredText(
+        nvg.drawCenteredText(
             iconSupplier.invoke(),
             iconX + ICON_SIZE / 2f - 1f,
             iconY + ICON_SIZE / 2f - 8f,
-            Comp.palette.getFontColor(ColorType.DARK),
+            palette.getFontColor(ColorType.DARK),
             ICON_FONT_SIZE,
             Fonts.LEGACYICON
         )
 
         val textStartX = iconX + ICON_SIZE + TEXT_MARGIN_START
         val textWidth = width - (textStartX - x) - TEXT_MARGIN_END
-        val title = Comp.nvg.getLimitText(titleSupplier.invoke(), TITLE_FONT_SIZE, Fonts.MEDIUM, textWidth)
+        val title = nvg.getLimitText(titleSupplier.invoke(), TITLE_FONT_SIZE, Fonts.MEDIUM, textWidth)
         val rawDescription = descriptionSupplier.invoke()
         val description = if (!"null".equals(rawDescription, ignoreCase = true)) {
-            Comp.nvg.getLimitText(rawDescription, DESCRIPTION_FONT_SIZE, Fonts.REGULAR, textWidth)
+            nvg.getLimitText(rawDescription, DESCRIPTION_FONT_SIZE, Fonts.REGULAR, textWidth)
         } else {
             ""
         }
 
-        Comp.nvg.drawText(title, textStartX, y + TITLE_OFFSET , Comp.palette.getFontColor(ColorType.DARK), TITLE_FONT_SIZE, Fonts.MEDIUM
+        nvg.drawText(title, textStartX, y + TITLE_OFFSET , palette.getFontColor(ColorType.DARK), TITLE_FONT_SIZE, Fonts.MEDIUM
         )
         if (description.isNotEmpty()) {
-            Comp.nvg.drawText(description, textStartX, y + DESCRIPTION_OFFSET , Comp.palette.getFontColor(ColorType.NORMAL), DESCRIPTION_FONT_SIZE, Fonts.REGULAR
+            nvg.drawText(description, textStartX, y + DESCRIPTION_OFFSET , palette.getFontColor(ColorType.NORMAL), DESCRIPTION_FONT_SIZE, Fonts.REGULAR
             )
         }
 
         val arrowX = x + width - ARROW_MARGIN
-        val arrowY = y + (height / 2f) - (Comp.nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LEGACYICON) / 2f)
-        Comp.nvg.drawCenteredText(LegacyIcon.CHEVRON_RIGHT, arrowX, arrowY, Comp.palette.getFontColor(ColorType.NORMAL), ARROW_FONT_SIZE, Fonts.LEGACYICON)
+        val arrowY = y + (height / 2f) - (nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LEGACYICON) / 2f)
+        nvg.drawCenteredText(LegacyIcon.CHEVRON_RIGHT, arrowX, arrowY, palette.getFontColor(ColorType.NORMAL), ARROW_FONT_SIZE, Fonts.LEGACYICON)
 
     }
 
