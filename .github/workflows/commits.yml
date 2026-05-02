@@ -48,7 +48,7 @@ jobs:
                     },
                     {
                       \"type\": 10,
-                      \"content\": \"-# ${TIME} • by ShindoClient Team\"
+                      \"content\": \"-# ${TIME} • by ShindoClient Team.\"
                     }
                   ]
                 }
