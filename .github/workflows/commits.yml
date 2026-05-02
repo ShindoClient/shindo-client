@@ -48,7 +48,11 @@ jobs:
                     },
                     {
                       \"type\": 10,
-                      \"content\": \"-# ${TIME} • Feel free to report a bug or make a pull request\"
+                      \"content\": \"- Feel free to report a bug or make a pull request\"
+                    },
+                    {
+                      \"type\": 10,
+                      \"content\": \"-# ${TIME}\"
                     }
                   ]
                 }
