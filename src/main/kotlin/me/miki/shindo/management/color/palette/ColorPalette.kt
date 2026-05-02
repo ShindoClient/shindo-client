@@ -2,7 +2,7 @@ package me.miki.shindo.management.color.palette
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.Theme
-import me.miki.shindo.ui.animation.value.ColorAnimation
+import me.miki.shindo.ui.animation.v1.value.ColorAnimation
 import java.awt.Color
 
 class ColorPalette {

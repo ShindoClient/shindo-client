@@ -1,6 +1,6 @@
 package me.miki.shindo.management.language
 
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 enum class Language(

@@ -6,11 +6,11 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.easing.EaseBackIn
-import me.miki.shindo.ui.animation.screen.ScreenAnimation
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.utils.TargetUtils.target
 import net.minecraft.util.ResourceLocation
 import kotlin.math.min

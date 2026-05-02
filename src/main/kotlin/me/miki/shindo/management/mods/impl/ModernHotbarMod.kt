@@ -14,7 +14,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager

@@ -1,0 +1,138 @@
+package me.miki.shindo.ui.components.v1.buttons
+
+import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.nanovg.font.Fonts
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.components.v1.style.CompControlVariant
+import me.miki.shindo.ui.components.v1.style.CompStyleResolver
+import me.miki.shindo.ui.components.v1.templates.CompControlTemplate
+import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.utils.ColorUtils
+import java.awt.Color
+
+class CompIconButton : CompControlTemplate {
+    private val iconSupplier: () -> String?
+    private var enabledSupplier: (() -> Boolean)? = null
+
+    private val hoverAnimation = SimpleAnimation()
+    private val pressAnimation = SimpleAnimation()
+
+    private var radius: Float = 6f
+    private var iconSize: Float = 12f
+    private var fontSize: Float = 12f
+    private var overrideBackground: Color? = null
+    private var iconColorSupplier: (() -> Color)? = null
+
+    constructor(x: Float, y: Float, size: Float, iconSupplier: () -> String?) : super(x, y) {
+        this.iconSupplier = iconSupplier
+        Comp.setWidth(size)
+        Comp.setHeight(size)
+        setVariant(CompControlVariant.GHOST)
+    }
+
+    constructor(size: Float, iconSupplier: () -> String?) : this(0f, 0f, size, iconSupplier)
+
+    fun onClick(runnable: () -> Unit): CompIconButton {
+        this.onClick = runnable
+        return this
+    }
+
+    fun enabledWhen(enabledSupplier: (() -> Boolean)?): CompIconButton {
+        this.enabledSupplier = enabledSupplier
+        return this
+    }
+
+    override fun setRadius(radius: Float): CompIconButton {
+        this.radius = radius
+        return this
+    }
+
+    fun setIconSize(iconSize: Float): CompIconButton {
+        this.iconSize = iconSize
+        return this
+    }
+
+    override fun setFontSize(fontSize: Float): CompIconButton {
+        this.fontSize = fontSize
+        return this
+    }
+
+    fun setOverrideBackground(overrideBackground: Color?): CompIconButton {
+        this.overrideBackground = overrideBackground
+        return this
+    }
+
+    fun setIconColorSupplier(iconColorSupplier: (() -> Color)?): CompIconButton {
+        this.iconColorSupplier = iconColorSupplier
+        return this
+    }
+
+    override fun isEnabled(): Boolean = enabledSupplier?.invoke() ?: true
+
+    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
+        val nvgInstance = Comp.nvg
+        val paletteColors = Comp.palette
+        val accentColors = Comp.accent
+        val enabled = isEnabled()
+
+        hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
+        pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f, 16.0)
+
+        val baseBackground =
+            overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
+        val hoverBackground = overrideBackground?.let { ColorUtils.lighten(it, 0.08f) }
+            ?: CompStyleResolver.resolveControlHover(getVariant(), paletteColors, accentColors)
+
+        var drawBackground =
+            ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
+        if (pressAnimation.value > 0.08f) {
+            drawBackground = ColorUtils.darken(drawBackground, pressAnimation.value * 0.18f)
+        }
+        if (!enabled) {
+            drawBackground = ColorUtils.applyAlpha(drawBackground, 118)
+        }
+
+        val outlineIdle = ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 26)
+        val outlineHover = ColorUtils.applyAlpha(accentColors.getColor1(), 92)
+        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.value.toDouble())
+        if (!enabled) {
+            outlineColor = ColorUtils.applyAlpha(outlineColor, 94)
+        }
+
+        nvgInstance.drawRoundedRect(Comp.getX(), Comp.getY(), Comp.getWidth(), Comp.getHeight(), radius, drawBackground)
+        nvgInstance.drawOutlineRoundedRect(
+            Comp.getX(),
+            Comp.getY(),
+            Comp.getWidth(),
+            Comp.getHeight(), radius, 1f, outlineColor)
+
+        val icon = iconSupplier.invoke()
+        if (icon != null) {
+            val baseIconColor = iconColorSupplier?.invoke() ?: paletteColors.getFontColor(ColorType.DARK)
+            val hoverIconColor = if (iconColorSupplier != null) {
+                ColorUtils.interpolateColor(baseIconColor, Color.WHITE, 0.2)
+            } else {
+                ColorUtils.lighten(baseIconColor, 0.16f)
+            }
+            var iconColor = ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.value.toDouble())
+            if (!enabled) {
+                iconColor = ColorUtils.applyAlpha(iconColor, 132)
+            }
+
+            val drawSize = iconSize.coerceAtLeast(fontSize)
+            val textHeight = nvgInstance.getTextHeight(icon, drawSize, Fonts.LEGACYICON)
+            val textWidth = nvgInstance.getTextWidth(icon, drawSize, Fonts.LEGACYICON)
+            val iconX = Comp.getX() + Comp.getWidth() / 2f - textWidth / 2f
+            val iconY = Comp.getY() + Comp.getHeight() / 2f - textHeight / 2f
+
+            nvgInstance.drawText(icon, iconX, iconY, iconColor, drawSize, Fonts.LEGACYICON)
+        }
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (mouseButton == 0 && isEnabled() && super.isHoveredInteractive(mouseX, mouseY)) {
+            pressAnimation.value = 1.0f
+        }
+        super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+}

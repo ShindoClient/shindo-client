@@ -2,7 +2,7 @@ package me.miki.shindo.management.cosmetic.bandana.impl
 
 import me.miki.shindo.api.roles.Role
 import me.miki.shindo.management.cosmetic.bandana.BandanaCategory
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 open class Bandana(

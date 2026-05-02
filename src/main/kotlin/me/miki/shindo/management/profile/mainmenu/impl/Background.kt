@@ -1,6 +1,6 @@
 package me.miki.shindo.management.profile.mainmenu.impl
 
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 
 open class Background(private val id: Int, private val name: String?) {
 

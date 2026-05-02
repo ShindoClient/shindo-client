@@ -2,7 +2,7 @@
 
 package me.miki.extensions.ui.animation
 
-import me.miki.shindo.ui.animation.EasingFunctions
+import me.miki.shindo.ui.animation.v1.EasingFunctions
 
 /**
  * Progress (0.0..1.0) easing helpers on primitives.

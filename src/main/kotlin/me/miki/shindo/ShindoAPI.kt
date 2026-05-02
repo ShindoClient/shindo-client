@@ -9,7 +9,7 @@ import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.gui.GuiNavigationHub
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
-import me.miki.shindo.gui.modmenu.GuiModMenu
+import me.miki.shindo.gui.modmenu.v1.GuiModMenu
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.file.FileManager
 import net.minecraft.client.Minecraft

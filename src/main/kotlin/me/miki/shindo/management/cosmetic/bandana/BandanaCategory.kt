@@ -1,8 +1,8 @@
 package me.miki.shindo.management.cosmetic.bandana
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.ui.animation.value.ColorAnimation
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.ColorAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 
 enum class BandanaCategory(private val names: String) {
     ALL(TranslateText.ALL.getText()),

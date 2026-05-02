@@ -1,7 +1,7 @@
 package me.miki.shindo.ui.layout
 
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.ui.comp.layout.SettingsPanel.LayoutMode
+import me.miki.shindo.ui.components.v1.layout.SettingsPanel.LayoutMode
 import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 

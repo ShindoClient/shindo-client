@@ -5,9 +5,9 @@ import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution

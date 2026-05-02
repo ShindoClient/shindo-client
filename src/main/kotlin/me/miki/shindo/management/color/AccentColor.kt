@@ -1,6 +1,6 @@
 package me.miki.shindo.management.color
 
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 

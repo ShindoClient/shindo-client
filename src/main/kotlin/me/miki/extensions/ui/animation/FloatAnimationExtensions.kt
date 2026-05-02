@@ -2,7 +2,7 @@
 
 package me.miki.extensions.ui.animation
 
-import me.miki.shindo.ui.animation.value.FloatAnimation
+import me.miki.shindo.ui.animation.v1.value.FloatAnimation
 
 /**
  * Extension helpers for [FloatAnimation].

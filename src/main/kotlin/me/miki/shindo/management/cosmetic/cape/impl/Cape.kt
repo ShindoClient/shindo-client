@@ -2,7 +2,7 @@ package me.miki.shindo.management.cosmetic.cape.impl
 
 import me.miki.shindo.api.roles.Role
 import me.miki.shindo.management.cosmetic.cape.CapeCategory
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 open class Cape(

@@ -6,11 +6,11 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.quickplay.QuickPlay
 import me.miki.shindo.management.quickplay.QuickPlayManager
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.SmoothStepAnimation
-import me.miki.shindo.ui.animation.easing.EaseBackIn
-import me.miki.shindo.ui.animation.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.curve.SmoothStepAnimation
+import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils

@@ -18,10 +18,10 @@ import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.DecelerateAnimation
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiScreen

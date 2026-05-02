@@ -1,8 +1,8 @@
 package me.miki.shindo.ui
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
 import me.miki.shindo.utils.ColorUtils
 
 class ClickEffects {

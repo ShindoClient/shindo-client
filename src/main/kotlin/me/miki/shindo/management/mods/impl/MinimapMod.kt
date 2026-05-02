@@ -10,7 +10,7 @@ import me.miki.shindo.management.mods.impl.minimap.ChunkAtlas
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.screen.ScreenStencil
+import me.miki.shindo.ui.animation.v1.screen.ScreenStencil
 import me.miki.shindo.utils.GlUtils.startTranslate
 import me.miki.shindo.utils.GlUtils.stopTranslate
 import me.miki.shindo.utils.render.RenderUtils

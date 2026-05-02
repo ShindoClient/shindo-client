@@ -6,10 +6,10 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.easing.EaseLiner
-import me.miki.shindo.ui.animation.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.easing.EaseLiner
+import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.*

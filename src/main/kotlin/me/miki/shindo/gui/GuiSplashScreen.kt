@@ -4,9 +4,9 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
 import me.miki.shindo.utils.GlUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution

@@ -5,10 +5,10 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.easing.EaseBackIn
-import me.miki.shindo.ui.animation.screen.ScreenAlpha
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v1.screen.ScreenAlpha
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import net.minecraft.client.Minecraft

@@ -22,8 +22,8 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSet
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
-import me.miki.shindo.ui.animation.GlobalAnimationSettings
-import me.miki.shindo.ui.comp.layout.SettingsPanel.LayoutMode
+import me.miki.shindo.ui.animation.v1.GlobalAnimationSettings
+import me.miki.shindo.ui.components.v1.layout.SettingsPanel.LayoutMode
 import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display

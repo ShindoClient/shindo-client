@@ -2,10 +2,10 @@
 
 package me.miki.extensions.ui.animation
 
-import me.miki.shindo.ui.animation.Animation
-import me.miki.shindo.ui.animation.Direction
-import me.miki.shindo.ui.animation.TimedAnimation
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.Animation
+import me.miki.shindo.ui.animation.v1.Direction
+import me.miki.shindo.ui.animation.v1.TimedAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 
 /**
  * Extension helpers for [Animation] timelines.

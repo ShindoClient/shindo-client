@@ -4,7 +4,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.config.ConfigOwner
-import me.miki.shindo.ui.animation.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import java.util.*
 
 open class Addon(
