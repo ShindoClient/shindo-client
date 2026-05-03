@@ -6,14 +6,10 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.opengl.GL11
 
-/**
- * Screen masking helper that composites offscreen content through a rounded-rectangle stencil.
- */
+
 open class ScreenStencil : ScreenFramebufferBase(), ScreenEffect {
 
-    /**
-     * Draws [task] into an offscreen framebuffer and re-composites it through a rounded-rect stencil.
-     */
+
     fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float = 1f) {
         val sr = ScaledResolution(mc) // Allocates per call; no cache available on 1.8.9 client.
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
