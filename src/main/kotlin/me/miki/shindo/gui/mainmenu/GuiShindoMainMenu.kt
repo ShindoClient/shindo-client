@@ -52,7 +52,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         val firstLogin = instance.shindoAPI.isFirstLogin()
         ensureDefaultColorScheme(instance, firstLogin)
 
-        scenes.add(MainScene(this))
+        scenes.add(MainSceneV2(this))
         scenes.add(BackgroundScene(this))
         scenes.add(ShopScene(this))
         //scenes.add(SkinScene(this))
@@ -70,7 +70,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             if (instance.updateNeeded) {
                 getSceneByClass(UpdateScene::class.java)
             } else {
-                getSceneByClass(MainScene::class.java)
+                getSceneByClass(MainSceneV2::class.java)
             }
         }
     }
@@ -84,7 +84,6 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val isFirstLogin = instance.shindoAPI.isFirstLogin()
 
         backgroundAnimations[0].setAnimation(Mouse.getX().toFloat(), 16.0)
         backgroundAnimations[1].setAnimation(Mouse.getY().toFloat(), 16.0)
@@ -92,9 +91,6 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         nvg!!.setupAndDraw(Runnable {
             drawNanoVG(sr, instance, nvg)
 
-            if (!isFirstLogin) {
-                drawButtons(mouseX, mouseY, sr, nvg)
-            }
         })
 
         currentScene?.drawScreen(mouseX, mouseY, partialTicks)
@@ -158,7 +154,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             9f,
             Fonts.REGULAR
         )
-        nvg.drawText(instance.buildInfo.getDisplayString(), 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
+        nvg.drawText(instance.buildInfo.displayString, 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
     }
 
     private fun drawButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {
@@ -251,25 +247,25 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         val isFirstLogin = Shindo.getInstance().shindoAPI.isFirstLogin()
 
         if (mouseButton == 0 && !isFirstLogin) {
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {
-                mc.shutdown()
-            }
+            //if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {
+            //    mc.shutdown()
+            //}
 
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    sr.scaledWidth - 56f,
-                    6f,
-                    22f,
-                    22f
-                ) && currentScene != getSceneByClass(BackgroundScene::class.java)
-            ) {
-                setCurrentScene(getSceneByClass(BackgroundScene::class.java))
-            }
+            //if (MouseUtils.isInside(
+            //        mouseX,
+            //        mouseY,
+            //        sr.scaledWidth - 56f,
+            //        6f,
+            //        22f,
+            //        22f
+            //    ) && currentScene != getSceneByClass(BackgroundScene::class.java)
+            //) {
+            //    setCurrentScene(getSceneByClass(BackgroundScene::class.java))
+            //}
 
-            if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) {
-                setCurrentScene(getSceneByClass(SkinScene::class.java))
-            }
+            //if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) {
+            //    setCurrentScene(getSceneByClass(SkinScene::class.java))
+            //}
 
         }
 

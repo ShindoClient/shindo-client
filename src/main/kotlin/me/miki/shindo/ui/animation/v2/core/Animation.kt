@@ -39,8 +39,6 @@ open class Animation(
 
     fun getValueInt(): Int = getValue().toInt()
 
-    val valueFloat: Float get() = getValueFloat()
-
     fun isDone(): Boolean = timer.delay(scaledDuration())
 
     fun isDone(dir: Direction): Boolean = isDone() && this.direction == dir

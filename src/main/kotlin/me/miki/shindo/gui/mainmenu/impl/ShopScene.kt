@@ -51,7 +51,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             false
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
-            setCurrentScene(getSceneByClass(MainScene::class.java))
+            setCurrentScene(getSceneByClass(MainSceneV2::class.java))
         }
     }
 

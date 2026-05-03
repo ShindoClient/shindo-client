@@ -3,7 +3,7 @@ package me.miki.shindo.gui.mainmenu.impl.welcome
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
-import me.miki.shindo.gui.mainmenu.impl.MainScene
+import me.miki.shindo.gui.mainmenu.impl.MainSceneV2
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.sound.Sound
@@ -46,7 +46,7 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         if (blurAnimation.isDone(Direction.BACKWARDS)) {
             Shindo.getInstance().shindoAPI.createFirstLoginFile()
-            setCurrentScene(getSceneByClass(MainScene::class.java))
+            setCurrentScene(getSceneByClass(MainSceneV2::class.java))
         }
 
         if (fadeAnimation != null) {

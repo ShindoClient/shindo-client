@@ -81,7 +81,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private fun exitGui() {
         val instance = Shindo.getInstance()
         instance.updateNeeded = false
-        setCurrentScene(getSceneByClass(MainScene::class.java))
+        setCurrentScene(getSceneByClass(MainSceneV2::class.java))
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
