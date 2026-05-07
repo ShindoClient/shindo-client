@@ -2,106 +2,174 @@ package me.miki.shindo.ui.animation.v2.screen
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.ui.animation.v2.core.GlobalAnimationSettings
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.nanovg.NVGLUFramebuffer
+import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG
+import org.lwjgl.nanovg.NanoVGGL2
 import org.lwjgl.opengl.GL11
+import org.lwjgl3.BufferUtils
+import java.nio.FloatBuffer
+import kotlin.math.min
 
-open class ScreenAnimation : ScreenFramebufferBase(), ScreenEffect {
 
-    /**
-     * Core wrap — all other overloads delegate here.
-     *
-     * @param x           Region origin X in GUI coordinates (default 0).
-     * @param y           Region origin Y in GUI coordinates (default 0).
-     * @param width       Region width  in GUI coordinates (default full screen).
-     * @param height      Region height in GUI coordinates (default full screen).
-     * @param animProgress Scale progress [0..1]; 1 = normal size.
-     * @param alphaProgress Alpha  progress [0..1]; 1 = fully opaque.
-     * @param stencil     When true, clips compositing to the specified region rect.
-     * @param glRender    Optional extra GL render call executed after [task] (default null).
-     * @param task        Lambda containing your NanoVG draw calls.
-     */
+class ScreenAnimation {
+    private val mc: Minecraft = Minecraft.getMinecraft()
+
+    private var fbWidth = 0
+    private var fbHeight = 0
+    private var fb: NVGLUFramebuffer? = null
+
+    @JvmOverloads
     fun wrap(
         glRender: Runnable?,
-        task: Runnable,
-        x: Float = 0f,
-        y: Float = 0f,
-        width: Float = -1f,
-        height: Float = -1f,
-        animProgress: Float,
+        task: Runnable?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        animationProgress: Float,
         alphaProgress: Float,
         stencil: Boolean = false
     ) {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager ?: return
         val sr = ScaledResolution(mc)
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         val factor = sr.scaleFactor
 
-        val resolvedW = if (width  < 0f) sr.scaledWidth.toFloat()  else width
-        val resolvedH = if (height < 0f) sr.scaledHeight.toFloat() else height
-
-        if (!GlobalAnimationSettings.enabled) {
-            nvg.setupAndDraw(task)
-            glRender?.run()
-            return
+        if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
+            close()
         }
 
-        ensureFramebuffer(nvg, mc.displayWidth, mc.displayHeight)
+        if (fb == null) {
+            fbWidth = mc.displayWidth
+            fbHeight = mc.displayHeight
+            fb = NanoVGGL2.nvgluCreateFramebuffer(nvg.getContext(), mc.displayWidth, mc.displayHeight, 0)
+        }
 
-        val savedColor = snapshotClearColor()
+        NanoVGGL2.nvgluBindFramebuffer(nvg.getContext(), fb)
+
+        GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight)
+
+        val floaty: FloatBuffer = BufferUtils.createFloatBuffer(16)
+
         GlStateManager.enableTexture2D()
+
+
+
+        GL11.glGetFloat(GL11.GL_COLOR_CLEAR_VALUE, floaty)
+
         GL11.glClearColor(0f, 0f, 0f, 0f)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
-        restoreClearColor(savedColor)
 
-        val ctx = nvg.getContext()
+        GL11.glClearColor(floaty.get(0), floaty.get(1), floaty.get(2), floaty.get(3))
 
-        nvg.setupAndDraw(Runnable {
-            nvg.resetScissor()
-            task.run()
-            nvg.resetScissor()
-        })
+        nvg.setupAndDraw(task)
+
         glRender?.run()
 
         mc.framebuffer.bindFramebuffer(true)
 
         nvg.setupAndDraw(Runnable {
-            nvg.resetScissor()
-            nvg.setAlpha(alphaProgress.coerceIn(0f, 1f))
-            nvg.scale(
-                x * factor, y * factor,
-                resolvedW * factor, resolvedH * factor,
-                animProgress
-            )
-            NanoVG.nvgBeginPath(ctx)
+            nvg.setAlpha(min(alphaProgress, 1.0f))
+            nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
+
+            val paint = NVGPaint.create()
+
+            NanoVG.nvgBeginPath(nvg.getContext())
+
             if (stencil) {
-                NanoVG.nvgRect(ctx, x * factor, y * factor, resolvedW * factor, resolvedH * factor)
+                NanoVG.nvgRect(nvg.getContext(), x * factor, y * factor, width * factor, height * factor)
             } else {
-                NanoVG.nvgRect(ctx, 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
+                NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
             }
+
             NanoVG.nvgFillPaint(
-                ctx,
-                NanoVG.nvgImagePattern(ctx, 0f, 0f,
-                    mc.displayWidth.toFloat(), mc.displayHeight.toFloat(),
-                    0f, fb!!.image(), 1f, sharedPaint)
+                nvg.getContext(),
+                NanoVG.nvgImagePattern(
+                    nvg.getContext(),
+                    0f,
+                    0f,
+                    mc.displayWidth.toFloat(),
+                    mc.displayHeight.toFloat(),
+                    0f,
+                    fb!!.image(),
+                    1f,
+                    paint
+                )
             )
-            NanoVG.nvgFill(ctx)
-            nvg.resetScissor()
+            NanoVG.nvgFill(nvg.getContext())
         }, false)
     }
 
-
-    fun wrap(task: Runnable, progress: Float) {
-        wrap(null, task = task, animProgress = progress, alphaProgress = progress)
+    fun wrap(
+        task: Runnable?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        animationProgress: Float,
+        alphaProgress: Float
+    ) {
+        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, false)
     }
 
-
-    fun wrap(task: Runnable, animProgress: Float, alphaProgress: Float) {
-        wrap(null, task = task, animProgress = animProgress, alphaProgress = alphaProgress)
+    fun wrap(
+        task: Runnable?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        animationProgress: Float,
+        alphaProgress: Float,
+        stencil: Boolean
+    ) {
+        wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
     }
 
-    override fun close() {
-        releaseFramebuffer(Shindo.getInstance().nanoVGManager ?: return)
+    fun wrap(task: Runnable?, animationProgress: Float, alphaProgress: Float) {
+        val sr = ScaledResolution(mc)
+
+        wrap(
+            null,
+            task,
+            0f,
+            0f,
+            sr.scaledWidth.toFloat(),
+            sr.scaledHeight.toFloat(),
+            animationProgress,
+            alphaProgress,
+            false
+        )
+    }
+
+    fun wrap(task: Runnable?, x: Float, y: Float, width: Float, height: Float, progress: Float) {
+        wrap(null, task, x, y, width, height, progress, progress, false)
+    }
+
+    fun wrap(task: Runnable?, progress: Float) {
+        val sr = ScaledResolution(mc)
+
+        wrap(
+            null,
+            task,
+            0f,
+            0f,
+            sr.scaledWidth.toFloat(),
+            sr.scaledHeight.toFloat(),
+            progress,
+            progress,
+            false
+        )
+    }
+
+    fun close() {
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
+
+        if (fb != null) {
+            NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), fb!!)
+            fb = null
+        }
     }
 }

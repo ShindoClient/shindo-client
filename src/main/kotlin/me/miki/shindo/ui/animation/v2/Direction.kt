@@ -1,4 +1,4 @@
-package me.miki.shindo.ui.animation.v2.core
+package me.miki.shindo.ui.animation.v2
 
 enum class Direction {
     FORWARDS,

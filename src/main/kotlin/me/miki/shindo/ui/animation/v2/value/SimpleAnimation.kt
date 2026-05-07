@@ -1,37 +1,50 @@
 package me.miki.shindo.ui.animation.v2.value
 
-import me.miki.shindo.ui.animation.v2.core.GlobalAnimationSettings
+import me.miki.shindo.ui.animation.v2.value.AnimationUtils.calculateCompensation
 import kotlin.math.abs
 
-open class SimpleAnimation(initialValue: Float = 0f) {
+class SimpleAnimation {
+    private var value: Float
+    private var lastMS: Long
 
-    @JvmField var value: Float = initialValue
-
-    private var lastMs: Long = System.currentTimeMillis()
-
-    fun toward(target: Float, speed: Double = 16.0) {
-        if (!GlobalAnimationSettings.enabled) {
-            value = target
-            lastMs = System.currentTimeMillis()
-            return
-        }
-
-        val now = System.currentTimeMillis()
-        val delta = now - lastMs
-        lastMs = now
-
-        val clampedSpeed = speed.coerceIn(0.0, 28.0)
-        val step = if (clampedSpeed != 0.0)
-            abs(target - value) * 0.35f / (10.0 / clampedSpeed)
-        else 0.0
-
-        value = AnimationUtils.step(target, value, step, delta)
+    constructor() {
+        this.value = 0.0f
+        this.lastMS = System.currentTimeMillis()
     }
 
-    fun toward(target: Float, speed: Int) = toward(target, speed.toDouble())
+    constructor(value: Float) {
+        this.value = value
+        this.lastMS = System.currentTimeMillis()
+    }
 
-    fun snap(target: Float) {
-        value = target
-        lastMs = System.currentTimeMillis()
+    fun setAnimation(value: Float, speed: Double) {
+        var speed = speed
+        val currentMS = System.currentTimeMillis()
+        val delta = currentMS - this.lastMS
+        this.lastMS = currentMS
+
+        var deltaValue = 0.0
+
+        if (speed > 28) {
+            speed = 28.0
+        }
+
+        if (speed != 0.0) {
+            deltaValue = abs(value - this.value) * 0.35f / (10.0 / speed)
+        }
+
+        this.value = calculateCompensation(value, this.value, deltaValue, delta)
+    }
+
+    fun setAnimation(target: Float) {
+        setAnimation(target, 16.0)
+    }
+
+    fun getValue(): Float {
+        return value
+    }
+
+    fun setValue(value: Float) {
+        this.value = value
     }
 }

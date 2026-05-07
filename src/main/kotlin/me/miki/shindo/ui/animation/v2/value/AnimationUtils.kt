@@ -2,17 +2,26 @@ package me.miki.shindo.ui.animation.v2.value
 
 import kotlin.math.abs
 
+object AnimationUtils {
 
-internal object AnimationUtils {
+    fun calculateCompensation(target: Float, current: Float, speed: Double, delta: Long): Float {
+        var currentVar = current
+        val diff = currentVar - target
+        val add = delta * (speed / 50)
 
-    fun step(target: Float, current: Float, speed: Double, delta: Long): Float {
-        val diff = current - target
-        val step = delta * (speed / 50.0)
+        when {
+            diff > speed -> {
+                currentVar = if (currentVar - add > target) (currentVar - add).toFloat() else target
+            }
 
-        return when {
-            diff > speed  -> if (current - step > target) (current - step).toFloat() else target
-            diff < -speed -> if (current + step < target) (current + step).toFloat() else target
-            else          -> if (abs(current - target) < 0.03f) target else current
+            diff < -speed -> {
+                currentVar = if (currentVar + add < target) (currentVar + add).toFloat() else target
+            }
+
+            else -> {
+                if (abs(currentVar - target) < 0.03f) currentVar = target
+            }
         }
+        return currentVar
     }
 }

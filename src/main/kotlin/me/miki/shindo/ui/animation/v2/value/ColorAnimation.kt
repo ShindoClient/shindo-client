@@ -1,41 +1,40 @@
 package me.miki.shindo.ui.animation.v2.value
 
+import me.miki.extensions.ui.animation.getValueI
+import me.miki.extensions.ui.animation.setValue
 import java.awt.Color
 
-class ColorAnimation(initial: Color = Color(0, 0, 0, 0)) {
 
-    private val r = SimpleAnimation(initial.red.toFloat())
-    private val g = SimpleAnimation(initial.green.toFloat())
-    private val b = SimpleAnimation(initial.blue.toFloat())
-    private val a = SimpleAnimation(initial.alpha.toFloat())
+class ColorAnimation {
 
-    private var cached: Color = initial
+    private val animation = arrayOfNulls<SimpleAnimation>(3)
 
-
-    fun toward(target: Color, rgbSpeed: Int = 12, alphaSpeed: Int = rgbSpeed): Color {
-        r.toward(target.red.toFloat(),   rgbSpeed)
-        g.toward(target.green.toFloat(), rgbSpeed)
-        b.toward(target.blue.toFloat(),  rgbSpeed)
-        a.toward(target.alpha.toFloat(), alphaSpeed)
-
-        val ri = r.value.toInt()
-        val gi = g.value.toInt()
-        val bi = b.value.toInt()
-        val ai = a.value.toInt()
-
-        if (cached.red != ri || cached.green != gi || cached.blue != bi || cached.alpha != ai) {
-            cached = Color(ri, gi, bi, ai)
+    init {
+        for (i in animation.indices) {
+            animation[i] = SimpleAnimation()
         }
-        return cached
     }
 
-    fun snap(color: Color) {
-        r.snap(color.red.toFloat())
-        g.snap(color.green.toFloat())
-        b.snap(color.blue.toFloat())
-        a.snap(color.alpha.toFloat())
-        cached = color
+    fun getColor(color: Color, speed: Int): Color {
+        animation[0]!!.setAnimation(color.red.toFloat(), speed.toDouble())
+        animation[1]!!.setAnimation(color.green.toFloat(), speed.toDouble())
+        animation[2]!!.setAnimation(color.blue.toFloat(), speed.toDouble())
+
+        return Color(
+            animation[0]!!.getValueI(),
+            animation[1]!!.getValueI(),
+            animation[2]!!.getValueI(),
+            color.alpha
+        )
     }
 
-    val current: Color get() = cached
+    fun getColor(color: Color): Color {
+        return getColor(color, 12)
+    }
+
+    fun setColor(color: Color) {
+        animation[0]!!.setValue(color.red)
+        animation[1]!!.setValue(color.green)
+        animation[2]!!.setValue(color.blue)
+    }
 }
