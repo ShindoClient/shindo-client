@@ -134,6 +134,9 @@ object LegacyIcon {
     const val ARROW_DROP_RIGHT: String = "â"
     const val ARROW_DROP_LEFT: String = "ã"
     const val DNS: String = "Þ"
+    const val CONTENT_COPY: String = "ì"
+    const val CONTENT_PASTE: String = "í"
+
 
     const val MOD_ANIMATIONS: String = "\uE000"
     const val MOD_APPLE_SKIN: String = "\uE001"

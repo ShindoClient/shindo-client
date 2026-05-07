@@ -85,9 +85,7 @@ dependencies {
     }
     embed "com.neovisionaries:nv-i18n:1.29"
 
-    // --- Networking / caching ---
-    embed "com.squareup.okhttp3:okhttp:3.14.9"
-    embed "com.github.ben-manes.caffeine:caffeine:2.9.3"
+    // --- Networking ---
     embed "org.java-websocket:Java-WebSocket:1.6.0"
 
     // --- JSON (single source of truth) ---
@@ -170,9 +168,7 @@ shadowJar {
     )
 
     // Package relocation
-    relocate 'okhttp3',                     'me.miki.shindo.libs.okhttp3'
     relocate 'okio',                        'me.miki.shindo.libs.okio'
-    relocate 'com.github.benmanes.caffeine','me.miki.shindo.libs.caffeine'
     relocate 'org.java_websocket',          'me.miki.shindo.libs.websocket'
     relocate 'com.wrapper.spotify',         'me.miki.shindo.libs.spotify'
     relocate 'com.neovisionaries',          'me.miki.shindo.libs.neovisionaries'

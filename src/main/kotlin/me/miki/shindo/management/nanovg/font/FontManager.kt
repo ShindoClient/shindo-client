@@ -15,8 +15,6 @@ class FontManager {
         loadFont(nvg, Fonts.SHINCONIC)
         loadFont(nvg, Fonts.LEGACYICON)
         loadFont(nvg, Fonts.MOJANGLES)
-        loadFont(nvg, Fonts.ICON_FILLED);
-        loadFont(nvg, Fonts.ICON_OUTLINE);
     }
 
     private fun loadFont(nvg: Long, font: Font) {

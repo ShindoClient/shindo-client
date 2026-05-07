@@ -1,9 +1,7 @@
 package me.miki.shindo.gui.mainmenu.impl
 
-import eu.shoroa.contrib.render.Blur
 import me.miki.extensions.ui.graphics.nanovg.drawCenteredText
 import me.miki.extensions.ui.graphics.nanovg.drawOutlineRoundedRect
-import me.miki.extensions.ui.graphics.nanovg.drawRect
 import me.miki.extensions.ui.graphics.nanovg.drawRoundedRect
 import me.miki.extensions.ui.graphics.nanovg.drawText
 import me.miki.shindo.Shindo
@@ -13,11 +11,10 @@ import me.miki.shindo.gui.modmenu.v1.GuiModMenu
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.Icons
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
 import me.miki.shindo.utils.mouse.MouseUtils.isInside
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiOptions
@@ -248,12 +245,12 @@ class MainSceneV2(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         // Settings
         //rightX -= (btnS + btnSp)
         settingsHover = lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SETTINGS, settingsHover, anim, true)
+        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SETTINGS, settingsHover, anim)
 
         // Logo
         rightX -= (btnS + btnSp)
         featherHover = lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, featherHover, anim, true)
+        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, featherHover, anim)
 
         // Profile box
         rightX -= (btnS + btnSp)
@@ -286,17 +283,12 @@ class MainSceneV2(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         size: Float,
         icon: String,
         hover: Float,
-        anim: Float,
-        legacy: Boolean
+        anim: Float
     ) {
         nvg.drawRoundedRect(x, y, size, size, 5, Color(20, 20, 25, (anim * (180 + hover * 75)).toInt()))
         nvg.drawOutlineRoundedRect(x, y, size, size, 5, 1f, Color(255, 255, 255, (anim * (30 + hover * 50)).toInt()))
         val iconColor: Color = Color(255, 255, 255, (anim * (180 + hover * 75)).toInt())
-        if (legacy) {
-            nvg.drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LEGACYICON)
-        } else {
-            nvg.drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.ICON_FILLED)
-        }
+        nvg.drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LEGACYICON)
     }
 
     private fun lerp(current: Float, target: Float, factor: Float): Float {

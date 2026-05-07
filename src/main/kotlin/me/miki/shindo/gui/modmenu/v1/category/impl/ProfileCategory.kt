@@ -306,11 +306,11 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         nvg.drawRoundedRect(btnX, shareY - 1f, btnSize, btnSize, 5f,
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190))
         nvg.drawCenteredText(
-            if (alreadyShared) Icons.PREVIEW_LINK_24 else Icons.COPY_20,
+            if (alreadyShared) LegacyIcon.CHECK else LegacyIcon.COPY,
             btnX + btnSize / 2f - 0.5f, shareY + 3f,
             if (alreadyShared) applyAlpha(palette.getFontColor(ColorType.DARK), 200)
             else               applyAlpha(palette.getFontColor(ColorType.NORMAL), 170),
-            10f, Fonts.ICON_FILLED
+            10f, Fonts.LEGACYICON
         )
     }
 
@@ -353,10 +353,10 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
         nvg.drawRoundedRect(btnX, btnY, btnW, btnH, 6f, applyAlpha(bgColor, bgAlpha))
         nvg.drawOutlineRoundedRect(btnX, btnY, btnW, btnH, 6f, 1f,
             applyAlpha(palette.getBackgroundColor(ColorType.MID), (160 + t * 60).toInt()))
-        nvg.drawCenteredText(Icons.CLIPBOARD_PASTE_24,btnX + 8.5f, btnY + btnH / 2f - 4f,
+        nvg.drawCenteredText(LegacyIcon.PASTE,btnX + 8.5f, btnY + btnH / 2f - 4f,
             applyAlpha(palette.getFontColor(if (hovered) ColorType.DARK else ColorType.NORMAL),
                 if (showImportOverlay) 80 else 220),
-            8.5f, Fonts.ICON_FILLED)
+            8.5f, Fonts.LEGACYICON)
         nvg.drawCenteredText(
             TranslateText.PROFILE_IMPORT.getText(),
             btnX + btnW / 2f, btnY + btnH / 2f - 4f,
