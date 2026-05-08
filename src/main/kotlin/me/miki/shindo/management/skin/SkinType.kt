@@ -1,7 +1,7 @@
 package me.miki.shindo.management.skin
 
-import me.miki.shindo.ui.animation.v1.value.ColorAnimation
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.ColorAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
 enum class SkinType(val id: Int, val names: String) {
 

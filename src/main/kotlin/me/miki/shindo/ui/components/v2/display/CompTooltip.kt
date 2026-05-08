@@ -2,8 +2,8 @@ package me.miki.shindo.ui.components.v2.display
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
+import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 import kotlin.math.max
@@ -14,7 +14,7 @@ class CompTooltip(
     private var text: String,
     x: Float = 0f,
     y: Float = 0f
-) : Comp(x, y) {
+) : Component(x, y) {
 
     private val fadeAnimation = SimpleAnimation()
     private var padding: Float = 8f
@@ -26,7 +26,7 @@ class CompTooltip(
     private var shadow: Boolean = true
 
     init {
-        fadeAnimation.value = 0f
+        fadeAnimation.setValue(0f)
         updateSize()
     }
 
@@ -102,12 +102,12 @@ class CompTooltip(
     }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!isVisible() || fadeAnimation.value <= 0f) return
+        if (!isVisible() || fadeAnimation.getValue() <= 0f) return
 
         val nvgInstance = nvg
         val paletteColors = palette
 
-        val alpha = (fadeAnimation.value * 255).toInt()
+        val alpha = (fadeAnimation.getValue() * 255).toInt()
         val bgColor = backgroundColor ?: ColorUtils.applyAlpha(
             paletteColors.getBackgroundColor(ColorType.DARK),
             (alpha * 0.92f).toInt()

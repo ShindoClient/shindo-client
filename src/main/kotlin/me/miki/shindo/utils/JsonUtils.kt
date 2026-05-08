@@ -110,12 +110,12 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun parseBooleanGrid(element: JsonElement?): Array<BooleanArray>? {
+    fun parseBooleanGrid(element: JsonElement?): Array<BooleanArray?> {
         if (element == null || !element.isJsonArray) {
-            return null
+            return emptyArray()
         }
         val rows = element.asJsonArray
-        val grid = Array(rows.size()) { BooleanArray(0) }
+        val grid: Array<BooleanArray?> = Array(rows.size()) { BooleanArray(0) }
         for (i in 0 until rows.size()) {
             val rowElement = rows[i]
             if (!rowElement.isJsonArray) {
@@ -133,12 +133,12 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun parseIntGrid(element: JsonElement?): Array<IntArray>? {
+    fun parseIntGrid(element: JsonElement?): Array<IntArray?> {
         if (element == null || !element.isJsonArray) {
-            return null
+            return emptyArray()
         }
         val rows = element.asJsonArray
-        val grid = Array(rows.size()) { IntArray(0) }
+        val grid: Array<IntArray?> = Array(rows.size()) { IntArray(0) }
         for (i in 0 until rows.size()) {
             val rowElement = rows[i]
             if (!rowElement.isJsonArray) {
@@ -156,11 +156,8 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun toBooleanGrid(grid: Array<BooleanArray>?): JsonArray {
+    fun toBooleanGrid(grid: Array<BooleanArray?>): JsonArray {
         val rows = JsonArray()
-        if (grid == null) {
-            return rows
-        }
         for (row in grid) {
             val cols = JsonArray()
             if (row != null) {
@@ -174,11 +171,8 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun toIntGrid(grid: Array<IntArray>?): JsonArray {
+    fun toIntGrid(grid: Array<IntArray?>): JsonArray {
         val rows = JsonArray()
-        if (grid == null) {
-            return rows
-        }
         for (row in grid) {
             val cols = JsonArray()
             if (row != null) {

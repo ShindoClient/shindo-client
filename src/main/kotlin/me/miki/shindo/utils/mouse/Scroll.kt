@@ -1,6 +1,6 @@
 package me.miki.shindo.utils.mouse
 
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import kotlin.math.max
@@ -58,11 +58,11 @@ class Scroll {
         scrollAnimation.setAnimation(rawScroll, animationSpeed.toDouble())
     }
 
-    fun getValue(): Float = scrollAnimation.value
+    fun getValue(): Float = scrollAnimation.getValue()
 
     fun setScrollPosition(scroll: Float) {
         rawScroll = scroll
-        scrollAnimation.value = scroll
+        scrollAnimation.setValue(scroll)
     }
 
     fun reset() {
@@ -71,6 +71,6 @@ class Scroll {
 
     fun resetAll() {
         rawScroll = minScroll
-        scrollAnimation.value = minScroll
+        scrollAnimation.setValue(minScroll)
     }
 }

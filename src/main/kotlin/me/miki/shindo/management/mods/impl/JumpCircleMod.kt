@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.injection.interfaces.IMixinMinecraft
 import me.miki.shindo.injection.interfaces.IMixinRenderManager
@@ -46,7 +47,7 @@ class JumpCircleMod : Mod(
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
-        val currentColor = getInstance().colorManager.getCurrentColor()
+        val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
 
         GL11.glPushMatrix()
         GL11.glEnable(3042)

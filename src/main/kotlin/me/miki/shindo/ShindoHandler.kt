@@ -1,6 +1,6 @@
 package me.miki.shindo
 
-import me.miki.shindo.gui.modmenu.v1.GuiModMenu
+import me.miki.shindo.gui.modmenu.v2.GuiModMenu
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.profile.Profile
@@ -25,20 +25,20 @@ class ShindoHandler {
 
     @EventTarget
     fun onJoinServer(event: EventJoinServer) {
-        for (p: Profile in instance.profileManager.profiles) {
+        for (p: Profile in instance.getProfileManager().profiles) {
             val serverIp = p.serverIp ?: return
             if (serverIp.isNotEmpty() && StringUtils.containsIgnoreCase(event.getIp(), serverIp)) {
-                instance.modManager.disableAll()
-                p.jsonFile.let { instance.profileManager.load(it) }
+                instance.getModManager().disableAll()
+                p.jsonFile.let { instance.getProfileManager().load(it) }
                 break
             }
         }
-        instance.restrictedMod.joinServer(event.getIp())
+        instance.getRestrictedMod().joinServer(event.getIp())
     }
 
     @EventTarget
     fun onLoadWorld(event: EventLoadWorld) {
-        instance.restrictedMod.joinWorld()
+        instance.getRestrictedMod().joinWorld()
     }
 
     @EventTarget
@@ -63,7 +63,7 @@ class ShindoHandler {
 
     @EventTarget
     fun onCape(event: EventLocationCape) {
-        val capeManager = instance.capeManager
+        val capeManager = instance.getCapeManager()
         val playerInfo = event.getPlayerInfo() ?: return
         if (playerInfo.gameProfile.id == mc.thePlayer.gameProfile.id) {
             val currentCape = capeManager.getCurrentCape()
@@ -82,7 +82,7 @@ class ShindoHandler {
         val profile = info.gameProfile ?: return
         if (profile.id != player.gameProfile.id) return
 
-        val skinManager: SkinManager = instance.skinManager
+        val skinManager: SkinManager = instance.getSkinManager()
         val skin: Skin? = skinManager.getCurrentSkin()
         if (skin?.texture == null) return
 

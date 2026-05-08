@@ -17,7 +17,7 @@ class WaypointManager {
     private val waypoints = ArrayList<Waypoint>()
 
     init {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val waypointFile = File(fileManager.shindoDir, "Waypoint.json")
         fileManager.createFile(waypointFile)
         load(waypointFile)
@@ -49,7 +49,7 @@ class WaypointManager {
     }
 
     fun save() {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val waypointFile = File(fileManager.shindoDir, "Waypoint.json")
         try {
             waypointFile.writer().use { writer ->

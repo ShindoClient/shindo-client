@@ -14,7 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class BroadcastManager {
 
-    private val instance = Shindo.getInstance()
     private val broadcasts = LinkedBlockingQueue<BroadcastNotification>()
     private val handler = BroadcastHandler(broadcasts)
 
@@ -34,7 +33,7 @@ class BroadcastManager {
     private var tokenRequestedAt = 0L
 
     init {
-        instance.eventManager.register(handler)
+        Shindo.getInstance().getEventManager().register(handler)
     }
 
     fun handleMessage(type: MessageType, payload: JsonObject?) {
@@ -113,7 +112,7 @@ class BroadcastManager {
             onToken(cached)
             return
         }
-        val ws = instance.shindoAPI.ws
+        val ws = Shindo.getInstance().getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onToken(null)
             return
@@ -154,7 +153,7 @@ class BroadcastManager {
     }
 
     private fun isStaff(): Boolean {
-        val uuid = instance.shindoAPI.getEffectiveUuid()
+        val uuid = Shindo.getInstance().getShindoAPI().getEffectiveUuid()
         return RoleManager.hasAtLeast(uuid, Role.STAFF)
     }
 

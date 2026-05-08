@@ -29,19 +29,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class ProfileManager {
 
-    // -------------------------------------------------------------------------
-    // Constants
-    // -------------------------------------------------------------------------
-
     companion object {
         private const val SENTINEL_ID = 999
         private const val DEFAULT_ID = -1
         private val INVALID_CUSTOM_ICON_VALUES = setOf("", "null")
     }
-
-    // -------------------------------------------------------------------------
-    // State
-    // -------------------------------------------------------------------------
 
     private val instance = Shindo.getInstance()
     private val gson = Gson()
@@ -62,16 +54,12 @@ class ProfileManager {
         loadProfiles(loadDefaultProfile = true)
     }
 
-    // =========================================================================
-    // Public API
-    // =========================================================================
-
     @JvmOverloads
     fun loadProfiles(loadDefaultProfile: Boolean = true) {
         profiles.clear()
 
-        val profileDir = instance.fileManager.profileDir.also { dir ->
-            if (!dir.exists()) instance.fileManager.createDir(dir)
+        val profileDir = instance.getFileManager().profileDir.also { dir ->
+            if (!dir.exists()) instance.getFileManager().createDir(dir)
         }
 
         val defaultFile = File(profileDir, "Default.json")
@@ -98,7 +86,7 @@ class ProfileManager {
             return false
         }
 
-        if (disableModsBefore) instance.modManager.disableAll()
+        if (disableModsBefore) instance.getModManager().disableAll()
 
         return try {
             FileReader(file).use { reader ->
@@ -184,10 +172,6 @@ class ProfileManager {
         return target
     }
 
-    // =========================================================================
-    // Profile Loading Helpers
-    // =========================================================================
-
     private fun initDefaultFile(defaultFile: File, loadDefault: Boolean) {
         if (!defaultFile.exists()) {
             save(defaultFile, "", ProfileType.ALL, ProfileIcon.GRASS, null)
@@ -234,7 +218,7 @@ class ProfileManager {
     }
 
     private fun applyAppearance(appJson: JsonObject) {
-        val colorManager = instance.colorManager
+        val colorManager = instance.getColorManager()
         val accentName   = JsonUtils.getStringProperty(appJson, "Accent Color", "Teal Love")!!
         val themeId      = JsonUtils.getIntProperty(appJson, "Theme", Theme.LIGHT.getId())
         val bgId         = JsonUtils.getIntProperty(appJson, "Background", 0)
@@ -243,11 +227,11 @@ class ProfileManager {
         colorManager.setCurrentColor(colorManager.getColorByName(accentName))
         colorManager.setTheme(Theme.getThemeById(themeId))
         backgroundManager.setCurrentBackground(backgroundManager.getBackgroundById(bgId))
-        instance.languageManager.setCurrentLanguage(Language.getLanguageById(langId))
+        instance.getLanguageManager().setCurrentLanguage(Language.getLanguageById(langId))
     }
 
     private fun applyMods(modJson: JsonObject) {
-        for (mod in instance.modManager.getMods()) {
+        for (mod in instance.getModManager().getMods()) {
             val modObject = JsonUtils.getObjectProperty(modJson, mod.getNameKey()) ?: continue
             mod.setToggled(JsonUtils.getBooleanProperty(modObject, "Toggle", false))
 
@@ -259,13 +243,13 @@ class ProfileManager {
                 mod.setScale(JsonUtils.getFloatProperty(modObject, "Scale", 1f))
             }
 
-            instance.modManager.getSettingsByMod(mod)
-                ?.let { applySettings(instance.fileManager, modObject, it) }
+            instance.getModManager().getSettingsByMod(mod)
+                ?.let { applySettings(instance.getFileManager(), modObject, it) }
         }
     }
 
     private fun applyAddons(addonJson: JsonObject) {
-        for (addon in instance.addonManager.addons) {
+        for (addon in instance.getAddonManager().addons) {
             val addonKey = addon.getConfigId()
             val addonObject = JsonUtils.getObjectProperty(addonJson, addonKey)
                 ?: JsonUtils.getObjectProperty(addonJson, addon.name)
@@ -273,17 +257,13 @@ class ProfileManager {
 
             addon.setToggled(JsonUtils.getBooleanProperty(addonObject, "Toggle", addon.isToggled()), false)
 
-            instance.addonManager.getSettingByAddon(addon)
-                ?.let { applySettings(instance.fileManager, addonObject, it) }
+            instance.getAddonManager().getSettingByAddon(addon)
+                ?.let { applySettings(instance.getFileManager(), addonObject, it) }
 
             JsonUtils.getObjectProperty(addonObject, "Config")
                 ?.let { AddonConfigRegistry.get(addonKey)?.fromJson(it) }
         }
     }
-
-    // =========================================================================
-    // Profile Snapshot (Save)
-    // =========================================================================
 
     private fun buildProfileSnapshot(
         serverIp: String?,
@@ -318,18 +298,18 @@ class ProfileManager {
     }
 
     private fun buildAppearanceJson(): JsonObject {
-        val colorManager = instance.colorManager
+        val colorManager = instance.getColorManager()
         return JsonObject().apply {
             addProperty("Accent Color", colorManager.getCurrentColor().getName())
             addProperty("Theme", colorManager.getTheme().getId())
             addProperty("Background", backgroundManager.getCurrentBackground()!!.getId())
-            addProperty("Language", instance.languageManager.getCurrentLanguage().getId())
+            addProperty("Language", instance.getLanguageManager().getCurrentLanguage().getId())
         }
     }
 
     private fun buildModsJson(): JsonObject {
         val modJsonObject = JsonObject()
-        for (mod in instance.modManager.getMods()) {
+        for (mod in instance.getModManager().getMods()) {
             val modObject = JsonObject().apply {
                 addProperty("Toggle", mod.isToggled())
                 if (mod is HUDMod) {
@@ -340,7 +320,7 @@ class ProfileManager {
                     addProperty("Scale", mod.getScale())
                 }
             }
-            instance.modManager.getSettingsByMod(mod)
+            instance.getModManager().getSettingsByMod(mod)
                 ?.let { buildSettingsJson(it) }
                 ?.takeIf { it.size() > 0 }
                 ?.let { modObject.add("Settings", it) }
@@ -351,7 +331,7 @@ class ProfileManager {
 
     private fun buildAddonsJson(): JsonObject {
         val addonJsonObject = JsonObject()
-        for (addon in instance.addonManager.addons) {
+        for (addon in instance.getAddonManager().addons) {
             val addonObject = JsonObject().apply {
                 addProperty("Toggle", addon.isToggled())
             }
@@ -359,7 +339,7 @@ class ProfileManager {
                 ?.toJson()
                 ?.takeIf { it.size() > 0 }
                 ?.let { addonObject.add("Config", it) }
-            instance.addonManager.getSettingByAddon(addon)
+            instance.getAddonManager().getSettingByAddon(addon)
                 ?.let { buildSettingsJson(it) }
                 ?.takeIf { it.size() > 0 }
                 ?.let { addonObject.add("Settings", it) }
@@ -386,10 +366,6 @@ class ProfileManager {
         }
         return obj
     }
-
-    // =========================================================================
-    // Settings Application
-    // =========================================================================
 
     private fun applySettings(fileManager: FileManager, modJson: JsonObject, settings: List<Setting>) {
         val settingsJson = JsonUtils.getObjectProperty(modJson, "Settings") ?: return
@@ -429,12 +405,8 @@ class ProfileManager {
         }
     }
 
-    // =========================================================================
-    // Network Save / Load
-    // =========================================================================
-
     private fun buildNetworkJson(): JsonObject {
-        val networkManager = instance.networkManager
+        val networkManager = instance.getNetworkManager()
         return JsonObject().apply {
             addProperty("ProxyType", networkManager.getActiveProxyType().name)
             networkManager.getActiveCustomProxyId()?.let { addProperty("ActiveCustomProxyId", it) }
@@ -452,9 +424,9 @@ class ProfileManager {
     }
 
     private fun loadNetworkSettings(networkJson: JsonObject) {
-        val networkManager = instance.networkManager
+        val networkManager = instance.getNetworkManager()
         try {
-            JsonUtils.getArrayProperty(networkJson, "CustomProxies")?.let { arr ->
+            JsonUtils.getArrayProperty(networkJson, "CustomProxies").let { arr ->
                 for (i in 0 until arr.size()) {
                     val obj = arr[i].asJsonObject
                     val proxy = CustomProxy(
@@ -487,10 +459,6 @@ class ProfileManager {
             ShindoLogger.error("Failed to load network settings", e)
         }
     }
-
-    // =========================================================================
-    // Profile Resolution Helpers
-    // =========================================================================
 
     private fun synchronizeActiveProfile(forceDefault: Boolean) {
         pendingActiveFile?.let { pending ->
@@ -532,10 +500,6 @@ class ProfileManager {
             ?: defaultProfile?.takeIf { it.jsonFile?.canonicalPath == targetPath }
     }
 
-    // =========================================================================
-    // Profile Building
-    // =========================================================================
-
     private fun buildProfileFromFile(file: File, id: Int): Profile? {
         if (!file.exists()) return null
         return try {
@@ -556,7 +520,7 @@ class ProfileManager {
         val customIcon = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
             .trim()
             .takeIf { it !in INVALID_CUSTOM_ICON_VALUES }
-            ?.let { name -> File(instance.fileManager.profileIconDir, name).takeIf { it.exists() } }
+            ?.let { name -> File(instance.getFileManager().profileIconDir, name).takeIf { it.exists() } }
 
         val shareCode = (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
             .trim()
@@ -565,13 +529,9 @@ class ProfileManager {
         return Profile(id, serverIp, file, icon, customIcon, type, shareCode)
     }
 
-    // =========================================================================
-    // File I/O Utilities
-    // =========================================================================
-
     private fun writeProfile(file: File, jsonObject: JsonObject) {
         try {
-            file.parentFile?.takeIf { !it.exists() }?.let { instance.fileManager.createDir(it) }
+            file.parentFile?.takeIf { !it.exists() }?.let { instance.getFileManager().createDir(it) }
             FileWriter(file).use { prettyGson.toJson(jsonObject, it) }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to write profile: ${file.name}", e)
@@ -591,7 +551,7 @@ class ProfileManager {
     }
 
     private fun createUniqueProfileFile(baseName: String): File {
-        val profileDir = instance.fileManager.profileDir
+        val profileDir = instance.getFileManager().profileDir
         val sanitized  = sanitizeProfileName(baseName).ifEmpty { "Shared Profile" }
         var candidate  = File(profileDir, "$sanitized.json")
         var suffix     = 1
@@ -606,10 +566,6 @@ class ProfileManager {
         val cleaned = name.trim().replace(Regex("[^A-Za-z0-9 _-]"), "")
         return cleaned.take(48).ifEmpty { "Profile" }
     }
-
-    // =========================================================================
-    // Extension Utilities
-    // =========================================================================
 
     private fun Array<BooleanArray>.toCellGridJson(): JsonArray = JsonArray().also { outer ->
         forEach { row ->

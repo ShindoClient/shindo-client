@@ -115,7 +115,7 @@ object ShindoLogManager {
 
     private fun getFile(block: (FileManager) -> File): File? {
         return try {
-            block(Shindo.getInstance().fileManager)
+            block(Shindo.getInstance().getFileManager())
         } catch (ignored: Exception) {
             null
         }

@@ -124,7 +124,7 @@ class CompSlider : Component {
             }
             nvgInstance.drawText(
                 display,
-                getX() + animation.getValue - nvgInstance.getTextWidth(display, 7f, Fonts.REGULAR) / 2,
+                getX() + animation.getValue() - nvgInstance.getTextWidth(display, 7f, Fonts.REGULAR) / 2,
                 getY() - 10,
                 palette.getFontColor(
                     ColorType.NORMAL,

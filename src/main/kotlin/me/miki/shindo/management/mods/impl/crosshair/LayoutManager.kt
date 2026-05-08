@@ -3,7 +3,7 @@ package me.miki.shindo.management.mods.impl.crosshair
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.JsonUtils.getStringProperty
 import me.miki.shindo.utils.JsonUtils.parseBooleanGrid
@@ -14,6 +14,7 @@ import java.io.FileWriter
 import java.util.*
 import kotlin.math.min
 
+@Suppress("UNUSED")
 class LayoutManager {
     private val preset4 = arrayOf<BooleanArray?>(
         booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
@@ -137,7 +138,7 @@ class LayoutManager {
     private val presetFile: File
 
     init {
-        val fileManager = getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         this.presetFile = File(fileManager.shindoDir, PRESET_FILE_NAME)
         init()
     }
@@ -151,20 +152,20 @@ class LayoutManager {
         }
     }
 
-    val defaultLayout: Array<BooleanArray?>?
+    val defaultLayout: Array<BooleanArray?>
         get() = copyGrid(preset4)
 
     val customPresets: MutableList<CellGridPreset?>
         get() = ArrayList<CellGridPreset?>(userPresets)
 
-    fun addCustomPreset(name: String?, layout: Array<BooleanArray?>?, colors: Array<IntArray?>?): CellGridPreset {
+    fun addCustomPreset(name: String?, layout: Array<BooleanArray?>, colors: Array<IntArray?>): CellGridPreset {
         return addOrUpdatePreset(null, layout, colors, name)
     }
 
     fun addOrUpdatePreset(
         id: String?,
-        layout: Array<BooleanArray?>?,
-        colors: Array<IntArray?>?,
+        layout: Array<BooleanArray?>,
+        colors: Array<IntArray?>,
         nameOverride: String?
     ): CellGridPreset {
         val target = if (id == null) null else getPresetById(id)
@@ -216,9 +217,9 @@ class LayoutManager {
     }
 
     private fun seedDefaults() {
-        addOrUpdatePreset("seed-dot", preset4, null, "dot")
-        addOrUpdatePreset("seed-diamond", preset5, null, "diamond")
-        addOrUpdatePreset("seed-star", preset8, null, "star")
+        addOrUpdatePreset("seed-dot", preset4, arrayOfNulls(0), "dot")
+        addOrUpdatePreset("seed-diamond", preset5, arrayOfNulls(0), "diamond")
+        addOrUpdatePreset("seed-star", preset8, arrayOfNulls(0), "star")
     }
 
     private fun loadFromDisk() {
@@ -230,7 +231,7 @@ class LayoutManager {
 
             FileReader(presetFile).use { reader ->
                 val gson = GsonBuilder().setPrettyPrinting().create()
-                val json = gson.fromJson<JsonObject?>(reader, JsonObject::class.java)
+                val json = gson.fromJson(reader, JsonObject::class.java)
                 if (json == null || !json.has("presets")) {
                     return
                 }
@@ -239,13 +240,11 @@ class LayoutManager {
                 val iterator = array.iterator()
                 while (iterator.hasNext() && userPresets.size < MAX_CUSTOM_PRESETS) {
                     val element = iterator.next()!!.asJsonObject
-                    val layout: Array<BooleanArray?>? = parseBooleanGrid(element.get("layout")) as Array<BooleanArray?>?
-                    val colors: Array<IntArray?>? = parseIntGrid(element.get("colors")) as Array<IntArray?>?
+                    val layout: Array<BooleanArray?> = parseBooleanGrid(element.get("layout"))
+                    val colors: Array<IntArray?> = parseIntGrid(element.get("colors"))
                     val id = getStringProperty(element, "id", UUID.randomUUID().toString())
                     val name = getStringProperty(element, "name", "")
-                    if (layout != null) {
-                        userPresets.add(CellGridPreset(id, name, layout, colors, true))
-                    }
+                    userPresets.add(CellGridPreset(id, name, layout, colors, true))
                 }
             }
         } catch (ignored: Exception) {
@@ -263,8 +262,8 @@ class LayoutManager {
                     val entry = JsonObject()
                     entry.addProperty("id", preset.id)
                     entry.addProperty("name", preset.name)
-                    entry.add("layout", JsonUtils.toBooleanGrid(preset.layoutCopy as Array<BooleanArray>?))
-                    entry.add("colors", JsonUtils.toIntGrid(preset.colorCopy as Array<IntArray>?))
+                    entry.add("layout", JsonUtils.toBooleanGrid(preset.layoutCopy ))
+                    entry.add("colors", JsonUtils.toIntGrid(preset.colorCopy))
                     presetsArray.add(entry)
                 }
 
@@ -278,25 +277,25 @@ class LayoutManager {
     class CellGridPreset(
         val id: String?,
         val name: String?,
-        layout: Array<BooleanArray?>?,
-        colors: Array<IntArray?>?,
+        layout: Array<BooleanArray?>,
+        colors: Array<IntArray?>,
         val isUserPreset: Boolean
     ) {
-        private var layout: Array<BooleanArray?>?
-        private var colors: Array<IntArray?>?
+        private var layout: Array<BooleanArray?>
+        private var colors: Array<IntArray?>
 
         init {
             this.layout = copyGrid(layout)
             this.colors = copyColors(colors, layout)
         }
 
-        val layoutCopy: Array<BooleanArray?>?
+        val layoutCopy: Array<BooleanArray?>
             get() = copyGrid(layout)
 
-        val colorCopy: Array<IntArray?>?
+        val colorCopy: Array<IntArray?>
             get() = copyColors(colors, layout)
 
-        fun update(newLayout: Array<BooleanArray?>?, newColors: Array<IntArray?>?) {
+        fun update(newLayout: Array<BooleanArray?>, newColors: Array<IntArray?>) {
             this.layout = copyGrid(newLayout)
             this.colors = copyColors(newColors, newLayout)
         }
@@ -307,28 +306,22 @@ class LayoutManager {
         private const val DEFAULT_PRESET_COLOR = -0x10000
         private const val PRESET_FILE_NAME = "CrosshairPresets.json"
 
-        private fun copyGrid(source: Array<BooleanArray?>?): Array<BooleanArray?>? {
-            if (source == null) {
-                return null
-            }
+        private fun copyGrid(source: Array<BooleanArray?>): Array<BooleanArray?> {
             val copy = arrayOfNulls<BooleanArray>(source.size)
             for (i in source.indices) {
                 val row = source[i]
-                copy[i] = if (row != null) row.clone() else null
+                copy[i] = row!!.clone()
             }
             return copy
         }
 
-        private fun copyColors(source: Array<IntArray?>?, layout: Array<BooleanArray?>?): Array<IntArray?>? {
-            if (layout == null) {
-                return null
-            }
+        private fun copyColors(source: Array<IntArray?>, layout: Array<BooleanArray?>): Array<IntArray?> {
             val copy = arrayOfNulls<IntArray>(layout.size)
             for (i in layout.indices) {
-                val length = if (layout[i] != null) layout[i]!!.size else 0
+                val length = layout[i]!!.size
                 copy[i] = IntArray(length)
-                if (source != null && i < source.size && source[i] != null) {
-                    System.arraycopy(source[i], 0, copy[i], 0, min(length, source[i]!!.size))
+                if (i < source.size) {
+                    System.arraycopy(source[i]!!, 0, copy[i]!!, 0, min(length, source[i]!!.size))
                 }
                 for (j in 0 until length) {
                     if (copy[i]!![j] == 0) {

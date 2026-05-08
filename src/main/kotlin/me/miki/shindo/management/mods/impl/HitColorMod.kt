@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventHitOverlay
 import me.miki.shindo.management.language.TranslateText
@@ -24,7 +24,7 @@ class HitColorMod :
 
     @EventTarget
     fun onHitOverlay(event: EventHitOverlay) {
-        val currentColor = getInstance().colorManager.getCurrentColor()
+        val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
         val lastColor = if (customColorSetting) colorSetting else currentColor.getInterpolateColor()
 
         event.red = lastColor.red / 255f

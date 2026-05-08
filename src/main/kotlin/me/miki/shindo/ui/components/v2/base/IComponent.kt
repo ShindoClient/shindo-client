@@ -1,6 +1,5 @@
 package me.miki.shindo.ui.components.v2.base
 
-
 interface IComponent {
     fun draw(mouseX: Int, mouseY: Int, partialTicks: Float)
     fun update(partialTicks: Float)
@@ -10,7 +9,6 @@ interface IComponent {
     fun isVisible(): Boolean
     fun setVisible(visible: Boolean)
 }
-
 
 interface IBounded {
     fun getX(): Float
@@ -29,7 +27,6 @@ interface IBounded {
     }
 }
 
-
 interface IContainer {
     fun addChild(component: IComponent?)
     fun removeChild(component: IComponent)
@@ -37,7 +34,6 @@ interface IContainer {
     fun getChildren(): List<IComponent>
     fun hasChildren(): Boolean
 }
-
 
 interface IInteractive {
     fun isHovered(mouseX: Int, mouseY: Int): Boolean

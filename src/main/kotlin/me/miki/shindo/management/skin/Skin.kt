@@ -1,6 +1,6 @@
 package me.miki.shindo.management.skin
 
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 class Skin(

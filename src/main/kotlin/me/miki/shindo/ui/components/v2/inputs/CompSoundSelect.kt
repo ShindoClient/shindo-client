@@ -6,7 +6,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.SoundSetting
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
@@ -16,7 +16,7 @@ import java.io.File
 import java.io.IOException
 
 
-class CompSoundSelect : Comp {
+class CompSoundSelect : Component {
 
     private val soundSetting: SoundSetting
 
@@ -68,7 +68,7 @@ class CompSoundSelect : Comp {
             TaskExecutor.runAsync(ThreadPoolType.IO) {
                 val sound = FileUtils.selectSoundFile()
                 if (sound != null) {
-                    val fileManager = Shindo.getInstance().fileManager
+                    val fileManager = Shindo.getInstance().getFileManager()
                     val cacheDir = File(fileManager.cacheDir, "custom-sound")
                     fileManager.createDir(cacheDir)
 

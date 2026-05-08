@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl.asyncscreenshot
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.mods.impl.AsyncScreenshotMod
 import net.minecraft.client.Minecraft
@@ -101,8 +102,8 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
 
                 while (true) {
                     screenshot = File(
-                        getInstance().fileManager.screenshotDir,
-                        dateFormatting + (if (screenshotCount == 1) "" else ("_" + screenshotCount)) + ".png"
+                        Shindo.getInstance().getFileManager().screenshotDir,
+                        dateFormatting + (if (screenshotCount == 1) "" else ("_$screenshotCount")) + ".png"
                     )
                     if (!screenshot.exists()) {
                         break

@@ -5,6 +5,6 @@ import me.miki.shindo.Shindo
 open class SecurityFeature {
 
     init {
-        Shindo.getInstance().eventManager.register(this)
+        Shindo.getInstance().getEventManager().register(this)
     }
 }

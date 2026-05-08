@@ -288,7 +288,7 @@ open class HUDMod : Mod {
     fun drawBackground(addX: Float, addY: Float, width: Float, height: Float, radius: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val colorManager: ColorManager = instance.colorManager
+        val colorManager: ColorManager = instance.getColorManager()
         val currentColor: AccentColor = colorManager.getCurrentColor()
         val theme = InternalSettingsMod.instance.hudTheme
 
@@ -472,7 +472,7 @@ open class HUDMod : Mod {
         val isLight = theme == InternalSettingsMod.HudTheme.LIGHT
 
         if (isDark || isLight) {
-            return Shindo.getInstance().colorManager.getCurrentColor().getInterpolateColor(alpha)
+            return Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(alpha)
         }
         return Color(255, 255, 255, alpha)
     }

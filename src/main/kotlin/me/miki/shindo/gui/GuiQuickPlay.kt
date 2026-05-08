@@ -1,16 +1,17 @@
 package me.miki.shindo.gui
 
+import me.miki.extensions.ui.animation.wrap
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.quickplay.QuickPlay
 import me.miki.shindo.management.quickplay.QuickPlayManager
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.SmoothStepAnimation
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.SmoothStepAnimation
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -18,7 +19,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 
-class GuiQuickPlay : GuiScreen(), IShindoScreen {
+class GuiQuickPlay : GuiScreen() {
 
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()
@@ -74,8 +75,8 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val palette: ColorPalette = instance.colorManager.getPalette()
-        val quickPlayManager: QuickPlayManager = instance.quickPlayManager
+        val palette: ColorPalette = instance.getColorManager().getPalette()
+        val quickPlayManager: QuickPlayManager = instance.getQuickPlayManager()
 
         var offsetX = 0
         var offsetY = 0
@@ -206,7 +207,7 @@ class GuiQuickPlay : GuiScreen(), IShindoScreen {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val instance = Shindo.getInstance()
-        val quickPlayManager = instance.quickPlayManager
+        val quickPlayManager = instance.getQuickPlayManager()
 
         var offsetX = 0
         var offsetY = 0

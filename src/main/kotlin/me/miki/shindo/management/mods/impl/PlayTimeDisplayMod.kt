@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
@@ -23,7 +23,7 @@ class PlayTimeDisplayMod : SimpleHUDMod(
     }
 
     override fun getText(): String {
-        var sec = ((System.currentTimeMillis() - getInstance().shindoAPI.launchTime) / 1000).toInt()
+        var sec = ((System.currentTimeMillis() - Shindo.getInstance().getShindoAPI().launchTime) / 1000).toInt()
         val min = (sec % 3600) / 60
         val hour = sec / 3600
         sec %= 60

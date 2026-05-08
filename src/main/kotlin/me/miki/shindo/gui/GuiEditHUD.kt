@@ -11,9 +11,9 @@ import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
 import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
@@ -27,9 +27,9 @@ import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 
-class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen {
+class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen() {
 
-    private val mods: ArrayList<HUDMod> = ArrayList(Shindo.getInstance().modManager.getHudMods())
+    private val mods: ArrayList<HUDMod> = ArrayList(Shindo.getInstance().getModManager().getHudMods())
     private var localMouseX = -1
     private var localMouseY = -1
     private lateinit var introAnimation: Animation
@@ -43,7 +43,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
     override fun initGui() {
         for (m in mods) {
             m.setDragging(false)
-            m.animation.value = 0F
+            m.animation.setValue(0F)
         }
 
         introAnimation = EaseBackIn(500, 1.0, 0f)
@@ -54,7 +54,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager ?: return
-        val palette: ColorPalette = instance.colorManager.getPalette()
+        val palette: ColorPalette = instance.getColorManager().getPalette()
         val shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
         localMouseX = mouseX
         localMouseY = mouseY
@@ -192,7 +192,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                         }
                     }
 
-                    for (m2 in instance.modManager.getHudMods()) {
+                    for (m2 in instance.getModManager().getHudMods()) {
                         if (m2.isToggled() && m.isDragging() && m2 != m && !snapping && canSnap) {
                             val mod2X = m2.getX()
                             val mod2Y = m2.getY()
@@ -321,7 +321,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
                     m.getHeight() + 4f,
                     6.5f * m.getScale(),
                     2f,
-                    palette.getBackgroundColor(ColorType.DARK, (m.animation.value * 255).toInt())
+                    palette.getBackgroundColor(ColorType.DARK, (m.animation.getValue() * 255).toInt())
                 )
             }
 
@@ -387,7 +387,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen(), IShindoScreen 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             if (fromModMenu) {
-                mc.displayGuiScreen(Shindo.getInstance().shindoAPI.modMenu)
+                mc.displayGuiScreen(Shindo.getInstance().getShindoAPI().modMenu)
             } else {
                 introAnimation.setDirection(Direction.BACKWARDS)
             }

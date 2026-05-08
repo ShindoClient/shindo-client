@@ -7,10 +7,10 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.SmoothStepAnimation
-import me.miki.shindo.ui.animation.v1.screen.ScreenAlpha
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.SmoothStepAnimation
+import me.miki.shindo.ui.animation.v2.screen.ScreenAlpha
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import net.minecraft.client.Minecraft
@@ -54,8 +54,8 @@ class Notification {
     private fun drawNanoVG(nvg: NanoVGManager) {
         val sr = ScaledResolution(Minecraft.getMinecraft())
         val instance = Shindo.getInstance()
-        val palette = instance.colorManager.getPalette()
-        val currentColor: AccentColor = instance.colorManager.getCurrentColor()
+        val palette = instance.getColorManager().getPalette()
+        val currentColor: AccentColor = instance.getColorManager().getCurrentColor()
         val severity = resolveSeverityColors(type, currentColor)
 
         val titleWidth = nvg.getTextWidth(title, TITLE_SIZE, Fonts.MEDIUM)

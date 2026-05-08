@@ -1,5 +1,6 @@
 package me.miki.shindo.utils
 
+import me.miki.shindo.logger.ShindoLogger
 import java.util.*
 
 object OSUtils {
@@ -27,6 +28,47 @@ object OSUtils {
             else -> "Unknown"
         }
     }
+
+    @JvmStatic
+    fun runWindowsBrowser(uri: String) {
+        Runtime.getRuntime().exec(
+            arrayOf("rundll32", "url.dll,FileProtocolHandler", uri)
+        )
+    }
+
+    @JvmStatic
+    fun runMacBrowser(uri: String) {
+        Runtime.getRuntime().exec(
+            arrayOf("open", uri)
+        )
+    }
+
+    @JvmStatic
+    fun runLinuxBrowser(uri: String): Boolean {
+        val browsers = arrayOf(
+            "xdg-open",
+            "gio",
+            "gnome-open",
+            "kde-open",
+            "kde-open5"
+        )
+
+        for (i in browsers.indices) {
+            try {
+                val browser = browsers[i]
+
+                if (browser == "gio") {
+                    Runtime.getRuntime().exec(arrayOf(browser, "open", uri))
+                } else {
+                    Runtime.getRuntime().exec(arrayOf(browser, uri))
+                }
+
+                return true
+            } catch (e: Exception) {
+                ShindoLogger.error(e.message!!)
+            }
+        }
+
+        return false
+    }
 }
-
-

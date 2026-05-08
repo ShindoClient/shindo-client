@@ -4,7 +4,7 @@ import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation;
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -135,7 +135,7 @@ public abstract class MixinEntityRenderer {
         AnimationsMod mod = AnimationsMod.instance;
         if (mod.getSmoothSneakSetting().isToggled()) {
             smooth.setAnimation(mod.isToggled() && mod.getSneakSetting().isToggled() ? previousHeight + (height - previousHeight) * partialTicks : entity.getEyeHeight(), mod.getSmoothSneakSpeedSetting() * 10);
-            return smooth.value;
+            return smooth.getValue();
         } else {
             return mod.isToggled() && mod.getSneakSetting().isToggled() ? previousHeight + (height - previousHeight) * partialTicks : entity.getEyeHeight();
         }

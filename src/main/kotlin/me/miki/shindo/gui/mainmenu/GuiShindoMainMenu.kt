@@ -1,8 +1,10 @@
 package me.miki.shindo.gui.mainmenu
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.gui.IShindoScreen
-import me.miki.shindo.gui.mainmenu.impl.*
+import me.miki.shindo.gui.mainmenu.impl.BackgroundScene
+import me.miki.shindo.gui.mainmenu.impl.MainScene
+import me.miki.shindo.gui.mainmenu.impl.ShopScene
+import me.miki.shindo.gui.mainmenu.impl.UpdateScene
 import me.miki.shindo.gui.mainmenu.impl.welcome.*
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.Theme
@@ -18,10 +20,10 @@ import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiScreen
@@ -29,7 +31,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
-class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
+class GuiShindoMainMenu : GuiScreen() {
 
     private val scenes: ArrayList<MainMenuScene> = ArrayList()
 
@@ -49,10 +51,10 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     init {
         val instance = Shindo.getInstance()
-        val firstLogin = instance.shindoAPI.isFirstLogin()
+        val firstLogin = instance.getShindoAPI().isFirstLogin()
         ensureDefaultColorScheme(instance, firstLogin)
 
-        scenes.add(MainSceneV2(this))
+        scenes.add(MainScene(this))
         scenes.add(BackgroundScene(this))
         scenes.add(ShopScene(this))
         //scenes.add(SkinScene(this))
@@ -67,10 +69,10 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
         currentScene = if (firstLogin) {
             getSceneByClass(WelcomeMessageScene::class.java)
         } else {
-            if (instance.updateNeeded) {
+            if (instance.isUpdateNeeded()) {
                 getSceneByClass(UpdateScene::class.java)
             } else {
-                getSceneByClass(MainSceneV2::class.java)
+                getSceneByClass(MainScene::class.java)
             }
         }
     }
@@ -113,12 +115,12 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     private fun drawNanoVG(sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
         val copyright = "Copyright Mojang AB. Do not distribute!"
-        when (val currentBackground = instance.profileManager.backgroundManager.getCurrentBackground()) {
+        when (val currentBackground = instance.getProfileManager().backgroundManager.getCurrentBackground()) {
             is DefaultBackground -> {
                 nvg.drawImage(
                     currentBackground.getImage()!!,
-                    -21f + backgroundAnimations[0].value / 90,
-                    backgroundAnimations[1].value * -1 / 90,
+                    -21f + backgroundAnimations[0].getValue() / 90,
+                    backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
                     sr.scaledHeight + 20f
                 )
@@ -127,8 +129,8 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             is CustomBackground -> {
                 nvg.drawImage(
                     currentBackground.getImage(),
-                    -21f + backgroundAnimations[0].value / 90,
-                    backgroundAnimations[1].value * -1 / 90,
+                    -21f + backgroundAnimations[0].getValue() / 90,
+                    backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
                     sr.scaledHeight + 20f
                 )
@@ -138,8 +140,8 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
                 ShaderBackgroundRenderer.renderShaderBackground(
                     nvg,
                     currentBackground.getShaderFile(),
-                    -21f + backgroundAnimations[0].value / 90,
-                    backgroundAnimations[1].value * -1 / 90,
+                    -21f + backgroundAnimations[0].getValue() / 90,
+                    backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
                     sr.scaledHeight + 20f
                 )
@@ -154,7 +156,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             9f,
             Fonts.REGULAR
         )
-        nvg.drawText(instance.buildInfo.displayString, 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
+        nvg.drawText(instance.getBuildInfo().getDisplayString(), 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
     }
 
     private fun drawButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {
@@ -172,8 +174,8 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             8f,
             Color(
                 255,
-                255 - (closeFocusAnimation.value * 200).toInt(),
-                255 - (closeFocusAnimation.value * 200).toInt()
+                255 - (closeFocusAnimation.getValue() * 200).toInt(),
+                255 - (closeFocusAnimation.getValue() * 200).toInt()
             ),
             18f,
             Fonts.LEGACYICON
@@ -181,7 +183,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
         backgroundSelectFocusAnimation.setAnimation(
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16
+            16.0
         )
 
         nvg.drawRoundedRect(sr.scaledWidth - 56f, 6f, 22f, 22f, 4f, controlColor)
@@ -190,9 +192,9 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
             sr.scaledWidth - 52f + 6.5f - 1.5f,
             9.5f - 1.5f,
             Color(
-                255 - (backgroundSelectFocusAnimation.value * 200).toInt(),
+                255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt(),
                 255,
-                255 - (backgroundSelectFocusAnimation.value * 200).toInt()
+                255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt()
             ),
             18f,
             Fonts.LEGACYICON
@@ -244,7 +246,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val sr = ScaledResolution(mc)
 
-        val isFirstLogin = Shindo.getInstance().shindoAPI.isFirstLogin()
+        val isFirstLogin = Shindo.getInstance().getShindoAPI().isFirstLogin()
 
         if (mouseButton == 0 && !isFirstLogin) {
             //if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {
@@ -307,7 +309,7 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
     private fun ensureDefaultColorScheme(instance: Shindo?, forceDefaults: Boolean) {
         if (instance == null) return
 
-        val colorManager: ColorManager = instance.colorManager
+        val colorManager: ColorManager = instance.getColorManager()
 
         if (forceDefaults) {
             colorManager.setCurrentColor(colorManager.getColorByName("Default"))
@@ -317,14 +319,14 @@ class GuiShindoMainMenu : GuiScreen(), IShindoScreen {
 
     private fun getControlFillColor(): Color {
         val instance = Shindo.getInstance()
-        val palette: ColorPalette = instance.colorManager.getPalette()
+        val palette: ColorPalette = instance.getColorManager().getPalette()
         val base = palette.getBackgroundColor(ColorType.NORMAL)
         return ColorUtils.applyAlpha(base, 255.coerceAtMost(base.alpha + 5))
     }
 
     fun getBackgroundColor(): Color {
         val instance = Shindo.getInstance()
-        val palette: ColorPalette = instance.colorManager.getPalette()
+        val palette: ColorPalette = instance.getColorManager().getPalette()
         val base = palette.getBackgroundColor(ColorType.DARK)
         return ColorUtils.applyAlpha(base, 235)
     }

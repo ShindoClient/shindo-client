@@ -25,7 +25,7 @@ class ScreenAnimation {
     @JvmOverloads
     fun wrap(
         glRender: Runnable?,
-        task: Runnable?,
+        task: Runnable,
         x: Float,
         y: Float,
         width: Float,
@@ -104,7 +104,7 @@ class ScreenAnimation {
     }
 
     fun wrap(
-        task: Runnable?,
+        task: Runnable,
         x: Float,
         y: Float,
         width: Float,
@@ -116,7 +116,7 @@ class ScreenAnimation {
     }
 
     fun wrap(
-        task: Runnable?,
+        task: Runnable,
         x: Float,
         y: Float,
         width: Float,
@@ -128,7 +128,7 @@ class ScreenAnimation {
         wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
     }
 
-    fun wrap(task: Runnable?, animationProgress: Float, alphaProgress: Float) {
+    fun wrap(task: Runnable, animationProgress: Float, alphaProgress: Float) {
         val sr = ScaledResolution(mc)
 
         wrap(
@@ -144,11 +144,11 @@ class ScreenAnimation {
         )
     }
 
-    fun wrap(task: Runnable?, x: Float, y: Float, width: Float, height: Float, progress: Float) {
+    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, progress: Float) {
         wrap(null, task, x, y, width, height, progress, progress, false)
     }
 
-    fun wrap(task: Runnable?, progress: Float) {
+    fun wrap(task: Runnable, progress: Float) {
         val sr = ScaledResolution(mc)
 
         wrap(
@@ -173,3 +173,4 @@ class ScreenAnimation {
         }
     }
 }
+

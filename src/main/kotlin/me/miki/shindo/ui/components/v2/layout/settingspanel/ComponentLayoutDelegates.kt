@@ -2,7 +2,7 @@ package me.miki.shindo.ui.components.v2.layout.settingspanel
 
 
 import me.miki.shindo.ui.components.v2.Component
-import me.miki.shindo.ui.components.v2.buttons.*
+import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
 import me.miki.shindo.ui.components.v2.inputs.*
 import kotlin.math.max
 import kotlin.math.min

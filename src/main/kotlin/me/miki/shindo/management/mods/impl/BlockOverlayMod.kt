@@ -1,6 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.extensions.ui.animation.setAnimation
+import me.miki.shindo.Shindo
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventBlockHighlightRender
 import me.miki.shindo.management.language.TranslateText
@@ -9,7 +10,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils.setColor
 import me.miki.shindo.utils.Render3DUtils.drawFillBox
 import me.miki.shindo.utils.TimerUtils
@@ -77,7 +78,7 @@ open class BlockOverlayMod : Mod(
 
     @EventTarget
     fun onBlockHighlightRender(event: EventBlockHighlightRender) {
-        val currentColor = getInstance().colorManager.getCurrentColor()
+        val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
 
         event.setCancelled(true)
 
@@ -130,12 +131,12 @@ open class BlockOverlayMod : Mod(
                     simpleAnimation[5]!!.setAnimation((slide.maxZ + (selectedBox.maxZ - slide.maxZ)).toFloat(), 24)
 
                     val renderBB = AxisAlignedBB(
-                        simpleAnimation[0]!!.value - 0.01,
-                        simpleAnimation[1]!!.value - 0.01,
-                        simpleAnimation[2]!!.value - 0.01,
-                        simpleAnimation[3]!!.value + 0.01,
-                        simpleAnimation[4]!!.value + 0.01,
-                        simpleAnimation[5]!!.value + 0.01
+                        simpleAnimation[0]!!.getValue() - 0.01,
+                        simpleAnimation[1]!!.getValue() - 0.01,
+                        simpleAnimation[2]!!.getValue() - 0.01,
+                        simpleAnimation[3]!!.getValue() + 0.01,
+                        simpleAnimation[4]!!.getValue() + 0.01,
+                        simpleAnimation[5]!!.getValue() + 0.01
                     )
 
                     if (fillSetting) {

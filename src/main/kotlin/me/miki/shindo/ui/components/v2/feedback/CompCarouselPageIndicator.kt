@@ -1,11 +1,11 @@
 package me.miki.shindo.ui.components.v2.feedback
 
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
-class CompCarouselPageIndicator : Comp() {
+class CompCarouselPageIndicator : Component() {
 
     private var pageCount: Int = 0
     private var selectedIndex: Int = 0

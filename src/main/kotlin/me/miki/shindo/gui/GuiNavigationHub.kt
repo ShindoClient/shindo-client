@@ -5,15 +5,15 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.easing.EaseLiner
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.easing.EaseLiner
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiNavigationHub : GuiScreen(), IShindoScreen {
+class GuiNavigationHub : GuiScreen() {
 
     private data class IconButton(val icon: String, val action: () -> Unit)
 
@@ -119,7 +119,7 @@ class GuiNavigationHub : GuiScreen(), IShindoScreen {
         val mainButtonX = centerX - (mainButtonW / 2f)
         val mainButtonY = centerY - 12f + bottomOffset
         if (MouseUtils.isInside(mouseX, mouseY, mainButtonX, mainButtonY, mainButtonW, mainButtonH)) {
-            openNow(Shindo.getInstance().shindoAPI.modMenu)
+            openNow(Shindo.getInstance().getShindoAPI().modMenu)
             return
         }
 

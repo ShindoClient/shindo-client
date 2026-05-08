@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
@@ -19,7 +19,7 @@ class Items2DMod :
         val itemPhysics = ItemPhysicsMod.instance
         if (itemPhysics != null && itemPhysics.isToggled()) {
             itemPhysics.setToggled(false)
-            getInstance().notificationManager.post(
+            Shindo.getInstance().getNotificationManager().post(
                 TranslateText.ITEM_PHYSICS.getText(),
                 "Disabled due to incompatibility",
                 NotificationType.WARNING

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.profile
 
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 enum class ProfileIcon(val id: Int, val icon: ResourceLocation) {

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.shindo.Shindo
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
@@ -29,17 +30,16 @@ class GlintColorMod : Mod(
         instance = this
     }
 
-    val glintColor: Color?
+    val glintColor: Color
         get() {
             when (glintType) {
                 GlintType.SYNC -> {
-                    val currentColor = getInstance().colorManager.getCurrentColor()
+                    val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
                     return currentColor.getInterpolateColor()
                 }
 
                 GlintType.RAINBOW -> return getRainbow(0, 25.0, 255)
                 GlintType.CUSTOM -> return applyAlpha(colorSetting, 255)
-                else -> return Color.RED
             }
         }
 

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.injection.interfaces.IMixinS14PacketEntity
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventReceivePacket
@@ -57,8 +57,7 @@ class PlayerPredicatorMod : Mod(
         }
 
         if (packet is S14PacketEntity) {
-            val s14PacketEntity = packet
-            val iS14PacketEntity = s14PacketEntity as IMixinS14PacketEntity
+            val iS14PacketEntity = packet as IMixinS14PacketEntity
 
             if (iS14PacketEntity.entityId == target!!.entityId) {
                 realTargetPosition.x += iS14PacketEntity.posX / 32.0
@@ -66,12 +65,11 @@ class PlayerPredicatorMod : Mod(
                 realTargetPosition.z += iS14PacketEntity.posZ / 32.0
             }
         } else if (packet is S18PacketEntityTeleport) {
-            val s18PacketEntityTeleport = packet
 
             realTargetPosition = Position(
-                s18PacketEntityTeleport.x / 32.0,
-                s18PacketEntityTeleport.y / 32.0,
-                s18PacketEntityTeleport.z / 32.0
+                packet.x / 32.0,
+                packet.y / 32.0,
+                packet.z / 32.0
             )
         }
     }
@@ -97,7 +95,7 @@ class PlayerPredicatorMod : Mod(
 
             val expand = 0.14
 
-            setColor(applyAlpha(getInstance().colorManager.getCurrentColor().getInterpolateColor(0), 80).rgb)
+            setColor(applyAlpha(Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(0), 80).rgb)
 
             drawBoundingBox(
                 mc.thePlayer.entityBoundingBox.offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)

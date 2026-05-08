@@ -1,5 +1,7 @@
 package me.miki.shindo.gui
 
+import me.miki.extensions.ui.animation.setAnimation
+import me.miki.extensions.ui.animation.wrap
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -8,11 +10,11 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.waypoint.Waypoint
 import me.miki.shindo.management.waypoint.WaypointManager
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
-import me.miki.shindo.ui.components.v1.inputs.CompTextBox
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
+import me.miki.shindo.ui.components.v2.inputs.CompTextBox
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -21,7 +23,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiWaypoint : GuiScreen(), IShindoScreen {
+class GuiWaypoint : GuiScreen() {
 
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()
@@ -80,8 +82,8 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
     private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val waypointManager: WaypointManager = instance.waypointManager
-        val colorManager: ColorManager = instance.colorManager
+        val waypointManager: WaypointManager = instance.getWaypointManager()
+        val colorManager: ColorManager = instance.getColorManager()
         val palette: ColorPalette = colorManager.getPalette()
 
         var offsetX: Int
@@ -150,8 +152,8 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
                     y + 44f + offsetY,
                     Color(
                         255,
-                        255 - (waypoint.getTrashAnimation().value * 255).toInt(),
-                        255 - (waypoint.getTrashAnimation().value * 255).toInt()
+                        255 - (waypoint.getTrashAnimation().getValue() * 255).toInt(),
+                        255 - (waypoint.getTrashAnimation().getValue() * 255).toInt()
                     ),
                     11f,
                     Fonts.LEGACYICON
@@ -240,7 +242,7 @@ class GuiWaypoint : GuiScreen(), IShindoScreen {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val instance = Shindo.getInstance()
-        val waypointManager: WaypointManager = instance.waypointManager
+        val waypointManager: WaypointManager = instance.getWaypointManager()
 
         var offsetX: Int
         var offsetY = 0

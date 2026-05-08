@@ -7,12 +7,12 @@ import me.miki.shindo.management.mods.impl.AutoTextMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
-import me.miki.shindo.ui.components.v1.inputs.CompAutoTextKeybind
-import me.miki.shindo.ui.components.v1.inputs.CompTextBox
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
+import me.miki.shindo.ui.components.v2.inputs.CompAutoTextKeybind
+import me.miki.shindo.ui.components.v2.inputs.CompTextBox
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -21,7 +21,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen(), IShindoScreen {
+class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
 
     private data class AutoTextCard(
         val entry: AutoTextEntry,

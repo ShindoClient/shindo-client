@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
@@ -10,7 +11,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
 class MemoryUsageMod :
     SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
@@ -41,7 +42,7 @@ class MemoryUsageMod :
         this.drawCenteredText(this.usingMemory.toString() + "%", 54 / 2f, 32f, 9f, getHudFont(1))
 
         this.drawArc(27f, 35.5f, 16.5f, -90f, 360f, 1.6f, this.getFontColor(120))
-        this.drawArc(27f, 35.5f, 16.5f, -90f, circleAnimation.value - 90, 1.6f, this.getFontColor())
+        this.drawArc(27f, 35.5f, 16.5f, -90f, circleAnimation.getValue() - 90, 1.6f, this.getFontColor())
 
         this.setWidth(54)
         this.setHeight(60)

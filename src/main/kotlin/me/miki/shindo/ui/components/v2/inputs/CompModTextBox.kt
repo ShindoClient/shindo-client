@@ -3,19 +3,20 @@ package me.miki.shindo.ui.components.v2.inputs
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.settings.impl.TextSetting
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
-import me.miki.shindo.ui.components.v1.style.CompControlVariant
-import me.miki.shindo.ui.components.v1.style.CompStyleResolver
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
+import me.miki.shindo.ui.components.v2.style.CompControlVariant
+import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 
-class CompModTextBox : CompTextBoxBase {
+class CompModTextBox: CompTextBoxBase {
+
     private val setting: TextSetting
     private val timer = TimerUtils()
-    private val hoverAnimation = SimpleAnimation()
-    private val focusAnimation = SimpleAnimation()
+    private val hoverAnim = SimpleAnimation()
+    private val focusAnim = SimpleAnimation()
+
 
     constructor(x: Float, y: Float, width: Float, height: Float, setting: TextSetting) : super(x, y, width, height) {
         this.setting = setting
@@ -28,159 +29,135 @@ class CompModTextBox : CompTextBoxBase {
     }
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = nvg
-        val paletteColors = palette
-        val accentColor = accent
-
-        val height = getHeight()
-        val selectionEnd = this.getSelectionEnd()
-        val cursorPosition = this.getCursorPosition()
-        val text = this.getText()
-        val enabled = this.isEnabled()
-        val focused = this.isFocused()
+        val text = getText()
+        val enabled = isEnabled()
+        val focused = isFocused()
         val hovered = MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
-        val textInset = 6f
-        val textPaddingEnd = 6f
 
-        var addX = 0f
-        val halfHeight = (height * 0.5f).coerceAtLeast(8f)
-        val referenceText = if (text.isEmpty()) "A" else text
-        val textHeight = nvgInstance.getTextHeight(referenceText, halfHeight, Fonts.REGULAR)
-        val textY = getY() + (getHeight() / 2f) - (textHeight / 2f) + 0.5f
+        val halfH = (getHeight() * 0.5f).coerceAtLeast(8f)
+        val refText = text.ifEmpty { "A" }
+        val textH = nvg.getTextHeight(refText, halfH, Fonts.REGULAR)
+        val textY = getY() + getHeight() / 2f - textH / 2f + 0.5f
+        val inset = 6f
 
-        var outTextSize = 0
-        var resultText = ""
+        val addX = computeScrollOffset(text, halfH, inset)
 
-        for (c in text.toCharArray()) {
-            resultText += c
+        hoverAnim.setAnimation(if (hovered && enabled) 1f else 0f, 16.0)
+        focusAnim.setAnimation(if (focused && enabled) 1f else 0f, 16.0)
 
-            if (nvgInstance.getTextWidth(
-                    resultText,
-                    halfHeight,
-                    Fonts.REGULAR
-                ) + textInset + textPaddingEnd > getWidth()
-            ) {
-                outTextSize++
-                addX = getWidth() - nvgInstance.getTextWidth(
-                    resultText,
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - textInset - textPaddingEnd
-            }
-        }
+        drawBackground(enabled)
+        drawOutline(enabled)
 
-        if (selectionEnd < outTextSize) {
-            val reversedText = StringBuilder(text).reverse().toString()
-            addX =
-                getWidth() - nvgInstance.getTextWidth(
-                    reversedText.substring(outTextSize - selectionEnd),
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - textInset - textPaddingEnd
-        }
+        nvg.save()
+        nvg.scissor(getX() + 2, getY(), getWidth() - 4, getHeight())
 
-        hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
-        focusAnimation.setAnimation(if (focused && enabled) 1.0f else 0.0f, 16.0)
+        drawSelection(text, halfH, textH, textY, inset, addX, enabled)
+        drawText(text, halfH, textY, inset, addX, enabled)
+        drawCursor(text, halfH, textH, textY, inset, addX, enabled, focused)
 
-        val baseBackground =
-            CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, paletteColors, accentColor)
-        val hoverBackground =
-            CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, paletteColors, accentColor)
-        val shellColor = ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
-        val focusTint = ColorUtils.applyAlpha(accentColor.getColor1(), 106)
-        var backgroundColor =
-            ColorUtils.interpolateColor(shellColor, focusTint, (focusAnimation.value * 0.18f).toDouble())
-        if (!enabled) {
-            backgroundColor = ColorUtils.applyAlpha(backgroundColor, 116)
-        }
+        nvg.restore()
 
-        val idleOutline = ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 28)
-        val hoverOutline = ColorUtils.applyAlpha(accentColor.getColor1(), 76)
-        val focusOutline = ColorUtils.applyAlpha(accentColor.getColor1(), 154)
-        val mixedOutline = ColorUtils.interpolateColor(idleOutline, hoverOutline, hoverAnimation.value.toDouble())
-        var outlineColor = ColorUtils.interpolateColor(mixedOutline, focusOutline, focusAnimation.value.toDouble())
-        if (!enabled) {
-            outlineColor = ColorUtils.applyAlpha(outlineColor, 96)
-        }
+        if (!focused) setting.setText(getText())
 
-        nvgInstance.drawRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            6f,
-            backgroundColor
-        )
-        nvgInstance.drawOutlineRoundedRect(
-            getX(),
-            getY(),
-            getWidth(),
-            getHeight(),
-            6f,
-            1f,
-            outlineColor
-        )
-
-        nvgInstance.save()
-        nvgInstance.scissor(getX() + 2, getY(), getWidth() - 4, getHeight())
-
-        if (cursorPosition != selectionEnd) {
-            val start = minOf(selectionEnd, cursorPosition)
-            val end = maxOf(selectionEnd, cursorPosition)
-
-            val selectionWidth = nvgInstance.getTextWidth(text.substring(start, end), halfHeight, Fonts.REGULAR)
-            val offset = nvgInstance.getTextWidth(text.substring(0, start), halfHeight, Fonts.REGULAR)
-
-            if (selectionWidth != 0f) {
-                nvgInstance.drawRect(
-                    getX() + textInset + offset + addX,
-                    textY - 0.5f,
-                    selectionWidth,
-                    textHeight + 1f,
-                    ColorUtils.applyAlpha(accentColor.getColor1(), if (enabled) 164 else 92)
-                )
-            }
-        }
-
-        val textColor = if (enabled) {
-            paletteColors.getFontColor(ColorType.DARK)
-        } else {
-            paletteColors.getFontColor(ColorType.NORMAL, 145)
-        }
-        nvgInstance.drawText(
-            text,
-            getX() + textInset + addX,
-            textY,
-            textColor,
-            halfHeight,
-            Fonts.REGULAR
-        )
-
-        if (timer.delay(600)) {
-            val position =
-                nvgInstance.getTextWidth(text, halfHeight, Fonts.REGULAR) -
-                        nvgInstance.getTextWidth(text.substring(cursorPosition), halfHeight, Fonts.REGULAR)
-
-            if (enabled && focused && cursorPosition == selectionEnd) {
-                nvgInstance.drawRect(
-                    getX() + textInset + addX + position,
-                    textY - 0.5f,
-                    0.85f,
-                    textHeight + 1.25f,
-                    paletteColors.getFontColor(ColorType.DARK)
-                )
-            }
-
-            if (timer.delay(1200)) {
-                timer.reset()
-            }
-        }
-
-        if (!focused) {
-            setting.setText(this.getText())
-        }
-
-        nvgInstance.restore()
         super.draw(mouseX, mouseY, partialTicks)
+    }
+
+    private fun computeScrollOffset(text: String, halfH: Float, inset: Float): Float {
+        val selEnd = getSelectionEnd()
+        var addX = 0f
+        var result = ""
+
+        for (c in text) {
+            result += c
+            if (nvg.getTextWidth(result, halfH, Fonts.REGULAR) + inset * 2 > getWidth()) {
+                addX = getWidth() - nvg.getTextWidth(result, halfH, Fonts.REGULAR) - inset * 2
+            }
+        }
+
+        val outTextSize = text.length - result.length
+        if (selEnd < outTextSize) {
+            addX = getWidth() - nvg.getTextWidth(
+                text.reversed().substring(outTextSize - selEnd), halfH, Fonts.REGULAR
+            ) - inset * 2
+        }
+
+        return addX
+    }
+
+    private fun drawBackground(enabled: Boolean) {
+        val shell = ColorUtils.interpolateColor(
+            CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, palette, accent),
+            CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, palette, accent),
+            hoverAnim.getValue().toDouble()
+        )
+        var bg = ColorUtils.interpolateColor(
+            shell,
+            ColorUtils.applyAlpha(accent.getColor1(), 106),
+            (focusAnim.getValue() * 0.18f).toDouble()
+        )
+        if (!enabled) bg = ColorUtils.applyAlpha(bg, 116)
+
+        nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 6f, bg)
+    }
+
+    private fun drawOutline(enabled: Boolean) {
+        val mixed = ColorUtils.interpolateColor(
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 28),
+            ColorUtils.applyAlpha(accent.getColor1(), 76),
+            hoverAnim.getValue().toDouble()
+        )
+        var outline = ColorUtils.interpolateColor(
+            mixed,
+            ColorUtils.applyAlpha(accent.getColor1(), 154),
+            focusAnim.getValue().toDouble()
+        )
+        if (!enabled) outline = ColorUtils.applyAlpha(outline, 96)
+
+        nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), 6f, 1f, outline)
+    }
+
+    private fun drawSelection(
+        text: String, halfH: Float, textH: Float, textY: Float, inset: Float, addX: Float, enabled: Boolean
+    ) {
+        val cursor = getCursorPosition()
+        val selEnd = getSelectionEnd()
+        if (cursor == selEnd) return
+
+        val start = minOf(selEnd, cursor)
+        val end = maxOf(selEnd, cursor)
+        val selW = nvg.getTextWidth(text.substring(start, end), halfH, Fonts.REGULAR)
+        val offset = nvg.getTextWidth(text.substring(0, start), halfH, Fonts.REGULAR)
+
+        if (selW != 0f) {
+            nvg.drawRect(
+                getX() + inset + offset + addX, textY - 0.5f,
+                selW, textH + 1f,
+                ColorUtils.applyAlpha(accent.getColor1(), if (enabled) 164 else 92)
+            )
+        }
+    }
+
+    private fun drawText(text: String, halfH: Float, textY: Float, inset: Float, addX: Float, enabled: Boolean) {
+        val color = if (enabled) palette.getFontColor(ColorType.DARK)
+        else palette.getFontColor(ColorType.NORMAL, 145)
+        nvg.drawText(text, getX() + inset + addX, textY, color, halfH, Fonts.REGULAR)
+    }
+
+    private fun drawCursor(
+        text: String, halfH: Float, textH: Float, textY: Float, inset: Float, addX: Float, enabled: Boolean, focused: Boolean
+    ) {
+        if (!enabled || !focused || getCursorPosition() != getSelectionEnd()) return
+        if (!timer.delay(600)) return
+
+        val pos = nvg.getTextWidth(text, halfH, Fonts.REGULAR) -
+                nvg.getTextWidth(text.substring(getCursorPosition()), halfH, Fonts.REGULAR)
+
+        nvg.drawRect(
+            getX() + inset + addX + pos, textY - 0.5f,
+            0.85f, textH + 1.25f,
+            palette.getFontColor(ColorType.DARK)
+        )
+
+        if (timer.delay(1200)) timer.reset()
     }
 }

@@ -9,7 +9,7 @@ import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.gui.GuiNavigationHub
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
-import me.miki.shindo.gui.modmenu.v1.GuiModMenu
+import me.miki.shindo.gui.modmenu.v2.GuiModMenu
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.file.FileManager
 import net.minecraft.client.Minecraft
@@ -20,8 +20,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.BiConsumer
 import java.util.function.Supplier
-
-@Suppress("unused")
+@Suppress("unused", "RedundantSamConstructor")
 class ShindoAPI {
 
     private val roleManager = RoleManager()
@@ -41,7 +40,7 @@ class ShindoAPI {
         private set
 
     init {
-        val fileManager: FileManager = Shindo.getInstance().fileManager
+        val fileManager: FileManager = Shindo.getInstance().getFileManager()
         firstLoginFile = File(fileManager.cacheDir, "first.tmp")
     }
 
@@ -102,14 +101,15 @@ class ShindoAPI {
                     )
                 }
             }
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().profileShareManager.handleMessage(type, payload)
+
+            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?> { type, payload ->
+                Shindo.getInstance().getProfileShareManager().handleMessage(type, payload)
             })
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().chatManager.handleMessage(type, payload)
+            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?> { type, payload ->
+                Shindo.getInstance().getChatManager().handleMessage(type, payload)
             })
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().broadcastManager.handleMessage(type, payload)
+            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?>{ type, payload ->
+                Shindo.getInstance().getBroadcastManager().handleMessage(type, payload)
             })
             connect()
         }
@@ -121,7 +121,7 @@ class ShindoAPI {
     }
 
     fun createFirstLoginFile() {
-        Shindo.getInstance().fileManager.createFile(firstLoginFile)
+        Shindo.getInstance().getFileManager().createFile(firstLoginFile)
     }
 
     fun isFirstLogin(): Boolean = !firstLoginFile.exists()

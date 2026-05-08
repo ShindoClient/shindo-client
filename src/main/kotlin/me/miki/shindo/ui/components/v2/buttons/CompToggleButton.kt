@@ -1,6 +1,6 @@
 package me.miki.shindo.ui.components.v2.buttons
 
-import me.miki.shindo.gui.modmenu.v1.style.ModMenuListCardStyle
+import me.miki.shindo.gui.modmenu.v2.style.ModMenuListCardStyle
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation

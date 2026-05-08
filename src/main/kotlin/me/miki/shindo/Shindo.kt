@@ -40,8 +40,8 @@ import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
 import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.ClickEffects
-import me.miki.shindo.util.BuildInfo
 import me.miki.shindo.ui.layout.UILayoutManager
+import me.miki.shindo.utils.BuildInfo
 import me.miki.shindo.utils.OptifineUtils
 import me.miki.shindo.utils.render.EntityProjection
 import net.minecraft.client.Minecraft
@@ -49,91 +49,72 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import org.apache.commons.lang3.ArrayUtils
 
+@Suppress("UNUSED")
 class Shindo private constructor() {
 
     private val mc: Minecraft = Minecraft.getMinecraft()
-    val buildInfo: BuildInfo = BuildInfo.DEFAULT
+    private val buildInfo: BuildInfo = BuildInfo.DEFAULT
 
-    val name: String = "Shindo"
-    val version: String = buildInfo.semver
-    val author: String = "MikiDevAHM"
-    val verIdentifier: Int = buildInfo.build
+    private val name: String = "Shindo"
+    private val version: String = buildInfo.semver
+    private val author: String = "MikiDevAHM"
+    private val verIdentifier: Int = buildInfo.build
+
+    private var started: Boolean = false
+    private var updateNeeded: Boolean = false
+
+    // Core / Infrastructure
+    private lateinit var fileManager: FileManager
+    private lateinit var languageManager: LanguageManager
+    private lateinit var eventManager: EventManager
+    private lateinit var networkManager: NetworkManager
+    private lateinit var downloadManager: DownloadManager
+    private lateinit var extensionManager: ExtensionManager
+
+    // API / External Services
+    private lateinit var shindoAPI: ShindoAPI
+    private lateinit var discordStats: DiscordStats
+
+    // User / Profiles
+    private lateinit var profileManager: ProfileManager
+    private lateinit var profileShareManager: ProfileShareManager
+    private lateinit var skinManager: SkinManager
+    private lateinit var capeManager: CapeManager
+    private lateinit var wingManager: WingManager
+    private lateinit var bandanaManager: BandanaManager
+    private lateinit var colorManager: ColorManager
+
+    // Content / Mods
+    private lateinit var modManager: ModManager
+    private lateinit var addonManager: AddonManager
+    private lateinit var shaderManager: ShaderManager
+    private lateinit var restrictedMod: RestrictedMod
+    private lateinit var blacklistManager: BlacklistManager
+
+    // Social / Communication
+    private lateinit var chatManager: ChatManager
+    private lateinit var broadcastManager: BroadcastManager
+    private lateinit var notificationManager: NotificationManager
+
+    // Gameplay / Features
+    private lateinit var waypointManager: WaypointManager
+    private lateinit var quickPlayManager: QuickPlayManager
+    private lateinit var clickEffects: ClickEffects
+    private lateinit var securityFeatureManager: SecurityFeatureManager
+    private lateinit var romanizationManager: RomanizationManager
+
+    // UI / Media
+    private lateinit var uiLayoutManager: UILayoutManager
+    private lateinit var musicManager: MusicManager
+    private lateinit var screenshotManager: ScreenshotManager
+
+    // Commands / Updates / Info
+    private lateinit var commandManager: CommandManager
+    private lateinit var changelogManager: ChangelogManager
+    private lateinit var newsManager: NewsManager
+    private lateinit var update: Update
 
     var nanoVGManager: NanoVGManager? = null
-    private var started: Boolean = false
-
-    var updateNeeded: Boolean = false
-
-    lateinit var fileManager: FileManager
-        private set
-    lateinit var languageManager: LanguageManager
-        private set
-    lateinit var eventManager: EventManager
-        private set
-    lateinit var extensionManager: ExtensionManager
-        private set
-    lateinit var downloadManager: DownloadManager
-        private set
-    lateinit var modManager: ModManager
-        private set
-    lateinit var addonManager: AddonManager
-        private set
-    lateinit var capeManager: CapeManager
-        private set
-    lateinit var wingManager: WingManager
-        private set
-    lateinit var bandanaManager: BandanaManager
-        private set
-    lateinit var colorManager: ColorManager
-        private set
-    lateinit var profileManager: ProfileManager
-        private set
-    lateinit var profileShareManager: ProfileShareManager
-        private set
-    lateinit var chatManager: ChatManager
-        private set
-    lateinit var broadcastManager: BroadcastManager
-        private set
-    private lateinit var commandManager: CommandManager
-    lateinit var screenshotManager: ScreenshotManager
-        private set
-    lateinit var notificationManager: NotificationManager
-        private set
-    private lateinit var securityFeatureManager: SecurityFeatureManager
-    lateinit var uiLayoutManager: UILayoutManager
-        private set
-    lateinit var musicManager: MusicManager
-        private set
-    lateinit var quickPlayManager: QuickPlayManager
-        private set
-    lateinit var changelogManager: ChangelogManager
-        private set
-    lateinit var newsManager: NewsManager
-        private set
-    lateinit var discordStats: DiscordStats
-        private set
-    lateinit var waypointManager: WaypointManager
-        private set
-    lateinit var update: Update
-        private set
-    lateinit var clickEffects: ClickEffects
-        private set
-    lateinit var blacklistManager: BlacklistManager
-        private set
-    lateinit var restrictedMod: RestrictedMod
-        private set
-    lateinit var shaderManager: ShaderManager
-        private set
-    lateinit var romanizationManager: RomanizationManager
-        private set
-    lateinit var skinManager: SkinManager
-        private set
-    lateinit var networkManager: NetworkManager
-        private set
-    lateinit var shindoAPI: ShindoAPI
-        private set
-
-    fun hasStarted(): Boolean = started
 
     fun start() {
         ShindoLogger.info("Starting Shindo")
@@ -250,4 +231,68 @@ class Shindo private constructor() {
         @JvmStatic
         fun getInstance(): Shindo = instance
     }
+
+    // Core / Infrastructure
+    fun getFileManager(): FileManager = fileManager
+    fun getLanguageManager(): LanguageManager = languageManager
+    fun getEventManager(): EventManager = eventManager
+    fun getNetworkManager(): NetworkManager = networkManager
+    fun getDownloadManager(): DownloadManager = downloadManager
+    fun getExtensionManager(): ExtensionManager = extensionManager
+
+    // API / External Services
+    fun getShindoAPI(): ShindoAPI = shindoAPI
+    fun getDiscordStats(): DiscordStats = discordStats
+
+    // User / Profiles
+    fun getProfileManager(): ProfileManager = profileManager
+    fun getProfileShareManager(): ProfileShareManager = profileShareManager
+    fun getSkinManager(): SkinManager = skinManager
+    fun getCapeManager(): CapeManager = capeManager
+    fun getWingManager(): WingManager = wingManager
+    fun getBandanaManager(): BandanaManager = bandanaManager
+    fun getColorManager(): ColorManager = colorManager
+
+    // Content / Mods
+    fun getModManager(): ModManager = modManager
+    fun getAddonManager(): AddonManager = addonManager
+    fun getShaderManager(): ShaderManager = shaderManager
+    fun getRestrictedMod(): RestrictedMod = restrictedMod
+    fun getBlacklistManager(): BlacklistManager = blacklistManager
+
+    // Social / Communication
+    fun getChatManager(): ChatManager = chatManager
+    fun getBroadcastManager(): BroadcastManager = broadcastManager
+    fun getNotificationManager(): NotificationManager = notificationManager
+
+    // Gameplay / Features
+    fun getWaypointManager(): WaypointManager = waypointManager
+    fun getQuickPlayManager(): QuickPlayManager = quickPlayManager
+    fun getClickEffects(): ClickEffects = clickEffects
+    fun getSecurityFeatureManager(): SecurityFeatureManager = securityFeatureManager
+    fun getRomanizationManager(): RomanizationManager = romanizationManager
+
+    // UI / Media
+    fun getUILayoutManager(): UILayoutManager = uiLayoutManager
+    fun getMusicManager(): MusicManager = musicManager
+    fun getScreenshotManager(): ScreenshotManager = screenshotManager
+
+    // Commands / Updates / Info
+    fun getCommandManager(): CommandManager = commandManager
+    fun getChangelogManager(): ChangelogManager = changelogManager
+    fun getNewsManager(): NewsManager = newsManager
+    fun getUpdate(): Update = update
+
+    fun getName(): String = name
+    fun getVersion(): String = version
+    fun getAuthor(): String = author
+    fun getVerIdentifier(): Int = verIdentifier
+
+    fun getBuildInfo(): BuildInfo = buildInfo
+    fun isUpdateNeeded(): Boolean = updateNeeded
+    fun setUpdateNeeded(updateNeeded: Boolean) {
+        this.updateNeeded = updateNeeded
+    }
+
+    fun hasStarted(): Boolean = started
 }

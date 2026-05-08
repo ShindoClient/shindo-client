@@ -18,7 +18,7 @@ class DiscordStats {
     }
 
     fun checkDiscordValues() {
-        val discordStats = Shindo.getInstance().discordStats
+        val discordStats = Shindo.getInstance().getDiscordStats()
         val jsonObject: JsonObject? =
             HttpUtils.readJson("https://discord.com/api/v9/invites/uU56tvtXMU?with_counts=true", null)
 

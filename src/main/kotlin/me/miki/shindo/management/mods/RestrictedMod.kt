@@ -8,7 +8,7 @@ class RestrictedMod {
 
     var shouldCheck: Boolean = true
     private var currentServerIP = ""
-    private val blacklistManager = Shindo.getInstance().blacklistManager
+    private val blacklistManager = Shindo.getInstance().getBlacklistManager()
 
     fun checkAllowed(mod: Mod): Boolean {
         if (shouldCheck) {
@@ -33,10 +33,10 @@ class RestrictedMod {
 
     fun joinWorld() {
         currentServerIP = ServerUtils.getServerIP()
-        for (mod in Shindo.getInstance().modManager.getMods()) {
+        for (mod in Shindo.getInstance().getModManager().getMods()) {
             if (!checkAllowed(mod) && mod.isToggled()) {
                 mod.setToggled(false)
-                Shindo.getInstance().notificationManager.post(
+                Shindo.getInstance().getNotificationManager().post(
                     mod.getName(),
                     "Disabled due to serverside blacklist",
                     NotificationType.INFO

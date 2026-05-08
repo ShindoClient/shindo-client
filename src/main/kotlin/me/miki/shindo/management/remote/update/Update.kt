@@ -26,17 +26,17 @@ class Update {
 
     fun checkForUpdates() {
         val g = Shindo.getInstance()
-        val localBuild = g.buildInfo.getBuild()
-        val localBuildId = g.buildInfo.getBuildId()
-        g.updateNeeded = compareBuild(localBuild, localBuildId, buildID, buildId) < 0
+        val localBuild = g.getBuildInfo().build
+        val localBuildId = g.getBuildInfo().buildId
+        g.setUpdateNeeded(compareBuild(localBuild, localBuildId, buildID, buildId) < 0)
     }
 
     private fun applyLegacyMeta(jsonObject: JsonObject) {
         updateLink = JsonUtils.getStringProperty(jsonObject, "updatelink", updateLink).toString()
         versionString = JsonUtils.getStringProperty(jsonObject, "latestversionstring", versionString).toString()
         buildID = JsonUtils.getIntProperty(jsonObject, "latestversion", buildID)
-        buildId = JsonUtils.getStringProperty(jsonObject, "latestbuildid", buildId)?.toString() ?: "$buildID.1"
-        type = JsonUtils.getStringProperty(jsonObject, "latesttype", type)?.toString() ?: "stable"
+        buildId = JsonUtils.getStringProperty(jsonObject, "latestbuildid", buildId) ?: "$buildID.1"
+        type = JsonUtils.getStringProperty(jsonObject, "latesttype", type) ?: "stable"
     }
 
     private fun applyVersioningMeta(jsonObject: JsonObject): Boolean {

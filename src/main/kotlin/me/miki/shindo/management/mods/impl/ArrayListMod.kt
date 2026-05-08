@@ -36,12 +36,12 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
     @EventTarget
     fun onRender2D(event: EventNVG?) {
         val instance = getInstance()
-        val currentColor = instance.colorManager.getCurrentColor()
+        val currentColor = instance.getColorManager().getCurrentColor()
 
         val enabledMods = ArrayList<Mod>()
         var maxWidth = 0
 
-        for (m in instance.modManager.getMods()) {
+        for (m in instance.getModManager().getMods()) {
             if (!includeHudMods && m.getCategory() == ModCategory.HUD) {
                 continue
             }

@@ -5,7 +5,7 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.management.settings.config.ConfigOwner
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
@@ -40,12 +40,12 @@ open class Mod @JvmOverloads constructor(
     }
 
     open fun onEnable() {
-        if (Shindo.getInstance().restrictedMod.checkAllowed(this)) {
-            Shindo.getInstance().eventManager.register(this)
+        if (Shindo.getInstance().getRestrictedMod().checkAllowed(this)) {
+            Shindo.getInstance().getEventManager().register(this)
             ShindoLogger.info("[MODULE] " + getName() + " was enabled")
         } else {
             setToggled(false)
-            Shindo.getInstance().notificationManager.post(
+            Shindo.getInstance().getNotificationManager().post(
                 nameTranslate.getText(),
                 "Disabled due to serverside blacklist",
                 NotificationType.INFO
@@ -54,7 +54,7 @@ open class Mod @JvmOverloads constructor(
     }
 
     open fun onDisable() {
-        Shindo.getInstance().eventManager.unregister(this)
+        Shindo.getInstance().getEventManager().unregister(this)
         ShindoLogger.info("[MODULE] " + getName() + " was disabled")
     }
 
@@ -67,10 +67,10 @@ open class Mod @JvmOverloads constructor(
 
         if (toggled) {
             onEnable()
-            if (sound) Shindo.getInstance().modManager.playToggleSound(true)
+            if (sound) Shindo.getInstance().getModManager().playToggleSound(true)
         } else {
             onDisable()
-            if (sound) Shindo.getInstance().modManager.playToggleSound(false)
+            if (sound) Shindo.getInstance().getModManager().playToggleSound(false)
         }
     }
 

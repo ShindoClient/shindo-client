@@ -14,22 +14,20 @@ object ShaderBackgroundRenderer {
     @JvmStatic
     fun renderShaderBackground(nvg: NanoVGManager, shaderFile: File?, x: Float, y: Float, width: Float, height: Float) {
         val instance = Shindo.getInstance()
-        val shaderManager = instance.shaderManager
-        if (shaderManager != null) {
-            var shaderId = shaderManager.loadShader(net.minecraft.util.ResourceLocation("shindo/shaders/menu.fsh"))
-            if (shaderId == -1 && shaderFile != null && shaderFile.exists()) {
-                shaderId = shaderManager.loadShader(shaderFile)
-            }
-            if (shaderId != -1) {
-                nvg.save()
-                org.lwjgl.opengl.GL11.glPushAttrib(org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS)
-                org.lwjgl.opengl.GL11.glPushMatrix()
-                shaderManager.renderShader(shaderId, x, y, width, height)
-                org.lwjgl.opengl.GL11.glPopMatrix()
-                org.lwjgl.opengl.GL11.glPopAttrib()
-                nvg.restore()
-                return
-            }
+        val shaderManager = instance.getShaderManager()
+        var shaderId = shaderManager.loadShader(net.minecraft.util.ResourceLocation("shindo/shaders/menu.fsh"))
+        if (shaderId == -1 && shaderFile != null && shaderFile.exists()) {
+            shaderId = shaderManager.loadShader(shaderFile)
+        }
+        if (shaderId != -1) {
+            nvg.save()
+            org.lwjgl.opengl.GL11.glPushAttrib(org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS)
+            org.lwjgl.opengl.GL11.glPushMatrix()
+            shaderManager.renderShader(shaderId, x, y, width, height)
+            org.lwjgl.opengl.GL11.glPopMatrix()
+            org.lwjgl.opengl.GL11.glPopAttrib()
+            nvg.restore()
+            return
         }
         renderFallbackBackground(nvg, shaderFile, x, y, width, height)
     }

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiWaypoint
 import me.miki.shindo.injection.interfaces.IMixinRenderManager
 import me.miki.shindo.management.event.EventTarget
@@ -30,8 +30,8 @@ class WaypointMod :
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
-        for (wy in getInstance().waypointManager.getWaypoints()) {
-            if (getInstance().waypointManager.getWorld() == wy.getWorld()) {
+        for (wy in Shindo.getInstance().getWaypointManager().getWaypoints()) {
+            if (Shindo.getInstance().getWaypointManager().getWorld() == wy.getWorld()) {
                 var distance = this.getDistance(wy, mc.renderViewEntity)
                 val renderDistance = (mc.gameSettings.renderDistanceChunks * 16) * 0.75
 

@@ -1,183 +1,145 @@
 package me.miki.shindo.ui.components.v2.inputs
 
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import java.awt.Color
 
-class CompMainMenuTextBox : CompTextBoxBase {
+class CompMainMenuTextBox(
+    x: Float = 0f,
+    y: Float = 0f,
+    width: Float = 0f,
+    height: Float = 0f
+) : CompTextBoxBase(x, y, width, height) {
+
     private val timer = TimerUtils()
     private val animation = SimpleAnimation()
 
-    private var backgroundColor: Color = Color.WHITE
-    private var fontColor: Color = Color.WHITE
+    var backgroundColor: Color = Color.WHITE
+    var fontColor: Color = Color.WHITE
+    var passwordMode: Boolean = false
 
-    private var title: String? = null
     private var icon: String? = null
-
-    private var passwordMode: Boolean = false
-
-    constructor(x: Float, y: Float, width: Float, height: Float) : super(x, y, width, height)
-
-    constructor() : super(0f, 0f, 0f, 0f)
-
-    fun getBackgroundColor(): Color = backgroundColor
-    fun getFontColor(): Color = fontColor
-
-    fun setBackgroundColor(color: Color) {
-        this.backgroundColor = color
-    }
-
-    fun setFontColor(color: Color) {
-        this.fontColor = color
-    }
-
-    fun setPasswordMode(passwordMode: Boolean) {
-        this.passwordMode = passwordMode
-    }
-
-    override fun setPosition(x: Float, y: Float, width: Float, height: Float) {
-        this.setX(x)
-        this.setY(y)
-        this.setWidth(width)
-        this.setHeight(height)
-    }
-
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = nvg
-
-        val height = this.getHeight()
-        val selectionEnd = this.getSelectionEnd()
-        val cursorPosition = this.getCursorPosition()
-        val rawText = this.getText()
-        val drawText = if (passwordMode) repeat(rawText.length) else rawText
-        val focused = this.isFocused()
-
-        var addX = 0f
-        val halfHeight = height / 2f
-
-        var outTextSize = 0
-        var resultText = ""
-
-        for (c in drawText.toCharArray()) {
-            resultText += c
-
-            if (nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) + halfHeight + 5 > getWidth()) {
-                outTextSize++
-
-                addX = getWidth() - nvgInstance.getTextWidth(resultText, halfHeight, Fonts.REGULAR) - halfHeight - 5
-            }
-        }
-
-        if (selectionEnd < outTextSize) {
-            val reversedText = StringBuilder(drawText).reverse().toString()
-
-            addX =
-                getWidth() - nvgInstance.getTextWidth(
-                    reversedText.substring(outTextSize - selectionEnd),
-                    halfHeight,
-                    Fonts.REGULAR
-                ) - halfHeight - 5
-        }
-
-        nvgInstance.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 4f, backgroundColor)
-
-        nvgInstance.save()
-        nvgInstance.scissor(getX() + 1, getY(), getWidth() - 2, getHeight())
-
-        addX += if (title != null && icon != null) 16 else 5
-
-        if (cursorPosition != selectionEnd) {
-            val start = minOf(selectionEnd, cursorPosition)
-            val end = maxOf(selectionEnd, cursorPosition)
-
-            val selectionWidth = nvgInstance.getTextWidth(drawText.substring(start, end), halfHeight, Fonts.REGULAR)
-            val offset = nvgInstance.getTextWidth(drawText.substring(0, start), halfHeight, Fonts.REGULAR)
-
-            if (selectionWidth != 0f) {
-                nvgInstance.drawRect(
-                    getX() + offset + addX - 1,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                    selectionWidth,
-                    nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR),
-                    Color(0, 135, 247)
-                )
-            }
-        }
-
-        animation.setAnimation(if (!focused && rawText.isEmpty()) 1.0f else 0.0f, 16.0)
-
-        if (icon != null && title != null) {
-            nvgInstance.drawText(
-                icon!!,
-                getX() + 5,
-                getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                fontColor,
-                halfHeight,
-                Fonts.LEGACYICON
-            )
-
-            if (rawText.isEmpty()) {
-                nvgInstance.save()
-                nvgInstance.translate(animation.value * 8 - 8, 0f)
-                nvgInstance.drawText(
-                    title!!,
-                    getX() + 16,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(
-                        drawText,
-                        halfHeight,
-                        Fonts.REGULAR
-                    ) / 2) + 1,
-                    ColorUtils.applyAlpha(fontColor, (animation.value * 255).toInt()),
-                    halfHeight,
-                    Fonts.REGULAR
-                )
-                nvgInstance.restore()
-            }
-        }
-
-        nvgInstance.drawText(
-            drawText,
-            getX() + addX,
-            getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2) + 1,
-            fontColor,
-            halfHeight,
-            Fonts.REGULAR
-        )
-
-        if (timer.delay(600)) {
-            val position = nvgInstance.getTextWidth(drawText.substring(0, cursorPosition), halfHeight, Fonts.REGULAR)
-
-            if (focused && cursorPosition == selectionEnd) {
-                nvgInstance.drawRect(
-                    getX() + addX + position,
-                    getY() + (getHeight() / 2) - (nvgInstance.getTextHeight(drawText, halfHeight, Fonts.REGULAR) / 2),
-                    0.7f,
-                    10f,
-                    fontColor
-                )
-            }
-
-            if (timer.delay(1200)) {
-                timer.reset()
-            }
-        }
-
-        nvgInstance.restore()
-        super.draw(mouseX, mouseY, partialTicks)
-    }
+    private var title: String? = null
 
     fun setEmptyText(icon: String, title: String) {
         this.icon = icon
         this.title = title
     }
 
-    private fun repeat(count: Int): String {
-        if (count <= 0) return ""
-        val builder = StringBuilder(count)
-        repeat(count) { builder.append('*') }
-        return builder.toString()
+    override fun setPosition(x: Float, y: Float, width: Float, height: Float) {
+        setX(x); setY(y); setWidth(width); setHeight(height)
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val rawText = getText()
+        val drawText = if (passwordMode) "*".repeat(rawText.length) else rawText
+        val focused = isFocused()
+        val halfH = getHeight() / 2f
+
+        val addX = computeScrollOffset(drawText, halfH) + if (icon != null && title != null) 16 else 5
+
+        nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), 4f, backgroundColor)
+
+        nvg.save()
+        nvg.scissor(getX() + 1, getY(), getWidth() - 2, getHeight())
+
+        drawSelection(drawText, halfH, addX)
+        drawPlaceholder(rawText, drawText, halfH, focused)
+        drawText(drawText, halfH, addX)
+        drawCursor(drawText, halfH, addX, focused)
+
+        nvg.restore()
+        super.draw(mouseX, mouseY, partialTicks)
+    }
+
+    private fun computeScrollOffset(drawText: String, halfH: Float): Float {
+        val selectionEnd = getSelectionEnd()
+        var addX = 0f
+        var result = ""
+
+        for (c in drawText) {
+            result += c
+            if (nvg.getTextWidth(result, halfH, Fonts.REGULAR) + halfH + 5 > getWidth()) {
+                addX = getWidth() - nvg.getTextWidth(result, halfH, Fonts.REGULAR) - halfH - 5
+            }
+        }
+
+        val outTextSize = drawText.length - result.length
+        if (selectionEnd < outTextSize) {
+            val reversed = drawText.reversed()
+            addX = getWidth() - nvg.getTextWidth(
+                reversed.substring(outTextSize - selectionEnd), halfH, Fonts.REGULAR
+            ) - halfH - 5
+        }
+
+        return addX
+    }
+
+    private fun drawSelection(drawText: String, halfH: Float, addX: Float) {
+        val cursor = getCursorPosition()
+        val selEnd = getSelectionEnd()
+        if (cursor == selEnd) return
+
+        val start = minOf(selEnd, cursor)
+        val end = maxOf(selEnd, cursor)
+        val selWidth = nvg.getTextWidth(drawText.substring(start, end), halfH, Fonts.REGULAR)
+        val offset = nvg.getTextWidth(drawText.substring(0, start), halfH, Fonts.REGULAR)
+
+        if (selWidth != 0f) {
+            nvg.drawRect(
+                getX() + offset + addX - 1,
+                getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2,
+                selWidth,
+                nvg.getTextHeight(drawText, halfH, Fonts.REGULAR),
+                Color(0, 135, 247)
+            )
+        }
+    }
+
+    private fun drawPlaceholder(rawText: String, drawText: String, halfH: Float, focused: Boolean) {
+        val icon = icon ?: return
+        val title = title ?: return
+
+        val textY = getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2
+
+        nvg.drawText(icon, getX() + 5, textY, fontColor, halfH, Fonts.LEGACYICON)
+
+        animation.setAnimation(if (!focused && rawText.isEmpty()) 1f else 0f, 16.0)
+
+        if (rawText.isEmpty()) {
+            nvg.save()
+            nvg.translate(animation.getValue() * 8 - 8, 0f)
+            nvg.drawText(
+                title, getX() + 16, textY + 1,
+                ColorUtils.applyAlpha(fontColor, (animation.getValue() * 255).toInt()),
+                halfH, Fonts.REGULAR
+            )
+            nvg.restore()
+        }
+    }
+
+    private fun drawText(drawText: String, halfH: Float, addX: Float) {
+        nvg.drawText(
+            drawText,
+            getX() + addX,
+            getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2 + 1,
+            fontColor, halfH, Fonts.REGULAR
+        )
+    }
+
+    private fun drawCursor(drawText: String, halfH: Float, addX: Float, focused: Boolean) {
+        if (!focused || getCursorPosition() != getSelectionEnd()) return
+        if (!timer.delay(600)) return
+
+        val position = nvg.getTextWidth(drawText.substring(0, getCursorPosition()), halfH, Fonts.REGULAR)
+        nvg.drawRect(
+            getX() + addX + position,
+            getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2,
+            0.7f, 10f, fontColor
+        )
+
+        if (timer.delay(1200)) timer.reset()
     }
 }

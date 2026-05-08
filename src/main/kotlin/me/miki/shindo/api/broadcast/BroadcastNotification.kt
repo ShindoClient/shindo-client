@@ -5,10 +5,10 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
-import me.miki.shindo.ui.animation.v1.screen.ScreenAlpha
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.screen.ScreenAlpha
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import net.minecraft.client.Minecraft
@@ -40,8 +40,7 @@ class BroadcastNotification(
 
     private fun drawNanoVG(nvg: NanoVGManager) {
         val sr = ScaledResolution(Minecraft.getMinecraft())
-        val instance = Shindo.getInstance()
-        val currentColor: AccentColor = instance.colorManager.getCurrentColor()
+        val currentColor: AccentColor = Shindo.getInstance().getColorManager().getCurrentColor()
 
         val titleWidth = nvg.getTextWidth(title, 10.4f, Fonts.MEDIUM)
         val messageWidth = nvg.getTextWidth(message, 8.2f, Fonts.REGULAR)

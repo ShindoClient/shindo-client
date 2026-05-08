@@ -3,10 +3,9 @@ package me.miki.shindo.ui.components.v2.buttons
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
-import me.miki.shindo.ui.components.v1.style.CompControlVariant
-import me.miki.shindo.ui.components.v1.templates.CompControlTemplate
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
+import me.miki.shindo.ui.components.v2.style.CompControlVariant
+import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 
 class CompSceneButton(
@@ -91,7 +90,7 @@ class CompSceneButton(
 
     override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton == 0 && isEnabled()) {
-            pressAnimation.value = 1.0f
+            pressAnimation.setValue(1.0f)
         }
     }
 

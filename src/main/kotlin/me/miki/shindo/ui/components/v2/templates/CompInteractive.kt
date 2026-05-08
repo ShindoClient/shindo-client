@@ -1,7 +1,7 @@
 package me.miki.shindo.ui.components.v2.templates
 
-import me.miki.shindo.ui.components.v2.base.IInteractive
 import me.miki.shindo.ui.components.v2.Component
+import me.miki.shindo.ui.components.v2.base.IInteractive
 import me.miki.shindo.utils.mouse.MouseUtils
 
 abstract class CompInteractive(

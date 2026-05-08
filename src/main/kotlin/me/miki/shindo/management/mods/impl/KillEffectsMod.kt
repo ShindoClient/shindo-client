@@ -268,7 +268,7 @@ class KillEffectsMod : Mod(
             val renderX = interpX - (mc.renderManager as IMixinRenderManager).renderPosX
             val renderY = interpY - (mc.renderManager as IMixinRenderManager).renderPosY
             val renderZ = interpZ - (mc.renderManager as IMixinRenderManager).renderPosZ
-            val color: Color = Shindo.getInstance().colorManager.getCurrentColor().getColor1()
+            val color: Color = Shindo.getInstance().getColorManager().getCurrentColor().getColor1()
             GlStateManager.pushMatrix()
             GlStateManager.translate(renderX, renderY, renderZ)
             GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)

@@ -1,7 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
 import com.wrapper.spotify.model_objects.specification.Track
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger.info
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventKey
@@ -28,6 +28,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
+@Suppress("UNUSED")
 class MusicInfoMod :
     SimpleHUDMod(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION, LegacyIcon.MOD_MUSIC_INFO),
     TrackInfoCallback {
@@ -53,8 +54,6 @@ class MusicInfoMod :
     )
     private var lyricsApiUrlSetting: String = "https://spotify.mopigames.gay/"
     private val visibleLyrics = 5
-    private val addX = 0f
-    private val back = false
     private var trackDuration = 0L
     private var currentTrackId: String? = ""
     private var lyricsScrollOffset = 0.0f
@@ -68,7 +67,7 @@ class MusicInfoMod :
 
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
-        val nvg = getInstance().nanoVGManager
+        val nvg = Shindo.getInstance().nanoVGManager
         this.updateDynamicHeight()
         if (design == Design.SIMPLE) {
             this.draw()
@@ -80,7 +79,7 @@ class MusicInfoMod :
     @EventTarget
     fun onUpdate(event: EventUpdate?) {
         this.setDraggable(true)
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         if (musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
             this.updateLyrics(musicManager.getCurrentTrack(), musicManager.getTrackPosition())
         }
@@ -93,23 +92,20 @@ class MusicInfoMod :
         }
 
         val keyCode = event.keyCode
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
 
         if (!musicManager.isPlaying()) {
             return
         }
 
-        var lastVolumeChangeTime = 0L
         if (keyCode == Keyboard.KEY_UP) {
             val currentVolume = musicManager.getVolume()
             val newVolume = min(100, currentVolume + 5)
             musicManager.setVolume(newVolume)
-            lastVolumeChangeTime = System.currentTimeMillis()
         } else if (keyCode == Keyboard.KEY_DOWN) {
             val currentVolume = musicManager.getVolume()
             val newVolume = max(0, currentVolume - 5)
             musicManager.setVolume(newVolume)
-            lastVolumeChangeTime = System.currentTimeMillis()
         }
 
         if (keyCode == Keyboard.KEY_RIGHT) {
@@ -127,7 +123,7 @@ class MusicInfoMod :
     }
 
     private fun updateDynamicHeight() {
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         var baseHeight = 85
         if (!musicManager.isPlaying() || musicManager.getCurrentTrack() == null) {
             baseHeight = 75
@@ -146,7 +142,7 @@ class MusicInfoMod :
         if (!this.showLyricsSetting || currentTrack == null) {
             return
         }
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         val lyricsManager = musicManager.getLyricsManager()
         if (currentTrack.id != this.currentTrackId) {
             this.currentTrackId = currentTrack.id
@@ -163,7 +159,7 @@ class MusicInfoMod :
     }
 
     private fun drawAdvancedNanoVG() {
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         var hasLyrics = false
         val baseHeight = this.cachedHeight
         if (this.showLyricsSetting && musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
@@ -177,7 +173,7 @@ class MusicInfoMod :
         if (musicManager.isPlaying() && musicManager.getCurrentTrack() != null) {
             val currentTrack = musicManager.getCurrentTrack()!!
             val albumArtUrl = musicManager.getAlbumArtUrl(currentTrack)
-            if (albumArtUrl != null && albumArtUrl.isNotEmpty()) {
+            if (!albumArtUrl.isNullOrEmpty()) {
                 val albumArtFile = File(albumArtUrl)
                 if (albumArtFile.exists()) {
                     this.drawRoundedImage(albumArtFile, 5.5f, 25.0f, 37.0f, 37.0f, 6.0f)
@@ -258,9 +254,9 @@ class MusicInfoMod :
                             text = line.romanizedWords
                         }
 
-                        if (text != null && text.isNotEmpty()) {
+                        if (!text.isNullOrEmpty()) {
                             val limitedText =
-                                getInstance().nanoVGManager!!.getLimitText(text, 9.0f, this.getHudFont(1), 140.0f)
+                                Shindo.getInstance().nanoVGManager!!.getLimitText(text, 9.0f, this.getHudFont(1), 140.0f)
                             val xPos = 5.0f
                             if (isCurrentLine) {
                                 this.drawText(
@@ -341,7 +337,7 @@ class MusicInfoMod :
             } else {
                 var progress: Float = timeSinceScroll.toFloat() / LYRICS_SCROLL_DURATION
                 progress = this.easeOutCubic(progress)
-                this.lyricsScrollOffset = (1.0f - progress) * this.lyricsScrollOffset
+                this.lyricsScrollOffset *= (1.0f - progress)
             }
         }
     }
@@ -352,7 +348,6 @@ class MusicInfoMod :
 
     private fun breakTextIntoLines(text: String, maxWidth: Float): MutableList<String> {
         val lines = ArrayList<String>()
-        getInstance().nanoVGManager
         if (this.getTextWidth(text, 10.5f, this.getHudFont(1))!! <= maxWidth) {
             lines.add(text)
             return lines
@@ -361,7 +356,6 @@ class MusicInfoMod :
         var currentLine = StringBuilder()
         for (word in words) {
             val testLine: String = if (currentLine.isNotEmpty()) "$currentLine $word" else word
-            testLine
             if (this.getTextWidth(testLine, 10.5f, this.getHudFont(1))!! <= maxWidth) {
                 currentLine = StringBuilder(testLine)
                 continue
@@ -385,7 +379,7 @@ class MusicInfoMod :
     }
 
     override fun getText(): String? {
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         if (musicManager.isPlaying()) {
             val currentTrack = musicManager.getCurrentTrack()
             return if (currentTrack != null) "Now Playing: " + currentTrack.name else "Nothing is Playing"
@@ -399,7 +393,7 @@ class MusicInfoMod :
 
     override fun onTrackInfoUpdated(position: Long, duration: Long) {
         this.trackDuration = duration
-        val musicManager = getInstance().musicManager
+        val musicManager = Shindo.getInstance().getMusicManager()
         musicManager.getLyricsManager().updateCurrentLineIndex(position)
         val newLineIndex = musicManager.getLyricsManager().getCurrentLineIndex()
         if (newLineIndex != this.prevLyricsLineIndex) {

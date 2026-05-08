@@ -1,6 +1,7 @@
 package me.miki.shindo.gui.mainmenu.impl
 
 import eu.shoroa.contrib.render.Blur
+import me.miki.extensions.ui.animation.wrap
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
@@ -16,10 +17,10 @@ import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
 import me.miki.shindo.management.shader.ShaderBackgroundRenderer
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseInOutCirc
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseInOutCirc
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.file.FileUtils
@@ -57,12 +58,12 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             false
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
-            setCurrentScene(getSceneByClass(MainSceneV2::class.java))
+            setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
-        val backgroundManager: BackgroundManager = instance.profileManager.backgroundManager
+        val backgroundManager: BackgroundManager = instance.getProfileManager().backgroundManager
         val palette: ColorPalette = getMenuPalette()
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
@@ -156,7 +157,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                             57.5f
                         )
                     ) 1.0f else 0.0f,
-                    16
+                    16.0
                 )
 
                 nvg.drawRoundedImage(bg.getImage(), acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
@@ -164,7 +165,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     LegacyIcon.TRASH,
                     acX + offsetX + 100f,
                     acY + 38f + offsetY,
-                    palette.getMaterialRed((bg.getTrashAnimation().value * 255).toInt()),
+                    palette.getMaterialRed((bg.getTrashAnimation().getValue() * 255).toInt()),
                     10f,
                     Fonts.LEGACYICON
                 )
@@ -210,8 +211,8 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val sr = ScaledResolution(mc)
 
         val instance = Shindo.getInstance()
-        val fileManager: FileManager = instance.fileManager
-        val backgroundManager: BackgroundManager = instance.profileManager.backgroundManager
+        val fileManager: FileManager = instance.getFileManager()
+        val backgroundManager: BackgroundManager = instance.getProfileManager().backgroundManager
 
         val acWidth = 240
         val acHeight = 148

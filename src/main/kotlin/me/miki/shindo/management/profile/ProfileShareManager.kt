@@ -17,13 +17,13 @@ class ProfileShareManager {
     private val pendingUnshare = ConcurrentHashMap<String, (UnshareResult) -> Unit>()
 
     fun requestShare(profile: Profile, onResult: (ShareResult) -> Unit) {
-        val ws = instance.shindoAPI.ws
+        val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult(ShareResult.Error("websocket_unavailable"))
             return
         }
         val file = profile.jsonFile
-        val json = instance.profileManager.readProfileJson(file)
+        val json = instance.getProfileManager().readProfileJson(file)
         if (json == null) {
             onResult(ShareResult.Error("profile_not_found"))
             return
@@ -41,7 +41,7 @@ class ProfileShareManager {
     }
 
     fun requestFetch(code: String, onResult: (FetchResult) -> Unit) {
-        val ws = instance.shindoAPI.ws
+        val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult(FetchResult.Error("websocket_unavailable"))
             return
@@ -57,7 +57,7 @@ class ProfileShareManager {
     }
 
     fun requestUnshare(code: String, onResult: ((UnshareResult) -> Unit)? = null) {
-        val ws = instance.shindoAPI.ws
+        val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult?.invoke(UnshareResult.Error("websocket_unavailable"))
             return

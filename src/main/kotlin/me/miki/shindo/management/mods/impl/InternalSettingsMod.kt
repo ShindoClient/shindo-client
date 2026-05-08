@@ -22,8 +22,8 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSet
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getComboSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getKeybindSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
-import me.miki.shindo.ui.animation.v1.GlobalAnimationSettings
-import me.miki.shindo.ui.components.v1.layout.SettingsPanel.LayoutMode
+import me.miki.shindo.ui.animation.v2.GlobalAnimationSettings
+import me.miki.shindo.ui.components.v2.layout.SettingsPanel.LayoutMode
 import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -134,7 +134,7 @@ class InternalSettingsMod :
     fun onKey(event: EventKey) {
         val keybind = getModMenuKeybindSetting()?.getKeyCode() ?: modMenuKeybindSetting
         if (event.keyCode == keybind) {
-            mc.displayGuiScreen(Shindo.getInstance().shindoAPI.navigationHub)
+            mc.displayGuiScreen(Shindo.getInstance().getShindoAPI().navigationHub)
         }
 
         if (event.keyCode == Keyboard.KEY_DOWN) {

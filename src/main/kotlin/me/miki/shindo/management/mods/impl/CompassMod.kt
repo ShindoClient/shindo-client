@@ -10,7 +10,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.screen.ScreenStencil
+import me.miki.shindo.ui.animation.v2.screen.ScreenStencil
 import net.minecraft.util.MathHelper
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color

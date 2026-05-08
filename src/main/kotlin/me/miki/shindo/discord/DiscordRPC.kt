@@ -18,7 +18,7 @@ class DiscordRPC {
             setListener(object : IPCListener {
                 override fun onReady(client: IPCClient) {
                     val builder = RichPresence.Builder()
-                        .setState("Playing Shindo Client v${Shindo.getInstance().version}")
+                        .setState("Playing Shindo Client v${Shindo.getInstance().getVersion()}")
                         .setStartTimestamp(OffsetDateTime.now())
                         .setLargeImage("large")
 

@@ -1,6 +1,7 @@
 package me.miki.shindo.gui.mainmenu.impl.welcome
 
 import eu.shoroa.contrib.render.Blur
+import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
@@ -8,10 +9,10 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
-import me.miki.shindo.ui.animation.v1.screen.ScreenAlpha
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v2.screen.ScreenAlpha
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -32,7 +33,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
     private var fadeAnimation: Animation? = null
 
     init {
-        currentColor = Shindo.getInstance().colorManager.getColorByName("Default")
+        currentColor = Shindo.getInstance().getColorManager().getColorByName("Default")
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -61,7 +62,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
-        val colorManager: ColorManager = instance.colorManager
+        val colorManager: ColorManager = instance.getColorManager()
 
         var offsetX = 0
         var offsetY = 0
@@ -108,7 +109,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
                 LegacyIcon.CHECK,
                 x + offsetX + 10f + (32 / 2f),
                 y + offsetY + 48f,
-                Color(255, 255, 255, (color.getAnimation().value * 255).toInt()),
+                Color(255, 255, 255, (color.getAnimation().getValue() * 255).toInt()),
                 16f,
                 Fonts.LEGACYICON
             )
@@ -133,7 +134,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val instance = Shindo.getInstance()
-        val colorManager: ColorManager = instance.colorManager
+        val colorManager: ColorManager = instance.getColorManager()
 
         var offsetX = 0
         var offsetY = scroll.getValue().toInt()
@@ -158,7 +159,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         }
 
         if (MouseUtils.isInside(mouseX, mouseY, x + width - 86f, y + height - 26f, 80f, 20f) && mouseButton == 0) {
-            Shindo.getInstance().colorManager.setCurrentColor(currentColor)
+            Shindo.getInstance().getColorManager().setCurrentColor(currentColor)
             fadeAnimation!!.setDirection(Direction.BACKWARDS)
         }
     }

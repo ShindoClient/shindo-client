@@ -1,5 +1,7 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.extensions.ui.animation.setAnimation
+import me.miki.shindo.Shindo
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
@@ -14,7 +16,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -124,7 +126,7 @@ class ModernHotbarMod :
     private fun drawNanoVG(nvg: NanoVGManager) {
         val sr = ScaledResolution(mc)
         val currentDesign = design
-        val currentColor = getInstance().colorManager.getCurrentColor()
+        val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
         val isText = InternalSettingsMod.instance.hudTheme == HudTheme.TEXT
 
         if (mc.renderViewEntity is EntityPlayer) {
@@ -173,7 +175,7 @@ class ModernHotbarMod :
 
             if (smoothSetting) {
                 selectorAnimation.setAnimation((i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat(), 18)
-                selX = selectorAnimation.value
+                selX = selectorAnimation.getValue()
             } else {
                 selX = (i - 91 - 1 + entityplayer.inventory.currentItem * 20).toFloat()
             }

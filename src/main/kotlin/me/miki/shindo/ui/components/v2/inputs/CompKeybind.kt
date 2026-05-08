@@ -2,13 +2,14 @@ package me.miki.shindo.ui.components.v2.inputs
 
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.settings.impl.KeybindSetting
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.components.v2.Component
+
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 
-class CompKeybind : Comp {
+class CompKeybind : Component {
 
     private val setting: KeybindSetting
     private var width: Float

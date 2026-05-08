@@ -90,11 +90,11 @@ object DialogUtils {
 
     private fun tryPostNotification(title: String, message: String, type: NotificationType): Boolean {
         return try {
-            val shindo = Shindo.getInstance()
-            if (!shindo.hasStarted()) {
+            val instance = Shindo.getInstance()
+            if (!instance.hasStarted()) {
                 false
             } else {
-                shindo.notificationManager.post(title, message, type)
+                instance.getNotificationManager().post(title, message, type)
                 true
             }
         } catch (_: Throwable) {

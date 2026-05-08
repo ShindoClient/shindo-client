@@ -3,7 +3,7 @@ package me.miki.shindo.injection.mixin.minecraft.client.gui;
 import eu.shoroa.contrib.render.Blur;
 import me.miki.shindo.Shindo;
 import me.miki.shindo.gui.GuiEditHUD;
-import me.miki.shindo.gui.modmenu.v1.GuiModMenu;
+import me.miki.shindo.gui.modmenu.v2.GuiModMenu;
 import me.miki.shindo.injection.interfaces.IMixinGuiIngame;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.AnimationsMod;

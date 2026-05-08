@@ -5,9 +5,9 @@ import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
@@ -57,7 +57,7 @@ class WelcomeMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 )
             })
 
-            if (timer.delay(2500) && fadeAnimation!!.direction == Direction.FORWARDS) {
+            if (timer.delay(2500) && fadeAnimation!!.getDirection() == Direction.FORWARDS) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
                 timer.reset()
             }

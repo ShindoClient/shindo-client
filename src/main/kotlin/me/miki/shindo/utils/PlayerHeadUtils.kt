@@ -33,7 +33,7 @@ object PlayerHeadUtils {
         if (pending.putIfAbsent(key, true) == null) {
             TaskExecutor.runAsync(ThreadPoolType.NETWORK) {
                 try {
-                    val skin = Shindo.getInstance().skinManager.downloadSkinByUsername(rawName)
+                    val skin = Shindo.getInstance().getSkinManager().downloadSkinByUsername(rawName)
                     val texture = registerTexture(skin.image, "head-$key")
                     if (texture != null) {
                         cache[key] = texture

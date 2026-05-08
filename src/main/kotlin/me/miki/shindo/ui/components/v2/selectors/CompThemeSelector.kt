@@ -126,7 +126,7 @@ class CompThemeSelector(
                     LegacyIcon.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 12f,
-                    Color(255, 255, 255, min(255, 180 + (theme.getAnimation().value * 60f).toInt())),
+                    Color(255, 255, 255, min(255, 180 + (theme.getAnimation().getValue() * 60f).toInt())),
                     12f,
                     Fonts.LEGACYICON
                 )

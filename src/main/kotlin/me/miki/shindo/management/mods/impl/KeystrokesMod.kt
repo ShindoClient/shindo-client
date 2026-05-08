@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
@@ -8,7 +9,7 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod.HudTheme
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -63,23 +64,23 @@ class KeystrokesMod :
         this.drawBackground(64f, 32f, 28f, 28f)
 
         this.save()
-        this.scale(32f, 0f, 28f, 28f, animations[0]!!.value)
-        this.drawHighlight(32f, 0f, 28f, 28f, 6f, this.getFontColor((120 * animations[0]!!.value).toInt()))
+        this.scale(32f, 0f, 28f, 28f, animations[0]!!.getValue())
+        this.drawHighlight(32f, 0f, 28f, 28f, 6f, this.getFontColor((120 * animations[0]!!.getValue()).toInt()))
         this.restore()
 
         this.save()
-        this.scale(0f, 32f, 28f, 28f, animations[1]!!.value)
-        this.drawHighlight(0f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[1]!!.value).toInt()))
+        this.scale(0f, 32f, 28f, 28f, animations[1]!!.getValue())
+        this.drawHighlight(0f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[1]!!.getValue()).toInt()))
         this.restore()
 
         this.save()
-        this.scale(32f, 32f, 28f, 28f, animations[2]!!.value)
-        this.drawHighlight(32f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[2]!!.value).toInt()))
+        this.scale(32f, 32f, 28f, 28f, animations[2]!!.getValue())
+        this.drawHighlight(32f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[2]!!.getValue()).toInt()))
         this.restore()
 
         this.save()
-        this.scale(64f, 32f, 28f, 28f, animations[3]!!.value)
-        this.drawHighlight(64f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[3]!!.value).toInt()))
+        this.scale(64f, 32f, 28f, 28f, animations[3]!!.getValue())
+        this.drawHighlight(64f, 32f, 28f, 28f, 6f, this.getFontColor((120 * animations[3]!!.getValue()).toInt()))
         this.restore()
 
         if (!unmarkedSetting) {
@@ -117,14 +118,14 @@ class KeystrokesMod :
             this.drawBackground(0f, 64f, ((28 * 3) + 8).toFloat(), 22f)
 
             this.save()
-            this.scale(0f, 64f, ((28 * 3) + 8).toFloat(), 22f, animations[4]!!.value)
+            this.scale(0f, 64f, ((28 * 3) + 8).toFloat(), 22f, animations[4]!!.getValue())
             this.drawHighlight(
                 0f,
                 64f,
                 ((28 * 3) + 8).toFloat(),
                 22f,
                 6f,
-                this.getFontColor((120 * animations[4]!!.value).toInt())
+                this.getFontColor((120 * animations[4]!!.getValue()).toInt())
             )
             this.restore()
 

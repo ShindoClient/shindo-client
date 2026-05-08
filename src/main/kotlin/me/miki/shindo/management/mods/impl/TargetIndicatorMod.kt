@@ -1,6 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
-import me.miki.shindo.Shindo.Companion.getInstance
+import me.miki.shindo.Shindo
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
@@ -29,7 +29,7 @@ class TargetIndicatorMod : Mod(
 
     @EventTarget
     fun onRender3D(event: EventRender3D?) {
-        val currentColor = getInstance().colorManager.getCurrentColor()
+        val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
 
         if (target != null && target != mc.thePlayer) {
             Render3DUtils.drawTargetIndicator(

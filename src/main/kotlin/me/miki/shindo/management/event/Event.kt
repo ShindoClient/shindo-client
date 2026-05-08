@@ -3,6 +3,7 @@ package me.miki.shindo.management.event
 import me.miki.shindo.Shindo
 import java.lang.reflect.InvocationTargetException
 
+@Suppress("UNCHECKED_CAST")
 abstract class Event {
 
     private var cancelled: Boolean = false
@@ -11,7 +12,7 @@ abstract class Event {
         @JvmStatic
         private fun call(event: Event) {
             val instance = Shindo.getInstance()
-            val eventManager = instance.eventManager
+            val eventManager = instance.getEventManager()
             val invoked = HashSet<Data>()
             var c: Class<*>? = event.javaClass
 

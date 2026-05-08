@@ -20,7 +20,7 @@ import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicInteger
 
-class GuiFixConnecting : GuiScreen, IShindoScreen {
+class GuiFixConnecting : GuiScreen {
 
     private val previousGuiScreen: GuiScreen
     private var networkManager: NetworkManager? = null

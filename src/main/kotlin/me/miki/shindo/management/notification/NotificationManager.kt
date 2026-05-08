@@ -10,7 +10,7 @@ class NotificationManager {
     private val notifications = LinkedBlockingQueue<Notification>()
 
     init {
-        Shindo.getInstance().eventManager.register(NotificationHandler(notifications))
+        Shindo.getInstance().getEventManager().register(NotificationHandler(notifications))
     }
 
     fun post(title: TranslateText, message: TranslateText, type: NotificationType) {

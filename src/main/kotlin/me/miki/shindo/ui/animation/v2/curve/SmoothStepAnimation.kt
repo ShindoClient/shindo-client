@@ -14,7 +14,7 @@ open class SmoothStepAnimation : Animation {
     }
 
     override fun getEquation(x: Double): Double {
-        val x1 = x / duration.toDouble()
+        val x1 = x / getDuration()
         return -2 * x1.pow(3.0) + (3 * x1.pow(2.0))
     }
 }

@@ -32,13 +32,13 @@ open class Component(
         get() = _nvg ?: Shindo.getInstance().nanoVGManager!!
 
     protected val palette: ColorPalette
-        get() = _palette ?: Shindo.getInstance().colorManager.getPalette()
+        get() = _palette ?: Shindo.getInstance().getColorManager().getPalette()
 
     protected val accent: AccentColor
-        get() = Shindo.getInstance().colorManager.getCurrentColor()
+        get() = Shindo.getInstance().getColorManager().getCurrentColor()
 
     protected val colors: ColorManager
-        get() = _colors ?: Shindo.getInstance().colorManager
+        get() = _colors ?: Shindo.getInstance().getColorManager()
 
     override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!_visible) return

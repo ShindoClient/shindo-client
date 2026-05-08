@@ -14,11 +14,11 @@ import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.ui.components.v2.buttons.CompCategory
 import me.miki.shindo.ui.components.v2.factory.SettingComponentFactory
 import me.miki.shindo.ui.components.v2.inputs.CompCellGrid
+import me.miki.shindo.ui.components.v2.inputs.CompColorPicker
 import me.miki.shindo.ui.components.v2.layout.settingspanel.ComponentLayoutContext
 import me.miki.shindo.ui.components.v2.layout.settingspanel.ComponentLayoutRegistry
 import me.miki.shindo.ui.components.v2.layout.settingspanel.ComponentPlacement
 import me.miki.shindo.ui.components.v2.layout.settingspanel.SettingsPanelStyle
-import me.miki.shindo.ui.components.v2.inputs.CompColorPicker
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -172,7 +172,7 @@ class SettingsPanel {
                 totalContentHeight,
                 scroll.getValue(),
                 palette,
-                Shindo.getInstance().colorManager.getCurrentColor(),
+                Shindo.getInstance().getColorManager().getCurrentColor(),
                 18f * PANEL_SCALE
             )
         }

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.waypoint
 
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import java.awt.Color
 
 class Waypoint(

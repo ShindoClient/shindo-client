@@ -4,7 +4,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.config.ConfigOwner
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import java.util.*
 
 open class Addon(
@@ -40,12 +40,12 @@ open class Addon(
     }
 
     open fun onEnable() {
-        Shindo.getInstance().eventManager.register(this)
+        Shindo.getInstance().getEventManager().register(this)
         ShindoLogger.info("[ADDON] $name was enabled")
     }
 
     open fun onDisable() {
-        Shindo.getInstance().eventManager.unregister(this)
+        Shindo.getInstance().getEventManager().unregister(this)
         ShindoLogger.info("[ADDON] $name was disabled")
     }
 
@@ -63,10 +63,10 @@ open class Addon(
         this.toggled = toggled
         if (toggled) {
             onEnable()
-            if (sound) Shindo.getInstance().addonManager.playToggleSound(true)
+            if (sound) Shindo.getInstance().getAddonManager().playToggleSound(true)
         } else {
             onDisable()
-            if (sound) Shindo.getInstance().addonManager.playToggleSound(false)
+            if (sound) Shindo.getInstance().getAddonManager().playToggleSound(false)
         }
     }
 

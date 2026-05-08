@@ -2,11 +2,10 @@ package me.miki.shindo.ui.components.v2.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
-import me.miki.shindo.ui.components.v1.style.CompControlVariant
-import me.miki.shindo.ui.components.v1.style.CompStyleResolver
-import me.miki.shindo.ui.components.v1.templates.CompControlTemplate
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
+import me.miki.shindo.ui.components.v2.style.CompControlVariant
+import me.miki.shindo.ui.components.v2.style.CompStyleResolver
+import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
@@ -76,7 +75,7 @@ class CompIconButton : CompControlTemplate {
         val enabled = isEnabled()
 
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
-        pressAnimation.setAnimation(if (pressAnimation.value > 0.08f) pressAnimation.value * 0.82f else 0.0f, 16.0)
+        pressAnimation.setAnimation(if (pressAnimation.getValue() > 0.08f) pressAnimation.getValue() * 0.82f else 0.0f, 16.0)
 
         val baseBackground =
             overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
@@ -84,9 +83,9 @@ class CompIconButton : CompControlTemplate {
             ?: CompStyleResolver.resolveControlHover(getVariant(), paletteColors, accentColors)
 
         var drawBackground =
-            ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.value.toDouble())
-        if (pressAnimation.value > 0.08f) {
-            drawBackground = ColorUtils.darken(drawBackground, pressAnimation.value * 0.18f)
+            ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.getValue().toDouble())
+        if (pressAnimation.getValue() > 0.08f) {
+            drawBackground = ColorUtils.darken(drawBackground, pressAnimation.getValue() * 0.18f)
         }
         if (!enabled) {
             drawBackground = ColorUtils.applyAlpha(drawBackground, 118)
@@ -94,7 +93,7 @@ class CompIconButton : CompControlTemplate {
 
         val outlineIdle = ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), 26)
         val outlineHover = ColorUtils.applyAlpha(accentColors.getColor1(), 92)
-        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.value.toDouble())
+        var outlineColor = ColorUtils.interpolateColor(outlineIdle, outlineHover, hoverAnimation.getValue().toDouble())
         if (!enabled) {
             outlineColor = ColorUtils.applyAlpha(outlineColor, 94)
         }
@@ -114,7 +113,7 @@ class CompIconButton : CompControlTemplate {
             } else {
                 ColorUtils.lighten(baseIconColor, 0.16f)
             }
-            var iconColor = ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.value.toDouble())
+            var iconColor = ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.getValue().toDouble())
             if (!enabled) {
                 iconColor = ColorUtils.applyAlpha(iconColor, 132)
             }
@@ -131,7 +130,7 @@ class CompIconButton : CompControlTemplate {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton == 0 && isEnabled() && super.isHoveredInteractive(mouseX, mouseY)) {
-            pressAnimation.value = 1.0f
+            pressAnimation.setValue(1.0f)
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }

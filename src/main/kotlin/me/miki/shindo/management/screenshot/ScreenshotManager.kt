@@ -16,7 +16,7 @@ class ScreenshotManager {
     private var prevSize = 0
 
     init {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val screenshotCacheDir = File(fileManager.cacheDir, "screenshot")
         val dataJson = File(screenshotCacheDir, "Data.json")
         val toRemove = loadData()
@@ -33,7 +33,7 @@ class ScreenshotManager {
     }
 
     private fun loadData(): ArrayList<String> {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val screenshotCacheDir = File(fileManager.cacheDir, "screenshot")
         val dataJson = File(screenshotCacheDir, "Data.json")
         val output = ArrayList<String>()
@@ -54,7 +54,7 @@ class ScreenshotManager {
     }
 
     private fun saveData() {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val screenshotCacheDir = File(fileManager.cacheDir, "screenshot")
         val dataJson = File(screenshotCacheDir, "Data.json")
 
@@ -76,7 +76,7 @@ class ScreenshotManager {
     }
 
     fun loadScreenshots() {
-        val screenshotDir = Shindo.getInstance().fileManager.screenshotDir
+        val screenshotDir = Shindo.getInstance().getFileManager().screenshotDir
         val files = screenshotDir.listFiles() ?: return
         if (prevSize != files.size) {
             prevSize = files.size

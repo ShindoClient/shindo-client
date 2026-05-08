@@ -1,71 +1,37 @@
 package me.miki.shindo.utils
 
-import net.minecraft.util.Util
-import org.lwjgl.Sys
 import java.awt.Desktop
-import java.io.IOException
 import java.net.URI
 
 object BrowserUtils {
-
     @JvmStatic
-    fun openUrl(url: String?): Boolean {
-        if (url.isNullOrBlank()) {
-            return false
-        }
+    fun tryOpenBrowser(uri: String): Boolean {
 
-        val uri = try {
-            URI.create(url.trim())
-        } catch (_: IllegalArgumentException) {
-            return false
-        }
+        val target = URI(uri)
 
-        if (tryDesktopBrowse(uri)) return true
-        if (tryNativeOpen(uri.toString())) return true
-        return tryLwjglFallback(uri.toString())
-    }
-
-    private fun tryDesktopBrowse(uri: URI): Boolean {
-        if (!Desktop.isDesktopSupported()) return false
-
-        return try {
+        if (Desktop.isDesktopSupported()) {
             val desktop = Desktop.getDesktop()
-            if (!desktop.isSupported(Desktop.Action.BROWSE)) return false
-            desktop.browse(uri)
-            true
-        } catch (_: IOException) {
-            false
-        } catch (_: SecurityException) {
-            false
-        }
-    }
 
-    private fun tryNativeOpen(url: String): Boolean {
-        return try {
-            when (Util.getOSType()) {
-                Util.EnumOS.OSX -> {
-                    Runtime.getRuntime().exec(arrayOf("/usr/bin/open", url))
-                    true
-                }
-
-                Util.EnumOS.WINDOWS -> {
-                    Runtime.getRuntime().exec(arrayOf("cmd.exe", "/C", "start", "\"\"", url))
-                    true
-                }
-
-                else -> false
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                desktop.browse(target)
+                return true
             }
-        } catch (_: IOException) {
-            false
         }
-    }
 
-    private fun tryLwjglFallback(url: String): Boolean {
-        return try {
-            Sys.openURL(url)
-            true
-        } catch (_: Exception) {
-            false
+        if (OSUtils.windows) {
+            OSUtils.runWindowsBrowser(uri)
+            return true
         }
+
+        if (OSUtils.mac) {
+            OSUtils.runMacBrowser(uri)
+            return true
+        }
+
+        if (OSUtils.linux) {
+            return OSUtils.runLinuxBrowser(uri)
+        }
+
+        return false
     }
 }

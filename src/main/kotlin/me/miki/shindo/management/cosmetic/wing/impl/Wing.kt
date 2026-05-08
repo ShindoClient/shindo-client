@@ -2,7 +2,7 @@ package me.miki.shindo.management.cosmetic.wing.impl
 
 import me.miki.shindo.api.roles.Role
 import me.miki.shindo.management.cosmetic.wing.WingCategory
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
 open class Wing(

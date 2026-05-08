@@ -26,7 +26,7 @@ class CapeManager {
 
     init {
         val instance = Shindo.getInstance()
-        val fileManager = instance.fileManager
+        val fileManager = instance.getFileManager()
         val customCapeDir = fileManager.customCapeDir
         val cacheDir = fileManager.capeCacheDir
 

@@ -32,7 +32,7 @@ class SkinManager {
     private var currentSkin: Skin? = null
 
     init {
-        val fileManager: FileManager = Shindo.getInstance().fileManager
+        val fileManager: FileManager = Shindo.getInstance().getFileManager()
         skinsDir = fileManager.skinsDir
         if (!skinsDir.exists()) fileManager.createDir(skinsDir)
         dataFile = File(skinsDir, DATA_FILE)

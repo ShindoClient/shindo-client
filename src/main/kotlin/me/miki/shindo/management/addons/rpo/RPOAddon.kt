@@ -20,7 +20,7 @@ class RPOAddon : Addon(
     private var config: ConfigHandler? = null
 
     fun init() {
-        val configDir: File = Shindo.getInstance().fileManager.addonConfigDir
+        val configDir: File = Shindo.getInstance().getFileManager().addonConfigDir
         config = ConfigHandler(File(configDir, "rpo.json"))
 
         val enabled: MutableList<String> = ArrayList(config!!.options.getEnabledPacks())
@@ -35,7 +35,7 @@ class RPOAddon : Addon(
 
     fun get(): ConfigHandler {
         if (config == null) {
-            val configDir: File = Shindo.getInstance().fileManager.addonConfigDir
+            val configDir: File = Shindo.getInstance().getFileManager().addonConfigDir
             config = ConfigHandler(File(configDir, "rpo.json"))
         }
         return config!!

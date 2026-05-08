@@ -21,7 +21,7 @@ class AutoTextManager {
     private val file: File
 
     init {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         file = File(fileManager.shindoDir, FILE_NAME)
         fileManager.createFile(file)
         load()

@@ -1,5 +1,6 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderDamageTint
 import me.miki.shindo.management.language.TranslateText
@@ -8,7 +9,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.PlayerUtils.isCreative
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -54,7 +55,7 @@ class DamageTintMod : Mod(
         GlStateManager.depthMask(false)
         GlStateManager.tryBlendFuncSeparate(0, 769, 1, 0)
 
-        GlStateManager.color(0f, animation1.value, animation1.value, animation1.value)
+        GlStateManager.color(0f, animation1.getValue(), animation1.getValue(), animation1.getValue())
         mc.textureManager.bindTexture(shape)
         val tes = Tessellator.getInstance()
         val wr = tes.worldRenderer

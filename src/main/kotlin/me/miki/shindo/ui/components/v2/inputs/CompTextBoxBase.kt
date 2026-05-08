@@ -1,6 +1,6 @@
 package me.miki.shindo.ui.components.v2.inputs
 
-import me.miki.shindo.ui.components.v1.Comp
+import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.IOUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ChatAllowedCharacters
@@ -10,7 +10,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-open class CompTextBoxBase : Comp {
+open class CompTextBoxBase : Component {
 
     private var text: String
 

@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import java.awt.Color
 
@@ -70,7 +70,7 @@ open class MainMenuScene(private val parent: GuiShindoMainMenu) {
 
     private fun getColorManager(): ColorManager {
         val instance = Shindo.getInstance()
-        return instance.colorManager
+        return instance.getColorManager()
     }
 
     fun getSceneByClass(clazz: Class<out MainMenuScene>): MainMenuScene? {

@@ -16,7 +16,7 @@ class AddonManager {
 
     fun init() {
         registerAddon(RPOAddon())
-        AddonLoader.loadExternalAddons(Shindo.getInstance().fileManager, this)
+        AddonLoader.loadExternalAddons(Shindo.getInstance().getFileManager(), this)
     }
 
     fun getAddonByName(name: String): Addon? {

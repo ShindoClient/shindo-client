@@ -14,7 +14,7 @@ class CommandManager {
     }
 
     init {
-        Shindo.getInstance().eventManager.register(this)
+        Shindo.getInstance().getEventManager().register(this)
     }
 
     @EventTarget

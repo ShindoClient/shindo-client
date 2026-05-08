@@ -117,7 +117,7 @@ class CompAccentColorSelector(
                     LegacyIcon.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 10f,
-                    Color(255, 255, 255, (accent.getAnimation().value * 255).toInt()),
+                    Color(255, 255, 255, (accent.getAnimation().getValue() * 255).toInt()),
                     12f,
                     Fonts.LEGACYICON
                 )

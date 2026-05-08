@@ -45,8 +45,8 @@ open class Setting protected constructor(
         }
 
         when (parent) {
-            is Mod -> Shindo.getInstance().modManager.addSettings(this)
-            is Addon -> Shindo.getInstance().addonManager.addSettings(this)
+            is Mod -> Shindo.getInstance().getModManager().addSettings(this)
+            is Addon -> Shindo.getInstance().getAddonManager().addSettings(this)
         }
 
         registered = true

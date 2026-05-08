@@ -1,8 +1,8 @@
 package me.miki.shindo.management.mods
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.ui.animation.v1.value.ColorAnimation
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.ColorAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
 enum class ModCategory(private val nameTranslate: TranslateText) {
     ALL(TranslateText.ALL),

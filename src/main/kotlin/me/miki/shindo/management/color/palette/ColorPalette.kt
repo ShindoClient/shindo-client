@@ -2,7 +2,7 @@ package me.miki.shindo.management.color.palette
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.Theme
-import me.miki.shindo.ui.animation.v1.value.ColorAnimation
+import me.miki.shindo.ui.animation.v2.value.ColorAnimation
 import java.awt.Color
 
 class ColorPalette {
@@ -39,7 +39,7 @@ class ColorPalette {
     }
 
     private fun getTheme(): Theme =
-        Shindo.getInstance().colorManager.getTheme()
+        Shindo.getInstance().getColorManager().getTheme()
 
     fun getMaterialRed(alpha: Int): Color = Color(232, 38, 52, alpha)
     fun getMaterialYellow(alpha: Int): Color = Color(255, 255, 0, alpha)

@@ -1,6 +1,6 @@
 package me.miki.shindo.management.screenshot
 
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import java.io.File
 
 class Screenshot(image: File) {

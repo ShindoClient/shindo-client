@@ -6,9 +6,9 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.ComboSetting
 import me.miki.shindo.management.settings.impl.combo.Option
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
+import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.ui.components.v2.style.CompControlVariant
 import me.miki.shindo.ui.components.v2.style.CompStyleResolver
-import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 

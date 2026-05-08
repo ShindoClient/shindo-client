@@ -10,8 +10,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
-import me.miki.shindo.ui.components.v1.inputs.CompTextBox
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
+import me.miki.shindo.ui.components.v2.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.PlayerHeadUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -22,7 +22,7 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
-class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShindoScreen {
+class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
 
     private val screenAnimation = ScreenAnimation()
     private val addFriendBox = CompTextBox()
@@ -64,10 +64,9 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         BlurUtils.drawBlurScreen(20f)
         val instance = Shindo.getInstance()
-        instance.chatManager
         val nvg = instance.nanoVGManager ?: return
-        val palette = instance.colorManager.getPalette()
-        val accent = instance.colorManager.getCurrentColor()
+        val palette = instance.getColorManager().getPalette()
+        val accent = instance.getColorManager().getCurrentColor()
 
         screenAnimation.wrap(
             Runnable { drawContent(nvg, palette, accent, mouseX, mouseY, partialTicks) },
@@ -102,7 +101,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235)
         )
 
-        val chatManager = Shindo.getInstance().chatManager
+        val chatManager = Shindo.getInstance().getChatManager()
         friendEntries.clear()
         requestEntries.clear()
 
@@ -283,7 +282,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val instance = Shindo.getInstance()
-        val chatManager = instance.chatManager
+        val chatManager = instance.getChatManager()
         if (!chatManager.isFeatureAvailable()) {
             return
         }
@@ -522,8 +521,8 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         width: Float,
         height: Float
     ) {
-        val chatManager = Shindo.getInstance().chatManager
-        val selfUuid = Shindo.getInstance().shindoAPI.getEffectiveUuid().toString()
+        val chatManager = Shindo.getInstance().getChatManager()
+        val selfUuid = Shindo.getInstance().getShindoAPI().getEffectiveUuid().toString()
         val headerY = y + 14f
 
         val headerText = selectedFriend?.name ?: TranslateText.CHAT_SELECT_FRIEND.getText()
@@ -643,7 +642,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
     }
 
     private fun requestFriend() {
-        val chatManager = Shindo.getInstance().chatManager
+        val chatManager = Shindo.getInstance().getChatManager()
         val username = addFriendBox.getText().trim()
         if (username.isEmpty()) {
             return
@@ -659,7 +658,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen(), IShin
         if (text.isEmpty()) {
             return
         }
-        val chatManager = Shindo.getInstance().chatManager
+        val chatManager = Shindo.getInstance().getChatManager()
         chatManager.sendMessage(friend.uuid, text) { result ->
             if (result is me.miki.shindo.api.chat.ChatManager.MessageSendResult.Success) {
                 messageBox.setText("")

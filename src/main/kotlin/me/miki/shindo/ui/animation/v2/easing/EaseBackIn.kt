@@ -1,18 +1,34 @@
 package me.miki.shindo.ui.animation.v2.easing
 
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.EasingFunctions
-import me.miki.shindo.ui.animation.v1.TimedAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import kotlin.math.max
+import kotlin.math.pow
 
-class EaseBackIn(
-    ms: Int,
-    endPoint: Double,
-    private val easeAmount: Float = 1.7f
-) : TimedAnimation(ms, endPoint, { e, d -> EasingFunctions.backIn(e, d, easeAmount) }) {
+class EaseBackIn : Animation {
+    private val easeAmount: Float
 
-    constructor(ms: Int, endPoint: Double, easeAmount: Float, direction: Direction) : this(ms, endPoint, easeAmount) {
-        setDirection(direction)
+    constructor(ms: Int, endPoint: Double, easeAmount: Float) : super(ms, endPoint) {
+        this.easeAmount = easeAmount
+        this.reset()
     }
 
-    override fun correctOutput(): Boolean = true
+    constructor(ms: Int, endPoint: Double, easeAmount: Float, direction: Direction?) : super(
+        ms,
+        endPoint,
+        direction!!
+    ) {
+        this.easeAmount = easeAmount
+        this.reset()
+    }
+
+    override fun correctOutput(): Boolean {
+        return true
+    }
+
+    protected override fun getEquation(x: Double): Double {
+        val x1 = x / getDuration()
+        val shrink = easeAmount + 1
+        return max(0.0, 1 + shrink * (x1 - 1).pow(3.0) + easeAmount * (x1 - 1).pow(2.0))
+    }
 }

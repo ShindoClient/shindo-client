@@ -19,7 +19,7 @@ class ChangelogManager {
 
     private fun loadChangelog() {
         val jsonObject = HttpUtils.readJson(
-            "https://cdn.shindoclient.com/data/changelogs/versions/${Shindo.getInstance().verIdentifier}.json",
+            "https://cdn.shindoclient.com/data/changelogs/versions/${Shindo.getInstance().getVerIdentifier()}.json",
             null
         ) ?: return
         val jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs") ?: return

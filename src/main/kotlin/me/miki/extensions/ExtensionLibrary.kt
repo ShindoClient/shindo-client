@@ -1,92 +1,18 @@
 package me.miki.extensions
 
-import me.miki.extensions.manager.ExtensionManager
+import me.miki.extensions.core.ExtensionManager
 
-/**
- * Bootstrap point for the extensions library.
- */
 object ExtensionLibrary {
     const val BASE_PACKAGE: String = "me.miki.extensions"
     const val VERSION: String = "0.1.0"
 
     fun bootstrap(manager: ExtensionManager) {
-        registerCore(manager)
-        registerManagement(manager)
         registerUi(manager)
         registerNetwork(manager)
         registerUtils(manager)
         registerSerialization(manager)
     }
 
-    private fun registerCore(manager: ExtensionManager) {
-        manager.register {
-            id = "me.miki.extensions.core"
-            name = "Shindo Kotlin Extensions"
-            version = VERSION
-            description = "Helper extensions that bridge Shindo core services with Kotlin consumers."
-            tags("core", "shindo", "kotlin")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.core.shindo"
-            namespace = "$BASE_PACKAGE"
-            name = "Shindo Service Accessors"
-            version = VERSION
-            description = "Kotlin helpers that expose Shindo manager accessors via `ShindoExtensions`."
-            tags("core", "shindo", "accessors")
-        }
-    }
-
-    private fun registerManagement(manager: ExtensionManager) {
-        val base = "$BASE_PACKAGE.management"
-
-        manager.register {
-            id = "me.miki.extensions.management.modules"
-            namespace = "$base.modules"
-            name = "Module & ModManager Extensions"
-            version = VERSION
-            description = "Helpers for Mod/Module queries, settings, and owner metadata."
-            tags("modules", "mods", "settings")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.management.addons"
-            namespace = "$base.addons"
-            name = "AddonManager Extensions"
-            version = VERSION
-            description = "Helpers focused on addon lookup, filtering and projection."
-            tags("addons", "ui", "management")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.management.profiles"
-            namespace = "$base.profiles"
-            name = "ProfileManager Extensions"
-            version = VERSION
-            description = "Profile helpers that make persistence/lookup easier for UI flows."
-            tags("profiles", "persistence", "settings")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.management.settings"
-            namespace = "$base.settings"
-            name = "Settings Registry Extensions"
-            version = VERSION
-            description = "Typed filters and metadata helpers for the core settings registry."
-            tags("settings", "registry", "metadata")
-        }
-
-        listOf("color", "notification", "event").forEach { key ->
-            manager.register {
-                id = "me.miki.extensions.management.$key"
-                namespace = "$base.$key"
-                name = "${key.capitalize()} Extensions"
-                version = VERSION
-                description = "Placeholder helpers for the ${key} system."
-                tags(key, "placeholder")
-            }
-        }
-    }
 
     private fun registerUi(manager: ExtensionManager) {
         val base = "$BASE_PACKAGE.ui"
@@ -101,8 +27,8 @@ object ExtensionLibrary {
         }
 
         manager.register {
-            id = "me.miki.extensions.ui.graphics.nanovg"
-            namespace = "$base.graphics.nanovg"
+            id = "me.miki.extensions.ui.nanovg"
+            namespace = "$base.nanovg"
             name = "NanoVG Extensions"
             version = VERSION
             description = "Extensions that wrap NanoVG manager helpers for shared render primitives."
@@ -129,15 +55,6 @@ object ExtensionLibrary {
             version = VERSION
             description = "High-level HTTP helpers."
             tags("http", "network")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.network.http.okhttp"
-            namespace = "$base.http.okhttp"
-            name = "OkHttp Extensions"
-            version = VERSION
-            description = "Helpers that speak directly with OkHttp requests/responses."
-            tags("http", "okhttp", "request")
         }
 
         manager.register {

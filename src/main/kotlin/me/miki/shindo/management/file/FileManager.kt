@@ -124,7 +124,7 @@ class FileManager {
     private fun createVersionFile() {
         val versionDir = File(cacheDir, "version")
         createDir(versionDir)
-        createFile(File(versionDir, "${Shindo.getInstance().verIdentifier}.tmp"))
+        createFile(File(versionDir, "${Shindo.getInstance().getVerIdentifier()}.tmp"))
     }
 
     fun createDir(file: File?) {

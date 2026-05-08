@@ -9,10 +9,10 @@ import me.miki.shindo.management.language.Language
 import me.miki.shindo.management.language.LanguageManager
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.curve.DecelerateAnimation
-import me.miki.shindo.ui.animation.v1.screen.ScreenAlpha
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
+import me.miki.shindo.ui.animation.v2.screen.ScreenAlpha
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -23,7 +23,7 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private val screenAlpha = ScreenAlpha()
     private val scroll = Scroll()
-    private val languageManager: LanguageManager = Shindo.getInstance().languageManager
+    private val languageManager: LanguageManager = Shindo.getInstance().getLanguageManager()
     private var x = 0
     private var y = 0
     private var width = 0
@@ -57,7 +57,7 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private fun drawNanoVG() {
         val instance = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
-        val currentColor: AccentColor = instance.colorManager.getCurrentColor()
+        val currentColor: AccentColor = instance.getColorManager().getCurrentColor()
 
         var offsetX = 0
         var index = 1
@@ -115,7 +115,7 @@ class LanguageSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         if (MouseUtils.isInside(mouseX, mouseY, x + width - 86f, y + height - 26f, 80f, 20f) && mouseButton == 0) {
-            Shindo.getInstance().languageManager.setCurrentLanguage(currentLanguage)
+            Shindo.getInstance().getLanguageManager().setCurrentLanguage(currentLanguage)
             fadeAnimation!!.setDirection(Direction.BACKWARDS)
         }
     }

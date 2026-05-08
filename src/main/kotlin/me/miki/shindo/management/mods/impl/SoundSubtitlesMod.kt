@@ -2,6 +2,7 @@ package me.miki.shindo.management.mods.impl
 
 import com.google.common.collect.Lists
 import com.google.gson.JsonParser
+import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.event.EventTarget
@@ -12,7 +13,7 @@ import me.miki.shindo.management.mods.impl.subtitle.Subtitle
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.audio.ISound
 import net.minecraft.util.ResourceLocation
@@ -63,16 +64,16 @@ class SoundSubtitlesMod :
     }
 
     private fun drawNanoVG() {
-        val Vec3 = Vec3(
+        val vec3 = Vec3(
             mc.thePlayer.posX,
             mc.thePlayer.posY + mc.thePlayer.eyeHeight.toDouble(),
             mc.thePlayer.posZ
         )
-        val Vec31 = (Vec3(0.0, 0.0, -1.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
+        val vec31 = (Vec3(0.0, 0.0, -1.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
             .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
-        val Vec32 = (Vec3(0.0, 1.0, 0.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
+        val vec32 = (Vec3(0.0, 1.0, 0.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
             .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
-        val Vec33 = Vec31.crossProduct(Vec32)
+        val vec33 = vec31.crossProduct(vec32)
 
         val subtitleWidth = 120
         val subtitleHeight = (if (this.isEditing()) 3 else subtitles.size) * 16
@@ -93,10 +94,10 @@ class SoundSubtitlesMod :
 
         backgroundAnimation.setAnimation(subtitleHeight.toFloat(), 20)
 
-        if (backgroundAnimation.value > 1) {
+        if (backgroundAnimation.getValue() > 1) {
             val fakeSubtitle = ArrayList<Subtitle>()
 
-            this.drawBackground(subtitleWidth.toFloat(), backgroundAnimation.value)
+            this.drawBackground(subtitleWidth.toFloat(), backgroundAnimation.getValue())
 
             var index = 1
 
@@ -112,20 +113,20 @@ class SoundSubtitlesMod :
 
             for (subtitle in (if (this.isEditing()) fakeSubtitle else subtitles)) {
                 val subtitleLocation = subtitle.location ?: continue
-                val Vec34 = subtitleLocation.subtract(Vec3).normalize()
-                val d0 = -Vec33.dotProduct(Vec34)
-                val d1 = -Vec31.dotProduct(Vec34)
+                val vec34 = subtitleLocation.subtract(vec3).normalize()
+                val d0 = -vec33.dotProduct(vec34)
+                val d1 = -vec31.dotProduct(vec34)
                 val flag = d1 > 0.5
 
                 subtitle.animation.setAnimation((if (subtitle.isRemove) 0 else 1).toFloat(), 17)
 
-                if (subtitle.animation.value < 0.1 && subtitle.isRemove) {
+                if (subtitle.animation.getValue() < 0.1 && subtitle.isRemove) {
                     subtitle.isDone = true
                 }
 
-                val opacity = if (this.isEditing()) 255 else (subtitle.animation.value * 255).toInt()
+                val opacity = if (this.isEditing()) 255 else (subtitle.animation.getValue() * 255).toInt()
                 var animationOffsetY =
-                    (((index - 2) * 16) + (if (this.isEditing()) 1f else subtitle.animation.value) * 16)
+                    (((index - 2) * 16) + (if (this.isEditing()) 1f else subtitle.animation.getValue()) * 16)
 
                 if (index == 1) {
                     animationOffsetY = 0f

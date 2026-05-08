@@ -1,7 +1,7 @@
 package me.miki.shindo.ui.animation.v2.curve
 
-import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
 
 
 open class DecelerateAnimation : Animation {
@@ -14,7 +14,7 @@ open class DecelerateAnimation : Animation {
     }
 
     override fun getEquation(x: Double): Double {
-        val x1: Double = x / duration
+        val x1: Double = x / getDuration()
         return 1 - ((x1 - 1) * (x1 - 1))
     }
 }

@@ -1,6 +1,15 @@
 package me.miki.shindo.ui.animation.v2.easing
 
-import me.miki.shindo.ui.animation.v1.EasingFunctions
-import me.miki.shindo.ui.animation.v1.TimedAnimation
+import me.miki.shindo.ui.animation.v2.Animation
 
-class EaseInQuint(ms: Int, endPoint: Double) : TimedAnimation(ms, endPoint, EasingFunctions::inQuint)
+class EaseInQuint(ms: Int, endPoint: Double) : Animation(ms, endPoint) {
+    init {
+        this.reset()
+    }
+
+    protected override fun getEquation(x: Double): Double {
+        val x1: Double = x / getDuration()
+
+        return x1 * x1 * x1 * x1 * x1
+    }
+}

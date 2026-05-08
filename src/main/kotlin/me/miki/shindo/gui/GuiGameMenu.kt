@@ -6,10 +6,10 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseLiner
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseLiner
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.*
@@ -19,7 +19,7 @@ import net.minecraft.client.resources.I18n
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiGameMenu : GuiScreen(), IShindoScreen {
+class GuiGameMenu : GuiScreen() {
 
     private val screenAnimation = ScreenAnimation()
     private lateinit var introAnimation: Animation
@@ -141,7 +141,7 @@ class GuiGameMenu : GuiScreen(), IShindoScreen {
         }
         offset += standardPadding
         if (MouseUtils.isInside(mouseX, mouseY, x.toFloat(), y + offset, menuWidth.toFloat(), 22f)) {
-            mc.displayGuiScreen(Shindo.getInstance().shindoAPI.modMenu)
+            mc.displayGuiScreen(Shindo.getInstance().getShindoAPI().modMenu)
         }
         offset += standardPadding
         if (MouseUtils.isInside(mouseX, mouseY, x.toFloat(), y + offset, menuWidth.toFloat(), 22f)) {

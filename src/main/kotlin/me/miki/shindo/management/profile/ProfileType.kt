@@ -1,8 +1,8 @@
 package me.miki.shindo.management.profile
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.ui.animation.v1.value.ColorAnimation
-import me.miki.shindo.ui.animation.v1.value.SimpleAnimation
+import me.miki.shindo.ui.animation.v2.value.ColorAnimation
+import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
 enum class ProfileType(val id: Int, private val nameTranslate: TranslateText) {
     ALL(0, TranslateText.ALL),

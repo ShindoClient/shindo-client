@@ -13,8 +13,7 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 import java.util.Locale
 
-class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen),
-    IShindoScreen {
+class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen) {
     private var searchField: GuiTextField? = null
     private lateinit var guiPacksAvailable: GuiResourcePackAvailable
     private lateinit var guiPacksSelected: GuiResourcePackSelected

@@ -104,7 +104,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             tokenFile.outputStream().use { props.store(it, "Spotify Tokens") }
         } catch (e: IOException) {
             ShindoLogger.error("Failed to save tokens", e)
-            Shindo.getInstance().notificationManager.post(
+            Shindo.getInstance().getNotificationManager().post(
                 TranslateText.SPOTIFY_AUTH,
                 TranslateText.SPOTIFY_FAILED_TO_SAVE_TOKENS,
                 NotificationType.ERROR
@@ -284,7 +284,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                 val deviceId = getActiveDeviceId()
                 fetchCurrentPlaybackState()
                 if (deviceId == null) {
-                    Shindo.getInstance().notificationManager.post(
+                    Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_NO_ACTIVE_DEVICE,
                         NotificationType.ERROR
@@ -300,7 +300,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                     playbackRequest.execute()
                     isPlaying = true
                     updatePlaybackState()
-                    Shindo.getInstance().notificationManager.post(
+                    Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_PLAYBACK_STARTED,
                         NotificationType.SUCCESS
@@ -308,7 +308,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                 } catch (e: Exception) {
                     if (e.message?.contains("Restriction violated") == true) {
                         ShindoLogger.warn("Play command restricted - likely due to Spotify Premium requirement or device limitations")
-                        Shindo.getInstance().notificationManager.post(
+                        Shindo.getInstance().getNotificationManager().post(
                             TranslateText.SPOTIFY_PLAYBACK,
                             TranslateText.SPOTIFY_PLAYBACK_RESTRICTED,
                             NotificationType.WARNING
@@ -344,7 +344,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             try {
                 val deviceId = getActiveDeviceId()
                 if (deviceId == null) {
-                    Shindo.getInstance().notificationManager.post(
+                    Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_NO_ACTIVE_DEVICE,
                         NotificationType.ERROR
@@ -360,7 +360,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             } catch (e: Exception) {
                 if (e.message?.contains("Restriction violated") == true) {
                     ShindoLogger.warn("Resume playback restricted - likely due to Spotify Premium requirement or device limitations")
-                    Shindo.getInstance().notificationManager.post(
+                    Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_PREMIUM_REQUIRED,
                         NotificationType.WARNING
@@ -476,7 +476,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             "play playlist" -> TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST
             else -> TranslateText.ERROR
         }
-        Shindo.getInstance().notificationManager.post(
+        Shindo.getInstance().getNotificationManager().post(
             TranslateText.SPOTIFY_PLAYBACK,
             errorText,
             NotificationType.ERROR

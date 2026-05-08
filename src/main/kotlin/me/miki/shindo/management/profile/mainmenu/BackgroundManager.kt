@@ -23,7 +23,7 @@ class BackgroundManager {
     private var currentBackground: Background? = null
 
     init {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val bgCacheDir = File(fileManager.cacheDir, "background")
         val dataJson = File(bgCacheDir, "Data.json")
 
@@ -69,7 +69,7 @@ class BackgroundManager {
     }
 
     fun load(): ArrayList<String> {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val bgCacheDir = File(fileManager.cacheDir, "background")
         val dataJson = File(bgCacheDir, "Data.json")
         val output = ArrayList<String>()
@@ -91,7 +91,7 @@ class BackgroundManager {
     }
 
     fun save() {
-        val fileManager = Shindo.getInstance().fileManager
+        val fileManager = Shindo.getInstance().getFileManager()
         val bgCacheDir = File(fileManager.cacheDir, "background")
         val dataJson = File(bgCacheDir, "Data.json")
 

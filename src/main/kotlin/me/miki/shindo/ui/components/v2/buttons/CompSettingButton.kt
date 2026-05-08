@@ -2,9 +2,9 @@ package me.miki.shindo.ui.components.v2.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.ui.components.v1.Comp
-import me.miki.shindo.ui.components.v1.style.CompControlVariant
-import me.miki.shindo.ui.components.v1.templates.CompControlTemplate
+import me.miki.shindo.ui.components.v2.Component
+import me.miki.shindo.ui.components.v2.style.CompControlVariant
+import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
@@ -14,7 +14,7 @@ class CompSettingButton : CompControlTemplate {
 
     private var statusSupplier: (() -> String)? = null
     private var statusColorSupplier: (() -> Color)? = null
-    private var trailingComp: Comp? = null
+    private var trailingComp: Component? = null
 
     private var paddingLeft: Float = 16f
     private var paddingRight: Float = 18f
@@ -43,7 +43,7 @@ class CompSettingButton : CompControlTemplate {
     @Deprecated("Use onClickAction instead", ReplaceWith("onClickAction(onClick)"))
     fun onClick(onClick: () -> Unit): CompSettingButton = onClickAction(onClick)
 
-    fun trailing(comp: Comp): CompSettingButton {
+    fun trailing(comp: Component): CompSettingButton {
         this.trailingComp = comp
         return this
     }

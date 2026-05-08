@@ -29,7 +29,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val acHeight = 190
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
         val acY = sr.scaledHeight / 2 - (acHeight / 2)
-        val update = instance.update
+        val update = instance.getUpdate()
         val panelColor = getPanelColor()
         val controlColor = getControlColor()
         nvg.drawRoundedRect(acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat(), 8f, panelColor)
@@ -43,7 +43,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             Fonts.REGULAR
         )
         nvg.drawCenteredText(
-            instance.buildInfo.getSemver() + " -> " + update.versionString,
+            instance.getBuildInfo().semver + " -> " + update.versionString,
             acX + (acWidth / 2f),
             acY + 48f,
             Color.WHITE,
@@ -51,7 +51,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             Fonts.REGULAR
         )
         nvg.drawCenteredText(
-            instance.buildInfo.getBuildId() + " (" + instance.buildInfo.getType() + ") -> " + update.buildId + " (" + update.type + ")",
+            instance.getBuildInfo().buildId + " (" + instance.getBuildInfo().type + ") -> " + update.buildId + " (" + update.type + ")",
             acX + (acWidth / 2f),
             acY + 60f,
             Color.WHITE,
@@ -80,8 +80,8 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
     private fun exitGui() {
         val instance = Shindo.getInstance()
-        instance.updateNeeded = false
-        setCurrentScene(getSceneByClass(MainSceneV2::class.java))
+        instance.setUpdateNeeded(false)
+        setCurrentScene(getSceneByClass(MainScene::class.java))
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -94,7 +94,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             val instance = Shindo.getInstance()
             if (MouseUtils.isInside(mouseX, mouseY, acX + acWidth / 2f - 90f, acY + acHeight - 64f, 180f, 20f)) {
                 try {
-                    Desktop.getDesktop().browse(URI(instance.update.updateLink))
+                    Desktop.getDesktop().browse(URI(instance.getUpdate().updateLink))
                 } catch (_: Exception) {
                 }
             }

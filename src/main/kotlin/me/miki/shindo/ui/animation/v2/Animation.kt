@@ -10,11 +10,9 @@ abstract class Animation {
     @JvmField
     val timer = TimerUtils()
 
-    protected var duration: Int
-
-    protected var endPoint: Double
-
-    protected var direction: Direction
+    private var duration: Int
+    private var endPoint: Double
+    private var direction: Direction
 
     constructor(ms: Int, endPoint: Double) {
         this.duration = ms
@@ -55,7 +53,7 @@ abstract class Animation {
         }
     }
 
-    protected fun correctOutput(): Boolean {
+    open fun correctOutput(): Boolean {
         return false
     }
 

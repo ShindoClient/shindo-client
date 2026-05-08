@@ -1,14 +1,15 @@
 package me.miki.shindo.management.mods.impl
 
+import me.miki.extensions.ui.animation.wrap
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.animation.v1.Animation
-import me.miki.shindo.ui.animation.v1.Direction
-import me.miki.shindo.ui.animation.v1.easing.EaseBackIn
-import me.miki.shindo.ui.animation.v1.screen.ScreenAnimation
+import me.miki.shindo.ui.animation.v2.Animation
+import me.miki.shindo.ui.animation.v2.Direction
+import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
+import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.utils.GlUtils.startScale
 import me.miki.shindo.utils.GlUtils.stopScale
 import net.minecraft.block.Block
@@ -39,10 +40,10 @@ class BlockInfoMod :
         screenAnimation.wrap(
             Runnable { drawBlock() },
             Runnable { drawNanoVG() },
-            this.getX().toFloat(),
-            this.getY().toFloat(),
-            this.getWidth().toFloat(),
-            this.getHeight().toFloat(),
+            this.getX(),
+            this.getY(),
+            this.getWidth(),
+            this.getHeight(),
             2 - introAnimation!!.getValueFloat(),
             introAnimation!!.getValueFloat()
         )
