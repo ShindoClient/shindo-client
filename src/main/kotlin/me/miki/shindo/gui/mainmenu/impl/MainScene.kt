@@ -92,29 +92,9 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         multiHover = lerp(multiHover, if (isInside(mouseX, mouseY, btnX, startY + spacing, btnW, btnH)) 1f else 0f, 0.2f)
         exitHover = lerp(exitHover, if (isInside(mouseX, mouseY, btnX, startY + spacing * 2, btnW, btnH)) 1f else 0f, 0.2f)
 
-        drawGlassButton(
-            nvg,
-            centerX,
-            startY,
-            btnW,
-            btnH,
-            TranslateText.SINGLEPLAYER.getText(),
-            singleHover,
-            anim,
-            false
-        )
-        drawGlassButton(
-            nvg,
-            centerX,
-            startY + spacing,
-            btnW,
-            btnH,
-            TranslateText.MULTIPLAYER.getText(),
-            multiHover,
-            anim,
-            false
-        )
-        drawExitButton(nvg, centerX, startY + spacing * 2, btnW, btnH, anim)
+        nvg.drawGlassButton(TranslateText.SINGLEPLAYER.getText(), centerX, startY, btnW, btnH, singleHover, anim, false)
+        nvg.drawGlassButton(TranslateText.MULTIPLAYER.getText(), centerX, startY + spacing, btnW, btnH, multiHover, anim, false)
+        nvg.drawGlassButton( "QUIT GAME", centerX, startY + spacing * 2, btnW, btnH, exitHover,anim, true)
 
         val bgSize = 36f
         val bgX = 10f
@@ -142,48 +122,6 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         // Top right
         drawTopRight(nvg, mouseX, mouseY, sw, anim)
 
-    }
-
-    private fun drawGlassButton(
-        nvg: NanoVGManager,
-        cx: Float,
-        y: Float,
-        w: Float,
-        h: Float,
-        text: String,
-        hover: Float,
-        anim: Float,
-        red: Boolean
-    ) {
-        val scale = 1.0f + (hover * 0.03f)
-        val dw = w * scale
-        val dh = h * scale
-        val dx = cx - (dw / 2f)
-        val dy = y + (h - dh) / 2f
-
-        val bg: Color = Color(15, 15, 20, (anim * (140 + hover * 70)).toInt())
-        nvg.drawRoundedRect(dx, dy, dw, dh, 4.5f, bg)
-        nvg.drawOutlineRoundedRect(
-            dx, dy, dw, dh, 4.5f, 1.2f,
-            Color(255, 255, 255, (anim * (35 + hover * 85)).toInt())
-        )
-        nvg.drawCenteredText(
-            text, cx, dy + dh / 2f - 4.5f,
-            Color(255, 255, 255, (anim * (200 + hover * 55)).toInt()), 9.5f, Fonts.REGULAR
-        )
-    }
-
-    private fun drawExitButton(nvg: NanoVGManager, cx: Float, y: Float, w: Float, h: Float, anim: Float) {
-        val scale = 1.0f + (exitHover * 0.03f)
-        val dw = w * scale
-        val dh = h * scale
-        val dx = cx - (dw / 2f)
-        val dy = y + (h - dh) / 2f
-
-        val redAlpha = (anim * (80 + exitHover * 100)).toInt()
-        nvg.drawRoundedRect(dx, dy, dw, dh, 4.5f, Color(180, 30, 30, redAlpha))
-        nvg.drawOutlineRoundedRect(dx, dy, dw, dh, 4.5f, 1.2f, Color(255, 80, 80, (anim * (60 + exitHover * 120)).toInt()))
-        nvg.drawCenteredText("QUIT GAME", cx, dy + dh / 2f - 4.5f, Color(255, 200, 200, (anim * (200 + exitHover * 55)).toInt()), 9.5f, Fonts.REGULAR)
     }
 
     private fun drawConfirmExit(nvg: NanoVGManager, sw: Float, sh: Float, mouseX: Int, mouseY: Int, alpha: Float) {
@@ -242,12 +180,12 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         // Settings
         //rightX -= (btnS + btnSp)
         settingsHover = lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SETTINGS, settingsHover, anim)
+        nvg.drawGlassButtonWithIcon(LegacyIcon.SETTINGS, rightX - btnS, topY, btnS,  settingsHover, anim)
 
         // Logo
         rightX -= (btnS + btnSp)
         featherHover = lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, featherHover, anim)
+        nvg.drawGlassButtonWithIcon(LegacyIcon.SHINDO, rightX - btnS, topY, btnS,  featherHover, anim)
 
         // Profile box
         rightX -= (btnS + btnSp)
@@ -271,21 +209,6 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             name, profX + 26, topY + btnS / 2f - 5f,
             Color(255, 255, 255, (anim * 230).toInt()), 10, Fonts.SEMIBOLD
         )
-    }
-
-    private fun drawCornerIcon(
-        nvg: NanoVGManager,
-        x: Float,
-        y: Float,
-        size: Float,
-        icon: String,
-        hover: Float,
-        anim: Float
-    ) {
-        nvg.drawRoundedRect(x, y, size, size, 5, Color(20, 20, 25, (anim * (180 + hover * 75)).toInt()))
-        nvg.drawOutlineRoundedRect(x, y, size, size, 5, 1f, Color(255, 255, 255, (anim * (30 + hover * 50)).toInt()))
-        val iconColor: Color = Color(255, 255, 255, (anim * (180 + hover * 75)).toInt())
-        nvg.drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LEGACYICON)
     }
 
     private fun lerp(current: Float, target: Float, factor: Float): Float {

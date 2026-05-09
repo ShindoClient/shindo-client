@@ -1,5 +1,8 @@
 package me.miki.shindo.management.nanovg
 
+import me.miki.extensions.ui.nanovg.drawCenteredText
+import me.miki.extensions.ui.nanovg.drawOutlineRoundedRect
+import me.miki.extensions.ui.nanovg.drawRoundedRect
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -329,6 +332,33 @@ class NanoVGManager {
             )
         )
         NanoVG.nvgFill(nvg)
+    }
+
+    fun drawGlassButton(text: String, x: Float, y: Float, w: Float, h: Float, hover: Float, anim: Float, red: Boolean) {
+        val scale = 1.0f + (hover * 0.03f)
+        val dw = w * scale
+        val dh = h * scale
+        val dx = x - (dw / 2f)
+        val dy = y + (h - dh) / 2f
+
+        val bg: Color = if (red) Color(180, 30, 30, (anim * (80 + hover * 100)).toInt()) else Color(15, 15, 20, (anim * (140 + hover * 70)).toInt())
+        drawRoundedRect(dx, dy, dw, dh, 4.5f, bg)
+        drawOutlineRoundedRect(dx, dy, dw, dh, 4.5f, 1.2f, Color(255, 255, 255, (anim * (35 + hover * 85)).toInt()))
+        drawCenteredText(text, x, dy + dh / 2f - 4.5f, Color(255, 255, 255, (anim * (200 + hover * 55)).toInt()), 9.5f, Fonts.REGULAR)
+    }
+
+    fun drawGlassButtonWithIcon(
+        icon: String,
+        x: Float,
+        y: Float,
+        size: Float,
+        hover: Float,
+        anim: Float
+    ) {
+        drawRoundedRect(x, y, size, size, 5, Color(20, 20, 25, (anim * (180 + hover * 75)).toInt()))
+        drawOutlineRoundedRect(x, y, size, size, 5, 1f, Color(255, 255, 255, (anim * (30 + hover * 50)).toInt()))
+        val iconColor: Color = Color(255, 255, 255, (anim * (180 + hover * 75)).toInt())
+        drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LEGACYICON)
     }
 
     fun drawGradientRoundedRect(

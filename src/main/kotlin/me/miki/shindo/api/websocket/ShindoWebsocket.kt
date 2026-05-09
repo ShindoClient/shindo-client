@@ -79,7 +79,7 @@ class ShindoWebsocket(
         if (c == null || type == null) return
         val obj = payload ?: JsonObject()
         obj.addProperty("type", type.wireType)
-        FileLogWriter.websocket("send type=" + type.wireType)
+        //FileLogWriter.websocket("send type=" + type.wireType)
         c.sendJson(obj)
     }
 
@@ -121,13 +121,13 @@ class ShindoWebsocket(
                 cancelReconnect()
                 authenticate()
                 startHeartbeat()
-                FileLogWriter.websocket("open url=$url")
+                //FileLogWriter.websocket("open url=$url")
                 notifyListeners(Consumer { l -> l.onOpen(null) })
             }
 
             override fun onMessage(type: String, payload: JsonObject) {
                 handleServerMessage(type, payload)
-                FileLogWriter.websocket("recv type=$type")
+                //FileLogWriter.websocket("recv type=$type")
                 notifyListeners(Consumer { l -> l.onMessage(type, payload) })
             }
 
@@ -135,14 +135,13 @@ class ShindoWebsocket(
                 stopHeartbeat()
                 clientRef.compareAndSet(c, null)
                 if (!stopRequested.get()) scheduleReconnect("close:$code")
-                FileLogWriter.websocket("close code=$code reason=$reason remote=$remote")
+                //FileLogWriter.websocket("close code=$code reason=$reason remote=$remote")
                 notifyListeners(Consumer { l -> l.onClose(code, reason, remote) })
             }
 
             override fun onError(ex: Exception) {
                 FileLogWriter.websocket("error ${ex.javaClass.simpleName} ${ex.message}")
                 notifyListeners(Consumer { l -> l.onError(ex) })
-                // scheduleReconnect is triggered via onClose which OkHttp fires after onFailure.
             }
         })
 
@@ -217,7 +216,7 @@ class ShindoWebsocket(
                 val now = System.currentTimeMillis()
                 val lastAck = lastHeartbeatAck.get()
                 if (lastAck > 0 && now - lastAck > HEARTBEAT_TIMEOUT_MS) {
-                    FileLogWriter.websocket("heartbeat_timeout – forcing reconnect")
+                    //FileLogWriter.websocket("heartbeat_timeout – forcing reconnect")
                     closeClient(client)
                     scheduleReconnect("heartbeat_timeout")
                     return@scheduleAtFixedRate
@@ -243,7 +242,7 @@ class ShindoWebsocket(
         val delay = RECONNECT_MAX_MS.coerceAtMost(
             (RECONNECT_BASE_MS * 2.0.pow((attempt - 1).toDouble())).toLong()
         )
-        FileLogWriter.websocket("reconnect scheduled reason=$reason attempt=$attempt delay=${delay}ms")
+        //FileLogWriter.websocket("reconnect scheduled reason=$reason attempt=$attempt delay=${delay}ms")
         reconnectFuture.set(
             scheduler.schedule({ establishClient() }, delay, TimeUnit.MILLISECONDS)
         )
@@ -260,7 +259,7 @@ class ShindoWebsocket(
     }
 
     private fun normalizeRoles(roles: Array<String>?): Array<String> {
-        if (roles == null || roles.isEmpty()) return arrayOf(DEFAULT_ROLE)
+        if (roles.isNullOrEmpty()) return arrayOf(DEFAULT_ROLE)
         val set = HashSet<String>()
         for (role in roles) {
             val normalized = role.trim().toUpperCase(Locale.ROOT)

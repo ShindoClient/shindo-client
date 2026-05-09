@@ -2,6 +2,9 @@ package me.miki.shindo.gui
 
 import me.miki.extensions.ui.animation.setAnimation
 import me.miki.extensions.ui.animation.wrap
+import me.miki.extensions.ui.nanovg.drawOutlineRoundedRect
+import me.miki.extensions.ui.nanovg.drawRoundedRect
+import me.miki.extensions.ui.nanovg.drawShadow
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
@@ -15,6 +18,7 @@ import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
 import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.ui.components.v2.inputs.CompTextBox
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import me.miki.shindo.utils.render.BlurUtils
@@ -81,7 +85,7 @@ class GuiWaypoint : GuiScreen() {
 
     private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val instance = Shindo.getInstance()
-        val nvg = instance.nanoVGManager
+        val nvg = instance.nanoVGManager!!
         val waypointManager: WaypointManager = instance.getWaypointManager()
         val colorManager: ColorManager = instance.getColorManager()
         val palette: ColorPalette = colorManager.getPalette()
@@ -97,17 +101,26 @@ class GuiWaypoint : GuiScreen() {
             mc.displayGuiScreen(null)
         }
 
-        nvg!!.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 10f)
+        nvg.drawShadow(x, y, menuWidth, menuHeight, 8f, 7)
         nvg.drawRoundedRect(
-            x.toFloat(),
-            y.toFloat(),
-            menuWidth.toFloat(),
-            menuHeight.toFloat(),
-            10f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            x,
+            y,
+            menuWidth,
+            menuHeight,
+            8f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
         )
+        nvg.drawRoundedRect(
+            x + 1f,
+            y + 1f,
+            menuWidth - 2f,
+            menuHeight - 2f,
+            7f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+        )
+
         nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
-        nvg.drawRect(x.toFloat(), y + 24f, menuWidth.toFloat(), 1f, palette.getBackgroundColor(ColorType.DARK))
+        nvg.drawRoundedRect(x + 6, y + 25f, menuWidth - 12, 1.75f,3f, palette.getBackgroundColor(ColorType.NORMAL))
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 25f, 190f, menuHeight - 25f)
@@ -128,13 +141,23 @@ class GuiWaypoint : GuiScreen() {
                     16
                 )
 
+                nvg.drawShadow(x, y, width, height, 6f, 7)
                 nvg.drawRoundedRect(
                     x + 10f,
                     y + 35f + offsetY,
                     170f,
                     28f,
                     6f,
-                    palette.getBackgroundColor(ColorType.DARK)
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                )
+                nvg.drawOutlineRoundedRect(
+                    x + 10f,
+                    y + 35f + offsetY,
+                    170f,
+                    28f,
+                    6f,
+                    1f,
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
                 )
                 nvg.drawRoundedRect(x + 16f, y + 40f + offsetY, 18f, 18f, 4f, waypoint.getColor())
                 nvg.drawText(
@@ -168,14 +191,26 @@ class GuiWaypoint : GuiScreen() {
 
         scroll.maxScroll = if (index < 3) 0f else (index - 3) * 66f
 
+
+        nvg.drawShadow(x + menuWidth - 130f, y + 35f, 120f, menuHeight - 45f, 6f, 7)
         nvg.drawRoundedRect(
             x + menuWidth - 130f,
             y + 35f,
             120f,
             menuHeight - 45f,
             6f,
-            palette.getBackgroundColor(ColorType.DARK)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
         )
+        nvg.drawOutlineRoundedRect(
+            x + menuWidth - 130f,
+            y + 35f,
+            120f,
+            menuHeight - 45f,
+            6f,
+            1f,
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+        )
+
         nvg.drawCenteredText(
             "Create a waypoint",
             x + menuWidth - 130f + (120 / 2f),
