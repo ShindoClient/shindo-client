@@ -1,10 +1,7 @@
-package me.miki.extensions.manager
+package me.miki.extensions.core
 
 import me.miki.shindo.logger.ShindoLogger
 
-/**
- * Manager that keeps track of registered [ExtensionModule] instances.
- */
 class ExtensionManager {
     private val modules: MutableMap<String, ExtensionModule> = linkedMapOf()
     private val loggerTag = "ExtensionManager"

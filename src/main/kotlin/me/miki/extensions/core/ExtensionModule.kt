@@ -1,10 +1,7 @@
-package me.miki.extensions.manager
+package me.miki.extensions.core
 
 import me.miki.extensions.ExtensionLibrary
 
-/**
- * Metadata for a logical extension bundle that ships within the extension system.
- */
 data class ExtensionModule(
     val id: String,
     val name: String,
@@ -15,9 +12,6 @@ data class ExtensionModule(
     val metadata: Map<String, String>
 )
 
-/**
- * Helper DSL for making [ExtensionModule] instances more readable.
- */
 class ExtensionModuleBuilder {
     var id: String? = null
     var name: String? = null
