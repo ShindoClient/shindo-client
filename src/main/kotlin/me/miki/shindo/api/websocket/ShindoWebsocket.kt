@@ -7,8 +7,7 @@ import me.miki.shindo.api.websocket.message.MessageHandler
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.logger.FileLogWriter
-import org.java_websocket.handshake.ServerHandshake
-import java.net.URI
+import okhttp3.Handshake
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -19,28 +18,36 @@ import java.util.function.Consumer
 import kotlin.math.pow
 
 class ShindoWebsocket(
-    private val uri: URI,
-    private val ssl: Boolean,
+    private val url: String,
     presenceTracker: PresenceTracker? = null
 ) {
 
-    private val listeners = CopyOnWriteArrayList<Listener>()
-    private val clientRef = AtomicReference<WsClient?>(null)
-    private val lastRolesSent = AtomicReference<List<String>>(Collections.emptyList())
-    private val scheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { r ->
-        Thread(r, "shindo-ws").apply { isDaemon = true }
-    }
-    private val stopRequested = AtomicBoolean(false)
-    private val reconnectAttempts = AtomicInteger(0)
-    private val lastHeartbeatAck = AtomicLong(0L)
-    private val heartbeatFuture = AtomicReference<ScheduledFuture<*>?>(null)
-    private val reconnectFuture = AtomicReference<ScheduledFuture<*>?>(null)
+    @Suppress("UNUSED_PARAMETER")
+    constructor(
+        uri: java.net.URI,
+        ssl: Boolean,
+        presenceTracker: PresenceTracker? = null
+    ) : this(uri.toString(), presenceTracker)
 
     val messageHandler: MessageHandler = MessageHandler(presenceTracker)
 
     var provider: IdentityProvider? = null
     var presenceTracker: PresenceTracker? = presenceTracker
     var roleManager: RoleManager? = null
+
+    private val listeners = CopyOnWriteArrayList<Listener>()
+    private val clientRef = AtomicReference<WsClient?>(null)
+    private val lastRolesSent = AtomicReference<List<String>>(Collections.emptyList())
+
+    private val scheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { r ->
+        Thread(r, "shindo-ws").apply { isDaemon = true }
+    }
+
+    private val stopRequested = AtomicBoolean(false)
+    private val reconnectAttempts = AtomicInteger(0)
+    private val lastHeartbeatAck = AtomicLong(0L)
+    private val heartbeatFuture = AtomicReference<ScheduledFuture<*>?>(null)
+    private val reconnectFuture = AtomicReference<ScheduledFuture<*>?>(null)
 
     fun addListener(l: Listener?) {
         if (l != null) listeners.add(l)
@@ -59,7 +66,7 @@ class ShindoWebsocket(
         cancelReconnect()
         lastRolesSent.set(Collections.emptyList())
         lastHeartbeatAck.set(0L)
-        safeClose(clientRef.getAndSet(null))
+        closeClient(clientRef.getAndSet(null))
     }
 
     fun isOpen(): Boolean {
@@ -100,25 +107,27 @@ class ShindoWebsocket(
 
     private fun establishClient() {
         if (stopRequested.get()) return
+
         val existing = clientRef.get()
         if (existing != null && existing.isOpenAtomic()) return
-        safeClose(existing)
+        closeClient(existing)
 
-        val c = WsClient(uri, ssl)
+        val c = WsClient(url, WsHttpClientProvider.instance)
         c.addListener(object : WsClient.WsClientListener {
+
             override fun onOpen() {
                 lastHeartbeatAck.set(System.currentTimeMillis())
                 reconnectAttempts.set(0)
                 cancelReconnect()
                 authenticate()
                 startHeartbeat()
-                FileLogWriter.websocket("open")
+                FileLogWriter.websocket("open url=$url")
                 notifyListeners(Consumer { l -> l.onOpen(null) })
             }
 
             override fun onMessage(type: String, payload: JsonObject) {
                 handleServerMessage(type, payload)
-                FileLogWriter.websocket("recv type=" + type)
+                FileLogWriter.websocket("recv type=$type")
                 notifyListeners(Consumer { l -> l.onMessage(type, payload) })
             }
 
@@ -131,9 +140,9 @@ class ShindoWebsocket(
             }
 
             override fun onError(ex: Exception) {
-                FileLogWriter.websocket("error " + ex.javaClass.simpleName + " " + ex.message)
+                FileLogWriter.websocket("error ${ex.javaClass.simpleName} ${ex.message}")
                 notifyListeners(Consumer { l -> l.onError(ex) })
-                if (!stopRequested.get()) scheduleReconnect("error")
+                // scheduleReconnect is triggered via onClose which OkHttp fires after onFailure.
             }
         })
 
@@ -153,8 +162,7 @@ class ShindoWebsocket(
         return sanitizeIdentity(raw)
     }
 
-    private fun sendAuthPayload(info: WsIdentity?) {
-        if (info == null) return
+    private fun sendAuthPayload(info: WsIdentity) {
         val outgoingRoles = normalizeRoles(info.roles)
         val payload = JsonObject()
         payload.addProperty("uuid", info.uuid)
@@ -173,6 +181,7 @@ class ShindoWebsocket(
 
         when (type) {
             MessageType.PONG -> return
+
             MessageType.SERVER_KEEPALIVE -> {
                 send(MessageType.PING, JsonObject())
                 return
@@ -186,33 +195,17 @@ class ShindoWebsocket(
             else -> {}
         }
 
-        if (type == MessageType.AUTH_OK && payload != null && payload.has("roles") && payload.get("roles").isJsonArray) {
+        if (type == MessageType.AUTH_OK &&
+            payload != null &&
+            payload.has("roles") &&
+            payload.get("roles").isJsonArray
+        ) {
             val arr = payload.getAsJsonArray("roles")
             val roles = Array(arr.size()) { idx -> arr[idx].asString }
             lastRolesSent.set(listOf(*normalizeRoles(roles)))
         }
+
         messageHandler.handle(rawType, payload)
-    }
-
-    private fun sanitizeIdentity(info: WsIdentity): WsIdentity {
-        val uuid = safeTrim(info.uuid)
-        val name = safeTrim(info.name)
-        val accountType = info.accountType
-        val normalizedRoles = normalizeRoles(info.roles)
-        return WsIdentity(uuid, name, normalizedRoles, accountType)
-    }
-
-    private fun safeTrim(value: String?): String = value?.trim() ?: ""
-
-    private fun normalizeRoles(roles: Array<String>?): Array<String> {
-        if (roles == null || roles.isEmpty()) return arrayOf(DEFAULT_ROLE)
-        val set = HashSet<String>()
-        for (role in roles) {
-            val normalized = safeTrim(role).toUpperCase(Locale.ROOT)
-            if (ALLOWED_ROLES.contains(normalized)) set.add(normalized)
-        }
-        if (set.isEmpty()) set.add(DEFAULT_ROLE)
-        return set.toTypedArray()
     }
 
     private fun startHeartbeat() {
@@ -224,7 +217,8 @@ class ShindoWebsocket(
                 val now = System.currentTimeMillis()
                 val lastAck = lastHeartbeatAck.get()
                 if (lastAck > 0 && now - lastAck > HEARTBEAT_TIMEOUT_MS) {
-                    safeClose(client)
+                    FileLogWriter.websocket("heartbeat_timeout – forcing reconnect")
+                    closeClient(client)
                     scheduleReconnect("heartbeat_timeout")
                     return@scheduleAtFixedRate
                 }
@@ -234,35 +228,51 @@ class ShindoWebsocket(
     }
 
     private fun stopHeartbeat() {
-        val future = heartbeatFuture.getAndSet(null)
-        future?.cancel(true)
-    }
-
-    private fun scheduleReconnect(reason: String) {
-        if (stopRequested.get()) return
-        val existing = reconnectFuture.get()
-        if (existing != null && !existing.isDone) return
-        val attempt = 1.coerceAtLeast(reconnectAttempts.incrementAndGet())
-        val delay =
-            RECONNECT_MAX_MS.coerceAtMost((RECONNECT_BASE_MS * 2.0.pow((attempt - 1).toDouble())).toLong())
-        reconnectFuture.set(scheduler.schedule({ establishClient() }, delay, TimeUnit.MILLISECONDS))
-    }
-
-    private fun cancelReconnect() {
-        val future = reconnectFuture.getAndSet(null)
-        future?.cancel(true)
+        heartbeatFuture.getAndSet(null)?.cancel(true)
     }
 
     private fun recordHeartbeat() {
         lastHeartbeatAck.set(System.currentTimeMillis())
     }
 
-    private fun safeClose(client: WsClient?) {
-        if (client == null) return
-        try {
-            client.close()
-        } catch (ignored: Exception) {
+    private fun scheduleReconnect(reason: String) {
+        if (stopRequested.get()) return
+        val existing = reconnectFuture.get()
+        if (existing != null && !existing.isDone) return
+        val attempt = reconnectAttempts.incrementAndGet().coerceAtLeast(1)
+        val delay = RECONNECT_MAX_MS.coerceAtMost(
+            (RECONNECT_BASE_MS * 2.0.pow((attempt - 1).toDouble())).toLong()
+        )
+        FileLogWriter.websocket("reconnect scheduled reason=$reason attempt=$attempt delay=${delay}ms")
+        reconnectFuture.set(
+            scheduler.schedule({ establishClient() }, delay, TimeUnit.MILLISECONDS)
+        )
+    }
+
+    private fun cancelReconnect() {
+        reconnectFuture.getAndSet(null)?.cancel(true)
+    }
+
+    private fun sanitizeIdentity(info: WsIdentity): WsIdentity {
+        val uuid = info.uuid.trim()
+        val name = info.name.trim()
+        return WsIdentity(uuid, name, normalizeRoles(info.roles), info.accountType)
+    }
+
+    private fun normalizeRoles(roles: Array<String>?): Array<String> {
+        if (roles == null || roles.isEmpty()) return arrayOf(DEFAULT_ROLE)
+        val set = HashSet<String>()
+        for (role in roles) {
+            val normalized = role.trim().toUpperCase(Locale.ROOT)
+            if (ALLOWED_ROLES.contains(normalized)) set.add(normalized)
         }
+        if (set.isEmpty()) set.add(DEFAULT_ROLE)
+        return set.toTypedArray()
+    }
+
+    private fun closeClient(client: WsClient?) {
+        if (client == null) return
+        try { client.close() } catch (ignored: Exception) { }
     }
 
     private fun notifyListeners(consumer: Consumer<Listener>) {
@@ -275,7 +285,7 @@ class ShindoWebsocket(
     }
 
     interface Listener {
-        fun onOpen(handshake: ServerHandshake?) {}
+        fun onOpen(handshake: Handshake?) {}
         fun onClose(code: Int, reason: String, remote: Boolean) {}
         fun onError(ex: Exception) {}
         fun onMessage(type: String, payload: JsonObject) {}

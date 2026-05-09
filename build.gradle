@@ -86,7 +86,7 @@ dependencies {
     embed "com.neovisionaries:nv-i18n:1.29"
 
     // --- Networking ---
-    embed "org.java-websocket:Java-WebSocket:1.6.0"
+    embed "com.squareup.okhttp3:okhttp:3.14.9"
 
     // --- JSON (single source of truth) ---
     embed "com.google.code.gson:gson:2.13.1"
@@ -168,6 +168,7 @@ shadowJar {
     )
 
     // Package relocation
+    relocate 'okhttp3',                     'me.miki.shindo.libs.okhttp3'
     relocate 'okio',                        'me.miki.shindo.libs.okio'
     relocate 'org.java_websocket',          'me.miki.shindo.libs.websocket'
     relocate 'com.wrapper.spotify',         'me.miki.shindo.libs.spotify'

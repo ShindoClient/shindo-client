@@ -17,7 +17,7 @@ fun JsonObject.booleanOrDefault(key: String, defaultValue: Boolean = false): Boo
 }
 
 fun JsonObject.putIfNotBlank(key: String, value: String?): JsonObject {
-    if (value != null && value.isNotBlank()) {
+    if (!value.isNullOrBlank()) {
         addProperty(key, value)
     }
     return this

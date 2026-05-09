@@ -10,16 +10,14 @@ import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.gui.GuiNavigationHub
 import me.miki.shindo.gui.mainmenu.GuiShindoMainMenu
 import me.miki.shindo.gui.modmenu.v2.GuiModMenu
-import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.file.FileManager
+import me.miki.shindo.utils.AccountUtil
 import net.minecraft.client.Minecraft
-import net.minecraft.util.Session
 import java.io.File
-import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.BiConsumer
-import java.util.function.Supplier
+
 @Suppress("unused", "RedundantSamConstructor")
 class ShindoAPI {
 
@@ -52,65 +50,22 @@ class ShindoAPI {
     }
 
     fun start() {
-        val uuidSup: Supplier<String> = Supplier {
-            try {
-                getEffectiveUuid().toString()
-            } catch (e: Exception) {
-                ""
-            }
-        }
-
-        val nameSup: Supplier<String> = Supplier {
-            try {
-                Minecraft.getMinecraft().session.username
-            } catch (e: Exception) {
-                ""
-            }
-        }
-
-        val typeSup: Supplier<String> = Supplier {
-            try {
-                resolveAccountType(Minecraft.getMinecraft()).name
-            } catch (e: Exception) {
-                "LOCAL"
-            }
-        }
-
-        ws = ShindoWebsocket(URI.create("wss://ws.shindoclient.com/websocket"), true, presence).apply {
+        ws = ShindoWebsocket("wss://ws.shindoclient.com/websocket", presence).apply {
             roleManager = this@ShindoAPI.roleManager
             provider = object : ShindoWebsocket.IdentityProvider {
-                override fun player(): WsIdentity {
-                    val rawUuid = safeTrim(uuidSup.get())
-                    var rawName = safeTrim(nameSup.get())
-                    if (rawName.isEmpty()) rawName = "Player"
-
-                    val parsed = safeUUID(rawUuid)
-                    var effectiveUuid = rawUuid
-                    var accountType = AccountType.from(typeSup.get())
-
-                    if (parsed == null) {
-                        effectiveUuid = generateOfflineUuid(rawName)
-                        accountType = AccountType.LOCAL
-                    }
-
-                    return WsIdentity(
-                        effectiveUuid,
-                        rawName,
-                        null,
-                        accountType
-                    )
-                }
+                override fun player(): WsIdentity = buildIdentity()
             }
 
-            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?> { type, payload ->
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().getProfileShareManager().handleMessage(type, payload)
             })
-            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?> { type, payload ->
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().getChatManager().handleMessage(type, payload)
             })
-            messageHandler.addObserver (BiConsumer<MessageType, JsonObject?>{ type, payload ->
+            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
                 Shindo.getInstance().getBroadcastManager().handleMessage(type, payload)
             })
+
             connect()
         }
     }
@@ -126,55 +81,38 @@ class ShindoAPI {
 
     fun isFirstLogin(): Boolean = !firstLoginFile.exists()
 
-    fun getEffectiveUuid(): UUID {
-        return resolveEffectiveUuid(Minecraft.getMinecraft())
-    }
+    fun getEffectiveUuid(): UUID = resolveEffectiveUuid(Minecraft.getMinecraft())
 
-    fun getAccountType(): AccountType {
-        return resolveAccountType(Minecraft.getMinecraft())
-    }
+    fun getAccountType(): AccountType = resolveAccountType(Minecraft.getMinecraft())
 
-    private fun safeTrim(value: String?): String = value?.trim() ?: ""
+    private fun buildIdentity(): WsIdentity {
+        val mc = Minecraft.getMinecraft()
+        val session = mc.session
 
-    private fun safeUUID(value: String?): UUID? = try {
-        if (value.isNullOrEmpty()) null else UUID.fromString(value)
-    } catch (ignored: Exception) {
-        null
-    }
+        val name = session?.username?.trim()?.takeIf { it.isNotEmpty() } ?: "Player"
 
-    private fun generateOfflineUuid(name: String?): String {
-        val baseName = if (name.isNullOrEmpty()) "Player" else name
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:$baseName").toByteArray(StandardCharsets.UTF_8)).toString()
-    }
+        // Profile UUID is the authoritative source; fall back to entity UUID.
+        val profileUuid: UUID? = session?.profile?.id ?: mc.thePlayer?.uniqueID
 
-    private fun resolveAccountType(mc: Minecraft): AccountType {
-        val session = mc.session ?: return AccountType.LOCAL
+        val accountType = AccountUtil.detectAccountTypeFromUuid(profileUuid)
 
-        try {
-            val sessionType = session.sessionType
-            val token = session.token
-            if (sessionType != null && (sessionType.equals(Session.Type.MOJANG) || sessionType.equals(Session.Type.LEGACY)) && token.isNotEmpty()) {
-                return AccountType.MICROSOFT
-            }
-        } catch (e: Exception) {
-            ShindoLogger.error("An error occurred while trying to get the session type", e)
-            ShindoLogger.error("An error occurred while trying to get the token", e)
-        }
+        val uuidString = profileUuid?.toString()
+            ?: UUID.nameUUIDFromBytes(
+                ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8)
+            ).toString()
 
-        return AccountType.OFFLINE
+        return WsIdentity(uuidString, name, null, accountType)
     }
 
     private fun resolveEffectiveUuid(mc: Minecraft): UUID {
-        val session = mc.session
-        val profileId = session?.profile?.id
-        if (profileId != null) {
-            return profileId
-        }
-        val playerId = mc.thePlayer?.uniqueID
-        if (playerId != null) {
-            return playerId
-        }
-        val name = session?.username ?: "Player"
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8))
+        mc.session?.profile?.id?.let { return it }
+        mc.thePlayer?.uniqueID?.let { return it }
+        val name = mc.session?.username ?: "Player"
+        return UUID.nameUUIDFromBytes(
+            ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8)
+        )
     }
+
+    private fun resolveAccountType(mc: Minecraft): AccountType =
+        AccountUtil.detectAccountTypeFromUuid(resolveEffectiveUuid(mc))
 }

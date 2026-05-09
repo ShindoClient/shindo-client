@@ -2,37 +2,25 @@ package me.miki.shindo.api.websocket
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import org.java_websocket.client.WebSocketClient
-import org.java_websocket.handshake.ServerHandshake
-import java.net.URI
-import java.nio.ByteBuffer
+import me.miki.shindo.logger.ShindoLogger
+import okhttp3.*
+import okio.ByteString
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocketFactory
+import java.util.concurrent.atomic.AtomicReference
 
 internal class WsClient(
-    serverUri: URI,
-    private val ssl: Boolean
-) : WebSocketClient(serverUri) {
+    private val url: String,
+    private val httpClient: OkHttpClient
+) {
 
     private val listeners: MutableList<WsClientListener> = CopyOnWriteArrayList()
     private val open = AtomicBoolean(false)
-    private val outbox: ConcurrentLinkedQueue<JsonObject> = ConcurrentLinkedQueue()
+    private val socketRef = AtomicReference<WebSocket?>(null)
 
-    init {
-        if (ssl && serverUri.toString().startsWith("wss://")) {
-            try {
-                val context = SSLContext.getInstance("TLS")
-                context.init(null, null, null)
-                val factory: SSLSocketFactory = context.socketFactory
-                setSocketFactory(factory)
-            } catch (ignored: Exception) {
-            }
-        }
-        connectionLostTimeout = 0
-    }
+    // Messages queued before the socket handshake completes.
+    private val outbox: ConcurrentLinkedQueue<String> = ConcurrentLinkedQueue()
 
     fun addListener(l: WsClientListener?) {
         if (l != null) listeners.add(l)
@@ -40,63 +28,95 @@ internal class WsClient(
 
     fun isOpenAtomic(): Boolean = open.get()
 
+    /** Opens the WebSocket connection asynchronously. */
+    fun connect() {
+        val request = Request.Builder().url(url).build()
+        httpClient.newWebSocket(request, InternalListener())
+    }
+
+    /**
+     * Sends [json] immediately if the socket is open, or enqueues it for
+     * delivery once the handshake completes.
+     */
     fun sendJson(json: JsonObject) {
-        if (isOpen) {
-            super.send(json.toString())
+        val text = json.toString()
+        val ws = socketRef.get()
+        if (ws != null && open.get()) {
+            ws.send(text)
         } else {
-            outbox.offer(json)
+            outbox.offer(text)
         }
     }
 
-    override fun onOpen(handshakedata: ServerHandshake) {
-        open.set(true)
-        while (!outbox.isEmpty()) {
-            val o = outbox.poll()
-            if (o != null) super.send(o.toString())
-        }
-        for (l in listeners) {
-            try {
-                l.onOpen()
-            } catch (ignored: Exception) {
-            }
-        }
-    }
-
-    override fun onMessage(message: String?) {
-        if (message == null) return
-        try {
-            val obj = JsonParser.parseString(message).asJsonObject
-            val type = if (obj.has("type")) obj.get("type").asString else "unknown"
-            for (l in listeners) {
-                try {
-                    l.onMessage(type, obj)
-                } catch (ignored: Exception) {
-                }
-            }
-        } catch (ignored: Exception) {
-        }
-    }
-
-    override fun onMessage(bytes: ByteBuffer?) {
-
-    }
-
-    override fun onClose(code: Int, reason: String?, remote: Boolean) {
+    /**
+     * Initiates a graceful close (code 1000).
+     * Safe to call even if the socket is already closed.
+     */
+    fun close() {
+        socketRef.get()?.close(NORMAL_CLOSE_CODE, "client_disconnect")
         open.set(false)
-        for (l in listeners) {
-            try {
-                l.onClose(code, reason ?: "", remote)
-            } catch (ignored: Exception) {
+    }
+
+    /** Cancels the socket immediately without a graceful handshake. */
+    fun cancel() {
+        socketRef.get()?.cancel()
+        open.set(false)
+    }
+
+    private inner class InternalListener : WebSocketListener() {
+
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            socketRef.set(webSocket)
+            open.set(true)
+
+            // Drain any messages that arrived before the handshake completed.
+            while (outbox.isNotEmpty()) {
+                val queued = outbox.poll() ?: break
+                webSocket.send(queued)
             }
+
+            for (l in listeners) safeCall { l.onOpen() }
+        }
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            try {
+                val obj = JsonParser.parseString(text).asJsonObject
+                val type = if (obj.has("type")) obj.get("type").asString else "unknown"
+                for (l in listeners) safeCall { l.onMessage(type, obj) }
+            } catch (e: Exception) {
+                ShindoLogger.error("[WEBSOCKET] Exception!", e)
+            }
+        }
+
+        override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+            // Binary frames are not used by the Shindo protocol.
+        }
+
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+            // Acknowledge the server-initiated close.
+            webSocket.close(NORMAL_CLOSE_CODE, null)
+        }
+
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            open.set(false)
+            socketRef.compareAndSet(webSocket, null)
+            for (l in listeners) safeCall { l.onClose(code, reason, true) }
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            open.set(false)
+            socketRef.compareAndSet(webSocket, null)
+            val ex = if (t is Exception) t else RuntimeException(t)
+            for (l in listeners) safeCall { l.onError(ex) }
+            // Treat failure as a close so ShindoWebsocket can trigger reconnect.
+            for (l in listeners) safeCall { l.onClose(FAILURE_CLOSE_CODE, t.message ?: "failure", false) }
         }
     }
 
-    override fun onError(ex: Exception) {
-        for (l in listeners) {
-            try {
-                l.onError(ex)
-            } catch (ignored: Exception) {
-            }
+    private inline fun safeCall(block: () -> Unit) {
+        try {
+            block()
+        } catch (ignored: Exception) {
         }
     }
 
@@ -105,5 +125,10 @@ internal class WsClient(
         fun onMessage(type: String, payload: JsonObject)
         fun onClose(code: Int, reason: String, remote: Boolean)
         fun onError(ex: Exception)
+    }
+
+    companion object {
+        private const val NORMAL_CLOSE_CODE = 1000
+        private const val FAILURE_CLOSE_CODE = -1
     }
 }

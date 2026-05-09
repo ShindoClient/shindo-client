@@ -57,14 +57,6 @@ object ExtensionLibrary {
             tags("http", "network")
         }
 
-        manager.register {
-            id = "me.miki.extensions.network.websocket"
-            namespace = "$base.websocket"
-            name = "WebSocket Extensions"
-            version = VERSION
-            description = "Helpers that simplify websocket usage (JavaWebSocket, proxies)."
-            tags("websocket", "network", "ws")
-        }
 
         manager.register {
             id = "me.miki.extensions.network.proxy"
@@ -99,15 +91,6 @@ object ExtensionLibrary {
             version = VERSION
             description = "Gson helpers that reside alongside serialization DTOs."
             tags("gson", "json", "serialization")
-        }
-
-        manager.register {
-            id = "me.miki.extensions.serialization.kotlinx"
-            namespace = "$base.kotlinx"
-            name = "Kotlinx Serialization Extensions"
-            version = VERSION
-            description = "Placeholders for kotlinx.serialization helpers when adopted."
-            tags("kotlinx", "serialization", "json")
         }
     }
 }
