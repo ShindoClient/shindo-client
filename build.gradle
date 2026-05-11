@@ -1,67 +1,83 @@
 buildscript {
     ext.kotlin_version = '1.3.72'
-
     repositories {
         mavenCentral()
-        maven { name = "forge";  url = "https://maven.minecraftforge.net" }
-        maven { name = "sponge"; url = "https://repo.spongepowered.org/maven" }
-        maven { url = "https://jitpack.io" }
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net"
+//            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+            url = 'https://jitpack.io'
+        }
     }
-
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1.3'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'idea'
+apply plugin: "net.minecraftforge.gradle.tweaker-client"
+apply plugin: "org.spongepowered.mixin"
+apply plugin: "java"
+apply plugin: "kotlin"
+apply plugin: "idea"
 
-version             = "5112"
+version             = "5111"
 group               = "me.miki"
 archivesBaseName    = "ShindoClient"
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = "UTF-8"
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget       = "1.8"
+        jvmTarget = "1.8"
         languageVersion = "1.3"
-        apiVersion      = "1.3"
+        apiVersion = "1.3"
         freeCompilerArgs += ["-Xallow-no-source-files"]
     }
 }
 
 minecraft {
-    version          = "1.8.9"
-    runDir           = "run"
-    tweakClass       = "me.miki.shindo.injection.mixin.ShindoTweaker"
-    mappings         = "stable_22"
+    version = "1.8.9"
+    runDir = "run"
+    tweakClass = "me.miki.shindo.injection.mixin.ShindoTweaker"
+    mappings = "stable_22"
     makeObfSourceJar = false
 }
 
 repositories {
+    jcenter()
     mavenCentral()
-    maven { name = "Jitpack";       url = "https://jitpack.io" }
-    maven { name = "SpongePowered"; url = "https://repo.spongepowered.org/maven" }
-    maven { name = "CleanroomMC";   url = "https://maven.cleanroommc.com" }
+    maven {
+        name "Jitpack"
+        url "https://jitpack.io"
+    }
+    maven {
+        name "SpongePowered"
+        url "https://repo.spongepowered.org/maven/"
+    }
+    maven {
+        url 'https://maven.cleanroommc.com'
+    }
 }
 
 configurations {
     embed
     compile.extendsFrom(embed)
-    shadowEmbed
-    shadowEmbed.extendsFrom(embed)
 }
 
 configurations.all {
-    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    resolutionStrategy {
+        force "org.jetbrains.kotlin:kotlin-stdlib:1.3.72"
+    }
 }
 
 dependencies {
@@ -95,6 +111,7 @@ dependencies {
     embed files("libs/lwjgl-shindo.jar")
     embed files("libs/lwjgl-shindo-natives.jar")
     embed files("libs/viashindo-1.0.0.jar")
+
 }
 
 mixin {
@@ -105,80 +122,54 @@ mixin {
 sourceSets {
     main {
         kotlin { srcDirs = ['src/main/kotlin', 'src/main/java'] }
-        java   { srcDirs = ['src/main/java'] }
+        java { srcDirs = ['src/main/java'] }
     }
 }
 
 processResources {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType(Copy).matching { it.name == 'processResources' }.configureEach {
-    from("src/main/resources") { into "" }
+    inputs.files "src/main/resources"
+    outputs.dir "build/classes/main"
+    copy {
+        from("src/main/resources")
+        into("build/classes/main")
+    }
 }
 
 jar {
+    dependsOn configurations.embed
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest.attributes(
-            "MixinConfigs"    : "mixins.shindo.json",
-            "TweakClass"      : "me.miki.shindo.injection.mixin.ShindoTweaker",
-            "TweakOrder"      : 0,
-            "Manifest-Version": "1.0",
-            "FMLAT"           : "shindo_at.cfg"
-    )
-}
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-shadowJar {
-    // Output: ShindoClient-<version>-release.jar
-    classifier = "release"
-
-    // Read deps from our custom `shadowEmbed` configuration (which extends `embed`)
-    configurations = [project.configurations.shadowEmbed]
-
-    // Exclusions
-    exclude 'META-INF/*.RSA'
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    // Drop redundant metadata
-    exclude 'META-INF/MANIFEST.MF'
-    exclude 'META-INF/maven/**'
-    exclude 'META-INF/proguard/**'
-    // Drop multi-release bytecode (Java 9+ only)
-    exclude 'META-INF/versions/**'
-    // Drop service descriptors that conflict with Forge's own providers
-    exclude 'META-INF/services/javax.*'
-    // Drop Java 9+ module descriptors
-    exclude 'module-info.class'
-    // Drop Kotlin compiler-internal classes (not needed at runtime)
-    exclude 'kotlin/reflect/**'
-    exclude 'kotlin/internal/**'
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    // Manifest
-    manifest.attributes(
-            "MixinConfigs"    : "mixins.shindo.json",
-            "TweakClass"      : "me.miki.shindo.injection.mixin.ShindoTweaker",
-            "TweakOrder"      : 0,
-            "Manifest-Version": "1.0",
-            "FMLAT"           : "shindo_at.cfg"
+            "MixinConfigs": "mixins.shindo.json",
+            "TweakClass": "me.miki.shindo.injection.mixin.ShindoTweaker",
+            "TweakOrder": 0,
+            "Manifest-Version": 1.0,
+            "FMLAT": "shindo_at.cfg"
     )
 
-    // Package relocation
-    relocate 'okhttp3',                     'me.miki.shindo.libs.okhttp3'
-    relocate 'okio',                        'me.miki.shindo.libs.okio'
-    relocate 'org.java_websocket',          'me.miki.shindo.libs.websocket'
-    relocate 'com.wrapper.spotify',         'me.miki.shindo.libs.spotify'
-    relocate 'com.neovisionaries',          'me.miki.shindo.libs.neovisionaries'
-
-    // Task ordering
-    dependsOn reobfJar
-}
-
-// Ensure `./gradlew build` produces the shadow jar automatically
-build {
-    dependsOn shadowJar
+    from {
+        configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+        exclude 'META-INF/**'
+        exclude 'META-INF/versions/**'
+        exclude 'module-info.class'
+        // Exclusions
+        exclude 'META-INF/*.RSA'
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        // Drop redundant metadata
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/maven/**'
+        exclude 'META-INF/proguard/**'
+        // Drop multi-release bytecode (Java 9+ only)
+        exclude 'META-INF/versions/**'
+        // Drop service descriptors that conflict with Forge's own providers
+        exclude 'META-INF/services/javax.*'
+        // Drop Java 9+ module descriptors
+        exclude 'module-info.class'
+        // Drop Kotlin compiler-internal classes (not needed at runtime)
+        exclude 'kotlin/reflect/**'
+        exclude 'kotlin/internal/**'
+    }
 }

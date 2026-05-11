@@ -7,6 +7,7 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.ui.components.v2.templates.CompPanel
+import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -35,11 +36,11 @@ class CompAccentColorSelector(
         setWidth(width)
         setHeight(height)
         setRadius(10f)
-        setSurfaceVariant(CompSurfaceVariant.CARD)
-        setBackgroundColor(null)
+        setShadowStrength(7)
+        setStyle(PanelStyle.CARD)
+
     }
 
-    fun getSelectedColor(): AccentColor? = selectedColor
     fun setSelectedColor(color: AccentColor) {
         this.selectedColor = color
     }
@@ -49,21 +50,8 @@ class CompAccentColorSelector(
         return this
     }
 
-    override fun getBackgroundColor(
-        paletteColors: ColorPalette,
-        accentColors: AccentColor
-    ): Color {
-        return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 220)
-    }
-
-    override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color {
-        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-    }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = nvg
-        val paletteColors = palette
-        val currentAccent = accent
 
         val innerX = getX() + innerPadding
         val innerY = getY() + innerPadding
@@ -77,11 +65,9 @@ class CompAccentColorSelector(
         }
 
         scroll.onAnimation()
-
         val scrollValue = scroll.getValue()
-
-        nvgInstance.save()
-        nvgInstance.intersectScissor(getX(), getY(), getWidth(), getHeight())
+        nvg.save()
+        nvg.intersectScissor(getX(), getY(), getWidth(), getHeight())
 
         var cardX = innerX + scrollValue
         for (accent in accentColorsList) {
@@ -91,18 +77,18 @@ class CompAccentColorSelector(
 
             accent.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 18.0)
 
-            nvgInstance.drawRoundedRect(
+            nvg.drawRoundedRect(
                 screenX,
                 innerY,
                 itemWidth,
                 itemHeight,
                 10f,
                 ColorUtils.applyAlpha(
-                    paletteColors.getBackgroundColor(ColorType.MID),
+                    palette.getBackgroundColor(ColorType.MID),
                     if (hovered || selected) 220 else 190
                 )
             )
-            nvgInstance.drawGradientRoundedRect(
+            nvg.drawGradientRoundedRect(
                 screenX,
                 innerY,
                 itemWidth,
@@ -113,7 +99,7 @@ class CompAccentColorSelector(
             )
 
             if (selected) {
-                nvgInstance.drawText(
+                nvg.drawText(
                     LegacyIcon.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 10f,
@@ -122,7 +108,7 @@ class CompAccentColorSelector(
                     Fonts.LEGACYICON
                 )
             } else if (hovered) {
-                nvgInstance.drawOutlineRoundedRect(
+                nvg.drawOutlineRoundedRect(
                     screenX,
                     innerY,
                     itemWidth,
@@ -133,8 +119,8 @@ class CompAccentColorSelector(
                 )
             }
 
-            val label = nvgInstance.getLimitText(accent.getName(), 8.5f, Fonts.MEDIUM, itemWidth - 16f)
-            nvgInstance.drawCenteredText(
+            val label = nvg.getLimitText(accent.getName(), 8.5f, Fonts.MEDIUM, itemWidth - 16f)
+            nvg.drawCenteredText(
                 label,
                 screenX + itemWidth / 2f,
                 innerY + itemHeight - 18f,
@@ -146,7 +132,7 @@ class CompAccentColorSelector(
             cardX += itemWidth + itemSpacing
         }
 
-        nvgInstance.restore()
+        nvg.restore()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

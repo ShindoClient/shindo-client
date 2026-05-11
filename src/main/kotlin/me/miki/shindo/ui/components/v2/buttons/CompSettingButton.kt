@@ -23,8 +23,7 @@ class CompSettingButton : CompControlTemplate {
     private var shadowStrength: Float = 6f
     private var shadowRadius: Float = 8f
 
-    constructor(x: Float, y: Float, width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) :
-            super(x, y) {
+    constructor(x: Float, y: Float, width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) : super(x, y) {
         this.titleSupplier = titleSupplier
         this.descriptionSupplier = descriptionSupplier
         setWidth(width)
@@ -39,9 +38,6 @@ class CompSettingButton : CompControlTemplate {
         this.onClick = onClick
         return this
     }
-
-    @Deprecated("Use onClickAction instead", ReplaceWith("onClickAction(onClick)"))
-    fun onClick(onClick: () -> Unit): CompSettingButton = onClickAction(onClick)
 
     fun trailing(comp: Component): CompSettingButton {
         this.trailingComp = comp

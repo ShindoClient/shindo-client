@@ -12,7 +12,6 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
-import me.miki.shindo.ui.components.v2.layout.withSurfaceVariant
 import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -32,7 +31,6 @@ class LanguageScene(parent: SettingsCategory) :
     override fun initGui() {
         container = CompScrollableContainer()
             .setScrollbarGutter(14f)
-            .withSurfaceVariant(CompSurfaceVariant.PANEL)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

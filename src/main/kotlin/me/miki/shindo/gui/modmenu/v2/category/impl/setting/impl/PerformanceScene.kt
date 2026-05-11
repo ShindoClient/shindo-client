@@ -33,13 +33,10 @@ class PerformanceScene(parent: SettingsCategory) :
             requiresRestart = true
         )
 
-        container = CompScrollableContainer().apply {
-            setScrollbarGutter(14f)
-            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210))
-            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
-            setShadowStrength(7)
-            setStyle(PanelStyle.PANEL)
-        }
+        container = CompScrollableContainer()
+            .setScrollbarGutter(14f)
+
+
         settingCards.clear()
         settingCards.add(
             CompSettingButton(
@@ -47,7 +44,7 @@ class PerformanceScene(parent: SettingsCategory) :
                 { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION.getText() },
                 { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION_DESCRIPTION.getText() })
                 .trailing(textureOptimizationToggle)
-                .onClick {
+                .onClickAction {
                     val setting = textureOptimizationToggle.getSetting()
                     setting.setToggled(!setting.isToggled())
                     textureOptimizationToggle.setShowWarning(true)

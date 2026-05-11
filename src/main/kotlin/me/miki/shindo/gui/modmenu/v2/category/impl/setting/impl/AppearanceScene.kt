@@ -57,23 +57,13 @@ class AppearanceScene(parent: SettingsCategory) :
 
         themeSelector = CompThemeSelector().apply {
             setSelectedTheme(colorManager.getTheme())
-            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220))
-            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
-            setShadowStrength(7)
-            setStyle(PanelStyle.CARD)
             setOnThemeSelected { theme ->
                 colorManager.setTheme(theme)
             }
         }
 
-        accentColorSelector = CompAccentColorSelector(
-            accentColors = colorManager.getColors()
-        ).apply {
+        accentColorSelector = CompAccentColorSelector(accentColors = colorManager.getColors()).apply {
             setSelectedColor(colorManager.getCurrentColor())
-            setBackgroundColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220))
-            setBorder(1f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
-            setShadowStrength(7)
-            setStyle(PanelStyle.CARD)
             setOnColorSelected { accent ->
                 colorManager.setCurrentColor(accent)
             }

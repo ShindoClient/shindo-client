@@ -8,28 +8,8 @@ import java.awt.Color
 
 object CompStyleResolver {
 
-    enum class CompSurfaceVariant {
-        CANVAS, PANEL, CARD, OVERLAY, TRANSPARENT
-    }
-
     enum class CompControlVariant {
         PRIMARY, SECONDARY, GHOST, SUCCESS, DANGER
-    }
-
-    fun resolveSurfaceBackground(variant: CompSurfaceVariant, palette: ColorPalette, accent: AccentColor): Color {
-        return when (variant) {
-            CompSurfaceVariant.CANVAS -> ColorUtils.applyAlpha(ColorUtils.interpolateColor(
-                palette.getBackgroundColor(ColorType.DARK),
-                accent.getColor1(), 0.05
-            ), 220)
-            CompSurfaceVariant.PANEL -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
-            CompSurfaceVariant.CARD -> ColorUtils.applyAlpha(
-                ColorUtils.interpolateColor(palette.getBackgroundColor(ColorType.MID), accent.getColor1(), 0.03),
-                210
-            )
-            CompSurfaceVariant.OVERLAY -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 205)
-            CompSurfaceVariant.TRANSPARENT -> Color(0, 0, 0, 0)
-        }
     }
 
     fun resolveControlBase(variant: CompControlVariant, palette: ColorPalette, accent: AccentColor): Color {

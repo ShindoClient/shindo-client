@@ -8,6 +8,7 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.ui.components.v2.templates.CompPanel
+import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
@@ -35,11 +36,11 @@ class CompThemeSelector(
         setWidth(width)
         setHeight(height)
         setRadius(10f)
-        setSurfaceVariant(CompSurfaceVariant.CARD)
-        setBackgroundColor(null)
+        setStyle(PanelStyle.CARD)
     }
 
     fun getSelectedTheme(): Theme? = selectedTheme
+
     fun setSelectedTheme(theme: Theme) {
         this.selectedTheme = theme
     }
@@ -49,22 +50,7 @@ class CompThemeSelector(
         return this
     }
 
-    override fun getBackgroundColor(
-        paletteColors: ColorPalette,
-        accentColors: AccentColor
-    ): Color {
-        return ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), 220)
-    }
-
-    override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color {
-        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
-    }
-
-
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val nvgInstance = nvg
-        palette
-        val accentColors = accent
 
         val innerX = getX() + innerPadding
         val innerY = getY() + innerPadding
@@ -82,8 +68,8 @@ class CompThemeSelector(
 
         val scrollValue = scroll.getValue()
 
-        nvgInstance.save()
-        nvgInstance.intersectScissor(getX(), getY(), getWidth(), getHeight())
+        nvg.save()
+        nvg.intersectScissor(getX(), getY(), getWidth(), getHeight())
 
         var cardX = innerX + scrollValue
         for (theme in themes) {
@@ -93,15 +79,13 @@ class CompThemeSelector(
 
             theme.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 18.0)
 
-            val baseColor =
-                ColorUtils.applyAlpha(theme.getNormalBackgroundColor(), if (hovered || selected) 240 else 205)
-            val overlayColor =
-                ColorUtils.applyAlpha(theme.getDarkBackgroundColor(), if (hovered || selected) 220 else 185)
+            val baseColor = ColorUtils.applyAlpha(theme.getNormalBackgroundColor(), if (hovered || selected) 240 else 205)
+            val overlayColor = ColorUtils.applyAlpha(theme.getDarkBackgroundColor(), if (hovered || selected) 220 else 185)
 
-            nvgInstance.drawRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor)
-            nvgInstance.drawGradientRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor, overlayColor)
+            nvg.drawRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor)
+            nvg.drawGradientRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor, overlayColor)
 
-            nvgInstance.drawRoundedRect(
+            nvg.drawRoundedRect(
                 screenX + 12f,
                 innerY + 16f,
                 itemWidth - 24f,
@@ -109,7 +93,7 @@ class CompThemeSelector(
                 4f,
                 ColorUtils.applyAlpha(theme.getDarkFontColor(), 210)
             )
-            nvgInstance.drawRoundedRect(
+            nvg.drawRoundedRect(
                 screenX + 12f,
                 innerY + 34f,
                 itemWidth - 24f,
@@ -118,11 +102,11 @@ class CompThemeSelector(
                 ColorUtils.applyAlpha(theme.getNormalFontColor(), 190)
             )
 
-            val label = nvgInstance.getLimitText(theme.name, 9.5f, Fonts.MEDIUM, itemWidth - 24f)
-            nvgInstance.drawText(label, screenX + 12f, innerY + itemHeight - 22f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+            val label = nvg.getLimitText(theme.name, 9.5f, Fonts.MEDIUM, itemWidth - 24f)
+            nvg.drawText(label, screenX + 12f, innerY + itemHeight - 22f, Color.WHITE, 9.5f, Fonts.MEDIUM)
 
             if (selected) {
-                nvgInstance.drawText(
+                nvg.drawText(
                     LegacyIcon.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 12f,
@@ -131,21 +115,21 @@ class CompThemeSelector(
                     Fonts.LEGACYICON
                 )
             } else if (hovered) {
-                nvgInstance.drawOutlineRoundedRect(
+                nvg.drawOutlineRoundedRect(
                     screenX,
                     innerY,
                     itemWidth,
                     itemHeight,
                     10f,
                     2f,
-                    ColorUtils.applyAlpha(accentColors.getColor2(), 160)
+                    ColorUtils.applyAlpha(accent.getColor2(), 160)
                 )
             }
 
             cardX += itemWidth + itemSpacing
         }
 
-        nvgInstance.restore()
+        nvg.restore()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

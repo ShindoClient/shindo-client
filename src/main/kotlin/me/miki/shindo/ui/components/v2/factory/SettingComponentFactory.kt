@@ -5,10 +5,11 @@ import me.miki.shindo.management.settings.impl.*
 import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
 import me.miki.shindo.ui.components.v2.inputs.*
+import java.util.LinkedHashMap
 import java.util.concurrent.ConcurrentHashMap
 
 object SettingComponentFactory {
-    private val registry: MutableMap<Class<out Setting>, (Setting) -> Component> = ConcurrentHashMap()
+    private val registry: MutableMap<Class<out Setting>, (Setting) -> Component> = LinkedHashMap()
     private val componentCache: MutableMap<Setting, Component> = ConcurrentHashMap()
 
     init {
@@ -78,17 +79,4 @@ object SettingComponentFactory {
 
         return null
     }
-
-    @JvmStatic
-    fun clearCache() {
-        componentCache.clear()
-    }
-
-    @JvmStatic
-    fun invalidateCache(setting: Setting) {
-        componentCache.remove(setting)
-    }
-
-    @JvmStatic
-    fun getRegisteredFactoryCount(): Int = registry.size
 }

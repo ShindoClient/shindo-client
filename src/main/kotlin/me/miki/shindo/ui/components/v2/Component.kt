@@ -5,63 +5,54 @@ import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.ui.components.v2.base.IBounded
-import me.miki.shindo.ui.components.v2.base.IComponent
-import me.miki.shindo.ui.components.v2.base.IContainer
 import me.miki.shindo.utils.mouse.MouseUtils
 
 
 open class Component(
-    x: Float = 0f,
-    y: Float = 0f
-) : IComponent, IBounded, IContainer {
+    private var x: Float = 0f,
+    private var y: Float = 0f
+) {
 
-    private var _x:        Float    =  x
-    private var _y:        Float    =  y
-    private var _width:    Float    =  0f
-    private var _height:   Float    =  0f
-    private var _visible:  Boolean  =  true
-
-    private var _nvg:      NanoVGManager?   =  null
-    private var _palette:  ColorPalette?    =  null
-    private var _colors:   ColorManager?    =  null
+    private var width:    Float    =  0f
+    private var height:   Float    =  0f
+    private var visible:  Boolean  =  true
 
     private val children: MutableList<Component> = mutableListOf()
 
     protected val nvg: NanoVGManager
-        get() = _nvg ?: Shindo.getInstance().nanoVGManager!!
+        get() = Shindo.getInstance().nanoVGManager!!
 
     protected val palette: ColorPalette
-        get() = _palette ?: Shindo.getInstance().getColorManager().getPalette()
+        get() = Shindo.getInstance().getColorManager().getPalette()
 
     protected val accent: AccentColor
         get() = Shindo.getInstance().getColorManager().getCurrentColor()
 
     protected val colors: ColorManager
-        get() = _colors ?: Shindo.getInstance().getColorManager()
+        get() = Shindo.getInstance().getColorManager()
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!_visible) return
+    open fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (!visible) return
         drawChildren(mouseX, mouseY, partialTicks)
     }
 
-    override fun update(partialTicks: Float) {
-        if (!_visible) return
+    open fun update(partialTicks: Float) {
+        if (!visible) return
         updateChildren(partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!_visible) return
+    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (!visible) return
         forEachChild { it.mouseClicked(mouseX, mouseY, mouseButton) }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (!_visible) return
+    open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (!visible) return
         forEachChild { it.mouseReleased(mouseX, mouseY, mouseButton) }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (!_visible) return
+    open fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (!visible) return
         forEachChild { it.keyTyped(typedChar, keyCode) }
     }
 
@@ -75,69 +66,62 @@ open class Component(
         forEachChild { it.update(partialTicks) }
     }
 
-    override fun getX():       Float  =  _x
-    override fun getY():       Float  =  _y
-    override fun getWidth():   Float  =  _width
-    override fun getHeight():  Float  =  _height
+    open fun getX():       Float  =  x
+    open fun getY():       Float  =  y
+    open fun getWidth():   Float  =  width
+    open fun getHeight():  Float  =  height
 
-    override fun setX(x: Float) {
-        this._x = x
+    open fun setX(x: Float) {
+        this.x = x
     }
 
-    override fun setY(y: Float) {
-        this._y = y
+    open fun setY(y: Float) {
+        this.y = y
     }
 
-    override fun setWidth(width: Float) {
-        this._width = width
+    open fun setWidth(width: Float) {
+        this.width = width
     }
 
-    override fun setHeight(height: Float) {
-        this._height = height
+    open fun setHeight(height: Float) {
+        this.height = height
     }
 
-    override fun setBounds(x: Float, y: Float, width: Float, height: Float) {
-        this._x = x
-        this._y = y
-        this._width = width
-        this._height = height
+    open fun setBounds(x: Float, y: Float, width: Float, height: Float) {
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
     }
 
-    override fun isVisible(): Boolean = _visible
-    override fun setVisible(visible: Boolean) {
-        this._visible = visible
+    open fun isVisible(): Boolean = visible
+    open fun setVisible(visible: Boolean) {
+        this.visible = visible
     }
 
-    override fun addChild(component: IComponent?) {
-        if (component is Component && !children.contains(component)) {
+    open fun addChild(component: Component) {
+        if (!children.contains(component)) {
             children.add(component)
         }
     }
 
-    override fun removeChild(component: IComponent) {
-        if (component is Component) {
-            children.remove(component)
-        }
+    open fun removeChild(component: Component) {
+        children.remove(component)
     }
 
-    override fun clearChildren() {
+    open fun clearChildren() {
         children.clear()
     }
 
-    override fun getChildren(): List<IComponent> = children.toList()
+    open fun getChildren(): List<Component> = children.toList()
 
-    override fun hasChildren(): Boolean = children.isNotEmpty()
+    open fun hasChildren(): Boolean = children.isNotEmpty()
 
     open fun isHovered(mouseX: Int, mouseY: Int): Boolean {
-        return MouseUtils.isInside(mouseX, mouseY, _x, _y, _width, _height)
+        return MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
     }
 
     private inline fun forEachChild(action: (Component) -> Unit) {
-        val size = children.size
-        var i = 0
-        while (i < size) {
-            action(children[i])
-            i++
-        }
+        children.forEach(action)
     }
 }

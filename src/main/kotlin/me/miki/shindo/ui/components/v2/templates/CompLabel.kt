@@ -8,10 +8,9 @@ import java.awt.Color
 open class CompLabel(
     x: Float = 0f,
     y: Float = 0f,
-    text: String = ""
+    private var text: String = ""
 ) : CompDisplay(x, y) {
 
-    private var text: String = text
     private var fontSize: Float = 10f
     private var fontColor: Color? = null
     private var font: Font = Fonts.REGULAR

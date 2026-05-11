@@ -9,7 +9,6 @@ import me.miki.shindo.ui.components.v2.buttons.CompSettingButton
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
 import me.miki.shindo.ui.components.v2.inputs.CompKeybind
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
-import me.miki.shindo.ui.components.v2.layout.withSurfaceVariant
 import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import kotlin.math.max
 
@@ -56,8 +55,7 @@ class GeneralScene(parent: SettingsCategory) :
         )
 
         container = CompScrollableContainer()
-            .setScrollbarGutter(14f).
-            withSurfaceVariant(CompSurfaceVariant.PANEL)
+            .setScrollbarGutter(14f)
 
 
         settingCards.clear()

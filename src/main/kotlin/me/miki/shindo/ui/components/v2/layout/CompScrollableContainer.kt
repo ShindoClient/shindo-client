@@ -33,20 +33,10 @@ open class CompScrollableContainer(
 
     init {
         setStyle(PanelStyle.PANEL)
-        setSurfaceVariant(CompSurfaceVariant.PANEL)
         setRadius(12f)
         setShadowStrength(7)
     }
 
-    override fun setRadius(radius: Float): CompScrollableContainer {
-        super.setRadius(radius)
-        return this
-    }
-
-    override fun setShadowStrength(strength: Int): CompScrollableContainer {
-        super.setShadowStrength(strength)
-        return this
-    }
 
     fun setInnerPadding(padding: Float): CompScrollableContainer {
         this.innerPadding = max(0f, padding)
@@ -57,16 +47,6 @@ open class CompScrollableContainer(
         this.scrollbarGutter = max(0f, gutter)
         return this
     }
-
-    fun getInnerPadding(): Float = innerPadding
-
-    fun getScroll(): Scroll = scroll
-
-    fun getScrollValue(): Float = scroll.getValue()
-
-    fun getContentHeight(): Float = contentHeight
-
-    fun getViewport(): ScrollViewport = lastViewport
 
     fun setContentHeight(height: Float) {
         contentHeight = max(0f, height)
@@ -87,42 +67,16 @@ open class CompScrollableContainer(
         return this
     }
 
-    fun clearContentRenderer(): CompScrollableContainer {
-        contentRenderer = null
-        contentRendererWithViewport = null
-        return this
-    }
-
-    fun render(
-        mouseX: Int,
-        mouseY: Int,
-        partialTicks: Float,
-        contentHeight: Float,
-        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
-    ) {
+    fun render(mouseX: Int, mouseY: Int, partialTicks: Float, contentHeight: Float, renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit) {
         setContentHeight(contentHeight)
         setContentRenderer(renderer)
         draw(mouseX, mouseY, partialTicks)
     }
 
-    fun renderWithViewport(
-        mouseX: Int,
-        mouseY: Int,
-        partialTicks: Float,
-        contentHeight: Float,
-        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
-    ) {
+    fun renderWithViewport(mouseX: Int, mouseY: Int, partialTicks: Float, contentHeight: Float, renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit) {
         setContentHeight(contentHeight)
         setContentRendererWithViewport(renderer)
         draw(mouseX, mouseY, partialTicks)
-    }
-
-    override fun getBackgroundColor(paletteColors: ColorPalette, accentColors: AccentColor): Color? {
-        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
-    }
-
-    override fun getBorderColor(palette: ColorPalette, accent: AccentColor): Color? {
-        return ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
     }
 
     override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -183,27 +137,7 @@ open class CompScrollableContainer(
         )
     }
 
-    protected open fun drawScrollableContent(
-        mouseX: Int,
-        mouseY: Int,
-        partialTicks: Float,
-        scrollValue: Float,
-        viewport: ScrollViewport
-    ) {
-        drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue)
-    }
-
-    @Deprecated("Use drawScrollableContent(mouseX, mouseY, partialTicks, scrollValue, viewport).")
-    protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) {
-
-    }
-
-    @Deprecated("Use setContentRenderer(...) or render(...).")
-    var drawScrollableContent: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
-        get() = contentRenderer
-        set(value) {
-            contentRenderer = value
-        }
+    protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) {}
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (scroll.maxScroll > 0f) {
@@ -224,9 +158,4 @@ open class CompScrollableContainer(
         val boundedVisible = max(0f, visibleHeight)
         scroll.maxScroll = max(0f, contentHeight - boundedVisible)
     }
-}
-
-fun CompScrollableContainer.withSurfaceVariant(surfaceVariant: CompSurfaceVariant): CompScrollableContainer {
-    setSurfaceVariant(surfaceVariant)
-    return this
 }

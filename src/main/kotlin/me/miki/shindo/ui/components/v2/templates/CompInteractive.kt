@@ -1,26 +1,25 @@
 package me.miki.shindo.ui.components.v2.templates
 
 import me.miki.shindo.ui.components.v2.Component
-import me.miki.shindo.ui.components.v2.base.IInteractive
 import me.miki.shindo.utils.mouse.MouseUtils
 
 abstract class CompInteractive(
     x: Float = 0f,
     y: Float = 0f
-) : Component(x, y), IInteractive {
+) : Component(x, y) {
 
     private var enabled:     Boolean  =  true
     private var hovered:     Boolean  =  false
     private var lastMouseX:  Int      =  -1
     private var lastMouseY:  Int      =  -1
 
-    override var onClick:       (() -> Unit)?  =  null
-    override var onHoverEnter:  (() -> Unit)?  =  null
-    override var onHoverExit:   (() -> Unit)?  =  null
+    open var onClick:       (() -> Unit)?  =  null
+    open var onHoverEnter:  (() -> Unit)?  =  null
+    open var onHoverExit:   (() -> Unit)?  =  null
 
-    override fun isEnabled(): Boolean = enabled
+    open fun isEnabled(): Boolean = enabled
 
-    override fun setEnabled(enabled: Boolean) {
+    open fun setEnabled(enabled: Boolean) {
         this.enabled = enabled
     }
 
