@@ -3,15 +3,12 @@ package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.v2.category.impl.setting.SettingScene
-import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.components.v2.buttons.CompSettingButton
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
-import me.miki.shindo.ui.components.v2.templates.PanelStyle
-import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
 class PerformanceScene(parent: SettingsCategory) :

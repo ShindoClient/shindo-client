@@ -29,8 +29,8 @@ class CompCellGrid(
         val preferredCell = if (narrow) 13f else 12f
         val gridHeight = preferredCell * info.rows
         val padding = if (narrow) 18f else 16f
-        val minHeight = if (narrow) 160f else 148f
-        val maxHeight = if (narrow) 236f else 212f
+        val minHeight = if (narrow) 250f else 226f
+        val maxHeight = if (narrow) 270f else 236f
         return (gridHeight + padding).coerceIn(minHeight, maxHeight)
     }
 

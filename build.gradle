@@ -17,7 +17,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1.3'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -110,8 +110,7 @@ dependencies {
     // --- Local native libs ---
     embed files("libs/lwjgl-shindo.jar")
     embed files("libs/lwjgl-shindo-natives.jar")
-    embed files("libs/viashindo-1.0.0.jar")
-
+    embed (fileTree(dir: 'libs/viashindo', include: ['ViaVersion*.jar', 'ViaBackwards*.jar', 'ViaRewind*.jar', 'snakeyaml*.jar']))
 }
 
 mixin {

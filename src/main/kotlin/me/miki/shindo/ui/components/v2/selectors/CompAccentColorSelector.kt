@@ -1,11 +1,9 @@
 package me.miki.shindo.ui.components.v2.selectors
 
 import me.miki.shindo.management.color.AccentColor
-import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
-import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.ui.components.v2.templates.CompPanel
 import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils

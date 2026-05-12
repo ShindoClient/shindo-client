@@ -1,15 +1,9 @@
 package me.miki.shindo.ui.components.v2.layout
 
-import me.miki.shindo.management.color.AccentColor
-import me.miki.shindo.management.color.palette.ColorPalette
-import me.miki.shindo.management.color.palette.ColorType
-import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.ui.components.v2.templates.CompPanel
 import me.miki.shindo.ui.components.v2.templates.PanelStyle
-import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
-import java.awt.Color
 import kotlin.math.max
 
 open class CompScrollableContainer(

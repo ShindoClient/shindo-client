@@ -4,6 +4,7 @@ import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
+import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderNotification
 import me.miki.shindo.management.language.TranslateText
@@ -324,7 +325,7 @@ class GuiEditHUD(private val fromModMenu: Boolean) : GuiScreen() {
                     palette.getBackgroundColor(ColorType.DARK, (m.animation.getValue() * 255).toInt())
                 )
             }
-
+            EventNVG(partialTicks).call();
         })
 
         EventRender2D(partialTicks).call()

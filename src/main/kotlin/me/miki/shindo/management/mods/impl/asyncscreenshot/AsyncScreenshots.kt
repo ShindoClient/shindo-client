@@ -1,7 +1,6 @@
 package me.miki.shindo.management.mods.impl.asyncscreenshot
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.mods.impl.AsyncScreenshotMod
 import net.minecraft.client.Minecraft
 import net.minecraft.event.ClickEvent

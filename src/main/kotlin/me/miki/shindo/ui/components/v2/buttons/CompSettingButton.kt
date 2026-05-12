@@ -3,7 +3,6 @@ package me.miki.shindo.ui.components.v2.buttons
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.components.v2.Component
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
@@ -28,7 +27,6 @@ class CompSettingButton : CompControlTemplate {
         this.descriptionSupplier = descriptionSupplier
         setWidth(width)
         setHeight(DEFAULT_HEIGHT)
-        setVariant(CompControlVariant.GHOST)
     }
 
     constructor(width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) :

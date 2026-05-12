@@ -3,9 +3,8 @@ package me.miki.shindo.ui.components.v2.templates
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
+import java.awt.Color
 
 open class CompControlTemplate(
     x: Float = 0f,
@@ -20,7 +19,6 @@ open class CompControlTemplate(
     private var text: String? = null
     private var radius = 6f
     private var fontSize = 10f
-    private var variant: CompControlVariant = CompControlVariant.SECONDARY
 
     init {
         setWidth(width)
@@ -44,20 +42,12 @@ open class CompControlTemplate(
         return this
     }
 
-    fun setVariant(variant: CompControlVariant): CompControlTemplate {
-        this.variant = variant
-        return this
-    }
-
-    fun getVariant(): CompControlVariant = variant
-
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 16.0)
         pressAnimation.setAnimation(if (pressAnimation.getValue() > 0.1f) pressAnimation.getValue() * 0.84f else 0.0f, 16.0)
 
-        val base = CompStyleResolver.resolveControlBase(variant, palette, accent)
-        val hover = CompStyleResolver.resolveControlHover(variant, palette, accent)
-        val background = ColorUtils.interpolateColor(base, hover, hoverAnimation.getValue().toDouble())
+
+        val background = ColorUtils.interpolateColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165), hoverAnimation.getValue().toDouble())
         val pressed = if (pressAnimation.getValue() > 0.1f) ColorUtils.darken(background, pressAnimation.getValue() * 0.2f) else background
 
         nvg.drawRoundedRect(
@@ -72,7 +62,7 @@ open class CompControlTemplate(
         val drawText = text
         if (!drawText.isNullOrEmpty()) {
             val color = if (isEnabled()) {
-                CompStyleResolver.resolveControlText(variant, palette)
+                Color.WHITE
             } else {
                 palette.getFontColor(ColorType.NORMAL, 150)
             }

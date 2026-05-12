@@ -4,7 +4,6 @@ import me.miki.shindo.gui.modmenu.v2.style.ModMenuListCardStyle
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 
 import me.miki.shindo.utils.ColorUtils
@@ -22,14 +21,12 @@ class CompToggleButton : CompControlTemplate {
     constructor(x: Float, y: Float, scale: Float, setting: BooleanSetting) : super(x, y) {
         this.setting = setting
         setScale(scale)
-        setVariant(CompControlVariant.SECONDARY)
         initState()
     }
 
     constructor(setting: BooleanSetting) : super(0f, 0f) {
         this.setting = setting
         setScale(1.0f)
-        setVariant(CompControlVariant.SECONDARY)
         initState()
     }
 

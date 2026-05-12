@@ -114,7 +114,7 @@ class Shindo private constructor() {
     private lateinit var newsManager: NewsManager
     private lateinit var update: Update
 
-    var nanoVGManager: NanoVGManager? = null
+    lateinit var nanoVGManager: NanoVGManager
 
     fun start() {
         ShindoLogger.info("Starting Shindo")

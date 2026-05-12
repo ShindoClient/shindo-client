@@ -12,7 +12,6 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
-import me.miki.shindo.ui.components.v2.style.CompSurfaceVariant
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation

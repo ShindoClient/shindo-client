@@ -12,4 +12,3 @@ public class MixinGuiLanguage extends GuiScreen {
         mc.ingameGUI.getChatGUI().refreshChat();
     }
 }
-

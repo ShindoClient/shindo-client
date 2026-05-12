@@ -2,7 +2,6 @@ package me.miki.shindo.gui
 
 import me.miki.extensions.ui.animation.setAnimation
 import me.miki.extensions.ui.animation.wrap
-import me.miki.extensions.ui.nanovg.drawOutlineRoundedRect
 import me.miki.extensions.ui.nanovg.drawRoundedRect
 import me.miki.extensions.ui.nanovg.drawShadow
 import me.miki.shindo.Shindo

@@ -2,7 +2,6 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.Shindo
-import me.miki.shindo.Shindo.Companion.getInstance
 import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D

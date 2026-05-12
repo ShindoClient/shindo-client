@@ -15,8 +15,9 @@ import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.NumberSetting;
+import me.miki.shindo.utils.IconUtil;
 import me.miki.shindo.utils.MacOSUtils;
-import me.miki.shindo.viaversion.fixes.AttackOrder;
+import me.miki.viashindo.fixes.AttackOrder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
@@ -414,12 +415,18 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
             MacOSUtils.setDockIcon("/assets/minecraft/shindo/osx.png");
             c.cancel();
         }
+
+        if (Util.getOSType() == Util.EnumOS.LINUX || Util.getOSType() == Util.EnumOS.WINDOWS) {
+            IconUtil.setDisplayIcon("/assets/minecraft/shindo/icon.png");
+            c.cancel();
+        }
     }
 
     @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V"))
     private void optimizedWorldSwapping() {
     }
 
+    @Unique
     private long getCurrentTime() {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
@@ -475,7 +482,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Redirect(method = "clickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;swingItem()V"))
     private void redirectSwing(EntityPlayerSP instance) {
-        ViaVersionMod viaMod = ViaVersionMod.instance;
+        ViaVersionMod viaMod = ViaVersionMod.getInstance();
         if (viaMod.isToggled() && viaMod.isLoaded()) {
             AttackOrder.sendConditionalSwing(objectMouseOver);
         } else {
@@ -485,7 +492,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
 
     @Redirect(method = "clickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V"))
     private void redirectAttack(PlayerControllerMP instance, EntityPlayer playerIn, Entity targetEntity) {
-        ViaVersionMod viaMod = ViaVersionMod.instance;
+        ViaVersionMod viaMod = ViaVersionMod.getInstance();
         if (Objects.requireNonNull(viaMod).isToggled() && viaMod.isLoaded()) {
             AttackOrder.sendFixedAttack(thePlayer, objectMouseOver.entityHit);
         } else {

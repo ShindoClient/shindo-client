@@ -3,8 +3,6 @@ package me.miki.shindo.ui.components.v2.templates
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
@@ -23,7 +21,6 @@ open class CompButton(
     private var textColor: Color? = null
     private var radius: Float = 4f
     private var fontSize: Float = 10f
-    private var variant: CompControlVariant = CompControlVariant.SECONDARY
 
     init {
         setWidth(width)
@@ -60,13 +57,6 @@ open class CompButton(
         return this
     }
 
-    fun setVariant(variant: CompControlVariant): CompButton {
-        this.variant = variant
-        return this
-    }
-
-    fun getVariant(): CompControlVariant = variant
-
     fun getText():       String?  =  text
     fun getTextColor():  Color?   =  textColor
     fun getFontSize():   Float    =  fontSize
@@ -75,18 +65,14 @@ open class CompButton(
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         val nvgInstance = nvg
         val paletteColors = palette
-        val accentColors = accent
 
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 14.0)
         clickAnimation.setAnimation(if (clickAnimation.getValue() > 0.1f) clickAnimation.getValue() * 0.85f else 0.0f, 16.0)
 
-        val baseBg = backgroundColor ?: CompStyleResolver.resolveControlBase(variant, paletteColors, accentColors)
-        val hoverBg = hoverColor ?: CompStyleResolver.resolveControlHover(variant, paletteColors, accentColors)
-
         val finalBg = if (hoverAnimation.getValue() > 0.1f) {
-            ColorUtils.interpolateColor(baseBg, hoverBg, hoverAnimation.getValue().toDouble())
+            ColorUtils.interpolateColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165), hoverAnimation.getValue().toDouble())
         } else {
-            baseBg
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
         }
 
         val finalBgWithClick = if (clickAnimation.getValue() > 0.1f) {
@@ -105,18 +91,13 @@ open class CompButton(
         )
 
         text?.let {
-            val finalTextColor = textColor ?: if (isEnabled()) {
-                CompStyleResolver.resolveControlText(variant, paletteColors)
-            } else {
-                paletteColors.getFontColor(ColorType.NORMAL, 150)
-            }
 
             val textY = getY() + getHeight() / 2f - fontSize / 2f
             nvgInstance.drawCenteredText(
                 it,
                 getX() + getWidth() / 2f,
                 textY,
-                finalTextColor,
+                paletteColors.getFontColor(ColorType.NORMAL, 150),
                 fontSize,
                 Fonts.REGULAR
             )

@@ -4,7 +4,7 @@ import me.miki.shindo.api.websocket.AccountType
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.UUID
+import java.util.*
 
 object AccountUtil {
 

@@ -1,12 +1,8 @@
 package me.miki.shindo.ui.components.v2.templates
 
-import me.miki.shindo.management.color.AccentColor
-import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.ui.components.v2.Component
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
-import java.awt.Color
 
 open class CompPanel(
     x: Float = 0f,
@@ -24,6 +20,8 @@ open class CompPanel(
         setWidth(width)
         setHeight(height)
     }
+
+    open fun getRadius(): Float = radius
 
     open fun setRadius(radius: Float) {
         this.radius = radius

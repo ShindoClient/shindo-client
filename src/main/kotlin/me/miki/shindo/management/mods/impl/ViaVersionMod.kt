@@ -6,8 +6,8 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.utils.concurrent.TaskExecutor
 import me.miki.shindo.utils.concurrent.ThreadPoolType
-import me.miki.shindo.viaversion.ViaShindo
 import me.miki.viashindo.ViaLoadingBase
+import me.miki.viashindo.ViaShindo
 import me.miki.viashindo.protocolinfo.ProtocolInfo
 
 
@@ -17,37 +17,50 @@ class ViaVersionMod : Mod(
     ModCategory.OTHER,
     LegacyIcon.MOD_VIA_VERSION
 ) {
-    var isLoaded: Boolean = false
-        private set
+    private var loaded: Boolean
 
     init {
         instance = this
+        loaded = false
     }
 
     override fun onEnable() {
         super.onEnable()
 
-        if (!this.isLoaded) {
-            this.isLoaded = true
+        if (!loaded) {
+            loaded = true
             TaskExecutor.runAsync(ThreadPoolType.GENERAL) {
                 ViaShindo.create()
-                ViaShindo.getInstance().initAsyncSlider()
+                ViaShindo.getInstance()!!.initAsyncSlider()
+
             }
+
         }
     }
 
     override fun onDisable() {
         super.onDisable()
 
-        if (this.isLoaded) {
-            ViaShindo.getInstance().asyncVersionSlider.setVersion(ProtocolInfo.R1_8.versionId)
-            ViaLoadingBase.getInstance()?.reload(ProtocolInfo.R1_8)
+        if (loaded) {
+            ViaShindo.getInstance().asyncVersionSlider.setVersion(ProtocolInfo.R1_8.protocolVersion.version)
+            ViaLoadingBase.getInstance().reload(ProtocolInfo.R1_8.protocolVersion)
         }
     }
 
+
+    fun isLoaded(): Boolean {
+        return loaded
+    }
+
     companion object {
-        @JvmField
-        var instance: ViaVersionMod? = null
+
+        private lateinit var instance: ViaVersionMod
+
+        @JvmStatic
+        fun getInstance(): ViaVersionMod {
+            return instance
+        }
+
     }
 }
 

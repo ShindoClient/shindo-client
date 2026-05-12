@@ -3,8 +3,6 @@ package me.miki.shindo.ui.components.v2.buttons
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
@@ -26,7 +24,6 @@ class CompIconButton : CompControlTemplate {
         this.iconSupplier = iconSupplier
         setWidth(size)
         setHeight(size)
-        setVariant(CompControlVariant.GHOST)
     }
 
     constructor(size: Float, iconSupplier: () -> String?) : this(0f, 0f, size, iconSupplier)
@@ -77,13 +74,9 @@ class CompIconButton : CompControlTemplate {
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
         pressAnimation.setAnimation(if (pressAnimation.getValue() > 0.08f) pressAnimation.getValue() * 0.82f else 0.0f, 16.0)
 
-        val baseBackground =
-            overrideBackground ?: CompStyleResolver.resolveControlBase(getVariant(), paletteColors, accentColors)
-        val hoverBackground = overrideBackground?.let { ColorUtils.lighten(it, 0.08f) }
-            ?: CompStyleResolver.resolveControlHover(getVariant(), paletteColors, accentColors)
 
         var drawBackground =
-            ColorUtils.interpolateColor(baseBackground, hoverBackground, hoverAnimation.getValue().toDouble())
+            ColorUtils.interpolateColor( ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 108), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 145), hoverAnimation.getValue().toDouble())
         if (pressAnimation.getValue() > 0.08f) {
             drawBackground = ColorUtils.darken(drawBackground, pressAnimation.getValue() * 0.18f)
         }

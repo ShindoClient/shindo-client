@@ -4,7 +4,7 @@ import me.miki.shindo.injection.interfaces.IMixinWorld;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod;
 import me.miki.shindo.management.mods.impl.WeatherChangerMod.Weather;
 import me.miki.shindo.utils.EnumFacings;
-import me.miki.shindo.viaversion.fixes.FixedSoundEngine;
+import me.miki.viashindo.fixes.FixedSoundEngine;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
@@ -79,11 +79,6 @@ public abstract class MixinWorld implements IMixinWorld {
         if (entityIn instanceof EntityTNTPrimed || entityIn instanceof EntityFallingBlock || entityIn instanceof EntityItem || entityIn instanceof EntityFX) {
             cir.setReturnValue(list);
         }
-    }
-
-    @Inject(method = "getHorizon", at = @At("HEAD"), cancellable = true)
-    private void injectGetHorizon(CallbackInfoReturnable<Double> cir) {
-        cir.setReturnValue(0.0D); // ou qualquer valor que você deseje retornar
     }
 
     @ModifyArg(method = "checkLightFor", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isAreaLoaded(Lnet/minecraft/util/BlockPos;IZ)Z", ordinal = 0), index = 1)

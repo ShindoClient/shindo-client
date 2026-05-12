@@ -4,7 +4,7 @@ import me.miki.shindo.gui.GuiFixConnecting;
 import me.miki.shindo.hooks.ServerDataHook;
 import me.miki.shindo.injection.interfaces.IMixinServerList;
 import me.miki.shindo.management.mods.impl.ViaVersionMod;
-import me.miki.shindo.viaversion.ViaShindo;
+import me.miki.viashindo.ViaShindo;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -35,7 +35,7 @@ public class MixinGuiMultiplayer extends GuiScreen {
 
     @Inject(method = "initGui", at = @At("TAIL"))
     public void preInitGui(CallbackInfo ci) {
-        if (ViaVersionMod.instance != null && ViaVersionMod.instance.isToggled()) {
+        if (ViaVersionMod.getInstance().isToggled()) {
             this.buttonList.add(ViaShindo.getInstance().getAsyncVersionSlider());
         }
     }

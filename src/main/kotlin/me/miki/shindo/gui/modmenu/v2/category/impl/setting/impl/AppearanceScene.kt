@@ -16,7 +16,6 @@ import me.miki.shindo.ui.components.v2.inputs.CompSlider
 import me.miki.shindo.ui.components.v2.selectors.CompAccentColorSelector
 import me.miki.shindo.ui.components.v2.selectors.CompThemeSelector
 import me.miki.shindo.ui.components.v2.templates.CompLabel
-import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll

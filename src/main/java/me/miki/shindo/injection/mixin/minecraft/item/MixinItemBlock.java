@@ -1,6 +1,6 @@
 package me.miki.shindo.injection.mixin.minecraft.item;
 
-import me.miki.shindo.viaversion.fixes.FixedSoundEngine;
+import me.miki.viashindo.fixes.FixedSoundEngine;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;

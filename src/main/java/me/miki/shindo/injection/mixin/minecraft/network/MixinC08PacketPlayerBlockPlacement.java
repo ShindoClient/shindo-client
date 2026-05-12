@@ -10,6 +10,7 @@ import net.minecraft.util.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.io.IOException;
 
@@ -68,11 +69,12 @@ public class MixinC08PacketPlayerBlockPlacement {
         buf.writeByte((int) (this.facingZ * amount));
     }
 
+    @Unique
     private boolean isNewVersion() {
-        ViaVersionMod viaMod = ViaVersionMod.instance;
+        ViaVersionMod viaMod = ViaVersionMod.getInstance();
         return viaMod.isLoaded() &&
                 viaMod.isToggled() &&
-                ViaLoadingBase.getInstance().getTargetVersion().isNewerThanOrEqualTo(ProtocolInfo.R1_11);
+                ViaLoadingBase.getInstance().getTargetVersion().isNewerThanOrEqualTo(ProtocolInfo.R1_11.getProtocolVersion());
     }
 }
 

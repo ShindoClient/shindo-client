@@ -4,8 +4,6 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -86,8 +84,8 @@ class CompModTextBox: CompTextBoxBase {
 
     private fun drawBackground(enabled: Boolean) {
         val shell = ColorUtils.interpolateColor(
-            CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, palette, accent),
-            CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, palette, accent),
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
             hoverAnim.getValue().toDouble()
         )
         var bg = ColorUtils.interpolateColor(

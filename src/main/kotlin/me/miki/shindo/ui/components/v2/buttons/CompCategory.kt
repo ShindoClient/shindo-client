@@ -5,7 +5,6 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.CategorySetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
@@ -18,7 +17,6 @@ class CompCategory : CompControlTemplate {
 
     constructor(width: Float, setting: CategorySetting) : super(0f, 0f) {
         this.setting = setting
-        setVariant(CompControlVariant.GHOST)
         setHeight(22f)
     }
 

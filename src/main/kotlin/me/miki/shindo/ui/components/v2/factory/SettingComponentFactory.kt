@@ -5,7 +5,6 @@ import me.miki.shindo.management.settings.impl.*
 import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
 import me.miki.shindo.ui.components.v2.inputs.*
-import java.util.LinkedHashMap
 import java.util.concurrent.ConcurrentHashMap
 
 object SettingComponentFactory {
@@ -42,7 +41,7 @@ object SettingComponentFactory {
             CompSoundSelect(setting)
         }
         register(CellGridSetting::class.java) { setting ->
-            CompCellGrid(270f, 160f, setting)
+            CompCellGrid(270f, 270f, setting)
         }
     }
 

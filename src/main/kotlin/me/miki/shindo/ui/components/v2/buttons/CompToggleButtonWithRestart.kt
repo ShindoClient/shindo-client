@@ -7,8 +7,6 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.display.CompTooltip
-import me.miki.shindo.ui.components.v2.style.CompControlVariant
-import me.miki.shindo.ui.components.v2.style.CompStyleResolver
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -39,7 +37,6 @@ class CompToggleButtonWithRestart(
 
     init {
         scale = 1.0f
-        setVariant(CompControlVariant.SECONDARY)
         toggleAnim.setValue(if (setting.isToggled()) 1f else 0f)
         warningAnim.setValue(0f)
     }
@@ -75,8 +72,8 @@ class CompToggleButtonWithRestart(
 
     private fun drawTrack(x: Float, y: Float, w: Float, h: Float, radius: Float, enabled: Boolean) {
         var trackColor = ColorUtils.interpolateColor(
-            CompStyleResolver.resolveControlBase(CompControlVariant.SECONDARY, palette, accent),
-            CompStyleResolver.resolveControlHover(CompControlVariant.SECONDARY, palette, accent),
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
             hoverAnim.getValue().toDouble()
         )
         if (pressAnim.getValue() > 0.08f) trackColor = ColorUtils.darken(trackColor, pressAnim.getValue() * 0.16f)
