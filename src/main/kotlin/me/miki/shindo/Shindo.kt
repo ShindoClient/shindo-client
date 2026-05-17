@@ -63,7 +63,6 @@ class Shindo private constructor() {
     private var started: Boolean = false
     private var updateNeeded: Boolean = false
 
-    // Core / Infrastructure
     private lateinit var fileManager: FileManager
     private lateinit var languageManager: LanguageManager
     private lateinit var eventManager: EventManager
@@ -71,11 +70,9 @@ class Shindo private constructor() {
     private lateinit var downloadManager: DownloadManager
     private lateinit var extensionManager: ExtensionManager
 
-    // API / External Services
     private lateinit var shindoAPI: ShindoAPI
     private lateinit var discordStats: DiscordStats
 
-    // User / Profiles
     private lateinit var profileManager: ProfileManager
     private lateinit var profileShareManager: ProfileShareManager
     private lateinit var skinManager: SkinManager
@@ -84,31 +81,26 @@ class Shindo private constructor() {
     private lateinit var bandanaManager: BandanaManager
     private lateinit var colorManager: ColorManager
 
-    // Content / Mods
     private lateinit var modManager: ModManager
     private lateinit var addonManager: AddonManager
     private lateinit var shaderManager: ShaderManager
     private lateinit var restrictedMod: RestrictedMod
     private lateinit var blacklistManager: BlacklistManager
 
-    // Social / Communication
     private lateinit var chatManager: ChatManager
     private lateinit var broadcastManager: BroadcastManager
     private lateinit var notificationManager: NotificationManager
 
-    // Gameplay / Features
     private lateinit var waypointManager: WaypointManager
     private lateinit var quickPlayManager: QuickPlayManager
     private lateinit var clickEffects: ClickEffects
     private lateinit var securityFeatureManager: SecurityFeatureManager
     private lateinit var romanizationManager: RomanizationManager
 
-    // UI / Media
     private lateinit var uiLayoutManager: UILayoutManager
     private lateinit var musicManager: MusicManager
     private lateinit var screenshotManager: ScreenshotManager
 
-    // Commands / Updates / Info
     private lateinit var commandManager: CommandManager
     private lateinit var changelogManager: ChangelogManager
     private lateinit var newsManager: NewsManager
@@ -196,7 +188,7 @@ class Shindo private constructor() {
         ShindoLogger.info("Stopping Shindo")
 
         started = false
-        nanoVGManager!!.destroy()
+        nanoVGManager.destroy()
         profileManager.save()
         shindoAPI.stop()
 
@@ -232,7 +224,6 @@ class Shindo private constructor() {
         fun getInstance(): Shindo = instance
     }
 
-    // Core / Infrastructure
     fun getFileManager(): FileManager = fileManager
     fun getLanguageManager(): LanguageManager = languageManager
     fun getEventManager(): EventManager = eventManager
@@ -240,11 +231,9 @@ class Shindo private constructor() {
     fun getDownloadManager(): DownloadManager = downloadManager
     fun getExtensionManager(): ExtensionManager = extensionManager
 
-    // API / External Services
     fun getShindoAPI(): ShindoAPI = shindoAPI
     fun getDiscordStats(): DiscordStats = discordStats
 
-    // User / Profiles
     fun getProfileManager(): ProfileManager = profileManager
     fun getProfileShareManager(): ProfileShareManager = profileShareManager
     fun getSkinManager(): SkinManager = skinManager
@@ -253,31 +242,26 @@ class Shindo private constructor() {
     fun getBandanaManager(): BandanaManager = bandanaManager
     fun getColorManager(): ColorManager = colorManager
 
-    // Content / Mods
     fun getModManager(): ModManager = modManager
     fun getAddonManager(): AddonManager = addonManager
     fun getShaderManager(): ShaderManager = shaderManager
     fun getRestrictedMod(): RestrictedMod = restrictedMod
     fun getBlacklistManager(): BlacklistManager = blacklistManager
 
-    // Social / Communication
     fun getChatManager(): ChatManager = chatManager
     fun getBroadcastManager(): BroadcastManager = broadcastManager
     fun getNotificationManager(): NotificationManager = notificationManager
 
-    // Gameplay / Features
     fun getWaypointManager(): WaypointManager = waypointManager
     fun getQuickPlayManager(): QuickPlayManager = quickPlayManager
     fun getClickEffects(): ClickEffects = clickEffects
     fun getSecurityFeatureManager(): SecurityFeatureManager = securityFeatureManager
     fun getRomanizationManager(): RomanizationManager = romanizationManager
 
-    // UI / Media
     fun getUILayoutManager(): UILayoutManager = uiLayoutManager
     fun getMusicManager(): MusicManager = musicManager
     fun getScreenshotManager(): ScreenshotManager = screenshotManager
 
-    // Commands / Updates / Info
     fun getCommandManager(): CommandManager = commandManager
     fun getChangelogManager(): ChangelogManager = changelogManager
     fun getNewsManager(): NewsManager = newsManager
