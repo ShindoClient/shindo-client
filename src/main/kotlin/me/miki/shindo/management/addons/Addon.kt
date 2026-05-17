@@ -87,7 +87,7 @@ open class Addon(
     }
 
     override fun getConfigId(): String {
-        return name.toLowerCase(Locale.ROOT).replace(' ', '_')
+        return name.lowercase(Locale.ROOT).replace(' ', '_')
     }
 
     override fun getDisplayName(): String {

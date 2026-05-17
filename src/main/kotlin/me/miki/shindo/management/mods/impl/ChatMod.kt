@@ -75,8 +75,8 @@ class ChatMod :
         val player: EntityPlayer = mc.thePlayer
 
         val component = event.getMessage()
-        val name = player.name.toLowerCase(Locale.getDefault())
-        var text = component.unformattedText.toLowerCase(Locale.getDefault())
+        val name = player.name.lowercase(Locale.getDefault())
+        var text = component.unformattedText.lowercase(Locale.getDefault())
         text = text.replaceFirst("<.+>".toRegex(), "")
         if (text.contains(name)) {
             play(Sounds.SHINDO_AUDIO_PLING, false)

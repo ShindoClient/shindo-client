@@ -16,7 +16,7 @@ class ResourcePackSecurity : SecurityFeature() {
         if (pkt is S48PacketResourcePackSend) {
             val url = pkt.url
             val hash = pkt.hash
-            if (url.toLowerCase().startsWith("level://") && check(url, hash)) {
+            if (url.lowercase().startsWith("level://") && check(url, hash)) {
                 event.setCancelled(true)
             }
         }

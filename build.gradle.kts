@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
     repositories {
         mavenCentral()
@@ -21,16 +23,16 @@ buildscript {
     dependencies {
         classpath("com.github.MikiDevAHM:ForgeGradle:50e3574")
         classpath("com.github.thefightagainstmalware:MixinGradle:92e66fe")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     }
 }
 
-var kotlin_version = "1.9.24"
+var kotlin_version = "2.2.0"
 
 apply(plugin = "net.minecraftforge.gradle.tweaker-client")
 apply(plugin = "org.spongepowered.mixin")
-apply(plugin = "java")
 apply(plugin = "kotlin")
+apply(plugin = "java")
 apply(plugin = "idea")
 
 version = "5111"
@@ -39,7 +41,6 @@ group = "me.miki"
 configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -49,9 +50,9 @@ tasks.withType<JavaCompile>().configureEach {
 
 // Kotlin target
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += listOf("-Xallow-no-source-files")
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.set(listOf("-Xallow-no-source-files"))
     }
 }
 
@@ -94,7 +95,7 @@ configurations {
 
 configurations.all {
     resolutionStrategy {
-        force("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+        force("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     }
 }
 
@@ -131,8 +132,6 @@ dependencies {
             )
         }
     )
-
-
 }
 dependencyLocking {
     lockAllConfigurations()

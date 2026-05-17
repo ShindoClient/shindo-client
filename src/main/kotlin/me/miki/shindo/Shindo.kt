@@ -119,8 +119,7 @@ class Shindo private constructor() {
         blacklistManager = BlacklistManager()
         restrictedMod = RestrictedMod()
         try {
-            restrictedMod.shouldCheck =
-                !System.getProperty("me.miki.shindo.blacklistchecks", "true").equals("false", ignoreCase = true)
+            restrictedMod.shouldCheck = !System.getProperty("me.miki.shindo.blacklistchecks", "true").equals("false", ignoreCase = true)
         } catch (e: Exception) {
             ShindoLogger.error("Restriction System load Error", e)
         }
@@ -193,7 +192,6 @@ class Shindo private constructor() {
         shindoAPI.stop()
 
         shaderManager.cleanup()
-
         Sound.play(Sounds.SHINDO_AUDIO_CLOSE, true)
 
         romanizationManager.shutdown()

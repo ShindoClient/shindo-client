@@ -91,7 +91,7 @@ open class Setting protected constructor(
             var candidate = raw ?: ""
             candidate = Normalizer.normalize(candidate, Normalizer.Form.NFD)
                 .replace("\\p{M}".toRegex(), "")
-                .toLowerCase(Locale.ROOT)
+                .lowercase(Locale.ROOT)
             candidate = KEY_SANITIZE.matcher(candidate).replaceAll("_")
             candidate = candidate.replace("^_+".toRegex(), "").replace("_+$".toRegex(), "")
 

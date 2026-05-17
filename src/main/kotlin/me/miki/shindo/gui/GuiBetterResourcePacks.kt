@@ -228,7 +228,7 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
                 } else {
                     list.add(ResourcePackListEntryFolder(this, file))
                 }
-            } else if (file.name.toLowerCase(Locale.ROOT).endsWith(".zip")) {
+            } else if (file.name.lowercase(Locale.ROOT).endsWith(".zip")) {
                 val entry = ResourcePackRepositoryCustom.createEntryInstance(repository, file)
                 if (entry != null) {
                     try {

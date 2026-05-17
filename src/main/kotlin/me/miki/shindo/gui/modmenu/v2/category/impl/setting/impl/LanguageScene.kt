@@ -227,7 +227,7 @@ class LanguageScene(parent: SettingsCategory) :
         val languageName = nvg.getLimitText(language.getName(), 11.8f, Fonts.MEDIUM, availableTextWidth)
         nvg.drawText(languageName, textX, y + 18f, palette.getFontColor(ColorType.DARK), 11.8f, Fonts.MEDIUM)
 
-        val localeCode = language.getId().toUpperCase(Locale.ROOT)
+        val localeCode = language.getId().uppercase(Locale.ROOT)
         val codeWidth = nvg.getTextWidth(localeCode, 7.4f, Fonts.MEDIUM) + 12f
         val codeHeight = nvg.getTextHeight(localeCode, 7.4f, Fonts.MEDIUM)
         val codeX = x + width - rightPadding - codeWidth

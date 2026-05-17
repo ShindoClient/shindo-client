@@ -10,8 +10,8 @@ object SearchUtils {
 
     @JvmStatic
     fun isSimilar(s1: String, s2: String, searchDistance: Int): Boolean {
-        val left = s1.toLowerCase(Locale.ENGLISH)
-        val right = s2.toLowerCase(Locale.ENGLISH)
+        val left = s1.lowercase(Locale.ENGLISH)
+        val right = s2.lowercase(Locale.ENGLISH)
 
         if (left.length <= searchDistance) {
             return left.contains(right)

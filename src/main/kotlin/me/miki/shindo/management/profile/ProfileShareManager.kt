@@ -46,7 +46,7 @@ class ProfileShareManager {
             onResult(FetchResult.Error("websocket_unavailable"))
             return
         }
-        val normalizedCode = code.trim().toUpperCase(Locale.ROOT)
+        val normalizedCode = code.trim().uppercase(Locale.ROOT)
         val requestId = UUID.randomUUID().toString()
         pendingFetch[requestId] = onResult
 
@@ -62,7 +62,7 @@ class ProfileShareManager {
             onResult?.invoke(UnshareResult.Error("websocket_unavailable"))
             return
         }
-        val normalizedCode = code.trim().toUpperCase(Locale.ROOT)
+        val normalizedCode = code.trim().uppercase(Locale.ROOT)
         if (normalizedCode.length != 12) {
             onResult?.invoke(UnshareResult.Error("invalid_code"))
             return

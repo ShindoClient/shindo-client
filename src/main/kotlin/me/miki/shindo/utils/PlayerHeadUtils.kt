@@ -50,7 +50,7 @@ object PlayerHeadUtils {
     }
 
     private fun normalize(username: String?): String {
-        return username?.trim()?.toLowerCase(Locale.ROOT) ?: ""
+        return username?.trim()?.lowercase(Locale.ROOT) ?: ""
     }
 
     private fun registerTexture(image: BufferedImage, id: String): ResourceLocation? {

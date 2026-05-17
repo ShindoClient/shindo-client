@@ -75,7 +75,7 @@ class BroadcastManager {
         val payload = JsonObject()
         payload.addProperty("title", cleanTitle)
         payload.addProperty("message", cleanMessage)
-        payload.addProperty("severity", severity.toLowerCase(Locale.ROOT))
+        payload.addProperty("severity", severity.lowercase(Locale.ROOT))
         postBroadcast(payload) { response ->
             onResult?.invoke(response?.get("success")?.asBoolean == true)
         }
@@ -158,7 +158,7 @@ class BroadcastManager {
     }
 
     private fun mapSeverity(raw: String): NotificationType {
-        return when (raw.trim().toLowerCase(Locale.ROOT)) {
+        return when (raw.trim().lowercase(Locale.ROOT)) {
             "success" -> NotificationType.SUCCESS
             "error" -> NotificationType.ERROR
             "warning" -> NotificationType.WARNING

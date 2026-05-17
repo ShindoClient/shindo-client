@@ -262,7 +262,7 @@ class ShindoWebsocket(
         if (roles.isNullOrEmpty()) return arrayOf(DEFAULT_ROLE)
         val set = HashSet<String>()
         for (role in roles) {
-            val normalized = role.trim().toUpperCase(Locale.ROOT)
+            val normalized = role.trim().uppercase(Locale.ROOT)
             if (ALLOWED_ROLES.contains(normalized)) set.add(normalized)
         }
         if (set.isEmpty()) set.add(DEFAULT_ROLE)

@@ -66,7 +66,7 @@ object FileExtractor {
 
     @JvmStatic
     fun extract(file: File, dest: File) {
-        val name = file.name.toLowerCase(Locale.ROOT)
+        val name = file.name.lowercase(Locale.ROOT)
         try {
             when {
                 name.endsWith(".zip") -> unzip(file, dest)

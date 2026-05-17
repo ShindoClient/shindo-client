@@ -13,8 +13,8 @@ enum class AccountType {
         @JvmStatic
         fun from(raw: String?): AccountType {
             if (raw == null) return LOCAL
-            val normalized = raw.trim().toUpperCase(Locale.ROOT)
-            for (type in values()) {
+            val normalized = raw.trim().uppercase(Locale.ROOT)
+            for (type in entries) {
                 if (type.name == normalized) return type
             }
             return LOCAL

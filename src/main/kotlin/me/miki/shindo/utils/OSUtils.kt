@@ -5,7 +5,7 @@ import java.util.*
 
 object OSUtils {
 
-    private val osName = System.getProperty("os.name").toLowerCase(Locale.ROOT)
+    private val osName = System.getProperty("os.name").lowercase(Locale.ROOT)
 
     @JvmField
     val windows: Boolean = osName.contains("windows")

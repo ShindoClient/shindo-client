@@ -40,7 +40,7 @@ object ShaderBackgroundRenderer {
         width: Float,
         height: Float
     ) {
-        val shaderName = (shaderFile?.name ?: "default").toLowerCase()
+        val shaderName = (shaderFile?.name ?: "default").lowercase()
         val time = (System.currentTimeMillis() % 10000) / 1000f
 
         when {

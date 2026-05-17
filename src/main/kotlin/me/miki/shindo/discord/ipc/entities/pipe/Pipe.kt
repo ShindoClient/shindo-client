@@ -127,7 +127,7 @@ abstract class Pipe(
             callbacks: HashMap<String, Callback>,
             location: String
         ): Pipe {
-            val osName = System.getProperty("os.name").toUpperCase(Locale.ROOT)
+            val osName = System.getProperty("os.name").uppercase(Locale.ROOT)
             return if (osName.contains("win")) {
                 WindowsPipe(ipcClient, callbacks, location)
             } else {

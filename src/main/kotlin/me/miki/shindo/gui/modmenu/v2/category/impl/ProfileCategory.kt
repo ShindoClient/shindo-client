@@ -586,7 +586,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
         val confirmX = overlayX + margin + inputW + 6f
         val confirmY = overlayY + 38f
-        val code = importCodeBox.getText().trim().toUpperCase(Locale.ROOT)
+        val code = importCodeBox.getText().trim().uppercase(Locale.ROOT)
         val canConfirm = code.length == SHARE_CODE_LENGTH
         val confirmHovered = canConfirm && MouseUtils.isInside(mouseX, mouseY, confirmX, confirmY, confirmW, 20f)
 
@@ -679,7 +679,7 @@ class ProfileCategory(parent: GuiModMenu) : Category(parent, TranslateText.PROFI
 
     private fun onImportConfirm() {
         val instance = Shindo.getInstance()
-        val code = importCodeBox.getText().trim().toUpperCase(Locale.ROOT)
+        val code = importCodeBox.getText().trim().uppercase(Locale.ROOT)
         if (code.length != SHARE_CODE_LENGTH) return
 
         instance.getProfileShareManager().requestFetch(code) { result ->

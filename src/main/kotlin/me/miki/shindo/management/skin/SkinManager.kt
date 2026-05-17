@@ -310,7 +310,7 @@ class SkinManager {
         if (uuid == null) return null
         val cleaned = uuid.replace("-", "").trim()
         if (cleaned.isEmpty()) return null
-        return cleaned.toLowerCase(Locale.ROOT)
+        return cleaned.lowercase(Locale.ROOT)
     }
 
     @Throws(IOException::class)

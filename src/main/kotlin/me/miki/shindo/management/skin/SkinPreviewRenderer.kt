@@ -190,7 +190,7 @@ class SkinPreviewRenderer {
             val trimmed = uuid!!.trim()
             if (trimmed.isEmpty()) return null
             val cleaned = trimmed.replace("-", "")
-            return if (cleaned.isEmpty()) null else cleaned.toLowerCase(Locale.ROOT)
+            return if (cleaned.isEmpty()) null else cleaned.lowercase(Locale.ROOT)
         }
     }
 }

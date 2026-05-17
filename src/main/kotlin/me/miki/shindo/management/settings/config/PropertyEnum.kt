@@ -25,14 +25,14 @@ interface PropertyEnum {
         }
         val raw = (this as Enum<*>)
             .name
-            .toLowerCase(Locale.ROOT)
+            .lowercase(Locale.ROOT)
             .replace('_', ' ')
 
         if (raw.isEmpty()) {
             return ""
         }
 
-        return raw.substring(0, 1).toUpperCase(Locale.ROOT) + raw.substring(1)
+        return raw.substring(0, 1).uppercase(Locale.ROOT) + raw.substring(1)
     }
 }
 

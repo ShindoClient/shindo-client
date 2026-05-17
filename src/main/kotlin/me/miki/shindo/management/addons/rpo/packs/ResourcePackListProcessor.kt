@@ -40,7 +40,7 @@ class ResourcePackListProcessor(
     }
 
     private fun checkFilter(entryText: String): Boolean {
-        return textFilter == null || textFilter!!.matcher(entryText.toLowerCase(Locale.ENGLISH)).find()
+        return textFilter == null || textFilter!!.matcher(entryText.lowercase(Locale.ENGLISH)).find()
     }
 
     companion object {
