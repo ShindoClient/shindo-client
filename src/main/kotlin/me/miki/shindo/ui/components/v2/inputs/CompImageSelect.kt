@@ -58,14 +58,21 @@ class CompImageSelect : Component {
             9f,
             Fonts.REGULAR
         )
-        nvgInstance.drawCenteredText(LegacyIcon.FOLDER, this.getX() + 8, this.getY() + 2.5f, Color.WHITE, 10f, Fonts.LEGACYICON)
+        nvgInstance.drawCenteredText(
+            LegacyIcon.FOLDER,
+            this.getX() + 8,
+            this.getY() + 2.5f,
+            Color.WHITE,
+            10f,
+            Fonts.LEGACYICON
+        )
 
         super.draw(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), 16f, 16f) && mouseButton == 0) {
-            TaskExecutor.runAsync(ThreadPoolType.IO){
+            TaskExecutor.runAsync(ThreadPoolType.IO) {
                 val image = FileUtils.selectImageFile()
                 if (image != null) {
                     val fileManager: FileManager = Shindo.getInstance().getFileManager()

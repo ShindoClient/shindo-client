@@ -14,16 +14,17 @@ public class VLBViaProviders implements ViaPlatformLoader {
 
     @Override
     public void load() {
-    	
+
         final ViaProviders providers = Via.getManager().getProviders();
         providers.use(VersionProvider.class, new VLBBaseVersionProvider());
         providers.use(MovementTransmitterProvider.class, new VLBMovementTransmitterProvider());
 
         if (ViaLoadingBase.getInstance().getProviders() != null) {
-        	ViaLoadingBase.getInstance().getProviders().accept(providers);
+            ViaLoadingBase.getInstance().getProviders().accept(providers);
         }
     }
 
     @Override
-    public void unload() {}
+    public void unload() {
+    }
 }

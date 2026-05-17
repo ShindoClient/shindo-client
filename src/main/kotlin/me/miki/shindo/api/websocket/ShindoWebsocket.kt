@@ -271,7 +271,10 @@ class ShindoWebsocket(
 
     private fun closeClient(client: WsClient?) {
         if (client == null) return
-        try { client.close() } catch (ignored: Exception) { }
+        try {
+            client.close()
+        } catch (ignored: Exception) {
+        }
     }
 
     private fun notifyListeners(consumer: Consumer<Listener>) {

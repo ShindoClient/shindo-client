@@ -57,20 +57,27 @@ open class CompButton(
         return this
     }
 
-    fun getText():       String?  =  text
-    fun getTextColor():  Color?   =  textColor
-    fun getFontSize():   Float    =  fontSize
-    fun getRadius():     Float    =  radius
+    fun getText(): String? = text
+    fun getTextColor(): Color? = textColor
+    fun getFontSize(): Float = fontSize
+    fun getRadius(): Float = radius
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         val nvgInstance = nvg
         val paletteColors = palette
 
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 14.0)
-        clickAnimation.setAnimation(if (clickAnimation.getValue() > 0.1f) clickAnimation.getValue() * 0.85f else 0.0f, 16.0)
+        clickAnimation.setAnimation(
+            if (clickAnimation.getValue() > 0.1f) clickAnimation.getValue() * 0.85f else 0.0f,
+            16.0
+        )
 
         val finalBg = if (hoverAnimation.getValue() > 0.1f) {
-            ColorUtils.interpolateColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165), hoverAnimation.getValue().toDouble())
+            ColorUtils.interpolateColor(
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
+                hoverAnimation.getValue().toDouble()
+            )
         } else {
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
         }

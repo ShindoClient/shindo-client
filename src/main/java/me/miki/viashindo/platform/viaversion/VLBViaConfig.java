@@ -28,7 +28,8 @@ public class VLBViaConfig extends AbstractViaConfig {
     }
 
     @Override
-    protected void handleConfig(Map<String, Object> config) {}
+    protected void handleConfig(Map<String, Object> config) {
+    }
 
     @Override
     public List<String> getUnsupportedOptions() {

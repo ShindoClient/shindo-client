@@ -13,9 +13,9 @@ open class Component(
     private var y: Float = 0f
 ) {
 
-    private var width:    Float    =  0f
-    private var height:   Float    =  0f
-    private var visible:  Boolean  =  true
+    private var width: Float = 0f
+    private var height: Float = 0f
+    private var visible: Boolean = true
 
     private val children: MutableList<Component> = mutableListOf()
 
@@ -66,10 +66,10 @@ open class Component(
         forEachChild { it.update(partialTicks) }
     }
 
-    open fun getX():       Float  =  x
-    open fun getY():       Float  =  y
-    open fun getWidth():   Float  =  width
-    open fun getHeight():  Float  =  height
+    open fun getX(): Float = x
+    open fun getY(): Float = y
+    open fun getWidth(): Float = width
+    open fun getHeight(): Float = height
 
     open fun setX(x: Float) {
         this.x = x

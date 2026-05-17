@@ -47,8 +47,10 @@ class CompToggleButtonWithRestart(
     }
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val x = getX(); val y = getY()
-        val w = getWidth(); val h = getHeight()
+        val x = getX();
+        val y = getY()
+        val w = getWidth();
+        val h = getHeight()
         val enabled = isEnabled()
         val toggled = setting.isToggled()
 

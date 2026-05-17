@@ -116,7 +116,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
 
         var offsetY = 0f
         for (card in cards) {
-            drawCard(nvg, card, listX , listY + offsetY, listWidth, cardHeight, mouseX, mouseY, partialTicks)
+            drawCard(nvg, card, listX, listY + offsetY, listWidth, cardHeight, mouseX, mouseY, partialTicks)
             offsetY += cardHeight + cardGap
         }
 
@@ -176,7 +176,14 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             card.keybindComp.setWidth(72f)
             card.keybindComp.draw(mouseX, mouseY, partialTicks)
         } else {
-            nvg.drawRoundedRect(cardX + 8f, cardY + 8f, contentWidth, 20f,4f, palette.getBackgroundColor(ColorType.NORMAL))
+            nvg.drawRoundedRect(
+                cardX + 8f,
+                cardY + 8f,
+                contentWidth,
+                20f,
+                4f,
+                palette.getBackgroundColor(ColorType.NORMAL)
+            )
             nvg.drawText(
                 card.entry.name.ifBlank { TranslateText.NAME.getText() },
                 cardX + 12f,
@@ -185,7 +192,14 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 9.5f,
                 Fonts.MEDIUM
             )
-            nvg.drawRoundedRect(cardX + 8f, cardY + 34f, contentWidth, 20f, 4f, palette.getBackgroundColor(ColorType.NORMAL))
+            nvg.drawRoundedRect(
+                cardX + 8f,
+                cardY + 34f,
+                contentWidth,
+                20f,
+                4f,
+                palette.getBackgroundColor(ColorType.NORMAL)
+            )
             nvg.drawText(
                 card.entry.textOrCommand.ifBlank { TranslateText.TEXT.getText() },
                 cardX + 12f,

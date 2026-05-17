@@ -75,8 +75,10 @@ class CompThemeSelector(
 
             theme.getAnimation().setAnimation(if (selected) 1.0f else 0.0f, 18.0)
 
-            val baseColor = ColorUtils.applyAlpha(theme.getNormalBackgroundColor(), if (hovered || selected) 240 else 205)
-            val overlayColor = ColorUtils.applyAlpha(theme.getDarkBackgroundColor(), if (hovered || selected) 220 else 185)
+            val baseColor =
+                ColorUtils.applyAlpha(theme.getNormalBackgroundColor(), if (hovered || selected) 240 else 205)
+            val overlayColor =
+                ColorUtils.applyAlpha(theme.getDarkBackgroundColor(), if (hovered || selected) 220 else 185)
 
             nvg.drawRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor)
             nvg.drawGradientRoundedRect(screenX, innerY, itemWidth, itemHeight, 10f, baseColor, overlayColor)

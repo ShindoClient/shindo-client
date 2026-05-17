@@ -54,7 +54,7 @@ object ColorUtils {
 
     @JvmStatic
     fun transitionColor(from: Color, to: Color, state: Boolean): Color {
-        return  interpolateColor(from, to, if (state) 1.0 else 0.0)
+        return interpolateColor(from, to, if (state) 1.0 else 0.0)
     }
 
     @JvmStatic

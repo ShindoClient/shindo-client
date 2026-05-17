@@ -22,7 +22,13 @@ class CompSettingButton : CompControlTemplate {
     private var shadowStrength: Float = 6f
     private var shadowRadius: Float = 8f
 
-    constructor(x: Float, y: Float, width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) : super(x, y) {
+    constructor(
+        x: Float,
+        y: Float,
+        width: Float,
+        titleSupplier: () -> String,
+        descriptionSupplier: () -> String
+    ) : super(x, y) {
         this.titleSupplier = titleSupplier
         this.descriptionSupplier = descriptionSupplier
         setWidth(width)
@@ -90,7 +96,7 @@ class CompSettingButton : CompControlTemplate {
         }
 
         nvgInstance.drawRoundedRect(x, y, width, height, DEFAULT_RADIUS, base)
-        nvgInstance.drawOutlineRoundedRect(x, y, width, height, DEFAULT_RADIUS, 1f,overlay)
+        nvgInstance.drawOutlineRoundedRect(x, y, width, height, DEFAULT_RADIUS, 1f, overlay)
 
         var availableTextWidth = width - paddingLeft - paddingRight
         trailingComp?.let {

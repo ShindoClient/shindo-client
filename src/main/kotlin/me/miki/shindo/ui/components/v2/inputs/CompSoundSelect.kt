@@ -58,7 +58,14 @@ class CompSoundSelect : Component {
             9f,
             Fonts.REGULAR
         )
-        nvgInstance.drawCenteredText(LegacyIcon.FOLDER, this.getX() + 8, this.getY() + 2.5f, Color.WHITE, 10f, Fonts.LEGACYICON)
+        nvgInstance.drawCenteredText(
+            LegacyIcon.FOLDER,
+            this.getX() + 8,
+            this.getY() + 2.5f,
+            Color.WHITE,
+            10f,
+            Fonts.LEGACYICON
+        )
 
         super.draw(mouseX, mouseY, partialTicks)
     }

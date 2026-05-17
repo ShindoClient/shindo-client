@@ -72,11 +72,18 @@ class CompIconButton : CompControlTemplate {
         val enabled = isEnabled()
 
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
-        pressAnimation.setAnimation(if (pressAnimation.getValue() > 0.08f) pressAnimation.getValue() * 0.82f else 0.0f, 16.0)
+        pressAnimation.setAnimation(
+            if (pressAnimation.getValue() > 0.08f) pressAnimation.getValue() * 0.82f else 0.0f,
+            16.0
+        )
 
 
         var drawBackground =
-            ColorUtils.interpolateColor( ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 108), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 145), hoverAnimation.getValue().toDouble())
+            ColorUtils.interpolateColor(
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 108),
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 145),
+                hoverAnimation.getValue().toDouble()
+            )
         if (pressAnimation.getValue() > 0.08f) {
             drawBackground = ColorUtils.darken(drawBackground, pressAnimation.getValue() * 0.18f)
         }
@@ -96,7 +103,8 @@ class CompIconButton : CompControlTemplate {
             getX(),
             getY(),
             getWidth(),
-            getHeight(), radius, 1f, outlineColor)
+            getHeight(), radius, 1f, outlineColor
+        )
 
         val icon = iconSupplier.invoke()
         if (icon != null) {
@@ -106,7 +114,8 @@ class CompIconButton : CompControlTemplate {
             } else {
                 ColorUtils.lighten(baseIconColor, 0.16f)
             }
-            var iconColor = ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.getValue().toDouble())
+            var iconColor =
+                ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.getValue().toDouble())
             if (!enabled) {
                 iconColor = ColorUtils.applyAlpha(iconColor, 132)
             }

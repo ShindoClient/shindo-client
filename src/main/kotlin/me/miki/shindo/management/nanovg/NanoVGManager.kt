@@ -341,10 +341,22 @@ class NanoVGManager {
         val dx = x - (dw / 2f)
         val dy = y + (h - dh) / 2f
 
-        val bg: Color = if (red) Color(180, 30, 30, (anim * (80 + hover * 100)).toInt()) else Color(15, 15, 20, (anim * (140 + hover * 70)).toInt())
+        val bg: Color = if (red) Color(180, 30, 30, (anim * (80 + hover * 100)).toInt()) else Color(
+            15,
+            15,
+            20,
+            (anim * (140 + hover * 70)).toInt()
+        )
         drawRoundedRect(dx, dy, dw, dh, 4.5f, bg)
         drawOutlineRoundedRect(dx, dy, dw, dh, 4.5f, 1.2f, Color(255, 255, 255, (anim * (35 + hover * 85)).toInt()))
-        drawCenteredText(text, x, dy + dh / 2f - 4.5f, Color(255, 255, 255, (anim * (200 + hover * 55)).toInt()), 9.5f, Fonts.REGULAR)
+        drawCenteredText(
+            text,
+            x,
+            dy + dh / 2f - 4.5f,
+            Color(255, 255, 255, (anim * (200 + hover * 55)).toInt()),
+            9.5f,
+            Fonts.REGULAR
+        )
     }
 
     fun drawGlassButtonWithIcon(
@@ -1196,15 +1208,15 @@ class NanoVGManager {
         val scrollProgress = if (maxScroll <= 0f) 0f else scrollOffset / maxScroll
         val handleY = trackY + (trackHeight - handleHeight) * scrollProgress
 
-            drawGradientRoundedRect(
-                trackX - 1f,
-                handleY,
-                trackWidth + 2f,
-                handleHeight,
-                3f,
-                applyAlpha(accent.getColor1(), 190),
-                applyAlpha(accent.getColor2(), 190)
-            )
+        drawGradientRoundedRect(
+            trackX - 1f,
+            handleY,
+            trackWidth + 2f,
+            handleHeight,
+            3f,
+            applyAlpha(accent.getColor1(), 190),
+            applyAlpha(accent.getColor2(), 190)
+        )
     }
 
     fun drawDivider(

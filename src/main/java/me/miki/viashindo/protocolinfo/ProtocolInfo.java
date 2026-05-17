@@ -1,9 +1,9 @@
 package me.miki.viashindo.protocolinfo;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+
 import java.util.Arrays;
 import java.util.List;
-
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 
 public class ProtocolInfo {
     private static final String NO_DESC = "No Description Available";

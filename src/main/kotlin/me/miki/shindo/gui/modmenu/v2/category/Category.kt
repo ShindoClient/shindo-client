@@ -27,7 +27,8 @@ open class Category(
 
     val mc: Minecraft = Minecraft.getMinecraft()
 
-    @JvmField var scroll: Scroll = parent.getScroll()
+    @JvmField
+    var scroll: Scroll = parent.getScroll()
 
     private var initialized = false
 
@@ -50,7 +51,9 @@ open class Category(
     fun isShowSearchBox(): Boolean = showSearchBox
     fun isShowTitle(): Boolean = showTitle
     fun isInitialized(): Boolean = initialized
-    fun setInitialized(value: Boolean) { initialized = value }
+    fun setInitialized(value: Boolean) {
+        initialized = value
+    }
 
     fun getX(): Int = parent.getX() + 32
     fun getY(): Int = parent.getY() + if (showTitle) 31 else 0

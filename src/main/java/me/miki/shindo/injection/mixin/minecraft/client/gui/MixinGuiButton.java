@@ -23,15 +23,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiButton extends Gui {
 
 
-    @Shadow public boolean visible;
-    @Shadow protected boolean hovered;
-    @Shadow public int xPosition;
-    @Shadow public int yPosition;
-    @Shadow protected int width;
-    @Shadow protected int height;
-    @Shadow protected abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
-    @Shadow public boolean enabled;
-    @Shadow public String displayString;
+    @Shadow
+    public boolean visible;
+    @Shadow
+    protected boolean hovered;
+    @Shadow
+    public int xPosition;
+    @Shadow
+    public int yPosition;
+    @Shadow
+    protected int width;
+    @Shadow
+    protected int height;
+
+    @Shadow
+    protected abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
+
+    @Shadow
+    public boolean enabled;
+    @Shadow
+    public String displayString;
 
     @Shadow
     protected abstract int getHoverState(boolean mouseOver);

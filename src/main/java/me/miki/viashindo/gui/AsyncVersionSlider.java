@@ -1,7 +1,6 @@
 package me.miki.viashindo.gui;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-
 import me.miki.shindo.Shindo;
 import me.miki.shindo.management.color.palette.ColorPalette;
 import me.miki.shindo.management.color.palette.ColorType;
@@ -10,21 +9,20 @@ import me.miki.shindo.utils.ColorUtils;
 import me.miki.viashindo.ViaLoadingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 
 import java.util.Collections;
 import java.util.List;
 
 public class AsyncVersionSlider extends GuiButton {
-	
+
     private float dragValue = (float) (ViaLoadingBase.getProtocols().size() - ViaLoadingBase.getInstance().getTargetVersion().getIndex()) / ViaLoadingBase.getProtocols().size();
 
     private final List<ProtocolVersion> values;
     private float sliderValue;
     public boolean dragging;
 
-    public AsyncVersionSlider(int buttonId, int x, int y , int widthIn, int heightIn) {
+    public AsyncVersionSlider(int buttonId, int x, int y, int widthIn, int heightIn) {
         super(buttonId, x, y, Math.max(widthIn, 110), heightIn, "");
         this.values = ViaLoadingBase.getProtocols();
         Collections.reverse(values);
@@ -41,10 +39,10 @@ public class AsyncVersionSlider extends GuiButton {
     }
 
     protected void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
-    	
+
         if (this.visible) {
             if (this.dragging) {
-                this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
                 this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
                 this.dragValue = sliderValue;
                 this.displayString = values.get((int) (this.sliderValue * (values.size() - 1))).getName();
@@ -60,13 +58,13 @@ public class AsyncVersionSlider extends GuiButton {
 
     private void drawNanoVG(NanoVGManager nvg, ColorPalette palette, int mouseX, int mouseY) {
 
-        nvg.drawRoundedRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 6f, 20f, 2f, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.MID),0.04f), 245));
-        nvg.drawOutlineRoundedRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 6f, 20f, 2f, 1, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.NORMAL), 0.14f), 230));
+        nvg.drawRoundedRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 6f, 20f, 2f, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.MID), 0.04f), 245));
+        nvg.drawOutlineRoundedRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 6f, 20f, 2f, 1, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.NORMAL), 0.14f), 230));
     }
 
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         if (super.mousePressed(mc, mouseX, mouseY)) {
-            this.sliderValue = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+            this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
             this.sliderValue = MathHelper.clamp_float(this.sliderValue, 0.0F, 1.0F);
             this.dragValue = sliderValue;
             this.displayString = values.get((int) (this.sliderValue * (values.size() - 1))).getName();

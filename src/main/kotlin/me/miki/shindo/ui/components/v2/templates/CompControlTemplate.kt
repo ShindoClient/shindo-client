@@ -44,11 +44,21 @@ open class CompControlTemplate(
 
     override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
         hoverAnimation.setAnimation(if (hovered && isEnabled()) 1.0f else 0.0f, 16.0)
-        pressAnimation.setAnimation(if (pressAnimation.getValue() > 0.1f) pressAnimation.getValue() * 0.84f else 0.0f, 16.0)
+        pressAnimation.setAnimation(
+            if (pressAnimation.getValue() > 0.1f) pressAnimation.getValue() * 0.84f else 0.0f,
+            16.0
+        )
 
 
-        val background = ColorUtils.interpolateColor(ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210), ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165), hoverAnimation.getValue().toDouble())
-        val pressed = if (pressAnimation.getValue() > 0.1f) ColorUtils.darken(background, pressAnimation.getValue() * 0.2f) else background
+        val background = ColorUtils.interpolateColor(
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
+            hoverAnimation.getValue().toDouble()
+        )
+        val pressed = if (pressAnimation.getValue() > 0.1f) ColorUtils.darken(
+            background,
+            pressAnimation.getValue() * 0.2f
+        ) else background
 
         nvg.drawRoundedRect(
             getX(),

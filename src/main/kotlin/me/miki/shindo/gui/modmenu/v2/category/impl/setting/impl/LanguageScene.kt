@@ -206,7 +206,6 @@ class LanguageScene(parent: SettingsCategory) :
         }
 
 
-
         val mediaHeight = max(34f, height - 22f)
         val mediaWidth = min(86f, max(56f, width * 0.28f))
         val mediaX = x + 14f

@@ -119,7 +119,7 @@ class GuiWaypoint : GuiScreen() {
         )
 
         nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
-        nvg.drawRoundedRect(x + 6, y + 25f, menuWidth - 12, 1.75f,3f, palette.getBackgroundColor(ColorType.NORMAL))
+        nvg.drawRoundedRect(x + 6, y + 25f, menuWidth - 12, 1.75f, 3f, palette.getBackgroundColor(ColorType.NORMAL))
 
         nvg.save()
         nvg.scissor(x.toFloat(), y + 25f, 190f, menuHeight - 25f)

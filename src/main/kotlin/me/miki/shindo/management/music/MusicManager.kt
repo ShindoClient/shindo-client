@@ -60,7 +60,9 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             startPlaybackStateUpdater()
             scheduleTokenRefresh()
         } else {
-            try { startServer() } catch (e: IOException) {
+            try {
+                startServer()
+            } catch (e: IOException) {
                 ShindoLogger.error("Failed to start local callback server", e)
             }
         }
@@ -517,7 +519,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         val images = track?.album?.images ?: return null
         if (images.isEmpty()) return null
         val imageUrl = images.getOrNull(0)?.url ?: return null
-        
+
         // Non-blocking - uses cache if available, starts download otherwise
         return try {
             albumArtCache.getAlbumArt(imageUrl)
@@ -617,6 +619,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun setTrackInfoCallback(callback: TrackInfoCallback?) {
         trackInfoCallback = callback
     }
+
     fun refreshAccessToken() {
         val refreshToken = spotifyApi.refreshToken ?: run {
             ShindoLogger.warn("No refresh token available"); return
@@ -676,37 +679,37 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             throttleRequest(
                 "playlists",
                 Supplier<CompletableFuture<List<PlaylistSimplified>>> {
-                CompletableFuture.supplyAsync {
-                    try {
-                        val allPlaylists: MutableList<PlaylistSimplified> =
-                            ArrayList()
-                        var offset = 0
-                        var hasMore = true
-                        while (hasMore && offset < 200) {
-                            val request =
-                                spotifyApi.listOfCurrentUsersPlaylists
-                                    .limit(PLAYLIST_LIMIT)
-                                    .offset(offset)
-                                    .build()
-                            val batch = request.execute().items
-                            if (batch.isEmpty()) {
-                                hasMore = false
-                            } else {
-                                allPlaylists.addAll(listOf(*batch))
-                                offset += batch.size
-                                Thread.sleep(THROTTLE_DELAY)
+                    CompletableFuture.supplyAsync {
+                        try {
+                            val allPlaylists: MutableList<PlaylistSimplified> =
+                                ArrayList()
+                            var offset = 0
+                            var hasMore = true
+                            while (hasMore && offset < 200) {
+                                val request =
+                                    spotifyApi.listOfCurrentUsersPlaylists
+                                        .limit(PLAYLIST_LIMIT)
+                                        .offset(offset)
+                                        .build()
+                                val batch = request.execute().items
+                                if (batch.isEmpty()) {
+                                    hasMore = false
+                                } else {
+                                    allPlaylists.addAll(listOf(*batch))
+                                    offset += batch.size
+                                    Thread.sleep(THROTTLE_DELAY)
+                                }
                             }
+                            CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
+                            return@supplyAsync allPlaylists
+                        } catch (e: Exception) {
+                            error("Failed to fetch playlists", e)
+                            return@supplyAsync emptyList<PlaylistSimplified>()
+                        } finally {
+                            playlistCache.remove(cacheKey)
                         }
-                        CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
-                        return@supplyAsync allPlaylists
-                    } catch (e: Exception) {
-                        error("Failed to fetch playlists", e)
-                        return@supplyAsync emptyList<PlaylistSimplified>()
-                    } finally {
-                        playlistCache.remove(cacheKey)
                     }
-                }
-            })
+                })
         }
     }
 
@@ -761,7 +764,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         val images = playlist?.images ?: return null
         if (images.isEmpty()) return null
         val imageUrl = images.getOrNull(0)?.url ?: return null
-        
+
         // Safe call - getAlbumArt is now non-blocking
         return try {
             albumArtCache.getAlbumArt(imageUrl)

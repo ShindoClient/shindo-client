@@ -34,7 +34,10 @@ class CompCategory : CompControlTemplate {
 
         val accentPulse = max(hoverAnimation.getValue(), 0.25f + toggleAnimation.getValue() * 0.25f)
         val baseOverlay =
-            ColorUtils.applyAlpha(paletteColors.getBackgroundColor(ColorType.MID), (hoverAnimation.getValue() * 40).toInt())
+            ColorUtils.applyAlpha(
+                paletteColors.getBackgroundColor(ColorType.MID),
+                (hoverAnimation.getValue() * 40).toInt()
+            )
         nvg.drawRoundedRect(x, y, width, height, CATEGORY_CORNER_RADIUS, baseOverlay)
 
         val iconSize = 11f

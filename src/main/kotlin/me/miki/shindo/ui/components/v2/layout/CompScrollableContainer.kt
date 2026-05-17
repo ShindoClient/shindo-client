@@ -61,13 +61,25 @@ open class CompScrollableContainer(
         return this
     }
 
-    fun render(mouseX: Int, mouseY: Int, partialTicks: Float, contentHeight: Float, renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit) {
+    fun render(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        contentHeight: Float,
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
+    ) {
         setContentHeight(contentHeight)
         setContentRenderer(renderer)
         draw(mouseX, mouseY, partialTicks)
     }
 
-    fun renderWithViewport(mouseX: Int, mouseY: Int, partialTicks: Float, contentHeight: Float, renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit) {
+    fun renderWithViewport(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        contentHeight: Float,
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+    ) {
         setContentHeight(contentHeight)
         setContentRendererWithViewport(renderer)
         draw(mouseX, mouseY, partialTicks)
@@ -131,7 +143,14 @@ open class CompScrollableContainer(
         )
     }
 
-    protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) {}
+    protected open fun drawScrollableContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        scrollValue: Float,
+        viewport: ScrollViewport
+    ) {
+    }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (scroll.maxScroll > 0f) {

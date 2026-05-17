@@ -1,3 +1,4 @@
 package me.miki.viashindo.netty.event;
 
-public class CompressionReorderEvent {}
+public class CompressionReorderEvent {
+}

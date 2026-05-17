@@ -73,16 +73,31 @@ class CompSceneButton(
             ""
         }
 
-        nvg.drawText(title, textStartX, y + TITLE_OFFSET , palette.getFontColor(ColorType.DARK), TITLE_FONT_SIZE, Fonts.MEDIUM
+        nvg.drawText(
+            title, textStartX, y + TITLE_OFFSET, palette.getFontColor(ColorType.DARK), TITLE_FONT_SIZE, Fonts.MEDIUM
         )
         if (description.isNotEmpty()) {
-            nvg.drawText(description, textStartX, y + DESCRIPTION_OFFSET , palette.getFontColor(ColorType.NORMAL), DESCRIPTION_FONT_SIZE, Fonts.REGULAR
+            nvg.drawText(
+                description,
+                textStartX,
+                y + DESCRIPTION_OFFSET,
+                palette.getFontColor(ColorType.NORMAL),
+                DESCRIPTION_FONT_SIZE,
+                Fonts.REGULAR
             )
         }
 
         val arrowX = x + width - ARROW_MARGIN
-        val arrowY = y + (height / 2f) - (nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LEGACYICON) / 2f)
-        nvg.drawCenteredText(LegacyIcon.CHEVRON_RIGHT, arrowX, arrowY, palette.getFontColor(ColorType.NORMAL), ARROW_FONT_SIZE, Fonts.LEGACYICON)
+        val arrowY =
+            y + (height / 2f) - (nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LEGACYICON) / 2f)
+        nvg.drawCenteredText(
+            LegacyIcon.CHEVRON_RIGHT,
+            arrowX,
+            arrowY,
+            palette.getFontColor(ColorType.NORMAL),
+            ARROW_FONT_SIZE,
+            Fonts.LEGACYICON
+        )
 
     }
 

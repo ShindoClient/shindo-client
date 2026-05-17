@@ -88,7 +88,15 @@ open class CompTextBox(
         return addX
     }
 
-    private fun drawSelection(text: String, halfH: Float, textH: Float, textY: Float, inset: Float, addX: Float, enabled: Boolean) {
+    private fun drawSelection(
+        text: String,
+        halfH: Float,
+        textH: Float,
+        textY: Float,
+        inset: Float,
+        addX: Float,
+        enabled: Boolean
+    ) {
         val cursor = getCursorPosition()
         val selEnd = getSelectionEnd()
         if (cursor == selEnd) return
@@ -123,7 +131,15 @@ open class CompTextBox(
         nvg.drawText(text, getX() + inset + addX, textY, palette.getFontColor(ColorType.DARK), halfH, Fonts.REGULAR)
     }
 
-    private fun drawCursor(text: String, halfH: Float, textH: Float, textY: Float, inset: Float, addX: Float, focused: Boolean) {
+    private fun drawCursor(
+        text: String,
+        halfH: Float,
+        textH: Float,
+        textY: Float,
+        inset: Float,
+        addX: Float,
+        focused: Boolean
+    ) {
         if (!focused || getCursorPosition() != getSelectionEnd()) return
         if (!timer.delay(600)) return
 

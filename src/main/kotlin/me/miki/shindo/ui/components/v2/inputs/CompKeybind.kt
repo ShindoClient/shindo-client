@@ -51,22 +51,29 @@ class CompKeybind : Component {
             accentColor.getColor2()
         )
 
-        nvgInstance.drawCenteredText(info, this.getX() + (width / 2), this.getY() + 5f, Color(255, 255, 255), 8f, Fonts.REGULAR)
+        nvgInstance.drawCenteredText(
+            info,
+            this.getX() + (width / 2),
+            this.getY() + 5f,
+            Color(255, 255, 255),
+            8f,
+            Fonts.REGULAR
+        )
 
         super.draw(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if(MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), width, 16f) && mouseButton == 0) {
+        if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), width, 16f) && mouseButton == 0) {
             binding = !binding;
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if(binding) {
+        if (binding) {
 
-            if(keyCode == Keyboard.KEY_ESCAPE) {
+            if (keyCode == Keyboard.KEY_ESCAPE) {
                 setting.setKeyCode(Keyboard.KEY_NONE);
                 binding = false;
                 return;

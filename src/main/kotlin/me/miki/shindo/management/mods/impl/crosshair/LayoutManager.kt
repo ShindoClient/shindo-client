@@ -262,7 +262,7 @@ class LayoutManager {
                     val entry = JsonObject()
                     entry.addProperty("id", preset.id)
                     entry.addProperty("name", preset.name)
-                    entry.add("layout", JsonUtils.toBooleanGrid(preset.layoutCopy ))
+                    entry.add("layout", JsonUtils.toBooleanGrid(preset.layoutCopy))
                     entry.add("colors", JsonUtils.toIntGrid(preset.colorCopy))
                     presetsArray.add(entry)
                 }

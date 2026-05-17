@@ -161,7 +161,6 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     )
 
 
-
                     //nvg.save()
                     //nvg.scale(this.getX() + offsetX + 62f, this.getY() + this.getHeight() - 31f, 0.07f)
                     nvg.drawRoundedImage(
@@ -305,7 +304,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
             this.getHeight() - (addY * 2) - 38
         )
         val trash: Boolean =
-            MouseUtils.isInside(mouseX, mouseY, this.getX() + this.getWidth() - 61f, this.getY() + addY + 4.5f, 16f, 16f)
+            MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                this.getX() + this.getWidth() - 61f,
+                this.getY() + addY + 4.5f,
+                16f,
+                16f
+            )
 
         if (trash && mouseButton == 0) {
             var index = screenshotManager.getScreenshots().indexOf(currentScreenshot) - 1

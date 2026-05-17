@@ -1,15 +1,10 @@
 package me.miki.shindo.management.sound
 
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.utils.concurrent.TaskExecutor
-import me.miki.shindo.utils.concurrent.TaskPriority
-import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import java.io.BufferedInputStream
 import java.io.File
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
 import javax.sound.sampled.*
 import kotlin.math.log10
 

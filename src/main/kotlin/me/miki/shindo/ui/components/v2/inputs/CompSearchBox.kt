@@ -83,7 +83,14 @@ class CompSearchBox(
     }
 
     private fun drawPlaceholder(text: String, halfH: Float, textY: Float, focused: Boolean) {
-        nvg.drawText(LegacyIcon.SEARCH, getX() + 5, textY, palette.getFontColor(ColorType.NORMAL), halfH, Fonts.LEGACYICON)
+        nvg.drawText(
+            LegacyIcon.SEARCH,
+            getX() + 5,
+            textY,
+            palette.getFontColor(ColorType.NORMAL),
+            halfH,
+            Fonts.LEGACYICON
+        )
 
         searchAnim.setAnimation(if (!focused && text.isEmpty()) 1f else 0f, 16)
 

@@ -89,12 +89,23 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val btnX = centerX - (btnW / 2f)
 
         singleHover = lerp(singleHover, if (isInside(mouseX, mouseY, btnX, startY, btnW, btnH)) 1f else 0f, 0.2f)
-        multiHover = lerp(multiHover, if (isInside(mouseX, mouseY, btnX, startY + spacing, btnW, btnH)) 1f else 0f, 0.2f)
-        exitHover = lerp(exitHover, if (isInside(mouseX, mouseY, btnX, startY + spacing * 2, btnW, btnH)) 1f else 0f, 0.2f)
+        multiHover =
+            lerp(multiHover, if (isInside(mouseX, mouseY, btnX, startY + spacing, btnW, btnH)) 1f else 0f, 0.2f)
+        exitHover =
+            lerp(exitHover, if (isInside(mouseX, mouseY, btnX, startY + spacing * 2, btnW, btnH)) 1f else 0f, 0.2f)
 
         nvg.drawGlassButton(TranslateText.SINGLEPLAYER.getText(), centerX, startY, btnW, btnH, singleHover, anim, false)
-        nvg.drawGlassButton(TranslateText.MULTIPLAYER.getText(), centerX, startY + spacing, btnW, btnH, multiHover, anim, false)
-        nvg.drawGlassButton( "QUIT GAME", centerX, startY + spacing * 2, btnW, btnH, exitHover,anim, true)
+        nvg.drawGlassButton(
+            TranslateText.MULTIPLAYER.getText(),
+            centerX,
+            startY + spacing,
+            btnW,
+            btnH,
+            multiHover,
+            anim,
+            false
+        )
+        nvg.drawGlassButton("QUIT GAME", centerX, startY + spacing * 2, btnW, btnH, exitHover, anim, true)
 
         val bgSize = 36f
         val bgX = 10f
@@ -133,7 +144,14 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawRoundedRect(px, py, pw, ph, 8, Color(15, 10, 10, (alpha * 230).toInt()))
         nvg.drawOutlineRoundedRect(px, py, pw, ph, 8, 1.2f, Color(200, 50, 50, (alpha * 180).toInt()))
 
-        nvg.drawCenteredText("Are you sure?", sw / 2f, py + 14, Color(255, 255, 255, (alpha * 230).toInt()), 11, Fonts.SEMIBOLD)
+        nvg.drawCenteredText(
+            "Are you sure?",
+            sw / 2f,
+            py + 14,
+            Color(255, 255, 255, (alpha * 230).toInt()),
+            11,
+            Fonts.SEMIBOLD
+        )
 
 
         val btnW = 70f
@@ -179,13 +197,15 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         // Settings
         //rightX -= (btnS + btnSp)
-        settingsHover = lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.SETTINGS, rightX - btnS, topY, btnS,  settingsHover, anim)
+        settingsHover =
+            lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
+        nvg.drawGlassButtonWithIcon(LegacyIcon.SETTINGS, rightX - btnS, topY, btnS, settingsHover, anim)
 
         // Logo
         rightX -= (btnS + btnSp)
-        featherHover = lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.SHINDO, rightX - btnS, topY, btnS,  featherHover, anim)
+        featherHover =
+            lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
+        nvg.drawGlassButtonWithIcon(LegacyIcon.SHINDO, rightX - btnS, topY, btnS, featherHover, anim)
 
         // Profile box
         rightX -= (btnS + btnSp)

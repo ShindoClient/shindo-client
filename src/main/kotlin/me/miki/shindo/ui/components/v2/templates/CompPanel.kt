@@ -41,14 +41,32 @@ open class CompPanel(
         beforeDrawPanel(mouseX, mouseY, partialTicks)
 
         nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), radius, shadowStrength)
-        nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, when (style) {
-            PanelStyle.PANEL -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
-            PanelStyle.CARD -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
-        })
+        nvg.drawRoundedRect(
+            getX(), getY(), getWidth(), getHeight(), radius, when (style) {
+                PanelStyle.PANEL -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+                PanelStyle.CARD -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            }
+        )
 
         when (style) {
-            PanelStyle.PANEL -> nvg.drawRoundedRect(getX() + 1, getY() + 1, getWidth() - 2, getHeight() - 2, radius - 1f,ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230))
-            PanelStyle.CARD -> nvg.drawOutlineRoundedRect(getX(), getY(), getWidth(), getHeight(), radius, borderWidth, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210))
+            PanelStyle.PANEL -> nvg.drawRoundedRect(
+                getX() + 1,
+                getY() + 1,
+                getWidth() - 2,
+                getHeight() - 2,
+                radius - 1f,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            )
+
+            PanelStyle.CARD -> nvg.drawOutlineRoundedRect(
+                getX(),
+                getY(),
+                getWidth(),
+                getHeight(),
+                radius,
+                borderWidth,
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            )
         }
 
         nvg.save()

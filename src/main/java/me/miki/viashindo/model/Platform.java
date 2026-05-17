@@ -1,15 +1,15 @@
 package me.miki.viashindo.model;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-
 public class Platform {
-	
+
     public static int COUNT = 0;
     public final static List<ProtocolVersion> TEMP_INPUT_PROTOCOLS = new ArrayList<>();
 

@@ -414,7 +414,8 @@ class AddonCategory(parent: GuiModMenu) :
                     ModMenuMotion.CARD_HOVER_SPEED
                 )
             }
-            val settingsHoverAnimation = if (card.isFailed || addon == null) 0f else addon.settingsHoverAnimation.getValue()
+            val settingsHoverAnimation =
+                if (card.isFailed || addon == null) 0f else addon.settingsHoverAnimation.getValue()
 
             AddonCategoryRenderer.drawCardShell(
                 nvg = context.nvg,

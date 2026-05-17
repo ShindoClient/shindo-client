@@ -113,7 +113,11 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             translateX = slide,
             translateY = 0f
         ) {
-            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.drawScreen(mouseX, mouseY, partialTicks)
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.drawScreen(
+                mouseX,
+                mouseY,
+                partialTicks
+            )
         }
     }
 
@@ -132,7 +136,11 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
         }
 
         if (stateCoordinator.isSceneInteractive()) {
-            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseClicked(mouseX, mouseY, mouseButton)
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseClicked(
+                mouseX,
+                mouseY,
+                mouseButton
+            )
         }
 
         if (stateCoordinator.isSceneVisible() &&
@@ -149,7 +157,11 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (stateCoordinator.isSceneInteractive()) {
-            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseReleased(mouseX, mouseY, mouseButton)
+            (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseReleased(
+                mouseX,
+                mouseY,
+                mouseButton
+            )
         }
     }
 

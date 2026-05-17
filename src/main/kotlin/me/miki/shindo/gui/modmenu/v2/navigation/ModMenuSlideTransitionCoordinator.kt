@@ -56,6 +56,7 @@ class ModMenuSlideTransitionCoordinator {
                     onComplete()
                 }
             }
+
             else -> {}
         }
     }
@@ -75,7 +76,7 @@ class ModMenuSlideTransitionCoordinator {
     fun getState(): State = state
 
     fun isInteractive(): Boolean = state == State.IDLE || state == State.ACTIVE
-    fun isListInteractive(): Boolean =state == State.IDLE
+    fun isListInteractive(): Boolean = state == State.IDLE
 
     fun isSceneInteractive(): Boolean = state == State.ACTIVE
     fun isActiveSceneOpen(): Boolean = state == State.ACTIVE

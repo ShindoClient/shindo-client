@@ -74,7 +74,6 @@ abstract class Animation {
     }
 
 
-
     fun setValue(value: Double) {
         if (value in 0.0..1.0) {
             this.endPoint = value

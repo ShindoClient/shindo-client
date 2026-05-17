@@ -55,7 +55,8 @@ class CompToggleButton : CompControlTemplate {
         val progress = toggleAnimation.getValue()
 
         val toggleRadius = height / 2f
-        val toggleBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), ModMenuListCardStyle.TOGGLE_BASE_ALPHA)
+        val toggleBase =
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), ModMenuListCardStyle.TOGGLE_BASE_ALPHA)
         nvgInstance.drawRoundedRect(x, y, width, height, toggleRadius, toggleBase)
 
         if (progress > 0f) {

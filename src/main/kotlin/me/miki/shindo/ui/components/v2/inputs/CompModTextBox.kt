@@ -8,7 +8,7 @@ import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.TimerUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 
-class CompModTextBox: CompTextBoxBase {
+class CompModTextBox : CompTextBoxBase {
 
     private val setting: TextSetting
     private val timer = TimerUtils()
@@ -142,7 +142,14 @@ class CompModTextBox: CompTextBoxBase {
     }
 
     private fun drawCursor(
-        text: String, halfH: Float, textH: Float, textY: Float, inset: Float, addX: Float, enabled: Boolean, focused: Boolean
+        text: String,
+        halfH: Float,
+        textH: Float,
+        textY: Float,
+        inset: Float,
+        addX: Float,
+        enabled: Boolean,
+        focused: Boolean
     ) {
         if (!enabled || !focused || getCursorPosition() != getSelectionEnd()) return
         if (!timer.delay(600)) return

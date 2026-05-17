@@ -41,7 +41,9 @@ class CheckingDataScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 )
             })
 
-            if (Shindo.getInstance().getDownloadManager().isDownloaded() && fadeAnimation!!.getDirection() == Direction.FORWARDS) {
+            if (Shindo.getInstance().getDownloadManager()
+                    .isDownloaded() && fadeAnimation!!.getDirection() == Direction.FORWARDS
+            ) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
             }
 

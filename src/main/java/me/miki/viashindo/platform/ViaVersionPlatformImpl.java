@@ -11,7 +11,6 @@ import com.viaversion.viaversion.api.platform.ViaPlatform;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.VersionInfo;
-
 import me.miki.viashindo.ViaLoadingBase;
 import me.miki.viashindo.platform.viaversion.VLBViaAPIWrapper;
 import me.miki.viashindo.platform.viaversion.VLBViaConfig;
@@ -19,7 +18,7 @@ import me.miki.viashindo.util.VLBTask;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -161,9 +160,9 @@ public class ViaVersionPlatformImpl implements ViaPlatform<UUID> {
 
     @Override
     public JsonObject getDump() {
-    	
+
         if (ViaLoadingBase.getInstance().getDumpSupplier() == null) {
-        	return new JsonObject();
+            return new JsonObject();
         }
 
         return ViaLoadingBase.getInstance().getDumpSupplier().get();

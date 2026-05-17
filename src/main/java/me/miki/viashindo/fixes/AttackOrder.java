@@ -9,7 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 
 public class AttackOrder {
-	
+
     private final static Minecraft mc = Minecraft.getMinecraft();
 
     public static void sendConditionalSwing(MovingObjectPosition mop) {

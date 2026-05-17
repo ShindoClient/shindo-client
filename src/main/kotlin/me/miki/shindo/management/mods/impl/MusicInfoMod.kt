@@ -256,7 +256,12 @@ class MusicInfoMod :
 
                         if (!text.isNullOrEmpty()) {
                             val limitedText =
-                                Shindo.getInstance().nanoVGManager!!.getLimitText(text, 9.0f, this.getHudFont(1), 140.0f)
+                                Shindo.getInstance().nanoVGManager!!.getLimitText(
+                                    text,
+                                    9.0f,
+                                    this.getHudFont(1),
+                                    140.0f
+                                )
                             val xPos = 5.0f
                             if (isCurrentLine) {
                                 this.drawText(

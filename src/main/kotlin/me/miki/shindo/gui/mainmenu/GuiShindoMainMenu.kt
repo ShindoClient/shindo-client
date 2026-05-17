@@ -156,7 +156,14 @@ class GuiShindoMainMenu : GuiScreen() {
             9f,
             Fonts.REGULAR
         )
-        nvg.drawText(instance.getBuildInfo().getDisplayString(), 4f, sr.scaledHeight - 12f, Color.WHITE, 9f, Fonts.REGULAR)
+        nvg.drawText(
+            instance.getBuildInfo().getDisplayString(),
+            4f,
+            sr.scaledHeight - 12f,
+            Color.WHITE,
+            9f,
+            Fonts.REGULAR
+        )
     }
 
     private fun drawButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {

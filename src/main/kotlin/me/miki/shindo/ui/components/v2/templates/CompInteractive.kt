@@ -8,14 +8,14 @@ abstract class CompInteractive(
     y: Float = 0f
 ) : Component(x, y) {
 
-    private var enabled:     Boolean  =  true
-    private var hovered:     Boolean  =  false
-    private var lastMouseX:  Int      =  -1
-    private var lastMouseY:  Int      =  -1
+    private var enabled: Boolean = true
+    private var hovered: Boolean = false
+    private var lastMouseX: Int = -1
+    private var lastMouseY: Int = -1
 
-    open var onClick:       (() -> Unit)?  =  null
-    open var onHoverEnter:  (() -> Unit)?  =  null
-    open var onHoverExit:   (() -> Unit)?  =  null
+    open var onClick: (() -> Unit)? = null
+    open var onHoverEnter: (() -> Unit)? = null
+    open var onHoverExit: (() -> Unit)? = null
 
     open fun isEnabled(): Boolean = enabled
 

@@ -58,8 +58,21 @@ class GuiNavigationHub : GuiScreen() {
         nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, logoY, Color.WHITE, 34f, Fonts.LEGACYICON)
         nvg.drawCenteredText("Shindo", centerX, nameY, Color.WHITE, 16f, Fonts.SEMIBOLD)
 
-        mainHovered = lerp(mainHovered,if(MouseUtils.isInside(mouseX, mouseY, mainButtonX - (mainButtonW / 2f), mainButtonY, mainButtonW, mainButtonH)) 1f else 0f, 0.2f)
-        nvg.drawGlassButton(TranslateText.OPEN_MOD_MENU.getText(),
+        mainHovered = lerp(
+            mainHovered,
+            if (MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    mainButtonX - (mainButtonW / 2f),
+                    mainButtonY,
+                    mainButtonW,
+                    mainButtonH
+                )
+            ) 1f else 0f,
+            0.2f
+        )
+        nvg.drawGlassButton(
+            TranslateText.OPEN_MOD_MENU.getText(),
             mainButtonX,
             mainButtonY,
             mainButtonW,
@@ -67,7 +80,7 @@ class GuiNavigationHub : GuiScreen() {
             mainHovered,
             anim,
             false
-            )
+        )
 
         val iconSize = 20f
         val button1X = centerX - 40
@@ -76,14 +89,26 @@ class GuiNavigationHub : GuiScreen() {
         val buttonY = mainButtonY + 30f
 
 
-        icon1Hovered = lerp(icon1Hovered, if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY , iconSize, iconSize)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.MAP_PIN, button1X, buttonY, iconSize,  icon1Hovered, anim)
+        icon1Hovered = lerp(
+            icon1Hovered,
+            if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) 1f else 0f,
+            0.2f
+        )
+        nvg.drawGlassButtonWithIcon(LegacyIcon.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, anim)
 
-        icon2Hovered = lerp(icon2Hovered, if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY , iconSize, iconSize)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.CODE, button2X, buttonY, iconSize,  icon2Hovered, anim)
+        icon2Hovered = lerp(
+            icon2Hovered,
+            if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY, iconSize, iconSize)) 1f else 0f,
+            0.2f
+        )
+        nvg.drawGlassButtonWithIcon(LegacyIcon.CODE, button2X, buttonY, iconSize, icon2Hovered, anim)
 
-        icon3Hovered = lerp(icon3Hovered, if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY , iconSize, iconSize)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.LAYOUT, button3X, buttonY, iconSize,  icon3Hovered, anim)
+        icon3Hovered = lerp(
+            icon3Hovered,
+            if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY, iconSize, iconSize)) 1f else 0f,
+            0.2f
+        )
+        nvg.drawGlassButtonWithIcon(LegacyIcon.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, anim)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

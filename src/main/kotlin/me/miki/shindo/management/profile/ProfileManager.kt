@@ -135,7 +135,10 @@ class ProfileManager {
     fun save() {
         val target = activeProfile ?: defaultProfile ?: return
         val file = target.jsonFile ?: return
-        writeProfile(file, buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon, target.shareCode))
+        writeProfile(
+            file,
+            buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon, target.shareCode)
+        )
     }
 
     fun readProfileJson(file: File?): JsonObject? {
@@ -208,9 +211,9 @@ class ProfileManager {
     }
 
     private fun applyProfileJson(root: JsonObject) {
-        val appJson    = JsonUtils.getObjectProperty(root, "Appearance") ?: JsonObject()
-        val modJson    = JsonUtils.getObjectProperty(root, "Mods")       ?: JsonObject()
-        val addonJson  = JsonUtils.getObjectProperty(root, "Addons")     ?: JsonObject()
+        val appJson = JsonUtils.getObjectProperty(root, "Appearance") ?: JsonObject()
+        val modJson = JsonUtils.getObjectProperty(root, "Mods") ?: JsonObject()
+        val addonJson = JsonUtils.getObjectProperty(root, "Addons") ?: JsonObject()
 
         applyAppearance(appJson)
         applyMods(modJson)
@@ -219,10 +222,10 @@ class ProfileManager {
 
     private fun applyAppearance(appJson: JsonObject) {
         val colorManager = instance.getColorManager()
-        val accentName   = JsonUtils.getStringProperty(appJson, "Accent Color", "Teal Love")!!
-        val themeId      = JsonUtils.getIntProperty(appJson, "Theme", Theme.LIGHT.getId())
-        val bgId         = JsonUtils.getIntProperty(appJson, "Background", 0)
-        val langId       = JsonUtils.getStringProperty(appJson, "Language", Language.ENGLISH.getId())!!
+        val accentName = JsonUtils.getStringProperty(appJson, "Accent Color", "Teal Love")!!
+        val themeId = JsonUtils.getIntProperty(appJson, "Theme", Theme.LIGHT.getId())
+        val bgId = JsonUtils.getIntProperty(appJson, "Background", 0)
+        val langId = JsonUtils.getStringProperty(appJson, "Language", Language.ENGLISH.getId())!!
 
         colorManager.setCurrentColor(colorManager.getColorByName(accentName))
         colorManager.setTheme(Theme.getThemeById(themeId))
@@ -353,14 +356,14 @@ class ProfileManager {
         for (setting in settings) {
             val key = setting.getNameKey()
             when (setting) {
-                is ColorSetting    -> obj.addProperty(key, setting.getColor().rgb)
-                is BooleanSetting  -> obj.addProperty(key, setting.isToggled())
-                is ComboSetting    -> obj.addProperty(key, setting.getOption()!!.nameKey)
-                is NumberSetting   -> obj.addProperty(key, setting.getValue())
-                is TextSetting     -> obj.addProperty(key, setting.getText())
-                is KeybindSetting  -> obj.addProperty(key, setting.getKeyCode())
-                is ImageSetting    -> obj.addProperty(key, setting.getImage()?.name ?: "null")
-                is SoundSetting    -> obj.addProperty(key, setting.getSound()?.name ?: "null")
+                is ColorSetting -> obj.addProperty(key, setting.getColor().rgb)
+                is BooleanSetting -> obj.addProperty(key, setting.isToggled())
+                is ComboSetting -> obj.addProperty(key, setting.getOption()!!.nameKey)
+                is NumberSetting -> obj.addProperty(key, setting.getValue())
+                is TextSetting -> obj.addProperty(key, setting.getText())
+                is KeybindSetting -> obj.addProperty(key, setting.getKeyCode())
+                is ImageSetting -> obj.addProperty(key, setting.getImage()?.name ?: "null")
+                is SoundSetting -> obj.addProperty(key, setting.getSound()?.name ?: "null")
                 is CellGridSetting -> obj.add(key, setting.getCells()?.toCellGridJson() ?: JsonArray())
             }
         }
@@ -373,27 +376,55 @@ class ProfileManager {
         settingsLoop@ for (setting in settings) {
             val key = setting.getNameKey()
             when (setting) {
-                is ColorSetting   -> setting.setColor(ColorUtils.getColorByInt(JsonUtils.getIntProperty(settingsJson, key, Color.RED.rgb)))
+                is ColorSetting -> setting.setColor(
+                    ColorUtils.getColorByInt(
+                        JsonUtils.getIntProperty(
+                            settingsJson,
+                            key,
+                            Color.RED.rgb
+                        )
+                    )
+                )
 
                 is BooleanSetting -> {
                     if (key == "borderlessFullscreenSetting" && !allowBorderlessProfileLoad) continue@settingsLoop
                     setting.setToggled(JsonUtils.getBooleanProperty(settingsJson, key, false))
                 }
 
-                is ComboSetting   -> setting.setOption(
+                is ComboSetting -> setting.setOption(
                     setting.getOptionByNameKey(
                         JsonUtils.getStringProperty(settingsJson, key, setting.getDefaultOption()?.nameKey).toString()
                     )
                 )
 
-                is NumberSetting  -> setting.setValue(JsonUtils.getDoubleProperty(settingsJson, key, setting.getDefaultValue()))
-                is TextSetting    -> setting.setText(JsonUtils.getStringProperty(settingsJson, key, setting.getDefaultText()) ?: "")
-                is KeybindSetting -> setting.setKeyCode(JsonUtils.getIntProperty(settingsJson, key, setting.getDefaultKeyCode()))
+                is NumberSetting -> setting.setValue(
+                    JsonUtils.getDoubleProperty(
+                        settingsJson,
+                        key,
+                        setting.getDefaultValue()
+                    )
+                )
 
-                is ImageSetting   -> resolveFileFromCache(fileManager, "custom-image", settingsJson, key)
+                is TextSetting -> setting.setText(
+                    JsonUtils.getStringProperty(
+                        settingsJson,
+                        key,
+                        setting.getDefaultText()
+                    ) ?: ""
+                )
+
+                is KeybindSetting -> setting.setKeyCode(
+                    JsonUtils.getIntProperty(
+                        settingsJson,
+                        key,
+                        setting.getDefaultKeyCode()
+                    )
+                )
+
+                is ImageSetting -> resolveFileFromCache(fileManager, "custom-image", settingsJson, key)
                     ?.let { setting.setImage(it) }
 
-                is SoundSetting   -> resolveFileFromCache(fileManager, "custom-sound", settingsJson, key)
+                is SoundSetting -> resolveFileFromCache(fileManager, "custom-sound", settingsJson, key)
                     ?.let { setting.setSound(it) }
 
                 is CellGridSetting -> settingsJson.getAsJsonArray(key)?.let { outer ->
@@ -430,8 +461,8 @@ class ProfileManager {
                 for (i in 0 until arr.size()) {
                     val obj = arr[i].asJsonObject
                     val proxy = CustomProxy(
-                        id         = JsonUtils.getStringProperty(obj, "Id", null) ?: continue,
-                        name       = JsonUtils.getStringProperty(obj, "Name", null) ?: continue,
+                        id = JsonUtils.getStringProperty(obj, "Id", null) ?: continue,
+                        name = JsonUtils.getStringProperty(obj, "Name", null) ?: continue,
                         primaryDNS = JsonUtils.getStringProperty(obj, "PrimaryDNS", null) ?: continue,
                         secondaryDNS = JsonUtils.getStringProperty(obj, "SecondaryDNS", null)
                     )
@@ -448,7 +479,7 @@ class ProfileManager {
             }
 
             when (proxyType) {
-                NetworkManager.ProxyType.CLOUDFLARE    -> networkManager.enableCloudflareProxy()
+                NetworkManager.ProxyType.CLOUDFLARE -> networkManager.enableCloudflareProxy()
                 NetworkManager.ProxyType.SYSTEM_DEFAULT -> networkManager.disableAllProxies()
                 NetworkManager.ProxyType.CUSTOM -> {
                     JsonUtils.getStringProperty(networkJson, "ActiveCustomProxyId", null)
@@ -503,7 +534,13 @@ class ProfileManager {
     private fun buildProfileFromFile(file: File, id: Int): Profile? {
         if (!file.exists()) return null
         return try {
-            FileReader(file).use { buildProfileFromJson(gson.fromJson(it, JsonObject::class.java) ?: JsonObject(), file, id) }
+            FileReader(file).use {
+                buildProfileFromJson(
+                    gson.fromJson(it, JsonObject::class.java) ?: JsonObject(),
+                    file,
+                    id
+                )
+            }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to build profile from: ${file.name}", e)
             null
@@ -514,8 +551,8 @@ class ProfileManager {
         val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
 
         val serverIp = JsonUtils.getStringProperty(profileData, "Server", "") ?: ""
-        val icon     = ProfileIcon.getIconById(JsonUtils.getIntProperty(profileData, "Icon", ProfileIcon.GRASS.id))
-        val type     = ProfileType.getTypeById(JsonUtils.getIntProperty(profileData, "Type", ProfileType.ALL.id))
+        val icon = ProfileIcon.getIconById(JsonUtils.getIntProperty(profileData, "Icon", ProfileIcon.GRASS.id))
+        val type = ProfileType.getTypeById(JsonUtils.getIntProperty(profileData, "Type", ProfileType.ALL.id))
 
         val customIcon = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
             .trim()
@@ -544,7 +581,12 @@ class ProfileManager {
         return (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "").trim().ifEmpty { null }
     }
 
-    private fun resolveFileFromCache(fileManager: FileManager, subDir: String, settingsJson: JsonObject, key: String): File? {
+    private fun resolveFileFromCache(
+        fileManager: FileManager,
+        subDir: String,
+        settingsJson: JsonObject,
+        key: String
+    ): File? {
         val cacheDir = File(fileManager.cacheDir, subDir).takeIf { it.exists() } ?: return null
         val name = JsonUtils.getStringProperty(settingsJson, key, null) ?: return null
         return File(cacheDir, name).takeIf { it.exists() }
@@ -552,9 +594,9 @@ class ProfileManager {
 
     private fun createUniqueProfileFile(baseName: String): File {
         val profileDir = instance.getFileManager().profileDir
-        val sanitized  = sanitizeProfileName(baseName).ifEmpty { "Shared Profile" }
-        var candidate  = File(profileDir, "$sanitized.json")
-        var suffix     = 1
+        val sanitized = sanitizeProfileName(baseName).ifEmpty { "Shared Profile" }
+        var candidate = File(profileDir, "$sanitized.json")
+        var suffix = 1
         while (candidate.exists()) {
             candidate = File(profileDir, "$sanitized ($suffix).json")
             suffix++

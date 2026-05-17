@@ -53,11 +53,7 @@ public class ShindoTweaker implements ITweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
 
         classLoader.registerTransformer(LwjglTransformer.class.getName());
-//        classLoader.registerTransformer(SpongeForgeFixer.class.getName());
-//        classLoader.registerTransformer(MixinExtrasFixer.class.getName());
-
         MixinBootstrap.init();
-//        MixinExtrasBootstrap.init();
 
         MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
         Mixins.addConfiguration("mixins.shindo.json");

@@ -37,7 +37,7 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
                 isDaemon = true
             }
         }
-    
+
     // Placeholder image cached in memory to avoid loading from disk repeatedly
     private var cachedPlaceholder: BufferedImage? = null
 
@@ -109,12 +109,12 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     fun getAlbumArt(imageUrl: String): String {
         val id = imageUrl.hashCode().toString()
         val cachedFile = getCacheFile(id)
-        
+
         // Return cached file immediately if exists and valid
         if (cachedFile.exists() && isValidCacheFile(cachedFile)) {
             return cachedFile.absolutePath
         }
-        
+
         // Start async download, return placeholder for now
         getCachedAlbumArtUrlAsync(id, imageUrl)
         return PLACEHOLDER_PATH
@@ -150,21 +150,21 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
             connection.connectTimeout = CONNECT_TIMEOUT_MS
             connection.readTimeout = READ_TIMEOUT_MS
             connection.setRequestProperty("User-Agent", USER_AGENT)
-            
+
             val responseCode = connection.responseCode
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw java.io.IOException("HTTP error: $responseCode")
             }
-            
+
             connection.inputStream.use { inputStream ->
                 val image = ImageIO.read(inputStream)
                     ?: throw java.io.IOException("Failed to decode image")
-                
+
                 val resizedImage = resizeImage(image)
                 cacheFile.parentFile?.mkdirs()
                 ImageIO.write(resizedImage, "png", cacheFile)
             }
-            
+
             ShindoLogger.info("Cached album art: $id")
             cacheFile.absolutePath
         } catch (e: Exception) {
@@ -254,7 +254,7 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
         private const val CONNECT_TIMEOUT_MS = 8000
         private const val READ_TIMEOUT_MS = 15000
         private const val USER_AGENT = "Shindo/1.0"
-        
+
         // Placeholder path - use special marker that UI recognizes
         const val PLACEHOLDER_PATH = "__PLACEHOLDER__"
     }

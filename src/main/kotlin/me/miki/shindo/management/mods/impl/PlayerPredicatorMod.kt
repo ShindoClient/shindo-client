@@ -95,7 +95,12 @@ class PlayerPredicatorMod : Mod(
 
             val expand = 0.14
 
-            setColor(applyAlpha(Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(0), 80).rgb)
+            setColor(
+                applyAlpha(
+                    Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(0),
+                    80
+                ).rgb
+            )
 
             drawBoundingBox(
                 mc.thePlayer.entityBoundingBox.offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)

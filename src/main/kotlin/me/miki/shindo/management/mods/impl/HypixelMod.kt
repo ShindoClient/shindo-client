@@ -176,9 +176,13 @@ class HypixelMod :
             }
 
             if (autoglSetting && chatMessage.contains("The game starts in 5")) {
-                TaskExecutor.schedule(ThreadPoolType.SCHEDULED, autoglDelaySetting.toLong(), TimeUnit.SECONDS, Runnable {
-                    mc.thePlayer.sendChatMessage("/achat gl")
-                })
+                TaskExecutor.schedule(
+                    ThreadPoolType.SCHEDULED,
+                    autoglDelaySetting.toLong(),
+                    TimeUnit.SECONDS,
+                    Runnable {
+                        mc.thePlayer.sendChatMessage("/achat gl")
+                    })
             }
         }
 
@@ -189,9 +193,13 @@ class HypixelMod :
                 val title = titlePacket.message.formattedText
 
                 if (autoggSetting && title.startsWith("\u00a76\u00a7l") && title.endsWith("\u00a7r")) {
-                    TaskExecutor.schedule(ThreadPoolType.SCHEDULED, autoggDelaySetting.toLong(), TimeUnit.SECONDS, Runnable {
-                        mc.thePlayer.sendChatMessage("/achat gg")
-                    })
+                    TaskExecutor.schedule(
+                        ThreadPoolType.SCHEDULED,
+                        autoggDelaySetting.toLong(),
+                        TimeUnit.SECONDS,
+                        Runnable {
+                            mc.thePlayer.sendChatMessage("/achat gg")
+                        })
                 }
 
                 if (title.startsWith("\u00a76\u00a7l") && title.endsWith("\u00a7r") || title.startsWith("\u00a7c\u00a7lY") && title.endsWith(
