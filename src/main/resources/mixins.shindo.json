@@ -65,7 +65,6 @@
     "minecraft.client.renderer.entity.layer.MixinLayerWitherAura",
     "minecraft.client.renderer.texture.MixinTextureManager",
     "minecraft.client.renderer.texture.MixinTextureMap",
-    "minecraft.client.resources.MixinLanguageManager",
     "minecraft.client.resources.MixinResourcePackRepository",
     "minecraft.client.settings.MixinGameSettings",
     "minecraft.entity.MixinEntity",
