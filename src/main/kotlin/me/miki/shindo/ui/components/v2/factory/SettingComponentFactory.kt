@@ -46,19 +46,22 @@ object SettingComponentFactory {
     }
 
     @JvmStatic
-    fun <T : Setting> register(type: Class<T>, factory: (T) -> Component) {
+    fun <T : Setting> register(
+        type: Class<T>,
+        factory: (T) -> Component,
+    ) {
         @Suppress("UNCHECKED_CAST")
         registry[type] = factory as (Setting) -> Component
     }
 
     @JvmStatic
     fun create(setting: Setting): Component? {
-
         componentCache[setting]?.let { return it }
 
         val settingClass = setting.javaClass
-        val factory = findFactory(settingClass)
-            ?: return null
+        val factory =
+            findFactory(settingClass)
+                ?: return null
 
         val component = factory(setting)
         componentCache[setting] = component
@@ -66,7 +69,6 @@ object SettingComponentFactory {
     }
 
     private fun findFactory(settingClass: Class<out Setting>): ((Setting) -> Component)? {
-
         registry[settingClass]?.let { return it }
 
         var current: Class<*>? = settingClass

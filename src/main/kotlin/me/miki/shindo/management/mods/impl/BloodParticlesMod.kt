@@ -16,19 +16,20 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.ResourceLocation
 
-class BloodParticlesMod : Mod(
-    TranslateText.BLOOD_PARTICLES,
-    TranslateText.BLOOD_PARTICLES_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_BLOOD_PARTICLES
-) {
+class BloodParticlesMod :
+    Mod(
+        TranslateText.BLOOD_PARTICLES,
+        TranslateText.BLOOD_PARTICLES_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_BLOOD_PARTICLES,
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.AMOUNT,
         min = 1.0,
         max = 10.0,
         current = 2.0,
-        step = 1.0
+        step = 1.0,
     )
     private val amountSetting = 2
 
@@ -53,7 +54,7 @@ class BloodParticlesMod : Mod(
                     0.0,
                     0.0,
                     0.0,
-                    Block.getStateId(Blocks.redstone_block.defaultState)
+                    Block.getStateId(Blocks.redstone_block.defaultState),
                 )
             }
         }
@@ -66,8 +67,8 @@ class BloodParticlesMod : Mod(
                     1.2f,
                     (target!!.posX.toFloat()),
                     (target!!.posY.toFloat()),
-                    (target!!.posZ.toFloat())
-                )
+                    (target!!.posZ.toFloat()),
+                ),
             )
         }
     }
@@ -81,8 +82,3 @@ class BloodParticlesMod : Mod(
         }
     }
 }
-
-
-
-
-

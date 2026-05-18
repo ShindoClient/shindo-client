@@ -12,11 +12,12 @@ import net.minecraft.item.ItemBlock
 import kotlin.math.abs
 import kotlin.math.floor
 
-class GodbridgeAssistMod : HUDMod(
-    TranslateText.GODBRIDGE_ASSIST,
-    TranslateText.GODBRIDGE_ASSIST_DESCRIPTION,
-    LegacyIcon.MOD_GODBRIDGE_ASSIST
-) {
+class GodbridgeAssistMod :
+    HUDMod(
+        TranslateText.GODBRIDGE_ASSIST,
+        TranslateText.GODBRIDGE_ASSIST_DESCRIPTION,
+        LegacyIcon.MOD_GODBRIDGE_ASSIST,
+    ) {
     private var shiftedTicks = 0
 
     @EventTarget
@@ -49,7 +50,10 @@ class GodbridgeAssistMod : HUDMod(
                 return
             }
 
-            if (mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).item !is ItemBlock) {
+            if (mc.thePlayer.inventory
+                    .getStackInSlot(mc.thePlayer.inventory.currentItem)
+                    .item !is ItemBlock
+            ) {
                 return
             }
 
@@ -65,15 +69,19 @@ class GodbridgeAssistMod : HUDMod(
                 return
             }
 
-            if (Math.round(abs(mc.thePlayer.posX - floor(mc.thePlayer.posX)) * 10.0) != 3L && Math.round(
+            if (Math.round(abs(mc.thePlayer.posX - floor(mc.thePlayer.posX)) * 10.0) != 3L &&
+                Math.round(
                     abs(
-                        mc.thePlayer.posX - floor(
-                            mc.thePlayer.posX
-                        )
-                    ) * 10.0
-                ) != 7L && Math.round(
-                    abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0
-                ) != 3L && Math.round(abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0) != 7L
+                        mc.thePlayer.posX -
+                            floor(
+                                mc.thePlayer.posX,
+                            ),
+                    ) * 10.0,
+                ) != 7L &&
+                Math.round(
+                    abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0,
+                ) != 3L &&
+                Math.round(abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0) != 7L
             ) {
                 return
             }
@@ -88,12 +96,8 @@ class GodbridgeAssistMod : HUDMod(
                 -90f,
                 round.toFloat(),
                 1.6f,
-                this.getFontColor(alpha)
+                this.getFontColor(alpha),
             )
         }
     }
 }
-
-
-
-

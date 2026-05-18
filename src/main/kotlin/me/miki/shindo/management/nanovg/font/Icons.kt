@@ -1,7 +1,6 @@
 package me.miki.shindo.management.nanovg.font
 
 object Icons {
-
     // Fluent
     const val ACCESS_TIME_24: String = "\uF101"
     const val ACCESSIBILITY_16: String = "\uF102"

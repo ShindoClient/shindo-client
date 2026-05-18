@@ -10,14 +10,19 @@ open class Wing(
     private val sample: ResourceLocation?,
     private val texture: ResourceLocation?,
     private val category: WingCategory,
-    private val requiredRole: Role
+    private val requiredRole: Role,
 ) {
     private val animation = SimpleAnimation()
 
     fun getName(): String = name
+
     fun getSample(): ResourceLocation? = sample
+
     fun getTexture(): ResourceLocation? = texture
+
     fun getCategory(): WingCategory = category
+
     fun getRequiredRole(): Role = requiredRole
+
     fun getAnimation(): SimpleAnimation = animation
 }

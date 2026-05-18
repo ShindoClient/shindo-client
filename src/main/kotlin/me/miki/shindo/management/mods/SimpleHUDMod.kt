@@ -4,20 +4,18 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
 
-
 open class SimpleHUDMod : HUDMod {
-
     constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String) : super(
         nameTranslate,
         descriptionText,
-        icon
+        icon,
     )
 
     constructor(nameTranslate: TranslateText, descriptionText: TranslateText, icon: String, alias: String) : super(
         nameTranslate,
         descriptionText,
         icon,
-        alias
+        alias,
     )
 
     fun draw() {
@@ -43,8 +41,5 @@ open class SimpleHUDMod : HUDMod {
         }
     }
 
-    open fun getText(): String? {
-        return null
-    }
-
+    open fun getText(): String? = null
 }

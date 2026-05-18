@@ -4,7 +4,6 @@ import java.nio.FloatBuffer
 import kotlin.math.abs
 
 class Matrix3f {
-
     var m00 = 0f
     var m01 = 0f
     var m02 = 0f
@@ -82,15 +81,17 @@ class Matrix3f {
         if (this === other) return true
         if (other == null || this.javaClass != other.javaClass) return false
         val matrix3f = other as Matrix3f
-        return (java.lang.Float.compare(matrix3f.m00, this.m00) == 0
-                && java.lang.Float.compare(matrix3f.m01, this.m01) == 0
-                && java.lang.Float.compare(matrix3f.m02, this.m02) == 0
-                && java.lang.Float.compare(matrix3f.m10, this.m10) == 0
-                && java.lang.Float.compare(matrix3f.m11, this.m11) == 0
-                && java.lang.Float.compare(matrix3f.m12, this.m12) == 0
-                && java.lang.Float.compare(matrix3f.m20, this.m20) == 0
-                && java.lang.Float.compare(matrix3f.m21, this.m21) == 0
-                && java.lang.Float.compare(matrix3f.m22, this.m22) == 0)
+        return (
+            java.lang.Float.compare(matrix3f.m00, this.m00) == 0 &&
+                java.lang.Float.compare(matrix3f.m01, this.m01) == 0 &&
+                java.lang.Float.compare(matrix3f.m02, this.m02) == 0 &&
+                java.lang.Float.compare(matrix3f.m10, this.m10) == 0 &&
+                java.lang.Float.compare(matrix3f.m11, this.m11) == 0 &&
+                java.lang.Float.compare(matrix3f.m12, this.m12) == 0 &&
+                java.lang.Float.compare(matrix3f.m20, this.m20) == 0 &&
+                java.lang.Float.compare(matrix3f.m21, this.m21) == 0 &&
+                java.lang.Float.compare(matrix3f.m22, this.m22) == 0
+        )
     }
 
     override fun hashCode(): Int {
@@ -130,7 +131,10 @@ class Matrix3f {
         this.m22 = floatBuffer.get(bufferIndex(2, 2))
     }
 
-    fun load(floatBuffer: FloatBuffer, bl: Boolean) {
+    fun load(
+        floatBuffer: FloatBuffer,
+        bl: Boolean,
+    ) {
         if (bl) {
             loadTransposed(floatBuffer)
         } else {
@@ -150,9 +154,18 @@ class Matrix3f {
         this.m22 = matrix3f.m22
     }
 
-    override fun toString(): String {
-        return ("Matrix3f:\n" + this.m00 + " " + this.m01 + " " + this.m02 + "\n" + this.m10 + " " + this.m11 + " " + this.m12 + "\n" + this.m20 + " " + this.m21 + " " + this.m22 + "\n")
-    }
+    override fun toString(): String =
+        (
+            "Matrix3f:\n" + this.m00 + " " + this.m01 + " " + this.m02 + "\n" + this.m10 + " " + this.m11 + " " +
+                this.m12 +
+                "\n" +
+                this.m20 +
+                " " +
+                this.m21 +
+                " " +
+                this.m22 +
+                "\n"
+        )
 
     fun store(floatBuffer: FloatBuffer) {
         floatBuffer.put(bufferIndex(0, 0), this.m00)
@@ -178,7 +191,10 @@ class Matrix3f {
         floatBuffer.put(bufferIndex(2, 2), this.m22)
     }
 
-    fun store(floatBuffer: FloatBuffer, bl: Boolean) {
+    fun store(
+        floatBuffer: FloatBuffer,
+        bl: Boolean,
+    ) {
         if (bl) {
             storeTransposed(floatBuffer)
         } else {
@@ -238,7 +254,11 @@ class Matrix3f {
         }
     }
 
-    operator fun set(i: Int, j: Int, f: Float) {
+    operator fun set(
+        i: Int,
+        j: Int,
+        f: Float,
+    ) {
         if (i == 0) {
             if (j == 0) {
                 this.m00 = f
@@ -331,7 +351,11 @@ class Matrix3f {
 
     companion object {
         @JvmStatic
-        fun createScaleMatrix(f: Float, g: Float, h: Float): Matrix3f {
+        fun createScaleMatrix(
+            f: Float,
+            g: Float,
+            h: Float,
+        ): Matrix3f {
             val matrix3f = Matrix3f()
             matrix3f.m00 = f
             matrix3f.m11 = g
@@ -339,6 +363,9 @@ class Matrix3f {
             return matrix3f
         }
 
-        private fun bufferIndex(i: Int, j: Int): Int = j * 3 + i
+        private fun bufferIndex(
+            i: Int,
+            j: Int,
+        ): Int = j * 3 + i
     }
 }

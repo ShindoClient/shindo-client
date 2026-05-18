@@ -3,7 +3,10 @@ package me.miki.shindo.ui.animation.v2.easing
 import me.miki.shindo.ui.animation.v2.Animation
 import kotlin.math.pow
 
-class EaseInOutExpo(ms: Int, endPoint: Double) : Animation(ms, endPoint) {
+class EaseInOutExpo(
+    ms: Int,
+    endPoint: Double,
+) : Animation(ms, endPoint) {
     init {
         this.reset()
     }

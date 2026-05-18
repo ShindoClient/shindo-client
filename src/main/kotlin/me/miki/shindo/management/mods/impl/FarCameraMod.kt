@@ -11,14 +11,13 @@ import me.miki.shindo.management.settings.config.PropertyType
 
 class FarCameraMod :
     Mod(TranslateText.FAR_CAMERA, TranslateText.FAR_CAMERA_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_FAR_CAMERA) {
-
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.RANGE,
         min = 0.0,
         max = 50.0,
         current = 15.0,
-        step = 1.0
+        step = 1.0,
     )
     private val rangeSetting = 15
 
@@ -27,7 +26,3 @@ class FarCameraMod :
         event.thirdPersonDistance = rangeSetting.toFloat()
     }
 }
-
-
-
-

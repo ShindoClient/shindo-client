@@ -17,8 +17,7 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.text.DecimalFormat
 
-class SpeedometerMod :
-    SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION, LegacyIcon.MOD_SPEEDOMETER) {
+class SpeedometerMod : SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION, LegacyIcon.MOD_SPEEDOMETER) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val showIcon = true
 
@@ -58,7 +57,7 @@ class SpeedometerMod :
             for (i in 0 until speedCount) {
                 GL11.glVertex2d(
                     (this.getWidth() + 1) * i / speedCount.toDouble() + 3,
-                    this.getHeight() - (speeds[i] * (16)) - 10
+                    this.getHeight() - (speeds[i] * (16)) - 10,
                 )
             }
 
@@ -82,13 +81,9 @@ class SpeedometerMod :
         this.drawText("Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s", 5.5f, 6f, 10.5f, getHudFont(2))
     }
 
-    override fun getText(): String {
-        return "Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s"
-    }
+    override fun getText(): String = "Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s"
 
-    override fun getIcon(): String? {
-        return if (showIcon) LegacyIcon.ACTIVITY else null
-    }
+    override fun getIcon(): String? = if (showIcon) LegacyIcon.ACTIVITY else null
 
     private fun addSpeed(speed: Double) {
         var speed = speed
@@ -100,6 +95,3 @@ class SpeedometerMod :
         speeds[speedCount - 1] = speed
     }
 }
-
-
-

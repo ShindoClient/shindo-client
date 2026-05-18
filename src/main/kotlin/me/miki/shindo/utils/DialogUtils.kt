@@ -5,19 +5,27 @@ import me.miki.shindo.management.notification.NotificationType
 import javax.swing.JOptionPane
 
 object DialogUtils {
-
     @JvmStatic
-    fun info(title: String, message: String) {
+    fun info(
+        title: String,
+        message: String,
+    ) {
         showFeedback(title, message, NotificationType.INFO, JOptionPane.INFORMATION_MESSAGE)
     }
 
     @JvmStatic
-    fun warn(title: String, message: String) {
+    fun warn(
+        title: String,
+        message: String,
+    ) {
         showFeedback(title, message, NotificationType.WARNING, JOptionPane.WARNING_MESSAGE)
     }
 
     @JvmStatic
-    fun error(title: String, message: String) {
+    fun error(
+        title: String,
+        message: String,
+    ) {
         showFeedback(title, message, NotificationType.ERROR, JOptionPane.ERROR_MESSAGE)
     }
 
@@ -28,14 +36,18 @@ object DialogUtils {
     }
 
     @JvmStatic
-    fun confirm(title: String, message: String): Boolean {
-        val result = JOptionPane.showConfirmDialog(
-            null,
-            message,
-            title,
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
-        )
+    fun confirm(
+        title: String,
+        message: String,
+    ): Boolean {
+        val result =
+            JOptionPane.showConfirmDialog(
+                null,
+                message,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+            )
         return result == JOptionPane.YES_OPTION
     }
 
@@ -44,19 +56,20 @@ object DialogUtils {
         title: String,
         message: String,
         confirmLabel: String = "Delete",
-        cancelLabel: String = "Cancel"
+        cancelLabel: String = "Cancel",
     ): Boolean {
         val options = arrayOf(confirmLabel, cancelLabel)
-        val result = JOptionPane.showOptionDialog(
-            null,
-            message,
-            title,
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.WARNING_MESSAGE,
-            null,
-            options,
-            cancelLabel
-        )
+        val result =
+            JOptionPane.showOptionDialog(
+                null,
+                message,
+                title,
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                cancelLabel,
+            )
         return result == 0
     }
 
@@ -65,31 +78,41 @@ object DialogUtils {
         title: String,
         message: String,
         retryLabel: String = "Retry",
-        cancelLabel: String = "Cancel"
+        cancelLabel: String = "Cancel",
     ): Boolean {
         val options = arrayOf(retryLabel, cancelLabel)
-        val result = JOptionPane.showOptionDialog(
-            null,
-            message,
-            title,
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            options,
-            retryLabel
-        )
+        val result =
+            JOptionPane.showOptionDialog(
+                null,
+                message,
+                title,
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                retryLabel,
+            )
         return result == 0
     }
 
-    private fun showFeedback(title: String, message: String, type: NotificationType, swingType: Int) {
+    private fun showFeedback(
+        title: String,
+        message: String,
+        type: NotificationType,
+        swingType: Int,
+    ) {
         if (tryPostNotification(title, message, type)) {
             return
         }
         JOptionPane.showMessageDialog(null, message, title, swingType)
     }
 
-    private fun tryPostNotification(title: String, message: String, type: NotificationType): Boolean {
-        return try {
+    private fun tryPostNotification(
+        title: String,
+        message: String,
+        type: NotificationType,
+    ): Boolean =
+        try {
             val instance = Shindo.getInstance()
             if (!instance.hasStarted()) {
                 false
@@ -100,5 +123,4 @@ object DialogUtils {
         } catch (_: Throwable) {
             false
         }
-    }
 }

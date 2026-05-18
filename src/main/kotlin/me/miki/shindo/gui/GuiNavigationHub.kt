@@ -14,7 +14,6 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 class GuiNavigationHub : GuiScreen() {
-
     private val introAnimation: DecelerateAnimation = DecelerateAnimation(800, 1.0)
     private var centerX = 0f
     private var centerY = 0f
@@ -33,19 +32,27 @@ class GuiNavigationHub : GuiScreen() {
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager ?: return
 
-
-        nvg.setupAndDraw(Runnable {
-            nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
-            drawNanoVG(nvg, mouseX, mouseY)
-        })
+        nvg.setupAndDraw(
+            Runnable {
+                nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
+                drawNanoVG(nvg, mouseX, mouseY)
+            },
+        )
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawNanoVG(nvg: NanoVGManager, mouseX: Int, mouseY: Int) {
-
+    private fun drawNanoVG(
+        nvg: NanoVGManager,
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         val logoY = centerY - 78f
         val nameY = centerY - 42f
         val mainButtonW = 120f
@@ -58,19 +65,24 @@ class GuiNavigationHub : GuiScreen() {
         nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, logoY, Color.WHITE, 34f, Fonts.LEGACYICON)
         nvg.drawCenteredText("Shindo", centerX, nameY, Color.WHITE, 16f, Fonts.SEMIBOLD)
 
-        mainHovered = lerp(
-            mainHovered,
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    mainButtonX - (mainButtonW / 2f),
-                    mainButtonY,
-                    mainButtonW,
-                    mainButtonH
-                )
-            ) 1f else 0f,
-            0.2f
-        )
+        mainHovered =
+            lerp(
+                mainHovered,
+                if (MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        mainButtonX - (mainButtonW / 2f),
+                        mainButtonY,
+                        mainButtonW,
+                        mainButtonH,
+                    )
+                ) {
+                    1f
+                } else {
+                    0f
+                },
+                0.2f,
+            )
         nvg.drawGlassButton(
             TranslateText.OPEN_MOD_MENU.getText(),
             mainButtonX,
@@ -79,7 +91,7 @@ class GuiNavigationHub : GuiScreen() {
             mainButtonH,
             mainHovered,
             anim,
-            false
+            false,
         )
 
         val iconSize = 20f
@@ -88,30 +100,36 @@ class GuiNavigationHub : GuiScreen() {
         val button3X = button2X + 30
         val buttonY = mainButtonY + 30f
 
-
-        icon1Hovered = lerp(
-            icon1Hovered,
-            if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) 1f else 0f,
-            0.2f
-        )
+        icon1Hovered =
+            lerp(
+                icon1Hovered,
+                if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) 1f else 0f,
+                0.2f,
+            )
         nvg.drawGlassButtonWithIcon(LegacyIcon.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, anim)
 
-        icon2Hovered = lerp(
-            icon2Hovered,
-            if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY, iconSize, iconSize)) 1f else 0f,
-            0.2f
-        )
+        icon2Hovered =
+            lerp(
+                icon2Hovered,
+                if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY, iconSize, iconSize)) 1f else 0f,
+                0.2f,
+            )
         nvg.drawGlassButtonWithIcon(LegacyIcon.CODE, button2X, buttonY, iconSize, icon2Hovered, anim)
 
-        icon3Hovered = lerp(
-            icon3Hovered,
-            if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY, iconSize, iconSize)) 1f else 0f,
-            0.2f
-        )
+        icon3Hovered =
+            lerp(
+                icon3Hovered,
+                if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY, iconSize, iconSize)) 1f else 0f,
+                0.2f,
+            )
         nvg.drawGlassButtonWithIcon(LegacyIcon.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, anim)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) return
 
         val mainButtonW = 120f
@@ -130,7 +148,6 @@ class GuiNavigationHub : GuiScreen() {
         val button3X = button2X + 30
         val buttonY = mainButtonY + 30f
 
-
         if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) {
             openNow(GuiWaypoint())
             return
@@ -147,22 +164,25 @@ class GuiNavigationHub : GuiScreen() {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             mc.displayGuiScreen(null)
             mc.setIngameFocus()
         }
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame(): Boolean = false
 
     private fun openNow(screen: GuiScreen) {
         mc.displayGuiScreen(screen)
     }
 
-    private fun lerp(current: Float, target: Float, factor: Float): Float {
-        return current + (target - current) * factor
-    }
+    private fun lerp(
+        current: Float,
+        target: Float,
+        factor: Float,
+    ): Float = current + (target - current) * factor
 }

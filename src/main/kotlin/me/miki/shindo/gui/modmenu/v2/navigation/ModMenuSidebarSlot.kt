@@ -10,10 +10,10 @@ data class ModMenuSidebarSlot(
     val category: Category,
     val x: Float,
     val y: Float,
-    val size: Float
+    val size: Float,
 ) {
-    fun contains(mouseX: Int, mouseY: Int): Boolean {
-        return MouseUtils.isInside(mouseX, mouseY, x, y, size, size)
-    }
+    fun contains(
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean = MouseUtils.isInside(mouseX, mouseY, x, y, size, size)
 }
-

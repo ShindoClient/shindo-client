@@ -10,7 +10,6 @@ import me.miki.shindo.utils.network.HttpUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ChangelogManager {
-
     private val changelogs = CopyOnWriteArrayList<Changelog>()
 
     init {
@@ -18,10 +17,11 @@ class ChangelogManager {
     }
 
     private fun loadChangelog() {
-        val jsonObject = HttpUtils.readJson(
-            "https://cdn.shindoclient.com/data/changelogs/versions/${Shindo.getInstance().getVerIdentifier()}.json",
-            null
-        ) ?: return
+        val jsonObject =
+            HttpUtils.readJson(
+                "https://cdn.shindoclient.com/data/changelogs/versions/${Shindo.getInstance().getVerIdentifier()}.json",
+                null,
+            ) ?: return
         val jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs") ?: return
         val gson = Gson()
         for (jsonElement in jsonArray) {
@@ -29,8 +29,8 @@ class ChangelogManager {
             changelogs.add(
                 Changelog(
                     JsonUtils.getStringProperty(changelogJsonObject, "text", "null").toString(),
-                    ChangelogType.getTypeById(JsonUtils.getIntProperty(changelogJsonObject, "type", 999))
-                )
+                    ChangelogType.getTypeById(JsonUtils.getIntProperty(changelogJsonObject, "type", 999)),
+                ),
             )
         }
     }

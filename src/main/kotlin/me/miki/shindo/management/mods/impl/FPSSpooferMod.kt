@@ -9,19 +9,20 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class FPSSpooferMod : Mod(
-    TranslateText.FPS_SPOOFER,
-    TranslateText.FPS_SPOOFER_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_FPS_SPOOFER,
-    "fake"
-) {
+class FPSSpooferMod :
+    Mod(
+        TranslateText.FPS_SPOOFER,
+        TranslateText.FPS_SPOOFER_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_FPS_SPOOFER,
+        "fake",
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MULTIPLIER,
         min = 1.0,
         max = 30.0,
-        step = 1.0
+        step = 1.0,
     )
     private val multiplierSetting = 2.0
 
@@ -36,7 +37,3 @@ class FPSSpooferMod : Mod(
 
     fun getMultiplierSetting(): NumberSetting? = getNumberSetting(this, "multiplierSetting")
 }
-
-
-
-

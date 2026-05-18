@@ -10,9 +10,8 @@ import java.io.File
 class ResourcePackListEntryFolder(
     private val ownerScreen: GuiBetterResourcePacks,
     val folder: File,
-    val isUp: Boolean = false
+    val isUp: Boolean = false,
 ) : ResourcePackListEntryCustom(ownerScreen) {
-
     companion object {
         private val folderResource = ResourceLocation("shindo/rpo/folder.png")
     }
@@ -23,13 +22,9 @@ class ResourcePackListEntryFolder(
         mc.textureManager.bindTexture(folderResource)
     }
 
-    override fun func_148312_b(): String {
-        return folderName
-    }
+    override fun func_148312_b(): String = folderName
 
-    override fun func_148311_a(): String {
-        return if (isUp) "(Back)" else "(Folder)"
-    }
+    override fun func_148311_a(): String = if (isUp) "(Back)" else "(Folder)"
 
     override fun mousePressed(
         p_148278_1_: Int,
@@ -37,7 +32,7 @@ class ResourcePackListEntryFolder(
         p_148278_3_: Int,
         p_148278_4_: Int,
         p_148278_5_: Int,
-        p_148278_6_: Int
+        p_148278_6_: Int,
     ): Boolean {
         ownerScreen.moveToFolder(folder)
         return true
@@ -51,7 +46,7 @@ class ResourcePackListEntryFolder(
         slotHeight: Int,
         mouseX: Int,
         mouseY: Int,
-        isSelected: Boolean
+        isSelected: Boolean,
     ) {
         func_148313_c()
         GlStateManager.color(1f, 1f, 1f, 1f)
@@ -71,7 +66,7 @@ class ResourcePackListEntryFolder(
         if (width > 157) {
             s = mc.fontRendererObj.trimStringToWidth(
                 s,
-                157 - mc.fontRendererObj.getStringWidth("...")
+                157 - mc.fontRendererObj.getStringWidth("..."),
             ) + "..."
             width = mc.fontRendererObj.getStringWidth(s)
         }
@@ -84,9 +79,8 @@ class ResourcePackListEntryFolder(
                 lines[i],
                 (x + 32 + 2).toFloat(),
                 (y + 12 + 10 * i).toFloat(),
-                0x808080
+                0x808080,
             )
         }
     }
 }
-

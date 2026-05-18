@@ -10,7 +10,6 @@ import java.io.File
 import java.io.IOException
 
 class ScreenshotCommand : Command("screenshot") {
-
     override fun onCommand(message: String) {
         val fileManager = Shindo.getInstance().getFileManager()
         val args = message.split(" ")

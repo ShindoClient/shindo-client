@@ -21,8 +21,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 
-class BlockInfoMod :
-    HUDMod(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, LegacyIcon.MOD_BLOCK_INFO, "waila") {
+class BlockInfoMod : HUDMod(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, LegacyIcon.MOD_BLOCK_INFO, "waila") {
     private val screenAnimation = ScreenAnimation()
     private var lastSelection: Long = 0
     private var introAnimation: Animation? = null
@@ -45,7 +44,7 @@ class BlockInfoMod :
             this.getWidth(),
             this.getHeight(),
             2 - introAnimation!!.getValueFloat(),
-            introAnimation!!.getValueFloat()
+            introAnimation!!.getValueFloat(),
         )
 
         this.setWidth(80)
@@ -59,7 +58,7 @@ class BlockInfoMod :
                 this.getY().toFloat(),
                 this.getWidth().toFloat(),
                 this.getHeight().toFloat(),
-                2f * this.getScale()
+                2f * this.getScale(),
             )
             RenderHelper.enableGUIStandardItemLighting()
             GlStateManager.enableColorMaterial()
@@ -67,7 +66,7 @@ class BlockInfoMod :
             mc.renderItem.renderItemAndEffectIntoGUI(
                 ItemStack(block),
                 this.getX() + (this.getWidth() / 2) - 8,
-                this.getY() + (this.getHeight() / 2) - 8
+                this.getY() + (this.getHeight() / 2) - 8,
             )
             RenderHelper.disableStandardItemLighting()
             GlStateManager.colorMask(true, true, true, true)
@@ -76,7 +75,9 @@ class BlockInfoMod :
     }
 
     private fun drawNanoVG() {
-        if ((mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK) || this.isEditing()) {
+        if ((mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK) ||
+            this.isEditing()
+        ) {
             if (this.isEditing()) {
                 block = Blocks.grass
             } else {
@@ -100,7 +101,3 @@ class BlockInfoMod :
         }
     }
 }
-
-
-
-

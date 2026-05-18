@@ -11,7 +11,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class CompTextBoxBase : Component {
-
     private var text: String
 
     private var enabled: Boolean
@@ -21,10 +20,15 @@ open class CompTextBoxBase : Component {
     private var maxStringLength: Int
 
     fun getText(): String = text
+
     fun isEnabled(): Boolean = enabled
+
     fun isFocused(): Boolean = focused
+
     fun getCursorPosition(): Int = cursorPosition
+
     fun getSelectionEnd(): Int = selectionEnd
+
     fun getMaxStringLength(): Int = maxStringLength
 
     fun setEnabled(enabled: Boolean) {
@@ -59,7 +63,11 @@ open class CompTextBoxBase : Component {
         this.maxStringLength = 256
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!enabled) {
             this.focused = false
             super.mouseClicked(mouseX, mouseY, mouseButton)
@@ -72,7 +80,10 @@ open class CompTextBoxBase : Component {
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (!enabled) {
             super.keyTyped(typedChar, keyCode)
             return
@@ -157,8 +168,10 @@ open class CompTextBoxBase : Component {
                         return
                     }
 
-                    else -> if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
-                        this.writeText(typedChar.toString())
+                    else -> {
+                        if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
+                            this.writeText(typedChar.toString())
+                        }
                     }
                 }
             }
@@ -235,7 +248,10 @@ open class CompTextBoxBase : Component {
 
     private fun getNthWordFromCursor(num: Int): Int = getNthWordFromPos(num, this.cursorPosition)
 
-    private fun getNthWordFromPos(num: Int, pos: Int): Int {
+    private fun getNthWordFromPos(
+        num: Int,
+        pos: Int,
+    ): Int {
         var i = pos
         val negative = num < 0
         val steps = abs(num)
@@ -280,7 +296,12 @@ open class CompTextBoxBase : Component {
         this.selectionEnd = selection
     }
 
-    open fun setPosition(x: Float, y: Float, width: Float, height: Float) {
+    open fun setPosition(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         this.setX(x)
         this.setY(y)
         this.setWidth(width)

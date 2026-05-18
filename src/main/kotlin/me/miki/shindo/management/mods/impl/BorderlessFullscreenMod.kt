@@ -13,12 +13,13 @@ import org.lwjgl.LWJGLException
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.DisplayMode
 
-class BorderlessFullscreenMod : Mod(
-    TranslateText.BORDERLESS_FULSCREEN,
-    TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_BORDERLESS_FULLSCREEN
-) {
+class BorderlessFullscreenMod :
+    Mod(
+        TranslateText.BORDERLESS_FULSCREEN,
+        TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_BORDERLESS_FULLSCREEN,
+    ) {
     private var prevX = 0
     private var prevY = 0
     private var prevWidth = 0
@@ -75,13 +76,13 @@ class BorderlessFullscreenMod : Mod(
                 Display.setDisplayMode(
                     DisplayMode(
                         Display.getDesktopDisplayMode().width,
-                        Display.getDesktopDisplayMode().height
-                    )
+                        Display.getDesktopDisplayMode().height,
+                    ),
                 )
                 Display.setLocation(0, 0)
                 (mc as IMixinMinecraft).resizeWindow(
                     Display.getDesktopDisplayMode().width,
-                    Display.getDesktopDisplayMode().height
+                    Display.getDesktopDisplayMode().height,
                 )
             } else {
                 Display.setDisplayMode(DisplayMode(prevWidth, prevHeight))

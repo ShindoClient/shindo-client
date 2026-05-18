@@ -10,7 +10,6 @@ import java.awt.Color
  * Lightweight UI telemetry overlay for ModMenu profiling/debug sessions.
  */
 class ModMenuTelemetryOverlay {
-
     private var frameStartNanos = 0L
     private var lastFrameMs = 0f
     private var smoothedFrameMs = 0f
@@ -27,11 +26,12 @@ class ModMenuTelemetryOverlay {
 
         val durationNs = System.nanoTime() - frameStartNanos
         lastFrameMs = durationNs / 1_000_000f
-        smoothedFrameMs = if (smoothedFrameMs == 0f) {
-            lastFrameMs
-        } else {
-            (smoothedFrameMs * 0.88f) + (lastFrameMs * 0.12f)
-        }
+        smoothedFrameMs =
+            if (smoothedFrameMs == 0f) {
+                lastFrameMs
+            } else {
+                (smoothedFrameMs * 0.88f) + (lastFrameMs * 0.12f)
+            }
     }
 
     fun toggle() {
@@ -40,7 +40,13 @@ class ModMenuTelemetryOverlay {
 
     fun isEnabled(): Boolean = enabled
 
-    fun draw(nvg: NanoVGManager, palette: ColorPalette, menuX: Float, menuY: Float, menuWidth: Float) {
+    fun draw(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        menuX: Float,
+        menuY: Float,
+        menuWidth: Float,
+    ) {
         if (!enabled) {
             return
         }
@@ -58,20 +64,21 @@ class ModMenuTelemetryOverlay {
             y + 22f,
             palette.getFontColor(ColorType.DARK),
             8.5f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
-        val clipDebugStatus = if (ModMenuClipCoordinator.isDebugOverlayEnabled()) {
-            "on (" + ModMenuClipCoordinator.getCapturedClipCount() + ")"
-        } else {
-            "off"
-        }
+        val clipDebugStatus =
+            if (ModMenuClipCoordinator.isDebugOverlayEnabled()) {
+                "on (" + ModMenuClipCoordinator.getCapturedClipCount() + ")"
+            } else {
+                "off"
+            }
         nvg.drawText(
             "Clip debug: $clipDebugStatus",
             x + 8f,
             y + 34f,
             palette.getFontColor(ColorType.NORMAL),
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 }

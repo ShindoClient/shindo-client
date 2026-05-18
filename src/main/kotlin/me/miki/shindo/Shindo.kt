@@ -51,7 +51,6 @@ import org.apache.commons.lang3.ArrayUtils
 
 @Suppress("UNUSED")
 class Shindo private constructor() {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val buildInfo: BuildInfo = BuildInfo.DEFAULT
 
@@ -119,7 +118,8 @@ class Shindo private constructor() {
         blacklistManager = BlacklistManager()
         restrictedMod = RestrictedMod()
         try {
-            restrictedMod.shouldCheck = !System.getProperty("me.miki.shindo.blacklistchecks", "true").equals("false", ignoreCase = true)
+            restrictedMod.shouldCheck =
+                !System.getProperty("me.miki.shindo.blacklistchecks", "true").equals("false", ignoreCase = true)
         } catch (e: Exception) {
             ShindoLogger.error("Restriction System load Error", e)
         }
@@ -127,9 +127,10 @@ class Shindo private constructor() {
         fileManager = FileManager()
         languageManager = LanguageManager()
         eventManager = EventManager()
-        extensionManager = ExtensionManager().also {
-            ExtensionLibrary.bootstrap(it)
-        }
+        extensionManager =
+            ExtensionManager().also {
+                ExtensionLibrary.bootstrap(it)
+            }
 
         downloadManager = DownloadManager()
         modManager = ModManager()
@@ -223,55 +224,87 @@ class Shindo private constructor() {
     }
 
     fun getFileManager(): FileManager = fileManager
+
     fun getLanguageManager(): LanguageManager = languageManager
+
     fun getEventManager(): EventManager = eventManager
+
     fun getNetworkManager(): NetworkManager = networkManager
+
     fun getDownloadManager(): DownloadManager = downloadManager
+
     fun getExtensionManager(): ExtensionManager = extensionManager
 
     fun getShindoAPI(): ShindoAPI = shindoAPI
+
     fun getDiscordStats(): DiscordStats = discordStats
 
     fun getProfileManager(): ProfileManager = profileManager
+
     fun getProfileShareManager(): ProfileShareManager = profileShareManager
+
     fun getSkinManager(): SkinManager = skinManager
+
     fun getCapeManager(): CapeManager = capeManager
+
     fun getWingManager(): WingManager = wingManager
+
     fun getBandanaManager(): BandanaManager = bandanaManager
+
     fun getColorManager(): ColorManager = colorManager
 
     fun getModManager(): ModManager = modManager
+
     fun getAddonManager(): AddonManager = addonManager
+
     fun getShaderManager(): ShaderManager = shaderManager
+
     fun getRestrictedMod(): RestrictedMod = restrictedMod
+
     fun getBlacklistManager(): BlacklistManager = blacklistManager
 
     fun getChatManager(): ChatManager = chatManager
+
     fun getBroadcastManager(): BroadcastManager = broadcastManager
+
     fun getNotificationManager(): NotificationManager = notificationManager
 
     fun getWaypointManager(): WaypointManager = waypointManager
+
     fun getQuickPlayManager(): QuickPlayManager = quickPlayManager
+
     fun getClickEffects(): ClickEffects = clickEffects
+
     fun getSecurityFeatureManager(): SecurityFeatureManager = securityFeatureManager
+
     fun getRomanizationManager(): RomanizationManager = romanizationManager
 
     fun getUILayoutManager(): UILayoutManager = uiLayoutManager
+
     fun getMusicManager(): MusicManager = musicManager
+
     fun getScreenshotManager(): ScreenshotManager = screenshotManager
 
     fun getCommandManager(): CommandManager = commandManager
+
     fun getChangelogManager(): ChangelogManager = changelogManager
+
     fun getNewsManager(): NewsManager = newsManager
+
     fun getUpdate(): Update = update
 
     fun getName(): String = name
+
     fun getVersion(): String = version
+
     fun getAuthor(): String = author
+
     fun getVerIdentifier(): Int = verIdentifier
 
     fun getBuildInfo(): BuildInfo = buildInfo
+
     fun isUpdateNeeded(): Boolean = updateNeeded
+
     fun setUpdateNeeded(updateNeeded: Boolean) {
         this.updateNeeded = updateNeeded
     }

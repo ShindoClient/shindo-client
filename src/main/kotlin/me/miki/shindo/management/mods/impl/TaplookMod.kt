@@ -11,8 +11,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.input.Keyboard
 
-class TaplookMod :
-    Mod(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_TAPLOOK) {
+class TaplookMod : Mod(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_TAPLOOK) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.PERSPECTIVE)
     private val perspective = Perspective.FRONT
 
@@ -48,16 +47,13 @@ class TaplookMod :
         mc.renderGlobal.setDisplayListEntitiesDirty()
     }
 
-    private enum class Perspective(private val translate: TranslateText) : PropertyEnum {
+    private enum class Perspective(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         FRONT(TranslateText.FRONT),
-        BEHIND(TranslateText.BEHIND);
+        BEHIND(TranslateText.BEHIND),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-
-

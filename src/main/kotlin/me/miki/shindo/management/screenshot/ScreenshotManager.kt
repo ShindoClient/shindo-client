@@ -10,7 +10,6 @@ import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ScreenshotManager {
-
     private val screenshots = CopyOnWriteArrayList<Screenshot>()
     private val removeScreenshots = CopyOnWriteArrayList<File>()
     private var prevSize = 0
@@ -81,7 +80,10 @@ class ScreenshotManager {
         if (prevSize != files.size) {
             prevSize = files.size
             for (f in files) {
-                if (FileUtils.getExtension(f) == "png" && !removeScreenshots.contains(f) && getScreenshotByFile(f) == null) {
+                if (FileUtils.getExtension(f) == "png" &&
+                    !removeScreenshots.contains(f) &&
+                    getScreenshotByFile(f) == null
+                ) {
                     screenshots.add(Screenshot(f))
                     Shindo.getInstance().nanoVGManager?.loadImage(f)
                 }
@@ -103,8 +105,7 @@ class ScreenshotManager {
         return screenshots[index]
     }
 
-    fun getScreenshotByFile(file: File): Screenshot? =
-        screenshots.firstOrNull { it.getImage() == file }
+    fun getScreenshotByFile(file: File): Screenshot? = screenshots.firstOrNull { it.getImage() == file }
 
     fun delete(screenshot: Screenshot) {
         removeScreenshots.add(screenshot.getImage())

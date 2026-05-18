@@ -1,8 +1,9 @@
 package me.miki.shindo.management.event
 
 @Suppress("UNCHECKED_CAST")
-class ArrayHelper<T>(private var elements: Array<T>) : MutableIterable<T> {
-
+class ArrayHelper<T>(
+    private var elements: Array<T>,
+) : MutableIterable<T> {
     constructor() : this(emptyArray<Any?>() as Array<T>)
 
     fun add(t: T?) {
@@ -60,21 +61,16 @@ class ArrayHelper<T>(private var elements: Array<T>) : MutableIterable<T> {
 
     fun isEmpty(): Boolean = size() == 0
 
-    override fun iterator(): MutableIterator<T> {
-        return object : MutableIterator<T> {
+    override fun iterator(): MutableIterator<T> =
+        object : MutableIterator<T> {
             private var index = 0
 
-            override fun hasNext(): Boolean {
-                return index < this@ArrayHelper.size() && this@ArrayHelper.get(index) != null
-            }
+            override fun hasNext(): Boolean = index < this@ArrayHelper.size() && this@ArrayHelper.get(index) != null
 
-            override fun next(): T {
-                return this@ArrayHelper.get(index++)
-            }
+            override fun next(): T = this@ArrayHelper.get(index++)
 
             override fun remove() {
                 this@ArrayHelper.remove(this@ArrayHelper.get(index))
             }
         }
-    }
 }

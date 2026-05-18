@@ -50,7 +50,7 @@ class MusicInfoMod :
     @Property(
         type = PropertyType.TEXT,
         translate = TranslateText.LYRICS_API_URL,
-        text = "https://spotify.mopigames.gay/"
+        text = "https://spotify.mopigames.gay/",
     )
     private var lyricsApiUrlSetting: String = "https://spotify.mopigames.gay/"
     private val visibleLyrics = 5
@@ -138,7 +138,10 @@ class MusicInfoMod :
         this.setHeight(baseHeight)
     }
 
-    private fun updateLyrics(currentTrack: Track?, position: Long) {
+    private fun updateLyrics(
+        currentTrack: Track?,
+        position: Long,
+    ) {
         if (!this.showLyricsSetting || currentTrack == null) {
             return
         }
@@ -147,13 +150,15 @@ class MusicInfoMod :
         if (currentTrack.id != this.currentTrackId) {
             this.currentTrackId = currentTrack.id
             lyricsManager.reset()
-            lyricsManager.fetchLyrics(currentTrack).thenAcceptAsync(Consumer { lyrics: LyricsResponse? ->
-                if (lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
-                    if (this.romanizeJapaneseSetting) {
-                        lyricsManager.processLyricsRomanization(lyrics)
+            lyricsManager.fetchLyrics(currentTrack).thenAcceptAsync(
+                Consumer { lyrics: LyricsResponse? ->
+                    if (lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
+                        if (this.romanizeJapaneseSetting) {
+                            lyricsManager.processLyricsRomanization(lyrics)
+                        }
                     }
-                }
-            })
+                },
+            )
         }
         lyricsManager.updateCurrentLineIndex(position)
     }
@@ -191,12 +196,13 @@ class MusicInfoMod :
                 6.0f,
                 10.5f,
                 this.getHudFont(3),
-                Color(255, 255, 255, 80)
+                Color(255, 255, 255, 80),
             )
             val trackName = currentTrack.name
-            val artistNames = currentTrack.artists
-                .filterNotNull()
-                .joinToString(", ") { it.name }
+            val artistNames =
+                currentTrack.artists
+                    .filterNotNull()
+                    .joinToString(", ") { it.name }
             val trackNameLines = this.breakTextIntoLines(trackName, 95.0f)
             var trackNameY = 25.0f
             for (line in trackNameLines) {
@@ -214,12 +220,20 @@ class MusicInfoMod :
             val progressFactor = current / end
 
             this.drawRoundedRect(
-                6.0f, progressBarY, 142.5f, 2.5f, 1.3f,
-                Color(255, 255, 255, 80)
+                6.0f,
+                progressBarY,
+                142.5f,
+                2.5f,
+                1.3f,
+                Color(255, 255, 255, 80),
             )
             this.drawRoundedRect(
-                6.0f, progressBarY, progressFactor * 142.5f, 2.5f, 1.3f,
-                Color(255, 255, 255, 180)
+                6.0f,
+                progressBarY,
+                progressFactor * 142.5f,
+                2.5f,
+                1.3f,
+                Color(255, 255, 255, 180),
             )
 
             val timeY = progressBarY + 6.0f
@@ -233,7 +247,6 @@ class MusicInfoMod :
                 val visibleLines = lyricsManager2.getVisibleLines(this.visibleLyrics)
 
                 if (visibleLines.isNotEmpty()) {
-
                     this.save()
                     val lyricsAreaHeight = baseHeight - lyricsHeaderY - 5.0f
                     this.scissor(0f, lyricsHeaderY, 145.0f, lyricsAreaHeight + 4.0f)
@@ -260,7 +273,7 @@ class MusicInfoMod :
                                     text,
                                     9.0f,
                                     this.getHudFont(1),
-                                    140.0f
+                                    140.0f,
                                 )
                             val xPos = 5.0f
                             if (isCurrentLine) {
@@ -270,7 +283,7 @@ class MusicInfoMod :
                                     lyricsY + yOffset,
                                     9.0f,
                                     this.getHudFont(2),
-                                    Color(255, 255, 255, 180)
+                                    Color(255, 255, 255, 180),
                                 )
                             } else {
                                 this.drawText(
@@ -279,7 +292,7 @@ class MusicInfoMod :
                                     lyricsY + yOffset,
                                     9.0f,
                                     this.getHudFont(1),
-                                    Color(255, 255, 255, 80)
+                                    Color(255, 255, 255, 80),
                                 )
                             }
                         }
@@ -297,7 +310,7 @@ class MusicInfoMod :
                         lyricsHeaderY + 20.0f,
                         10.0f,
                         this.getHudFont(1),
-                        Color(200, 200, 200)
+                        Color(200, 200, 200),
                     )
                 }
             }
@@ -308,14 +321,18 @@ class MusicInfoMod :
                 6.0f,
                 10.5f,
                 this.getHudFont(3),
-                Color(255, 255, 255, 80)
+                Color(255, 255, 255, 80),
             )
             this.drawRoundedImage(PLACEHOLDER_IMAGE, 5.5f, 25.0f, 37.0f, 37.0f, 6.0f)
             val progressBarY = 67.5f
 
             this.drawRoundedRect(
-                6.0f, progressBarY, 142.5f, 2.5f, 1.3f,
-                Color(255, 255, 255, 80)
+                6.0f,
+                progressBarY,
+                142.5f,
+                2.5f,
+                1.3f,
+                Color(255, 255, 255, 80),
             )
         }
         this.setWidth(155)
@@ -347,11 +364,12 @@ class MusicInfoMod :
         }
     }
 
-    private fun easeOutCubic(t: Float): Float {
-        return 1.0f - (1.0f - t).toDouble().pow(3.0).toFloat()
-    }
+    private fun easeOutCubic(t: Float): Float = 1.0f - (1.0f - t).toDouble().pow(3.0).toFloat()
 
-    private fun breakTextIntoLines(text: String, maxWidth: Float): MutableList<String> {
+    private fun breakTextIntoLines(
+        text: String,
+        maxWidth: Float,
+    ): MutableList<String> {
         val lines = ArrayList<String>()
         if (this.getTextWidth(text, 10.5f, this.getHudFont(1))!! <= maxWidth) {
             lines.add(text)
@@ -392,11 +410,12 @@ class MusicInfoMod :
         return "Nothing is Playing"
     }
 
-    override fun getIcon(): String? {
-        return if (this.iconSetting) "9" else null
-    }
+    override fun getIcon(): String? = if (this.iconSetting) "9" else null
 
-    override fun onTrackInfoUpdated(position: Long, duration: Long) {
+    override fun onTrackInfoUpdated(
+        position: Long,
+        duration: Long,
+    ) {
         this.trackDuration = duration
         val musicManager = Shindo.getInstance().getMusicManager()
         musicManager.getLyricsManager().updateCurrentLineIndex(position)
@@ -408,29 +427,22 @@ class MusicInfoMod :
         }
     }
 
-    fun getShowLyricsSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "showLyricsSetting")
-    }
+    fun getShowLyricsSetting(): BooleanSetting? = getBooleanSetting(this, "showLyricsSetting")
 
-    fun getRomanizeJapaneseSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "romanizeJapaneseSetting")
-    }
+    fun getRomanizeJapaneseSetting(): BooleanSetting? = getBooleanSetting(this, "romanizeJapaneseSetting")
 
-    fun getEnableHotkeysSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "enableHotkeysSetting")
-    }
+    fun getEnableHotkeysSetting(): BooleanSetting? = getBooleanSetting(this, "enableHotkeysSetting")
 
-    fun getLyricsApiUrlSetting(): TextSetting? {
-        return getTextSetting(this, "lyricsApiUrlSetting")
-    }
+    fun getLyricsApiUrlSetting(): TextSetting? = getTextSetting(this, "lyricsApiUrlSetting")
 
-    enum class Design(private val translate: TranslateText) : PropertyEnum {
+    enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SIMPLE(TranslateText.SIMPLE),
-        ADVANCED(TranslateText.ADVANCED);
+        ADVANCED(TranslateText.ADVANCED),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -441,6 +453,3 @@ class MusicInfoMod :
         var instance: MusicInfoMod? = null
     }
 }
-
-
-

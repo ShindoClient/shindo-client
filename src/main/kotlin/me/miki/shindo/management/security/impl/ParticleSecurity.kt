@@ -6,7 +6,6 @@ import me.miki.shindo.management.security.SecurityFeature
 import net.minecraft.network.play.server.S2APacketParticles
 
 class ParticleSecurity : SecurityFeature() {
-
     private var particles: Int = 0
 
     @EventTarget
@@ -16,8 +15,11 @@ class ParticleSecurity : SecurityFeature() {
             particles += pkt.particleCount
             particles -= 6
             particles = minOf(particles, 150)
-            if (particles > 100 || pkt.particleCount < 1 || kotlin.math.abs(pkt.particleCount) > 20 ||
-                pkt.particleSpeed < 0f || pkt.particleSpeed > 1000f
+            if (particles > 100 ||
+                pkt.particleCount < 1 ||
+                kotlin.math.abs(pkt.particleCount) > 20 ||
+                pkt.particleSpeed < 0f ||
+                pkt.particleSpeed > 1000f
             ) {
                 event.setCancelled(true)
             }

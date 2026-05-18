@@ -32,14 +32,13 @@ import java.util.*
 import kotlin.math.abs
 
 @Suppress("unused", "UNUSED_PARAMETER")
-class KillEffectsMod : Mod(
-    TranslateText.KILL_EFFECTS,
-    TranslateText.KILL_EFFECTS_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_KILL_EFFECTS
-) {
-
-
+class KillEffectsMod :
+    Mod(
+        TranslateText.KILL_EFFECTS,
+        TranslateText.KILL_EFFECTS_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_KILL_EFFECTS,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)
     private val soundSetting = true
 
@@ -52,7 +51,7 @@ class KillEffectsMod : Mod(
         min = 1.0,
         max = 10.0,
         step = 1.0,
-        current = 1.0
+        current = 1.0,
     )
     private val multiplierSetting = 1
 
@@ -80,7 +79,6 @@ class KillEffectsMod : Mod(
         trackedEntities.removeAll(toRemove.toSet())
     }
 
-
     private fun spawnKillEffect(target: EntityLivingBase) {
         if (mc.thePlayer.ticksExisted > 10) {
             if (effectType == EffectType.LIGHTNING) {
@@ -90,8 +88,10 @@ class KillEffectsMod : Mod(
                     mc.soundHandler.playSound(
                         PositionedSoundRecord.create(
                             ResourceLocation("ambient.weather.thunder"),
-                            target.posX.toFloat(), target.posY.toFloat(), target.posZ.toFloat()
-                        )
+                            target.posX.toFloat(),
+                            target.posY.toFloat(),
+                            target.posZ.toFloat(),
+                        ),
                     )
                 }
             } else if (effectType == EffectType.FLAMES) {
@@ -102,8 +102,10 @@ class KillEffectsMod : Mod(
                     mc.soundHandler.playSound(
                         PositionedSoundRecord.create(
                             ResourceLocation("item.fireCharge.use"),
-                            target.posX.toFloat(), target.posY.toFloat(), target.posZ.toFloat()
-                        )
+                            target.posX.toFloat(),
+                            target.posY.toFloat(),
+                            target.posZ.toFloat(),
+                        ),
                     )
                 }
             } else if (effectType == EffectType.CLOUD) {
@@ -114,8 +116,10 @@ class KillEffectsMod : Mod(
                     mc.soundHandler.playSound(
                         PositionedSoundRecord.create(
                             ResourceLocation("fireworks.twinkle"),
-                            target.posX.toFloat(), target.posY.toFloat(), target.posZ.toFloat()
-                        )
+                            target.posX.toFloat(),
+                            target.posY.toFloat(),
+                            target.posZ.toFloat(),
+                        ),
                     )
                 }
             } else if (effectType == EffectType.BLOOD) {
@@ -128,15 +132,19 @@ class KillEffectsMod : Mod(
                         0.0,
                         0.0,
                         0.0,
-                        Block.getStateId(Blocks.redstone_block.defaultState)
+                        Block.getStateId(Blocks.redstone_block.defaultState),
                     )
                 }
                 if (soundSetting) {
                     mc.soundHandler.playSound(
                         PositionedSoundRecord(
-                            ResourceLocation("dig.stone"), 4.0f, 1.2f,
-                            target.posX.toFloat(), target.posY.toFloat(), target.posZ.toFloat()
-                        )
+                            ResourceLocation("dig.stone"),
+                            4.0f,
+                            1.2f,
+                            target.posX.toFloat(),
+                            target.posY.toFloat(),
+                            target.posZ.toFloat(),
+                        ),
                     )
                 }
             } else if (effectType == EffectType.PHYSICS) {
@@ -156,16 +164,20 @@ class KillEffectsMod : Mod(
                             target.posZ + offsetZ,
                             velocityX,
                             velocityY,
-                            velocityZ
-                        )
+                            velocityZ,
+                        ),
                     )
                 }
                 if (soundSetting) {
                     mc.soundHandler.playSound(
                         PositionedSoundRecord(
-                            ResourceLocation("dig.stone"), 2.0f, 0.8f,
-                            target.posX.toFloat(), target.posY.toFloat(), target.posZ.toFloat()
-                        )
+                            ResourceLocation("dig.stone"),
+                            2.0f,
+                            0.8f,
+                            target.posX.toFloat(),
+                            target.posY.toFloat(),
+                            target.posZ.toFloat(),
+                        ),
                     )
                 }
             }
@@ -196,16 +208,17 @@ class KillEffectsMod : Mod(
         }
     }
 
-    private enum class EffectType(private val translate: TranslateText) : PropertyEnum {
+    private enum class EffectType(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         LIGHTNING(TranslateText.LIGHTING),
         FLAMES(TranslateText.FLAMES),
         CLOUD(TranslateText.CLOUD),
         BLOOD(TranslateText.BLOOD),
-        PHYSICS(TranslateText.PHYSICS);
+        PHYSICS(TranslateText.PHYSICS),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     private class PhysicsParticle(
@@ -214,7 +227,7 @@ class KillEffectsMod : Mod(
         private var posZ: Double,
         vx: Double,
         vy: Double,
-        vz: Double
+        vz: Double,
     ) {
         private var prevPosX: Double
         private var prevPosY: Double
@@ -225,6 +238,7 @@ class KillEffectsMod : Mod(
         var age: Int
         private val size: Double = 0.05
         private var mc: Minecraft = Minecraft.getMinecraft()
+
         fun update() {
             age++
             prevPosX = posX
@@ -268,7 +282,12 @@ class KillEffectsMod : Mod(
             val renderX = interpX - (mc.renderManager as IMixinRenderManager).renderPosX
             val renderY = interpY - (mc.renderManager as IMixinRenderManager).renderPosY
             val renderZ = interpZ - (mc.renderManager as IMixinRenderManager).renderPosZ
-            val color: Color = Shindo.getInstance().getColorManager().getCurrentColor().getColor1()
+            val color: Color =
+                Shindo
+                    .getInstance()
+                    .getColorManager()
+                    .getCurrentColor()
+                    .getColor1()
             GlStateManager.pushMatrix()
             GlStateManager.translate(renderX, renderY, renderZ)
             GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
@@ -312,9 +331,3 @@ class KillEffectsMod : Mod(
         }
     }
 }
-
-
-
-
-
-

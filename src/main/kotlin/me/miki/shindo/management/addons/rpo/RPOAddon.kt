@@ -9,14 +9,14 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.minecraft.client.Minecraft
 import java.io.File
 
-class RPOAddon : Addon(
-    "Resource Pack Organizer",
-    "Organizes the resourcepack Screen",
-    TranslateText.ADDON_RPO_DESCRIPTION,
-    LegacyIcon.ADDON_RPO,
-    AddonType.RENDER
-) {
-
+class RPOAddon :
+    Addon(
+        "Resource Pack Organizer",
+        "Organizes the resourcepack Screen",
+        TranslateText.ADDON_RPO_DESCRIPTION,
+        LegacyIcon.ADDON_RPO,
+        AddonType.RENDER,
+    ) {
     private var config: ConfigHandler? = null
 
     fun init() {
@@ -27,8 +27,14 @@ class RPOAddon : Addon(
 
         ResourcePackRepositoryCustom.overrideRepository(enabled)
 
-        Minecraft.getMinecraft().gameSettings.resourcePacks.clear()
-        Minecraft.getMinecraft().gameSettings.resourcePacks.addAll(enabled)
+        Minecraft
+            .getMinecraft()
+            .gameSettings.resourcePacks
+            .clear()
+        Minecraft
+            .getMinecraft()
+            .gameSettings.resourcePacks
+            .addAll(enabled)
         Minecraft.getMinecraft().gameSettings.saveOptions()
         Minecraft.getMinecraft().refreshResources()
     }
@@ -47,7 +53,6 @@ class RPOAddon : Addon(
             private set
 
         init {
-
         }
     }
 
@@ -55,4 +60,3 @@ class RPOAddon : Addon(
         instance = this
     }
 }
-

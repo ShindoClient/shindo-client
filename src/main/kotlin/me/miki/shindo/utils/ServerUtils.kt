@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 
 object ServerUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
@@ -23,22 +22,20 @@ object ServerUtils {
     fun isJoinServer(): Boolean = !mc.isSingleplayer && mc.currentServerData != null
 
     @JvmStatic
-    fun getServerIP(): String {
-        return if (isJoinServer()) {
+    fun getServerIP(): String =
+        if (isJoinServer()) {
             mc.currentServerData.serverIP
         } else {
             "Single Player"
         }
-    }
 
     @JvmStatic
-    fun getPing(): Int {
-        return if (mc.isSingleplayer || !isJoinServer()) {
+    fun getPing(): Int =
+        if (mc.isSingleplayer || !isJoinServer()) {
             0
         } else {
             mc.currentServerData.pingToServer.toInt()
         }
-    }
 
     @JvmStatic
     fun isHypixel(): Boolean = getServerIP().contains("hypixel")

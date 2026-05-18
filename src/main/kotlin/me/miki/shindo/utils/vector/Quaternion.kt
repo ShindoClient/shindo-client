@@ -7,9 +7,8 @@ class Quaternion(
     private var i: Float,
     private var j: Float,
     private var k: Float,
-    private var r: Float
+    private var r: Float,
 ) {
-
     constructor(vector3f: Vector3f, f: Float, bl: Boolean) : this(0f, 0f, 0f, 1f) {
         var angle = f
         if (bl) {
@@ -46,8 +45,11 @@ class Quaternion(
     constructor(quaternion: Quaternion) : this(quaternion.i, quaternion.j, quaternion.k, quaternion.r)
 
     fun i(): Float = this.i
+
     fun j(): Float = this.j
+
     fun k(): Float = this.k
+
     fun r(): Float = this.r
 
     fun mul(quaternion: Quaternion) {
@@ -78,7 +80,12 @@ class Quaternion(
         this.k = -this.k
     }
 
-    fun set(f: Float, g: Float, h: Float, i: Float) {
+    fun set(
+        f: Float,
+        g: Float,
+        h: Float,
+        i: Float,
+    ) {
         this.i = f
         this.j = g
         this.k = h
@@ -102,9 +109,10 @@ class Quaternion(
         }
     }
 
-    fun slerp(quaternion: Quaternion, f: Float) {
-        throw UnsupportedOperationException()
-    }
+    fun slerp(
+        quaternion: Quaternion,
+        f: Float,
+    ): Unit = throw UnsupportedOperationException()
 
     fun copy(): Quaternion = Quaternion(this)
 
@@ -122,7 +130,7 @@ class Quaternion(
             Vector3f(
                 atan2((2.0f * j() * k() + 2.0f * i() * r()).toDouble(), (f - g - h + i).toDouble()).toFloat(),
                 l,
-                atan2((2.0f * i() * j() + 2.0f * r() * k()).toDouble(), (f + g - h - i).toDouble()).toFloat()
+                atan2((2.0f * i() * j() + 2.0f * r() * k()).toDouble(), (f + g - h - i).toDouble()).toFloat(),
             )
         }
     }
@@ -132,7 +140,7 @@ class Quaternion(
         return Vector3f(
             Math.toDegrees(vector3f.x().toDouble()).toFloat(),
             Math.toDegrees(vector3f.y().toDouble()).toFloat(),
-            Math.toDegrees(vector3f.z().toDouble()).toFloat()
+            Math.toDegrees(vector3f.z().toDouble()).toFloat(),
         )
     }
 
@@ -150,7 +158,7 @@ class Quaternion(
             Vector3f(
                 l,
                 atan2((2.0f * i() * k() + 2.0f * j() * r()).toDouble(), (f - g - h + i).toDouble()).toFloat(),
-                atan2((2.0f * i() * j() + 2.0f * r() * k()).toDouble(), (f - g + h - i).toDouble()).toFloat()
+                atan2((2.0f * i() * j() + 2.0f * r() * k()).toDouble(), (f - g + h - i).toDouble()).toFloat(),
             )
         }
     }
@@ -160,7 +168,7 @@ class Quaternion(
         return Vector3f(
             Math.toDegrees(vector3f.x().toDouble()).toFloat(),
             Math.toDegrees(vector3f.y().toDouble()).toFloat(),
-            Math.toDegrees(vector3f.z().toDouble()).toFloat()
+            Math.toDegrees(vector3f.z().toDouble()).toFloat(),
         )
     }
 
@@ -182,16 +190,18 @@ class Quaternion(
         return i
     }
 
-    override fun toString(): String {
-        return "Quaternion[${r()} + ${i()}i + ${j()}j + ${k()}k]"
-    }
+    override fun toString(): String = "Quaternion[${r()} + ${i()}i + ${j()}j + ${k()}k]"
 
     companion object {
         @JvmField
         val ONE = Quaternion(0.0f, 0.0f, 0.0f, 1.0f)
 
         @JvmStatic
-        fun fromYXZ(f: Float, g: Float, h: Float): Quaternion {
+        fun fromYXZ(
+            f: Float,
+            g: Float,
+            h: Float,
+        ): Quaternion {
             val quaternion = ONE.copy()
             quaternion.mul(Quaternion(0.0f, sin(f / 2.0f), 0.0f, cos(f / 2.0f)))
             quaternion.mul(Quaternion(sin(g / 2.0f), 0.0f, 0.0f, cos(g / 2.0f)))
@@ -200,21 +210,22 @@ class Quaternion(
         }
 
         @JvmStatic
-        fun fromXYZDegrees(vector3f: Vector3f): Quaternion {
-            return fromXYZ(
+        fun fromXYZDegrees(vector3f: Vector3f): Quaternion =
+            fromXYZ(
                 Math.toRadians(vector3f.x().toDouble()).toFloat(),
                 Math.toRadians(vector3f.y().toDouble()).toFloat(),
-                Math.toRadians(vector3f.z().toDouble()).toFloat()
+                Math.toRadians(vector3f.z().toDouble()).toFloat(),
             )
-        }
 
         @JvmStatic
-        fun fromXYZ(vector3f: Vector3f): Quaternion {
-            return fromXYZ(vector3f.x(), vector3f.y(), vector3f.z())
-        }
+        fun fromXYZ(vector3f: Vector3f): Quaternion = fromXYZ(vector3f.x(), vector3f.y(), vector3f.z())
 
         @JvmStatic
-        fun fromXYZ(f: Float, g: Float, h: Float): Quaternion {
+        fun fromXYZ(
+            f: Float,
+            g: Float,
+            h: Float,
+        ): Quaternion {
             val quaternion = ONE.copy()
             quaternion.mul(Quaternion(sin(f / 2.0f), 0.0f, 0.0f, cos(f / 2.0f)))
             quaternion.mul(Quaternion(0.0f, sin(g / 2.0f), 0.0f, cos(g / 2.0f)))

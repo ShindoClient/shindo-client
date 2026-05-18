@@ -10,9 +10,8 @@ class CompMainMenuTextBox(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : CompTextBoxBase(x, y, width, height) {
-
     private val timer = TimerUtils()
     private val animation = SimpleAnimation()
 
@@ -23,16 +22,31 @@ class CompMainMenuTextBox(
     private var icon: String? = null
     private var title: String? = null
 
-    fun setEmptyText(icon: String, title: String) {
+    fun setEmptyText(
+        icon: String,
+        title: String,
+    ) {
         this.icon = icon
         this.title = title
     }
 
-    override fun setPosition(x: Float, y: Float, width: Float, height: Float) {
-        setX(x); setY(y); setWidth(width); setHeight(height)
+    override fun setPosition(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
+        setX(x)
+        setY(y)
+        setWidth(width)
+        setHeight(height)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val rawText = getText()
         val drawText = if (passwordMode) "*".repeat(rawText.length) else rawText
         val focused = isFocused()
@@ -54,7 +68,10 @@ class CompMainMenuTextBox(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    private fun computeScrollOffset(drawText: String, halfH: Float): Float {
+    private fun computeScrollOffset(
+        drawText: String,
+        halfH: Float,
+    ): Float {
         val selectionEnd = getSelectionEnd()
         var addX = 0f
         var result = ""
@@ -69,15 +86,22 @@ class CompMainMenuTextBox(
         val outTextSize = drawText.length - result.length
         if (selectionEnd < outTextSize) {
             val reversed = drawText.reversed()
-            addX = getWidth() - nvg.getTextWidth(
-                reversed.substring(outTextSize - selectionEnd), halfH, Fonts.REGULAR
-            ) - halfH - 5
+            addX = getWidth() -
+                nvg.getTextWidth(
+                    reversed.substring(outTextSize - selectionEnd),
+                    halfH,
+                    Fonts.REGULAR,
+                ) - halfH - 5
         }
 
         return addX
     }
 
-    private fun drawSelection(drawText: String, halfH: Float, addX: Float) {
+    private fun drawSelection(
+        drawText: String,
+        halfH: Float,
+        addX: Float,
+    ) {
         val cursor = getCursorPosition()
         val selEnd = getSelectionEnd()
         if (cursor == selEnd) return
@@ -93,12 +117,17 @@ class CompMainMenuTextBox(
                 getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2,
                 selWidth,
                 nvg.getTextHeight(drawText, halfH, Fonts.REGULAR),
-                Color(0, 135, 247)
+                Color(0, 135, 247),
             )
         }
     }
 
-    private fun drawPlaceholder(rawText: String, drawText: String, halfH: Float, focused: Boolean) {
+    private fun drawPlaceholder(
+        rawText: String,
+        drawText: String,
+        halfH: Float,
+        focused: Boolean,
+    ) {
         val icon = icon ?: return
         val title = title ?: return
 
@@ -112,24 +141,38 @@ class CompMainMenuTextBox(
             nvg.save()
             nvg.translate(animation.getValue() * 8 - 8, 0f)
             nvg.drawText(
-                title, getX() + 16, textY + 1,
+                title,
+                getX() + 16,
+                textY + 1,
                 ColorUtils.applyAlpha(fontColor, (animation.getValue() * 255).toInt()),
-                halfH, Fonts.REGULAR
+                halfH,
+                Fonts.REGULAR,
             )
             nvg.restore()
         }
     }
 
-    private fun drawText(drawText: String, halfH: Float, addX: Float) {
+    private fun drawText(
+        drawText: String,
+        halfH: Float,
+        addX: Float,
+    ) {
         nvg.drawText(
             drawText,
             getX() + addX,
             getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2 + 1,
-            fontColor, halfH, Fonts.REGULAR
+            fontColor,
+            halfH,
+            Fonts.REGULAR,
         )
     }
 
-    private fun drawCursor(drawText: String, halfH: Float, addX: Float, focused: Boolean) {
+    private fun drawCursor(
+        drawText: String,
+        halfH: Float,
+        addX: Float,
+        focused: Boolean,
+    ) {
         if (!focused || getCursorPosition() != getSelectionEnd()) return
         if (!timer.delay(600)) return
 
@@ -137,7 +180,9 @@ class CompMainMenuTextBox(
         nvg.drawRect(
             getX() + addX + position,
             getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2,
-            0.7f, 10f, fontColor
+            0.7f,
+            10f,
+            fontColor,
         )
 
         if (timer.delay(1200)) timer.reset()

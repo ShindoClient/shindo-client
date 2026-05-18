@@ -9,7 +9,6 @@ import me.miki.shindo.utils.network.HttpUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
 class BlacklistManager {
-
     private val blacklist = CopyOnWriteArrayList<Server>()
 
     init {

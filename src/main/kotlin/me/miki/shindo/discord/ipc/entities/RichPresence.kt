@@ -20,37 +20,42 @@ class RichPresence(
     private val matchSecret: String?,
     private val joinSecret: String?,
     private val spectateSecret: String?,
-    private val instance: Boolean
+    private val instance: Boolean,
 ) {
-
     fun toJson(): JsonObject {
-        val timestampsObject = JsonObject().apply {
-            startTimestamp?.let { addProperty("start", it.toEpochSecond()) }
-            endTimestamp?.let { addProperty("end", it.toEpochSecond()) }
-        }
-
-        val assetsObject = JsonObject().apply {
-            largeImageKey?.let { addProperty("large_image", it) }
-            largeImageText?.let { addProperty("large_text", it) }
-            smallImageKey?.let { addProperty("small_image", it) }
-            smallImageText?.let { addProperty("small_text", it) }
-        }
-
-        val partyObject = if (partyId != null) {
+        val timestampsObject =
             JsonObject().apply {
-                addProperty("id", partyId)
-                val partySizeArray = JsonArray()
-                partySizeArray.add(JsonPrimitive(partySize))
-                partySizeArray.add(JsonPrimitive(partyMax))
-                add("size", partySizeArray)
+                startTimestamp?.let { addProperty("start", it.toEpochSecond()) }
+                endTimestamp?.let { addProperty("end", it.toEpochSecond()) }
             }
-        } else null
 
-        val secretsObject = JsonObject().apply {
-            joinSecret?.let { addProperty("join", it) }
-            spectateSecret?.let { addProperty("spectate", it) }
-            matchSecret?.let { addProperty("match", it) }
-        }
+        val assetsObject =
+            JsonObject().apply {
+                largeImageKey?.let { addProperty("large_image", it) }
+                largeImageText?.let { addProperty("large_text", it) }
+                smallImageKey?.let { addProperty("small_image", it) }
+                smallImageText?.let { addProperty("small_text", it) }
+            }
+
+        val partyObject =
+            if (partyId != null) {
+                JsonObject().apply {
+                    addProperty("id", partyId)
+                    val partySizeArray = JsonArray()
+                    partySizeArray.add(JsonPrimitive(partySize))
+                    partySizeArray.add(JsonPrimitive(partyMax))
+                    add("size", partySizeArray)
+                }
+            } else {
+                null
+            }
+
+        val secretsObject =
+            JsonObject().apply {
+                joinSecret?.let { addProperty("join", it) }
+                spectateSecret?.let { addProperty("spectate", it) }
+                matchSecret?.let { addProperty("match", it) }
+            }
 
         return JsonObject().apply {
             state?.let { addProperty("state", it) }
@@ -80,47 +85,65 @@ class RichPresence(
         private var spectateSecret: String? = null
         private var instance: Boolean = false
 
-        fun build(): RichPresence = RichPresence(
-            state,
-            details,
-            startTimestamp,
-            endTimestamp,
-            largeImageKey,
-            largeImageText,
-            smallImageKey,
-            smallImageText,
-            partyId,
-            partySize,
-            partyMax,
-            matchSecret,
-            joinSecret,
-            spectateSecret,
-            instance
-        )
+        fun build(): RichPresence =
+            RichPresence(
+                state,
+                details,
+                startTimestamp,
+                endTimestamp,
+                largeImageKey,
+                largeImageText,
+                smallImageKey,
+                smallImageText,
+                partyId,
+                partySize,
+                partyMax,
+                matchSecret,
+                joinSecret,
+                spectateSecret,
+                instance,
+            )
 
         fun setState(state: String) = apply { this.state = state }
+
         fun setDetails(details: String) = apply { this.details = details }
+
         fun setStartTimestamp(startTimestamp: OffsetDateTime) = apply { this.startTimestamp = startTimestamp }
+
         fun setEndTimestamp(endTimestamp: OffsetDateTime) = apply { this.endTimestamp = endTimestamp }
-        fun setLargeImage(largeImageKey: String, largeImageText: String? = null) = apply {
+
+        fun setLargeImage(
+            largeImageKey: String,
+            largeImageText: String? = null,
+        ) = apply {
             this.largeImageKey = largeImageKey
             this.largeImageText = largeImageText
         }
 
-        fun setSmallImage(smallImageKey: String, smallImageText: String? = null) = apply {
+        fun setSmallImage(
+            smallImageKey: String,
+            smallImageText: String? = null,
+        ) = apply {
             this.smallImageKey = smallImageKey
             this.smallImageText = smallImageText
         }
 
-        fun setParty(partyId: String, partySize: Int, partyMax: Int) = apply {
+        fun setParty(
+            partyId: String,
+            partySize: Int,
+            partyMax: Int,
+        ) = apply {
             this.partyId = partyId
             this.partySize = partySize
             this.partyMax = partyMax
         }
 
         fun setMatchSecret(matchSecret: String) = apply { this.matchSecret = matchSecret }
+
         fun setJoinSecret(joinSecret: String) = apply { this.joinSecret = joinSecret }
+
         fun setSpectateSecret(spectateSecret: String) = apply { this.spectateSecret = spectateSecret }
+
         fun setInstance(instance: Boolean) = apply { this.instance = instance }
     }
 }

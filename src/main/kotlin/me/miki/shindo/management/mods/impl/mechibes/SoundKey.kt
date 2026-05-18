@@ -4,7 +4,10 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.sound.Sound
 import net.minecraft.util.ResourceLocation
 
-class SoundKey(mode: String?, key: String?) {
+class SoundKey(
+    mode: String?,
+    key: String?,
+) {
     private val sound: Sound
     var isPressed: Boolean
     var lastPressKey: Int
@@ -29,4 +32,3 @@ class SoundKey(mode: String?, key: String?) {
         sound.setVolume(volume)
     }
 }
-

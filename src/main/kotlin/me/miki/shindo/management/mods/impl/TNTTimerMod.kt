@@ -22,8 +22,7 @@ import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.min
 
-class TNTTimerMod :
-    SimpleHUDMod(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION, LegacyIcon.MOD_TNT_TIMER) {
+class TNTTimerMod : SimpleHUDMod(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION, LegacyIcon.MOD_TNT_TIMER) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private val displayMode = DisplayMode.TAG
 
@@ -61,7 +60,7 @@ class TNTTimerMod :
                     GlStateManager.translate(
                         event.getX().toFloat() + 0.0f,
                         event.getY().toFloat() + event.getEntity().height + 0.5f,
-                        event.getZ().toFloat()
+                        event.getZ().toFloat(),
                     )
                     GL11.glNormal3f(0.0f, 1.0f, 0.0f)
                     GlStateManager.rotate(-event.getTntRenderer().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f)
@@ -77,7 +76,7 @@ class TNTTimerMod :
                         event.getTntRenderer().getRenderManager().playerViewX * xMultiplier.toFloat(),
                         1.0f,
                         0.0f,
-                        0.0f
+                        0.0f,
                     )
                     GlStateManager.scale(-scale, -scale, scale)
                     GlStateManager.disableLighting()
@@ -95,12 +94,18 @@ class TNTTimerMod :
                     GlStateManager.depthMask(true)
                     GlStateManager.disableTexture2D()
                     worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
-                    worldrenderer.pos((-stringWidth - 1).toDouble(), -1.0, 0.0).color(0.0f, 0.0f, 0.0f, 0.25f)
+                    worldrenderer
+                        .pos((-stringWidth - 1).toDouble(), -1.0, 0.0)
+                        .color(0.0f, 0.0f, 0.0f, 0.25f)
                         .endVertex()
-                    worldrenderer.pos((-stringWidth - 1).toDouble(), 8.0, 0.0).color(0.0f, 0.0f, 0.0f, 0.25f)
+                    worldrenderer
+                        .pos((-stringWidth - 1).toDouble(), 8.0, 0.0)
+                        .color(0.0f, 0.0f, 0.0f, 0.25f)
                         .endVertex()
                     worldrenderer.pos((stringWidth + 1).toDouble(), 8.0, 0.0).color(0.0f, 0.0f, 0.0f, 0.25f).endVertex()
-                    worldrenderer.pos((stringWidth + 1).toDouble(), -1.0, 0.0).color(0.0f, 0.0f, 0.0f, 0.25f)
+                    worldrenderer
+                        .pos((stringWidth + 1).toDouble(), -1.0, 0.0)
+                        .color(0.0f, 0.0f, 0.0f, 0.25f)
                         .endVertex()
                     tessellator.draw()
                     GlStateManager.enableTexture2D()
@@ -115,7 +120,13 @@ class TNTTimerMod :
     }
 
     override fun getText(): String {
-        if ((mc.objectMouseOver != null && mc.objectMouseOver.entityHit != null && mc.objectMouseOver.typeOfHit == MovingObjectType.ENTITY && mc.objectMouseOver.entityHit is EntityTNTPrimed)) {
+        if ((
+                mc.objectMouseOver != null &&
+                    mc.objectMouseOver.entityHit != null &&
+                    mc.objectMouseOver.typeOfHit == MovingObjectType.ENTITY &&
+                    mc.objectMouseOver.entityHit is EntityTNTPrimed
+            )
+        ) {
             currentTNT = mc.objectMouseOver.entityHit as EntityTNTPrimed
         }
 
@@ -135,15 +146,13 @@ class TNTTimerMod :
         return "There is no TNT"
     }
 
-    private enum class DisplayMode(private val translate: TranslateText) : PropertyEnum {
+    private enum class DisplayMode(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         TAG(TranslateText.TAG),
-        HUD(TranslateText.HUD);
+        HUD(TranslateText.HUD),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-

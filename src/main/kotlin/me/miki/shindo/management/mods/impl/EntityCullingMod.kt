@@ -30,12 +30,13 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class EntityCullingMod : Mod(
-    TranslateText.ENTITY_CULLING,
-    TranslateText.ENTITY_CULLING_DESCRIPTIONN,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_ENTITY_CULLING
-) {
+class EntityCullingMod :
+    Mod(
+        TranslateText.ENTITY_CULLING,
+        TranslateText.ENTITY_CULLING_DESCRIPTIONN,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_ENTITY_CULLING,
+    ) {
     private val renderManager: RenderManager = mc.renderManager
     private val queries: ConcurrentHashMap<UUID?, OcclusionQuery> = ConcurrentHashMap<UUID?, OcclusionQuery>()
     private val SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33
@@ -46,7 +47,7 @@ class EntityCullingMod : Mod(
         min = 1.0,
         max = 3.0,
         current = 2.0,
-        step = 1.0
+        step = 1.0,
     )
     private val delaySetting = 2
 
@@ -56,7 +57,7 @@ class EntityCullingMod : Mod(
         min = 10.0,
         max = 150.0,
         current = 45.0,
-        step = 1.0
+        step = 1.0,
     )
     private val distanceSetting = 45
 
@@ -72,9 +73,14 @@ class EntityCullingMod : Mod(
 
         val armorstand = entity is EntityArmorStand
 
-        if (entity === mc.thePlayer || entity.worldObj !== mc.thePlayer.worldObj || (armorstand && (entity as EntityArmorStand).hasMarker()) || (entity.isInvisibleToPlayer(
-                mc.thePlayer
-            ))
+        if (entity === mc.thePlayer ||
+            entity.worldObj !== mc.thePlayer.worldObj ||
+            (armorstand && (entity as EntityArmorStand).hasMarker()) ||
+            (
+                entity.isInvisibleToPlayer(
+                    mc.thePlayer,
+                )
+            )
         ) {
             return
         }
@@ -153,26 +159,44 @@ class EntityCullingMod : Mod(
                 val teamVisibilityRule = otherEntityTeam.nameTagVisibility
 
                 when (teamVisibilityRule) {
-                    EnumVisible.NEVER -> return false
-                    EnumVisible.HIDE_FOR_OTHER_TEAMS -> return playerTeam == null || otherEntityTeam.isSameTeam(
-                        playerTeam
-                    )
+                    EnumVisible.NEVER -> {
+                        return false
+                    }
 
-                    EnumVisible.HIDE_FOR_OWN_TEAM -> return playerTeam == null || !otherEntityTeam.isSameTeam(playerTeam)
-                    EnumVisible.ALWAYS -> return true
-                    else -> return true
+                    EnumVisible.HIDE_FOR_OTHER_TEAMS -> {
+                        return playerTeam == null ||
+                            otherEntityTeam.isSameTeam(
+                                playerTeam,
+                            )
+                    }
+
+                    EnumVisible.HIDE_FOR_OWN_TEAM -> {
+                        return playerTeam == null || !otherEntityTeam.isSameTeam(playerTeam)
+                    }
+
+                    EnumVisible.ALWAYS -> {
+                        return true
+                    }
+
+                    else -> {
+                        return true
+                    }
                 }
             }
         }
 
-        return Minecraft.isGuiEnabled() && entity !== mc.renderManager.livingPlayer && ((entity is EntityArmorStand) || !entity.isInvisibleToPlayer(
-            player
-        )) && entity.riddenByEntity == null
+        return Minecraft.isGuiEnabled() &&
+            entity !== mc.renderManager.livingPlayer &&
+            (
+                (entity is EntityArmorStand) ||
+                    !entity.isInvisibleToPlayer(
+                        player,
+                    )
+            ) &&
+            entity.riddenByEntity == null
     }
 
-    fun renderItem(stack: Entity): Boolean {
-        return shouldPerformCulling && stack.worldObj === mc.thePlayer.worldObj && checkEntity(stack)
-    }
+    fun renderItem(stack: Entity): Boolean = shouldPerformCulling && stack.worldObj === mc.thePlayer.worldObj && checkEntity(stack)
 
     private fun check() {
         var delay: Long = 0
@@ -223,8 +247,8 @@ class EntityCullingMod : Mod(
                     .offset(
                         -(renderManager as IMixinRenderManager).getRenderPosX(),
                         -(renderManager as IMixinRenderManager).getRenderPosY(),
-                        -(renderManager as IMixinRenderManager).getRenderPosZ()
-                    )
+                        -(renderManager as IMixinRenderManager).getRenderPosZ(),
+                    ),
             )
             GL15.glEndQuery(mode)
         }
@@ -232,7 +256,9 @@ class EntityCullingMod : Mod(
         return query.occluded
     }
 
-    private class OcclusionQuery(val uuid: UUID?) {
+    private class OcclusionQuery(
+        val uuid: UUID?,
+    ) {
         var nextQuery: Int = 0
         var refresh: Boolean = true
         var occluded: Boolean = false
@@ -285,7 +311,3 @@ class EntityCullingMod : Mod(
             }
     }
 }
-
-
-
-

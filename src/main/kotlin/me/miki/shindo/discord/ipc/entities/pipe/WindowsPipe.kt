@@ -14,14 +14,14 @@ import java.io.RandomAccessFile
 class WindowsPipe(
     ipcClient: IPCClient,
     callbacks: HashMap<String, Callback>,
-    location: String
+    location: String,
 ) : Pipe(ipcClient, callbacks) {
-
-    private val file: RandomAccessFile = try {
-        RandomAccessFile(location, "rw")
-    } catch (e: FileNotFoundException) {
-        throw RuntimeException(e)
-    }
+    private val file: RandomAccessFile =
+        try {
+            RandomAccessFile(location, "rw")
+        } catch (e: FileNotFoundException) {
+            throw RuntimeException(e)
+        }
 
     @Throws(IOException::class)
     override fun write(b: ByteArray) {
@@ -50,9 +50,10 @@ class WindowsPipe(
         val d = ByteArray(len)
         file.readFully(d)
 
-        val gson = GsonBuilder()
-            .registerTypeAdapter(Packet::class.java, PacketDeserializer(op))
-            .create()
+        val gson =
+            GsonBuilder()
+                .registerTypeAdapter(Packet::class.java, PacketDeserializer(op))
+                .create()
         val jsonObject = gson.fromJson(String(d), JsonObject::class.java)
         val p = gson.fromJson(jsonObject, Packet::class.java)
 

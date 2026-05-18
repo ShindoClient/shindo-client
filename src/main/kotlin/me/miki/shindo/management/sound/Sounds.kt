@@ -1,6 +1,8 @@
 package me.miki.shindo.management.sound
 
-enum class Sounds(val path: String) {
+enum class Sounds(
+    val path: String,
+) {
     SHINDO_AUDIO_CLICK("shindo/audio/click.wav"),
     SHINDO_AUDIO_CLICK_LEGACY("shindo/audio/click_legacy.wav"),
     SHINDO_AUDIO_CLOSE("shindo/audio/close.wav"),
@@ -89,5 +91,5 @@ enum class Sounds(val path: String) {
     SHINDO_MECHVIBES_TOPRE_PURPLE_ENTER("shindo/mechvibes/topre_purple/enter.wav"),
     SHINDO_MECHVIBES_TOPRE_PURPLE_SHIFT("shindo/mechvibes/topre_purple/shift.wav"),
     SHINDO_MECHVIBES_TOPRE_PURPLE_SPACE("shindo/mechvibes/topre_purple/space.wav"),
-    SHINDO_MECHVIBES_TOPRE_PURPLE_TAB("shindo/mechvibes/topre_purple/tab.wav");
+    SHINDO_MECHVIBES_TOPRE_PURPLE_TAB("shindo/mechvibes/topre_purple/tab.wav"),
 }

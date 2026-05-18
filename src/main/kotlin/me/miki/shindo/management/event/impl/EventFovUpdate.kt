@@ -5,13 +5,13 @@ import net.minecraft.client.entity.AbstractClientPlayer
 
 class EventFovUpdate(
     private val _entity: AbstractClientPlayer,
-    private var _fov: Float
+    private var _fov: Float,
 ) : Event() {
     fun getFov(): Float = _fov
+
     fun setFov(fov: Float) {
         _fov = fov
     }
 
     fun getEntity(): AbstractClientPlayer = _entity
 }
-

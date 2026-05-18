@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ChatManager {
-
     private val friends = CopyOnWriteArrayList<ChatFriend>()
     private val requests = CopyOnWriteArrayList<ChatRequest>()
     private val messagesByFriend = ConcurrentHashMap<String, MutableList<ChatMessage>>()
@@ -32,7 +31,10 @@ class ChatManager {
         return Collections.unmodifiableList(ArrayList(list))
     }
 
-    fun handleMessage(type: MessageType, payload: JsonObject?) {
+    fun handleMessage(
+        type: MessageType,
+        payload: JsonObject?,
+    ) {
         if (payload == null) return
         when (type) {
             MessageType.CHAT_FRIEND_LIST -> {
@@ -68,7 +70,12 @@ class ChatManager {
                 val fromName = payload.get("fromName")?.asString ?: "Unknown"
                 val toUuid = payload.get("toUuid")?.asString ?: return
                 val message = payload.get("message")?.asString ?: return
-                val selfUuid = Shindo.getInstance().getShindoAPI().getEffectiveUuid().toString()
+                val selfUuid =
+                    Shindo
+                        .getInstance()
+                        .getShindoAPI()
+                        .getEffectiveUuid()
+                        .toString()
                 val msg = ChatMessage(fromUuid, fromName, message)
                 val otherUuid = if (fromUuid == selfUuid) toUuid else fromUuid
                 messagesByFriend.getOrPut(otherUuid) { Collections.synchronizedList(mutableListOf()) }.add(msg)
@@ -113,10 +120,18 @@ class ChatManager {
         }
     }
 
-    fun acceptFriendRequest(uuid: String, callback: () -> Unit) {
-        val ws = Shindo.getInstance().getShindoAPI().ws ?: run { callback(); return }
+    fun acceptFriendRequest(
+        uuid: String,
+        callback: () -> Unit,
+    ) {
+        val ws =
+            Shindo.getInstance().getShindoAPI().ws ?: run {
+                callback()
+                return
+            }
         if (!ws.isOpen()) {
-            callback(); return
+            callback()
+            return
         }
         val requestId = UUID.randomUUID().toString()
         pendingAccept[requestId] = callback
@@ -126,10 +141,18 @@ class ChatManager {
         ws.send(MessageType.CHAT_FRIEND_ACCEPT, payload)
     }
 
-    fun removeFriend(uuid: String, callback: () -> Unit) {
-        val ws = Shindo.getInstance().getShindoAPI().ws ?: run { callback(); return }
+    fun removeFriend(
+        uuid: String,
+        callback: () -> Unit,
+    ) {
+        val ws =
+            Shindo.getInstance().getShindoAPI().ws ?: run {
+                callback()
+                return
+            }
         if (!ws.isOpen()) {
-            callback(); return
+            callback()
+            return
         }
         val requestId = UUID.randomUUID().toString()
         pendingRemove[requestId] = callback
@@ -139,24 +162,48 @@ class ChatManager {
         ws.send(MessageType.CHAT_FRIEND_REMOVE, payload)
     }
 
-    fun requestFriend(username: String, callback: () -> Unit) {
-        val ws = Shindo.getInstance().getShindoAPI().ws ?: run { callback(); return }
+    fun requestFriend(
+        username: String,
+        callback: () -> Unit,
+    ) {
+        val ws =
+            Shindo.getInstance().getShindoAPI().ws ?: run {
+                callback()
+                return
+            }
         if (!ws.isOpen()) {
-            callback(); return
+            callback()
+            return
         }
         val requestId = UUID.randomUUID().toString()
         pendingRequestFriend[requestId] = callback
         val payload = JsonObject()
         payload.addProperty("requestId", requestId)
         payload.addProperty("name", username.trim())
-        payload.addProperty("uuid", Shindo.getInstance().getShindoAPI().getEffectiveUuid().toString())
+        payload.addProperty(
+            "uuid",
+            Shindo
+                .getInstance()
+                .getShindoAPI()
+                .getEffectiveUuid()
+                .toString(),
+        )
         ws.send(MessageType.CHAT_FRIEND_REQUEST, payload)
     }
 
-    fun sendMessage(friendUuid: String, text: String, callback: (MessageSendResult) -> Unit) {
-        val ws = Shindo.getInstance().getShindoAPI().ws ?: run { callback(MessageSendResult.Error(null)); return }
+    fun sendMessage(
+        friendUuid: String,
+        text: String,
+        callback: (MessageSendResult) -> Unit,
+    ) {
+        val ws =
+            Shindo.getInstance().getShindoAPI().ws ?: run {
+                callback(MessageSendResult.Error(null))
+                return
+            }
         if (!ws.isOpen()) {
-            callback(MessageSendResult.Error(null)); return
+            callback(MessageSendResult.Error(null))
+            return
         }
         val requestId = UUID.randomUUID().toString()
         pendingSendMessage[requestId] = callback
@@ -169,6 +216,9 @@ class ChatManager {
 
     sealed class MessageSendResult {
         object Success : MessageSendResult()
-        data class Error(val reason: String?) : MessageSendResult()
+
+        data class Error(
+            val reason: String?,
+        ) : MessageSendResult()
     }
 }

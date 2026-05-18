@@ -42,7 +42,7 @@ class ToggleSprintMod :
     fun onUpdate(event: EventUpdate?) {
         KeyBinding.setKeyBindState(
             mc.gameSettings.keyBindSprint.keyCode,
-            state == State.HELD || state == State.TOGGLED || alwaysSprint
+            state == State.HELD || state == State.TOGGLED || alwaysSprint,
         )
     }
 
@@ -89,13 +89,12 @@ class ToggleSprintMod :
         return prefix + " (" + state.displayName + ")"
     }
 
-    private enum class State(val displayName: String) {
+    private enum class State(
+        val displayName: String,
+    ) {
         WALK("Walking"),
         VANILLA("Vanilla"),
         HELD("Key Held"),
-        TOGGLED("Toggled")
+        TOGGLED("Toggled"),
     }
 }
-
-
-

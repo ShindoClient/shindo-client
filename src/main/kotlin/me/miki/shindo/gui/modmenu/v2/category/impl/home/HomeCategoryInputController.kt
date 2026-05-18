@@ -8,16 +8,13 @@ import kotlin.math.min
  * Click resolution for HomeCategory interactive controls.
  */
 class HomeCategoryInputController {
-
     enum class MusicControlAction {
         PREVIOUS,
         TOGGLE_PLAYBACK,
-        NEXT
+        NEXT,
     }
 
-    fun isPrimaryClick(mouseButton: Int): Boolean {
-        return mouseButton == 0
-    }
+    fun isPrimaryClick(mouseButton: Int): Boolean = mouseButton == 0
 
     fun isJoinButtonClicked(
         mouseX: Int,
@@ -25,10 +22,8 @@ class HomeCategoryInputController {
         joinButtonX: Float,
         joinButtonY: Float,
         joinButtonWidth: Float = 52f,
-        joinButtonHeight: Float = 18f
-    ): Boolean {
-        return MouseUtils.isInside(mouseX, mouseY, joinButtonX, joinButtonY, joinButtonWidth, joinButtonHeight)
-    }
+        joinButtonHeight: Float = 18f,
+    ): Boolean = MouseUtils.isInside(mouseX, mouseY, joinButtonX, joinButtonY, joinButtonWidth, joinButtonHeight)
 
     fun resolveMusicControlAction(
         mouseX: Int,
@@ -36,7 +31,7 @@ class HomeCategoryInputController {
         controlsCenterX: Float,
         controlsY: Float,
         controlSize: Float,
-        controlSpacing: Float
+        controlSpacing: Float,
     ): MusicControlAction? {
         if (MouseUtils.isInside(
                 mouseX,
@@ -44,7 +39,7 @@ class HomeCategoryInputController {
                 controlsCenterX - controlSpacing - controlSize / 2f,
                 controlsY,
                 controlSize,
-                controlSize
+                controlSize,
             )
         ) {
             return MusicControlAction.PREVIOUS
@@ -56,7 +51,7 @@ class HomeCategoryInputController {
                 controlsCenterX - controlSize / 2f,
                 controlsY,
                 controlSize,
-                controlSize
+                controlSize,
             )
         ) {
             return MusicControlAction.TOGGLE_PLAYBACK
@@ -68,7 +63,7 @@ class HomeCategoryInputController {
                 controlsCenterX + controlSpacing - controlSize / 2f,
                 controlsY,
                 controlSize,
-                controlSize
+                controlSize,
             )
         ) {
             return MusicControlAction.NEXT
@@ -83,7 +78,7 @@ class HomeCategoryInputController {
         barX: Float,
         barY: Float,
         barWidth: Float,
-        barHeight: Float = 2f
+        barHeight: Float = 2f,
     ): Float? {
         if (!MouseUtils.isInside(mouseX, mouseY, barX, barY, barWidth, barHeight)) {
             return null

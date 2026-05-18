@@ -13,15 +13,14 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class ImageDisplayMod :
-    HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY) {
+class ImageDisplayMod : HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.RADIUS,
         min = 2.0,
         max = 64.0,
         current = 6.0,
-        step = 1.0
+        step = 1.0,
     )
     private val radiusSetting = 6
 
@@ -39,7 +38,6 @@ class ImageDisplayMod :
 
     @EventTarget
     fun onRender2D(event: EventNVG?) {
-
         if (imageFile != null && imageFile != prevImage) {
             prevImage = imageFile
             try {
@@ -76,7 +74,7 @@ class ImageDisplayMod :
                 width.toFloat(),
                 height.toFloat(),
                 radiusSetting.toFloat(),
-                alphaSetting.toFloat()
+                alphaSetting.toFloat(),
             )
 
             this.setWidth(width)
@@ -84,7 +82,3 @@ class ImageDisplayMod :
         }
     }
 }
-
-
-
-

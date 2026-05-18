@@ -29,15 +29,29 @@ class RearviewCamera {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
         GL11.glTexImage2D(
-            GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB8, 800, 600, 0, GL11.GL_RGBA, GL11.GL_INT,
-            null as IntBuffer?
+            GL11.GL_TEXTURE_2D,
+            0,
+            GL11.GL_RGB8,
+            800,
+            600,
+            0,
+            GL11.GL_RGBA,
+            GL11.GL_INT,
+            null as IntBuffer?,
         )
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, mirrorDepth)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
         GL11.glTexImage2D(
-            GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, 800, 600, 0, GL11.GL_DEPTH_COMPONENT,
-            GL11.GL_INT, null as IntBuffer?
+            GL11.GL_TEXTURE_2D,
+            0,
+            GL11.GL_DEPTH_COMPONENT,
+            800,
+            600,
+            0,
+            GL11.GL_DEPTH_COMPONENT,
+            GL11.GL_INT,
+            null as IntBuffer?,
         )
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0)
 
@@ -103,7 +117,7 @@ class RearviewCamera {
 
         mc.entityRenderer.renderWorld(
             ((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks,
-            System.nanoTime()
+            System.nanoTime(),
         )
         mc.entityRenderer.setupOverlayRendering()
 
@@ -140,13 +154,17 @@ class RearviewCamera {
         OpenGlHelper.glBindFramebuffer(ARBFramebufferObject.GL_DRAW_FRAMEBUFFER, mirrorFBO)
         OpenGlHelper.glFramebufferTexture2D(
             OpenGlHelper.GL_FRAMEBUFFER,
-            OpenGlHelper.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D,
-            this.texture, 0
+            OpenGlHelper.GL_COLOR_ATTACHMENT0,
+            GL11.GL_TEXTURE_2D,
+            this.texture,
+            0,
         )
         OpenGlHelper.glFramebufferTexture2D(
             OpenGlHelper.GL_FRAMEBUFFER,
-            OpenGlHelper.GL_DEPTH_ATTACHMENT, GL11.GL_TEXTURE_2D,
-            mirrorDepth, 0
+            OpenGlHelper.GL_DEPTH_ATTACHMENT,
+            GL11.GL_TEXTURE_2D,
+            mirrorDepth,
+            0,
         )
     }
 

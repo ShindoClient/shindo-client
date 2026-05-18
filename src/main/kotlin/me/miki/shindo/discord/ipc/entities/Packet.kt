@@ -4,8 +4,10 @@ import com.google.gson.JsonObject
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
-class Packet(val op: OpCode, private val data: JsonObject) {
-
+class Packet(
+    val op: OpCode,
+    private val data: JsonObject,
+) {
     fun toBytes(): ByteArray {
         val d = data.toString().toByteArray(StandardCharsets.UTF_8)
         val packet = ByteBuffer.allocate(d.size + 2 * Integer.BYTES)
@@ -20,6 +22,10 @@ class Packet(val op: OpCode, private val data: JsonObject) {
     override fun toString(): String = "Pkt:$op${json()}"
 
     enum class OpCode {
-        HANDSHAKE, FRAME, CLOSE, PING, PONG
+        HANDSHAKE,
+        FRAME,
+        CLOSE,
+        PING,
+        PONG,
     }
 }

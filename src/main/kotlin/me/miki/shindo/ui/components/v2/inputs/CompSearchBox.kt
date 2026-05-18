@@ -12,17 +12,28 @@ class CompSearchBox(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : CompTextBoxBase(x, y, width, height) {
-
     private val timer = TimerUtils()
     private val searchAnim = SimpleAnimation()
 
-    override fun setPosition(x: Float, y: Float, width: Float, height: Float) {
-        setX(x); setY(y); setWidth(width); setHeight(height)
+    override fun setPosition(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
+        setX(x)
+        setY(y)
+        setWidth(width)
+        setHeight(height)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val text = getText()
         val focused = isFocused()
         val halfH = getHeight() / 2f
@@ -45,7 +56,10 @@ class CompSearchBox(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    private fun computeScrollOffset(text: String, halfH: Float): Float {
+    private fun computeScrollOffset(
+        text: String,
+        halfH: Float,
+    ): Float {
         val selEnd = getSelectionEnd()
         var addX = 0f
         var result = ""
@@ -59,15 +73,24 @@ class CompSearchBox(
 
         val outTextSize = text.length - result.length
         if (selEnd < outTextSize) {
-            addX = getWidth() - nvg.getTextWidth(
-                text.reversed().substring(outTextSize - selEnd), halfH, Fonts.REGULAR
-            ) - halfH - 5
+            addX = getWidth() -
+                nvg.getTextWidth(
+                    text.reversed().substring(outTextSize - selEnd),
+                    halfH,
+                    Fonts.REGULAR,
+                ) - halfH - 5
         }
 
         return addX
     }
 
-    private fun drawSelection(text: String, halfH: Float, textH: Float, textY: Float, addX: Float) {
+    private fun drawSelection(
+        text: String,
+        halfH: Float,
+        textH: Float,
+        textY: Float,
+        addX: Float,
+    ) {
         val cursor = getCursorPosition()
         val selEnd = getSelectionEnd()
         if (cursor == selEnd) return
@@ -82,14 +105,19 @@ class CompSearchBox(
         }
     }
 
-    private fun drawPlaceholder(text: String, halfH: Float, textY: Float, focused: Boolean) {
+    private fun drawPlaceholder(
+        text: String,
+        halfH: Float,
+        textY: Float,
+        focused: Boolean,
+    ) {
         nvg.drawText(
             LegacyIcon.SEARCH,
             getX() + 5,
             textY,
             palette.getFontColor(ColorType.NORMAL),
             halfH,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         searchAnim.setAnimation(if (!focused && text.isEmpty()) 1f else 0f, 16)
@@ -98,23 +126,38 @@ class CompSearchBox(
             nvg.save()
             nvg.translate(searchAnim.getValue() * 8 - 8, 0f)
             nvg.drawText(
-                TranslateText.SEARCH.getText(), getX() + 16, textY + 1,
+                TranslateText.SEARCH.getText(),
+                getX() + 16,
+                textY + 1,
                 palette.getFontColor(ColorType.NORMAL, (searchAnim.getValue() * 200).toInt()),
-                halfH, Fonts.REGULAR
+                halfH,
+                Fonts.REGULAR,
             )
             nvg.restore()
         }
     }
 
-    private fun drawText(text: String, halfH: Float, textY: Float, addX: Float) {
+    private fun drawText(
+        text: String,
+        halfH: Float,
+        textY: Float,
+        addX: Float,
+    ) {
         nvg.drawText(text, getX() + 16 + addX, textY + 1, palette.getFontColor(ColorType.NORMAL), halfH, Fonts.REGULAR)
     }
 
-    private fun drawCursor(text: String, halfH: Float, textY: Float, addX: Float, focused: Boolean) {
+    private fun drawCursor(
+        text: String,
+        halfH: Float,
+        textY: Float,
+        addX: Float,
+        focused: Boolean,
+    ) {
         if (!focused || getCursorPosition() != getSelectionEnd()) return
         if (!timer.delay(600)) return
 
-        val pos = nvg.getTextWidth(text, halfH, Fonts.REGULAR) -
+        val pos =
+            nvg.getTextWidth(text, halfH, Fonts.REGULAR) -
                 nvg.getTextWidth(text.substring(getCursorPosition()), halfH, Fonts.REGULAR)
 
         nvg.drawRect(getX() + 16 + addX + pos, textY - 0.5f, 0.7f, 10f, palette.getFontColor(ColorType.DARK))

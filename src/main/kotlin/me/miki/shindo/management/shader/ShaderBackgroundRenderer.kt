@@ -7,12 +7,19 @@ import java.awt.Color
 import java.io.File
 
 object ShaderBackgroundRenderer {
-
     private fun clampColor(value: Int): Int = maxOf(0, minOf(255, value))
+
     private fun clampFloat(value: Float): Float = maxOf(0f, minOf(1f, value))
 
     @JvmStatic
-    fun renderShaderBackground(nvg: NanoVGManager, shaderFile: File?, x: Float, y: Float, width: Float, height: Float) {
+    fun renderShaderBackground(
+        nvg: NanoVGManager,
+        shaderFile: File?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         val instance = Shindo.getInstance()
         val shaderManager = instance.getShaderManager()
         var shaderId = shaderManager.loadShader(net.minecraft.util.ResourceLocation("shindo/shaders/menu.fsh"))
@@ -21,11 +28,15 @@ object ShaderBackgroundRenderer {
         }
         if (shaderId != -1) {
             nvg.save()
-            org.lwjgl.opengl.GL11.glPushAttrib(org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS)
-            org.lwjgl.opengl.GL11.glPushMatrix()
+            org.lwjgl.opengl.GL11
+                .glPushAttrib(org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS)
+            org.lwjgl.opengl.GL11
+                .glPushMatrix()
             shaderManager.renderShader(shaderId, x, y, width, height)
-            org.lwjgl.opengl.GL11.glPopMatrix()
-            org.lwjgl.opengl.GL11.glPopAttrib()
+            org.lwjgl.opengl.GL11
+                .glPopMatrix()
+            org.lwjgl.opengl.GL11
+                .glPopAttrib()
             nvg.restore()
             return
         }
@@ -38,7 +49,7 @@ object ShaderBackgroundRenderer {
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         val shaderName = (shaderFile?.name ?: "default").lowercase()
         val time = (System.currentTimeMillis() % 10000) / 1000f
@@ -80,7 +91,14 @@ object ShaderBackgroundRenderer {
     }
 
     @JvmStatic
-    fun renderShaderPreview(nvg: NanoVGManager, shaderFile: File?, x: Float, y: Float, width: Float, height: Float) {
+    fun renderShaderPreview(
+        nvg: NanoVGManager,
+        shaderFile: File?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         renderFallbackBackground(nvg, shaderFile, x, y, width, height)
         nvg.drawRoundedRect(x, y, width, height, 6f, Color(255, 255, 255, 30))
         nvg.drawOutlineRoundedRect(x, y, width, height, 6f, 1f, Color(255, 255, 255, 60))

@@ -13,7 +13,9 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 import java.util.Locale
 
-class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenResourcePacks(parentScreen) {
+class GuiBetterResourcePacks(
+    private val parentScreen: GuiScreen,
+) : GuiScreenResourcePacks(parentScreen) {
     private var searchField: GuiTextField? = null
     private lateinit var guiPacksAvailable: GuiResourcePackAvailable
     private lateinit var guiPacksSelected: GuiResourcePackSelected
@@ -41,9 +43,10 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         buttonList.add(GuiOptionButton(20, width / 2 - 74, height - 26, 70, 20, "Refresh"))
 
         val prevText = searchField?.text ?: ""
-        searchField = GuiTextField(30, fontRendererObj, width / 2 - 203, height - 46, 198, 16).apply {
-            text = prevText
-        }
+        searchField =
+            GuiTextField(30, fontRendererObj, width / 2 - 203, height - 46, 198, 16).apply {
+                text = prevText
+            }
 
         if (!requiresReload) {
             listPacksAvailable = Lists.newArrayListWithCapacity(8)
@@ -80,10 +83,22 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
-            20 -> refreshAvailablePacks()
-            11 -> listProcessor.setSorter(ResourcePackListProcessor.sortZA.also { currentSorter = it })
-            10 -> listProcessor.setSorter(ResourcePackListProcessor.sortAZ.also { currentSorter = it })
-            2 -> FileUtils.openFolderAtPath(mc.resourcePackRepository.dirResourcepacks)
+            20 -> {
+                refreshAvailablePacks()
+            }
+
+            11 -> {
+                listProcessor.setSorter(ResourcePackListProcessor.sortZA.also { currentSorter = it })
+            }
+
+            10 -> {
+                listProcessor.setSorter(ResourcePackListProcessor.sortAZ.also { currentSorter = it })
+            }
+
+            2 -> {
+                FileUtils.openFolderAtPath(mc.resourcePackRepository.dirResourcepacks)
+            }
+
             1 -> {
                 if (requiresReload) {
                     val selected = refreshSelectedPacks()
@@ -91,7 +106,10 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
                     for (entry in selected) {
                         mc.gameSettings.resourcePacks.add(entry.resourcePackName)
                     }
-                    RPOAddon.instance.get().options.updateEnabledPacks()
+                    RPOAddon.instance
+                        .get()
+                        .options
+                        .updateEnabledPacks()
                     mc.gameSettings.saveOptions()
                     mc.refreshResources()
                 }
@@ -100,7 +118,11 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, buttonId: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        buttonId: Int,
+    ) {
         if (buttonId == 0) {
             for (button in buttonList) {
                 if (button.mousePressed(mc, mouseX, mouseY)) {
@@ -128,14 +150,21 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         guiPacksSelected.handleMouseInput()
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, eventType: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        eventType: Int,
+    ) {
         if (eventType == 0 && selectedButton != null) {
             selectedButton?.mouseReleased(mouseX, mouseY)
             selectedButton = null
         }
     }
 
-    override fun keyTyped(keyChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        keyChar: Char,
+        keyCode: Int,
+    ) {
         super.keyTyped(keyChar, keyCode)
 
         val field = searchField
@@ -191,7 +220,11 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         return selected
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTickTime: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTickTime: Float,
+    ) {
         drawBackground(0)
         guiPacksAvailable.drawScreen(mouseX, mouseY, partialTickTime)
         guiPacksSelected.drawScreen(mouseX, mouseY, partialTickTime)
@@ -249,13 +282,10 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         return list
     }
 
-    override fun hasResourcePackEntry(entry: ResourcePackListEntry): Boolean {
-        return listPacksSelected.contains(entry)
-    }
+    override fun hasResourcePackEntry(entry: ResourcePackListEntry): Boolean = listPacksSelected.contains(entry)
 
-    override fun getListContaining(entry: ResourcePackListEntry): MutableList<ResourcePackListEntry> {
-        return if (hasResourcePackEntry(entry)) listPacksSelected else listPacksAvailable
-    }
+    override fun getListContaining(entry: ResourcePackListEntry): MutableList<ResourcePackListEntry> =
+        if (hasResourcePackEntry(entry)) listPacksSelected else listPacksAvailable
 
     override fun getAvailableResourcePacks(): MutableList<ResourcePackListEntry> {
         hasUpdated = true
@@ -272,5 +302,3 @@ class GuiBetterResourcePacks(private val parentScreen: GuiScreen) : GuiScreenRes
         requiresReload = true
     }
 }
-
-

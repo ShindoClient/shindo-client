@@ -10,9 +10,8 @@ import me.miki.shindo.utils.ColorUtils
 class CompSceneButton(
     private val iconSupplier: () -> String,
     private val titleSupplier: () -> String,
-    private val descriptionSupplier: () -> String
+    private val descriptionSupplier: () -> String,
 ) : CompControlTemplate() {
-
     private var active: Boolean = false
     private val hoverAnimation = SimpleAnimation()
     private val pressAnimation = SimpleAnimation()
@@ -26,7 +25,12 @@ class CompSceneButton(
         return this
     }
 
-    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
+    override fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    ) {
         val x = getX()
         val y = getY()
         val width = getWidth()
@@ -42,7 +46,7 @@ class CompSceneButton(
             width,
             height,
             CARD_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -51,30 +55,36 @@ class CompSceneButton(
             height,
             CARD_RADIUS,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210),
         )
-        //nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY + 19.5F, this.getWidth() - 30, 1F, 0, new Color(255, 200, 10));
+        // nvg.drawRoundedRect(this.getX() + 15, this.getY() + offsetY + 19.5F, this.getWidth() - 30, 1F, 0, new Color(255, 200, 10));
         nvg.drawCenteredText(
             iconSupplier.invoke(),
             iconX + ICON_SIZE / 2f - 1f,
             iconY + ICON_SIZE / 2f - 8f,
             palette.getFontColor(ColorType.DARK),
             ICON_FONT_SIZE,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         val textStartX = iconX + ICON_SIZE + TEXT_MARGIN_START
         val textWidth = width - (textStartX - x) - TEXT_MARGIN_END
         val title = nvg.getLimitText(titleSupplier.invoke(), TITLE_FONT_SIZE, Fonts.MEDIUM, textWidth)
         val rawDescription = descriptionSupplier.invoke()
-        val description = if (!"null".equals(rawDescription, ignoreCase = true)) {
-            nvg.getLimitText(rawDescription, DESCRIPTION_FONT_SIZE, Fonts.REGULAR, textWidth)
-        } else {
-            ""
-        }
+        val description =
+            if (!"null".equals(rawDescription, ignoreCase = true)) {
+                nvg.getLimitText(rawDescription, DESCRIPTION_FONT_SIZE, Fonts.REGULAR, textWidth)
+            } else {
+                ""
+            }
 
         nvg.drawText(
-            title, textStartX, y + TITLE_OFFSET, palette.getFontColor(ColorType.DARK), TITLE_FONT_SIZE, Fonts.MEDIUM
+            title,
+            textStartX,
+            y + TITLE_OFFSET,
+            palette.getFontColor(ColorType.DARK),
+            TITLE_FONT_SIZE,
+            Fonts.MEDIUM,
         )
         if (description.isNotEmpty()) {
             nvg.drawText(
@@ -83,7 +93,7 @@ class CompSceneButton(
                 y + DESCRIPTION_OFFSET,
                 palette.getFontColor(ColorType.NORMAL),
                 DESCRIPTION_FONT_SIZE,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -96,12 +106,15 @@ class CompSceneButton(
             arrowY,
             palette.getFontColor(ColorType.NORMAL),
             ARROW_FONT_SIZE,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
-
     }
 
-    override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun onMouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0 && isEnabled()) {
             pressAnimation.setValue(1.0f)
         }

@@ -2,11 +2,18 @@ package me.miki.shindo.utils.vector
 
 import me.miki.shindo.utils.MathUtils
 
-class Vector4f(var x: Float = 0.0f, var y: Float = 0.0f, var z: Float = 0.0f, var w: Float = 0.0f) {
-
+class Vector4f(
+    var x: Float = 0.0f,
+    var y: Float = 0.0f,
+    var z: Float = 0.0f,
+    var w: Float = 0.0f,
+) {
     fun x(): Float = x
+
     fun y(): Float = y
+
     fun z(): Float = z
+
     fun w(): Float = w
 
     fun mul(f: Float) {
@@ -16,23 +23,31 @@ class Vector4f(var x: Float = 0.0f, var y: Float = 0.0f, var z: Float = 0.0f, va
         this.w *= f
     }
 
-    fun set(f: Float, g: Float, h: Float, i: Float) {
+    fun set(
+        f: Float,
+        g: Float,
+        h: Float,
+        i: Float,
+    ) {
         this.x = f
         this.y = g
         this.z = h
         this.w = i
     }
 
-    fun add(f: Float, g: Float, h: Float, i: Float) {
+    fun add(
+        f: Float,
+        g: Float,
+        h: Float,
+        i: Float,
+    ) {
         this.x += f
         this.y += g
         this.z += h
         this.w += i
     }
 
-    fun dot(vector4f: Vector4f): Float {
-        return this.x * vector4f.x + this.y * vector4f.y + this.z * vector4f.z + this.w * vector4f.w
-    }
+    fun dot(vector4f: Vector4f): Float = this.x * vector4f.x + this.y * vector4f.y + this.z * vector4f.z + this.w * vector4f.w
 
     fun normalize(): Boolean {
         val f = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
@@ -74,7 +89,10 @@ class Vector4f(var x: Float = 0.0f, var y: Float = 0.0f, var z: Float = 0.0f, va
         this.w = 1.0f
     }
 
-    fun lerp(vector4f: Vector4f, f: Float) {
+    fun lerp(
+        vector4f: Vector4f,
+        f: Float,
+    ) {
         val g = 1.0f - f
         this.x = this.x * g + vector4f.x * f
         this.y = this.y * g + vector4f.y * f

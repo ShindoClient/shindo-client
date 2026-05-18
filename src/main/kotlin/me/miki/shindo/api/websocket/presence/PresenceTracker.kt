@@ -4,8 +4,10 @@ import com.google.gson.JsonObject
 import java.util.concurrent.ConcurrentHashMap
 
 class PresenceTracker {
-
-    fun handleMessage(type: String, payload: JsonObject) {
+    fun handleMessage(
+        type: String,
+        payload: JsonObject,
+    ) {
         when (type) {
             "user.join" -> {
                 val uuid = payload.get("uuid").asString

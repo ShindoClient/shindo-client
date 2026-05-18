@@ -7,7 +7,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object RoleVisuals {
-
     private const val ROLE_CACHE_TTL_MS = 2_000L
     private const val ONLINE_CACHE_TTL_MS = 1_000L
 
@@ -29,8 +28,7 @@ object RoleVisuals {
     private val onlineCache = ConcurrentHashMap<UUID, CacheEntry<Boolean>>()
 
     @JvmStatic
-    fun getPrimaryRole(uuid: UUID?): Role =
-        RoleHierarchy.highest(RoleManager.getDirectRoles(uuid))
+    fun getPrimaryRole(uuid: UUID?): Role = RoleHierarchy.highest(RoleManager.getDirectRoles(uuid))
 
     @JvmStatic
     fun getPrimaryRoleCached(uuid: UUID?): Role {
@@ -55,14 +53,15 @@ object RoleVisuals {
     }
 
     @JvmStatic
-    fun getRoleColor(role: Role?): Color = when (role) {
-        Role.STAFF -> staffColor
-        Role.NETHERITE -> netheriteColor
-        Role.EMERALD -> emeraldColor
-        Role.DIAMOND -> diamondColor
-        Role.GOLD -> goldColor
-        else -> memberColor
-    }
+    fun getRoleColor(role: Role?): Color =
+        when (role) {
+            Role.STAFF -> staffColor
+            Role.NETHERITE -> netheriteColor
+            Role.EMERALD -> emeraldColor
+            Role.DIAMOND -> diamondColor
+            Role.GOLD -> goldColor
+            else -> memberColor
+        }
 
     @JvmStatic
     fun getTabIcon(role: Role?): String = LegacyIcon.SHINDO
@@ -71,14 +70,18 @@ object RoleVisuals {
     fun getTabFallbackText(role: Role?): String = "★"
 
     @JvmStatic
-    fun getIconPNG(role: Role?): String = when (role) {
-        Role.STAFF -> STAFF_ICON
-        Role.NETHERITE -> NETHERITE_ICON
-        Role.EMERALD -> EMERALD_ICON
-        Role.DIAMOND -> DIAMOND_ICON
-        Role.GOLD -> GOLD_ICON
-        else -> MEMBER_ICON
-    }
+    fun getIconPNG(role: Role?): String =
+        when (role) {
+            Role.STAFF -> STAFF_ICON
+            Role.NETHERITE -> NETHERITE_ICON
+            Role.EMERALD -> EMERALD_ICON
+            Role.DIAMOND -> DIAMOND_ICON
+            Role.GOLD -> GOLD_ICON
+            else -> MEMBER_ICON
+        }
 
-    private data class CacheEntry<T>(val value: T, val expiresAt: Long)
+    private data class CacheEntry<T>(
+        val value: T,
+        val expiresAt: Long,
+    )
 }

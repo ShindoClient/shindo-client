@@ -5,7 +5,6 @@ import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.config.ConfigOwner
 
 open class CellGridSetting : Setting {
-
     private val defaultCells: Array<BooleanArray>?
     private var cells: Array<BooleanArray>?
 
@@ -23,19 +22,19 @@ open class CellGridSetting : Setting {
         cells = copyGrid(defaultCells)
     }
 
-    fun getCells(): Array<BooleanArray>? {
-        return cells
-    }
+    fun getCells(): Array<BooleanArray>? = cells
 
     open fun setCells(cells: Array<BooleanArray>?) {
         this.cells = copyGrid(cells)
     }
 
-    fun getDefaultCells(): Array<BooleanArray>? {
-        return defaultCells
-    }
+    fun getDefaultCells(): Array<BooleanArray>? = defaultCells
 
-    fun setCell(row: Int, col: Int, enabled: Boolean) {
+    fun setCell(
+        row: Int,
+        col: Int,
+        enabled: Boolean,
+    ) {
         if (!isValidIndex(row, col, cells)) {
             return
         }
@@ -45,7 +44,12 @@ open class CellGridSetting : Setting {
     }
 
     @Deprecated("Cell color is no longer stored in CellGridSetting. Use a separate ColorSetting.")
-    fun setCell(row: Int, col: Int, enabled: Boolean, color: java.awt.Color?) {
+    fun setCell(
+        row: Int,
+        col: Int,
+        enabled: Boolean,
+        color: java.awt.Color?,
+    ) {
         setCell(row, col, enabled)
     }
 
@@ -63,9 +67,14 @@ open class CellGridSetting : Setting {
         }
     }
 
-    private fun isValidIndex(row: Int, col: Int, array: Array<BooleanArray>?): Boolean {
-        return array != null
-                && row >= 0 && row < array.size
-                && col >= 0 && col < array[row].size
-    }
+    private fun isValidIndex(
+        row: Int,
+        col: Int,
+        array: Array<BooleanArray>?,
+    ): Boolean =
+        array != null &&
+            row >= 0 &&
+            row < array.size &&
+            col >= 0 &&
+            col < array[row].size
 }

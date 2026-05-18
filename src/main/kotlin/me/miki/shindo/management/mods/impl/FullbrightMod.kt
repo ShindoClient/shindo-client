@@ -24,7 +24,3 @@ class FullbrightMod :
         mc.renderGlobal.loadRenderers()
     }
 }
-
-
-
-

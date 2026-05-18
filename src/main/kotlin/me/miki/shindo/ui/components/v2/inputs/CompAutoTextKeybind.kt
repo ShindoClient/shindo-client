@@ -9,9 +9,8 @@ import java.awt.Color
 class CompAutoTextKeybind(
     width: Float,
     private val getKeyCode: () -> Int,
-    private val setKeyCode: (Int) -> Unit
+    private val setKeyCode: (Int) -> Unit,
 ) : Component(0f, 0f) {
-
     private var widthInternal = width
     private var binding = false
 
@@ -22,7 +21,10 @@ class CompAutoTextKeybind(
         setHeight(16f)
     }
 
-    fun setPosition(x: Float, y: Float) {
+    fun setPosition(
+        x: Float,
+        y: Float,
+    ) {
         setX(x)
         setY(y)
     }
@@ -34,7 +36,11 @@ class CompAutoTextKeybind(
         super.setWidth(width)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val keyName = if (binding) "..." else Keyboard.getKeyName(getKeyCode.invoke())
         val nvgInstance = nvg
 
@@ -44,7 +50,7 @@ class CompAutoTextKeybind(
             widthInternal,
             16f,
             4f,
-            Color(255, 255, 255, 30)
+            Color(255, 255, 255, 30),
         )
         nvgInstance.drawCenteredText(
             keyName,
@@ -52,20 +58,27 @@ class CompAutoTextKeybind(
             getY() + 5f,
             Color.WHITE,
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0 && MouseUtils.isInside(mouseX, mouseY, getX(), getY(), widthInternal, 16f)) {
             binding = !binding
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (!binding) {
             super.keyTyped(typedChar, keyCode)
             return

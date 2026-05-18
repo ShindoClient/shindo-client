@@ -10,11 +10,12 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils.getPotionsFromInventory
 import net.minecraft.potion.Potion
 
-class PotionCounterMod : SimpleHUDMod(
-    TranslateText.POTION_COUNTER,
-    TranslateText.POTION_COUNTER_DESCRIPTION,
-    LegacyIcon.MOD_POTION_COUNTER
-) {
+class PotionCounterMod :
+    SimpleHUDMod(
+        TranslateText.POTION_COUNTER,
+        TranslateText.POTION_COUNTER_DESCRIPTION,
+        LegacyIcon.MOD_POTION_COUNTER,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val showIcon = true
 
@@ -29,9 +30,5 @@ class PotionCounterMod : SimpleHUDMod(
         return amount.toString() + " " + (if (amount <= 1) "pot" else "pots")
     }
 
-    override fun getIcon(): String? {
-        return if (showIcon) LegacyIcon.ARCHIVE else null
-    }
+    override fun getIcon(): String? = if (showIcon) LegacyIcon.ARCHIVE else null
 }
-
-

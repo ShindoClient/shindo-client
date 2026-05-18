@@ -5,8 +5,7 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 
-class Skin3DMod :
-    Mod(TranslateText.SKIN_3D, TranslateText.SKIN_3D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_SKIN3_D) {
+class Skin3DMod : Mod(TranslateText.SKIN_3D, TranslateText.SKIN_3D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_SKIN3_D) {
     private val baseVoxelSize = 1.15f
     private val bodyVoxelWidthSize = 1.05f
     private val headVoxelSize = 1.18f
@@ -26,33 +25,19 @@ class Skin3DMod :
         }
     }
 
-    fun getBaseVoxelSize(): Float {
-        return baseVoxelSize
-    }
+    fun getBaseVoxelSize(): Float = baseVoxelSize
 
-    fun getBodyVoxelWidthSize(): Float {
-        return bodyVoxelWidthSize
-    }
+    fun getBodyVoxelWidthSize(): Float = bodyVoxelWidthSize
 
-    fun getHeadVoxelSize(): Float {
-        return headVoxelSize
-    }
+    fun getHeadVoxelSize(): Float = headVoxelSize
 
-    fun getRenderDistanceLOD(): Int {
-        return renderDistanceLOD
-    }
+    fun getRenderDistanceLOD(): Int = renderDistanceLOD
 
     companion object {
         @JvmField
         var instance: Skin3DMod? = null
 
         @JvmStatic
-        fun getInstance(): Skin3DMod? {
-            return instance
-        }
+        fun getInstance(): Skin3DMod? = instance
     }
 }
-
-
-
-

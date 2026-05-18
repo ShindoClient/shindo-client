@@ -10,11 +10,12 @@ import me.miki.shindo.utils.GlUtils.startScale
 import me.miki.shindo.utils.GlUtils.stopScale
 import me.miki.shindo.utils.render.RenderUtils.drawItemStack
 
-class InventoryDisplayMod : HUDMod(
-    TranslateText.INVENTORY_DISPLAY,
-    TranslateText.INVENTORY_DISPLAY_DESCRIPTION,
-    LegacyIcon.MOD_INVENTORY_DISPLAY
-) {
+class InventoryDisplayMod :
+    HUDMod(
+        TranslateText.INVENTORY_DISPLAY,
+        TranslateText.INVENTORY_DISPLAY_DESCRIPTION,
+        LegacyIcon.MOD_INVENTORY_DISPLAY,
+    ) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         var startX = this.getX() + 6
@@ -63,7 +64,3 @@ class InventoryDisplayMod : HUDMod(
         this.setHeight(82)
     }
 }
-
-
-
-

@@ -18,8 +18,7 @@ import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class HitBoxMod :
-    Mod(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_BOX) {
+class HitBoxMod : Mod(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_BOX) {
     private val eyeHeightColor: Color = Color.RED
     private val lookVectorColor: Color = Color.BLUE
 
@@ -44,7 +43,7 @@ class HitBoxMod :
         min = 1.0,
         max = 5.0,
         current = 2.0,
-        step = 1.0
+        step = 1.0,
     )
     private val lineWidthSetting = 2
 
@@ -67,31 +66,39 @@ class HitBoxMod :
 
         if (boundingBoxSetting) {
             val box = event.getEntity().entityBoundingBox
-            val offsetBox = AxisAlignedBB(
-                box.minX - event.getEntity().posX + event.getX(),
-                box.minY - event.getEntity().posY + event.getY(), box.minZ - event.getEntity().posZ + event.getZ(),
-                box.maxX - event.getEntity().posX + event.getX(), box.maxY - event.getEntity().posY + event.getY(),
-                box.maxZ - event.getEntity().posZ + event.getZ()
-            )
+            val offsetBox =
+                AxisAlignedBB(
+                    box.minX - event.getEntity().posX + event.getX(),
+                    box.minY - event.getEntity().posY + event.getY(),
+                    box.minZ - event.getEntity().posZ + event.getZ(),
+                    box.maxX - event.getEntity().posX + event.getX(),
+                    box.maxY - event.getEntity().posY + event.getY(),
+                    box.maxZ - event.getEntity().posZ + event.getZ(),
+                )
             val boundingBoxColor = colorSetting
             RenderGlobal.drawOutlinedBoundingBox(
                 offsetBox,
                 boundingBoxColor.red,
                 boundingBoxColor.green,
                 boundingBoxColor.blue,
-                (alphaSetting * 255).toInt()
+                (alphaSetting * 255).toInt(),
             )
         }
 
         if (eyeHeightSetting && event.getEntity() is EntityLivingBase) {
             RenderGlobal.drawOutlinedBoundingBox(
                 AxisAlignedBB(
-                    event.getX() - half, event.getY() + event.getEntity().eyeHeight - 0.009999999776482582,
-                    event.getZ() - half, event.getX() + half,
-                    event.getY() + event.getEntity().eyeHeight + 0.009999999776482582, event.getZ() + half
+                    event.getX() - half,
+                    event.getY() + event.getEntity().eyeHeight - 0.009999999776482582,
+                    event.getZ() - half,
+                    event.getX() + half,
+                    event.getY() + event.getEntity().eyeHeight + 0.009999999776482582,
+                    event.getZ() + half,
                 ),
-                eyeHeightColor.red, eyeHeightColor.green, eyeHeightColor.blue,
-                (alphaSetting * 255).toInt()
+                eyeHeightColor.red,
+                eyeHeightColor.green,
+                eyeHeightColor.blue,
+                (alphaSetting * 255).toInt(),
             )
         }
 
@@ -101,18 +108,20 @@ class HitBoxMod :
 
             val look = event.getEntity().getLook(event.getPartialTicks())
             worldrenderer.begin(3, DefaultVertexFormats.POSITION_COLOR)
-            worldrenderer.pos(event.getX(), event.getY() + event.getEntity().eyeHeight, event.getZ())
+            worldrenderer
+                .pos(event.getX(), event.getY() + event.getEntity().eyeHeight, event.getZ())
                 .color(0, 0, 255, 255)
                 .endVertex()
-            worldrenderer.pos(
-                event.getX() + look.xCoord * 2,
-                event.getY() + event.getEntity().eyeHeight + look.yCoord * 2, event.getZ() + look.zCoord * 2
-            )
-                .color(
+            worldrenderer
+                .pos(
+                    event.getX() + look.xCoord * 2,
+                    event.getY() + event.getEntity().eyeHeight + look.yCoord * 2,
+                    event.getZ() + look.zCoord * 2,
+                ).color(
                     lookVectorColor.red,
                     lookVectorColor.green,
                     lookVectorColor.blue,
-                    (alphaSetting * 255).toInt()
+                    (alphaSetting * 255).toInt(),
                 ).endVertex()
             tessellator.draw()
         }
@@ -140,7 +149,3 @@ class HitBoxMod :
         }
     }
 }
-
-
-
-

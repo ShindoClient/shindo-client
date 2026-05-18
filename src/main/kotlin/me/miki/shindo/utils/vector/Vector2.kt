@@ -1,7 +1,9 @@
 package me.miki.shindo.utils.vector
 
-class Vector2(@JvmField var x: Float, @JvmField var y: Float) {
-
+class Vector2(
+    @JvmField var x: Float,
+    @JvmField var y: Float,
+) {
     fun clone(): Vector2 = Vector2(x, y)
 
     fun copy(vec: Vector2) {
@@ -45,7 +47,5 @@ class Vector2(@JvmField var x: Float, @JvmField var y: Float) {
         return this
     }
 
-    override fun toString(): String {
-        return "Vector2 [x=$x, y=$y]"
-    }
+    override fun toString(): String = "Vector2 [x=$x, y=$y]"
 }

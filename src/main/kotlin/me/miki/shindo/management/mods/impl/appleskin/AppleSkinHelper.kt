@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
 
 object AppleSkinHelper {
-
     fun getFoodValues(stack: ItemStack): FoodValues {
         val food = stack.item as ItemFood?
         val hunger = food?.getHealAmount(stack) ?: 0

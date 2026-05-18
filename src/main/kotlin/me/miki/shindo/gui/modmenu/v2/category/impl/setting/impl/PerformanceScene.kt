@@ -11,9 +11,9 @@ import me.miki.shindo.ui.components.v2.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
 import kotlin.math.max
 
-class PerformanceScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
-
+class PerformanceScene(
+    parent: SettingsCategory,
+) : SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
     private lateinit var container: CompScrollableContainer
     private lateinit var textureOptimizationToggle: CompToggleButtonWithRestart
     private val settingCards = ArrayList<CompSettingButton>()
@@ -24,32 +24,37 @@ class PerformanceScene(parent: SettingsCategory) :
         val palette = colorManager.getPalette()
         val settingsMod = InternalSettingsMod.instance
 
-        textureOptimizationToggle = CompToggleButtonWithRestart(
-            settingsMod.getTextureOptimizationSetting()
-                ?: throw IllegalStateException("Texture optimization setting missing"),
-            requiresRestart = true
-        )
+        textureOptimizationToggle =
+            CompToggleButtonWithRestart(
+                settingsMod.getTextureOptimizationSetting()
+                    ?: throw IllegalStateException("Texture optimization setting missing"),
+                requiresRestart = true,
+            )
 
-        container = CompScrollableContainer()
-            .setScrollbarGutter(14f)
-
+        container =
+            CompScrollableContainer()
+                .setScrollbarGutter(14f)
 
         settingCards.clear()
         settingCards.add(
             CompSettingButton(
                 0f,
                 { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION.getText() },
-                { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION_DESCRIPTION.getText() })
-                .trailing(textureOptimizationToggle)
+                { TranslateText.PERFORMANCE_TEXTURE_OPTIMIZATION_DESCRIPTION.getText() },
+            ).trailing(textureOptimizationToggle)
                 .onClickAction {
                     val setting = textureOptimizationToggle.getSetting()
                     setting.setToggled(!setting.isToggled())
                     textureOptimizationToggle.setShowWarning(true)
-                }
+                },
         )
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
@@ -71,7 +76,7 @@ class PerformanceScene(parent: SettingsCategory) :
             mouseX,
             mouseY,
             partialTicks,
-            totalContentHeight
+            totalContentHeight,
         ) { mouseXInner, mouseYInner, partialInner, scrollValue ->
             var currentY = baseY + padding + scrollValue
             val cardWidth = baseWidth - 28f
@@ -84,7 +89,11 @@ class PerformanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         container.mouseClicked(mouseX, mouseY, mouseButton)
 
         for (card in settingCards) {
@@ -92,7 +101,11 @@ class PerformanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         container.mouseReleased(mouseX, mouseY, mouseButton)
 
         for (card in settingCards) {
@@ -100,7 +113,10 @@ class PerformanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         container.keyTyped(typedChar, keyCode)
 
         for (card in settingCards) {

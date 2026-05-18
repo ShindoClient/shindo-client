@@ -4,7 +4,7 @@ data class WsIdentity(
     val uuid: String,
     val name: String,
     val roles: Array<String>?,
-    val accountType: AccountType
+    val accountType: AccountType,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -15,7 +15,9 @@ data class WsIdentity(
         if (roles != null) {
             if (other.roles == null) return false
             if (!roles.contentEquals(other.roles)) return false
-        } else if (other.roles != null) return false
+        } else if (other.roles != null) {
+            return false
+        }
         return true
     }
 

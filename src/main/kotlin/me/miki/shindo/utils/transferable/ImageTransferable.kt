@@ -5,8 +5,9 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
 
-class ImageTransferable(private val image: Image) : Transferable {
-
+class ImageTransferable(
+    private val image: Image,
+) : Transferable {
     override fun getTransferDataFlavors(): Array<DataFlavor> = arrayOf(DataFlavor.imageFlavor)
 
     override fun isDataFlavorSupported(flavor: DataFlavor): Boolean = DataFlavor.imageFlavor == flavor

@@ -7,8 +7,7 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.notification.NotificationType
 
-class Items2DMod :
-    Mod(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEMS2_D) {
+class Items2DMod : Mod(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEMS2_D) {
     init {
         instance = this
     }
@@ -22,7 +21,7 @@ class Items2DMod :
             Shindo.getInstance().getNotificationManager().post(
                 TranslateText.ITEM_PHYSICS.getText(),
                 "Disabled due to incompatibility",
-                NotificationType.WARNING
+                NotificationType.WARNING,
             )
         }
     }
@@ -32,7 +31,3 @@ class Items2DMod :
         var instance: Items2DMod? = null
     }
 }
-
-
-
-

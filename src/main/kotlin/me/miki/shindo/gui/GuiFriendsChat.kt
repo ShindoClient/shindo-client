@@ -22,8 +22,9 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
-class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
-
+class GuiFriendsChat(
+    private val parent: GuiScreen? = null,
+) : GuiScreen() {
     private val screenAnimation = ScreenAnimation()
     private val addFriendBox = CompTextBox()
     private val messageBox = CompTextBox()
@@ -61,7 +62,11 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         messageBox.setText("")
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         BlurUtils.drawBlurScreen(20f)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
@@ -76,7 +81,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             menuHeight,
             1f,
             1f,
-            false
+            false,
         )
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -87,7 +92,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         accent: AccentColor,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), java.awt.Color(0, 0, 0, 140))
         nvg.drawShadow(x, y, menuWidth, menuHeight, 12f)
@@ -98,7 +103,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             menuWidth - 2f,
             menuHeight - 2f,
             9f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 235),
         )
 
         val chatManager = Shindo.getInstance().getChatManager()
@@ -134,14 +139,14 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             leftHeaderY,
             palette.getFontColor(ColorType.DARK),
             13f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
         nvg.drawRect(
             leftX + 14f,
             leftHeaderY + 16f,
             leftWidth - 28f,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80),
         )
 
         val addY = leftHeaderY + 24f
@@ -163,7 +168,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             addButtonH,
             LegacyIcon.PLUS,
             mouseX,
-            mouseY
+            mouseY,
         )
 
         val requestsTitleY = addY + 32f
@@ -173,7 +178,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             requestsTitleY,
             palette.getFontColor(ColorType.NORMAL),
             10.5f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         var currentY = requestsTitleY + 14f
@@ -186,7 +191,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 currentY + 10f,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                 9f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             currentY += 16f
         } else {
@@ -201,7 +206,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                     leftWidth - 20f,
                     requestHeight,
                     mouseX,
-                    mouseY
+                    mouseY,
                 )
                 currentY += requestHeight + 8f
             }
@@ -219,7 +224,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 friendY + 10f,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                 9f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         } else {
             nvg.save()
@@ -228,14 +233,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             nvg.translate(0f, friendScrollOffset)
 
             for (friend in friends) {
-                val hovered = MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    leftX + 10f,
-                    friendY + friendScrollOffset,
-                    leftWidth - 20f,
-                    friendRowHeight
-                )
+                val hovered =
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        leftX + 10f,
+                        friendY + friendScrollOffset,
+                        leftWidth - 20f,
+                        friendRowHeight,
+                    )
                 val active = selectedFriend?.uuid == friend.uuid
                 drawFriendRow(
                     nvg,
@@ -247,7 +253,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                     leftWidth - 20f,
                     friendRowHeight,
                     hovered,
-                    active
+                    active,
                 )
                 friendEntries.add(
                     FriendEntry(
@@ -259,8 +265,8 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                         leftX + leftWidth - 38f,
                         friendY + friendScrollOffset + 9f,
                         18f,
-                        18f
-                    )
+                        18f,
+                    ),
                 )
                 friendY += friendRowHeight + 8f
             }
@@ -280,7 +286,11 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val chatManager = instance.getChatManager()
         if (!chatManager.isFeatureAvailable()) {
@@ -298,7 +308,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                         request.acceptX,
                         request.acceptY,
                         request.acceptW,
-                        request.acceptH
+                        request.acceptH,
                     )
                 ) {
                     chatManager.acceptFriendRequest(request.request.uuid) { }
@@ -330,7 +340,10 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             if (parent != null) {
                 mc.displayGuiScreen(parent)
@@ -355,7 +368,10 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
 
     override fun doesGuiPauseGame(): Boolean = false
 
-    private fun drawUnavailable(nvg: NanoVGManager, palette: ColorPalette) {
+    private fun drawUnavailable(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+    ) {
         val text = TranslateText.CHAT_FEATURE_UNAVAILABLE.getText()
         nvg.drawCenteredText(
             text,
@@ -363,11 +379,18 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             y + menuHeight / 2f,
             palette.getFontColor(ColorType.NORMAL),
             12f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
     }
 
-    private fun drawPanel(nvg: NanoVGManager, x: Float, y: Float, width: Float, height: Float, palette: ColorPalette) {
+    private fun drawPanel(
+        nvg: NanoVGManager,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        palette: ColorPalette,
+    ) {
         nvg.drawRoundedRect(x, y, width, height, 12f, palette.getBackgroundColor(ColorType.DARK))
         nvg.drawRoundedRect(
             x + 1f,
@@ -375,7 +398,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             width - 2f,
             height - 2f,
             11f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230),
         )
     }
 
@@ -389,13 +412,18 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         height: Float,
         icon: String,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 200) else ColorUtils.applyAlpha(
-            accent.getColor1(),
-            160
-        )
+        val bg =
+            if (hovered) {
+                ColorUtils.applyAlpha(accent.getColor1(), 200)
+            } else {
+                ColorUtils.applyAlpha(
+                    accent.getColor1(),
+                    160,
+                )
+            }
         nvg.drawRoundedRect(x, y, width, height, 6f, bg)
         nvg.drawCenteredText(
             icon,
@@ -403,7 +431,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             y + height / 2f - 4f,
             palette.getFontColor(ColorType.DARK),
             10f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
     }
 
@@ -417,7 +445,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         width: Float,
         height: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
         nvg.drawRoundedRect(
@@ -426,7 +454,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             width,
             height,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered) 200 else 180)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered) 200 else 180),
         )
         val label = nvg.getLimitText(request.name, 10f, Fonts.MEDIUM, width - 80f)
         nvg.drawText(label, x + 10f, y + 9f, palette.getFontColor(ColorType.DARK), 10f, Fonts.MEDIUM)
@@ -436,10 +464,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         val acceptX = x + width - acceptW - 8f
         val acceptY = y + (height - acceptH) / 2f
         val acceptHovered = MouseUtils.isInside(mouseX, mouseY, acceptX, acceptY, acceptW, acceptH)
-        val acceptBg = if (acceptHovered) ColorUtils.applyAlpha(
-            accent.getColor1(),
-            210
-        ) else ColorUtils.applyAlpha(accent.getColor1(), 170)
+        val acceptBg =
+            if (acceptHovered) {
+                ColorUtils.applyAlpha(
+                    accent.getColor1(),
+                    210,
+                )
+            } else {
+                ColorUtils.applyAlpha(accent.getColor1(), 170)
+            }
         nvg.drawRoundedRect(acceptX, acceptY, acceptW, acceptH, 6f, acceptBg)
         nvg.drawCenteredText(
             TranslateText.CHAT_ACCEPT.getText(),
@@ -447,7 +480,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             acceptY + acceptH / 2f - 4f,
             palette.getFontColor(ColorType.DARK),
             9f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         requestEntries.add(RequestEntry(request, acceptX, acceptY, acceptW, acceptH))
@@ -463,13 +496,14 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         width: Float,
         height: Float,
         hovered: Boolean,
-        active: Boolean
+        active: Boolean,
     ) {
-        val base = if (active) {
-            ColorUtils.applyAlpha(accent.getColor1(), 120)
-        } else {
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered) 200 else 160)
-        }
+        val base =
+            if (active) {
+                ColorUtils.applyAlpha(accent.getColor1(), 120)
+            } else {
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), if (hovered) 200 else 160)
+            }
         nvg.drawRoundedRect(x, y, width, height, 8f, base)
 
         val head = PlayerHeadUtils.getOrRequest(friend.name)
@@ -482,7 +516,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 24f,
                 24f,
                 8f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200),
             )
             nvg.drawCenteredText(
                 LegacyIcon.USER,
@@ -490,7 +524,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 y + 12f,
                 palette.getFontColor(ColorType.DARK),
                 10f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
 
@@ -504,7 +538,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             18f,
             18f,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200),
         )
         nvg.drawCenteredText(LegacyIcon.TRASH, x + width - 19f, y + 13f, palette.getMaterialRed(), 9f, Fonts.LEGACYICON)
     }
@@ -519,10 +553,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         val chatManager = Shindo.getInstance().getChatManager()
-        val selfUuid = Shindo.getInstance().getShindoAPI().getEffectiveUuid().toString()
+        val selfUuid =
+            Shindo
+                .getInstance()
+                .getShindoAPI()
+                .getEffectiveUuid()
+                .toString()
         val headerY = y + 14f
 
         val headerText = selectedFriend?.name ?: TranslateText.CHAT_SELECT_FRIEND.getText()
@@ -532,7 +571,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             headerY + 18f,
             width - 32f,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 80),
         )
 
         val inputHeight = 28f
@@ -547,7 +586,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 y + height / 2f,
                 palette.getFontColor(ColorType.NORMAL),
                 11f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -565,10 +604,15 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             val textHeight = nvg.getTextBoxHeight(message.message, 9.5f, Fonts.REGULAR, textWidth)
             val bubbleHeight = textHeight + 16f
             val bubbleX = if (isOwn) x + width - bubbleMaxWidth - 20f else x + 20f
-            val bubbleColor = if (isOwn) ColorUtils.applyAlpha(
-                accent.getColor1(),
-                200
-            ) else ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
+            val bubbleColor =
+                if (isOwn) {
+                    ColorUtils.applyAlpha(
+                        accent.getColor1(),
+                        200,
+                    )
+                } else {
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
+                }
             nvg.drawRoundedRect(bubbleX, msgY, bubbleMaxWidth, bubbleHeight, 12f, bubbleColor)
             nvg.drawTextBox(
                 message.message,
@@ -577,7 +621,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
                 textWidth,
                 palette.getFontColor(ColorType.DARK),
                 9.5f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             msgY += bubbleHeight + 10f
         }
@@ -609,7 +653,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             sendButtonH,
             TranslateText.CHAT_SEND.getText(),
             mouseX,
-            mouseY
+            mouseY,
         )
     }
 
@@ -623,13 +667,18 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         height: Float,
         label: String,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        val bg = if (hovered) ColorUtils.applyAlpha(accent.getColor1(), 210) else ColorUtils.applyAlpha(
-            accent.getColor1(),
-            170
-        )
+        val bg =
+            if (hovered) {
+                ColorUtils.applyAlpha(accent.getColor1(), 210)
+            } else {
+                ColorUtils.applyAlpha(
+                    accent.getColor1(),
+                    170,
+                )
+            }
         nvg.drawRoundedRect(x, y, width, height, 6f, bg)
         nvg.drawCenteredText(
             label,
@@ -637,7 +686,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
             y + height / 2f - 4f,
             palette.getFontColor(ColorType.DARK),
             9.5f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
     }
 
@@ -675,7 +724,7 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         val removeX: Float,
         val removeY: Float,
         val removeW: Float,
-        val removeH: Float
+        val removeH: Float,
     )
 
     private data class RequestEntry(
@@ -683,6 +732,6 @@ class GuiFriendsChat(private val parent: GuiScreen? = null) : GuiScreen() {
         val acceptX: Float,
         val acceptY: Float,
         val acceptW: Float,
-        val acceptH: Float
+        val acceptH: Float,
     )
 }

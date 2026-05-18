@@ -9,12 +9,13 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class TimeChangerMod : Mod(
-    TranslateText.TIME_CHANGER,
-    TranslateText.TIME_CHANGER_DESCRIPTION,
-    ModCategory.WORLD,
-    LegacyIcon.MOD_TIME_CHANGER
-) {
+class TimeChangerMod :
+    Mod(
+        TranslateText.TIME_CHANGER,
+        TranslateText.TIME_CHANGER_DESCRIPTION,
+        ModCategory.WORLD,
+        LegacyIcon.MOD_TIME_CHANGER,
+    ) {
     @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 0.0, max = 24.0, current = 12.0)
     @JvmField
     var timeSetting = 12.0
@@ -30,7 +31,3 @@ class TimeChangerMod : Mod(
 
     fun getTimeSetting(): NumberSetting? = getNumberSetting(this, "timeSetting")
 }
-
-
-
-

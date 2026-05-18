@@ -17,8 +17,7 @@ import net.minecraft.client.resources.ResourcePackRepository
 import net.minecraft.util.ResourceLocation
 import java.io.IOException
 
-class PackDisplayMod :
-    HUDMod(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PACK_DISPLAY) {
+class PackDisplayMod : HUDMod(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PACK_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private val compactSetting = false
 
@@ -61,7 +60,7 @@ class PackDisplayMod :
             imgY,
             imgSize.toFloat(),
             imgSize.toFloat(),
-            (if (compact) 2 else 4).toFloat()
+            (if (compact) 2 else 4).toFloat(),
         )
         this.drawText(name, textX, textY, 9f, getHudFont(1))
 
@@ -77,15 +76,18 @@ class PackDisplayMod :
     }
 
     private fun loadTexture() {
-        val dynamicTexture: DynamicTexture? = try {
-            DynamicTexture(getCurrentPack()!!.packImage)
-        } catch (e: Exception) {
+        val dynamicTexture: DynamicTexture? =
             try {
-                DynamicTexture(((mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack).packImage)
-            } catch (e1: IOException) {
-                TextureUtil.missingTexture
+                DynamicTexture(getCurrentPack()!!.packImage)
+            } catch (e: Exception) {
+                try {
+                    DynamicTexture(
+                        ((mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack).packImage,
+                    )
+                } catch (e1: IOException) {
+                    TextureUtil.missingTexture
+                }
             }
-        }
 
         this.currentPack = mc.textureManager.getDynamicTextureLocation("texturepackicon", dynamicTexture)
     }
@@ -97,7 +99,3 @@ class PackDisplayMod :
         return (mc as IMixinMinecraft).mcDefaultResourcePack as net.minecraft.client.resources.DefaultResourcePack
     }
 }
-
-
-
-

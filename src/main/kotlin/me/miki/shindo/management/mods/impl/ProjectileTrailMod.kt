@@ -16,12 +16,13 @@ import net.minecraft.entity.projectile.EntityThrowable
 import net.minecraft.util.Vec3
 import java.util.*
 
-class ProjectileTrailMod : Mod(
-    TranslateText.PROJECTILE_TRAIL,
-    TranslateText.PROJECTILE_TRAIL_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_PROJECTILE_TRAIL
-) {
+class ProjectileTrailMod :
+    Mod(
+        TranslateText.PROJECTILE_TRAIL,
+        TranslateText.PROJECTILE_TRAIL_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_PROJECTILE_TRAIL,
+    ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private val type = ProjectileTrailType.HEARTS
 
@@ -36,8 +37,10 @@ class ProjectileTrailMod : Mod(
         updateThrowables()
 
         for (entity in mc.theWorld.getLoadedEntityList()) {
-            if (entity != null && (isValidEntity(entity) || throwables.contains(entity)) && entity.getDistanceToEntity(
-                    mc.thePlayer
+            if (entity != null &&
+                (isValidEntity(entity) || throwables.contains(entity)) &&
+                entity.getDistanceToEntity(
+                    mc.thePlayer,
                 ) > 3.0f
             ) {
                 spawnParticle(currentType, entity.positionVector)
@@ -45,7 +48,10 @@ class ProjectileTrailMod : Mod(
         }
     }
 
-    fun spawnParticle(trail: ProjectileTrailType, vector: Vec3) {
+    fun spawnParticle(
+        trail: ProjectileTrailType,
+        vector: Vec3,
+    ) {
         if (trail != ProjectileTrailType.GREEN_STAR && trail != ProjectileTrailType.HEARTS || ticks % 4 == 0) {
             if (trail != ProjectileTrailType.MUSIC_NOTES || ticks % 2 == 0) {
                 val translate = trail.translate
@@ -71,7 +77,7 @@ class ProjectileTrailMod : Mod(
                         d2,
                         xVel.toDouble(),
                         yVel.toDouble(),
-                        zVel.toDouble()
+                        zVel.toDouble(),
                     )
                 }
             }
@@ -86,8 +92,11 @@ class ProjectileTrailMod : Mod(
                 return entity.shootingEntity != null && entity.shootingEntity == mc.thePlayer
             } else if (entity is EntityFishHook) {
                 return entity.angler != null && entity.angler == mc.thePlayer
-            } else if (entity is EntityThrowable && entity.ticksExisted == 1 && entity.getDistanceSqToEntity(mc.thePlayer) <= 11.0 && !throwables.contains(
-                    entity
+            } else if (entity is EntityThrowable &&
+                entity.ticksExisted == 1 &&
+                entity.getDistanceSqToEntity(mc.thePlayer) <= 11.0 &&
+                !throwables.contains(
+                    entity,
                 )
             ) {
                 throwables.add(entity)
@@ -110,8 +119,3 @@ class ProjectileTrailMod : Mod(
         }
     }
 }
-
-
-
-
-

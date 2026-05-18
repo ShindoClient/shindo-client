@@ -12,9 +12,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 internal class WsClient(
     private val url: String,
-    private val httpClient: OkHttpClient
+    private val httpClient: OkHttpClient,
 ) {
-
     private val listeners: MutableList<WsClientListener> = CopyOnWriteArrayList()
     private val open = AtomicBoolean(false)
     private val socketRef = AtomicReference<WebSocket?>(null)
@@ -64,8 +63,10 @@ internal class WsClient(
     }
 
     private inner class InternalListener : WebSocketListener() {
-
-        override fun onOpen(webSocket: WebSocket, response: Response) {
+        override fun onOpen(
+            webSocket: WebSocket,
+            response: Response,
+        ) {
             socketRef.set(webSocket)
             open.set(true)
 
@@ -78,7 +79,10 @@ internal class WsClient(
             for (l in listeners) safeCall { l.onOpen() }
         }
 
-        override fun onMessage(webSocket: WebSocket, text: String) {
+        override fun onMessage(
+            webSocket: WebSocket,
+            text: String,
+        ) {
             try {
                 val obj = JsonParser.parseString(text).asJsonObject
                 val type = if (obj.has("type")) obj.get("type").asString else "unknown"
@@ -88,22 +92,37 @@ internal class WsClient(
             }
         }
 
-        override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+        override fun onMessage(
+            webSocket: WebSocket,
+            bytes: ByteString,
+        ) {
             // Binary frames are not used by the Shindo protocol.
         }
 
-        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+        override fun onClosing(
+            webSocket: WebSocket,
+            code: Int,
+            reason: String,
+        ) {
             // Acknowledge the server-initiated close.
             webSocket.close(NORMAL_CLOSE_CODE, null)
         }
 
-        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+        override fun onClosed(
+            webSocket: WebSocket,
+            code: Int,
+            reason: String,
+        ) {
             open.set(false)
             socketRef.compareAndSet(webSocket, null)
             for (l in listeners) safeCall { l.onClose(code, reason, true) }
         }
 
-        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+        override fun onFailure(
+            webSocket: WebSocket,
+            t: Throwable,
+            response: Response?,
+        ) {
             open.set(false)
             socketRef.compareAndSet(webSocket, null)
             val ex = if (t is Exception) t else RuntimeException(t)
@@ -122,8 +141,18 @@ internal class WsClient(
 
     internal interface WsClientListener {
         fun onOpen()
-        fun onMessage(type: String, payload: JsonObject)
-        fun onClose(code: Int, reason: String, remote: Boolean)
+
+        fun onMessage(
+            type: String,
+            payload: JsonObject,
+        )
+
+        fun onClose(
+            code: Int,
+            reason: String,
+            remote: Boolean,
+        )
+
         fun onError(ex: Exception)
     }
 

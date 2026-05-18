@@ -37,10 +37,10 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
-class ModuleCategory(parent: GuiModMenu) :
-    Category(parent, TranslateText.MODULE, LegacyIcon.ARCHIVE, true, true),
+class ModuleCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.MODULE, LegacyIcon.ARCHIVE, true, true),
     ModMenuListPageContract {
-
     private val settingScroll = Scroll()
     private val settingsPanel = SettingsPanel()
     private val moduleCardCache = ArrayList<ModuleCard>()
@@ -72,7 +72,11 @@ class ModuleCategory(parent: GuiModMenu) :
         settingsPanel.clear()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager: ColorManager = instance.getColorManager()
@@ -94,15 +98,16 @@ class ModuleCategory(parent: GuiModMenu) :
         nvg.save()
         nvg.translate(0f, scrollValue)
 
-        val listContext = ModMenuListPageRenderContext(
-            nvg = nvg,
-            palette = palette,
-            accent = accentColor,
-            mouseX = mouseX,
-            mouseY = mouseY,
-            partialTicks = partialTicks,
-            scrollOffset = scrollValue
-        )
+        val listContext =
+            ModMenuListPageRenderContext(
+                nvg = nvg,
+                palette = palette,
+                accent = accentColor,
+                mouseX = mouseX,
+                mouseY = mouseY,
+                partialTicks = partialTicks,
+                scrollOffset = scrollValue,
+            )
         val topFiltersBottom = drawTopFilters(listContext)
         rebuildFilteredEntries(topFiltersBottom)
         drawEntryCards(listContext, resolveCardLayoutSpec())
@@ -115,7 +120,7 @@ class ModuleCategory(parent: GuiModMenu) :
             getWidth() - 30f,
             12f,
             palette.getBackgroundColor(ColorType.NORMAL),
-            noColour
+            noColour,
         )
 
         nvg.drawVerticalGradientRect(
@@ -124,7 +129,7 @@ class ModuleCategory(parent: GuiModMenu) :
             getWidth() - 30f,
             12f,
             noColour,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            palette.getBackgroundColor(ColorType.NORMAL),
         )
 
         nvg.restore()
@@ -133,15 +138,16 @@ class ModuleCategory(parent: GuiModMenu) :
         nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         if (isDetailsLayerOpen()) {
-            val detailContext = ModMenuListPageRenderContext(
-                nvg = nvg,
-                palette = palette,
-                accent = accentColor,
-                mouseX = mouseX,
-                mouseY = mouseY,
-                partialTicks = partialTicks,
-                scrollOffset = settingScroll.getValue()
-            )
+            val detailContext =
+                ModMenuListPageRenderContext(
+                    nvg = nvg,
+                    palette = palette,
+                    accent = accentColor,
+                    mouseX = mouseX,
+                    mouseY = mouseY,
+                    partialTicks = partialTicks,
+                    scrollOffset = settingScroll.getValue(),
+                )
             drawDetailsLayer(detailContext)
         }
 
@@ -151,7 +157,11 @@ class ModuleCategory(parent: GuiModMenu) :
         scroll.maxScroll = max(0f, moduleContentHeight - viewportHeight)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val modManager = instance.getModManager()
 
@@ -170,17 +180,18 @@ class ModuleCategory(parent: GuiModMenu) :
 
             for (card in moduleCardCache) {
                 val cardY = getY() + card.y + scroll.getValue()
-                val controlLayout = ModMenuListCardLayout.build(
-                    cardX = card.x,
-                    cardY = cardY,
-                    cardWidth = card.width,
-                    cardHeight = card.height,
-                    settingsSize = cardStyle.settingsSize,
-                    settingsPaddingFromRight = cardStyle.settingsPadding,
-                    toggleWidth = LIST_TOGGLE_WIDTH,
-                    toggleHeight = LIST_TOGGLE_HEIGHT,
-                    settingsGap = LIST_TOGGLE_GAP
-                )
+                val controlLayout =
+                    ModMenuListCardLayout.build(
+                        cardX = card.x,
+                        cardY = cardY,
+                        cardWidth = card.width,
+                        cardHeight = card.height,
+                        settingsSize = cardStyle.settingsSize,
+                        settingsPaddingFromRight = cardStyle.settingsPadding,
+                        toggleWidth = LIST_TOGGLE_WIDTH,
+                        toggleHeight = LIST_TOGGLE_HEIGHT,
+                        settingsGap = LIST_TOGGLE_GAP,
+                    )
 
                 if (!MouseUtils.isInside(mouseX, mouseY, card.x, cardY, card.width, card.height)) {
                     continue
@@ -192,8 +203,9 @@ class ModuleCategory(parent: GuiModMenu) :
                         getX().toFloat(),
                         getY().toFloat(),
                         getWidth().toFloat(),
-                        getHeight().toFloat()
-                    ) && mouseButton == 0
+                        getHeight().toFloat(),
+                    ) &&
+                    mouseButton == 0
                 ) {
                     if (iconLayout && card.hasSettings && controlLayout.isSettingsHit(mouseX, mouseY)) {
                         val settings: ArrayList<Setting>? = modManager.getSettingsByMod(card.mod)
@@ -231,12 +243,13 @@ class ModuleCategory(parent: GuiModMenu) :
 
         if (detailTransition.isActive()) {
             applySettingsPanelPreferences()
-            val overlayLayout = ModMenuSettingsOverlayRenderer.computeLayout(
-                getX().toFloat(),
-                getY().toFloat(),
-                getWidth().toFloat(),
-                getHeight().toFloat()
-            )
+            val overlayLayout =
+                ModMenuSettingsOverlayRenderer.computeLayout(
+                    getX().toFloat(),
+                    getY().toFloat(),
+                    getWidth().toFloat(),
+                    getHeight().toFloat(),
+                )
 
             val backX = overlayLayout.panelX + 10f
             val backY = overlayLayout.headerIconY
@@ -261,7 +274,7 @@ class ModuleCategory(parent: GuiModMenu) :
                     overlayLayout.contentY,
                     overlayLayout.contentWidth,
                     overlayLayout.contentHeight,
-                    settingScroll
+                    settingScroll,
                 )
             ) {
                 return
@@ -273,8 +286,9 @@ class ModuleCategory(parent: GuiModMenu) :
                     overlayLayout.panelX + overlayLayout.panelWidth - 26f,
                     overlayLayout.headerIconY,
                     16f,
-                    16f
-                ) && mouseButton == 0
+                    16f,
+                ) &&
+                mouseButton == 0
             ) {
                 settingsPanel.resetSettings()
                 resetSpinTarget += 360f
@@ -286,14 +300,21 @@ class ModuleCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (currentMod != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (currentMod != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
@@ -312,23 +333,22 @@ class ModuleCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun drawTopFilters(context: ModMenuListPageRenderContext): Float {
-        return drawCategoryChips(
+    override fun drawTopFilters(context: ModMenuListPageRenderContext): Float =
+        drawCategoryChips(
             nvg = context.nvg,
             palette = context.palette,
             accentColor = context.accent,
             scrollOffset = context.scrollOffset,
             mouseX = context.mouseX,
-            mouseY = context.mouseY
+            mouseY = context.mouseY,
         )
-    }
 
     override fun rebuildFilteredEntries(topFiltersBottom: Float) {
         rebuildModuleCards(
             modManager = Shindo.getInstance().getModManager(),
             startOffset = topFiltersBottom,
             columns = currentLayoutColumns,
-            iconLayout = false
+            iconLayout = false,
         )
     }
 
@@ -340,28 +360,32 @@ class ModuleCategory(parent: GuiModMenu) :
                 cardWidth = first.width,
                 cardHeight = first.height,
                 spacingX = if (currentLayoutColumns > 1) 24f else 0f,
-                spacingY = 14f
+                spacingY = 14f,
             )
         }
 
         val columns = max(1, min(2, currentLayoutColumns))
         val spacingX = if (columns > 1) 24f else 0f
-        val cardWidth = if (columns == 1) {
-            getWidth() - 30f
-        } else {
-            (getWidth() - 30f - spacingX) / columns
-        }
+        val cardWidth =
+            if (columns == 1) {
+                getWidth() - 30f
+            } else {
+                (getWidth() - 30f - spacingX) / columns
+            }
 
         return ModMenuListCardLayoutSpec(
             columns = columns,
             cardWidth = cardWidth,
             cardHeight = LIST_CARD_HEIGHT,
             spacingX = spacingX,
-            spacingY = 14f
+            spacingY = 14f,
         )
     }
 
-    override fun drawEntryCards(context: ModMenuListPageRenderContext, layout: ModMenuListCardLayoutSpec) {
+    override fun drawEntryCards(
+        context: ModMenuListPageRenderContext,
+        layout: ModMenuListCardLayoutSpec,
+    ) {
         if (moduleCardCache.isEmpty()) {
             context.nvg.drawCenteredText(
                 TranslateText.NONE.getText(),
@@ -369,7 +393,7 @@ class ModuleCategory(parent: GuiModMenu) :
                 getY() + 86f,
                 context.palette.getFontColor(ColorType.NORMAL),
                 10f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             return
         }
@@ -387,43 +411,46 @@ class ModuleCategory(parent: GuiModMenu) :
             val iconY = cardY + (card.height - style.iconSize) / 2f
 
             val hasSettings = modManager.getSettingsByMod(card.mod) != null
-            val controlLayout = ModMenuListCardLayout.build(
-                cardX = card.x,
-                cardY = cardY,
-                cardWidth = card.width,
-                cardHeight = card.height,
-                settingsSize = style.settingsSize,
-                settingsPaddingFromRight = style.settingsPadding,
-                toggleWidth = LIST_TOGGLE_WIDTH,
-                toggleHeight = LIST_TOGGLE_HEIGHT,
-                settingsGap = LIST_TOGGLE_GAP
-            )
+            val controlLayout =
+                ModMenuListCardLayout.build(
+                    cardX = card.x,
+                    cardY = cardY,
+                    cardWidth = card.width,
+                    cardHeight = card.height,
+                    settingsSize = style.settingsSize,
+                    settingsPaddingFromRight = style.settingsPadding,
+                    toggleWidth = LIST_TOGGLE_WIDTH,
+                    toggleHeight = LIST_TOGGLE_HEIGHT,
+                    settingsGap = LIST_TOGGLE_GAP,
+                )
             val hitboxLayout = controlLayout.withOffset(context.scrollOffset)
             card.hasSettings = hasSettings
 
             val textX = iconX + style.iconSize + 10f
-            val textRight = if (hasSettings) {
-                controlLayout.settingsX - LIST_TOGGLE_GAP
-            } else {
-                controlLayout.toggleX - LIST_TOGGLE_GAP
-            }
+            val textRight =
+                if (hasSettings) {
+                    controlLayout.settingsX - LIST_TOGGLE_GAP
+                } else {
+                    controlLayout.toggleX - LIST_TOGGLE_GAP
+                }
             val textWidth = max(80f, textRight - textX)
 
-            val hovered = hitboxLayout.isBodyHit(
-                context.mouseX,
-                context.mouseY,
-                card.x,
-                cardY + context.scrollOffset,
-                card.width,
-                card.height
-            )
+            val hovered =
+                hitboxLayout.isBodyHit(
+                    context.mouseX,
+                    context.mouseY,
+                    card.x,
+                    cardY + context.scrollOffset,
+                    card.width,
+                    card.height,
+                )
             card.mod.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
             val hoverProgress = card.mod.hoverAnimation.getValue()
 
             val settingsHover = hitboxLayout.isSettingsHit(context.mouseX, context.mouseY)
             card.mod.settingsHoverAnimation.setAnimation(
                 if (settingsHover) 1.0f else 0.0f,
-                ModMenuMotion.CARD_HOVER_SPEED
+                ModMenuMotion.CARD_HOVER_SPEED,
             )
             val settingsHoverAnimation = card.mod.settingsHoverAnimation.getValue()
 
@@ -461,25 +488,24 @@ class ModuleCategory(parent: GuiModMenu) :
                 toggleY = controlLayout.toggleY,
                 toggleWidth = controlLayout.toggleWidth,
                 toggleHeight = controlLayout.toggleHeight,
-                toggleProgress = toggleProgress
+                toggleProgress = toggleProgress,
             )
         }
     }
 
-    override fun isDetailsLayerOpen(): Boolean {
-        return currentMod != null
-    }
+    override fun isDetailsLayerOpen(): Boolean = currentMod != null
 
     override fun drawDetailsLayer(context: ModMenuListPageRenderContext) {
         val activeMod = currentMod ?: return
 
-        if (detailTransition.isActive() && MouseUtils.isInside(
+        if (detailTransition.isActive() &&
+            MouseUtils.isInside(
                 context.mouseX,
                 context.mouseY,
                 getX().toFloat(),
                 getY().toFloat(),
                 getWidth().toFloat(),
-                getHeight().toFloat()
+                getHeight().toFloat(),
             )
         ) {
             settingScroll.onScroll()
@@ -493,14 +519,15 @@ class ModuleCategory(parent: GuiModMenu) :
             viewportX = getX().toFloat(),
             viewportY = getY().toFloat(),
             viewportWidth = getWidth().toFloat(),
-            viewportHeight = getHeight().toFloat()
+            viewportHeight = getHeight().toFloat(),
         )
-        val layout = ModMenuSettingsOverlayRenderer.computeLayout(
-            getX().toFloat(),
-            getY().toFloat(),
-            getWidth().toFloat(),
-            getHeight().toFloat()
-        )
+        val layout =
+            ModMenuSettingsOverlayRenderer.computeLayout(
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat(),
+            )
 
         resetSpinAnimation.setAnimation(resetSpinTarget, 20.0)
         ModMenuSettingsOverlayRenderer.drawChrome(
@@ -510,7 +537,7 @@ class ModuleCategory(parent: GuiModMenu) :
             title = activeMod.getName(),
             resetRotation = resetSpinAnimation.getValue(),
             mouseX = context.mouseX,
-            mouseY = context.mouseY
+            mouseY = context.mouseY,
         )
         ModMenuSettingsOverlayRenderer.drawSettingsPanel(
             nvg = context.nvg,
@@ -520,7 +547,7 @@ class ModuleCategory(parent: GuiModMenu) :
             scroll = settingScroll,
             mouseX = context.mouseX,
             mouseY = context.mouseY,
-            partialTicks = context.partialTicks
+            partialTicks = context.partialTicks,
         )
     }
 
@@ -537,29 +564,38 @@ class ModuleCategory(parent: GuiModMenu) :
             return true
         }
 
-        return getSearchBox().getText().isNotEmpty() && !SearchUtils.isSimilar(
-            Shindo.getInstance().getModManager().getWords(
-                m
-            ), getSearchBox().getText()
-        )
+        return getSearchBox().getText().isNotEmpty() &&
+            !SearchUtils.isSimilar(
+                Shindo.getInstance().getModManager().getWords(
+                    m,
+                ),
+                getSearchBox().getText(),
+            )
     }
 
-    private fun rebuildModuleCards(modManager: ModManager, startOffset: Float, columns: Int, iconLayout: Boolean) {
+    private fun rebuildModuleCards(
+        modManager: ModManager,
+        startOffset: Float,
+        columns: Int,
+        iconLayout: Boolean,
+    ) {
         moduleCardCache.clear()
 
         val spacingY = if (iconLayout) ICON_CARD_GAP else 14f
         val availableWidth = getWidth() - 30f
         val normalizedColumns = if (iconLayout) max(1, min(columns, 2)) else max(1, min(columns, 2))
-        val spacingX = if (normalizedColumns > 1) {
-            if (iconLayout) ICON_CARD_GAP else 24f
-        } else {
-            0f
-        }
-        val cardWidth = if (normalizedColumns == 1) {
-            availableWidth
-        } else {
-            (availableWidth - (spacingX * (normalizedColumns - 1))) / normalizedColumns
-        }
+        val spacingX =
+            if (normalizedColumns > 1) {
+                if (iconLayout) ICON_CARD_GAP else 24f
+            } else {
+                0f
+            }
+        val cardWidth =
+            if (normalizedColumns == 1) {
+                availableWidth
+            } else {
+                (availableWidth - (spacingX * (normalizedColumns - 1))) / normalizedColumns
+            }
         val cardHeight = if (iconLayout) cardWidth * ICON_CARD_HEIGHT_RATIO else LIST_CARD_HEIGHT
 
         var columnIndex = 0
@@ -591,9 +627,7 @@ class ModuleCategory(parent: GuiModMenu) :
         moduleContentHeight = max(0f, lastBottom - 13f)
     }
 
-    private fun resolveModuleColumns(): Int {
-        return max(1, min(2, InternalSettingsMod.instance.moduleGridColumns))
-    }
+    private fun resolveModuleColumns(): Int = max(1, min(2, InternalSettingsMod.instance.moduleGridColumns))
 
     private fun drawCategoryChips(
         nvg: NanoVGManager,
@@ -601,7 +635,7 @@ class ModuleCategory(parent: GuiModMenu) :
         accentColor: AccentColor,
         scrollOffset: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         categoryChips.clear()
 
@@ -622,14 +656,16 @@ class ModuleCategory(parent: GuiModMenu) :
             }
 
             val active = category == currentCategory
-            val hovered = detailTransition.isInteractive() && MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                currentX,
-                currentY + scrollOffset,
-                chipWidth,
-                CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered =
+                detailTransition.isInteractive() &&
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        currentX,
+                        currentY + scrollOffset,
+                        chipWidth,
+                        CategoryChipRenderer.CHIP_HEIGHT,
+                    )
 
             CategoryChipRenderer.drawChip(
                 nvg,
@@ -641,16 +677,19 @@ class ModuleCategory(parent: GuiModMenu) :
                 label,
                 null,
                 active,
-                hovered
+                hovered,
             )
 
-            val chip = FilterChip(Runnable {
-                if (currentCategory != category) {
-                    currentCategory = category
-                    scroll.resetAll()
-                    moduleCardCache.clear()
-                }
-            })
+            val chip =
+                FilterChip(
+                    Runnable {
+                        if (currentCategory != category) {
+                            currentCategory = category
+                            scroll.resetAll()
+                            moduleCardCache.clear()
+                        }
+                    },
+                )
             chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
             categoryChips.add(chip)
 
@@ -660,13 +699,12 @@ class ModuleCategory(parent: GuiModMenu) :
         return (blockBottom - getY()) + CHIP_GAP
     }
 
-    private fun getCardStyle(columns: Int): CardStyle {
-        return when (columns) {
+    private fun getCardStyle(columns: Int): CardStyle =
+        when (columns) {
             1 -> CardStyle(28f, 20f, 18f, 14f, 18f)
             2 -> CardStyle(28f, 18f, 18f, 12f, 16f)
             else -> CardStyle(28f, 20f, 18f, 14f, 18f)
         }
-    }
 
     private data class ModuleCard(
         val mod: Mod,
@@ -674,7 +712,7 @@ class ModuleCategory(parent: GuiModMenu) :
         val y: Float,
         val width: Float,
         val height: Float,
-        var hasSettings: Boolean = false
+        var hasSettings: Boolean = false,
     )
 
     private data class CardStyle(
@@ -682,7 +720,7 @@ class ModuleCategory(parent: GuiModMenu) :
         val leftPadding: Float,
         val settingsSize: Float,
         val settingsPadding: Float,
-        val textRightPadding: Float
+        val textRightPadding: Float,
     )
 
     private fun applySettingsPanelPreferences() {
@@ -690,7 +728,7 @@ class ModuleCategory(parent: GuiModMenu) :
         ModMenuSettingsOverlayRenderer.configureSettingsPanel(
             panel = settingsPanel,
             panelStyle = MODULE_SETTINGS_PANEL_STYLE,
-            layoutMode = settings.settingsLayoutMode
+            layoutMode = settings.settingsLayoutMode,
         )
     }
 
@@ -707,11 +745,12 @@ class ModuleCategory(parent: GuiModMenu) :
         const val LIST_WARNING_BOTTOM_PADDING = 12f
         const val LIST_WARNING_ICON_OFFSET = 2f
 
-        val MODULE_SETTINGS_PANEL_STYLE = SettingsPanelStyle(
-            cardPaddingX = 16f,
-            cardPaddingY = 12f,
-            rowGap = 8f,
-            categoryGap = 14f
-        )
+        val MODULE_SETTINGS_PANEL_STYLE =
+            SettingsPanelStyle(
+                cardPaddingX = 16f,
+                cardPaddingY = 12f,
+                rowGap = 8f,
+                categoryGap = 14f,
+            )
     }
 }

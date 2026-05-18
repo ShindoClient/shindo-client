@@ -13,9 +13,8 @@ import kotlin.math.min
 class CompTooltip(
     private var text: String,
     x: Float = 0f,
-    y: Float = 0f
+    y: Float = 0f,
 ) : Component(x, y) {
-
     private val fadeAnimation = SimpleAnimation()
     private var padding: Float = 8f
     private var fontSize: Float = 9f
@@ -31,6 +30,7 @@ class CompTooltip(
     }
 
     fun getText(): String = text
+
     fun setText(text: String): CompTooltip {
         this.text = text
         updateSize()
@@ -85,33 +85,40 @@ class CompTooltip(
 
     private fun updateSize() {
         val nvgInstance = nvg
-        val singleLineWidth = nvgInstance.getTextWidth(
-            text,
-            fontSize,
-            Fonts.REGULAR
-        )
+        val singleLineWidth =
+            nvgInstance.getTextWidth(
+                text,
+                fontSize,
+                Fonts.REGULAR,
+            )
         val contentWidth = max(60f, min(maxWidth, singleLineWidth + 2f))
-        val textHeight = nvgInstance.getTextBoxHeight(
-            text,
-            fontSize,
-            Fonts.REGULAR,
-            contentWidth
-        )
+        val textHeight =
+            nvgInstance.getTextBoxHeight(
+                text,
+                fontSize,
+                Fonts.REGULAR,
+                contentWidth,
+            )
         setWidth(contentWidth + padding * 2)
         setHeight(textHeight + padding * 2)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible() || fadeAnimation.getValue() <= 0f) return
 
         val nvgInstance = nvg
         val paletteColors = palette
 
         val alpha = (fadeAnimation.getValue() * 255).toInt()
-        val bgColor = backgroundColor ?: ColorUtils.applyAlpha(
-            paletteColors.getBackgroundColor(ColorType.DARK),
-            (alpha * 0.92f).toInt()
-        )
+        val bgColor =
+            backgroundColor ?: ColorUtils.applyAlpha(
+                paletteColors.getBackgroundColor(ColorType.DARK),
+                (alpha * 0.92f).toInt(),
+            )
         val txtColor = textColor ?: ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), alpha)
 
         if (shadow) {
@@ -126,7 +133,7 @@ class CompTooltip(
             getHeight(),
             radius,
             1f,
-            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), (alpha * 0.28f).toInt())
+            ColorUtils.applyAlpha(paletteColors.getFontColor(ColorType.NORMAL), (alpha * 0.28f).toInt()),
         )
 
         nvgInstance.drawTextBox(
@@ -136,7 +143,7 @@ class CompTooltip(
             getWidth() - padding * 2f,
             txtColor,
             fontSize,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         super.draw(mouseX, mouseY, partialTicks)

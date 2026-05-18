@@ -17,7 +17,7 @@ class SlowSwingMod :
         min = 2.0,
         max = 20.0,
         current = 14.0,
-        step = 1.0
+        step = 1.0,
     )
     @JvmField
     var delaySetting = 14.0
@@ -33,7 +33,3 @@ class SlowSwingMod :
 
     fun getDelaySetting(): NumberSetting? = getNumberSetting(this, "delaySetting")
 }
-
-
-
-

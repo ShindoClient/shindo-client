@@ -12,10 +12,12 @@ import java.net.URI
 import javax.swing.JFileChooser
 
 object FileUtils {
-
     @JvmStatic
     @Throws(IOException::class)
-    fun copyFile(sourceFile: File, destFile: File) {
+    fun copyFile(
+        sourceFile: File,
+        destFile: File,
+    ) {
         FileInputStream(sourceFile).use { input ->
             FileOutputStream(destFile).use { output ->
                 val buffer = ByteArray(1024)
@@ -84,14 +86,20 @@ object FileUtils {
     fun openFolderAtPath(folder: File) {
         val absolutePath = folder.absolutePath
         when (Util.getOSType()) {
-            Util.EnumOS.OSX -> try {
-                Runtime.getRuntime().exec(arrayOf("/usr/bin/open", absolutePath)); return
-            } catch (_: IOException) {
+            Util.EnumOS.OSX -> {
+                try {
+                    Runtime.getRuntime().exec(arrayOf("/usr/bin/open", absolutePath))
+                    return
+                } catch (_: IOException) {
+                }
             }
 
-            Util.EnumOS.WINDOWS -> try {
-                Runtime.getRuntime().exec(String.format("cmd.exe /C start \"Open file\" \"%s\"", absolutePath)); return
-            } catch (_: IOException) {
+            Util.EnumOS.WINDOWS -> {
+                try {
+                    Runtime.getRuntime().exec(String.format("cmd.exe /C start \"Open file\" \"%s\"", absolutePath))
+                    return
+                } catch (_: IOException) {
+                }
             }
 
             else -> {}

@@ -9,7 +9,6 @@ import me.miki.shindo.utils.concurrent.ThreadPoolType
 import me.miki.shindo.utils.network.HttpUtils
 
 class Update {
-
     var updateLink: String = "https://shindoclient.com/"
     var versionString: String = "unknown"
     var buildID: Int = 0
@@ -45,21 +44,25 @@ class Update {
         val resolvedBuild = if (stableBuild > 0) stableBuild else latestBuild
         if (resolvedBuild <= 0) return false
 
-        val semver = JsonUtils.getStringProperty(jsonObject, "channels,stable,semver", null)
-            ?: JsonUtils.getStringProperty(jsonObject, "latest,semver", versionString)
-            ?: versionString
+        val semver =
+            JsonUtils.getStringProperty(jsonObject, "channels,stable,semver", null)
+                ?: JsonUtils.getStringProperty(jsonObject, "latest,semver", versionString)
+                ?: versionString
 
-        val incomingBuildId = JsonUtils.getStringProperty(jsonObject, "channels,stable,buildId", null)
-            ?: JsonUtils.getStringProperty(jsonObject, "latest,buildId", null)
-            ?: "$resolvedBuild.1"
+        val incomingBuildId =
+            JsonUtils.getStringProperty(jsonObject, "channels,stable,buildId", null)
+                ?: JsonUtils.getStringProperty(jsonObject, "latest,buildId", null)
+                ?: "$resolvedBuild.1"
 
-        val incomingType = JsonUtils.getStringProperty(jsonObject, "channels,stable,type", null)
-            ?: JsonUtils.getStringProperty(jsonObject, "latest,type", null)
-            ?: "stable"
+        val incomingType =
+            JsonUtils.getStringProperty(jsonObject, "channels,stable,type", null)
+                ?: JsonUtils.getStringProperty(jsonObject, "latest,type", null)
+                ?: "stable"
 
-        val releaseUrl = JsonUtils.getStringProperty(jsonObject, "links,clientRelease", null)
-            ?: JsonUtils.getStringProperty(jsonObject, "legacy,updatelink", updateLink)
-            ?: updateLink
+        val releaseUrl =
+            JsonUtils.getStringProperty(jsonObject, "links,clientRelease", null)
+                ?: JsonUtils.getStringProperty(jsonObject, "legacy,updatelink", updateLink)
+                ?: updateLink
 
         updateLink = releaseUrl
         versionString = semver
@@ -90,7 +93,12 @@ class Update {
         return Pair(major, minor)
     }
 
-    private fun compareBuild(localBuild: Int, localBuildId: String, remoteBuild: Int, remoteBuildId: String): Int {
+    private fun compareBuild(
+        localBuild: Int,
+        localBuildId: String,
+        remoteBuild: Int,
+        remoteBuildId: String,
+    ): Int {
         if (localBuild != remoteBuild) return localBuild.compareTo(remoteBuild)
         val localParsed = parseBuildId(localBuildId)
         val remoteParsed = parseBuildId(remoteBuildId)

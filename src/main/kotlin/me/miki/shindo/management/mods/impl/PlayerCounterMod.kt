@@ -8,11 +8,12 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class PlayerCounterMod : SimpleHUDMod(
-    TranslateText.PLAYER_COUNTER,
-    TranslateText.PLAYER_COUNTER_DESCRIPTION,
-    LegacyIcon.MOD_PLAYER_COUNTER
-) {
+class PlayerCounterMod :
+    SimpleHUDMod(
+        TranslateText.PLAYER_COUNTER,
+        TranslateText.PLAYER_COUNTER_DESCRIPTION,
+        LegacyIcon.MOD_PLAYER_COUNTER,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -21,13 +22,7 @@ class PlayerCounterMod : SimpleHUDMod(
         this.draw()
     }
 
-    override fun getText(): String {
-        return "Player: " + mc.thePlayer.sendQueue.playerInfoMap.size
-    }
+    override fun getText(): String = "Player: " + mc.thePlayer.sendQueue.playerInfoMap.size
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.USERS else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.USERS else null
 }
-
-

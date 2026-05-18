@@ -22,7 +22,6 @@ class SessionInfoMod :
 
     @EventTarget
     fun onRender2D(event: EventNVG?) {
-
         val time: String?
 
         if (mc.isSingleplayer) {
@@ -65,7 +64,9 @@ class SessionInfoMod :
 
             val message = StringUtils.stripControlCodes(chatMessage)
 
-            if (!message.contains(":") && Arrays.stream<String?>(killTrigger)
+            if (!message.contains(":") &&
+                Arrays
+                    .stream<String?>(killTrigger)
                     .anyMatch { s: String? -> message.replace(mc.thePlayer.name, "*").contains(s!!) }
             ) {
                 killCount++
@@ -78,6 +79,3 @@ class SessionInfoMod :
         startTime = System.currentTimeMillis()
     }
 }
-
-
-

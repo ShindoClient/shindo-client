@@ -22,9 +22,9 @@ import org.lwjgl.input.Keyboard
 import java.awt.Desktop
 import java.io.IOException
 
-
-class ScreenshotCategory(parent: GuiModMenu?) :
-    Category(parent!!, TranslateText.SCREENSHOT, LegacyIcon.CAMERA, false, true) {
+class ScreenshotCategory(
+    parent: GuiModMenu?,
+) : Category(parent!!, TranslateText.SCREENSHOT, LegacyIcon.CAMERA, false, true) {
     // todo: add delete confirm dialog
     private var currentScreenshot: Screenshot? = null
 
@@ -44,7 +44,11 @@ class ScreenshotCategory(parent: GuiModMenu?) :
         }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance: Shindo = Shindo.getInstance()
         val nvg: NanoVGManager = instance.nanoVGManager!!
         val screenshotManager: ScreenshotManager = instance.getScreenshotManager()
@@ -70,9 +74,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     this.getX(),
                     this.getY(),
                     42,
-                    this.getHeight()
+                    this.getHeight(),
                 )
-            ) 1.0f else 0.0f, 16
+            ) {
+                1.0f
+            } else {
+                0.0f
+            },
+            16,
         )
         rightAnimation.setAnimation(
             if (MouseUtils.isInside(
@@ -81,9 +90,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     this.getX() + this.getWidth() - 42,
                     this.getY(),
                     42,
-                    this.getHeight()
+                    this.getHeight(),
                 )
-            ) 1.0f else 0.0f, 16
+            ) {
+                1.0f
+            } else {
+                0.0f
+            },
+            16,
         )
 
         if (currentScreenshot != null) {
@@ -94,9 +108,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                         this.getX() + addX,
                         this.getY() + addY,
                         this.getWidth() - (addX * 2),
-                        this.getHeight() - (addY * 2) - 38
+                        this.getHeight() - (addY * 2) - 38,
                     )
-                ) 1.0f else 0.0f, 16
+                ) {
+                    1.0f
+                } else {
+                    0.0f
+                },
+                16,
             )
 
             nvg.drawRoundedImage(
@@ -105,7 +124,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + addY.toFloat(),
                 this.getWidth() - (addX * 2f),
                 this.getHeight() - (addY * 2) - 38f,
-                6f
+                6f,
             )
             nvg.drawText(
                 LegacyIcon.TRASH,
@@ -113,7 +132,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + addY + 6f,
                 palette.getMaterialRed((trashAnimation.getValue() * 255).toInt()),
                 12f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
 
             addX = 58
@@ -124,7 +143,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getWidth() - (addX * 2f),
                 30f,
                 6f,
-                palette.getBackgroundColor(ColorType.DARK)
+                palette.getBackgroundColor(ColorType.DARK),
             )
 
             nvg.save()
@@ -140,7 +159,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                         50f,
                         23f,
                         5f,
-                        7
+                        7,
                     )
                     nvg.drawRoundedRect(
                         this.getX() + offsetX + 62f,
@@ -148,7 +167,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                         50f,
                         23f,
                         5f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                        applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
                     )
                     nvg.drawOutlineRoundedRect(
                         this.getX() + offsetX + 62f,
@@ -157,21 +176,20 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                         23f,
                         5f,
                         1f,
-                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+                        applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
                     )
 
-
-                    //nvg.save()
-                    //nvg.scale(this.getX() + offsetX + 62f, this.getY() + this.getHeight() - 31f, 0.07f)
+                    // nvg.save()
+                    // nvg.scale(this.getX() + offsetX + 62f, this.getY() + this.getHeight() - 31f, 0.07f)
                     nvg.drawRoundedImage(
                         s.getImage(),
                         this.getX() + offsetX + 63f,
                         this.getY() + this.getHeight() - 35f,
                         48f,
                         21f,
-                        5f
+                        5f,
                     )
-                    //nvg.restore()
+                    // nvg.restore()
 
                     s.getSelectAnimation().setAnimation(if (currentScreenshot == s) 1.0f else 0.0f, 16)
 
@@ -183,14 +201,13 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                         5f,
                         s.getSelectAnimation().getValue() * 1.2f,
                         applyAlpha(accentColor.getColor1(), alpha),
-                        applyAlpha(accentColor.getColor2(), alpha)
+                        applyAlpha(accentColor.getColor2(), alpha),
                     )
                 }
 
                 offsetX += 54
                 index++
             }
-
 
             nvg.restore()
 
@@ -199,14 +216,14 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + this.getHeight() - 40f,
                 addX,
                 30f,
-                palette.getBackgroundColor(ColorType.NORMAL)
+                palette.getBackgroundColor(ColorType.NORMAL),
             )
             nvg.drawRect(
                 this.getX() + this.getWidth() - addX,
                 this.getY() + this.getHeight() - 40f,
                 addX - 14f,
                 30f,
-                palette.getBackgroundColor(ColorType.NORMAL)
+                palette.getBackgroundColor(ColorType.NORMAL),
             )
 
             val leftValue: Float = leftAnimation.getValue()
@@ -221,7 +238,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 12f,
                 24f,
                 4f,
-                palette.getBackgroundColor(ColorType.DARK, (leftValue * 255).toInt())
+                palette.getBackgroundColor(ColorType.DARK, (leftValue * 255).toInt()),
             )
             nvg.drawText(
                 "<",
@@ -229,7 +246,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + (this.getHeight() / 2) - 22f,
                 palette.getFontColor(ColorType.DARK, (leftValue * 255).toInt()),
                 9f,
-                Fonts.SEMIBOLD
+                Fonts.SEMIBOLD,
             )
 
             nvg.restore()
@@ -243,7 +260,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 12f,
                 24f,
                 4f,
-                palette.getBackgroundColor(ColorType.DARK, (rightValue * 255).toInt())
+                palette.getBackgroundColor(ColorType.DARK, (rightValue * 255).toInt()),
             )
             nvg.drawText(
                 ">",
@@ -251,7 +268,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + (this.getHeight() / 2) - 22f,
                 palette.getFontColor(ColorType.DARK, (rightValue * 255).toInt()),
                 9f,
-                Fonts.SEMIBOLD
+                Fonts.SEMIBOLD,
             )
 
             nvg.restore()
@@ -262,7 +279,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getWidth() - (addX * 2f),
                 this.getHeight() - (addY * 2f) - 38f,
                 6f,
-                palette.getBackgroundColor(ColorType.DARK)
+                palette.getBackgroundColor(ColorType.DARK),
             )
             nvg.drawCenteredText(
                 LegacyIcon.CAMERA,
@@ -270,7 +287,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getY() + 68f,
                 palette.getFontColor(ColorType.NORMAL),
                 64f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
 
             addX = 58
@@ -281,28 +298,33 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getWidth() - (addX * 2f),
                 30f,
                 6f,
-                palette.getBackgroundColor(ColorType.DARK)
+                palette.getBackgroundColor(ColorType.DARK),
             )
         }
 
         scroll.maxScroll = (if (index > 12f) (index - 12f) * 27f else 0f)
     }
 
-    public override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    public override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val screenshotManager: ScreenshotManager = Shindo.getInstance().getScreenshotManager()
 
         var offsetX = scroll.getValue()
         var addX = 42
         val addY = 12
 
-        val inside = MouseUtils.isInside(
-            mouseX,
-            mouseY,
-            this.getX() + addX,
-            this.getY() + addY,
-            this.getWidth() - (addX * 2),
-            this.getHeight() - (addY * 2) - 38
-        )
+        val inside =
+            MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                this.getX() + addX,
+                this.getY() + addY,
+                this.getWidth() - (addX * 2),
+                this.getHeight() - (addY * 2) - 38,
+            )
         val trash: Boolean =
             MouseUtils.isInside(
                 mouseX,
@@ -310,7 +332,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 this.getX() + this.getWidth() - 61f,
                 this.getY() + addY + 4.5f,
                 16f,
-                16f
+                16f,
             )
 
         if (trash && mouseButton == 0) {
@@ -322,11 +344,12 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                 index = 0
             }
 
-            currentScreenshot = if (screenshotManager.getScreenshots().isEmpty()) {
-                null
-            } else {
-                screenshotManager.getScreenshots()[index]
-            }
+            currentScreenshot =
+                if (screenshotManager.getScreenshots().isEmpty()) {
+                    null
+                } else {
+                    screenshotManager.getScreenshots()[index]
+                }
         }
 
         addX = 58
@@ -338,15 +361,16 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     this.getX() + offsetX + 62f,
                     this.getY() + this.getHeight() - 36f,
                     50f,
-                    23f
-                ) && mouseButton == 0 &&
+                    23f,
+                ) &&
+                mouseButton == 0 &&
                 MouseUtils.isInside(
                     mouseX,
                     mouseY,
                     this.getX() + addX,
                     this.getY() + this.getHeight() - 40,
                     this.getWidth() - (addX * 2),
-                    30
+                    30,
                 )
             ) {
                 currentScreenshot = s
@@ -370,7 +394,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     this.getX() + 20f,
                     this.getY() + (this.getHeight() / 2) - 30.5f,
                     12f,
-                    24f
+                    24f,
                 )
             ) {
                 currentScreenshot = screenshotManager.getBackScreenshot(currentScreenshot!!)
@@ -382,7 +406,7 @@ class ScreenshotCategory(parent: GuiModMenu?) :
                     this.getX() + this.getWidth() - 32f,
                     this.getY() + (this.getHeight() / 2) - 30.5f,
                     12f,
-                    24f
+                    24f,
                 )
             ) {
                 currentScreenshot = screenshotManager.getNextScreenshot(currentScreenshot!!)
@@ -390,7 +414,10 @@ class ScreenshotCategory(parent: GuiModMenu?) :
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         val screenshotManager: ScreenshotManager = Shindo.getInstance().getScreenshotManager()
         if (currentScreenshot == null) return
         if (keyCode == Keyboard.KEY_LEFT) {

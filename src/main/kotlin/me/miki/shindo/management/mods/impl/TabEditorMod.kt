@@ -38,7 +38,3 @@ class TabEditorMod :
 
     fun getPingSetting(): BooleanSetting? = getBooleanSetting(this, "pingSetting")
 }
-
-
-
-

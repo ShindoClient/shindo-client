@@ -7,11 +7,10 @@ import java.net.InetAddress
 
 /**
  * Gerenciador do sistema de rede
- * 
+ *
  * Gerencia proxies DNS e configurações de rede do cliente
  */
 class NetworkManager {
-
     val proxyManager = ProxyManager()
 
     private var cloudflareProxy: CloudflareProxy? = null
@@ -21,7 +20,7 @@ class NetworkManager {
     enum class ProxyType {
         SYSTEM_DEFAULT,
         CLOUDFLARE,
-        CUSTOM
+        CUSTOM,
     }
 
     /**
@@ -90,8 +89,14 @@ class NetworkManager {
     fun disableAllProxies() {
         if (enabled) {
             when (activeProxyType) {
-                ProxyType.CLOUDFLARE -> cloudflareProxy?.disable()
-                ProxyType.CUSTOM -> proxyManager.setActiveProxy(null)
+                ProxyType.CLOUDFLARE -> {
+                    cloudflareProxy?.disable()
+                }
+
+                ProxyType.CUSTOM -> {
+                    proxyManager.setActiveProxy(null)
+                }
+
                 ProxyType.SYSTEM_DEFAULT -> {}
             }
             enabled = false
@@ -103,64 +108,61 @@ class NetworkManager {
     /**
      * Verifica se algum proxy está ativo
      */
-    fun isProxyEnabled(): Boolean {
-        return when (activeProxyType) {
+    fun isProxyEnabled(): Boolean =
+        when (activeProxyType) {
             ProxyType.CLOUDFLARE -> enabled && (cloudflareProxy?.isActive() == true)
             ProxyType.CUSTOM -> enabled && proxyManager.hasActiveProxy()
             ProxyType.SYSTEM_DEFAULT -> false
         }
-    }
 
     /**
      * Verifica se o proxy Cloudflare está ativo
      */
-    fun isCloudflareProxyEnabled(): Boolean {
-        return enabled && activeProxyType == ProxyType.CLOUDFLARE
-    }
+    fun isCloudflareProxyEnabled(): Boolean = enabled && activeProxyType == ProxyType.CLOUDFLARE
 
     /**
      * Obtém o tipo de proxy ativo
      */
-    fun getActiveProxyType(): ProxyType {
-        return activeProxyType
-    }
+    fun getActiveProxyType(): ProxyType = activeProxyType
 
     /**
      * Obtém o ID do proxy customizado ativo (se houver)
      */
-    fun getActiveCustomProxyId(): String? {
-        return if (activeProxyType == ProxyType.CUSTOM) {
+    fun getActiveCustomProxyId(): String? =
+        if (activeProxyType == ProxyType.CUSTOM) {
             proxyManager.getActiveProxy()?.id
         } else {
             null
         }
-    }
 
     /**
      * Resolve um hostname usando o proxy DNS configurado
      */
-    fun resolveHostname(hostname: String): InetAddress? {
-        return when (activeProxyType) {
+    fun resolveHostname(hostname: String): InetAddress? =
+        when (activeProxyType) {
             ProxyType.CLOUDFLARE -> cloudflareProxy?.resolve(hostname)
             ProxyType.CUSTOM -> proxyManager.getActiveProxy()?.resolve(hostname)
             ProxyType.SYSTEM_DEFAULT -> null
         }
-    }
 
     /**
      * Obtém informações sobre o DNS atual
      */
-    fun getCurrentDNSInfo(): String {
-        return when (activeProxyType) {
-            ProxyType.CLOUDFLARE -> "Cloudflare (${cloudflareProxy?.getDNSAddress()})"
+    fun getCurrentDNSInfo(): String =
+        when (activeProxyType) {
+            ProxyType.CLOUDFLARE -> {
+                "Cloudflare (${cloudflareProxy?.getDNSAddress()})"
+            }
+
             ProxyType.CUSTOM -> {
                 val proxy = proxyManager.getActiveProxy()
                 "${proxy?.name} (${proxy?.getDNSAddress()})"
             }
 
-            ProxyType.SYSTEM_DEFAULT -> "System Default"
+            ProxyType.SYSTEM_DEFAULT -> {
+                "System Default"
+            }
         }
-    }
 
     /**
      * Limpa recursos do NetworkManager

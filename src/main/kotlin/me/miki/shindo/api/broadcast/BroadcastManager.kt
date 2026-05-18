@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.LinkedBlockingQueue
 
 class BroadcastManager {
-
     private val broadcasts = LinkedBlockingQueue<BroadcastNotification>()
     private val handler = BroadcastHandler(broadcasts)
 
@@ -36,7 +35,10 @@ class BroadcastManager {
         Shindo.getInstance().getEventManager().register(handler)
     }
 
-    fun handleMessage(type: MessageType, payload: JsonObject?) {
+    fun handleMessage(
+        type: MessageType,
+        payload: JsonObject?,
+    ) {
         if (payload == null) return
         when (type) {
             MessageType.BROADCAST -> {
@@ -60,7 +62,7 @@ class BroadcastManager {
         title: String,
         message: String,
         severity: String = "info",
-        onResult: ((Boolean) -> Unit)? = null
+        onResult: ((Boolean) -> Unit)? = null,
     ) {
         if (!isStaff()) {
             onResult?.invoke(false)
@@ -81,22 +83,30 @@ class BroadcastManager {
         }
     }
 
-    private fun enqueue(title: String, message: String, type: NotificationType) {
+    private fun enqueue(
+        title: String,
+        message: String,
+        type: NotificationType,
+    ) {
         broadcasts.add(BroadcastNotification(title, message, type))
     }
 
-    private fun postBroadcast(payload: JsonObject, onResponse: (JsonObject?) -> Unit) {
+    private fun postBroadcast(
+        payload: JsonObject,
+        onResponse: (JsonObject?) -> Unit,
+    ) {
         withBroadcastToken { token ->
             if (token.isNullOrEmpty()) {
                 dispatch { onResponse(null) }
                 return@withBroadcastToken
             }
             Thread {
-                val response = HttpUtils.postJson(
-                    "$BROADCAST_API_BASE/v1/broadcast/message",
-                    payload,
-                    mapOf("Authorization" to "Bearer $token")
-                )
+                val response =
+                    HttpUtils.postJson(
+                        "$BROADCAST_API_BASE/v1/broadcast/message",
+                        payload,
+                        mapOf("Authorization" to "Bearer $token"),
+                    )
                 dispatch { onResponse(response) }
             }.apply {
                 isDaemon = true
@@ -132,7 +142,10 @@ class BroadcastManager {
         }
     }
 
-    private fun storeBroadcastToken(token: String, expiresInSeconds: Long) {
+    private fun storeBroadcastToken(
+        token: String,
+        expiresInSeconds: Long,
+    ) {
         val now = System.currentTimeMillis()
         val waiters = mutableListOf<(String?) -> Unit>()
         synchronized(tokenLock) {
@@ -157,14 +170,13 @@ class BroadcastManager {
         return RoleManager.hasAtLeast(uuid, Role.STAFF)
     }
 
-    private fun mapSeverity(raw: String): NotificationType {
-        return when (raw.trim().lowercase(Locale.ROOT)) {
+    private fun mapSeverity(raw: String): NotificationType =
+        when (raw.trim().lowercase(Locale.ROOT)) {
             "success" -> NotificationType.SUCCESS
             "error" -> NotificationType.ERROR
             "warning" -> NotificationType.WARNING
             else -> NotificationType.INFO
         }
-    }
 
     companion object {
         private const val BROADCAST_API_BASE = "https://ws.shindoclient.com"

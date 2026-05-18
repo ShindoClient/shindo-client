@@ -4,7 +4,6 @@ import me.miki.shindo.logger.ShindoLogger
 import java.util.*
 
 object OSUtils {
-
     private val osName = System.getProperty("os.name").lowercase(Locale.ROOT)
 
     @JvmField
@@ -20,38 +19,38 @@ object OSUtils {
     val unix: Boolean = linux || mac
 
     @JvmStatic
-    fun getPlatform(): String {
-        return when {
+    fun getPlatform(): String =
+        when {
             windows -> "Windows"
             linux -> "Linux"
             mac -> "Mac"
             else -> "Unknown"
         }
-    }
 
     @JvmStatic
     fun runWindowsBrowser(uri: String) {
         Runtime.getRuntime().exec(
-            arrayOf("rundll32", "url.dll,FileProtocolHandler", uri)
+            arrayOf("rundll32", "url.dll,FileProtocolHandler", uri),
         )
     }
 
     @JvmStatic
     fun runMacBrowser(uri: String) {
         Runtime.getRuntime().exec(
-            arrayOf("open", uri)
+            arrayOf("open", uri),
         )
     }
 
     @JvmStatic
     fun runLinuxBrowser(uri: String): Boolean {
-        val browsers = arrayOf(
-            "xdg-open",
-            "gio",
-            "gnome-open",
-            "kde-open",
-            "kde-open5"
-        )
+        val browsers =
+            arrayOf(
+                "xdg-open",
+                "gio",
+                "gnome-open",
+                "kde-open",
+                "kde-open5",
+            )
 
         for (i in browsers.indices) {
             try {

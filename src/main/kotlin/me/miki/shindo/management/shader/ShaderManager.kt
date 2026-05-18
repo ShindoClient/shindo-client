@@ -13,7 +13,6 @@ import java.nio.file.Files
 import java.util.*
 
 class ShaderManager {
-
     private val shaderCache = HashMap<File, Int>()
     private val resourceShaderCache = HashMap<ResourceLocation, Int>()
     private var quadVAO = -1
@@ -59,7 +58,13 @@ class ShaderManager {
         }
     }
 
-    fun renderShader(shaderId: Int, x: Float, y: Float, width: Float, height: Float) {
+    fun renderShader(
+        shaderId: Int,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         if (shaderId == -1 || !initialized) return
         val mc = Minecraft.getMinecraft()
         val sr = ScaledResolution(mc)
@@ -112,19 +117,27 @@ class ShaderManager {
         y: Float,
         width: Float,
         height: Float,
-        sr: ScaledResolution
+        sr: ScaledResolution,
     ) {
         val currentTime = (System.currentTimeMillis() % 100000) / 1000f
         GL20.glGetUniformLocation(shaderId, "time").takeIf { it != -1 }?.let { GL20.glUniform1f(it, currentTime) }
         GL20.glGetUniformLocation(shaderId, "iTime").takeIf { it != -1 }?.let { GL20.glUniform1f(it, currentTime) }
-        GL20.glGetUniformLocation(shaderId, "resolution").takeIf { it != -1 }
+        GL20
+            .glGetUniformLocation(shaderId, "resolution")
+            .takeIf { it != -1 }
             ?.let { GL20.glUniform2f(it, width, height) }
-        GL20.glGetUniformLocation(shaderId, "iResolution").takeIf { it != -1 }
+        GL20
+            .glGetUniformLocation(shaderId, "iResolution")
+            .takeIf { it != -1 }
             ?.let { GL20.glUniform3f(it, width, height, 1f) }
         GL20.glGetUniformLocation(shaderId, "mouse").takeIf { it != -1 }?.let { GL20.glUniform2f(it, 0.5f, 0.5f) }
-        GL20.glGetUniformLocation(shaderId, "iMouse").takeIf { it != -1 }
+        GL20
+            .glGetUniformLocation(shaderId, "iMouse")
+            .takeIf { it != -1 }
             ?.let { GL20.glUniform4f(it, width * 0.5f, height * 0.5f, 0f, 0f) }
-        GL20.glGetUniformLocation(shaderId, "iFrame").takeIf { it != -1 }
+        GL20
+            .glGetUniformLocation(shaderId, "iFrame")
+            .takeIf { it != -1 }
             ?.let { GL20.glUniform1i(it, (currentTime * 60).toInt()) }
         GL20.glGetUniformLocation(shaderId, "iDate").takeIf { it != -1 }?.let { loc ->
             val cal = Calendar.getInstance()
@@ -133,14 +146,23 @@ class ShaderManager {
             val month = (cal.get(Calendar.MONTH) + 1).toFloat()
             val day = cal.get(Calendar.DAY_OF_MONTH).toFloat()
             val secondsInDay =
-                (cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)).toFloat()
+                (
+                    cal.get(
+                        Calendar.HOUR_OF_DAY,
+                    ) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)
+                ).toFloat()
             GL20.glUniform4f(loc, year, month, day, secondsInDay)
         }
     }
 
     private fun readShaderResource(resource: ResourceLocation): String? {
         return try {
-            val stream = Minecraft.getMinecraft().resourceManager.getResource(resource).inputStream ?: return null
+            val stream =
+                Minecraft
+                    .getMinecraft()
+                    .resourceManager
+                    .getResource(resource)
+                    .inputStream ?: return null
             stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to read shader resource: $resource", e)
@@ -148,27 +170,29 @@ class ShaderManager {
         }
     }
 
-    private fun readShaderFile(file: File): String? {
-        return try {
+    private fun readShaderFile(file: File): String? =
+        try {
             if (!file.exists()) null else String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8)
         } catch (e: IOException) {
             ShindoLogger.error("Failed to read shader file: ${file.name}", e)
             null
         }
-    }
 
     private fun getDefaultFragmentShader(): String =
         "#version 120\n" +
-                "uniform float time;\n" +
-                "uniform vec2 resolution;\n" +
-                "varying vec2 fragCoord;\n" +
-                "void main() {\n" +
-                "    vec2 uv = fragCoord;\n" +
-                "    vec3 color = vec3(0.5 + 0.5 * cos(time + uv.xyx + vec3(0, 2, 4)));\n" +
-                "    gl_FragColor = vec4(color, 1.0);\n" +
-                "}"
+            "uniform float time;\n" +
+            "uniform vec2 resolution;\n" +
+            "varying vec2 fragCoord;\n" +
+            "void main() {\n" +
+            "    vec2 uv = fragCoord;\n" +
+            "    vec3 color = vec3(0.5 + 0.5 * cos(time + uv.xyx + vec3(0, 2, 4)));\n" +
+            "    gl_FragColor = vec4(color, 1.0);\n" +
+            "}"
 
-    private fun createShaderProgram(vertexSource: String, fragmentSource: String): Int {
+    private fun createShaderProgram(
+        vertexSource: String,
+        fragmentSource: String,
+    ): Int {
         val vertexShader = compileShader(GL20.GL_VERTEX_SHADER, vertexSource)
         if (vertexShader == -1) return -1
         val fragmentShader = compileShader(GL20.GL_FRAGMENT_SHADER, fragmentSource)
@@ -192,7 +216,10 @@ class ShaderManager {
         return program
     }
 
-    private fun compileShader(type: Int, source: String): Int {
+    private fun compileShader(
+        type: Int,
+        source: String,
+    ): Int {
         val shader = GL20.glCreateShader(type)
         GL20.glShaderSource(shader, source)
         GL20.glCompileShader(shader)
@@ -215,7 +242,8 @@ class ShaderManager {
     }
 
     companion object {
-        private const val DEFAULT_VERTEX_SHADER = "#version 120\n" +
+        private const val DEFAULT_VERTEX_SHADER =
+            "#version 120\n" +
                 "attribute vec2 position;\n" +
                 "varying vec2 fragCoord;\n" +
                 "varying vec2 vTexCoord;\n" +

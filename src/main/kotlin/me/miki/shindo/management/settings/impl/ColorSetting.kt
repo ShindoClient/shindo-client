@@ -7,7 +7,6 @@ import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
 open class ColorSetting : Setting {
-
     private val defaultColor: Color
     private val showAlpha: Boolean
     private var hue: Float
@@ -44,55 +43,41 @@ open class ColorSetting : Setting {
         alpha = color.alpha
     }
 
-    fun getColor(): Color {
-        return color
-    }
+    fun getColor(): Color = color
 
     open fun setColor(color: Color) {
         this.color = color
     }
 
-    fun getDefaultColor(): Color {
-        return defaultColor
-    }
+    fun getDefaultColor(): Color = defaultColor
 
-    fun getHue(): Float {
-        return hue
-    }
+    fun getHue(): Float = hue
 
     open fun setHue(hue: Float) {
         this.hue = hue
         color = ColorUtils.applyAlpha(Color.getHSBColor(hue, saturation, brightness), alpha)
     }
 
-    fun getSaturation(): Float {
-        return saturation
-    }
+    fun getSaturation(): Float = saturation
 
     open fun setSaturation(saturation: Float) {
         this.saturation = saturation
         color = ColorUtils.applyAlpha(Color.getHSBColor(hue, saturation, brightness), alpha)
     }
 
-    fun getBrightness(): Float {
-        return brightness
-    }
+    fun getBrightness(): Float = brightness
 
     open fun setBrightness(brightness: Float) {
         this.brightness = brightness
         color = ColorUtils.applyAlpha(Color.getHSBColor(hue, saturation, brightness), alpha)
     }
 
-    fun getAlpha(): Int {
-        return alpha
-    }
+    fun getAlpha(): Int = alpha
 
     open fun setAlpha(alpha: Int) {
         this.alpha = alpha
         color = ColorUtils.applyAlpha(color, alpha)
     }
 
-    fun isShowAlpha(): Boolean {
-        return showAlpha
-    }
+    fun isShowAlpha(): Boolean = showAlpha
 }

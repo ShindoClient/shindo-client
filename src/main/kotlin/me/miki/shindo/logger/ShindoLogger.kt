@@ -1,7 +1,6 @@
 package me.miki.shindo.logger
 
 object ShindoLogger {
-
     @JvmStatic
     fun info(message: String) {
         ShindoLogManager.log(LogLevel.INFO, message, LogCategory.AUTO, null)
@@ -13,7 +12,10 @@ object ShindoLogger {
     }
 
     @JvmStatic
-    fun warn(message: String, e: Exception) {
+    fun warn(
+        message: String,
+        e: Exception,
+    ) {
         ShindoLogManager.log(LogLevel.WARN, message, LogCategory.AUTO, e)
     }
 
@@ -23,12 +25,18 @@ object ShindoLogger {
     }
 
     @JvmStatic
-    fun error(message: String, e: Exception) {
+    fun error(
+        message: String,
+        e: Exception,
+    ) {
         ShindoLogManager.log(LogLevel.ERROR, message, LogCategory.AUTO, e)
     }
 
     @JvmStatic
-    fun error(message: String, t: Throwable) {
+    fun error(
+        message: String,
+        t: Throwable,
+    ) {
         ShindoLogManager.log(LogLevel.ERROR, message, LogCategory.AUTO, t)
     }
 }

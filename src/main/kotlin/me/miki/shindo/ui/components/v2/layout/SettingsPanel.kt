@@ -26,11 +26,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 class SettingsPanel {
-
     enum class LayoutMode {
         SINGLE_COLUMN,
         DOUBLE_COLUMN,
-        STAGGERED_COLUMNS
+        STAGGERED_COLUMNS,
     }
 
     private val entries = ArrayList<Entry>()
@@ -99,7 +98,7 @@ class SettingsPanel {
         viewportHeight: Float,
         nvg: NanoVGManager,
         palette: ColorPalette,
-        scroll: Scroll
+        scroll: Scroll,
     ) {
         beginFrame()
         storeViewportContext(contentX, contentY, contentWidth, viewportHeight)
@@ -144,7 +143,7 @@ class SettingsPanel {
                                 section.headerX,
                                 section.contentStartY,
                                 section.headerWidth,
-                                visibleContentHeight + 1f
+                                visibleContentHeight + 1f,
                             )
                             val placement = layoutComponent(animatedEntry)
                             drawLabels(nvg, palette, animatedEntry, placement)
@@ -155,12 +154,13 @@ class SettingsPanel {
             }
         }
 
-        scroll.maxScroll = if (sectionLayouts.isEmpty()) {
-            0f
-        } else {
-            val contentHeight = contentBottom - (contentY + scroll.getValue())
-            max(0f, contentHeight - viewportHeight)
-        }
+        scroll.maxScroll =
+            if (sectionLayouts.isEmpty()) {
+                0f
+            } else {
+                val contentHeight = contentBottom - (contentY + scroll.getValue())
+                max(0f, contentHeight - viewportHeight)
+            }
 
         if (scroll.maxScroll > 0f) {
             val totalContentHeight = max(0f, contentBottom - (contentY + scroll.getValue()))
@@ -173,7 +173,7 @@ class SettingsPanel {
                 scroll.getValue(),
                 palette,
                 Shindo.getInstance().getColorManager().getCurrentColor(),
-                18f * PANEL_SCALE
+                18f * PANEL_SCALE,
             )
         }
     }
@@ -186,23 +186,23 @@ class SettingsPanel {
         contentY: Float,
         contentWidth: Float,
         viewportHeight: Float,
-        scroll: Scroll
+        scroll: Scroll,
     ): Boolean {
         storeViewportContext(contentX, contentY, contentWidth, viewportHeight)
         updateLayout(contentX, contentY, contentWidth, scroll.getValue())
 
         val viewportBottom = contentY + viewportHeight
         for (section in sectionLayouts) {
-            if (section.hasHeader()
-                && section.category != null
-                && isVisible(section.headerY, section.headerHeight, contentY, viewportBottom)
-                && MouseUtils.isInside(
+            if (section.hasHeader() &&
+                section.category != null &&
+                isVisible(section.headerY, section.headerHeight, contentY, viewportBottom) &&
+                MouseUtils.isInside(
                     mouseX,
                     mouseY,
                     section.headerX,
                     section.headerY,
                     section.headerWidth,
-                    section.headerHeight
+                    section.headerHeight,
                 )
             ) {
                 if (mouseButton == 0) {
@@ -225,9 +225,11 @@ class SettingsPanel {
                         positioned.x,
                         animatedY,
                         positioned.width,
-                        positioned.height
+                        positioned.height,
                     )
-                ) continue
+                ) {
+                    continue
+                }
                 positioned.entry.comp.mouseClicked(mouseX, mouseY, mouseButton)
                 return true
             }
@@ -235,7 +237,12 @@ class SettingsPanel {
         return false
     }
 
-    fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int, scroll: Scroll) {
+    fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+        scroll: Scroll,
+    ) {
         if (hasViewportContext && lastViewportHeight > 0f) {
             updateLayout(lastContentX, lastContentY, lastContentWidth, scroll.getValue())
         }
@@ -246,7 +253,10 @@ class SettingsPanel {
         }
     }
 
-    fun keyTyped(typedChar: Char, keyCode: Int) {
+    fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         for (entry in entries) {
             if (!entry.isCategoryMarker) {
                 entry.comp.keyTyped(typedChar, keyCode)
@@ -268,7 +278,12 @@ class SettingsPanel {
         textWidthCache.clear()
     }
 
-    private fun storeViewportContext(contentX: Float, contentY: Float, contentWidth: Float, viewportHeight: Float) {
+    private fun storeViewportContext(
+        contentX: Float,
+        contentY: Float,
+        contentWidth: Float,
+        viewportHeight: Float,
+    ) {
         lastContentX = contentX
         lastContentY = contentY
         lastContentWidth = contentWidth
@@ -276,14 +291,24 @@ class SettingsPanel {
         hasViewportContext = true
     }
 
-    private fun isVisible(y: Float, height: Float, viewportTop: Float, viewportBottom: Float): Boolean {
+    private fun isVisible(
+        y: Float,
+        height: Float,
+        viewportTop: Float,
+        viewportBottom: Float,
+    ): Boolean {
         val buffer = style.virtualizationBuffer * PANEL_SCALE
         val top = viewportTop - buffer
         val bottom = viewportBottom + buffer
         return y + height >= top && y <= bottom
     }
 
-    private fun updateLayout(contentX: Float, contentY: Float, contentWidth: Float, scrollOffset: Float) {
+    private fun updateLayout(
+        contentX: Float,
+        contentY: Float,
+        contentWidth: Float,
+        scrollOffset: Float,
+    ) {
         sectionLayouts.clear()
 
         val narrow = contentWidth <= style.narrowBreakpoint
@@ -327,7 +352,7 @@ class SettingsPanel {
         x: Float,
         startY: Float,
         width: Float,
-        narrow: Boolean
+        narrow: Boolean,
     ): Float {
         if (section.entries.isEmpty()) {
             return startY
@@ -347,7 +372,7 @@ class SettingsPanel {
         x: Float,
         startY: Float,
         width: Float,
-        narrow: Boolean
+        narrow: Boolean,
     ): Float {
         val rowGap = style.rowGap * PANEL_SCALE
         var yCursor = startY
@@ -373,7 +398,7 @@ class SettingsPanel {
         x: Float,
         startY: Float,
         width: Float,
-        narrow: Boolean
+        narrow: Boolean,
     ): Float {
         val rowGap = style.rowGap * PANEL_SCALE
         val columnGap = style.columnGap * PANEL_SCALE
@@ -382,7 +407,10 @@ class SettingsPanel {
             return layoutSingle(list, layout, x, startY, width, narrow)
         }
 
-        data class Pending(val entry: Entry, val rowHeight: Float)
+        data class Pending(
+            val entry: Entry,
+            val rowHeight: Float,
+        )
 
         val pending = ArrayList<Pending>(2)
         var rowY = startY
@@ -439,7 +467,7 @@ class SettingsPanel {
         x: Float,
         startY: Float,
         width: Float,
-        narrow: Boolean
+        narrow: Boolean,
     ): Float {
         val rowGap = style.rowGap * PANEL_SCALE
         val columnGap = style.columnGap * PANEL_SCALE
@@ -487,7 +515,10 @@ class SettingsPanel {
         return endY
     }
 
-    private fun resolveAnimatedRowHeight(entry: Entry, narrow: Boolean): Float {
+    private fun resolveAnimatedRowHeight(
+        entry: Entry,
+        narrow: Boolean,
+    ): Float {
         val state = getEntryState(entry.setting)
         val delegate = layoutRegistry.resolve(entry.comp)
         val minRow = (if (narrow) style.minRowHeightNarrow else style.minRowHeightDefault) * PANEL_SCALE
@@ -503,7 +534,11 @@ class SettingsPanel {
         return max(0f, state.heightAnimation.getValue())
     }
 
-    private fun drawCategoryHeader(nvg: NanoVGManager, palette: ColorPalette, section: SectionLayout) {
+    private fun drawCategoryHeader(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        section: SectionLayout,
+    ) {
         val category = section.category ?: return
         val titleSize = style.titleFontSize * PANEL_SCALE
         val iconSize = 9f * PANEL_SCALE
@@ -536,7 +571,7 @@ class SettingsPanel {
         nvg: NanoVGManager,
         palette: ColorPalette,
         positioned: PositionedEntry,
-        placement: ComponentPlacement
+        placement: ComponentPlacement,
     ) {
         val setting = positioned.entry.setting
         val metadata = setting.getMetadata()
@@ -550,12 +585,13 @@ class SettingsPanel {
         val textX = positioned.x + (7f * PANEL_SCALE)
         val descriptionGap = 2f * PANEL_SCALE
         val textBlockHeight = titleSize + if (description != null) (descriptionGap + descSize) else 0f
-        val textY = if (isCellGrid || isColorPicker) {
-            positioned.y + (2f * PANEL_SCALE)
-        } else {
-            val centeredY = positioned.y + (positioned.height - textBlockHeight) * 0.5f
-            max(positioned.y + (2f * PANEL_SCALE), centeredY)
-        }
+        val textY =
+            if (isCellGrid || isColorPicker) {
+                positioned.y + (2f * PANEL_SCALE)
+            } else {
+                val centeredY = positioned.y + (positioned.height - textBlockHeight) * 0.5f
+                max(positioned.y + (2f * PANEL_SCALE), centeredY)
+            }
         val textWidth = resolveTextWidth(positioned, placement, textX)
 
         val titleLimited = limitText(nvg, setting.name, titleSize, Fonts.MEDIUM, textWidth)
@@ -570,24 +606,29 @@ class SettingsPanel {
                 descY,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 198),
                 descSize,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
     }
 
     private fun layoutComponent(positioned: PositionedEntry): ComponentPlacement {
-        val context = ComponentLayoutContext(
-            positioned.x,
-            positioned.y,
-            positioned.width,
-            positioned.height,
-            positioned.narrow,
-            resolvedLayoutStyle
-        )
+        val context =
+            ComponentLayoutContext(
+                positioned.x,
+                positioned.y,
+                positioned.width,
+                positioned.height,
+                positioned.narrow,
+                resolvedLayoutStyle,
+            )
         return layoutRegistry.resolve(positioned.entry.comp).place(positioned.entry.comp, context)
     }
 
-    private fun resolveTextWidth(positioned: PositionedEntry, placement: ComponentPlacement, textX: Float): Float {
+    private fun resolveTextWidth(
+        positioned: PositionedEntry,
+        placement: ComponentPlacement,
+        textX: Float,
+    ): Float {
         val available = positioned.width - (textX - positioned.x)
         if (placement.controlLeft.isNaN()) {
             return max(72f, available - (8f * PANEL_SCALE))
@@ -633,7 +674,10 @@ class SettingsPanel {
         return state.expandAnimation.getValue().coerceIn(0f, 1f)
     }
 
-    private fun resolveAnimatedEntryY(section: SectionLayout, positioned: PositionedEntry): Float {
+    private fun resolveAnimatedEntryY(
+        section: SectionLayout,
+        positioned: PositionedEntry,
+    ): Float {
         if (section.contentProgress >= 0.999f) {
             return positioned.y
         }
@@ -645,8 +689,8 @@ class SettingsPanel {
         return (p * p * (3f - (2f * p))).coerceIn(0f, 1f)
     }
 
-    private fun buildScaledLayoutStyle(): SettingsPanelStyle {
-        return style.copy(
+    private fun buildScaledLayoutStyle(): SettingsPanelStyle =
+        style.copy(
             outerMargin = style.outerMargin * PANEL_SCALE,
             categoryGap = style.categoryGap * PANEL_SCALE,
             categoryHeaderHeight = style.categoryHeaderHeight * PANEL_SCALE,
@@ -666,24 +710,28 @@ class SettingsPanel {
             componentPadding = style.componentPadding * PANEL_SCALE,
             textGap = style.textGap * PANEL_SCALE,
             narrowBreakpoint = style.narrowBreakpoint,
-            virtualizationBuffer = style.virtualizationBuffer * PANEL_SCALE
+            virtualizationBuffer = style.virtualizationBuffer * PANEL_SCALE,
         )
-    }
 
-    private fun getEntryState(setting: Setting): EntryState {
-        return entryStates.getOrPut(setting) { EntryState() }
-    }
+    private fun getEntryState(setting: Setting): EntryState = entryStates.getOrPut(setting) { EntryState() }
 
-    private fun limitText(nvg: NanoVGManager, input: String?, size: Float, font: Font, maxWidth: Float): TruncatedText {
+    private fun limitText(
+        nvg: NanoVGManager,
+        input: String?,
+        size: Float,
+        font: Font,
+        maxWidth: Float,
+    ): TruncatedText {
         val inputText = input ?: return TruncatedText("", false)
         val normalizedMaxWidth = max(1f, maxWidth)
-        val key = TruncationCacheKey(
-            frameIndex,
-            inputText,
-            (size * 10f).toInt(),
-            font.name,
-            (normalizedMaxWidth * 10f).toInt()
-        )
+        val key =
+            TruncationCacheKey(
+                frameIndex,
+                inputText,
+                (size * 10f).toInt(),
+                font.name,
+                (normalizedMaxWidth * 10f).toInt(),
+            )
         val cached = truncatedTextCache[key]
         if (cached != null) return cached
 
@@ -705,7 +753,12 @@ class SettingsPanel {
         return resolved
     }
 
-    private fun textWidth(nvg: NanoVGManager, text: String, size: Float, font: Font): Float {
+    private fun textWidth(
+        nvg: NanoVGManager,
+        text: String,
+        size: Float,
+        font: Font,
+    ): Float {
         val key = TextWidthCacheKey(frameIndex, text, (size * 10f).toInt(), font.name)
         val cached = textWidthCache[key]
         if (cached != null) return cached
@@ -715,18 +768,29 @@ class SettingsPanel {
         return width
     }
 
-    private data class Entry(val setting: Setting, val comp: Component, val isCategoryMarker: Boolean)
-    private data class Section(val category: CategorySetting?, val entries: MutableList<Entry> = ArrayList())
+    private data class Entry(
+        val setting: Setting,
+        val comp: Component,
+        val isCategoryMarker: Boolean,
+    )
+
+    private data class Section(
+        val category: CategorySetting?,
+        val entries: MutableList<Entry> = ArrayList(),
+    )
+
     private data class PositionedEntry(
         val entry: Entry,
         val x: Float,
         val y: Float,
         val width: Float,
         val height: Float,
-        val narrow: Boolean
+        val narrow: Boolean,
     )
 
-    private class SectionLayout(val category: CategorySetting?) {
+    private class SectionLayout(
+        val category: CategorySetting?,
+    ) {
         var headerX = 0f
         var headerY = 0f
         var headerWidth = 0f
@@ -756,16 +820,25 @@ class SettingsPanel {
         var initialized = false
     }
 
-    private data class TruncatedText(val text: String, val truncated: Boolean)
+    private data class TruncatedText(
+        val text: String,
+        val truncated: Boolean,
+    )
+
     private data class TruncationCacheKey(
         val frame: Int,
         val input: String,
         val size10: Int,
         val fontName: String,
-        val width10: Int
+        val width10: Int,
     )
 
-    private data class TextWidthCacheKey(val frame: Int, val text: String, val size10: Int, val fontName: String)
+    private data class TextWidthCacheKey(
+        val frame: Int,
+        val text: String,
+        val size10: Int,
+        val fontName: String,
+    )
 
     companion object {
         // Global compact scaling requested for cleaner settings panel layout.

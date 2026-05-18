@@ -14,7 +14,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
 object PlayerHeadUtils {
-
     private val cache = ConcurrentHashMap<String, ResourceLocation>()
     private val pending = ConcurrentHashMap<String, Boolean>()
 
@@ -49,11 +48,12 @@ object PlayerHeadUtils {
         return null
     }
 
-    private fun normalize(username: String?): String {
-        return username?.trim()?.lowercase(Locale.ROOT) ?: ""
-    }
+    private fun normalize(username: String?): String = username?.trim()?.lowercase(Locale.ROOT) ?: ""
 
-    private fun registerTexture(image: BufferedImage, id: String): ResourceLocation? {
+    private fun registerTexture(
+        image: BufferedImage,
+        id: String,
+    ): ResourceLocation? {
         val mc = Minecraft.getMinecraft()
         return runOnRenderThread {
             val texture = DynamicTexture(image)
@@ -86,4 +86,3 @@ object PlayerHeadUtils {
         return ref.get()
     }
 }
-

@@ -31,9 +31,8 @@ abstract class LayoutAreaScene(
     val area: UILayoutArea,
     nameTranslate: TranslateText,
     descriptionTranslate: TranslateText,
-    icon: String
+    icon: String,
 ) : SettingScene(parent, nameTranslate, descriptionTranslate, icon) {
-
     private val layoutManager: UILayoutManager = Shindo.getInstance().getUILayoutManager()
     private var selectedType: UILayoutType? = null
     private var typeSelector: CompVisualPresetSelector? = null
@@ -41,7 +40,12 @@ abstract class LayoutAreaScene(
     /**
      * Simple immutable preview bounds shared with specialized scenes.
      */
-    protected data class PreviewRect(val x: Float, val y: Float, val width: Float, val height: Float)
+    protected data class PreviewRect(
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+    )
 
     protected var lastPreviewRect: PreviewRect? = null
 
@@ -74,33 +78,37 @@ abstract class LayoutAreaScene(
         }
 
         val selectedIndex = types.indexOf(selectedType).coerceAtLeast(0)
-        typeSelector = CompVisualPresetSelector()
-            .setEntries(entries)
-            .setSelectedIndex(selectedIndex)
-            .setOnSelect { index ->
-                if (index >= 0 && index < types.size) {
-                    selectType(types[index])
+        typeSelector =
+            CompVisualPresetSelector()
+                .setEntries(entries)
+                .setSelectedIndex(selectedIndex)
+                .setOnSelect { index ->
+                    if (index >= 0 && index < types.size) {
+                        selectType(types[index])
+                    }
+                }.setPreviewRenderer { index, _, x, y, width, height, selected, hovered, nvg, palette, accent ->
+                    if (index >= 0 && index < types.size) {
+                        drawTypeCardPreview(
+                            nvg,
+                            palette,
+                            accent,
+                            types[index],
+                            x,
+                            y,
+                            width,
+                            height,
+                            selected,
+                            hovered,
+                        )
+                    }
                 }
-            }
-            .setPreviewRenderer { index, _, x, y, width, height, selected, hovered, nvg, palette, accent ->
-                if (index >= 0 && index < types.size) {
-                    drawTypeCardPreview(
-                        nvg,
-                        palette,
-                        accent,
-                        types[index],
-                        x,
-                        y,
-                        width,
-                        height,
-                        selected,
-                        hovered
-                    )
-                }
-            }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.getColorManager().getPalette()
@@ -150,7 +158,7 @@ abstract class LayoutAreaScene(
                 extraHeight,
                 mouseX,
                 mouseY,
-                partialTicks
+                partialTicks,
             )
             cursorY += extraHeight + LayoutSceneStyle.CONTROL_GAP
         }
@@ -165,7 +173,7 @@ abstract class LayoutAreaScene(
                 y = panelY,
                 width = panelWidth,
                 height = panelHeight,
-                intersect = true
+                intersect = true,
             ) {
                 drawPreview(
                     nvg,
@@ -177,7 +185,7 @@ abstract class LayoutAreaScene(
                     previewHeight,
                     mouseX,
                     mouseY,
-                    partialTicks
+                    partialTicks,
                 )
             }
             return
@@ -196,7 +204,7 @@ abstract class LayoutAreaScene(
             y = panelY,
             width = panelWidth,
             height = panelHeight,
-            intersect = true
+            intersect = true,
         ) {
             drawPreview(
                 nvg,
@@ -208,7 +216,7 @@ abstract class LayoutAreaScene(
                 previewHeight,
                 mouseX,
                 mouseY,
-                partialTicks
+                partialTicks,
             )
         }
 
@@ -246,10 +254,14 @@ abstract class LayoutAreaScene(
         height: Float,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     )
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             return
         }
@@ -260,16 +272,12 @@ abstract class LayoutAreaScene(
     /**
      * Returns all layout types available for this area.
      */
-    protected fun getTypes(): List<UILayoutType> {
-        return layoutManager.getTypes(area)
-    }
+    protected fun getTypes(): List<UILayoutType> = layoutManager.getTypes(area)
 
     /**
      * Returns currently selected type for this area.
      */
-    protected fun getSelectedType(): UILayoutType? {
-        return selectedType
-    }
+    protected fun getSelectedType(): UILayoutType? = selectedType
 
     /**
      * Applies a new type through manager and synchronizes selector.
@@ -303,9 +311,7 @@ abstract class LayoutAreaScene(
     /**
      * Returns extra controls block height.
      */
-    protected open fun getExtraControlsHeight(): Float {
-        return 0f
-    }
+    protected open fun getExtraControlsHeight(): Float = 0f
 
     /**
      * Draws custom controls above preview/selector.
@@ -320,29 +326,30 @@ abstract class LayoutAreaScene(
         height: Float,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
     }
 
     /**
      * Handles mouse click for scene-specific controls.
      */
-    protected open fun mouseClickedExtra(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    protected open fun mouseClickedExtra(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
     }
 
     /**
      * Enables selector mode for scenes that use card grids instead of carousel.
      */
-    protected open fun showTypeSelector(): Boolean {
-        return true
-    }
+    protected open fun showTypeSelector(): Boolean = true
 
     /**
      * Creates one selector entry for the provided type.
      */
-    protected open fun createTypeEntry(type: UILayoutType): CompVisualPresetSelector.Entry {
-        return CompVisualPresetSelector.Entry(type.getTitle(), type.getDescription())
-    }
+    protected open fun createTypeEntry(type: UILayoutType): CompVisualPresetSelector.Entry =
+        CompVisualPresetSelector.Entry(type.getTitle(), type.getDescription())
 
     /**
      * Draws a selector card preview.
@@ -357,7 +364,7 @@ abstract class LayoutAreaScene(
         width: Float,
         height: Float,
         selected: Boolean,
-        hovered: Boolean
+        hovered: Boolean,
     ) {
         LayoutSceneRenderer.drawPreviewSurface(nvg, palette, x, y, width, height, 4f)
         val line = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected || hovered) 214 else 176)

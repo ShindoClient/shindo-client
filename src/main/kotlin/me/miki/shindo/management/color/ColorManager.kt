@@ -4,7 +4,6 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import java.awt.Color
 
 class ColorManager {
-
     private val colors = ArrayList<AccentColor>()
     private val palette = ColorPalette()
     private var currentColor: AccentColor
@@ -52,20 +51,26 @@ class ColorManager {
         currentColor = getColorByName("Default")
     }
 
-    private fun add(name: String, color1: Color, color2: Color) {
+    private fun add(
+        name: String,
+        color1: Color,
+        color2: Color,
+    ) {
         colors.add(AccentColor(name, color1, color2))
     }
 
     fun getColors(): ArrayList<AccentColor> = colors
+
     fun getCurrentColor(): AccentColor = currentColor
+
     fun setCurrentColor(c: AccentColor) {
         currentColor = c
     }
 
-    fun getColorByName(name: String): AccentColor =
-        colors.firstOrNull { it.getName() == name } ?: getColorByName("Default")
+    fun getColorByName(name: String): AccentColor = colors.firstOrNull { it.getName() == name } ?: getColorByName("Default")
 
     fun getTheme(): Theme = theme
+
     fun setTheme(t: Theme) {
         theme = t
     }

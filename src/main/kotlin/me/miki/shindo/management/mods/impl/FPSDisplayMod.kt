@@ -9,8 +9,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.Minecraft
 
-class FPSDisplayMod :
-    SimpleHUDMod(TranslateText.FPS_DISPLAY, TranslateText.FPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_FPS_DISPLAY) {
+class FPSDisplayMod : SimpleHUDMod(TranslateText.FPS_DISPLAY, TranslateText.FPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_FPS_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconEnabled = true
 
@@ -19,13 +18,7 @@ class FPSDisplayMod :
         this.draw()
     }
 
-    override fun getText(): String {
-        return Minecraft.getDebugFPS().toString() + " FPS"
-    }
+    override fun getText(): String = Minecraft.getDebugFPS().toString() + " FPS"
 
-    override fun getIcon(): String? {
-        return if (iconEnabled) LegacyIcon.MONITOR else null
-    }
+    override fun getIcon(): String? = if (iconEnabled) LegacyIcon.MONITOR else null
 }
-
-

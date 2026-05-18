@@ -5,14 +5,15 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 
-class HitDelayFixMod : Mod(
-    TranslateText.HIT_DELAY_FIX,
-    TranslateText.HIT_DELAY_FIX_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_HIT_DELAY_FIX,
-    "nodelay",
-    true
-) {
+class HitDelayFixMod :
+    Mod(
+        TranslateText.HIT_DELAY_FIX,
+        TranslateText.HIT_DELAY_FIX_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_HIT_DELAY_FIX,
+        "nodelay",
+        true,
+    ) {
     init {
         instance = this
     }
@@ -22,7 +23,3 @@ class HitDelayFixMod : Mod(
         var instance: HitDelayFixMod? = null
     }
 }
-
-
-
-

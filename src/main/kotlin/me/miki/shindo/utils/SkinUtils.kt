@@ -14,15 +14,10 @@ import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.util.ResourceLocation
 
 object SkinUtils {
-
     @JvmStatic
-    fun hasCustomSkin(player: AbstractClientPlayer): Boolean {
-        return DefaultPlayerSkin.getDefaultSkin(player.uniqueID) != player.locationSkin
-    }
+    fun hasCustomSkin(player: AbstractClientPlayer): Boolean = DefaultPlayerSkin.getDefaultSkin(player.uniqueID) != player.locationSkin
 
-    private fun getSkinTexture(player: AbstractClientPlayer): NativeImage? {
-        return getTexture(player.locationSkin)
-    }
+    private fun getSkinTexture(player: AbstractClientPlayer): NativeImage? = getTexture(player.locationSkin)
 
     private fun getTexture(resource: ResourceLocation): NativeImage? {
         val skin = NativeImage(64, 64, false)
@@ -40,7 +35,7 @@ object SkinUtils {
         abstractClientPlayerEntity: AbstractClientPlayer,
         settings: IMixinEntityPlayer,
         thinArms: Boolean,
-        model: ModelPlayer?
+        model: ModelPlayer?,
     ): Boolean {
         if (!hasCustomSkin(abstractClientPlayerEntity)) {
             return false
@@ -68,4 +63,3 @@ object SkinUtils {
         return true
     }
 }
-

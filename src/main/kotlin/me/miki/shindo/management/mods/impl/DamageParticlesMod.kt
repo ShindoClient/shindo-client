@@ -19,12 +19,13 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 import java.util.function.Consumer
 
-class DamageParticlesMod : Mod(
-    TranslateText.DAMAGE_PARTICLES,
-    TranslateText.DAMAGE_PARTICLES_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_DAMAGE_PARTICLES
-) {
+class DamageParticlesMod :
+    Mod(
+        TranslateText.DAMAGE_PARTICLES,
+        TranslateText.DAMAGE_PARTICLES_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_DAMAGE_PARTICLES,
+    ) {
     private val healthMap = HashMap<EntityLivingBase?, Float?>()
     private val particles = ArrayList<Particle>()
     private var canRemove = false
@@ -36,16 +37,18 @@ class DamageParticlesMod : Mod(
             particles.remove(removeParticle)
         }
 
-        particles.forEach(Consumer { particle: Particle? ->
-            particle!!.ticks++
-            if (particle.ticks <= 10) {
-                particle.location.setY(particle.location.y + particle.ticks * 0.005)
-            }
-            if (particle.ticks > 20) {
-                canRemove = true
-                removeParticle = particle
-            }
-        })
+        particles.forEach(
+            Consumer { particle: Particle? ->
+                particle!!.ticks++
+                if (particle.ticks <= 10) {
+                    particle.location.setY(particle.location.y + particle.ticks * 0.005)
+                }
+                if (particle.ticks > 20) {
+                    canRemove = true
+                    removeParticle = particle
+                }
+            },
+        )
     }
 
     @EventTarget
@@ -64,16 +67,18 @@ class DamageParticlesMod : Mod(
         val after = entity.health
 
         if (before != after) {
-
-            val text: String = if ((before - after) < 0) {
-                EnumChatFormatting.GREEN.toString() + "" + roundToPlace((before - after) * -1, 1)
-            } else {
-                EnumChatFormatting.YELLOW.toString() + "" + roundToPlace((before - after), 1)
-            }
+            val text: String =
+                if ((before - after) < 0) {
+                    EnumChatFormatting.GREEN.toString() + "" + roundToPlace((before - after) * -1, 1)
+                } else {
+                    EnumChatFormatting.YELLOW.toString() + "" + roundToPlace((before - after), 1)
+                }
 
             val location = LocationUtils(entity)
 
-            location.setY(entity.entityBoundingBox.minY + ((entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2))
+            location.setY(
+                entity.entityBoundingBox.minY + ((entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2),
+            )
 
             location.setX((location.x - 0.5) + (Random(System.currentTimeMillis()).nextInt(5) * 0.1))
             location.setZ((location.z - 0.5) + (Random(System.currentTimeMillis() + 1).nextInt(5) * 0.1))
@@ -124,7 +129,7 @@ class DamageParticlesMod : Mod(
                 particle.text,
                 -(mc.fontRendererObj.getStringWidth(particle.text) / 2).toFloat(),
                 -(mc.fontRendererObj.FONT_HEIGHT - 1).toFloat(),
-                0
+                0,
             )
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
             GL11.glDepthMask(true)
@@ -142,11 +147,10 @@ class DamageParticlesMod : Mod(
         this.healthMap.clear()
     }
 
-    private class Particle(var location: LocationUtils, var text: String?) {
+    private class Particle(
+        var location: LocationUtils,
+        var text: String?,
+    ) {
         var ticks: Int = 0
     }
 }
-
-
-
-

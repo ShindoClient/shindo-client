@@ -10,10 +10,14 @@ open class CompScrollableContainer(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : CompPanel(x, y, width, height) {
-
-    data class ScrollViewport(val x: Float, val y: Float, val width: Float, val height: Float)
+    data class ScrollViewport(
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+    )
 
     private val scroll = Scroll()
     private var innerPadding = 18f
@@ -21,7 +25,9 @@ open class CompScrollableContainer(
     private var scrollbarGutter = 12f
     private var themeScrollbarOnly = false
     private var contentRenderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)? = null
-    private var contentRendererWithViewport: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)? =
+    private var contentRendererWithViewport: (
+        (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+    )? =
         null
     private var lastViewport = ScrollViewport(0f, 0f, 0f, 0f)
 
@@ -30,7 +36,6 @@ open class CompScrollableContainer(
         setRadius(12f)
         setShadowStrength(7)
     }
-
 
     fun setInnerPadding(padding: Float): CompScrollableContainer {
         this.innerPadding = max(0f, padding)
@@ -48,14 +53,16 @@ open class CompScrollableContainer(
     }
 
     fun setContentRenderer(
-        renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?
+        renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit)?,
     ): CompScrollableContainer {
         contentRenderer = renderer
         return this
     }
 
     fun setContentRendererWithViewport(
-        renderer: ((mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit)?
+        renderer: (
+            (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+        )?,
     ): CompScrollableContainer {
         contentRendererWithViewport = renderer
         return this
@@ -66,7 +73,7 @@ open class CompScrollableContainer(
         mouseY: Int,
         partialTicks: Float,
         contentHeight: Float,
-        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float) -> Unit,
     ) {
         setContentHeight(contentHeight)
         setContentRenderer(renderer)
@@ -78,26 +85,31 @@ open class CompScrollableContainer(
         mouseY: Int,
         partialTicks: Float,
         contentHeight: Float,
-        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit
+        renderer: (mouseX: Int, mouseY: Int, partialTicks: Float, scrollValue: Float, viewport: ScrollViewport) -> Unit,
     ) {
         setContentHeight(contentHeight)
         setContentRendererWithViewport(renderer)
         draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawPanelContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val fullViewport = calculateViewport()
         val needsScrollbar = contentHeight > fullViewport.height
-        val viewport = if (needsScrollbar) {
-            ScrollViewport(
-                fullViewport.x,
-                fullViewport.y,
-                max(0f, fullViewport.width - scrollbarGutter),
-                fullViewport.height
-            )
-        } else {
-            fullViewport
-        }
+        val viewport =
+            if (needsScrollbar) {
+                ScrollViewport(
+                    fullViewport.x,
+                    fullViewport.y,
+                    max(0f, fullViewport.width - scrollbarGutter),
+                    fullViewport.height,
+                )
+            } else {
+                fullViewport
+            }
         lastViewport = viewport
 
         if (viewport.width <= 0f || viewport.height <= 0f) {
@@ -106,13 +118,14 @@ open class CompScrollableContainer(
 
         updateScrollBounds(viewport.height)
 
-        if (scroll.maxScroll > 0f && MouseUtils.isInside(
+        if (scroll.maxScroll > 0f &&
+            MouseUtils.isInside(
                 mouseX,
                 mouseY,
                 fullViewport.x,
                 fullViewport.y,
                 fullViewport.width,
-                fullViewport.height
+                fullViewport.height,
             )
         ) {
             scroll.onScroll()
@@ -139,7 +152,7 @@ open class CompScrollableContainer(
             scrollValue,
             palette,
             accent,
-            24f
+            24f,
         )
     }
 
@@ -148,11 +161,14 @@ open class CompScrollableContainer(
         mouseY: Int,
         partialTicks: Float,
         scrollValue: Float,
-        viewport: ScrollViewport
+        viewport: ScrollViewport,
     ) {
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (scroll.maxScroll > 0f) {
             scroll.onKey(keyCode)
         }

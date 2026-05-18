@@ -9,8 +9,9 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import java.awt.Color
 
-open class MainMenuScene(private val parent: GuiShindoMainMenu) {
-
+open class MainMenuScene(
+    private val parent: GuiShindoMainMenu,
+) {
     val animation = SimpleAnimation()
 
     val mc: Minecraft = Minecraft.getMinecraft()
@@ -21,16 +22,31 @@ open class MainMenuScene(private val parent: GuiShindoMainMenu) {
     open fun initGui() {
     }
 
-    open fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    open fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
     }
 
-    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    open fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
     }
 
-    open fun keyTyped(typedChar: Char, keyCode: Int) {
+    open fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
     }
 
-    open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    open fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
     }
 
     open fun handleInput() {
@@ -46,17 +62,11 @@ open class MainMenuScene(private val parent: GuiShindoMainMenu) {
         parent.setCurrentScene(scene)
     }
 
-    fun getBackgroundColor(): Color {
-        return getMenuPalette().getBackgroundColor(ColorType.DARK)
-    }
+    fun getBackgroundColor(): Color = getMenuPalette().getBackgroundColor(ColorType.DARK)
 
-    protected fun getPanelColor(): Color {
-        return getMenuPalette().getBackgroundColor(ColorType.MID)
-    }
+    protected fun getPanelColor(): Color = getMenuPalette().getBackgroundColor(ColorType.MID)
 
-    protected fun getControlColor(): Color {
-        return getMenuPalette().getBackgroundColor(ColorType.NORMAL)
-    }
+    protected fun getControlColor(): Color = getMenuPalette().getBackgroundColor(ColorType.NORMAL)
 
     protected fun getMenuPalette(): ColorPalette {
         val manager = getColorManager()
@@ -73,20 +83,17 @@ open class MainMenuScene(private val parent: GuiShindoMainMenu) {
         return instance.getColorManager()
     }
 
-    fun getSceneByClass(clazz: Class<out MainMenuScene>): MainMenuScene? {
-        return parent.getSceneByClass(clazz)
-    }
+    fun getSceneByClass(clazz: Class<out MainMenuScene>): MainMenuScene? = parent.getSceneByClass(clazz)
 
-    fun getParent(): GuiShindoMainMenu {
-        return parent
-    }
+    fun getParent(): GuiShindoMainMenu = parent
 
     companion object {
         private val FALLBACK_PALETTE = ColorPalette()
-        private val FALLBACK_ACCENT = AccentColor(
-            "Default",
-            Color(170, 255, 169),
-            Color(17, 255, 189)
-        )
+        private val FALLBACK_ACCENT =
+            AccentColor(
+                "Default",
+                Color(170, 255, 169),
+                Color(17, 255, 189),
+            )
     }
 }

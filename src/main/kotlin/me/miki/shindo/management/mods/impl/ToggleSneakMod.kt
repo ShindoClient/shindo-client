@@ -10,12 +10,13 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.settings.KeyBinding
 
-class ToggleSneakMod : Mod(
-    TranslateText.TOGGLE_SNEAK,
-    TranslateText.TOGGLE_SNEAK_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_TOGGLE_SNEAK
-) {
+class ToggleSneakMod :
+    Mod(
+        TranslateText.TOGGLE_SNEAK,
+        TranslateText.TOGGLE_SNEAK_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_TOGGLE_SNEAK,
+    ) {
     private var toggle = false
 
     override fun setup() {
@@ -48,7 +49,3 @@ class ToggleSneakMod : Mod(
         KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.keyCode, state)
     }
 }
-
-
-
-

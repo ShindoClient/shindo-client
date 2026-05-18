@@ -38,10 +38,10 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
 
-class AddonCategory(parent: GuiModMenu) :
-    Category(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true),
+class AddonCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true),
     ModMenuListPageContract {
-
     private val settingScroll = Scroll()
     private val settingsPanel = SettingsPanel()
     private val addonCardCache = ArrayList<AddonCard>()
@@ -73,7 +73,11 @@ class AddonCategory(parent: GuiModMenu) :
         settingsPanel.clear()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager: ColorManager = instance.getColorManager()
@@ -95,15 +99,16 @@ class AddonCategory(parent: GuiModMenu) :
         nvg.save()
         nvg.translate(0f, scrollValue)
 
-        val listContext = ModMenuListPageRenderContext(
-            nvg = nvg,
-            palette = palette,
-            accent = accentColor,
-            mouseX = mouseX,
-            mouseY = mouseY,
-            partialTicks = partialTicks,
-            scrollOffset = scrollValue
-        )
+        val listContext =
+            ModMenuListPageRenderContext(
+                nvg = nvg,
+                palette = palette,
+                accent = accentColor,
+                mouseX = mouseX,
+                mouseY = mouseY,
+                partialTicks = partialTicks,
+                scrollOffset = scrollValue,
+            )
         val topFiltersBottom = drawTopFilters(listContext)
         rebuildFilteredEntries(topFiltersBottom)
         drawEntryCards(listContext, resolveCardLayoutSpec())
@@ -116,7 +121,7 @@ class AddonCategory(parent: GuiModMenu) :
             getWidth() - 30f,
             12f,
             palette.getBackgroundColor(ColorType.NORMAL),
-            noColour
+            noColour,
         )
         nvg.drawVerticalGradientRect(
             getX() + 15f,
@@ -124,7 +129,7 @@ class AddonCategory(parent: GuiModMenu) :
             getWidth() - 30f,
             12f,
             noColour,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            palette.getBackgroundColor(ColorType.NORMAL),
         )
 
         nvg.restore()
@@ -133,15 +138,16 @@ class AddonCategory(parent: GuiModMenu) :
         nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
         if (isDetailsLayerOpen()) {
-            val detailContext = ModMenuListPageRenderContext(
-                nvg = nvg,
-                palette = palette,
-                accent = accentColor,
-                mouseX = mouseX,
-                mouseY = mouseY,
-                partialTicks = partialTicks,
-                scrollOffset = settingScroll.getValue()
-            )
+            val detailContext =
+                ModMenuListPageRenderContext(
+                    nvg = nvg,
+                    palette = palette,
+                    accent = accentColor,
+                    mouseX = mouseX,
+                    mouseY = mouseY,
+                    partialTicks = partialTicks,
+                    scrollOffset = settingScroll.getValue(),
+                )
             drawDetailsLayer(detailContext)
         }
 
@@ -151,7 +157,11 @@ class AddonCategory(parent: GuiModMenu) :
         scroll.maxScroll = max(0f, contentHeight - viewportHeight)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val addonManager = instance.getAddonManager()
 
@@ -165,20 +175,20 @@ class AddonCategory(parent: GuiModMenu) :
         }
 
         if (detailTransition.isInteractive()) {
-
             for (card in addonCardCache) {
                 val cardY = getY() + card.y + scroll.getValue()
-                val controlLayout = ModMenuListCardLayout.build(
-                    cardX = card.x,
-                    cardY = cardY,
-                    cardWidth = card.width,
-                    cardHeight = card.height,
-                    settingsSize = SETTINGS_SIZE,
-                    settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
-                    toggleWidth = LIST_TOGGLE_WIDTH,
-                    toggleHeight = LIST_TOGGLE_HEIGHT,
-                    settingsGap = LIST_TOGGLE_GAP
-                )
+                val controlLayout =
+                    ModMenuListCardLayout.build(
+                        cardX = card.x,
+                        cardY = cardY,
+                        cardWidth = card.width,
+                        cardHeight = card.height,
+                        settingsSize = SETTINGS_SIZE,
+                        settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
+                        toggleWidth = LIST_TOGGLE_WIDTH,
+                        toggleHeight = LIST_TOGGLE_HEIGHT,
+                        settingsGap = LIST_TOGGLE_GAP,
+                    )
 
                 if (!MouseUtils.isInside(mouseX, mouseY, card.x, cardY, card.width, card.height)) {
                     continue
@@ -190,15 +200,19 @@ class AddonCategory(parent: GuiModMenu) :
                         getX().toFloat(),
                         getY().toFloat(),
                         getWidth().toFloat(),
-                        getHeight().toFloat()
-                    ) && mouseButton == 0
+                        getHeight().toFloat(),
+                    ) &&
+                    mouseButton == 0
                 ) {
                     val addon = card.addon
 
-                    if (!card.isFailed && addon != null && controlLayout.isSettingsHit(
+                    if (!card.isFailed &&
+                        addon != null &&
+                        controlLayout.isSettingsHit(
                             mouseX,
-                            mouseY
-                        ) && detailTransition.isInteractive()
+                            mouseY,
+                        ) &&
+                        detailTransition.isInteractive()
                     ) {
                         val settings: ArrayList<Setting>? = addonManager.getSettingByAddon(addon)
                         if (settings != null) {
@@ -211,9 +225,12 @@ class AddonCategory(parent: GuiModMenu) :
                         continue
                     }
 
-                    if (!card.isFailed && addon != null && addon.showToggle && controlLayout.isToggleHit(
+                    if (!card.isFailed &&
+                        addon != null &&
+                        addon.showToggle &&
+                        controlLayout.isToggleHit(
                             mouseX,
-                            mouseY
+                            mouseY,
                         )
                     ) {
                         addon.toggle()
@@ -225,12 +242,13 @@ class AddonCategory(parent: GuiModMenu) :
 
         if (detailTransition.isActive()) {
             applySettingsPanelPreferences()
-            val overlayLayout = ModMenuSettingsOverlayRenderer.computeLayout(
-                getX().toFloat(),
-                getY().toFloat(),
-                getWidth().toFloat(),
-                getHeight().toFloat()
-            )
+            val overlayLayout =
+                ModMenuSettingsOverlayRenderer.computeLayout(
+                    getX().toFloat(),
+                    getY().toFloat(),
+                    getWidth().toFloat(),
+                    getHeight().toFloat(),
+                )
 
             val backX = overlayLayout.panelX + 10f
             val backY = overlayLayout.headerIconY
@@ -255,7 +273,7 @@ class AddonCategory(parent: GuiModMenu) :
                     overlayLayout.contentY,
                     overlayLayout.contentWidth,
                     overlayLayout.contentHeight,
-                    settingScroll
+                    settingScroll,
                 )
             ) {
                 return
@@ -267,8 +285,9 @@ class AddonCategory(parent: GuiModMenu) :
                     overlayLayout.panelX + overlayLayout.panelWidth - 26f,
                     overlayLayout.headerIconY,
                     16f,
-                    16f
-                ) && mouseButton == 0
+                    16f,
+                ) &&
+                mouseButton == 0
             ) {
                 settingsPanel.resetSettings()
                 resetSpinTarget += 360f
@@ -280,14 +299,21 @@ class AddonCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (currentAddon != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.mouseReleased(mouseX, mouseY, mouseButton, settingScroll)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (currentAddon != null && detailTransition.isActive()) {
             applySettingsPanelPreferences()
             settingsPanel.keyTyped(typedChar, keyCode)
@@ -306,16 +332,15 @@ class AddonCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun drawTopFilters(context: ModMenuListPageRenderContext): Float {
-        return drawTypeChips(
+    override fun drawTopFilters(context: ModMenuListPageRenderContext): Float =
+        drawTypeChips(
             nvg = context.nvg,
             palette = context.palette,
             accentColor = context.accent,
             scrollOffset = context.scrollOffset,
             mouseX = context.mouseX,
-            mouseY = context.mouseY
+            mouseY = context.mouseY,
         )
-    }
 
     override fun rebuildFilteredEntries(topFiltersBottom: Float) {
         rebuildAddonCards(Shindo.getInstance().getAddonManager(), topFiltersBottom)
@@ -329,7 +354,7 @@ class AddonCategory(parent: GuiModMenu) :
                 cardWidth = first.width,
                 cardHeight = first.height,
                 spacingX = 0f,
-                spacingY = 14f
+                spacingY = 14f,
             )
         }
 
@@ -338,11 +363,14 @@ class AddonCategory(parent: GuiModMenu) :
             cardWidth = getWidth() - 30f,
             cardHeight = LIST_CARD_HEIGHT,
             spacingX = 0f,
-            spacingY = 14f
+            spacingY = 14f,
         )
     }
 
-    override fun drawEntryCards(context: ModMenuListPageRenderContext, layout: ModMenuListCardLayoutSpec) {
+    override fun drawEntryCards(
+        context: ModMenuListPageRenderContext,
+        layout: ModMenuListCardLayoutSpec,
+    ) {
         if (addonCardCache.isEmpty()) {
             context.nvg.drawCenteredText(
                 TranslateText.NONE.getText(),
@@ -350,7 +378,7 @@ class AddonCategory(parent: GuiModMenu) :
                 getY() + 86f,
                 context.palette.getFontColor(ColorType.NORMAL),
                 10f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             return
         }
@@ -367,51 +395,55 @@ class AddonCategory(parent: GuiModMenu) :
 
             val showToggleForCard = !card.isFailed && addon != null && addon.showToggle
             val hasSettings = !card.isFailed && addon != null && addonManager.getSettingByAddon(addon) != null
-            val controlLayout = ModMenuListCardLayout.build(
-                cardX = card.x,
-                cardY = cardY,
-                cardWidth = card.width,
-                cardHeight = card.height,
-                settingsSize = SETTINGS_SIZE,
-                settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
-                toggleWidth = LIST_TOGGLE_WIDTH,
-                toggleHeight = LIST_TOGGLE_HEIGHT,
-                settingsGap = LIST_TOGGLE_GAP
-            )
+            val controlLayout =
+                ModMenuListCardLayout.build(
+                    cardX = card.x,
+                    cardY = cardY,
+                    cardWidth = card.width,
+                    cardHeight = card.height,
+                    settingsSize = SETTINGS_SIZE,
+                    settingsPaddingFromRight = ADDON_SETTINGS_PADDING,
+                    toggleWidth = LIST_TOGGLE_WIDTH,
+                    toggleHeight = LIST_TOGGLE_HEIGHT,
+                    settingsGap = LIST_TOGGLE_GAP,
+                )
             val hitboxLayout = controlLayout.withOffset(context.scrollOffset)
 
             card.hasSettings = hasSettings
 
             val textX = iconX + LIST_ICON_SIZE + 10f
-            val textRight = when {
-                card.isFailed -> card.x + card.width - 18f
-                hasSettings -> controlLayout.settingsX - LIST_TOGGLE_GAP
-                showToggleForCard -> controlLayout.toggleX - LIST_TOGGLE_GAP
-                else -> card.x + card.width - 18f
-            }
+            val textRight =
+                when {
+                    card.isFailed -> card.x + card.width - 18f
+                    hasSettings -> controlLayout.settingsX - LIST_TOGGLE_GAP
+                    showToggleForCard -> controlLayout.toggleX - LIST_TOGGLE_GAP
+                    else -> card.x + card.width - 18f
+                }
             val textWidth = max(80f, textRight - textX)
 
-            val hovered = hitboxLayout.isBodyHit(
-                context.mouseX,
-                context.mouseY,
-                card.x,
-                cardY + context.scrollOffset,
-                card.width,
-                card.height
-            )
+            val hovered =
+                hitboxLayout.isBodyHit(
+                    context.mouseX,
+                    context.mouseY,
+                    card.x,
+                    cardY + context.scrollOffset,
+                    card.width,
+                    card.height,
+                )
 
-            val hoverProgress = if (card.isFailed || addon == null) {
-                0f
-            } else {
-                addon.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
-                addon.hoverAnimation.getValue()
-            }
+            val hoverProgress =
+                if (card.isFailed || addon == null) {
+                    0f
+                } else {
+                    addon.hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, ModMenuMotion.CARD_HOVER_SPEED)
+                    addon.hoverAnimation.getValue()
+                }
 
             val settingsHover = hasSettings && hitboxLayout.isSettingsHit(context.mouseX, context.mouseY)
             if (!card.isFailed && addon != null) {
                 addon.settingsHoverAnimation.setAnimation(
                     if (settingsHover) 1.0f else 0.0f,
-                    ModMenuMotion.CARD_HOVER_SPEED
+                    ModMenuMotion.CARD_HOVER_SPEED,
                 )
             }
             val settingsHoverAnimation =
@@ -427,16 +459,17 @@ class AddonCategory(parent: GuiModMenu) :
                 height = card.height,
                 hoverProgress = hoverProgress,
                 indicatorWidth = indicatorWidth,
-                failed = card.isFailed
+                failed = card.isFailed,
             )
 
             if (card.isFailed) {
-                val failedName = context.nvg.getLimitText(
-                    TextUtils.stripUnicodeAccents(card.failedEntry!!.jarFileName),
-                    11.5f,
-                    Fonts.MEDIUM,
-                    textWidth
-                )
+                val failedName =
+                    context.nvg.getLimitText(
+                        TextUtils.stripUnicodeAccents(card.failedEntry!!.jarFileName),
+                        11.5f,
+                        Fonts.MEDIUM,
+                        textWidth,
+                    )
                 val failedDesc = context.nvg.getLimitText("Falhou ao carregar", 8.5f, Fonts.REGULAR, textWidth)
                 AddonCategoryRenderer.drawFailedText(
                     nvg = context.nvg,
@@ -444,7 +477,7 @@ class AddonCategory(parent: GuiModMenu) :
                     textX = textX,
                     cardY = cardY,
                     failedName = failedName,
-                    failedDescription = failedDesc
+                    failedDescription = failedDesc,
                 )
                 continue
             }
@@ -469,7 +502,7 @@ class AddonCategory(parent: GuiModMenu) :
                 textX = textX,
                 cardY = cardY,
                 description = description,
-                builtIn = addon.isBuiltIn
+                builtIn = addon.isBuiltIn,
             )
 
             AddonCategoryRenderer.drawCardControls(
@@ -486,25 +519,24 @@ class AddonCategory(parent: GuiModMenu) :
                 toggleY = controlLayout.toggleY,
                 toggleWidth = controlLayout.toggleWidth,
                 toggleHeight = controlLayout.toggleHeight,
-                toggleProgress = toggleProgress
+                toggleProgress = toggleProgress,
             )
         }
     }
 
-    override fun isDetailsLayerOpen(): Boolean {
-        return currentAddon != null
-    }
+    override fun isDetailsLayerOpen(): Boolean = currentAddon != null
 
     override fun drawDetailsLayer(context: ModMenuListPageRenderContext) {
         val activeAddon = currentAddon ?: return
 
-        if (detailTransition.isActive() && MouseUtils.isInside(
+        if (detailTransition.isActive() &&
+            MouseUtils.isInside(
                 context.mouseX,
                 context.mouseY,
                 getX().toFloat(),
                 getY().toFloat(),
                 getWidth().toFloat(),
-                getHeight().toFloat()
+                getHeight().toFloat(),
             )
         ) {
             settingScroll.onScroll()
@@ -518,14 +550,15 @@ class AddonCategory(parent: GuiModMenu) :
             viewportX = getX().toFloat(),
             viewportY = getY().toFloat(),
             viewportWidth = getWidth().toFloat(),
-            viewportHeight = getHeight().toFloat()
+            viewportHeight = getHeight().toFloat(),
         )
-        val layout = ModMenuSettingsOverlayRenderer.computeLayout(
-            getX().toFloat(),
-            getY().toFloat(),
-            getWidth().toFloat(),
-            getHeight().toFloat()
-        )
+        val layout =
+            ModMenuSettingsOverlayRenderer.computeLayout(
+                getX().toFloat(),
+                getY().toFloat(),
+                getWidth().toFloat(),
+                getHeight().toFloat(),
+            )
 
         resetSpinAnimation.setAnimation(resetSpinTarget, 20.0)
         ModMenuSettingsOverlayRenderer.drawChrome(
@@ -535,7 +568,7 @@ class AddonCategory(parent: GuiModMenu) :
             title = TextUtils.stripUnicodeAccents(activeAddon.name),
             resetRotation = resetSpinAnimation.getValue(),
             mouseX = context.mouseX,
-            mouseY = context.mouseY
+            mouseY = context.mouseY,
         )
         ModMenuSettingsOverlayRenderer.drawSettingsPanel(
             nvg = context.nvg,
@@ -545,10 +578,9 @@ class AddonCategory(parent: GuiModMenu) :
             scroll = settingScroll,
             mouseX = context.mouseX,
             mouseY = context.mouseY,
-            partialTicks = context.partialTicks
+            partialTicks = context.partialTicks,
         )
     }
-
 
     private fun drawTypeChips(
         nvg: NanoVGManager,
@@ -556,7 +588,7 @@ class AddonCategory(parent: GuiModMenu) :
         accentColor: AccentColor,
         scrollOffset: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         typeChips.clear()
 
@@ -565,7 +597,6 @@ class AddonCategory(parent: GuiModMenu) :
         var currentX = startX
         var currentY = getY() + 16f
         var blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
-
 
         for (type in AddonType.values()) {
             val label = type.getName()
@@ -579,14 +610,15 @@ class AddonCategory(parent: GuiModMenu) :
 
             val active = type == currentType
             val hovered =
-                detailTransition.isInteractive() && MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    currentX,
-                    currentY + scrollOffset,
-                    chipWidth,
-                    CategoryChipRenderer.CHIP_HEIGHT
-                )
+                detailTransition.isInteractive() &&
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        currentX,
+                        currentY + scrollOffset,
+                        chipWidth,
+                        CategoryChipRenderer.CHIP_HEIGHT,
+                    )
 
             CategoryChipRenderer.drawChip(
                 nvg,
@@ -598,18 +630,19 @@ class AddonCategory(parent: GuiModMenu) :
                 label,
                 null,
                 active,
-                hovered
+                hovered,
             )
 
-            val chip = FilterChip(
-                Runnable {
-                    if (currentType != type) {
-                        currentType = type
-                        scroll.resetAll()
-                        addonCardCache.clear()
-                    }
-                }
-            )
+            val chip =
+                FilterChip(
+                    Runnable {
+                        if (currentType != type) {
+                            currentType = type
+                            scroll.resetAll()
+                            addonCardCache.clear()
+                        }
+                    },
+                )
             chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
             typeChips.add(chip)
 
@@ -628,18 +661,19 @@ class AddonCategory(parent: GuiModMenu) :
             return true
         }
 
-        return getSearchBox().getText().isNotEmpty() && !SearchUtils.isSimilar(
-            Shindo.getInstance().getAddonManager().getWords(a),
-            getSearchBox().getText()
-        )
+        return getSearchBox().getText().isNotEmpty() &&
+            !SearchUtils.isSimilar(
+                Shindo.getInstance().getAddonManager().getWords(a),
+                getSearchBox().getText(),
+            )
     }
 
-    private fun filterFailedAddon(failed: FailedAddonEntry): Boolean {
-        return getSearchBox().getText().isNotEmpty() && !SearchUtils.isSimilar(
-            failed.jarFileName,
-            getSearchBox().getText()
-        )
-    }
+    private fun filterFailedAddon(failed: FailedAddonEntry): Boolean =
+        getSearchBox().getText().isNotEmpty() &&
+            !SearchUtils.isSimilar(
+                failed.jarFileName,
+                getSearchBox().getText(),
+            )
 
     private fun collectVisibleAddons(addonManager: AddonManager): ArrayList<Addon> {
         val visible = ArrayList<Addon>()
@@ -658,7 +692,7 @@ class AddonCategory(parent: GuiModMenu) :
         val y: Float,
         val width: Float,
         val height: Float,
-        var hasSettings: Boolean = false
+        var hasSettings: Boolean = false,
     ) {
         val isFailed: Boolean get() = failedEntry != null
     }
@@ -668,11 +702,14 @@ class AddonCategory(parent: GuiModMenu) :
         ModMenuSettingsOverlayRenderer.configureSettingsPanel(
             panel = settingsPanel,
             panelStyle = ADDON_SETTINGS_PANEL_STYLE,
-            layoutMode = settings.settingsLayoutMode
+            layoutMode = settings.settingsLayoutMode,
         )
     }
 
-    private fun rebuildAddonCards(addonManager: AddonManager, startOffset: Float) {
+    private fun rebuildAddonCards(
+        addonManager: AddonManager,
+        startOffset: Float,
+    ) {
         addonCardCache.clear()
 
         val availableWidth = getWidth() - 30f
@@ -721,11 +758,12 @@ class AddonCategory(parent: GuiModMenu) :
         const val LIST_ICON_FONT_OFFSET = 7.5f
         const val SETTINGS_SIZE = 18f
 
-        val ADDON_SETTINGS_PANEL_STYLE = SettingsPanelStyle(
-            cardPaddingX = 15f,
-            cardPaddingY = 11f,
-            rowGap = 7f,
-            categoryGap = 13f
-        )
+        val ADDON_SETTINGS_PANEL_STYLE =
+            SettingsPanelStyle(
+                cardPaddingX = 15f,
+                cardPaddingY = 11f,
+                rowGap = 7f,
+                categoryGap = 13f,
+            )
     }
 }

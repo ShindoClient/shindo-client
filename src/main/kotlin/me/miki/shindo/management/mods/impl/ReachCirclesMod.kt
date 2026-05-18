@@ -17,19 +17,20 @@ import org.lwjgl.opengl.GL11
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ReachCirclesMod : Mod(
-    TranslateText.REACH_CIRCLES,
-    TranslateText.REACH_CIRCLES_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_REACH_CIRCLES
-) {
+class ReachCirclesMod :
+    Mod(
+        TranslateText.REACH_CIRCLES,
+        TranslateText.REACH_CIRCLES_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_REACH_CIRCLES,
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.LINE_WIDTH,
         min = 1.0,
         max = 5.0,
         current = 2.0,
-        step = 1.0
+        step = 1.0,
     )
     private val lineWidthSetting = 2
 
@@ -44,16 +45,31 @@ class ReachCirclesMod : Mod(
         GL11.glDepthMask(false)
 
         for (o in mc.theWorld.loadedEntityList) {
-            if (o is EntityLivingBase && !o.isInvisible && !o.isSneaking && o !== mc.thePlayer && o.canEntityBeSeen(
-                    mc.thePlayer
-                ) && !o.isInvisible && o is EntityPlayer
+            if (o is EntityLivingBase &&
+                !o.isInvisible &&
+                !o.isSneaking &&
+                o !== mc.thePlayer &&
+                o.canEntityBeSeen(
+                    mc.thePlayer,
+                ) &&
+                !o.isInvisible &&
+                o is EntityPlayer
             ) {
-                val posX = o.lastTickPosX + (o.posX - o.lastTickPosX) * event.getPartialTicks()
-                    .toDouble() - mc.renderManager.viewerPosX
-                val posY = o.lastTickPosY + (o.posY - o.lastTickPosY) * event.getPartialTicks()
-                    .toDouble() - mc.renderManager.viewerPosY
-                val posZ = o.lastTickPosZ + (o.posZ - o.lastTickPosZ) * event.getPartialTicks()
-                    .toDouble() - mc.renderManager.viewerPosZ
+                val posX =
+                    o.lastTickPosX + (o.posX - o.lastTickPosX) *
+                        event
+                            .getPartialTicks()
+                            .toDouble() - mc.renderManager.viewerPosX
+                val posY =
+                    o.lastTickPosY + (o.posY - o.lastTickPosY) *
+                        event
+                            .getPartialTicks()
+                            .toDouble() - mc.renderManager.viewerPosY
+                val posZ =
+                    o.lastTickPosZ + (o.posZ - o.lastTickPosZ) *
+                        event
+                            .getPartialTicks()
+                            .toDouble() - mc.renderManager.viewerPosZ
 
                 this.circle(posX, posY, posZ, if (mc.playerController.isInCreativeMode) 4.7 else 3.4)
             }
@@ -67,7 +83,12 @@ class ReachCirclesMod : Mod(
         GL11.glPopMatrix()
     }
 
-    private fun circle(x: Double, y: Double, z: Double, rad: Double) {
+    private fun circle(
+        x: Double,
+        y: Double,
+        z: Double,
+        rad: Double,
+    ) {
         val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
 
         GL11.glPushMatrix()
@@ -82,7 +103,7 @@ class ReachCirclesMod : Mod(
             GL11.glVertex3d(
                 x + rad * cos(i.toDouble() * 6.283185307179586 / 45.0),
                 y,
-                z + rad * sin(i.toDouble() * 6.283185307179586 / 45.0)
+                z + rad * sin(i.toDouble() * 6.283185307179586 / 45.0),
             )
         }
 
@@ -90,7 +111,3 @@ class ReachCirclesMod : Mod(
         GL11.glPopMatrix()
     }
 }
-
-
-
-

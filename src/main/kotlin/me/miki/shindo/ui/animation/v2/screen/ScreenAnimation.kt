@@ -14,7 +14,6 @@ import org.lwjgl3.BufferUtils
 import java.nio.FloatBuffer
 import kotlin.math.min
 
-
 class ScreenAnimation {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
@@ -32,7 +31,7 @@ class ScreenAnimation {
         height: Float,
         animationProgress: Float,
         alphaProgress: Float,
-        stencil: Boolean = false
+        stencil: Boolean = false,
     ) {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
@@ -56,8 +55,6 @@ class ScreenAnimation {
 
         GlStateManager.enableTexture2D()
 
-
-
         GL11.glGetFloat(GL11.GL_COLOR_CLEAR_VALUE, floaty)
 
         GL11.glClearColor(0f, 0f, 0f, 0f)
@@ -71,36 +68,39 @@ class ScreenAnimation {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw(Runnable {
-            nvg.setAlpha(min(alphaProgress, 1.0f))
-            nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
+        nvg.setupAndDraw(
+            Runnable {
+                nvg.setAlpha(min(alphaProgress, 1.0f))
+                nvg.scale(x * factor, y * factor, width * factor, height * factor, animationProgress)
 
-            val paint = NVGPaint.create()
+                val paint = NVGPaint.create()
 
-            NanoVG.nvgBeginPath(nvg.getContext())
+                NanoVG.nvgBeginPath(nvg.getContext())
 
-            if (stencil) {
-                NanoVG.nvgRect(nvg.getContext(), x * factor, y * factor, width * factor, height * factor)
-            } else {
-                NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
-            }
+                if (stencil) {
+                    NanoVG.nvgRect(nvg.getContext(), x * factor, y * factor, width * factor, height * factor)
+                } else {
+                    NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
+                }
 
-            NanoVG.nvgFillPaint(
-                nvg.getContext(),
-                NanoVG.nvgImagePattern(
+                NanoVG.nvgFillPaint(
                     nvg.getContext(),
-                    0f,
-                    0f,
-                    mc.displayWidth.toFloat(),
-                    mc.displayHeight.toFloat(),
-                    0f,
-                    fb!!.image(),
-                    1f,
-                    paint
+                    NanoVG.nvgImagePattern(
+                        nvg.getContext(),
+                        0f,
+                        0f,
+                        mc.displayWidth.toFloat(),
+                        mc.displayHeight.toFloat(),
+                        0f,
+                        fb!!.image(),
+                        1f,
+                        paint,
+                    ),
                 )
-            )
-            NanoVG.nvgFill(nvg.getContext())
-        }, false)
+                NanoVG.nvgFill(nvg.getContext())
+            },
+            false,
+        )
     }
 
     fun wrap(
@@ -110,7 +110,7 @@ class ScreenAnimation {
         width: Float,
         height: Float,
         animationProgress: Float,
-        alphaProgress: Float
+        alphaProgress: Float,
     ) {
         wrap(null, task, x, y, width, height, animationProgress, alphaProgress, false)
     }
@@ -123,12 +123,16 @@ class ScreenAnimation {
         height: Float,
         animationProgress: Float,
         alphaProgress: Float,
-        stencil: Boolean
+        stencil: Boolean,
     ) {
         wrap(null, task, x, y, width, height, animationProgress, alphaProgress, stencil)
     }
 
-    fun wrap(task: Runnable, animationProgress: Float, alphaProgress: Float) {
+    fun wrap(
+        task: Runnable,
+        animationProgress: Float,
+        alphaProgress: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         wrap(
@@ -140,15 +144,25 @@ class ScreenAnimation {
             sr.scaledHeight.toFloat(),
             animationProgress,
             alphaProgress,
-            false
+            false,
         )
     }
 
-    fun wrap(task: Runnable, x: Float, y: Float, width: Float, height: Float, progress: Float) {
+    fun wrap(
+        task: Runnable,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        progress: Float,
+    ) {
         wrap(null, task, x, y, width, height, progress, progress, false)
     }
 
-    fun wrap(task: Runnable, progress: Float) {
+    fun wrap(
+        task: Runnable,
+        progress: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         wrap(
@@ -160,7 +174,7 @@ class ScreenAnimation {
             sr.scaledHeight.toFloat(),
             progress,
             progress,
-            false
+            false,
         )
     }
 
@@ -173,4 +187,3 @@ class ScreenAnimation {
         }
     }
 }
-

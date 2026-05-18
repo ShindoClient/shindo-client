@@ -5,5 +5,5 @@ enum class PipeStatus {
     CONNECTING,
     CONNECTED,
     CLOSED,
-    DISCONNECTED
+    DISCONNECTED,
 }

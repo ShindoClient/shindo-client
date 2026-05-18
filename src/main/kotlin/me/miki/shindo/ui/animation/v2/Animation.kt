@@ -4,9 +4,7 @@ import me.miki.shindo.utils.TimerUtils
 import kotlin.math.max
 import kotlin.math.min
 
-
 abstract class Animation {
-
     @JvmField
     val timer = TimerUtils()
 
@@ -26,21 +24,15 @@ abstract class Animation {
         this.direction = direction
     }
 
-    fun isDone(dir: Direction): Boolean {
-        return isDone() && this.direction == dir
-    }
+    fun isDone(dir: Direction): Boolean = isDone() && this.direction == dir
 
-    fun getLinearOutput(): Double {
-        return 1 - ((timer.elapsedTime / duration.toDouble()) * endPoint)
-    }
+    fun getLinearOutput(): Double = 1 - ((timer.elapsedTime / duration.toDouble()) * endPoint)
 
     fun reset() {
         timer.reset()
     }
 
-    fun isDone(): Boolean {
-        return timer.delay(duration.toLong())
-    }
+    fun isDone(): Boolean = timer.delay(duration.toLong())
 
     fun changeDirection() {
         setDirection(direction.opposite())
@@ -53,9 +45,7 @@ abstract class Animation {
         }
     }
 
-    open fun correctOutput(): Boolean {
-        return false
-    }
+    open fun correctOutput(): Boolean = false
 
     fun getValue(): Double {
         if (!GlobalAnimationSettings.enabled) {
@@ -69,10 +59,11 @@ abstract class Animation {
             if (correctOutput()) {
                 val revTime = min(duration.toLong(), max(0, duration - timer.elapsedTime)).toDouble()
                 return getEquation(revTime) * endPoint
-            } else return (1 - getEquation(timer.elapsedTime.toDouble())) * endPoint
+            } else {
+                return (1 - getEquation(timer.elapsedTime.toDouble())) * endPoint
+            }
         }
     }
-
 
     fun setValue(value: Double) {
         if (value in 0.0..1.0) {
@@ -82,29 +73,19 @@ abstract class Animation {
         }
     }
 
-    fun getValueFloat(): Float {
-        return getValue().toFloat()
-    }
+    fun getValueFloat(): Float = getValue().toFloat()
 
-    fun getValueInt(): Int {
-        return getValue().toInt()
-    }
+    fun getValueInt(): Int = getValue().toInt()
 
     protected abstract fun getEquation(x: Double): Double
 
-    fun getEndPoint(): Double {
-        return endPoint
-    }
+    fun getEndPoint(): Double = endPoint
 
     fun setEndPoint(endPoint: Double) {
         this.endPoint = endPoint
     }
 
-    fun getDuration(): Int {
-        return duration
-    }
+    fun getDuration(): Int = duration
 
-    fun getDirection(): Direction {
-        return direction
-    }
+    fun getDirection(): Direction = direction
 }

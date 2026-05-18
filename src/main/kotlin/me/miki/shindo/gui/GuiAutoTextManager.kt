@@ -26,14 +26,15 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
-
+class GuiAutoTextManager(
+    private val parent: GuiScreen?,
+) : GuiScreen() {
     private data class AutoTextCard(
         val entry: AutoTextEntry,
         val nameBox: CompTextBox = CompTextBox(),
         val textBox: CompTextBox = CompTextBox(),
         val keybindComp: CompAutoTextKeybind,
-        var editing: Boolean = false
+        var editing: Boolean = false,
     )
 
     private val manager = AutoTextMod.instance.autoTextManager
@@ -57,7 +58,11 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
         rebuildCards()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         BlurUtils.drawBlurScreen(20f)
         val nvg = Shindo.getInstance().nanoVGManager ?: return
         screenAnimation.wrap(
@@ -68,7 +73,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             menuHeight,
             2 - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            false
+            false,
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             closeGui()
@@ -76,8 +81,13 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawContent(nvg: NanoVGManager, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        //nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
+    private fun drawContent(
+        nvg: NanoVGManager,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
+        // nvg.drawRect(0f, 0f, width.toFloat(), height.toFloat(), Color(0, 0, 0, 120))
         val palette = Shindo.getInstance().getColorManager().getPalette()
 
         nvg.drawShadow(x, y, menuWidth, menuHeight, 8f, 7)
@@ -87,7 +97,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             menuWidth,
             menuHeight,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210),
         )
         nvg.drawRoundedRect(
             x + 1f,
@@ -95,7 +105,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             menuWidth - 2f,
             menuHeight - 2f,
             7f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230),
         )
         nvg.drawText(TranslateText.AUTO_TEXT.getText(), x + 10f, y + 10f, Color.WHITE, 13f, Fonts.MEDIUM)
 
@@ -137,23 +147,29 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
         cardHeight: Float,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         val palette = Shindo.getInstance().getColorManager().getPalette()
 
         nvg.drawShadow(cardX + 2, cardY + 2, cardWidth - 4, cardHeight - 4, 6f, 7)
         nvg.drawRoundedRect(
-            cardX + 2, cardY + 2, cardWidth - 4, cardHeight - 4,
+            cardX + 2,
+            cardY + 2,
+            cardWidth - 4,
+            cardHeight - 4,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
         )
         nvg.drawOutlineRoundedRect(
-            cardX + 2, cardY + 2, cardWidth - 4, cardHeight - 4,
+            cardX + 2,
+            cardY + 2,
+            cardWidth - 4,
+            cardHeight - 4,
             6f,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
         )
-        //nvg.drawRoundedRect(cardX, cardY, cardWidth, cardHeight, 8f, Color(255, 255, 255, 20))
+        // nvg.drawRoundedRect(cardX, cardY, cardWidth, cardHeight, 8f, Color(255, 255, 255, 20))
 
         val deleteSize = 18f
         val actionSize = 18f
@@ -182,7 +198,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 contentWidth,
                 20f,
                 4f,
-                palette.getBackgroundColor(ColorType.NORMAL)
+                palette.getBackgroundColor(ColorType.NORMAL),
             )
             nvg.drawText(
                 card.entry.name.ifBlank { TranslateText.NAME.getText() },
@@ -190,7 +206,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 cardY + 14f,
                 Color.WHITE,
                 9.5f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
             nvg.drawRoundedRect(
                 cardX + 8f,
@@ -198,7 +214,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 contentWidth,
                 20f,
                 4f,
-                palette.getBackgroundColor(ColorType.NORMAL)
+                palette.getBackgroundColor(ColorType.NORMAL),
             )
             nvg.drawText(
                 card.entry.textOrCommand.ifBlank { TranslateText.TEXT.getText() },
@@ -206,7 +222,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 cardY + 40f,
                 Color(235, 235, 235, 235),
                 9f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             nvg.drawRoundedRect(cardX + 8f, cardY + 58f, 72f, 16f, 4f, Color(255, 255, 255, 26))
             nvg.drawCenteredText(
@@ -215,7 +231,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
                 cardY + 63.5f,
                 Color.WHITE,
                 8f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -228,7 +244,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             actionSize,
             actionSize,
             4f,
-            if (actionHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45)
+            if (actionHovered) Color(255, 255, 255, 70) else Color(255, 255, 255, 45),
         )
         nvg.drawRoundedRect(
             deleteX,
@@ -236,7 +252,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             deleteSize,
             deleteSize,
             4f,
-            if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70)
+            if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70),
         )
         nvg.drawCenteredText(
             if (card.editing) LegacyIcon.CHECK else LegacyIcon.PENCIL,
@@ -244,7 +260,7 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             deleteY + 5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
         nvg.drawCenteredText(
             LegacyIcon.TRASH,
@@ -252,11 +268,15 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
             deleteY + 5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             for (card in cards) {
                 if (card.editing) {
@@ -328,7 +348,10 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             val anyBinding = cards.any { it.editing && it.keybindComp.isBinding() }
             if (anyBinding) {
@@ -386,25 +409,30 @@ class GuiAutoTextManager(private val parent: GuiScreen?) : GuiScreen() {
 
         for (entry in manager.getEntries()) {
             val old = map[entry.id]
-            val card = old
-                ?: AutoTextCard(
-                    entry = entry,
-                    keybindComp = CompAutoTextKeybind(
-                        72f,
-                        { entry.keyCode },
-                        {
-                            entry.keyCode = it
-                            manager.save()
-                        }
+            val card =
+                old
+                    ?: AutoTextCard(
+                        entry = entry,
+                        keybindComp =
+                            CompAutoTextKeybind(
+                                72f,
+                                { entry.keyCode },
+                                {
+                                    entry.keyCode = it
+                                    manager.save()
+                                },
+                            ),
                     )
-                )
             card.nameBox.setText(entry.name)
             card.textBox.setText(entry.textOrCommand)
             cards.add(card)
         }
     }
 
-    private fun setEditingById(id: String, editing: Boolean) {
+    private fun setEditingById(
+        id: String,
+        editing: Boolean,
+    ) {
         for (card in cards) {
             val isTarget = card.entry.id == id
             card.editing = isTarget && editing

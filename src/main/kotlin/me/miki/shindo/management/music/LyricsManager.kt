@@ -19,14 +19,14 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 class LyricsManager {
-
     private val gson = Gson()
-    private val executorService = Executors.newSingleThreadExecutor { r ->
-        Thread(r).apply {
-            name = "Lyrics-Fetcher"
-            isDaemon = true
+    private val executorService =
+        Executors.newSingleThreadExecutor { r ->
+            Thread(r).apply {
+                name = "Lyrics-Fetcher"
+                isDaemon = true
+            }
         }
-    }
     private val lyricsCache = ConcurrentHashMap<String, CachedLyrics>()
 
     private var currentTrackId: String? = null
@@ -53,47 +53,51 @@ class LyricsManager {
             return CompletableFuture.completedFuture(cached.lyrics)
         }
 
-        val apiUrl = getLyricsApiUrl(trackId)
-            ?: run {
-                ShindoLogger.error("Failed to construct API URL for track: ${track.name}")
-                return CompletableFuture.completedFuture(null)
-            }
-
-        return CompletableFuture.supplyAsync(Supplier<LyricsResponse?> supplyAsync@{
-            try {
-                val connection = URL(apiUrl).openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = TIMEOUT_MS
-                connection.readTimeout = TIMEOUT_MS
-                connection.setRequestProperty(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-                )
-
-                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader(InputStreamReader(connection.inputStream)).use { reader ->
-                        val response = reader.readText()
-                        val lyrics = gson.fromJson(response, LyricsResponse::class.java)
-                        if (lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
-                            lyricsCache[trackId] = CachedLyrics(lyrics)
-                            currentTrackId = trackId
-                            currentLyrics = lyrics
-                            currentLineIndex = 0
-                            return@supplyAsync lyrics
-                        }
-                    }
-                    reset()
-                } else {
-                    ShindoLogger.info("Failed to get lyrics, HTTP response code: ${connection.responseCode}")
-                    reset()
+        val apiUrl =
+            getLyricsApiUrl(trackId)
+                ?: run {
+                    ShindoLogger.error("Failed to construct API URL for track: ${track.name}")
+                    return CompletableFuture.completedFuture(null)
                 }
-                return@supplyAsync null
-            } catch (e: Exception) {
-                ShindoLogger.error("Error fetching lyrics: ${e.message}")
-                reset()
-                return@supplyAsync null
-            }
-        }, executorService)
+
+        return CompletableFuture.supplyAsync(
+            Supplier<LyricsResponse?> supplyAsync@{
+                try {
+                    val connection = URL(apiUrl).openConnection() as HttpURLConnection
+                    connection.requestMethod = "GET"
+                    connection.connectTimeout = TIMEOUT_MS
+                    connection.readTimeout = TIMEOUT_MS
+                    connection.setRequestProperty(
+                        "User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                    )
+
+                    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader(InputStreamReader(connection.inputStream)).use { reader ->
+                            val response = reader.readText()
+                            val lyrics = gson.fromJson(response, LyricsResponse::class.java)
+                            if (lyrics != null && !lyrics.isError() && lyrics.lines.isNotEmpty()) {
+                                lyricsCache[trackId] = CachedLyrics(lyrics)
+                                currentTrackId = trackId
+                                currentLyrics = lyrics
+                                currentLineIndex = 0
+                                return@supplyAsync lyrics
+                            }
+                        }
+                        reset()
+                    } else {
+                        ShindoLogger.info("Failed to get lyrics, HTTP response code: ${connection.responseCode}")
+                        reset()
+                    }
+                    return@supplyAsync null
+                } catch (e: Exception) {
+                    ShindoLogger.error("Error fetching lyrics: ${e.message}")
+                    reset()
+                    return@supplyAsync null
+                }
+            },
+            executorService,
+        )
     }
 
     private fun getLyricsApiUrl(trackId: String?): String? {
@@ -124,8 +128,7 @@ class LyricsManager {
         }
     }
 
-    private fun defaultUrl(trackId: String): String =
-        "$DEFAULT_LYRICS_API_URL?trackid=$trackId"
+    private fun defaultUrl(trackId: String): String = "$DEFAULT_LYRICS_API_URL?trackid=$trackId"
 
     fun reset() {
         currentTrackId = null
@@ -163,7 +166,9 @@ class LyricsManager {
             val index = startIndex + i
             if (index < lines.size) {
                 visible.add(lines[index])
-            } else break
+            } else {
+                break
+            }
         }
         return visible
     }
@@ -189,9 +194,10 @@ class LyricsManager {
 
         val romanizer = Shindo.getInstance().getRomanizationManager() ?: return
 
-        val linesToProcess = lyrics.lines.filter { line ->
-            !line.words.isNullOrEmpty() && romanizer.containsJapaneseCharacters(line.words)
-        }
+        val linesToProcess =
+            lyrics.lines.filter { line ->
+                !line.words.isNullOrEmpty() && romanizer.containsJapaneseCharacters(line.words)
+            }
 
         if (linesToProcess.isEmpty()) return
 

@@ -24,14 +24,15 @@ import kotlin.math.sqrt
  * This scene keeps the original interactive concept: the user drags
  * a notification preview and it snaps to one of the four corner anchors.
  */
-class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
-    parent,
-    UILayoutArea.NOTIFICATIONS,
-    TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION,
-    TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION,
-    LegacyIcon.BELL
-) {
-
+class LayoutNotificationsScene(
+    parent: SettingsCategory,
+) : LayoutAreaScene(
+        parent,
+        UILayoutArea.NOTIFICATIONS,
+        TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION,
+        TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION,
+        LegacyIcon.BELL,
+    ) {
     private var dragActive = false
     private var dragOffsetX = 0f
     private var dragOffsetY = 0f
@@ -41,9 +42,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
     private var cardY = Float.NaN
     private var previewState: NotificationPreviewState? = null
 
-    override fun showTypeSelector(): Boolean {
-        return false
-    }
+    override fun showTypeSelector(): Boolean = false
 
     override fun drawPreview(
         nvg: NanoVGManager,
@@ -55,7 +54,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         height: Float,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         LayoutSceneRenderer.drawPreviewSurface(nvg, palette, x, y, width, height, LayoutSceneStyle.PREVIEW_RADIUS)
 
@@ -76,26 +75,27 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         }
 
         val selected = getSelectedType() ?: UILayoutType.NOTIFICATION_BOTTOM_RIGHT
-        val target = if (dragActive) {
-            val rawX = (mouseX - dragOffsetX).coerceIn(areaX, areaX + areaWidth - cardWidth)
-            val rawY = (mouseY - dragOffsetY).coerceIn(areaY, areaY + areaHeight - cardHeight)
-            val nearest =
-                findNearestAnchorType(rawX + cardWidth / 2f, rawY + cardHeight / 2f, anchors, cardWidth, cardHeight)
-            highlightedAnchor = nearest
-            val nearestPoint = anchors[nearest] ?: NotificationPoint(rawX, rawY)
-            val dx = nearestPoint.x - rawX
-            val dy = nearestPoint.y - rawY
-            val distance = sqrt(dx * dx + dy * dy)
-            val attraction = ((MAGNET_RADIUS - distance) / MAGNET_RADIUS).coerceIn(0f, 1f)
-            val easedAttraction = attraction * attraction * 0.7f
-            NotificationPoint(
-                rawX + dx * easedAttraction,
-                rawY + dy * easedAttraction
-            )
-        } else {
-            highlightedAnchor = selected
-            anchors[selected] ?: anchors[UILayoutType.NOTIFICATION_BOTTOM_RIGHT]!!
-        }
+        val target =
+            if (dragActive) {
+                val rawX = (mouseX - dragOffsetX).coerceIn(areaX, areaX + areaWidth - cardWidth)
+                val rawY = (mouseY - dragOffsetY).coerceIn(areaY, areaY + areaHeight - cardHeight)
+                val nearest =
+                    findNearestAnchorType(rawX + cardWidth / 2f, rawY + cardHeight / 2f, anchors, cardWidth, cardHeight)
+                highlightedAnchor = nearest
+                val nearestPoint = anchors[nearest] ?: NotificationPoint(rawX, rawY)
+                val dx = nearestPoint.x - rawX
+                val dy = nearestPoint.y - rawY
+                val distance = sqrt(dx * dx + dy * dy)
+                val attraction = ((MAGNET_RADIUS - distance) / MAGNET_RADIUS).coerceIn(0f, 1f)
+                val easedAttraction = attraction * attraction * 0.7f
+                NotificationPoint(
+                    rawX + dx * easedAttraction,
+                    rawY + dy * easedAttraction,
+                )
+            } else {
+                highlightedAnchor = selected
+                anchors[selected] ?: anchors[UILayoutType.NOTIFICATION_BOTTOM_RIGHT]!!
+            }
 
         val smooth = if (dragActive) 0.35f else 0.22f
         cardX = if (cardX.isNaN()) target.x else cardX + (target.x - cardX) * smooth
@@ -113,7 +113,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             cardHeight,
             anchors,
             selected,
-            highlightedAnchor
+            highlightedAnchor,
         )
 
         drawNotificationCard(nvg, palette, accent, cardX, cardY, cardWidth, cardHeight, dragActive)
@@ -134,7 +134,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         cardHeight: Float,
         anchors: Map<UILayoutType, NotificationPoint>,
         selectedType: UILayoutType,
-        highlightedType: UILayoutType?
+        highlightedType: UILayoutType?,
     ) {
         nvg.drawRoundedRect(
             areaX,
@@ -142,7 +142,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             areaWidth,
             areaHeight,
             9f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 128)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 128),
         )
 
         nvg.drawLine(
@@ -151,7 +151,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             areaX + areaWidth / 2f,
             areaY + areaHeight - 6f,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 78)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 78),
         )
         nvg.drawLine(
             areaX + 6f,
@@ -159,7 +159,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             areaX + areaWidth - 6f,
             areaY + areaHeight / 2f,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 78)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 78),
         )
 
         val pulse = ((sin(System.currentTimeMillis().toDouble() * 0.01) + 1.0) * 0.5).toFloat()
@@ -170,16 +170,18 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             val anchor = entry.value
             val selected = type == selectedType
             val highlighted = type == highlightedType
-            val fillAlpha = when {
-                selected -> 156
-                highlighted -> 142
-                else -> 112
-            }
-            val borderAlpha = when {
-                highlighted -> (130f + pulse * 55f).toInt()
-                selected -> 168
-                else -> 102
-            }
+            val fillAlpha =
+                when {
+                    selected -> 156
+                    highlighted -> 142
+                    else -> 112
+                }
+            val borderAlpha =
+                when {
+                    highlighted -> (130f + pulse * 55f).toInt()
+                    selected -> 168
+                    else -> 102
+                }
             val borderWidth = if (highlighted) 1.35f else 1f
 
             if (highlighted) {
@@ -189,7 +191,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
                     cardWidth + 2f,
                     cardHeight + 2f,
                     7f,
-                    ColorUtils.applyAlpha(accent.getColor1(), (38f + pulse * 22f).toInt())
+                    ColorUtils.applyAlpha(accent.getColor1(), (38f + pulse * 22f).toInt()),
                 )
             }
 
@@ -199,7 +201,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
                 cardWidth,
                 cardHeight,
                 6f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), fillAlpha)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), fillAlpha),
             )
             nvg.drawOutlineRoundedRect(
                 anchor.x,
@@ -210,8 +212,8 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
                 borderWidth,
                 ColorUtils.applyAlpha(
                     if (selected || highlighted) accent.getColor1() else accent.getColor2(),
-                    borderAlpha
-                )
+                    borderAlpha,
+                ),
             )
             nvg.drawRoundedRect(
                 anchor.x + 3f,
@@ -219,7 +221,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
                 4f,
                 4f,
                 2f,
-                ColorUtils.applyAlpha(accent.getColor1(), if (selected || highlighted) 184 else 120)
+                ColorUtils.applyAlpha(accent.getColor1(), if (selected || highlighted) 184 else 120),
             )
         }
     }
@@ -235,7 +237,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         y: Float,
         width: Float,
         height: Float,
-        dragging: Boolean
+        dragging: Boolean,
     ) {
         nvg.drawShadow(x, y, width, height, 7f, if (dragging) 8 else 5)
         nvg.drawRoundedRect(
@@ -244,7 +246,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             width,
             height,
             7f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
         )
         nvg.drawGradientRoundedRect(
             x,
@@ -253,7 +255,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             height,
             7f,
             ColorUtils.applyAlpha(accent.getColor1(), 198),
-            ColorUtils.applyAlpha(accent.getColor2(), 198)
+            ColorUtils.applyAlpha(accent.getColor2(), 198),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -262,7 +264,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             height,
             7f,
             if (dragging) 1.4f else 1f,
-            ColorUtils.applyAlpha(if (dragging) accent.getColor1() else accent.getColor2(), if (dragging) 196 else 148)
+            ColorUtils.applyAlpha(if (dragging) accent.getColor1() else accent.getColor2(), if (dragging) 196 else 148),
         )
 
         nvg.drawCenteredText(
@@ -271,7 +273,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             y + height / 2f - 5.5f,
             palette.getFontColor(ColorType.DARK),
             10.6f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
         val textStartX = x + 21f
         val titleY = y + max(5.5f, height * 0.26f)
@@ -282,7 +284,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             max(14f, width - 28f),
             5.2f,
             2f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220),
         )
         nvg.drawRoundedRect(
             textStartX,
@@ -290,11 +292,15 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             max(10f, width - 40f),
             4.4f,
             2f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 188)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 188),
         )
     }
 
-    override fun mouseClickedExtra(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClickedExtra(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             return
         }
@@ -317,7 +323,11 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         dragOffsetY = mouseY - cardY
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0 && dragActive) {
             finalizeDragSnap()
         }
@@ -348,7 +358,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         centerY: Float,
         anchors: Map<UILayoutType, NotificationPoint>,
         cardWidth: Float,
-        cardHeight: Float
+        cardHeight: Float,
     ): UILayoutType {
         var nearestType = UILayoutType.NOTIFICATION_BOTTOM_RIGHT
         var nearestDistance = Float.MAX_VALUE
@@ -375,7 +385,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         width: Float,
         height: Float,
         cardWidth: Float,
-        cardHeight: Float
+        cardHeight: Float,
     ): Map<UILayoutType, NotificationPoint> {
         val left = x
         val right = x + width - cardWidth
@@ -385,11 +395,14 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
             UILayoutType.NOTIFICATION_TOP_LEFT to NotificationPoint(left, top),
             UILayoutType.NOTIFICATION_TOP_RIGHT to NotificationPoint(right, top),
             UILayoutType.NOTIFICATION_BOTTOM_LEFT to NotificationPoint(left, bottom),
-            UILayoutType.NOTIFICATION_BOTTOM_RIGHT to NotificationPoint(right, bottom)
+            UILayoutType.NOTIFICATION_BOTTOM_RIGHT to NotificationPoint(right, bottom),
         )
     }
 
-    private data class NotificationPoint(val x: Float, val y: Float)
+    private data class NotificationPoint(
+        val x: Float,
+        val y: Float,
+    )
 
     private data class NotificationPreviewState(
         val areaX: Float,
@@ -398,7 +411,7 @@ class LayoutNotificationsScene(parent: SettingsCategory) : LayoutAreaScene(
         val areaHeight: Float,
         val cardWidth: Float,
         val cardHeight: Float,
-        val anchors: Map<UILayoutType, NotificationPoint>
+        val anchors: Map<UILayoutType, NotificationPoint>,
     )
 
     companion object {

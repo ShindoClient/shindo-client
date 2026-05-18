@@ -8,7 +8,6 @@ import kotlin.math.max
  * Handles index-list drawing, scrolling and hit testing for [LayoutScene].
  */
 class LayoutSceneListController {
-
     private val scroll = Scroll()
     private val cardSlots = ArrayList<CardSlot>()
 
@@ -17,11 +16,12 @@ class LayoutSceneListController {
         val x: Float,
         val y: Float,
         val width: Float,
-        val height: Float
+        val height: Float,
     ) {
-        fun contains(mouseX: Int, mouseY: Int): Boolean {
-            return MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        }
+        fun contains(
+            mouseX: Int,
+            mouseY: Int,
+        ): Boolean = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
     }
 
     fun reset() {
@@ -38,13 +38,14 @@ class LayoutSceneListController {
         baseX: Float,
         baseY: Float,
         baseWidth: Float,
-        baseHeight: Float
+        baseHeight: Float,
     ) {
         val listPadding = 15f
         val entryHeight = 52f
         val entrySpacing = 10f
 
-        val contentHeight = listPadding * 2f +
+        val contentHeight =
+            listPadding * 2f +
                 controllers.size * entryHeight +
                 max(0, controllers.size - 1) * entrySpacing
         scroll.maxScroll = max(0f, contentHeight - baseHeight)
@@ -72,14 +73,17 @@ class LayoutSceneListController {
                 cardWidth,
                 entryHeight,
                 activeController == controller,
-                activeController == null
+                activeController == null,
             )
             offsetY += entryHeight + entrySpacing
             i++
         }
     }
 
-    fun findClickedController(mouseX: Int, mouseY: Int): LayoutAreaController? {
+    fun findClickedController(
+        mouseX: Int,
+        mouseY: Int,
+    ): LayoutAreaController? {
         var i = 0
         while (i < cardSlots.size) {
             val slot = cardSlots[i]

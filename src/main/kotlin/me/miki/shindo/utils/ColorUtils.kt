@@ -8,9 +8,12 @@ import kotlin.math.max
 import kotlin.math.min
 
 object ColorUtils {
-
     @JvmStatic
-    fun getRainbow(index: Int, speed: Double, alpha: Int): Color {
+    fun getRainbow(
+        index: Int,
+        speed: Double,
+        alpha: Int,
+    ): Color {
         val angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
         val hue = angle / 360f
         val color = Color.HSBtoRGB(hue, 1f, 1f)
@@ -19,32 +22,50 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun interpolateColors(speed: Int, index: Int, start: Color, end: Color): Color {
+    fun interpolateColors(
+        speed: Int,
+        index: Int,
+        start: Color,
+        end: Color,
+    ): Color {
         var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
         angle = (if (angle >= 180) 360 - angle else angle) * 2
         return interpolateColorHue(start, end, angle / 360f)
     }
 
-    private fun interpolateColorHue(color1: Color, color2: Color, amount: Float): Color {
+    private fun interpolateColorHue(
+        color1: Color,
+        color2: Color,
+        amount: Float,
+    ): Color {
         var amount = amount
         amount = 1f.coerceAtMost(0f.coerceAtLeast(amount))
         val color1HSB = Color.RGBtoHSB(color1.red, color1.green, color1.blue, null)
         val color2HSB = Color.RGBtoHSB(color2.red, color2.green, color2.blue, null)
-        val resultColor = Color.getHSBColor(
-            interpolateFloat(color1HSB[0], color2HSB[0], amount.toDouble()), interpolateFloat(
-                color1HSB[1], color2HSB[1], amount.toDouble()
-            ), interpolateFloat(color1HSB[2], color2HSB[2], amount.toDouble())
-        )
+        val resultColor =
+            Color.getHSBColor(
+                interpolateFloat(color1HSB[0], color2HSB[0], amount.toDouble()),
+                interpolateFloat(
+                    color1HSB[1],
+                    color2HSB[1],
+                    amount.toDouble(),
+                ),
+                interpolateFloat(color1HSB[2], color2HSB[2], amount.toDouble()),
+            )
         return Color(
             resultColor.red,
             resultColor.green,
             resultColor.blue,
-            interpolateInt(color1.alpha, color2.alpha, amount.toDouble())
+            interpolateInt(color1.alpha, color2.alpha, amount.toDouble()),
         )
     }
 
     @JvmStatic
-    fun interpolateColor(from: Color, to: Color, delta: Double): Color {
+    fun interpolateColor(
+        from: Color,
+        to: Color,
+        delta: Double,
+    ): Color {
         val red = interpolateInt(from.red, to.red, delta)
         val green = interpolateInt(from.green, to.green, delta)
         val blue = interpolateInt(from.blue, to.blue, delta)
@@ -53,12 +74,20 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun transitionColor(from: Color, to: Color, state: Boolean): Color {
-        return interpolateColor(from, to, if (state) 1.0 else 0.0)
-    }
+    fun transitionColor(
+        from: Color,
+        to: Color,
+        state: Boolean,
+    ): Color = interpolateColor(from, to, if (state) 1.0 else 0.0)
 
     @JvmStatic
-    fun transitionColor(from: Color, to: Color, state: Boolean, speed: Int, timer: TimerUtils): Color {
+    fun transitionColor(
+        from: Color,
+        to: Color,
+        state: Boolean,
+        speed: Int,
+        timer: TimerUtils,
+    ): Color {
         val elapsed = timer.elapsedTime.toDouble() / speed.coerceAtLeast(1)
         val progress = elapsed.coerceIn(0.0, 1.0)
         return interpolateColor(from, to, if (state) progress else 1.0 - progress)
@@ -80,27 +109,36 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun removeColorCode(text: String): String {
-        return text.replace("\\u00a7" + "1".toRegex(), "").replace("\\u00a7" + "2".toRegex(), "")
+    fun removeColorCode(text: String): String =
+        text
+            .replace("\\u00a7" + "1".toRegex(), "")
+            .replace("\\u00a7" + "2".toRegex(), "")
             .replace("\\u00a7" + "3".toRegex(), "")
-            .replace("\\u00a7" + "4".toRegex(), "").replace("\\u00a7" + "5".toRegex(), "")
+            .replace("\\u00a7" + "4".toRegex(), "")
+            .replace("\\u00a7" + "5".toRegex(), "")
             .replace("\\u00a7" + "6".toRegex(), "")
-            .replace("\\u00a7" + "7".toRegex(), "").replace("\\u00a7" + "8".toRegex(), "")
+            .replace("\\u00a7" + "7".toRegex(), "")
+            .replace("\\u00a7" + "8".toRegex(), "")
             .replace("\\u00a7" + "9".toRegex(), "")
-            .replace("\\u00a7" + "a".toRegex(), "").replace("\\u00a7" + "b".toRegex(), "")
+            .replace("\\u00a7" + "a".toRegex(), "")
+            .replace("\\u00a7" + "b".toRegex(), "")
             .replace("\\u00a7" + "c".toRegex(), "")
-            .replace("\\u00a7" + "d".toRegex(), "").replace("\\u00a7" + "e".toRegex(), "")
+            .replace("\\u00a7" + "d".toRegex(), "")
+            .replace("\\u00a7" + "e".toRegex(), "")
             .replace("\\u00a7" + "f".toRegex(), "")
-            .replace("\\u00a7" + "g".toRegex(), "").replace("\\u00a7" + "k".toRegex(), "")
+            .replace("\\u00a7" + "g".toRegex(), "")
+            .replace("\\u00a7" + "k".toRegex(), "")
             .replace("\\u00a7" + "l".toRegex(), "")
-            .replace("\\u00a7" + "m".toRegex(), "").replace("\\u00a7" + "n".toRegex(), "")
+            .replace("\\u00a7" + "m".toRegex(), "")
+            .replace("\\u00a7" + "n".toRegex(), "")
             .replace("\\u00a7" + "o".toRegex(), "")
             .replace("\\u00a7" + "r".toRegex(), "")
-    }
-
 
     @JvmStatic
-    fun setColor(color: Int, alpha: Float) {
+    fun setColor(
+        color: Int,
+        alpha: Float,
+    ) {
         val r = (color shr 16 and 255) / 255.0f
         val g = (color shr 8 and 255) / 255.0f
         val b = (color and 255) / 255.0f
@@ -127,7 +165,10 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun applyAlpha(color: Color, alpha: Int): Color {
+    fun applyAlpha(
+        color: Color,
+        alpha: Int,
+    ): Color {
         val r = color.red
         val g = color.green
         val b = color.blue
@@ -135,7 +176,10 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun applyAlpha(color: Int, alpha: Int): Int {
+    fun applyAlpha(
+        color: Int,
+        alpha: Int,
+    ): Int {
         val r = color shr 16 and 255
         val g = color shr 8 and 255
         val b = color and 255
@@ -143,7 +187,10 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun lighten(color: Color, amount: Float): Color {
+    fun lighten(
+        color: Color,
+        amount: Float,
+    ): Color {
         val clamped = max(0f, min(1f, amount))
         val r = color.red
         val g = color.green
@@ -158,7 +205,10 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun darken(color: Color, amount: Float): Color {
+    fun darken(
+        color: Color,
+        amount: Float,
+    ): Color {
         val clamped = max(0f, min(1f, amount))
         val r = color.red
         val g = color.green
@@ -173,9 +223,7 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun getAlphaByInt(color: Int): Float {
-        return (color shr 24 and 255) / 255.0f
-    }
+    fun getAlphaByInt(color: Int): Float = (color shr 24 and 255) / 255.0f
 
     @JvmStatic
     fun color(color: Int) {

@@ -7,5 +7,5 @@ class Font(
     val name: String,
     val resourceLocation: ResourceLocation,
     var isLoaded: Boolean = false,
-    var buffer: ByteBuffer? = null
+    var buffer: ByteBuffer? = null,
 )

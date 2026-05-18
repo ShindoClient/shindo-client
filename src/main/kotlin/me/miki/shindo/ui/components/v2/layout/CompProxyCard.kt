@@ -10,7 +10,6 @@ import java.awt.Color
 import kotlin.math.max
 
 class CompProxyCard : Component() {
-
     var title: String = ""
     var subtitle: String = ""
     var active: Boolean = false
@@ -24,16 +23,21 @@ class CompProxyCard : Component() {
     private val toggleHoverAnimation = SimpleAnimation()
     private val togglePressAnimation = SimpleAnimation()
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         val hovered = isHovered(mouseX, mouseY)
         val base = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 216 else 194)
-        val borderColor = when {
-            active -> ColorUtils.applyAlpha(accent.getInterpolateColor(), 188)
-            hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 126)
-            else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 206)
-        }
+        val borderColor =
+            when {
+                active -> ColorUtils.applyAlpha(accent.getInterpolateColor(), 188)
+                hovered -> ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 126)
+                else -> ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 206)
+            }
 
         nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, 6)
         nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, base)
@@ -45,7 +49,7 @@ class CompProxyCard : Component() {
                 3f,
                 getHeight() - 26f,
                 1.5f,
-                ColorUtils.applyAlpha(accent.getInterpolateColor(), 188)
+                ColorUtils.applyAlpha(accent.getInterpolateColor(), 188),
             )
         }
 
@@ -55,7 +59,7 @@ class CompProxyCard : Component() {
             getY() + TITLE_TOP_PADDING,
             if (active) accent.getColor1() else palette.getFontColor(ColorType.NORMAL),
             TITLE_FONT_SIZE,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
         nvg.drawText(
             subtitle,
@@ -63,7 +67,7 @@ class CompProxyCard : Component() {
             getY() + SUBTITLE_TOP_PADDING,
             palette.getFontColor(ColorType.DARK),
             SUBTITLE_FONT_SIZE,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         val toggleX = getX() + getWidth() - TOGGLE_WIDTH - TOGGLE_RIGHT_PADDING
@@ -73,7 +77,7 @@ class CompProxyCard : Component() {
         toggleHoverAnimation.setAnimation(if (toggleHovered) 1.0f else 0.0f, 14.0)
         togglePressAnimation.setAnimation(
             if (togglePressAnimation.getValue() > 0.08f) togglePressAnimation.getValue() * 0.82f else 0.0f,
-            16.0
+            16.0,
         )
         toggleAnimation.setAnimation(if (active) 1.0f else 0.0f, 16.0)
 
@@ -94,14 +98,15 @@ class CompProxyCard : Component() {
             statusY,
             if (active) accent.getColor1() else palette.getFontColor(ColorType.DARK),
             STATUS_FONT_SIZE,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         val toggleRadius = TOGGLE_HEIGHT / 2f
-        var toggleBase = ColorUtils.applyAlpha(
-            palette.getBackgroundColor(ColorType.NORMAL),
-            if (toggleHovered) 224 else 200
-        )
+        var toggleBase =
+            ColorUtils.applyAlpha(
+                palette.getBackgroundColor(ColorType.NORMAL),
+                if (toggleHovered) 224 else 200,
+            )
         if (pressProgress > 0.08f) {
             toggleBase = ColorUtils.darken(toggleBase, pressProgress * 0.15f)
         }
@@ -117,7 +122,7 @@ class CompProxyCard : Component() {
                 TOGGLE_HEIGHT,
                 toggleRadius,
                 ColorUtils.applyAlpha(accent.getColor1(), activeAlpha),
-                ColorUtils.applyAlpha(accent.getColor2(), activeAlpha)
+                ColorUtils.applyAlpha(accent.getColor2(), activeAlpha),
             )
         }
 
@@ -130,11 +135,12 @@ class CompProxyCard : Component() {
         val knobX = toggleX + 3f + toggleProgress * (TOGGLE_WIDTH - knobSize - 6f)
         val knobY = toggleY + 3f
 
-        var knobColor = ColorUtils.interpolateColor(
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 236),
-            Color.WHITE,
-            toggleProgress.toDouble()
-        )
+        var knobColor =
+            ColorUtils.interpolateColor(
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 236),
+                Color.WHITE,
+                toggleProgress.toDouble(),
+            )
         if (hoverProgress > 0.0f) {
             knobColor = ColorUtils.interpolateColor(knobColor, Color.WHITE, (hoverProgress * 0.18f).toDouble())
         }
@@ -151,11 +157,15 @@ class CompProxyCard : Component() {
             knobSize,
             knobSize / 2f,
             1f,
-            ColorUtils.applyAlpha(Color.BLACK, 36)
+            ColorUtils.applyAlpha(Color.BLACK, 36),
         )
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0 || !isHovered(mouseX, mouseY)) return
 
         val toggleX = getX() + getWidth() - TOGGLE_WIDTH - TOGGLE_RIGHT_PADDING

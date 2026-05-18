@@ -13,15 +13,14 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import kotlin.math.min
 
-class BowZoomMod :
-    Mod(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_BOW_ZOOM) {
+class BowZoomMod : Mod(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_BOW_ZOOM) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.FACTOR,
         min = 1.0,
         max = 15.0,
         current = 5.0,
-        step = 1.0
+        step = 1.0,
     )
     private val factorSetting = 5
 
@@ -43,7 +42,3 @@ class BowZoomMod :
         mc.renderGlobal.setDisplayListEntitiesDirty()
     }
 }
-
-
-
-

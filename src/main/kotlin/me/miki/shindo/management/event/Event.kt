@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException
 
 @Suppress("UNCHECKED_CAST")
 abstract class Event {
-
     private var cancelled: Boolean = false
 
     companion object {

@@ -14,13 +14,17 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 object ShindoLogManager {
-
     private val logger = LogManager.getLogger("Shindo Client")
     private val lock = ReentrantLock()
     private val timeFormat = DateTimeFormatter.ISO_INSTANT
 
     @JvmStatic
-    fun log(level: LogLevel, message: String, category: LogCategory = LogCategory.AUTO, t: Throwable? = null) {
+    fun log(
+        level: LogLevel,
+        message: String,
+        category: LogCategory = LogCategory.AUTO,
+        t: Throwable? = null,
+    ) {
         val resolved = if (category == LogCategory.AUTO) inferCategory() else category
         val line = formatLine(level, resolved, message, t)
 
@@ -29,7 +33,11 @@ object ShindoLogManager {
         append(getCategoryLogFile(resolved), line)
     }
 
-    private fun logToConsole(level: LogLevel, line: String, t: Throwable?) {
+    private fun logToConsole(
+        level: LogLevel,
+        line: String,
+        t: Throwable?,
+    ) {
         when (level) {
             LogLevel.TRACE -> logger.trace(line, t)
             LogLevel.DEBUG -> logger.debug(line, t)
@@ -39,7 +47,12 @@ object ShindoLogManager {
         }
     }
 
-    private fun formatLine(level: LogLevel, category: LogCategory, message: String, t: Throwable?): String {
+    private fun formatLine(
+        level: LogLevel,
+        category: LogCategory,
+        message: String,
+        t: Throwable?,
+    ): String {
         val timestamp = timeFormat.format(Instant.now())
         val base = "$timestamp [${level.name}] [${category.name}] $message"
         if (t == null) {
@@ -50,7 +63,10 @@ object ShindoLogManager {
         return base + "\n" + writer.toString().trimEnd()
     }
 
-    private fun append(file: File?, message: String) {
+    private fun append(
+        file: File?,
+        message: String,
+    ) {
         if (file == null) {
             return
         }
@@ -59,7 +75,6 @@ object ShindoLogManager {
                 try {
                     file.appendText(message + "\n", Charsets.UTF_8)
                 } catch (ignored: Exception) {
-
                 }
             }
         }
@@ -90,12 +105,10 @@ object ShindoLogManager {
         return LogCategory.CORE
     }
 
-    private fun getMainLogFile(): File? {
-        return getFile { it.mainLogFile }
-    }
+    private fun getMainLogFile(): File? = getFile { it.mainLogFile }
 
-    private fun getCategoryLogFile(category: LogCategory): File? {
-        return getFile { manager ->
+    private fun getCategoryLogFile(category: LogCategory): File? =
+        getFile { manager ->
             when (category) {
                 LogCategory.CORE -> manager.coreLogFile
                 LogCategory.MODS -> manager.modsLogFile
@@ -111,13 +124,11 @@ object ShindoLogManager {
                 LogCategory.AUTO -> manager.coreLogFile
             }
         }
-    }
 
-    private fun getFile(block: (FileManager) -> File): File? {
-        return try {
+    private fun getFile(block: (FileManager) -> File): File? =
+        try {
             block(Shindo.getInstance().getFileManager())
         } catch (ignored: Exception) {
             null
         }
-    }
 }

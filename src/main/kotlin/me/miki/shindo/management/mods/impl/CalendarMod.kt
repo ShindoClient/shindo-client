@@ -13,7 +13,6 @@ class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRI
 
     @EventTarget
     fun onRender2D(event: EventNVG?) {
-
         val calendar = Calendar.getInstance()
 
         val currentColor = Shindo.getInstance().getColorManager().getCurrentColor()
@@ -57,7 +56,7 @@ class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRI
                 33 + offsetY,
                 6f,
                 getHudFont(1),
-                if (i == day) currentColor.getInterpolateColor() else this.getFontColor()
+                if (i == day) currentColor.getInterpolateColor() else this.getFontColor(),
             )
 
             offsetX += 13.4.toFloat()
@@ -96,7 +95,3 @@ class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRI
         return "null"
     }
 }
-
-
-
-

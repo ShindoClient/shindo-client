@@ -11,22 +11,24 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 object HttpUtils {
-
     private const val ACCEPTED_RESPONSE = "application/json"
     private val gson = Gson()
 
     @JvmStatic
-    fun readJson(connection: HttpURLConnection): JsonObject? {
-        return gson.fromJson(readResponse(connection), JsonObject::class.java)
-    }
+    fun readJson(connection: HttpURLConnection): JsonObject? = gson.fromJson(readResponse(connection), JsonObject::class.java)
 
     @JvmStatic
-    fun postJson(url: String, request: Any): JsonObject? {
-        return postJson(url, request, null)
-    }
+    fun postJson(
+        url: String,
+        request: Any,
+    ): JsonObject? = postJson(url, request, null)
 
     @JvmStatic
-    fun postJson(url: String, request: Any, headers: Map<String, String>?): JsonObject? {
+    fun postJson(
+        url: String,
+        request: Any,
+        headers: Map<String, String>?,
+    ): JsonObject? {
         val connection = setupConnection(url, UserAgents.MOZILLA, 5000, false)
         if (connection == null) {
             ShindoLogger.error("Failed to setup connection for post json")
@@ -68,8 +70,8 @@ object HttpUtils {
         try {
             BufferedReader(
                 InputStreamReader(
-                    if (connection.responseCode >= 400) connection.errorStream else connection.inputStream
-                )
+                    if (connection.responseCode >= 400) connection.errorStream else connection.inputStream,
+                ),
             ).use { br ->
                 var line: String?
                 while (br.readLine().also { line = it } != null) {
@@ -84,7 +86,11 @@ object HttpUtils {
     }
 
     @JvmStatic
-    fun readJson(url: String, headers: Map<String, String>?, userAgents: String): JsonObject? {
+    fun readJson(
+        url: String,
+        headers: Map<String, String>?,
+        userAgents: String,
+    ): JsonObject? {
         return try {
             val connection = setupConnection(url, userAgents, 5000, false)
             if (connection == null) {
@@ -110,12 +116,13 @@ object HttpUtils {
     }
 
     @JvmStatic
-    fun readJson(url: String, headers: Map<String, String>?): JsonObject? {
-        return readJson(url, headers, UserAgents.MOZILLA)
-    }
+    fun readJson(
+        url: String,
+        headers: Map<String, String>?,
+    ): JsonObject? = readJson(url, headers, UserAgents.MOZILLA)
 
-    private fun readResponse(br: BufferedReader): String? {
-        return try {
+    private fun readResponse(br: BufferedReader): String? =
+        try {
             val sb = StringBuilder()
             var line: String?
             while (br.readLine().also { line = it } != null) {
@@ -126,16 +133,22 @@ object HttpUtils {
             ShindoLogger.error("Failed to read response", e)
             null
         }
-    }
 
     @JvmStatic
-    fun downloadFile(url: String, outputFile: File, userAgent: String, timeout: Int, useCaches: Boolean): Boolean {
+    fun downloadFile(
+        url: String,
+        outputFile: File,
+        userAgent: String,
+        timeout: Int,
+        useCaches: Boolean,
+    ): Boolean {
         val sanitized = url.replace(" ", "%20")
         return try {
             val connection = setupConnection(sanitized, userAgent, timeout, useCaches) ?: return false
             FileOutputStream(outputFile).use { fileOut ->
                 BufferedInputStream(connection.inputStream).use { input ->
-                    org.apache.commons.io.IOUtils.copy(input, fileOut)
+                    org.apache.commons.io.IOUtils
+                        .copy(input, fileOut)
                 }
             }
             true
@@ -146,18 +159,28 @@ object HttpUtils {
     }
 
     @JvmStatic
-    fun downloadFile(url: String, outputFile: File, userAgents: String): Boolean {
-        return downloadFile(url, outputFile, userAgents, 5000, false)
-    }
+    fun downloadFile(
+        url: String,
+        outputFile: File,
+        userAgents: String,
+    ): Boolean = downloadFile(url, outputFile, userAgents, 5000, false)
 
     @JvmStatic
-    fun downloadFile(url: String, outputFile: File) {
+    fun downloadFile(
+        url: String,
+        outputFile: File,
+    ) {
         downloadFile(url, outputFile, UserAgents.MOZILLA, 5000, false)
     }
 
     @JvmStatic
-    fun setupConnection(url: String, userAgent: String, timeout: Int, useCaches: Boolean): HttpURLConnection? {
-        return try {
+    fun setupConnection(
+        url: String,
+        userAgent: String,
+        timeout: Int,
+        useCaches: Boolean,
+    ): HttpURLConnection? =
+        try {
             val punycodeUrl = PunycodeUtils.punycode(url)
             val connection = URL(punycodeUrl).openConnection() as HttpURLConnection
 
@@ -175,23 +198,20 @@ object HttpUtils {
             ShindoLogger.error("Failed to setup connection")
             null
         }
-    }
 
     @JvmStatic
-    fun encodeURL(url: String): String {
-        return try {
+    fun encodeURL(url: String): String =
+        try {
             URLEncoder.encode(url, StandardCharsets.UTF_8.toString())
         } catch (_: UnsupportedEncodingException) {
             url
         }
-    }
 
     @JvmStatic
-    fun decodeURL(url: String): String {
-        return try {
+    fun decodeURL(url: String): String =
+        try {
             URLDecoder.decode(url, StandardCharsets.UTF_8.toString())
         } catch (_: UnsupportedEncodingException) {
             url
         }
-    }
 }

@@ -9,10 +9,15 @@ import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 
 object IconUtil {
-
-    private val SIZES = intArrayOf(
-        16, 32, 48, 64, 128, 256
-    )
+    private val SIZES =
+        intArrayOf(
+            16,
+            32,
+            48,
+            64,
+            128,
+            256,
+        )
 
     @JvmStatic
     fun setDisplayIcon(path: String) {
@@ -26,9 +31,9 @@ object IconUtil {
 
     @JvmStatic
     fun loadIcons(path: String): Array<ByteBuffer> {
-
-        val stream = getStream(path)
-            ?: throw IllegalStateException("Icon not found: $path")
+        val stream =
+            getStream(path)
+                ?: throw IllegalStateException("Icon not found: $path")
 
         val original = ImageIO.read(stream)
 
@@ -38,34 +43,36 @@ object IconUtil {
         }
     }
 
-    private fun getStream(path: String): InputStream? {
-        return IconUtil::class.java.getResourceAsStream(path)
+    private fun getStream(path: String): InputStream? =
+        IconUtil::class.java.getResourceAsStream(path)
             ?: ClassLoader.getSystemResourceAsStream(path)
-    }
 
-    private fun resize(src: BufferedImage, size: Int): BufferedImage {
-
-        val img = BufferedImage(
-            size,
-            size,
-            BufferedImage.TYPE_INT_ARGB
-        )
+    private fun resize(
+        src: BufferedImage,
+        size: Int,
+    ): BufferedImage {
+        val img =
+            BufferedImage(
+                size,
+                size,
+                BufferedImage.TYPE_INT_ARGB,
+            )
 
         val g = img.createGraphics()
 
         g.setRenderingHint(
             RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_BICUBIC
+            RenderingHints.VALUE_INTERPOLATION_BICUBIC,
         )
 
         g.setRenderingHint(
             RenderingHints.KEY_RENDERING,
-            RenderingHints.VALUE_RENDER_QUALITY
+            RenderingHints.VALUE_RENDER_QUALITY,
         )
 
         g.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
+            RenderingHints.VALUE_ANTIALIAS_ON,
         )
 
         g.drawImage(src, 0, 0, size, size, null)
@@ -75,30 +82,30 @@ object IconUtil {
     }
 
     private fun toBuffer(image: BufferedImage): ByteBuffer {
-
         val pixels = IntArray(image.width * image.height)
 
         image.getRGB(
-            0, 0,
+            0,
+            0,
             image.width,
             image.height,
             pixels,
             0,
-            image.width
+            image.width,
         )
 
-        val buffer = BufferUtils.createByteBuffer(
-            image.width * image.height * 4
-        )
+        val buffer =
+            BufferUtils.createByteBuffer(
+                image.width * image.height * 4,
+            )
 
         for (y in 0 until image.height) {
             for (x in 0 until image.width) {
-
                 val pixel = pixels[y * image.width + x]
 
                 buffer.put(((pixel shr 16) and 0xFF).toByte()) // R
-                buffer.put(((pixel shr 8) and 0xFF).toByte())  // G
-                buffer.put((pixel and 0xFF).toByte())          // B
+                buffer.put(((pixel shr 8) and 0xFF).toByte()) // G
+                buffer.put((pixel and 0xFF).toByte()) // B
                 buffer.put(((pixel shr 24) and 0xFF).toByte()) // A
             }
         }

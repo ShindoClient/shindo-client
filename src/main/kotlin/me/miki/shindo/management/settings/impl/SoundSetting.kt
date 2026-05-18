@@ -6,7 +6,6 @@ import me.miki.shindo.management.settings.config.ConfigOwner
 import java.io.File
 
 open class SoundSetting : Setting {
-
     private var sound: File? = null
 
     constructor(nameTranslate: TranslateText, parent: ConfigOwner) : super(nameTranslate, parent)
@@ -17,9 +16,7 @@ open class SoundSetting : Setting {
         sound = null
     }
 
-    fun getSound(): File? {
-        return sound
-    }
+    fun getSound(): File? = sound
 
     open fun setSound(sound: File?) {
         this.sound = sound

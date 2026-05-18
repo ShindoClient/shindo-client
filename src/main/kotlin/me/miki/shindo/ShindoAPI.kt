@@ -20,7 +20,6 @@ import java.util.function.BiConsumer
 
 @Suppress("unused", "RedundantSamConstructor")
 class ShindoAPI {
-
     private val roleManager = RoleManager()
     val presence = PresenceTracker()
 
@@ -50,24 +49,32 @@ class ShindoAPI {
     }
 
     fun start() {
-        ws = ShindoWebsocket("wss://ws.shindoclient.com/websocket", presence).apply {
-            roleManager = this@ShindoAPI.roleManager
-            provider = object : ShindoWebsocket.IdentityProvider {
-                override fun player(): WsIdentity = buildIdentity()
+        ws =
+            ShindoWebsocket("wss://ws.shindoclient.com/websocket", presence).apply {
+                roleManager = this@ShindoAPI.roleManager
+                provider =
+                    object : ShindoWebsocket.IdentityProvider {
+                        override fun player(): WsIdentity = buildIdentity()
+                    }
+
+                messageHandler.addObserver(
+                    BiConsumer<MessageType, JsonObject?> { type, payload ->
+                        Shindo.getInstance().getProfileShareManager().handleMessage(type, payload)
+                    },
+                )
+                messageHandler.addObserver(
+                    BiConsumer<MessageType, JsonObject?> { type, payload ->
+                        Shindo.getInstance().getChatManager().handleMessage(type, payload)
+                    },
+                )
+                messageHandler.addObserver(
+                    BiConsumer<MessageType, JsonObject?> { type, payload ->
+                        Shindo.getInstance().getBroadcastManager().handleMessage(type, payload)
+                    },
+                )
+
+                connect()
             }
-
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().getProfileShareManager().handleMessage(type, payload)
-            })
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().getChatManager().handleMessage(type, payload)
-            })
-            messageHandler.addObserver(BiConsumer<MessageType, JsonObject?> { type, payload ->
-                Shindo.getInstance().getBroadcastManager().handleMessage(type, payload)
-            })
-
-            connect()
-        }
     }
 
     fun stop() {
@@ -96,23 +103,27 @@ class ShindoAPI {
 
         val accountType = AccountUtil.detectAccountTypeFromUuid(profileUuid)
 
-        val uuidString = profileUuid?.toString()
-            ?: UUID.nameUUIDFromBytes(
-                ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8)
-            ).toString()
+        val uuidString =
+            profileUuid?.toString()
+                ?: UUID
+                    .nameUUIDFromBytes(
+                        ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8),
+                    ).toString()
 
         return WsIdentity(uuidString, name, null, accountType)
     }
 
     private fun resolveEffectiveUuid(mc: Minecraft): UUID {
-        mc.session?.profile?.id?.let { return it }
+        mc.session
+            ?.profile
+            ?.id
+            ?.let { return it }
         mc.thePlayer?.uniqueID?.let { return it }
         val name = mc.session?.username ?: "Player"
         return UUID.nameUUIDFromBytes(
-            ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8)
+            ("OfflinePlayer:$name").toByteArray(StandardCharsets.UTF_8),
         )
     }
 
-    private fun resolveAccountType(mc: Minecraft): AccountType =
-        AccountUtil.detectAccountTypeFromUuid(resolveEffectiveUuid(mc))
+    private fun resolveAccountType(mc: Minecraft): AccountType = AccountUtil.detectAccountTypeFromUuid(resolveEffectiveUuid(mc))
 }

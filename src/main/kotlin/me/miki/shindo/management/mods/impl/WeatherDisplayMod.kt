@@ -9,11 +9,12 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.util.BlockPos
 
-class WeatherDisplayMod : SimpleHUDMod(
-    TranslateText.WEATHER_DISPLAY,
-    TranslateText.WEATHER_DISPLAY_DESCRIPTION,
-    LegacyIcon.MOD_WEATHER_DISPLAY
-) {
+class WeatherDisplayMod :
+    SimpleHUDMod(
+        TranslateText.WEATHER_DISPLAY,
+        TranslateText.WEATHER_DISPLAY_DESCRIPTION,
+        LegacyIcon.MOD_WEATHER_DISPLAY,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconEnabled = true
 
@@ -65,5 +66,3 @@ class WeatherDisplayMod : SimpleHUDMod(
         return if (iconEnabled) iconFont else null
     }
 }
-
-

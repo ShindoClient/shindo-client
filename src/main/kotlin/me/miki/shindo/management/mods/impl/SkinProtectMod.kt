@@ -9,13 +9,14 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.minecraft.util.ResourceLocation
 
-class SkinProtectMod : Mod(
-    TranslateText.SKIN_PROTECT,
-    TranslateText.SKIN_PROTECT_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_SKIN_PROTECT,
-    "nickhider"
-) {
+class SkinProtectMod :
+    Mod(
+        TranslateText.SKIN_PROTECT,
+        TranslateText.SKIN_PROTECT_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_SKIN_PROTECT,
+        "nickhider",
+    ) {
     @EventTarget
     fun onLocationSkin(event: EventLocationSkin) {
         val uuid = UUIDTypeAdapter.fromUUID(event.getPlayerInfo().gameProfile.id)
@@ -27,7 +28,3 @@ class SkinProtectMod : Mod(
         }
     }
 }
-
-
-
-

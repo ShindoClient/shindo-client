@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Timer
 
 object BlurUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
     private var blurShader: ShaderGroup? = null
 
@@ -23,12 +22,13 @@ object BlurUtils {
         try {
             val buffer = Framebuffer(mc.displayWidth, mc.displayHeight, true)
             buffer.setFramebufferColor(0.0f, 0.0f, 0.0f, 0.0f)
-            blurShader = ShaderGroup(
-                mc.textureManager,
-                mc.resourceManager,
-                mc.framebuffer,
-                ResourceLocation("shaders/post/blurArea.json")
-            )
+            blurShader =
+                ShaderGroup(
+                    mc.textureManager,
+                    mc.resourceManager,
+                    mc.framebuffer,
+                    ResourceLocation("shaders/post/blurArea.json"),
+                )
             blurShader?.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
         } catch (e: Exception) {
             ShindoLogger.error("Failed to load blur shader", e)
@@ -60,13 +60,21 @@ object BlurUtils {
         val mixinShader = shader as IMixinShaderGroup
         val shaders = mixinShader.listShaders
 
-        shaders[0].shaderManager.getShaderUniform("BlurXY")
+        shaders[0]
+            .shaderManager
+            .getShaderUniform("BlurXY")
             .set(x * (sr.scaleFactor / 2.0f), (factor3 - height) * (sr.scaleFactor / 2.0f))
-        shaders[1].shaderManager.getShaderUniform("BlurXY")
+        shaders[1]
+            .shaderManager
+            .getShaderUniform("BlurXY")
             .set(x * (sr.scaleFactor / 2.0f), (factor3 - height) * (sr.scaleFactor / 2.0f))
-        shaders[0].shaderManager.getShaderUniform("BlurCoord")
+        shaders[0]
+            .shaderManager
+            .getShaderUniform("BlurCoord")
             .set((width - x) * (sr.scaleFactor / 2.0f), (height - y) * (sr.scaleFactor / 2.0f))
-        shaders[1].shaderManager.getShaderUniform("BlurCoord")
+        shaders[1]
+            .shaderManager
+            .getShaderUniform("BlurCoord")
             .set((width - x) * (sr.scaleFactor / 2.0f), (height - y) * (sr.scaleFactor / 2.0f))
         shaders[0].shaderManager.getShaderUniform("Radius").set(radius)
         shaders[1].shaderManager.getShaderUniform("Radius").set(radius)
@@ -75,4 +83,3 @@ object BlurUtils {
         mc.framebuffer.bindFramebuffer(true)
     }
 }
-

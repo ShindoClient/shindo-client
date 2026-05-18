@@ -6,7 +6,6 @@ import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
 class CompCarouselPageIndicator : Component() {
-
     private var pageCount: Int = 0
     private var selectedIndex: Int = 0
     private var dotSize: Float = 5f
@@ -29,13 +28,20 @@ class CompCarouselPageIndicator : Component() {
         return this
     }
 
-    fun setDotMetrics(size: Float, spacing: Float): CompCarouselPageIndicator {
+    fun setDotMetrics(
+        size: Float,
+        spacing: Float,
+    ): CompCarouselPageIndicator {
         dotSize = max(2f, size)
         dotSpacing = max(2f, spacing)
         return this
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible() || pageCount <= 1 || getWidth() <= 0f || getHeight() <= 0f) {
             return
         }
@@ -57,9 +63,8 @@ class CompCarouselPageIndicator : Component() {
                 size,
                 size,
                 radius,
-                if (index == selectedIndex) activeColor else normalColor
+                if (index == selectedIndex) activeColor else normalColor,
             )
         }
     }
 }
-

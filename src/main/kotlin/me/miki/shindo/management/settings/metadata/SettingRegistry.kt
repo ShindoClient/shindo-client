@@ -19,13 +19,15 @@ import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.roundToLong
 
 object SettingRegistry {
-
     private val PROPERTY_CACHE: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private val PROPERTY_BINDINGS = ConcurrentHashMap<OwnerFieldKey, Setting>()
     private val CATEGORY_BINDINGS = ConcurrentHashMap<ConfigOwner, LinkedHashMap<String, CategorySetting>>()
     private val OWNER_BINDINGS = ConcurrentHashMap<ConfigOwner, CopyOnWriteArrayList<Setting>>()
 
-    private fun registerOwnerSetting(owner: ConfigOwner?, setting: Setting?) {
+    private fun registerOwnerSetting(
+        owner: ConfigOwner?,
+        setting: Setting?,
+    ) {
         if (owner == null || setting == null) {
             return
         }
@@ -42,7 +44,10 @@ object SettingRegistry {
         processSettingFields(owner, processed)
     }
 
-    private fun processSettingFields(owner: ConfigOwner, processed: MutableSet<Setting>) {
+    private fun processSettingFields(
+        owner: ConfigOwner,
+        processed: MutableSet<Setting>,
+    ) {
         var type: Class<*>? = owner.javaClass
 
         while (type != null && type != Any::class.java) {
@@ -91,7 +96,10 @@ object SettingRegistry {
         }
     }
 
-    private fun processPropertyFields(owner: ConfigOwner, processed: MutableSet<Setting>) {
+    private fun processPropertyFields(
+        owner: ConfigOwner,
+        processed: MutableSet<Setting>,
+    ) {
         var type: Class<*>? = owner.javaClass
 
         while (type != null && type != Any::class.java) {
@@ -115,44 +123,56 @@ object SettingRegistry {
     }
 
     @JvmStatic
-    fun <T : Setting> getSetting(owner: ConfigOwner, fieldName: String, type: Class<T>): T? {
+    fun <T : Setting> getSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+        type: Class<T>,
+    ): T? {
         val setting = PROPERTY_BINDINGS[OwnerFieldKey(owner, fieldName)] ?: return null
         if (!type.isInstance(setting)) {
-            throw IllegalArgumentException("Property '" + fieldName + "' on " + owner.javaClass.simpleName + " is not of type " + type.simpleName)
+            throw IllegalArgumentException(
+                "Property '" + fieldName + "' on " + owner.javaClass.simpleName + " is not of type " + type.simpleName,
+            )
         }
         @Suppress("UNCHECKED_CAST")
         return setting as T
     }
 
     @JvmStatic
-    fun getBooleanSetting(owner: ConfigOwner, fieldName: String): BooleanSetting? {
-        return getSetting(owner, fieldName, BooleanSetting::class.java)
-    }
+    fun getBooleanSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): BooleanSetting? = getSetting(owner, fieldName, BooleanSetting::class.java)
 
     @JvmStatic
-    fun getNumberSetting(owner: ConfigOwner, fieldName: String): NumberSetting? {
-        return getSetting(owner, fieldName, NumberSetting::class.java)
-    }
+    fun getNumberSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): NumberSetting? = getSetting(owner, fieldName, NumberSetting::class.java)
 
     @JvmStatic
-    fun getTextSetting(owner: ConfigOwner, fieldName: String): TextSetting? {
-        return getSetting(owner, fieldName, TextSetting::class.java)
-    }
+    fun getTextSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): TextSetting? = getSetting(owner, fieldName, TextSetting::class.java)
 
     @JvmStatic
-    fun getColorSetting(owner: ConfigOwner, fieldName: String): ColorSetting? {
-        return getSetting(owner, fieldName, ColorSetting::class.java)
-    }
+    fun getColorSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): ColorSetting? = getSetting(owner, fieldName, ColorSetting::class.java)
 
     @JvmStatic
-    fun getKeybindSetting(owner: ConfigOwner, fieldName: String): KeybindSetting? {
-        return getSetting(owner, fieldName, KeybindSetting::class.java)
-    }
+    fun getKeybindSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): KeybindSetting? = getSetting(owner, fieldName, KeybindSetting::class.java)
 
     @JvmStatic
-    fun getComboSetting(owner: ConfigOwner, fieldName: String): ComboSetting? {
-        return getSetting(owner, fieldName, ComboSetting::class.java)
-    }
+    fun getComboSetting(
+        owner: ConfigOwner,
+        fieldName: String,
+    ): ComboSetting? = getSetting(owner, fieldName, ComboSetting::class.java)
 
     @JvmStatic
     fun getSettings(owner: ConfigOwner): List<Setting> {
@@ -166,7 +186,7 @@ object SettingRegistry {
     private fun ensureCategory(
         owner: ConfigOwner,
         rawCategory: String?,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): CategorySetting? {
         if (rawCategory == null) {
             return null
@@ -186,16 +206,20 @@ object SettingRegistry {
         return categorySetting
     }
 
-    private fun createCategorySetting(owner: ConfigOwner, category: String): CategorySetting {
+    private fun createCategorySetting(
+        owner: ConfigOwner,
+        category: String,
+    ): CategorySetting {
         if (owner is SettingCategoryProvider) {
             val provider = owner
             val key = category.lowercase(Locale.ROOT)
             val label = provider.resolveCategoryLabel(key)
-            val setting = if (label != null && label != TranslateText.NONE) {
-                CategorySetting(label, owner)
-            } else {
-                CategorySetting(category, owner)
-            }
+            val setting =
+                if (label != null && label != TranslateText.NONE) {
+                    CategorySetting(label, owner)
+                } else {
+                    CategorySetting(category, owner)
+                }
             setting.setCollapsed(provider.isCategoryInitiallyCollapsed(key))
             return setting
         }
@@ -208,85 +232,103 @@ object SettingRegistry {
         owner: ConfigOwner,
         field: Field,
         property: Property,
-        processed: MutableSet<Setting>
-    ): Setting? {
-        return try {
+        processed: MutableSet<Setting>,
+    ): Setting? =
+        try {
             val isStatic = Modifier.isStatic(field.modifiers)
             val target = if (isStatic) null else owner
             field.isAccessible = true
 
             when (property.type) {
-                me.miki.shindo.management.settings.config.PropertyType.BOOLEAN -> createBooleanSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.BOOLEAN -> {
+                    createBooleanSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.NUMBER -> createNumberSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.NUMBER -> {
+                    createNumberSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.TEXT -> createTextSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.TEXT -> {
+                    createTextSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.COLOR -> createColorSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.COLOR -> {
+                    createColorSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.KEYBIND -> createKeybindSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.KEYBIND -> {
+                    createKeybindSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.IMAGE -> createImageSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.IMAGE -> {
+                    createImageSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.SOUND -> createSoundSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.SOUND -> {
+                    createSoundSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.COMBO -> createComboSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.COMBO -> {
+                    createComboSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
-                me.miki.shindo.management.settings.config.PropertyType.CELL_GRID -> createCellGridSetting(
-                    owner,
-                    field,
-                    target,
-                    property,
-                    processed
-                )
+                me.miki.shindo.management.settings.config.PropertyType.CELL_GRID -> {
+                    createCellGridSetting(
+                        owner,
+                        field,
+                        target,
+                        property,
+                        processed,
+                    )
+                }
 
                 else -> {
                     ShindoLogger.warn("Property type " + property.type + " is not yet supported on field " + field.name)
@@ -297,30 +339,31 @@ object SettingRegistry {
             ShindoLogger.error("Failed to bind property field " + field.name, e)
             null
         }
-    }
 
     private fun createBooleanSetting(
         owner: ConfigOwner,
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
-        val defaultValue = if (!property.current.isNaN()) {
-            property.current != 0.0
-        } else if (field.type == java.lang.Boolean.TYPE) {
-            field.getBoolean(target)
-        } else {
-            val value = field.get(target)
-            value is Boolean && value
-        }
+        val defaultValue =
+            if (!property.current.isNaN()) {
+                property.current != 0.0
+            } else if (field.type == java.lang.Boolean.TYPE) {
+                field.getBoolean(target)
+            } else {
+                val value = field.get(target)
+                value is Boolean && value
+            }
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundBooleanSetting(property.translate, owner, defaultValue, field, target)
-        } else {
-            BoundBooleanSetting(resolveName(property, field), owner, defaultValue, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundBooleanSetting(property.translate, owner, defaultValue, field, target)
+            } else {
+                BoundBooleanSetting(resolveName(property, field), owner, defaultValue, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setToggled(defaultValue)
@@ -332,7 +375,7 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         val integer = isIntegerType(field.type)
         var defaultValue = if (!property.current.isNaN()) property.current else readNumericField(field, target)
@@ -349,11 +392,12 @@ object SettingRegistry {
         defaultValue = clamp(defaultValue, min, max)
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundNumberSetting(property.translate, owner, defaultValue, min, max, integer, field, target)
-        } else {
-            BoundNumberSetting(resolveName(property, field), owner, defaultValue, min, max, integer, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundNumberSetting(property.translate, owner, defaultValue, min, max, integer, field, target)
+            } else {
+                BoundNumberSetting(resolveName(property, field), owner, defaultValue, min, max, integer, field, target)
+            }
 
         val metadata = applyMetadata(setting, property, field)
         if (!property.step.isNaN()) {
@@ -368,7 +412,7 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         var defaultValue = if (property.text.isNotEmpty()) property.text else field.get(target) as? String
         if (defaultValue == null) {
@@ -376,11 +420,12 @@ object SettingRegistry {
         }
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundTextSetting(property.translate, owner, defaultValue, field, target)
-        } else {
-            BoundTextSetting(resolveName(property, field), owner, defaultValue, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundTextSetting(property.translate, owner, defaultValue, field, target)
+            } else {
+                BoundTextSetting(resolveName(property, field), owner, defaultValue, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setText(defaultValue)
@@ -392,21 +437,23 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
-        val defaultColor = if (property.color != Int.MIN_VALUE) {
-            Color(property.color, property.showAlpha)
-        } else {
-            val value = field.get(target) as? Color
-            value ?: Color.WHITE
-        }
+        val defaultColor =
+            if (property.color != Int.MIN_VALUE) {
+                Color(property.color, property.showAlpha)
+            } else {
+                val value = field.get(target) as? Color
+                value ?: Color.WHITE
+            }
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundColorSetting(property.translate, owner, defaultColor, property.showAlpha, field, target)
-        } else {
-            BoundColorSetting(resolveName(property, field), owner, defaultColor, property.showAlpha, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundColorSetting(property.translate, owner, defaultColor, property.showAlpha, field, target)
+            } else {
+                BoundColorSetting(resolveName(property, field), owner, defaultColor, property.showAlpha, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setColor(defaultColor)
@@ -418,16 +465,17 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         val defaultKey = if (property.keyCode != Int.MIN_VALUE) property.keyCode else field.getInt(target)
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundKeybindSetting(property.translate, owner, defaultKey, field, target)
-        } else {
-            BoundKeybindSetting(resolveName(property, field), owner, defaultKey, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundKeybindSetting(property.translate, owner, defaultKey, field, target)
+            } else {
+                BoundKeybindSetting(resolveName(property, field), owner, defaultKey, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setKeyCode(defaultKey)
@@ -439,16 +487,17 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         val defaultFile = field.get(target) as? File
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundImageSetting(property.translate, owner, defaultFile, field, target)
-        } else {
-            BoundImageSetting(resolveName(property, field), owner, defaultFile, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundImageSetting(property.translate, owner, defaultFile, field, target)
+            } else {
+                BoundImageSetting(resolveName(property, field), owner, defaultFile, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setImage(defaultFile)
@@ -460,16 +509,17 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         val defaultFile = field.get(target) as? File
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundSoundSetting(property.translate, owner, defaultFile, field, target)
-        } else {
-            BoundSoundSetting(resolveName(property, field), owner, defaultFile, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundSoundSetting(property.translate, owner, defaultFile, field, target)
+            } else {
+                BoundSoundSetting(resolveName(property, field), owner, defaultFile, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.setSound(defaultFile)
@@ -481,7 +531,7 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting? {
         val rawType = field.type
         if (!rawType.isEnum) {
@@ -491,7 +541,9 @@ object SettingRegistry {
 
         val constants = rawType.enumConstants
         if (constants == null || constants.isEmpty()) {
-            ShindoLogger.warn("Enum property " + field.name + " on " + owner.javaClass.simpleName + " defines no constants")
+            ShindoLogger.warn(
+                "Enum property " + field.name + " on " + owner.javaClass.simpleName + " defines no constants",
+            )
             return null
         }
 
@@ -513,11 +565,12 @@ object SettingRegistry {
         }
 
         val defaultKey = ensureEnumOption(mapping, defaultValue)
-        val setting = if (translate(property)) {
-            BoundEnumSetting(property.translate, owner, defaultKey, options, mapping, field, target)
-        } else {
-            BoundEnumSetting(resolveName(property, field), owner, defaultKey, options, mapping, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundEnumSetting(property.translate, owner, defaultKey, options, mapping, field, target)
+            } else {
+                BoundEnumSetting(resolveName(property, field), owner, defaultKey, options, mapping, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.initialize()
@@ -529,23 +582,28 @@ object SettingRegistry {
         field: Field,
         target: Any?,
         property: Property,
-        processed: MutableSet<Setting>
+        processed: MutableSet<Setting>,
     ): Setting {
         val defaultGrid = copyGrid(field.get(target) as? Array<BooleanArray>)
 
         ensureCategory(owner, property.category, processed)
-        val setting = if (translate(property)) {
-            BoundCellGridSetting(property.translate, owner, defaultGrid, field, target)
-        } else {
-            BoundCellGridSetting(resolveName(property, field), owner, defaultGrid, field, target)
-        }
+        val setting =
+            if (translate(property)) {
+                BoundCellGridSetting(property.translate, owner, defaultGrid, field, target)
+            } else {
+                BoundCellGridSetting(resolveName(property, field), owner, defaultGrid, field, target)
+            }
 
         applyMetadata(setting, property, field)
         setting.initialize()
         return setting
     }
 
-    private fun applyMetadata(setting: Setting, property: Property, field: Field): SettingMetadata {
+    private fun applyMetadata(
+        setting: Setting,
+        property: Property,
+        field: Field,
+    ): SettingMetadata {
         val metadata = SettingMetadata(field.name)
         metadata.category = property.category
         metadata.description = property.description
@@ -582,7 +640,10 @@ object SettingRegistry {
         return Option(display.ifEmpty { constant.name })
     }
 
-    private fun ensureEnumOption(mapping: LinkedHashMap<String, Enum<*>>, value: Enum<*>): String {
+    private fun ensureEnumOption(
+        mapping: LinkedHashMap<String, Enum<*>>,
+        value: Enum<*>,
+    ): String {
         for (entry in mapping.entries) {
             if (entry.value == value) {
                 return entry.key
@@ -603,24 +664,30 @@ object SettingRegistry {
         return copy
     }
 
-    private fun translate(property: Property): Boolean {
-        return property.translate != TranslateText.NONE
-    }
+    private fun translate(property: Property): Boolean = property.translate != TranslateText.NONE
 
-    private fun resolveName(property: Property, field: Field): String {
-        return property.name.ifEmpty {
+    private fun resolveName(
+        property: Property,
+        field: Field,
+    ): String =
+        property.name.ifEmpty {
             field.name
         }
-    }
 
-    private fun isIntegerType(type: Class<*>): Boolean {
-        return type == Integer.TYPE || type == Integer::class.java
-                || type == java.lang.Long.TYPE || type == java.lang.Long::class.java
-                || type == java.lang.Short.TYPE || type == java.lang.Short::class.java
-                || type == java.lang.Byte.TYPE || type == java.lang.Byte::class.java
-    }
+    private fun isIntegerType(type: Class<*>): Boolean =
+        type == Integer.TYPE ||
+            type == Integer::class.java ||
+            type == java.lang.Long.TYPE ||
+            type == java.lang.Long::class.java ||
+            type == java.lang.Short.TYPE ||
+            type == java.lang.Short::class.java ||
+            type == java.lang.Byte.TYPE ||
+            type == java.lang.Byte::class.java
 
-    private fun readNumericField(field: Field, target: Any?): Double {
+    private fun readNumericField(
+        field: Field,
+        target: Any?,
+    ): Double {
         val type = field.type
         return when (type) {
             java.lang.Double.TYPE -> field.getDouble(target)
@@ -639,11 +706,16 @@ object SettingRegistry {
         }
     }
 
-    private fun clamp(value: Double, min: Double, max: Double): Double {
-        return kotlin.math.max(min, kotlin.math.min(max, value))
-    }
+    private fun clamp(
+        value: Double,
+        min: Double,
+        max: Double,
+    ): Double = kotlin.math.max(min, kotlin.math.min(max, value))
 
-    private open class SettingBinding(val field: Field, val target: Any?) {
+    private open class SettingBinding(
+        val field: Field,
+        val target: Any?,
+    ) {
         fun handleException(e: Exception) {
             ShindoLogger.error("Failed to update property field " + field.name, e)
         }
@@ -657,7 +729,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultValue: Boolean,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, defaultValue) {
             binding = SettingBinding(field, target)
         }
@@ -665,7 +737,7 @@ object SettingRegistry {
         constructor(name: String, parent: ConfigOwner, defaultValue: Boolean, field: Field, target: Any?) : super(
             name,
             parent,
-            defaultValue
+            defaultValue,
         ) {
             binding = SettingBinding(field, target)
         }
@@ -706,7 +778,7 @@ object SettingRegistry {
             max: Double,
             integer: Boolean,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, defaultValue, min, max, integer) {
             binding = SettingBinding(field, target)
             this.integer = integer
@@ -720,7 +792,7 @@ object SettingRegistry {
             max: Double,
             integer: Boolean,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(name, parent, defaultValue, min, max, integer) {
             binding = SettingBinding(field, target)
             this.integer = integer
@@ -774,7 +846,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultText: String,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, defaultText) {
             binding = SettingBinding(field, target)
         }
@@ -784,7 +856,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultText: String,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(name, parent, defaultText) {
             binding = SettingBinding(field, target)
         }
@@ -817,7 +889,7 @@ object SettingRegistry {
             color: Color,
             showAlpha: Boolean,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, color, showAlpha) {
             binding = SettingBinding(field, target)
         }
@@ -828,7 +900,7 @@ object SettingRegistry {
             color: Color,
             showAlpha: Boolean,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(name, parent, color, showAlpha) {
             binding = SettingBinding(field, target)
         }
@@ -880,7 +952,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             keyCode: Int,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, keyCode) {
             binding = SettingBinding(field, target)
         }
@@ -888,7 +960,7 @@ object SettingRegistry {
         constructor(name: String, parent: ConfigOwner, keyCode: Int, field: Field, target: Any?) : super(
             name,
             parent,
-            keyCode
+            keyCode,
         ) {
             binding = SettingBinding(field, target)
         }
@@ -916,7 +988,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultFile: File?,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent) {
             binding = SettingBinding(field, target)
             super.setImage(defaultFile)
@@ -924,7 +996,7 @@ object SettingRegistry {
 
         constructor(name: String, parent: ConfigOwner, defaultFile: File?, field: Field, target: Any?) : super(
             name,
-            parent
+            parent,
         ) {
             binding = SettingBinding(field, target)
             super.setImage(defaultFile)
@@ -957,7 +1029,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultFile: File?,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent) {
             binding = SettingBinding(field, target)
             super.setSound(defaultFile)
@@ -965,7 +1037,7 @@ object SettingRegistry {
 
         constructor(name: String, parent: ConfigOwner, defaultFile: File?, field: Field, target: Any?) : super(
             name,
-            parent
+            parent,
         ) {
             binding = SettingBinding(field, target)
             super.setSound(defaultFile)
@@ -1001,7 +1073,7 @@ object SettingRegistry {
             options: List<Option>,
             mapping: Map<String, Enum<*>>,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, defaultKey, options) {
             binding = SettingBinding(field, target)
             this.mapping = mapping
@@ -1014,7 +1086,7 @@ object SettingRegistry {
             options: List<Option>,
             mapping: Map<String, Enum<*>>,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(name, parent, defaultKey, options) {
             binding = SettingBinding(field, target)
             this.mapping = mapping
@@ -1058,7 +1130,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultGrid: Array<BooleanArray>?,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(text, parent, copyGrid(defaultGrid)) {
             binding = SettingBinding(field, target)
         }
@@ -1068,7 +1140,7 @@ object SettingRegistry {
             parent: ConfigOwner,
             defaultGrid: Array<BooleanArray>?,
             field: Field,
-            target: Any?
+            target: Any?,
         ) : super(name, parent, copyGrid(defaultGrid)) {
             binding = SettingBinding(field, target)
         }
@@ -1106,7 +1178,10 @@ object SettingRegistry {
         }
     }
 
-    private class OwnerFieldKey(private val owner: ConfigOwner, private val fieldName: String) {
+    private class OwnerFieldKey(
+        private val owner: ConfigOwner,
+        private val fieldName: String,
+    ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1125,4 +1200,3 @@ object SettingRegistry {
         }
     }
 }
-

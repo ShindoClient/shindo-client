@@ -5,7 +5,8 @@ import java.util.*
 enum class AccountType {
     LOCAL,
     MICROSOFT,
-    OFFLINE;
+    OFFLINE,
+    ;
 
     fun getWireValue(): String = name
 

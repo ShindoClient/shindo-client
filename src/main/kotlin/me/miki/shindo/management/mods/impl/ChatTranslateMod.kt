@@ -16,12 +16,13 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatStyle
 import net.minecraft.util.EnumChatFormatting
 
-class ChatTranslateMod : Mod(
-    TranslateText.CHAT_TRANSLATE,
-    TranslateText.CHAT_TRANSLATE_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_CHAT_TRANSLATE
-) {
+class ChatTranslateMod :
+    Mod(
+        TranslateText.CHAT_TRANSLATE,
+        TranslateText.CHAT_TRANSLATE_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_CHAT_TRANSLATE,
+    ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.LANGUAGE)
     val language: Language = Language.JAPANESE
 
@@ -33,20 +34,22 @@ class ChatTranslateMod : Mod(
     fun onReceivePacket(event: EventReceivePacket) {
         if (event.getPacket() is S02PacketChat) {
             val chatPacket = event.getPacket() as S02PacketChat
-            val translate = ChatComponentText(" [" + '\u270E' + "]").setChatStyle(
-                ChatStyle().setColor(EnumChatFormatting.GREEN).setChatClickEvent(
-                    ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
-                        ".scmd translate " + chatPacket.chatComponent.unformattedText
-                    )
+            val translate =
+                ChatComponentText(" [" + '\u270E' + "]").setChatStyle(
+                    ChatStyle()
+                        .setColor(EnumChatFormatting.GREEN)
+                        .setChatClickEvent(
+                            ClickEvent(
+                                ClickEvent.Action.RUN_COMMAND,
+                                ".scmd translate " + chatPacket.chatComponent.unformattedText,
+                            ),
+                        ).setChatHoverEvent(
+                            HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                ChatComponentText(TranslateText.CLICK_TO_TRANSLATE.getText()),
+                            ),
+                        ),
                 )
-                    .setChatHoverEvent(
-                        HoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            ChatComponentText(TranslateText.CLICK_TO_TRANSLATE.getText())
-                        )
-                    )
-            )
             val chatMessage = chatPacket.chatComponent.unformattedText
 
             if (chatMessage.replace(" ".toRegex(), "").isEmpty() || chatPacket.type.toInt() == 2) {
@@ -59,15 +62,16 @@ class ChatTranslateMod : Mod(
         }
     }
 
-    enum class Language(private val translate: TranslateText) : PropertyEnum {
+    enum class Language(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         JAPANESE(TranslateText.JAPANESE),
         ENGLISH(TranslateText.ENGLISH),
         CHINESE(TranslateText.CHINESE),
-        POLISH(TranslateText.POLISH);
+        POLISH(TranslateText.POLISH),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -75,7 +79,3 @@ class ChatTranslateMod : Mod(
         var instance: ChatTranslateMod? = null
     }
 }
-
-
-
-

@@ -13,8 +13,7 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class KeystrokesMod :
-    HUDMod(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION, LegacyIcon.MOD_KEYSTROKES) {
+class KeystrokesMod : HUDMod(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION, LegacyIcon.MOD_KEYSTROKES) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SPACE)
     private val spaceSetting = true
 
@@ -31,28 +30,27 @@ class KeystrokesMod :
 
     @EventTarget
     fun onRender2D(event: EventNVG?) {
-
         val openGui = mc.currentScreen != null
 
         animations[0]!!.setAnimation(
             if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode)) 1.0f else 0.0f,
-            16
+            16,
         )
         animations[1]!!.setAnimation(
             if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)) 1.0f else 0.0f,
-            16
+            16,
         )
         animations[2]!!.setAnimation(
             if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindBack.keyCode)) 1.0f else 0.0f,
-            16
+            16,
         )
         animations[3]!!.setAnimation(
             if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)) 1.0f else 0.0f,
-            16
+            16,
         )
         animations[4]!!.setAnimation(
             if (!openGui && Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCode)) 1.0f else 0.0f,
-            16
+            16,
         )
 
         this.drawBackground(32f, 0f, 28f, 28f)
@@ -89,28 +87,28 @@ class KeystrokesMod :
                 32 + (28 / 2f),
                 (28 / 2f) - 4,
                 12f,
-                getHudFont(1)
+                getHudFont(1),
             )
             this.drawCenteredText(
                 Keyboard.getKeyName(mc.gameSettings.keyBindLeft.keyCode),
                 (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,
-                getHudFont(1)
+                getHudFont(1),
             )
             this.drawCenteredText(
                 Keyboard.getKeyName(mc.gameSettings.keyBindBack.keyCode),
                 32 + (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,
-                getHudFont(1)
+                getHudFont(1),
             )
             this.drawCenteredText(
                 Keyboard.getKeyName(mc.gameSettings.keyBindRight.keyCode),
                 64 + (28 / 2f),
                 32 + (28 / 2f) - 4,
                 12f,
-                getHudFont(1)
+                getHudFont(1),
             )
         }
 
@@ -125,7 +123,7 @@ class KeystrokesMod :
                 ((28 * 3) + 8).toFloat(),
                 22f,
                 6f,
-                this.getFontColor((120 * animations[4]!!.getValue()).toInt())
+                this.getFontColor((120 * animations[4]!!.getValue()).toInt()),
             )
             this.restore()
 
@@ -138,13 +136,19 @@ class KeystrokesMod :
         this.setHeight(if (spaceSetting) 64 + 22 else 32 + 28)
     }
 
-    private fun drawHighlight(addX: Float, addY: Float, width: Float, height: Float, radius: Float, color: Color) {
+    private fun drawHighlight(
+        addX: Float,
+        addY: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        color: Color,
+    ) {
         val rect = InternalSettingsMod.instance.hudTheme == HudTheme.RECT
-        if (!rect) this.drawRoundedRect(addX, addY, width, height, radius, color)
-        else this.drawRect(addX, addY, width, height, color)
+        if (!rect) {
+            this.drawRoundedRect(addX, addY, width, height, radius, color)
+        } else {
+            this.drawRect(addX, addY, width, height, color)
+        }
     }
 }
-
-
-
-

@@ -15,9 +15,8 @@ open class Setting protected constructor(
     private val nameTranslate: TranslateText?,
     val parent: ConfigOwner,
     private val displayName: String,
-    private val nameKey: String
+    private val nameKey: String,
 ) {
-
     private var registered = false
     private var metadata: SettingMetadata? = null
 
@@ -25,7 +24,7 @@ open class Setting protected constructor(
         nameTranslate,
         parent,
         nameTranslate.getText(),
-        nameTranslate.getKey()
+        nameTranslate.getKey(),
     ) {
         register()
     }
@@ -34,7 +33,7 @@ open class Setting protected constructor(
         null,
         parent,
         name,
-        buildKey(parent, name)
+        buildKey(parent, name),
     ) {
         register()
     }
@@ -58,9 +57,7 @@ open class Setting protected constructor(
     val name: String
         get() = displayName
 
-    fun getTranslate(): TranslateText? {
-        return nameTranslate
-    }
+    fun getTranslate(): TranslateText? = nameTranslate
 
     fun getNameKey(): String {
         val data = metadata
@@ -70,9 +67,7 @@ open class Setting protected constructor(
         return nameKey
     }
 
-    fun getMetadata(): SettingMetadata? {
-        return metadata
-    }
+    fun getMetadata(): SettingMetadata? = metadata
 
     fun applyMetadata(metadata: SettingMetadata) {
         this.metadata = metadata
@@ -81,7 +76,10 @@ open class Setting protected constructor(
     companion object {
         private val KEY_SANITIZE = Pattern.compile("[^a-z0-9]+")
 
-        private fun buildKey(parent: ConfigOwner, raw: String): String {
+        private fun buildKey(
+            parent: ConfigOwner,
+            raw: String,
+        ): String {
             val candidate = normalizeKey(raw)
             return parent.getConfigId() + ":" + candidate
         }
@@ -89,9 +87,11 @@ open class Setting protected constructor(
         @JvmStatic
         fun normalizeKey(raw: String?): String {
             var candidate = raw ?: ""
-            candidate = Normalizer.normalize(candidate, Normalizer.Form.NFD)
-                .replace("\\p{M}".toRegex(), "")
-                .lowercase(Locale.ROOT)
+            candidate =
+                Normalizer
+                    .normalize(candidate, Normalizer.Form.NFD)
+                    .replace("\\p{M}".toRegex(), "")
+                    .lowercase(Locale.ROOT)
             candidate = KEY_SANITIZE.matcher(candidate).replaceAll("_")
             candidate = candidate.replace("^_+".toRegex(), "").replace("_+$".toRegex(), "")
 
@@ -104,4 +104,3 @@ open class Setting protected constructor(
         }
     }
 }
-

@@ -3,7 +3,6 @@ package me.miki.shindo.ui.animation.v2.curve
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 
-
 open class DecelerateAnimation : Animation {
     constructor(ms: Int, endPoint: Double) : super(ms, endPoint) {
         this.reset()

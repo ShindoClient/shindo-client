@@ -7,7 +7,6 @@ import java.io.File
 import java.io.IOException
 
 class FileManager {
-
     val shindoDir: File
     val externalDir: File
     val cacheDir: File

@@ -16,14 +16,15 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Keyboard
 
-class FreelookMod : Mod(
-    TranslateText.FREELOOK,
-    TranslateText.FREELOOK_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_FREELOOK,
-    "perspectivemod",
-    true
-) {
+class FreelookMod :
+    Mod(
+        TranslateText.FREELOOK,
+        TranslateText.FREELOOK_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_FREELOOK,
+        "perspectivemod",
+        true,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.INVERT_YAW)
     private val invertYawSetting = false
 
@@ -137,13 +138,14 @@ class FreelookMod : Mod(
     private val isKeyBindDown: Boolean
         get() = Keyboard.isKeyDown(keybindSetting) && mc.currentScreen !is Gui
 
-    private enum class Mode(private val translate: TranslateText) : PropertyEnum {
+    private enum class Mode(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         TOGGLE(TranslateText.TOGGLE),
-        KEYDOWN(TranslateText.KEYDOWN);
+        KEYDOWN(TranslateText.KEYDOWN),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -151,7 +153,3 @@ class FreelookMod : Mod(
         var instance: FreelookMod? = null
     }
 }
-
-
-
-

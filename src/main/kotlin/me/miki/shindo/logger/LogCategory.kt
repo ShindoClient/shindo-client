@@ -12,5 +12,5 @@ enum class LogCategory {
     UI,
     SECURITY,
     ADDONS,
-    PROFILE
+    PROFILE,
 }

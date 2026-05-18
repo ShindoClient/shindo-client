@@ -16,123 +16,132 @@ import kotlin.math.min
 
 @Suppress("UNUSED")
 class LayoutManager {
-    private val preset4 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset5 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
-        booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
-        booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset7 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset8 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, true, false, true, false, true, false, false, false),
-        booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, true, true, true, false, true, false, true, true, true, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
-        booleanArrayOf(false, false, false, true, false, true, false, true, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset11 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
-        booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
-        booleanArrayOf(false, false, true, true, false, true, false, true, true, false, false),
-        booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
-        booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset13 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, true, true, false, false, false, true, true, false, false),
-        booleanArrayOf(false, false, true, false, false, false, false, false, true, false, false),
-        booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
-        booleanArrayOf(false, false, true, false, false, false, false, false, true, false, false),
-        booleanArrayOf(false, false, true, true, false, false, false, true, true, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset14 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, true, true, true, true, true, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, true, true, true, true, true, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset15 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, true, true, false, false, true, false, false, true, true, false),
-        booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
-        booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
-    private val preset16 = arrayOf<BooleanArray?>(
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
-        booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false)
-    )
+    private val preset4 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset5 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
+            booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
+            booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset7 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset8 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, true, false, true, false, true, false, false, false),
+            booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, true, true, true, false, true, false, true, true, true, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
+            booleanArrayOf(false, false, false, true, false, true, false, true, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset11 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
+            booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
+            booleanArrayOf(false, false, true, true, false, true, false, true, true, false, false),
+            booleanArrayOf(false, false, false, true, true, false, true, true, false, false, false),
+            booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset13 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, true, true, false, false, false, true, true, false, false),
+            booleanArrayOf(false, false, true, false, false, false, false, false, true, false, false),
+            booleanArrayOf(false, false, true, false, false, true, false, false, true, false, false),
+            booleanArrayOf(false, false, true, false, false, false, false, false, true, false, false),
+            booleanArrayOf(false, false, true, true, false, false, false, true, true, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset14 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, true, true, true, true, true, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, true, true, true, true, true, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset15 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, true, true, false, false, true, false, false, true, true, false),
+            booleanArrayOf(false, false, false, true, false, false, false, true, false, false, false),
+            booleanArrayOf(false, false, false, false, true, false, true, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
+    private val preset16 =
+        arrayOf<BooleanArray?>(
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, true, true, true, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, true, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+            booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false),
+        )
 
     private val userPresets: MutableList<CellGridPreset> = ArrayList<CellGridPreset>()
     private val presetFile: File
@@ -158,15 +167,17 @@ class LayoutManager {
     val customPresets: MutableList<CellGridPreset?>
         get() = ArrayList<CellGridPreset?>(userPresets)
 
-    fun addCustomPreset(name: String?, layout: Array<BooleanArray?>, colors: Array<IntArray?>): CellGridPreset {
-        return addOrUpdatePreset(null, layout, colors, name)
-    }
+    fun addCustomPreset(
+        name: String?,
+        layout: Array<BooleanArray?>,
+        colors: Array<IntArray?>,
+    ): CellGridPreset = addOrUpdatePreset(null, layout, colors, name)
 
     fun addOrUpdatePreset(
         id: String?,
         layout: Array<BooleanArray?>,
         colors: Array<IntArray?>,
-        nameOverride: String?
+        nameOverride: String?,
     ): CellGridPreset {
         val target = if (id == null) null else getPresetById(id)
 
@@ -176,13 +187,14 @@ class LayoutManager {
             return target
         }
 
-        val preset = CellGridPreset(
-            id ?: UUID.randomUUID().toString(),
-            nameOverride ?: "",
-            layout,
-            colors,
-            true
-        )
+        val preset =
+            CellGridPreset(
+                id ?: UUID.randomUUID().toString(),
+                nameOverride ?: "",
+                layout,
+                colors,
+                true,
+            )
         userPresets.removeIf { p: CellGridPreset? -> p!!.id == preset.id }
         userPresets.add(preset)
         enforceCustomLimit()
@@ -279,7 +291,7 @@ class LayoutManager {
         val name: String?,
         layout: Array<BooleanArray?>,
         colors: Array<IntArray?>,
-        val isUserPreset: Boolean
+        val isUserPreset: Boolean,
     ) {
         private var layout: Array<BooleanArray?>
         private var colors: Array<IntArray?>
@@ -295,7 +307,10 @@ class LayoutManager {
         val colorCopy: Array<IntArray?>
             get() = copyColors(colors, layout)
 
-        fun update(newLayout: Array<BooleanArray?>, newColors: Array<IntArray?>) {
+        fun update(
+            newLayout: Array<BooleanArray?>,
+            newColors: Array<IntArray?>,
+        ) {
             this.layout = copyGrid(newLayout)
             this.colors = copyColors(newColors, newLayout)
         }
@@ -315,7 +330,10 @@ class LayoutManager {
             return copy
         }
 
-        private fun copyColors(source: Array<IntArray?>, layout: Array<BooleanArray?>): Array<IntArray?> {
+        private fun copyColors(
+            source: Array<IntArray?>,
+            layout: Array<BooleanArray?>,
+        ): Array<IntArray?> {
             val copy = arrayOfNulls<IntArray>(layout.size)
             for (i in layout.indices) {
                 val length = layout[i]!!.size
@@ -333,4 +351,3 @@ class LayoutManager {
         }
     }
 }
-

@@ -9,11 +9,11 @@ open class CompSeparator(
     x: Float = 0f,
     y: Float = 0f,
     length: Float = 100f,
-    orientation: Orientation = Orientation.HORIZONTAL
+    orientation: Orientation = Orientation.HORIZONTAL,
 ) : CompDisplay(x, y) {
-
     enum class Orientation {
-        HORIZONTAL, VERTICAL
+        HORIZONTAL,
+        VERTICAL,
     }
 
     private var orientation: Orientation = orientation
@@ -50,7 +50,10 @@ open class CompSeparator(
         return this
     }
 
-    fun setGradient(enabled: Boolean, gradientColor: Color? = null): CompSeparator {
+    fun setGradient(
+        enabled: Boolean,
+        gradientColor: Color? = null,
+    ): CompSeparator {
         this.gradient = enabled
         this.gradientColor = gradientColor
         return this
@@ -74,14 +77,19 @@ open class CompSeparator(
         return this
     }
 
-    override fun drawDisplay(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawDisplay(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val paletteColors = palette
 
-        val finalColor = color ?: ColorUtils.applyAlpha(
-            paletteColors.getBackgroundColor(ColorType.NORMAL),
-            150
-        )
+        val finalColor =
+            color ?: ColorUtils.applyAlpha(
+                paletteColors.getBackgroundColor(ColorType.NORMAL),
+                150,
+            )
 
         if (gradient) {
             val gradColor = gradientColor ?: ColorUtils.applyAlpha(finalColor, 0)
@@ -93,7 +101,7 @@ open class CompSeparator(
                         getWidth(),
                         getHeight(),
                         gradColor,
-                        finalColor
+                        finalColor,
                     )
                 }
 
@@ -104,7 +112,7 @@ open class CompSeparator(
                         getWidth(),
                         getHeight(),
                         gradColor,
-                        finalColor
+                        finalColor,
                     )
                 }
             }

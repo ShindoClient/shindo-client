@@ -26,21 +26,23 @@ import net.minecraft.world.WorldSettings
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-open class BlockOverlayMod : Mod(
-    TranslateText.BLOCK_OVERLAY,
-    TranslateText.BLOCK_OVERLAY_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_BLOCK_OVERLAY,
-    "blockoutline"
-) {
-    private val simpleAnimation = arrayOf<SimpleAnimation?>(
-        SimpleAnimation(0.0f),
-        SimpleAnimation(0.0f),
-        SimpleAnimation(0.0f),
-        SimpleAnimation(0.0f),
-        SimpleAnimation(0.0f),
-        SimpleAnimation(0.0f)
-    )
+open class BlockOverlayMod :
+    Mod(
+        TranslateText.BLOCK_OVERLAY,
+        TranslateText.BLOCK_OVERLAY_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_BLOCK_OVERLAY,
+        "blockoutline",
+    ) {
+    private val simpleAnimation =
+        arrayOf<SimpleAnimation?>(
+            SimpleAnimation(0.0f),
+            SimpleAnimation(0.0f),
+            SimpleAnimation(0.0f),
+            SimpleAnimation(0.0f),
+            SimpleAnimation(0.0f),
+            SimpleAnimation(0.0f),
+        )
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     private val animationSetting = false
@@ -102,15 +104,27 @@ open class BlockOverlayMod : Mod(
         if (block.material !== Material.air && mc.theWorld.worldBorder.contains(blockpos)) {
             block.setBlockBoundsBasedOnState(mc.theWorld, blockpos)
 
-            val x = (mc.renderViewEntity.lastTickPosX
-                    + (mc.renderViewEntity.posX - mc.renderViewEntity.lastTickPosX) * event.getPartialTicks()
-                .toDouble())
-            val y = (mc.renderViewEntity.lastTickPosY
-                    + (mc.renderViewEntity.posY - mc.renderViewEntity.lastTickPosY) * event.getPartialTicks()
-                .toDouble())
-            val z = (mc.renderViewEntity.lastTickPosZ
-                    + (mc.renderViewEntity.posZ - mc.renderViewEntity.lastTickPosZ) * event.getPartialTicks()
-                .toDouble())
+            val x = (
+                mc.renderViewEntity.lastTickPosX +
+                    (mc.renderViewEntity.posX - mc.renderViewEntity.lastTickPosX) *
+                    event
+                        .getPartialTicks()
+                        .toDouble()
+            )
+            val y = (
+                mc.renderViewEntity.lastTickPosY +
+                    (mc.renderViewEntity.posY - mc.renderViewEntity.lastTickPosY) *
+                    event
+                        .getPartialTicks()
+                        .toDouble()
+            )
+            val z = (
+                mc.renderViewEntity.lastTickPosZ +
+                    (mc.renderViewEntity.posZ - mc.renderViewEntity.lastTickPosZ) *
+                    event
+                        .getPartialTicks()
+                        .toDouble()
+            )
 
             var selectedBox = block.getSelectedBoundingBox(mc.theWorld, blockpos)
 
@@ -130,48 +144,75 @@ open class BlockOverlayMod : Mod(
                     simpleAnimation[4]!!.setAnimation((slide.maxY + (selectedBox.maxY - slide.maxY)).toFloat(), 24)
                     simpleAnimation[5]!!.setAnimation((slide.maxZ + (selectedBox.maxZ - slide.maxZ)).toFloat(), 24)
 
-                    val renderBB = AxisAlignedBB(
-                        simpleAnimation[0]!!.getValue() - 0.01,
-                        simpleAnimation[1]!!.getValue() - 0.01,
-                        simpleAnimation[2]!!.getValue() - 0.01,
-                        simpleAnimation[3]!!.getValue() + 0.01,
-                        simpleAnimation[4]!!.getValue() + 0.01,
-                        simpleAnimation[5]!!.getValue() + 0.01
-                    )
+                    val renderBB =
+                        AxisAlignedBB(
+                            simpleAnimation[0]!!.getValue() - 0.01,
+                            simpleAnimation[1]!!.getValue() - 0.01,
+                            simpleAnimation[2]!!.getValue() - 0.01,
+                            simpleAnimation[3]!!.getValue() + 0.01,
+                            simpleAnimation[4]!!.getValue() + 0.01,
+                            simpleAnimation[5]!!.getValue() + 0.01,
+                        )
 
                     if (fillSetting) {
                         setColor(
-                            if (customColorSetting) fillColorSetting.rgb else currentColor.getInterpolateColor()
-                                .rgb, fillAlphaSetting.toFloat()
+                            if (customColorSetting) {
+                                fillColorSetting.rgb
+                            } else {
+                                currentColor
+                                    .getInterpolateColor()
+                                    .rgb
+                            },
+                            fillAlphaSetting.toFloat(),
                         )
                         drawFillBox(interpolateAxis(renderBB))
                     }
 
                     if (outlineSetting) {
                         setColor(
-                            if (customColorSetting) outlineColorSetting.rgb else currentColor.getInterpolateColor()
-                                .rgb, outlineAlphaSetting.toFloat()
+                            if (customColorSetting) {
+                                outlineColorSetting.rgb
+                            } else {
+                                currentColor
+                                    .getInterpolateColor()
+                                    .rgb
+                            },
+                            outlineAlphaSetting.toFloat(),
                         )
                         GL11.glLineWidth(outlineWidthSetting.toFloat())
                         RenderGlobal.drawSelectionBoundingBox(interpolateAxis(renderBB))
                     }
                 }
             } else {
-                selectedBox = selectedBox.expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-                    .offset(-x, -y, -z)
+                selectedBox =
+                    selectedBox
+                        .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
+                        .offset(-x, -y, -z)
 
                 if (fillSetting) {
                     setColor(
-                        if (customColorSetting) fillColorSetting.rgb else currentColor.getInterpolateColor()
-                            .rgb, fillAlphaSetting.toFloat()
+                        if (customColorSetting) {
+                            fillColorSetting.rgb
+                        } else {
+                            currentColor
+                                .getInterpolateColor()
+                                .rgb
+                        },
+                        fillAlphaSetting.toFloat(),
                     )
                     drawFillBox(selectedBox)
                 }
 
                 if (outlineSetting) {
                     setColor(
-                        if (customColorSetting) outlineColorSetting.rgb else currentColor.getInterpolateColor()
-                            .rgb, outlineAlphaSetting.toFloat()
+                        if (customColorSetting) {
+                            outlineColorSetting.rgb
+                        } else {
+                            currentColor
+                                .getInterpolateColor()
+                                .rgb
+                        },
+                        outlineAlphaSetting.toFloat(),
                     )
                     GL11.glLineWidth(outlineWidthSetting.toFloat())
                     RenderGlobal.drawSelectionBoundingBox(selectedBox)
@@ -202,11 +243,12 @@ open class BlockOverlayMod : Mod(
                 val selectedBlock = mc.objectMouseOver.blockPos
                 val block = mc.theWorld.getBlockState(selectedBlock).block
 
-                result = if (mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR) {
-                    block.hasTileEntity() && mc.theWorld.getTileEntity(selectedBlock) is IInventory
-                } else {
-                    itemstack != null && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block))
-                }
+                result =
+                    if (mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR) {
+                        block.hasTileEntity() && mc.theWorld.getTileEntity(selectedBlock) is IInventory
+                    } else {
+                        itemstack != null && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block))
+                    }
             }
         }
 
@@ -215,18 +257,13 @@ open class BlockOverlayMod : Mod(
         return result
     }
 
-    private fun interpolateAxis(bb: AxisAlignedBB): AxisAlignedBB {
-        return AxisAlignedBB(
+    private fun interpolateAxis(bb: AxisAlignedBB): AxisAlignedBB =
+        AxisAlignedBB(
             bb.minX - mc.renderManager.viewerPosX,
             bb.minY - mc.renderManager.viewerPosY,
             bb.minZ - mc.renderManager.viewerPosZ,
             bb.maxX - mc.renderManager.viewerPosX,
             bb.maxY - mc.renderManager.viewerPosY,
-            bb.maxZ - mc.renderManager.viewerPosZ
+            bb.maxZ - mc.renderManager.viewerPosZ,
         )
-    }
 }
-
-
-
-

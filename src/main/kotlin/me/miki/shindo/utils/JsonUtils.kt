@@ -7,7 +7,6 @@ import com.google.gson.JsonPrimitive
 import java.util.regex.Pattern
 
 object JsonUtils {
-
     @JvmStatic
     fun toStringList(jsonArray: JsonArray): List<String> {
         val list: MutableList<String> = ArrayList()
@@ -20,10 +19,17 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun hasProperty(jsonObject: JsonObject, key: String): Boolean = getProperty(jsonObject, key) != null
+    fun hasProperty(
+        jsonObject: JsonObject,
+        key: String,
+    ): Boolean = getProperty(jsonObject, key) != null
 
     @JvmStatic
-    fun getStringProperty(jsonObject: JsonObject, key: String, defaultValue: String?): String? {
+    fun getStringProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: String?,
+    ): String? {
         val value = getProperty(jsonObject, key)
         if (value == null || !value.isJsonPrimitive || !value.asJsonPrimitive.isString) {
             return defaultValue
@@ -32,27 +38,39 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun getFloatProperty(jsonObject: JsonObject, key: String, defaultValue: Float): Float {
-        return getNumberProperty(jsonObject, key, defaultValue).toFloat()
-    }
+    fun getFloatProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Float,
+    ): Float = getNumberProperty(jsonObject, key, defaultValue).toFloat()
 
     @JvmStatic
-    fun getDoubleProperty(jsonObject: JsonObject, key: String, defaultValue: Double): Double {
-        return getNumberProperty(jsonObject, key, defaultValue).toDouble()
-    }
+    fun getDoubleProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Double,
+    ): Double = getNumberProperty(jsonObject, key, defaultValue).toDouble()
 
     @JvmStatic
-    fun getLongProperty(jsonObject: JsonObject, key: String, defaultValue: Long): Long {
-        return getNumberProperty(jsonObject, key, defaultValue).toLong()
-    }
+    fun getLongProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Long,
+    ): Long = getNumberProperty(jsonObject, key, defaultValue).toLong()
 
     @JvmStatic
-    fun getIntProperty(jsonObject: JsonObject, key: String, defaultValue: Int): Int {
-        return getNumberProperty(jsonObject, key, defaultValue).toInt()
-    }
+    fun getIntProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Int,
+    ): Int = getNumberProperty(jsonObject, key, defaultValue).toInt()
 
     @JvmStatic
-    fun getNumberProperty(jsonObject: JsonObject, key: String, defaultValue: Number): Number {
+    fun getNumberProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Number,
+    ): Number {
         val value = getProperty(jsonObject, key)
         if (value == null || !value.isJsonPrimitive || !value.asJsonPrimitive.isNumber) {
             return defaultValue
@@ -61,7 +79,11 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun getBooleanProperty(jsonObject: JsonObject, key: String, defaultValue: Boolean): Boolean {
+    fun getBooleanProperty(
+        jsonObject: JsonObject,
+        key: String,
+        defaultValue: Boolean,
+    ): Boolean {
         val value = getProperty(jsonObject, key)
         if (value == null || !value.isJsonPrimitive || !value.asJsonPrimitive.isBoolean) {
             return defaultValue
@@ -70,19 +92,28 @@ object JsonUtils {
     }
 
     @JvmStatic
-    fun getArrayProperty(jsonObject: JsonObject, key: String): JsonArray {
+    fun getArrayProperty(
+        jsonObject: JsonObject,
+        key: String,
+    ): JsonArray {
         val result = getProperty(jsonObject, key)
         return if (result != null && result.isJsonArray) result.asJsonArray else JsonArray()
     }
 
     @JvmStatic
-    fun getObjectProperty(jsonObject: JsonObject, key: String): JsonObject? {
+    fun getObjectProperty(
+        jsonObject: JsonObject,
+        key: String,
+    ): JsonObject? {
         val result = getProperty(jsonObject, key)
         return if (result != null && result.isJsonObject) result.asJsonObject else null
     }
 
     @JvmStatic
-    fun getProperty(jsonObject: JsonObject, key: String?): JsonElement? {
+    fun getProperty(
+        jsonObject: JsonObject,
+        key: String?,
+    ): JsonElement? {
         if (key == null) {
             throw IllegalArgumentException("Property key cannot be null")
         } else if (key.isEmpty()) {
@@ -93,7 +124,6 @@ object JsonUtils {
         var parent: JsonObject = jsonObject
 
         for (i in tokens.indices) {
-
             val keyToken = tokens[i].replace("\\\\,".toRegex(), ",")
             val child = parent.get(keyToken)
             if (i + 1 == tokens.size) {
@@ -185,7 +215,5 @@ object JsonUtils {
         return rows
     }
 
-    private fun tokenizeKey(key: String): Array<String> {
-        return Pattern.compile("(?<!\\\\),").split(key)
-    }
+    private fun tokenizeKey(key: String): Array<String> = Pattern.compile("(?<!\\\\),").split(key)
 }

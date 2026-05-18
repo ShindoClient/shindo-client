@@ -13,12 +13,13 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import kotlin.math.min
 
-class FovModifierMod : Mod(
-    TranslateText.FOV_MODIFIER,
-    TranslateText.FOV_MODIFIER_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_FOV_MODIFIER
-) {
+class FovModifierMod :
+    Mod(
+        TranslateText.FOV_MODIFIER,
+        TranslateText.FOV_MODIFIER_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_FOV_MODIFIER,
+    ) {
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRINTING, min = -5.0, max = 5.0, current = 1.0)
     private val sprintingSetting = 1.0
 
@@ -70,7 +71,3 @@ class FovModifierMod : Mod(
         event.setFov(base)
     }
 }
-
-
-
-

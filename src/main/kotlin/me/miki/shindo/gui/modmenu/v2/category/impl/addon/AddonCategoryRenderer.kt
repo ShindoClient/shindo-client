@@ -14,7 +14,6 @@ import java.awt.Color
  * Dedicated renderer helper for addon list cards.
  */
 object AddonCategoryRenderer {
-
     fun drawCardShell(
         nvg: NanoVGManager,
         palette: ColorPalette,
@@ -25,7 +24,7 @@ object AddonCategoryRenderer {
         height: Float,
         hoverProgress: Float,
         indicatorWidth: Float,
-        failed: Boolean
+        failed: Boolean,
     ) {
         ModMenuListCardRenderer.drawCardShell(
             nvg = nvg,
@@ -34,7 +33,7 @@ object AddonCategoryRenderer {
             y = y,
             width = width,
             height = height,
-            hoverProgress = hoverProgress
+            hoverProgress = hoverProgress,
         )
         if (indicatorWidth > 0f) {
             val loadColor = if (failed) Color(200, 60, 60, 220) else Color(60, 180, 80, 220)
@@ -47,7 +46,7 @@ object AddonCategoryRenderer {
                     height,
                     4f,
                     ColorUtils.applyAlpha(accent.getColor1(), 150),
-                    ColorUtils.applyAlpha(accent.getColor2(), 150)
+                    ColorUtils.applyAlpha(accent.getColor2(), 150),
                 )
             }
         }
@@ -59,7 +58,7 @@ object AddonCategoryRenderer {
         textX: Float,
         cardY: Float,
         failedName: String,
-        failedDescription: String
+        failedDescription: String,
     ) {
         nvg.drawText(failedName, textX, cardY + 14f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)
         nvg.drawText(
@@ -68,7 +67,7 @@ object AddonCategoryRenderer {
             cardY + 26f,
             palette.getFontColor(ColorType.NORMAL),
             8.5f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 
@@ -82,7 +81,7 @@ object AddonCategoryRenderer {
         textX: Float,
         cardY: Float,
         description: String,
-        builtIn: Boolean
+        builtIn: Boolean,
     ) {
         if (icon.isNotEmpty()) {
             nvg.drawCenteredText(
@@ -91,7 +90,7 @@ object AddonCategoryRenderer {
                 iconCenterY,
                 palette.getFontColor(ColorType.DARK),
                 24f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
 
@@ -103,7 +102,7 @@ object AddonCategoryRenderer {
                 cardY + 15f,
                 palette.getFontColor(ColorType.NORMAL),
                 9f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
 
@@ -124,7 +123,7 @@ object AddonCategoryRenderer {
         toggleY: Float,
         toggleWidth: Float,
         toggleHeight: Float,
-        toggleProgress: Float
+        toggleProgress: Float,
     ) {
         if (hasSettings) {
             ModMenuListCardRenderer.drawSettingsButton(
@@ -134,7 +133,7 @@ object AddonCategoryRenderer {
                 x = settingsX,
                 y = settingsY,
                 size = settingsSize,
-                hoverProgress = settingsHoverProgress
+                hoverProgress = settingsHoverProgress,
             )
         }
 
@@ -147,7 +146,7 @@ object AddonCategoryRenderer {
                 y = toggleY,
                 width = toggleWidth,
                 height = toggleHeight,
-                progress = toggleProgress
+                progress = toggleProgress,
             )
         }
     }

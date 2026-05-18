@@ -5,7 +5,6 @@ import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.utils.ServerUtils
 
 class RestrictedMod {
-
     var shouldCheck: Boolean = true
     private var currentServerIP = ""
     private val blacklistManager = Shindo.getInstance().getBlacklistManager()
@@ -39,7 +38,7 @@ class RestrictedMod {
                 Shindo.getInstance().getNotificationManager().post(
                     mod.getName(),
                     "Disabled due to serverside blacklist",
-                    NotificationType.INFO
+                    NotificationType.INFO,
                 )
             }
         }

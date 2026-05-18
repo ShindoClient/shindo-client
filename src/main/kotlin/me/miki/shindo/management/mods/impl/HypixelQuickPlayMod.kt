@@ -11,12 +11,13 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.input.Keyboard
 
-class HypixelQuickPlayMod : Mod(
-    TranslateText.HYPIXEL_QUICK_PLAY,
-    TranslateText.HYPIXEL_QUICK_PLAY_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_HYPIXEL_QUICK_PLAY
-) {
+class HypixelQuickPlayMod :
+    Mod(
+        TranslateText.HYPIXEL_QUICK_PLAY,
+        TranslateText.HYPIXEL_QUICK_PLAY_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_HYPIXEL_QUICK_PLAY,
+    ) {
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_N)
     private val keybindSetting = Keyboard.KEY_N
 
@@ -27,7 +28,3 @@ class HypixelQuickPlayMod : Mod(
         }
     }
 }
-
-
-
-

@@ -56,9 +56,5 @@ class ComboCounterMod :
         }
     }
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.BAR_CHERT else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.BAR_CHERT else null
 }
-
-

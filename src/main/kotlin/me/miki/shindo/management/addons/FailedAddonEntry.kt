@@ -5,5 +5,5 @@ package me.miki.shindo.management.addons
  */
 data class FailedAddonEntry(
     val jarFileName: String,
-    val errorMessage: String
+    val errorMessage: String,
 )

@@ -6,14 +6,13 @@ import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.management.settings.impl.combo.Option
 
 open class ComboSetting : Setting {
-
     private val options: MutableList<Option>
     private val defaultOption: Option?
     private var option: Option?
 
     constructor(text: TranslateText, parent: ConfigOwner, defaultOption: TranslateText, options: List<Option>) : super(
         text,
-        parent
+        parent,
     ) {
         this.options = ArrayList(options)
         this.option = getOptionByKey(defaultOption.getKey())
@@ -22,7 +21,7 @@ open class ComboSetting : Setting {
 
     constructor(text: TranslateText, parent: ConfigOwner, defaultOptionKey: String, options: List<Option>) : super(
         text,
-        parent
+        parent,
     ) {
         this.options = ArrayList(options)
         this.option = getOptionByKey(defaultOptionKey)
@@ -34,7 +33,7 @@ open class ComboSetting : Setting {
 
     constructor(name: String, parent: ConfigOwner, defaultOptionKey: String, options: List<Option>) : super(
         name,
-        parent
+        parent,
     ) {
         this.options = ArrayList(options)
         this.option = getOptionByKey(defaultOptionKey)
@@ -48,25 +47,17 @@ open class ComboSetting : Setting {
         option = defaultOption
     }
 
-    fun getOption(): Option? {
-        return option
-    }
+    fun getOption(): Option? = option
 
     open fun setOption(option: Option?) {
         this.option = option
     }
 
-    fun getOptions(): List<Option> {
-        return options
-    }
+    fun getOptions(): List<Option> = options
 
-    fun getDefaultOption(): Option? {
-        return defaultOption
-    }
+    fun getDefaultOption(): Option? = defaultOption
 
-    fun getOptionByNameKey(nameKey: String): Option? {
-        return getOptionByKey(nameKey)
-    }
+    fun getOptionByNameKey(nameKey: String): Option? = getOptionByKey(nameKey)
 
     private fun getOptionByKey(key: String): Option? {
         for (op in options) {

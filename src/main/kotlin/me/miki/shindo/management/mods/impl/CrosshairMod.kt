@@ -71,8 +71,3 @@ class CrosshairMod :
         val layoutManager: LayoutManager = LayoutManager()
     }
 }
-
-
-
-
-

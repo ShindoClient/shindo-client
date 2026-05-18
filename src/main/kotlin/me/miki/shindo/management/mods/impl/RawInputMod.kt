@@ -7,8 +7,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import net.java.games.input.ControllerEnvironment
 import net.java.games.input.Mouse
 
-class RawInputMod :
-    Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT) {
+class RawInputMod : Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT) {
     private val mouseList = ArrayList<Mouse>()
     private var thread: MouseThread? = null
 
@@ -66,9 +65,7 @@ class RawInputMod :
         running = false
     }
 
-    fun getThread(): MouseThread {
-        return thread!!
-    }
+    fun getThread(): MouseThread = thread!!
 
     inner class MouseThread : Thread() {
         override fun run() {
@@ -83,7 +80,9 @@ class RawInputMod :
                     val dx = mouse.x.pollData
                     val dy = mouse.y.pollData
 
-                    if (org.lwjgl.input.Mouse.isGrabbed()) {
+                    if (org.lwjgl.input.Mouse
+                            .isGrabbed()
+                    ) {
                         this@RawInputMod.dx += dx
                         this@RawInputMod.dy += dy
                     }
@@ -102,7 +101,3 @@ class RawInputMod :
         var instance: RawInputMod? = null
     }
 }
-
-
-
-

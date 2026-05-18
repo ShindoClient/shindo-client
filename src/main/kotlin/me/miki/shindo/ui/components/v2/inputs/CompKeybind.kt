@@ -3,14 +3,11 @@ package me.miki.shindo.ui.components.v2.inputs
 import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.management.settings.impl.KeybindSetting
 import me.miki.shindo.ui.components.v2.Component
-
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-
 class CompKeybind : Component {
-
     private val setting: KeybindSetting
     private var width: Float
     private var binding = false
@@ -30,12 +27,17 @@ class CompKeybind : Component {
     }
 
     override fun getWidth(): Float = width
+
     override fun setWidth(width: Float) {
         this.width = width
         super.setWidth(width)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val accentColor = accent
 
@@ -48,7 +50,7 @@ class CompKeybind : Component {
             16f,
             4f,
             accentColor.getColor1(),
-            accentColor.getColor2()
+            accentColor.getColor2(),
         )
 
         nvgInstance.drawCenteredText(
@@ -57,36 +59,40 @@ class CompKeybind : Component {
             this.getY() + 5f,
             Color(255, 255, 255),
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), width, 16f) && mouseButton == 0) {
-            binding = !binding;
+            binding = !binding
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (binding) {
-
             if (keyCode == Keyboard.KEY_ESCAPE) {
-                setting.setKeyCode(Keyboard.KEY_NONE);
-                binding = false;
-                return;
+                setting.setKeyCode(Keyboard.KEY_NONE)
+                binding = false
+                return
             }
 
-            setting.setKeyCode(keyCode);
-            binding = false;
+            setting.setKeyCode(keyCode)
+            binding = false
         }
 
         super.keyTyped(typedChar, keyCode)
     }
 
-    fun isBinding(): Boolean {
-        return binding
-    }
+    fun isBinding(): Boolean = binding
 }

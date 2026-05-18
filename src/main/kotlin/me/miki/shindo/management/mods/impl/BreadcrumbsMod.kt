@@ -15,13 +15,14 @@ import me.miki.shindo.utils.Render3DUtils
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-class BreadcrumbsMod : Mod(
-    TranslateText.BREADCRUMBS,
-    TranslateText.BREADCRUMBS_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_BREADCRUMBS,
-    "playertrails"
-) {
+class BreadcrumbsMod :
+    Mod(
+        TranslateText.BREADCRUMBS,
+        TranslateText.BREADCRUMBS_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_BREADCRUMBS,
+        "playertrails",
+    ) {
     private val path: MutableList<Vec3> = ArrayList<Vec3>()
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
@@ -42,13 +43,16 @@ class BreadcrumbsMod : Mod(
 
         Render3DUtils.renderBreadCrumbs(
             path.toList(),
-            if (customColor) applyAlpha(trailColor, 255) else currentColor.getInterpolateColor()
+            if (customColor) applyAlpha(trailColor, 255) else currentColor.getInterpolateColor(),
         )
     }
 
     @EventTarget
     fun onMotionUpdate(event: EventMotionUpdate?) {
-        if (mc.thePlayer.lastTickPosX != mc.thePlayer.posX || mc.thePlayer.lastTickPosY != mc.thePlayer.posY || mc.thePlayer.lastTickPosZ != mc.thePlayer.posZ) {
+        if (mc.thePlayer.lastTickPosX != mc.thePlayer.posX ||
+            mc.thePlayer.lastTickPosY != mc.thePlayer.posY ||
+            mc.thePlayer.lastTickPosZ != mc.thePlayer.posZ
+        ) {
             path.add(Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
         }
 
@@ -60,7 +64,3 @@ class BreadcrumbsMod : Mod(
         }
     }
 }
-
-
-
-

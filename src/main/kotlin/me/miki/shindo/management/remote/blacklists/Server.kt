@@ -4,5 +4,5 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class Server(
     val serverIp: String,
-    val mods: CopyOnWriteArrayList<String>
+    val mods: CopyOnWriteArrayList<String>,
 )

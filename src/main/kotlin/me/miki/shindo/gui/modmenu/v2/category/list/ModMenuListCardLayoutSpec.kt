@@ -8,6 +8,5 @@ data class ModMenuListCardLayoutSpec(
     val cardWidth: Float,
     val cardHeight: Float,
     val spacingX: Float,
-    val spacingY: Float
+    val spacingY: Float,
 )
-

@@ -20,5 +20,5 @@ data class SettingsPanelStyle(
     val componentPadding: Float = 12f,
     val textGap: Float = 16f,
     val narrowBreakpoint: Float = 360f,
-    val virtualizationBuffer: Float = 56f
+    val virtualizationBuffer: Float = 56f,
 )

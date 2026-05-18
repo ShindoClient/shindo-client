@@ -17,12 +17,13 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 
-class DamageTintMod : Mod(
-    TranslateText.DAMAGE_TINT,
-    TranslateText.DAMAGE_TINT_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_DAMAGE_TINT
-) {
+class DamageTintMod :
+    Mod(
+        TranslateText.DAMAGE_TINT,
+        TranslateText.DAMAGE_TINT_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_DAMAGE_TINT,
+    ) {
     private val shape = ResourceLocation("shindo/shape.png")
 
     private val animation1 = SimpleAnimation(0.0f)
@@ -33,7 +34,7 @@ class DamageTintMod : Mod(
         min = 5.0,
         max = 16.0,
         step = 1.0,
-        current = 10.0
+        current = 10.0,
     )
     private val healthSetting = 10.0
 
@@ -74,7 +75,3 @@ class DamageTintMod : Mod(
         GlStateManager.popMatrix()
     }
 }
-
-
-
-

@@ -10,8 +10,7 @@ class CustomCape(
     private val sample: File,
     cape: ResourceLocation,
     category: CapeCategory,
-    requiredRole: Role
+    requiredRole: Role,
 ) : Cape(name, cape, category, requiredRole) {
-
     fun getSample(): File = sample
 }

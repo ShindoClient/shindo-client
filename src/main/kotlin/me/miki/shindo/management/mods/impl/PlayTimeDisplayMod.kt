@@ -9,11 +9,12 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class PlayTimeDisplayMod : SimpleHUDMod(
-    TranslateText.PLAY_TIME_DISPLAY,
-    TranslateText.PLAY_TIME_DISPLAY_DESCRIPTION,
-    LegacyIcon.MOD_PLAY_TIME_DISPLAY
-) {
+class PlayTimeDisplayMod :
+    SimpleHUDMod(
+        TranslateText.PLAY_TIME_DISPLAY,
+        TranslateText.PLAY_TIME_DISPLAY_DESCRIPTION,
+        LegacyIcon.MOD_PLAY_TIME_DISPLAY,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -31,9 +32,5 @@ class PlayTimeDisplayMod : SimpleHUDMod(
         return String.format("%02d", hour) + ":" + String.format("%02d", min) + ":" + String.format("%02d", sec)
     }
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.CLOCK else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.CLOCK else null
 }
-
-

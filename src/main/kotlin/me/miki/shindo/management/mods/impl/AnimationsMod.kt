@@ -11,13 +11,14 @@ import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class AnimationsMod : Mod(
-    TranslateText.OLD_ANIMATION,
-    TranslateText.OLD_ANIMATION_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_ANIMATIONS,
-    "oldoam1.7smoothsneak"
-) {
+class AnimationsMod :
+    Mod(
+        TranslateText.OLD_ANIMATION,
+        TranslateText.OLD_ANIMATION_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_ANIMATIONS,
+        "oldoam1.7smoothsneak",
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BLOCK_HIT)
     @JvmField
     var blockHitSetting = false
@@ -61,9 +62,7 @@ class AnimationsMod : Mod(
         instance = this
     }
 
-    fun getSmoothSneakSpeedSetting(): Float {
-        return smoothSneakSpeedSetting.toFloat()
-    }
+    fun getSmoothSneakSpeedSetting(): Float = smoothSneakSpeedSetting.toFloat()
 
     val smoothSneakSpeedSettingProperty: NumberSetting?
         get() = getNumberSetting(this, "smoothSneakSpeedSetting")
@@ -91,7 +90,3 @@ class AnimationsMod : Mod(
 
     fun getRodSetting(): BooleanSetting? = getBooleanSetting(this, "rodSetting")
 }
-
-
-
-

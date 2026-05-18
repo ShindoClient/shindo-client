@@ -17,15 +17,14 @@ class ResourcePackRepositoryCustom(
     rprDefaultResourcePack: IResourcePack,
     rprMetadataSerializer: IMetadataSerializer,
     settings: GameSettings,
-    enabledPacks: List<String>
+    enabledPacks: List<String>,
 ) : ResourcePackRepository(
-    dirResourcepacks,
-    dirServerResourcepacks,
-    rprDefaultResourcePack,
-    rprMetadataSerializer,
-    settings
-) {
-
+        dirResourcepacks,
+        dirServerResourcepacks,
+        rprDefaultResourcePack,
+        rprMetadataSerializer,
+        settings,
+    ) {
     private val repositoryEntries: MutableList<Entry> = Lists.newArrayList()
     private var isReady: Boolean = true
     private var repositoryEntriesAll: MutableList<Entry> = Lists.newArrayList()
@@ -56,7 +55,6 @@ class ResourcePackRepositoryCustom(
                     entry.updateResourcePack()
                     list.add(entry)
                 } catch (_: Exception) {
-
                 }
             } else {
                 val index = repositoryEntriesAll.indexOf(entry)
@@ -75,13 +73,9 @@ class ResourcePackRepositoryCustom(
         repositoryEntriesAll = list
     }
 
-    override fun getRepositoryEntriesAll(): List<Entry> {
-        return ImmutableList.copyOf(repositoryEntriesAll)
-    }
+    override fun getRepositoryEntriesAll(): List<Entry> = ImmutableList.copyOf(repositoryEntriesAll)
 
-    override fun getRepositoryEntries(): List<Entry> {
-        return ImmutableList.copyOf(repositoryEntries)
-    }
+    override fun getRepositoryEntries(): List<Entry> = ImmutableList.copyOf(repositoryEntries)
 
     override fun setRepositories(repositories: List<Entry>) {
         repositoryEntries.clear()
@@ -92,8 +86,8 @@ class ResourcePackRepositoryCustom(
         }
     }
 
-    private fun getResourcePackFiles(root: File): List<File> {
-        return if (root.isDirectory) {
+    private fun getResourcePackFiles(root: File): List<File> =
+        if (root.isDirectory) {
             val packFiles: MutableList<File> = Lists.newArrayList()
             for (file in root.listFiles() ?: emptyArray()) {
                 if (file.isDirectory && !File(file, "pack.mcmeta").isFile) {
@@ -106,7 +100,6 @@ class ResourcePackRepositoryCustom(
         } else {
             emptyList()
         }
-    }
 
     companion object {
         private var entryConstructor: Constructor<Entry>? = null
@@ -119,14 +112,15 @@ class ResourcePackRepositoryCustom(
                 val fileResourcepacks = (mc as IMixinMinecraft).getFileResourcepacks()
                 val originalRepo = (mc as IMixinMinecraft).getMcResourcePackRepository() as ResourcePackRepository
 
-                val customRepo = ResourcePackRepositoryCustom(
-                    fileResourcepacks,
-                    File(mc.mcDataDir, "server-resource-packs"),
-                    (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack,
-                    originalRepo.rprMetadataSerializer,
-                    mc.gameSettings,
-                    enabledPacks
-                )
+                val customRepo =
+                    ResourcePackRepositoryCustom(
+                        fileResourcepacks,
+                        File(mc.mcDataDir, "server-resource-packs"),
+                        (mc as IMixinMinecraft).getMcDefaultResourcePack() as net.minecraft.client.resources.DefaultResourcePack,
+                        originalRepo.rprMetadataSerializer,
+                        mc.gameSettings,
+                        enabledPacks,
+                    )
 
                 (mc as IMixinMinecraft).setMcResourcePackRepository(customRepo)
             } catch (t: Throwable) {
@@ -135,13 +129,18 @@ class ResourcePackRepositoryCustom(
         }
 
         @JvmStatic
-        fun createEntryInstance(repository: ResourcePackRepository, file: File): Entry? {
-            return try {
+        fun createEntryInstance(
+            repository: ResourcePackRepository,
+            file: File,
+        ): Entry? =
+            try {
                 if (entryConstructor == null) {
-                    entryConstructor = Entry::class.java.getDeclaredConstructor(
-                        ResourcePackRepository::class.java,
-                        File::class.java
-                    ).apply { isAccessible = true }
+                    entryConstructor =
+                        Entry::class.java
+                            .getDeclaredConstructor(
+                                ResourcePackRepository::class.java,
+                                File::class.java,
+                            ).apply { isAccessible = true }
                 }
 
                 entryConstructor!!.newInstance(repository, file)
@@ -149,6 +148,5 @@ class ResourcePackRepositoryCustom(
                 t.printStackTrace()
                 null
             }
-        }
     }
 }

@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap
  * (fallback: addons removidos não causam erro ao carregar).
  */
 object AddonConfigRegistry {
-
     private val storages = ConcurrentHashMap<String, AddonConfigStorageImpl>()
 
-    fun getOrCreate(addonId: String): AddonConfigStorageImpl {
-        return storages.getOrPut(addonId) { AddonConfigStorageImpl(addonId) }
-    }
+    fun getOrCreate(addonId: String): AddonConfigStorageImpl =
+        storages.getOrPut(addonId) {
+            AddonConfigStorageImpl(addonId)
+        }
 
     fun get(addonId: String): AddonConfigStorageImpl? = storages[addonId]
 

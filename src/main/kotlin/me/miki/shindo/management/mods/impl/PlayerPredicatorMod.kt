@@ -21,14 +21,15 @@ import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S18PacketEntityTeleport
 import org.lwjgl.opengl.GL11
 
-class PlayerPredicatorMod : Mod(
-    TranslateText.PLAYER_PREDICATOR,
-    TranslateText.PLAYER_PREDICATOR_DESCRIPTION,
-    ModCategory.WORLD,
-    LegacyIcon.MOD_PLAYER_PREDICATOR,
-    "",
-    true
-) {
+class PlayerPredicatorMod :
+    Mod(
+        TranslateText.PLAYER_PREDICATOR,
+        TranslateText.PLAYER_PREDICATOR_DESCRIPTION,
+        ModCategory.WORLD,
+        LegacyIcon.MOD_PLAYER_PREDICATOR,
+        "",
+        true,
+    ) {
     private var realTargetPosition = Position(0.0, 0.0, 0.0)
     private var target: AbstractClientPlayer? = null
     private var isActive = false
@@ -65,12 +66,12 @@ class PlayerPredicatorMod : Mod(
                 realTargetPosition.z += iS14PacketEntity.posZ / 32.0
             }
         } else if (packet is S18PacketEntityTeleport) {
-
-            realTargetPosition = Position(
-                packet.x / 32.0,
-                packet.y / 32.0,
-                packet.z / 32.0
-            )
+            realTargetPosition =
+                Position(
+                    packet.x / 32.0,
+                    packet.y / 32.0,
+                    packet.z / 32.0,
+                )
         }
     }
 
@@ -83,8 +84,9 @@ class PlayerPredicatorMod : Mod(
         if (realTargetPosition.squareDistanceTo(
                 target!!.posX,
                 target!!.posY,
-                target!!.posZ
-            ) > 0.00001 && !isHypixel()
+                target!!.posZ,
+            ) > 0.00001 &&
+            !isHypixel()
         ) {
             GlStateManager.pushMatrix()
             GlStateManager.pushAttrib()
@@ -97,16 +99,21 @@ class PlayerPredicatorMod : Mod(
 
             setColor(
                 applyAlpha(
-                    Shindo.getInstance().getColorManager().getCurrentColor().getInterpolateColor(0),
-                    80
-                ).rgb
+                    Shindo
+                        .getInstance()
+                        .getColorManager()
+                        .getCurrentColor()
+                        .getInterpolateColor(0),
+                    80,
+                ).rgb,
             )
 
             drawBoundingBox(
-                mc.thePlayer.entityBoundingBox.offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)
+                mc.thePlayer.entityBoundingBox
+                    .offset(-mc.thePlayer.posX, -mc.thePlayer.posY, -mc.thePlayer.posZ)
                     .offset
-                        (realTargetPosition.x, realTargetPosition.y, realTargetPosition.z)
-                    .expand(expand, expand, expand)
+                    (realTargetPosition.x, realTargetPosition.y, realTargetPosition.z)
+                    .expand(expand, expand, expand),
             )
 
             GlStateManager.enableTexture2D()
@@ -119,8 +126,16 @@ class PlayerPredicatorMod : Mod(
         }
     }
 
-    private data class Position(var x: Double, var y: Double, var z: Double) {
-        fun squareDistanceTo(x: Double, y: Double, z: Double): Double {
+    private data class Position(
+        var x: Double,
+        var y: Double,
+        var z: Double,
+    ) {
+        fun squareDistanceTo(
+            x: Double,
+            y: Double,
+            z: Double,
+        ): Double {
             val d0 = x - this.x
             val d1 = y - this.y
             val d2 = z - this.z
@@ -129,7 +144,3 @@ class PlayerPredicatorMod : Mod(
         }
     }
 }
-
-
-
-

@@ -11,12 +11,13 @@ import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class FPSLimiterMod : Mod(
-    TranslateText.FPS_LIMITER,
-    TranslateText.FPS_LIMITER_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_FPS_LIMITER
-) {
+class FPSLimiterMod :
+    Mod(
+        TranslateText.FPS_LIMITER,
+        TranslateText.FPS_LIMITER_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_FPS_LIMITER,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.LIMIT_MAX_FPS)
     @JvmField
     var limitMaxFpsSetting = false
@@ -27,7 +28,7 @@ class FPSLimiterMod : Mod(
         min = 240.0,
         max = 1440.0,
         step = 1.0,
-        current = 480.0
+        current = 480.0,
     )
     @JvmField
     var maxFpsSetting = 480.0
@@ -42,7 +43,7 @@ class FPSLimiterMod : Mod(
         min = 1.0,
         max = 24.00,
         step = 1.0,
-        current = 30.0
+        current = 30.0,
     )
     @JvmField
     var guiFpsSetting = 30.0
@@ -66,7 +67,3 @@ class FPSLimiterMod : Mod(
 
     fun getLimitGuiFps(): BooleanSetting? = getBooleanSetting(this, "limitGuiFps")
 }
-
-
-
-

@@ -15,9 +15,7 @@ import net.minecraft.util.ResourceLocation
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
-
 class BackgroundManager {
-
     private val backgrounds = CopyOnWriteArrayList<Background>()
     private val removeBackgrounds = CopyOnWriteArrayList<CustomBackground>()
     private var currentBackground: Background? = null
@@ -34,24 +32,24 @@ class BackgroundManager {
             DefaultBackground(
                 0,
                 TranslateText.BUTTERFLY,
-                ResourceLocation("shindo/mainmenu/background-butterfly.png")
-            )
+                ResourceLocation("shindo/mainmenu/background-butterfly.png"),
+            ),
         )
         backgrounds.add(
             DefaultBackground(
                 1,
                 TranslateText.NIGHT,
-                ResourceLocation("shindo/mainmenu/background-night.png")
-            )
+                ResourceLocation("shindo/mainmenu/background-night.png"),
+            ),
         )
         backgrounds.add(
             DefaultBackground(
                 2,
                 TranslateText.DOLPHIN,
-                ResourceLocation("shindo/mainmenu/background-dolphin.png")
-            )
+                ResourceLocation("shindo/mainmenu/background-dolphin.png"),
+            ),
         )
-        //backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
+        // backgrounds.add(PanoramaBackground(3, TranslateText.PANO))
         backgrounds.add(DefaultBackground(999, TranslateText.ADD, null))
 
         val removeImages = load()
@@ -144,6 +142,7 @@ class BackgroundManager {
     }
 
     fun getCurrentBackground(): Background? = currentBackground
+
     fun setCurrentBackground(bg: Background?) {
         currentBackground = bg
     }

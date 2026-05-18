@@ -7,18 +7,15 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 
-class ClearWaterMod : Mod(
-    TranslateText.CLEAR_WATER,
-    TranslateText.CLEAR_WATER_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_CLEAR_WATER
-) {
+class ClearWaterMod :
+    Mod(
+        TranslateText.CLEAR_WATER,
+        TranslateText.CLEAR_WATER_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_CLEAR_WATER,
+    ) {
     @EventTarget
     fun onWaterOverlay(event: EventWaterOverlay) {
         event.setCancelled(true)
     }
 }
-
-
-
-

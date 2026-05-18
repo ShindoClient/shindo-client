@@ -1,7 +1,6 @@
 package me.miki.shindo.utils.network
 
 object PunycodeUtils {
-
     private const val TMIN = 1
     private const val TMAX = 26
     private const val SKEW = 38
@@ -51,7 +50,11 @@ object PunycodeUtils {
         return sb.toString()
     }
 
-    private fun adaptBias(delta: Int, numPoints: Int, firstTime: Boolean): Int {
+    private fun adaptBias(
+        delta: Int,
+        numPoints: Int,
+        firstTime: Boolean,
+    ): Int {
         var d = if (firstTime) delta / DAMP else delta / 2
         d += d / numPoints
 
@@ -64,14 +67,22 @@ object PunycodeUtils {
         return k + ((36 - TMIN + 1) * d) / (d + SKEW)
     }
 
-    private fun encodeNumber(dst: StringBuilder, qValue: Int, bias: Int) {
+    private fun encodeNumber(
+        dst: StringBuilder,
+        qValue: Int,
+        bias: Int,
+    ) {
         var q = qValue
         var k = 36
         var keepGoing = true
 
         while (keepGoing) {
             var t = k - bias
-            if (t < TMIN) t = TMIN else if (t > TMAX) t = TMAX
+            if (t < TMIN) {
+                t = TMIN
+            } else if (t > TMAX) {
+                t = TMAX
+            }
 
             val digit: Int
             if (q < t) {

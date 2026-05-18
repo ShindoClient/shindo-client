@@ -9,13 +9,14 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class NameProtectMod : Mod(
-    TranslateText.NAME_PROTECT,
-    TranslateText.NAME_PROTECT_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_NAME_PROTECT,
-    "nickhider"
-) {
+class NameProtectMod :
+    Mod(
+        TranslateText.NAME_PROTECT,
+        TranslateText.NAME_PROTECT_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_NAME_PROTECT,
+        "nickhider",
+    ) {
     @Property(type = PropertyType.TEXT, translate = TranslateText.NAME, text = "You")
     private val nameSetting = "You"
 
@@ -24,7 +25,3 @@ class NameProtectMod : Mod(
         event.replace(mc.session.username, nameSetting)
     }
 }
-
-
-
-

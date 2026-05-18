@@ -9,10 +9,13 @@ open class CompScrollableWithChildren(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : CompScrollable(x, y, width, height) {
-
-    override fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScrollableContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         for (child in getChildren()) {
             if (child is Component) {
                 child.draw(mouseX, mouseY, partialTicks)
@@ -20,7 +23,11 @@ open class CompScrollableWithChildren(
         }
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         val nvgInstance = nvg

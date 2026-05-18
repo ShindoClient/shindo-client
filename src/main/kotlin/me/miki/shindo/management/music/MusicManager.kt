@@ -26,9 +26,9 @@ import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Supplier
 
-
-class MusicManager(private val fileManager: FileManager) : AutoCloseable {
-
+class MusicManager(
+    private val fileManager: FileManager,
+) : AutoCloseable {
     private val albumArtCache = AlbumArtCache(fileManager)
     private val lyricsManager = LyricsManager()
     private val rateLimiter = SimpleRateLimiter(20.0)
@@ -51,9 +51,11 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     init {
         initializeSchedulers()
-        spotifyApi = SpotifyApi.Builder()
-            .setRedirectUri(LOCAL_CALLBACK_URI)
-            .build()
+        spotifyApi =
+            SpotifyApi
+                .Builder()
+                .setRedirectUri(LOCAL_CALLBACK_URI)
+                .build()
         loadTokens()
         if (spotifyApi.accessToken != null) {
             isAuthorized = true
@@ -70,14 +72,15 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     private fun initializeSchedulers() {
-        scheduler = Executors.newSingleThreadScheduledExecutor { r ->
-            Thread(r).apply { isDaemon = true }
-        }
-        tokenRefreshScheduler = Executors.newSingleThreadScheduledExecutor { r ->
-            Thread(r).apply { isDaemon = true }
-        }
+        scheduler =
+            Executors.newSingleThreadScheduledExecutor { r ->
+                Thread(r).apply { isDaemon = true }
+            }
+        tokenRefreshScheduler =
+            Executors.newSingleThreadScheduledExecutor { r ->
+                Thread(r).apply { isDaemon = true }
+            }
     }
-
 
     private fun loadTokens() {
         val tokenFile = File(fileManager.musicDir, TOKEN_FILE_NAME)
@@ -98,10 +101,11 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     private fun saveTokens() {
         val tokenFile = File(fileManager.musicDir, TOKEN_FILE_NAME)
-        val props = Properties().apply {
-            setProperty("accessToken", spotifyApi.accessToken ?: "")
-            setProperty("refreshToken", spotifyApi.refreshToken ?: "")
-        }
+        val props =
+            Properties().apply {
+                setProperty("accessToken", spotifyApi.accessToken ?: "")
+                setProperty("refreshToken", spotifyApi.refreshToken ?: "")
+            }
         try {
             tokenFile.outputStream().use { props.store(it, "Spotify Tokens") }
         } catch (e: IOException) {
@@ -109,25 +113,25 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             Shindo.getInstance().getNotificationManager().post(
                 TranslateText.SPOTIFY_AUTH,
                 TranslateText.SPOTIFY_FAILED_TO_SAVE_TOKENS,
-                NotificationType.ERROR
+                NotificationType.ERROR,
             )
         }
     }
 
     @Throws(IOException::class)
     private fun startServer() {
-        server = HttpServer.create(InetSocketAddress(8888), 0).apply {
-            createContext("/callback", SpotifyCallbackHandler())
-            executor = Executors.newSingleThreadExecutor { r ->
-                Thread(r).apply { isDaemon = true }
+        server =
+            HttpServer.create(InetSocketAddress(8888), 0).apply {
+                createContext("/callback", SpotifyCallbackHandler())
+                executor =
+                    Executors.newSingleThreadExecutor { r ->
+                        Thread(r).apply { isDaemon = true }
+                    }
+                start()
             }
-            start()
-        }
     }
 
-    fun getAuthorizationCodeUri(): String {
-        return "$CDN_BASE_URL/api/spotify/login"
-    }
+    fun getAuthorizationCodeUri(): String = "$CDN_BASE_URL/api/spotify/login"
 
     private fun requestAccessToken(code: String) {
         try {
@@ -155,20 +159,23 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun isAuthorized(): Boolean = isAuthorized
+
     fun hasCredentials(): Boolean = true
 
     fun searchTracks(query: String?): CompletableFuture<List<Track>> {
         return searchCache.computeIfAbsent(
-            query!!
+            query!!,
         ) { q: String? ->
             throttleRequest(
                 "search",
                 Supplier {
                     CompletableFuture.supplyAsync {
                         try {
-                            val request = spotifyApi.searchTracks(q)
-                                .limit(SEARCH_LIMIT)
-                                .build()
+                            val request =
+                                spotifyApi
+                                    .searchTracks(q)
+                                    .limit(SEARCH_LIMIT)
+                                    .build()
                             val tracks =
                                 listOf(*request.execute().items)
                             CompletableFuture.runAsync {
@@ -177,11 +184,13 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                                     val end = (i + BATCH_SIZE).coerceAtMost(tracks.size)
                                     val batch: List<Track> =
                                         tracks.subList(i, end)
-                                    batch.forEach(Consumer { track: Track? ->
-                                        prefetchAlbumArt(
-                                            track
-                                        )
-                                    })
+                                    batch.forEach(
+                                        Consumer { track: Track? ->
+                                            prefetchAlbumArt(
+                                                track,
+                                            )
+                                        },
+                                    )
                                     try {
                                         Thread.sleep(THROTTLE_DELAY)
                                     } catch (e: InterruptedException) {
@@ -198,22 +207,25 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                             searchCache.remove(query)
                         }
                     }
-                })
+                },
+            )
         }
     }
 
     fun searchPlaylists(query: String): CompletableFuture<List<PlaylistSimplified>> {
         return playlistCache.computeIfAbsent(
-            "search:$query"
+            "search:$query",
         ) { q: String? ->
             throttleRequest(
                 "search_playlist",
                 Supplier {
                     CompletableFuture.supplyAsync {
                         try {
-                            val request = spotifyApi.searchPlaylists(query)
-                                .limit(SEARCH_LIMIT)
-                                .build()
+                            val request =
+                                spotifyApi
+                                    .searchPlaylists(query)
+                                    .limit(SEARCH_LIMIT)
+                                    .build()
                             val playlists =
                                 listOf(*request.execute().items)
                             CompletableFuture.runAsync {
@@ -222,11 +234,13 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                                     val end = (i + BATCH_SIZE).coerceAtMost(playlists.size)
                                     val batch: List<PlaylistSimplified> =
                                         playlists.subList(i, end)
-                                    batch.forEach(Consumer { playlist: PlaylistSimplified? ->
-                                        getPlaylistImageUrl(
-                                            playlist
-                                        )
-                                    })
+                                    batch.forEach(
+                                        Consumer { playlist: PlaylistSimplified? ->
+                                            getPlaylistImageUrl(
+                                                playlist,
+                                            )
+                                        },
+                                    )
                                     try {
                                         Thread.sleep(THROTTLE_DELAY)
                                     } catch (e: InterruptedException) {
@@ -243,7 +257,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                             playlistCache.remove("search:$query")
                         }
                     }
-                })
+                },
+            )
         }
     }
 
@@ -252,7 +267,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         if (images == null || images.isEmpty()) return
         val imageUrl = images[0].url ?: return
         try {
-            albumArtCache.getCachedAlbumArtUrlAsync(track.id, imageUrl)
+            albumArtCache
+                .getCachedAlbumArtUrlAsync(track.id, imageUrl)
                 .exceptionally { ex ->
                     ShindoLogger.warn("Failed to prefetch album art: ${ex.message}")
                     imageUrl
@@ -265,11 +281,14 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun addToQueue(trackUri: String): CompletableFuture<Void> =
         CompletableFuture.runAsync {
             try {
-                val deviceId = getActiveDeviceId()
-                    ?: throw IllegalStateException("No active device found")
-                val req = spotifyApi.addItemToUsersPlaybackQueue(trackUri)
-                    .device_id(deviceId)
-                    .build()
+                val deviceId =
+                    getActiveDeviceId()
+                        ?: throw IllegalStateException("No active device found")
+                val req =
+                    spotifyApi
+                        .addItemToUsersPlaybackQueue(trackUri)
+                        .device_id(deviceId)
+                        .build()
                 req.execute()
                 fetchCurrentPlaybackState()
             } catch (e: Exception) {
@@ -289,15 +308,17 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                     Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_NO_ACTIVE_DEVICE,
-                        NotificationType.ERROR
+                        NotificationType.ERROR,
                     )
                     return@runAsync
                 }
                 val uris = JsonParser.parseString("[\"$trackUri\"]").asJsonArray
-                val playbackRequest = spotifyApi.startResumeUsersPlayback()
-                    .device_id(deviceId)
-                    .uris(uris)
-                    .build()
+                val playbackRequest =
+                    spotifyApi
+                        .startResumeUsersPlayback()
+                        .device_id(deviceId)
+                        .uris(uris)
+                        .build()
                 try {
                     playbackRequest.execute()
                     isPlaying = true
@@ -305,15 +326,17 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                     Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_PLAYBACK_STARTED,
-                        NotificationType.SUCCESS
+                        NotificationType.SUCCESS,
                     )
                 } catch (e: Exception) {
                     if (e.message?.contains("Restriction violated") == true) {
-                        ShindoLogger.warn("Play command restricted - likely due to Spotify Premium requirement or device limitations")
+                        ShindoLogger.warn(
+                            "Play command restricted - likely due to Spotify Premium requirement or device limitations",
+                        )
                         Shindo.getInstance().getNotificationManager().post(
                             TranslateText.SPOTIFY_PLAYBACK,
                             TranslateText.SPOTIFY_PLAYBACK_RESTRICTED,
-                            NotificationType.WARNING
+                            NotificationType.WARNING,
                         )
                         fetchCurrentPlaybackState()
                     } else {
@@ -349,23 +372,27 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                     Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_NO_ACTIVE_DEVICE,
-                        NotificationType.ERROR
+                        NotificationType.ERROR,
                     )
                     return@runAsync
                 }
-                val resumeRequest = spotifyApi.startResumeUsersPlayback()
-                    .device_id(deviceId)
-                    .build()
+                val resumeRequest =
+                    spotifyApi
+                        .startResumeUsersPlayback()
+                        .device_id(deviceId)
+                        .build()
                 fetchCurrentPlaybackState()
                 resumeRequest.execute()
                 isPlaying = true
             } catch (e: Exception) {
                 if (e.message?.contains("Restriction violated") == true) {
-                    ShindoLogger.warn("Resume playback restricted - likely due to Spotify Premium requirement or device limitations")
+                    ShindoLogger.warn(
+                        "Resume playback restricted - likely due to Spotify Premium requirement or device limitations",
+                    )
                     Shindo.getInstance().getNotificationManager().post(
                         TranslateText.SPOTIFY_PLAYBACK,
                         TranslateText.SPOTIFY_PREMIUM_REQUIRED,
-                        NotificationType.WARNING
+                        NotificationType.WARNING,
                     )
                     fetchCurrentPlaybackState()
                 } else {
@@ -468,20 +495,24 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         }
     }
 
-    private fun handleSpotifyException(action: String, e: Exception) {
+    private fun handleSpotifyException(
+        action: String,
+        e: Exception,
+    ) {
         ShindoLogger.error("Failed to $action: ${e.message}", e)
-        val errorText = when (action) {
-            "start playback" -> TranslateText.SPOTIFY_PLAYBACK_START_FAILED
-            "pause playback" -> TranslateText.SPOTIFY_PLAYBACK_PAUSE_FAILED
-            "resume playback" -> TranslateText.SPOTIFY_PLAYBACK_RESUME_FAILED
-            "set volume" -> TranslateText.SPOTIFY_VOLUME_SET_FAILED
-            "play playlist" -> TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST
-            else -> TranslateText.ERROR
-        }
+        val errorText =
+            when (action) {
+                "start playback" -> TranslateText.SPOTIFY_PLAYBACK_START_FAILED
+                "pause playback" -> TranslateText.SPOTIFY_PLAYBACK_PAUSE_FAILED
+                "resume playback" -> TranslateText.SPOTIFY_PLAYBACK_RESUME_FAILED
+                "set volume" -> TranslateText.SPOTIFY_VOLUME_SET_FAILED
+                "play playlist" -> TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST
+                else -> TranslateText.ERROR
+            }
         Shindo.getInstance().getNotificationManager().post(
             TranslateText.SPOTIFY_PLAYBACK,
             errorText,
-            NotificationType.ERROR
+            NotificationType.ERROR,
         )
     }
 
@@ -530,8 +561,9 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
 
     private fun fetchCurrentPlaybackState() {
         try {
-            val playbackState = spotifyApi.informationAboutUsersCurrentPlayback.build().execute()
-                ?: return
+            val playbackState =
+                spotifyApi.informationAboutUsersCurrentPlayback.build().execute()
+                    ?: return
             isPlaying = playbackState.is_playing
             trackPosition = playbackState.progress_ms.toLong()
             lastPositionUpdateTime = System.currentTimeMillis()
@@ -551,6 +583,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun getCurrentTrack(): Track? = currentTrack
+
     fun isPlaying(): Boolean = isPlaying
 
     private fun startPlaybackStateUpdater() {
@@ -610,6 +643,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         }
 
     fun getCurrentTime(): Float = getCurrentPosition() / 1000f
+
     fun getEndTime(): Float = trackDuration / 1000f
 
     private fun notifyTrackInfoUpdated() {
@@ -621,13 +655,16 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun refreshAccessToken() {
-        val refreshToken = spotifyApi.refreshToken ?: run {
-            ShindoLogger.warn("No refresh token available"); return
-        }
+        val refreshToken =
+            spotifyApi.refreshToken ?: run {
+                ShindoLogger.warn("No refresh token available")
+                return
+            }
         try {
             val encoded = java.net.URLEncoder.encode(refreshToken, "UTF-8")
-            val connection = URL("$CDN_BASE_URL/api/spotify/refresh?refresh_token=$encoded")
-                .openConnection() as java.net.HttpURLConnection
+            val connection =
+                URL("$CDN_BASE_URL/api/spotify/refresh?refresh_token=$encoded")
+                    .openConnection() as java.net.HttpURLConnection
             connection.requestMethod = "GET"
             connection.connectTimeout = 10000
             connection.readTimeout = 10000
@@ -651,7 +688,9 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         val refreshInterval = 3600L - 300
         tokenRefreshScheduler.scheduleAtFixedRate(
             this::refreshAccessToken,
-            refreshInterval, refreshInterval, TimeUnit.SECONDS
+            refreshInterval,
+            refreshInterval,
+            TimeUnit.SECONDS,
         )
     }
 
@@ -674,7 +713,7 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     fun getUserPlaylists(): CompletableFuture<List<PlaylistSimplified>> {
         val cacheKey = "userPlaylists"
         return playlistCache.computeIfAbsent(
-            cacheKey
+            cacheKey,
         ) { k: String? ->
             throttleRequest(
                 "playlists",
@@ -709,7 +748,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
                             playlistCache.remove(cacheKey)
                         }
                     }
-                })
+                },
+            )
         }
     }
 
@@ -719,7 +759,8 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             while (i < playlists.size) {
                 val end = minOf(i + BATCH_SIZE, playlists.size)
                 val batch = playlists.subList(i, end)
-                batch.filter { it.images != null && it.images.isNotEmpty() }
+                batch
+                    .filter { it.images != null && it.images.isNotEmpty() }
                     .forEach { getPlaylistImageUrl(it) }
                 Thread.sleep(THROTTLE_DELAY)
                 i = end
@@ -729,8 +770,11 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
         }
     }
 
-    private fun <T> throttleRequest(key: String, request: Supplier<CompletableFuture<T>>): CompletableFuture<T> {
-        return CompletableFuture.supplyAsync {
+    private fun <T> throttleRequest(
+        key: String,
+        request: Supplier<CompletableFuture<T>>,
+    ): CompletableFuture<T> =
+        CompletableFuture.supplyAsync {
             val lastTime = lastRequestTime.getOrDefault(key, 0L)
             val now = System.currentTimeMillis()
             val timeSinceLastRequest = now - lastTime
@@ -744,14 +788,15 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             lastRequestTime[key] = System.currentTimeMillis()
             request.get().join()
         }
-    }
 
     fun playPlaylist(playlistUri: String) {
         CompletableFuture.runAsync {
             try {
-                val request = spotifyApi.startResumeUsersPlayback()
-                    .context_uri(playlistUri)
-                    .build()
+                val request =
+                    spotifyApi
+                        .startResumeUsersPlayback()
+                        .context_uri(playlistUri)
+                        .build()
                 request.execute()
             } catch (e: Exception) {
                 ShindoLogger.error("Failed to play playlist", e)
@@ -775,9 +820,12 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
     }
 
     fun getLyricsManager(): LyricsManager = lyricsManager
+
     fun getTrackPosition(): Long = trackPosition
 
-    private class SimpleRateLimiter(requestsPerSecond: Double) {
+    private class SimpleRateLimiter(
+        requestsPerSecond: Double,
+    ) {
         private val minTimeBetweenRequests = (1000.0 / requestsPerSecond).toLong()
         private var lastRequestTime: Long = 0
 
@@ -799,10 +847,11 @@ class MusicManager(private val fileManager: FileManager) : AutoCloseable {
             exchange.responseBody.use { it.write(response.toByteArray()) }
 
             val query = exchange.requestURI.query ?: return
-            val params = query.split("&").associate {
-                val parts = it.split("=", limit = 2)
-                parts[0] to java.net.URLDecoder.decode(parts.getOrElse(1) { "" }, "UTF-8")
-            }
+            val params =
+                query.split("&").associate {
+                    val parts = it.split("=", limit = 2)
+                    parts[0] to java.net.URLDecoder.decode(parts.getOrElse(1) { "" }, "UTF-8")
+                }
 
             if (params.containsKey("error")) {
                 error("Spotify auth error: ${params["error"]}")

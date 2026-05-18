@@ -35,9 +35,9 @@ import kotlin.math.min
 
 private typealias PreviewRenderer = (NanoVGManager, Float, Float, Float, Float) -> Unit
 
-class CosmeticsCategory(parent: GuiModMenu) :
-    Category(parent, TranslateText.COSMETICS, LegacyIcon.SHOPPING, true, true) {
-
+class CosmeticsCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.COSMETICS, LegacyIcon.SHOPPING, true, true) {
     private val sectionChips = ArrayList<FilterChip>()
     private val categoryChips = ArrayList<FilterChip>()
     private val capeCardBounds = LinkedHashMap<Cape, CardBounds>()
@@ -61,11 +61,13 @@ class CosmeticsCategory(parent: GuiModMenu) :
         scroll.resetAll()
     }
 
-    fun shouldShowCustomCapeFolder(): Boolean {
-        return activeSection == CosmeticSection.CAPES && activeCapeCategory == CapeCategory.CUSTOM
-    }
+    fun shouldShowCustomCapeFolder(): Boolean = activeSection == CosmeticSection.CAPES && activeCapeCategory == CapeCategory.CUSTOM
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.getColorManager().getPalette()
@@ -105,59 +107,70 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width = viewportWidth,
             height = viewportHeight,
             translateX = 0f,
-            translateY = scrollOffset
+            translateY = scrollOffset,
         ) {
             y = drawSectionChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
             y += SECTION_BLOCK_GAP
             y = drawCategoryChips(nvg, palette, accent, contentX, contentWidth, y, scrollOffset, mouseX, mouseY)
             y += CATEGORY_BLOCK_GAP
-            y = when (activeSection) {
-                CosmeticSection.CAPES -> drawCapeGrid(
-                    nvg,
-                    palette,
-                    accent,
-                    contentX,
-                    contentWidth,
-                    y,
-                    scrollOffset,
-                    searchQuery,
-                    mouseX,
-                    mouseY
-                )
+            y =
+                when (activeSection) {
+                    CosmeticSection.CAPES -> {
+                        drawCapeGrid(
+                            nvg,
+                            palette,
+                            accent,
+                            contentX,
+                            contentWidth,
+                            y,
+                            scrollOffset,
+                            searchQuery,
+                            mouseX,
+                            mouseY,
+                        )
+                    }
 
-                CosmeticSection.WINGS -> drawWingGrid(
-                    nvg,
-                    palette,
-                    accent,
-                    contentX,
-                    contentWidth,
-                    y,
-                    scrollOffset,
-                    searchQuery,
-                    mouseX,
-                    mouseY
-                )
+                    CosmeticSection.WINGS -> {
+                        drawWingGrid(
+                            nvg,
+                            palette,
+                            accent,
+                            contentX,
+                            contentWidth,
+                            y,
+                            scrollOffset,
+                            searchQuery,
+                            mouseX,
+                            mouseY,
+                        )
+                    }
 
-                CosmeticSection.BANDANAS -> drawBandanaGrid(
-                    nvg,
-                    palette,
-                    accent,
-                    contentX,
-                    contentWidth,
-                    y,
-                    scrollOffset,
-                    searchQuery,
-                    mouseX,
-                    mouseY
-                )
-            }
+                    CosmeticSection.BANDANAS -> {
+                        drawBandanaGrid(
+                            nvg,
+                            palette,
+                            accent,
+                            contentX,
+                            contentWidth,
+                            y,
+                            scrollOffset,
+                            searchQuery,
+                            mouseX,
+                            mouseY,
+                        )
+                    }
+                }
         }
 
         val logicalHeight = max(0f, (y - startY) + CONTENT_PADDING)
         scroll.maxScroll = max(0f, logicalHeight - viewportHeight)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             return
         }
@@ -171,10 +184,17 @@ class CosmeticsCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         scroll.onKey(keyCode)
     }
 
@@ -187,7 +207,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         y: Float,
         scrollOffset: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         var currentX = x
         var currentY = y
@@ -199,14 +219,15 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 currentY += CategoryChipRenderer.CHIP_HEIGHT + SECTION_CHIP_GAP
             }
 
-            val hovered = MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                currentX,
-                currentY + scrollOffset,
-                chipWidth,
-                CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered =
+                MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    currentX,
+                    currentY + scrollOffset,
+                    chipWidth,
+                    CategoryChipRenderer.CHIP_HEIGHT,
+                )
             CategoryChipRenderer.drawChip(
                 nvg,
                 palette,
@@ -217,15 +238,18 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 section.label,
                 section.icon,
                 section == activeSection,
-                hovered
+                hovered,
             )
 
-            val chip = FilterChip(Runnable {
-                if (activeSection != section) {
-                    activeSection = section
-                    scroll.resetAll()
-                }
-            })
+            val chip =
+                FilterChip(
+                    Runnable {
+                        if (activeSection != section) {
+                            activeSection = section
+                            scroll.resetAll()
+                        }
+                    },
+                )
             chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
             sectionChips.add(chip)
             currentX += chipWidth + SECTION_CHIP_GAP
@@ -243,7 +267,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         y: Float,
         scrollOffset: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         var currentX = x
         var currentY = y
@@ -255,14 +279,15 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 currentY += CategoryChipRenderer.CHIP_HEIGHT + CATEGORY_CHIP_GAP
             }
 
-            val hovered = MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                currentX,
-                currentY + scrollOffset,
-                chipWidth,
-                CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered =
+                MouseUtils.isInside(
+                    mouseX,
+                    mouseY,
+                    currentX,
+                    currentY + scrollOffset,
+                    chipWidth,
+                    CategoryChipRenderer.CHIP_HEIGHT,
+                )
             CategoryChipRenderer.drawChip(
                 nvg,
                 palette,
@@ -273,13 +298,16 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 option.label,
                 null,
                 option.active,
-                hovered
+                hovered,
             )
 
-            val chip = FilterChip(Runnable {
-                option.onClick.run()
-                scroll.resetAll()
-            })
+            val chip =
+                FilterChip(
+                    Runnable {
+                        option.onClick.run()
+                        scroll.resetAll()
+                    },
+                )
             chip.setBounds(currentX, currentY + scrollOffset, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
             categoryChips.add(chip)
             currentX += chipWidth + CATEGORY_CHIP_GAP
@@ -298,7 +326,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         scrollOffset: Float,
         searchQuery: String,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         val manager = Shindo.getInstance().getCapeManager()
         val filtered = manager.getCapes().filter { isCapeVisible(it, searchQuery) }
@@ -320,7 +348,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             { item -> getRequirementText(item.getRequiredRole(), manager::getTranslateText) },
             { item -> manager.canUseCape(getClientUuid(), item) },
             { item -> createCapePreview(item) },
-            { item, bounds -> capeCardBounds[item] = bounds }
+            { item, bounds -> capeCardBounds[item] = bounds },
         )
     }
 
@@ -334,7 +362,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         scrollOffset: Float,
         searchQuery: String,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         val manager = Shindo.getInstance().getWingManager()
         val filtered = manager.getWings().filter { isWingVisible(it, searchQuery) }
@@ -356,7 +384,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             { item -> getRequirementText(item.getRequiredRole(), manager::getTranslateText) },
             { item -> manager.canUseWing(getClientUuid(), item) },
             { item -> createWingPreview(item) },
-            { item, bounds -> wingCardBounds[item] = bounds }
+            { item, bounds -> wingCardBounds[item] = bounds },
         )
     }
 
@@ -370,7 +398,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         scrollOffset: Float,
         searchQuery: String,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         val manager = Shindo.getInstance().getBandanaManager()
         val filtered = manager.getBandanas().filter { isBandanaVisible(it, searchQuery) }
@@ -392,7 +420,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             { item -> getRequirementText(item.getRequiredRole(), manager::getTranslateText) },
             { item -> manager.canUseBandana(getClientUuid(), item) },
             { item -> createBandanaPreview(item) },
-            { item, bounds -> bandanaCardBounds[item] = bounds }
+            { item, bounds -> bandanaCardBounds[item] = bounds },
         )
     }
 
@@ -412,7 +440,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         requirementMapper: (T) -> String,
         unlockedMapper: (T) -> Boolean,
         previewFactory: (T) -> PreviewRenderer,
-        boundsCollector: (T, CardBounds) -> Unit
+        boundsCollector: (T, CardBounds) -> Unit,
     ): Float {
         if (items.isEmpty()) {
             nvg.drawText(
@@ -421,7 +449,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 startY + 4f,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 210),
                 10f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             return startY + 28f
         }
@@ -452,7 +480,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 unlockedMapper(item),
                 mouseX,
                 mouseY,
-                scrollOffset
+                scrollOffset,
             )
 
             boundsCollector(item, CardBounds(cardX, cardY + scrollOffset, cardWidth, CARD_HEIGHT))
@@ -477,10 +505,17 @@ class CosmeticsCategory(parent: GuiModMenu) :
         unlocked: Boolean,
         mouseX: Int,
         mouseY: Int,
-        scrollOffset: Float
+        scrollOffset: Float,
     ) {
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, y + scrollOffset, width, height)
-        val overlayAlpha = if (selected) 74 else if (hovered) 48 else 30
+        val overlayAlpha =
+            if (selected) {
+                74
+            } else if (hovered) {
+                48
+            } else {
+                30
+            }
 
         nvg.drawShadow(x, y, width, height, 12f, 7)
         nvg.drawRoundedRect(
@@ -489,7 +524,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width,
             height,
             12f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -498,9 +533,8 @@ class CosmeticsCategory(parent: GuiModMenu) :
             height,
             12f,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210),
         )
-
 
         val previewX = x + 6f
         val previewY = y + 7f
@@ -513,7 +547,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             previewWidth,
             previewHeight,
             9f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 220),
         )
 
         preview(nvg, previewX + 1.5f, previewY + 1.5f, previewWidth - 3f, previewHeight - 3f)
@@ -527,7 +561,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 y + height - 11f,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 215),
                 7.6f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -543,7 +577,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 badgeSize,
                 badgeSize,
                 5.5f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
             )
             nvg.drawOutlineRoundedRect(
                 badgeX,
@@ -552,7 +586,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 badgeSize,
                 5.5f,
                 1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
             )
             nvg.drawCenteredText(
                 LegacyIcon.CHECK,
@@ -560,7 +594,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 badgeY + badgeSize / 2f - 4f,
                 Color.WHITE,
                 10.5f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
 
@@ -571,7 +605,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 width,
                 height,
                 12f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 205)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 205),
             )
             nvg.drawCenteredText(
                 LegacyIcon.LOCK,
@@ -579,12 +613,15 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 y + height / 2f - 8f,
                 Color(227, 116, 116),
                 16f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
     }
 
-    private fun handleCapeClick(mouseX: Int, mouseY: Int) {
+    private fun handleCapeClick(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         val manager = Shindo.getInstance().getCapeManager()
         for ((cape, bounds) in capeCardBounds) {
             if (!bounds.contains(mouseX, mouseY)) continue
@@ -592,7 +629,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 Shindo.getInstance().getNotificationManager().post(
                     TranslateText.ERROR,
                     manager.getTranslateError(cape.getRequiredRole()),
-                    NotificationType.ERROR
+                    NotificationType.ERROR,
                 )
                 return
             }
@@ -601,7 +638,10 @@ class CosmeticsCategory(parent: GuiModMenu) :
         }
     }
 
-    private fun handleWingClick(mouseX: Int, mouseY: Int) {
+    private fun handleWingClick(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         val manager = Shindo.getInstance().getWingManager()
         for ((wing, bounds) in wingCardBounds) {
             if (!bounds.contains(mouseX, mouseY)) continue
@@ -609,7 +649,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 Shindo.getInstance().getNotificationManager().post(
                     TranslateText.ERROR,
                     manager.getTranslateError(wing.getRequiredRole()),
-                    NotificationType.ERROR
+                    NotificationType.ERROR,
                 )
                 return
             }
@@ -618,7 +658,10 @@ class CosmeticsCategory(parent: GuiModMenu) :
         }
     }
 
-    private fun handleBandanaClick(mouseX: Int, mouseY: Int) {
+    private fun handleBandanaClick(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         val manager = Shindo.getInstance().getBandanaManager()
         for ((bandana, bounds) in bandanaCardBounds) {
             if (!bounds.contains(mouseX, mouseY)) continue
@@ -626,7 +669,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 Shindo.getInstance().getNotificationManager().post(
                     TranslateText.ERROR,
                     manager.getTranslateError(bandana.getRequiredRole()),
-                    NotificationType.ERROR
+                    NotificationType.ERROR,
                 )
                 return
             }
@@ -690,7 +733,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         y: Float,
         width: Float,
         height: Float,
-        label: String
+        label: String,
     ) {
         val palette = Shindo.getInstance().getColorManager().getPalette()
         val accent = Shindo.getInstance().getColorManager().getCurrentColor()
@@ -702,7 +745,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width,
             height,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215),
         )
 
         val centerX = x + width / 2f
@@ -716,7 +759,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             bodyWidth,
             height * 0.62f,
             4f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240),
         )
         nvg.drawRoundedRect(
             centerX - bodyWidth / 2f - wingWidth,
@@ -724,7 +767,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             wingWidth,
             wingHeight,
             5f,
-            ColorUtils.applyAlpha(tone, 185)
+            ColorUtils.applyAlpha(tone, 185),
         )
         nvg.drawRoundedRect(
             centerX + bodyWidth / 2f,
@@ -732,7 +775,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             wingWidth,
             wingHeight,
             5f,
-            ColorUtils.applyAlpha(tone, 185)
+            ColorUtils.applyAlpha(tone, 185),
         )
         nvg.drawRoundedRect(
             centerX - bodyWidth / 2f - wingWidth * 0.85f,
@@ -740,7 +783,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             wingWidth * 0.85f,
             wingHeight * 0.78f,
             5f,
-            ColorUtils.applyAlpha(accent.getColor2(), 170)
+            ColorUtils.applyAlpha(accent.getColor2(), 170),
         )
         nvg.drawRoundedRect(
             centerX + bodyWidth / 2f,
@@ -748,7 +791,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             wingWidth * 0.85f,
             wingHeight * 0.78f,
             5f,
-            ColorUtils.applyAlpha(accent.getColor2(), 170)
+            ColorUtils.applyAlpha(accent.getColor2(), 170),
         )
     }
 
@@ -758,7 +801,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         y: Float,
         width: Float,
         height: Float,
-        label: String
+        label: String,
     ) {
         val palette = Shindo.getInstance().getColorManager().getPalette()
         val accent = Shindo.getInstance().getColorManager().getCurrentColor()
@@ -770,7 +813,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width,
             height,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 215),
         )
 
         val centerX = x + width / 2f
@@ -780,7 +823,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             centerX,
             headY,
             headRadius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 240),
         )
 
         val stripY = headY - headRadius * 0.25f
@@ -792,7 +835,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             stripHeight,
             4f,
             ColorUtils.applyAlpha(tint, 210),
-            ColorUtils.applyAlpha(accent.getColor2(), 190)
+            ColorUtils.applyAlpha(accent.getColor2(), 190),
         )
         nvg.drawRoundedRect(
             centerX + width * 0.21f,
@@ -800,7 +843,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width * 0.13f,
             height * 0.20f,
             3f,
-            ColorUtils.applyAlpha(tint, 175)
+            ColorUtils.applyAlpha(tint, 175),
         )
         nvg.drawRoundedRect(
             centerX + width * 0.31f,
@@ -808,12 +851,12 @@ class CosmeticsCategory(parent: GuiModMenu) :
             width * 0.11f,
             height * 0.16f,
             3f,
-            ColorUtils.applyAlpha(accent.getColor1(), 165)
+            ColorUtils.applyAlpha(accent.getColor1(), 165),
         )
     }
 
-    private fun defaultPreview(): PreviewRenderer {
-        return { nvg, px, py, width, height ->
+    private fun defaultPreview(): PreviewRenderer =
+        { nvg, px, py, width, height ->
             val palette = Shindo.getInstance().getColorManager().getPalette()
             nvg.drawRoundedRect(
                 px,
@@ -821,7 +864,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 width,
                 height,
                 6f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
             )
             nvg.drawCenteredText(
                 "-",
@@ -829,10 +872,9 @@ class CosmeticsCategory(parent: GuiModMenu) :
                 py + height / 2f - 5f,
                 palette.getFontColor(ColorType.NORMAL),
                 11f,
-                Fonts.SEMIBOLD
+                Fonts.SEMIBOLD,
             )
         }
-    }
 
     private fun drawImagePreview(
         nvg: NanoVGManager,
@@ -842,7 +884,7 @@ class CosmeticsCategory(parent: GuiModMenu) :
         y: Float,
         width: Float,
         height: Float,
-        radius: Float
+        radius: Float,
     ): Boolean {
         val size = if (location != null) nvg.getImageSize(location) else nvg.getImageSize(file ?: return false)
         if (size == null || size.width <= 0 || size.height <= 0) {
@@ -861,7 +903,12 @@ class CosmeticsCategory(parent: GuiModMenu) :
         return true
     }
 
-    private fun scaleToFit(originalWidth: Float, originalHeight: Float, maxWidth: Float, maxHeight: Float): FloatArray {
+    private fun scaleToFit(
+        originalWidth: Float,
+        originalHeight: Float,
+        maxWidth: Float,
+        maxHeight: Float,
+    ): FloatArray {
         if (originalWidth <= 0f || originalHeight <= 0f) {
             return floatArrayOf(maxWidth, maxHeight)
         }
@@ -870,28 +917,45 @@ class CosmeticsCategory(parent: GuiModMenu) :
         return floatArrayOf(originalWidth * ratio, originalHeight * ratio)
     }
 
-    private fun isCapeVisible(cape: Cape, searchQuery: String): Boolean =
-        (activeCapeCategory == CapeCategory.ALL || cape.getCategory() == activeCapeCategory) && matchesSearch(
-            cape.getName(),
-            searchQuery
-        )
+    private fun isCapeVisible(
+        cape: Cape,
+        searchQuery: String,
+    ): Boolean =
+        (activeCapeCategory == CapeCategory.ALL || cape.getCategory() == activeCapeCategory) &&
+            matchesSearch(
+                cape.getName(),
+                searchQuery,
+            )
 
-    private fun isWingVisible(wing: Wing, searchQuery: String): Boolean =
-        (activeWingCategory == WingCategory.ALL || wing.getCategory() == activeWingCategory) && matchesSearch(
-            wing.getName(),
-            searchQuery
-        )
+    private fun isWingVisible(
+        wing: Wing,
+        searchQuery: String,
+    ): Boolean =
+        (activeWingCategory == WingCategory.ALL || wing.getCategory() == activeWingCategory) &&
+            matchesSearch(
+                wing.getName(),
+                searchQuery,
+            )
 
-    private fun isBandanaVisible(bandana: Bandana, searchQuery: String): Boolean =
-        (activeBandanaCategory == BandanaCategory.ALL || bandana.getCategory() == activeBandanaCategory) && matchesSearch(
-            bandana.getName(),
-            searchQuery
-        )
+    private fun isBandanaVisible(
+        bandana: Bandana,
+        searchQuery: String,
+    ): Boolean =
+        (activeBandanaCategory == BandanaCategory.ALL || bandana.getCategory() == activeBandanaCategory) &&
+            matchesSearch(
+                bandana.getName(),
+                searchQuery,
+            )
 
-    private fun matchesSearch(value: String, query: String): Boolean =
-        query.isEmpty() || SearchUtils.isSimilar(value, query)
+    private fun matchesSearch(
+        value: String,
+        query: String,
+    ): Boolean = query.isEmpty() || SearchUtils.isSimilar(value, query)
 
-    private fun getRequirementText(role: Role, mapper: (Role) -> TranslateText?): String {
+    private fun getRequirementText(
+        role: Role,
+        mapper: (Role) -> TranslateText?,
+    ): String {
         if (role == Role.MEMBER) {
             return ""
         }
@@ -899,7 +963,10 @@ class CosmeticsCategory(parent: GuiModMenu) :
         return if (translate == null || translate == TranslateText.NONE) "" else translate.getText()
     }
 
-    private fun computeCardWidth(contentWidth: Float, columns: Int): Float {
+    private fun computeCardWidth(
+        contentWidth: Float,
+        columns: Int,
+    ): Float {
         val safeColumns = max(1, columns)
         val available = max(0f, contentWidth - (safeColumns - 1) * CARD_GAP)
         val target = if (available <= 0f) CARD_WIDTH else available / safeColumns
@@ -908,7 +975,11 @@ class CosmeticsCategory(parent: GuiModMenu) :
 
     private fun getClientUuid(): UUID = Shindo.getInstance().getShindoAPI().getEffectiveUuid()
 
-    private fun handleChipClick(chips: List<FilterChip>, mouseX: Int, mouseY: Int): Boolean {
+    private fun handleChipClick(
+        chips: List<FilterChip>,
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean {
         for (chip in chips) {
             if (chip.contains(mouseX, mouseY)) {
                 chip.click()
@@ -918,29 +989,55 @@ class CosmeticsCategory(parent: GuiModMenu) :
         return false
     }
 
-    private fun getActiveCategoryOptions(): List<ChipOption> {
-        return when (activeSection) {
-            CosmeticSection.CAPES -> CapeCategory.values()
-                .map { ChipOption(it.getName(), it == activeCapeCategory, Runnable { activeCapeCategory = it }) }
+    private fun getActiveCategoryOptions(): List<ChipOption> =
+        when (activeSection) {
+            CosmeticSection.CAPES -> {
+                CapeCategory
+                    .values()
+                    .map { ChipOption(it.getName(), it == activeCapeCategory, Runnable { activeCapeCategory = it }) }
+            }
 
-            CosmeticSection.WINGS -> WingCategory.values()
-                .map { ChipOption(it.getName(), it == activeWingCategory, Runnable { activeWingCategory = it }) }
+            CosmeticSection.WINGS -> {
+                WingCategory
+                    .values()
+                    .map { ChipOption(it.getName(), it == activeWingCategory, Runnable { activeWingCategory = it }) }
+            }
 
-            CosmeticSection.BANDANAS -> BandanaCategory.values()
-                .map { ChipOption(it.getName(), it == activeBandanaCategory, Runnable { activeBandanaCategory = it }) }
+            CosmeticSection.BANDANAS -> {
+                BandanaCategory
+                    .values()
+                    .map {
+                        ChipOption(it.getName(), it == activeBandanaCategory, Runnable { activeBandanaCategory = it })
+                    }
+            }
         }
+
+    private data class CardBounds(
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+    ) {
+        fun contains(
+            mx: Int,
+            my: Int,
+        ): Boolean = MouseUtils.isInside(mx, my, x, y, width, height)
     }
 
-    private data class CardBounds(val x: Float, val y: Float, val width: Float, val height: Float) {
-        fun contains(mx: Int, my: Int): Boolean = MouseUtils.isInside(mx, my, x, y, width, height)
-    }
+    private data class ChipOption(
+        val label: String,
+        val active: Boolean,
+        val onClick: Runnable,
+    )
 
-    private data class ChipOption(val label: String, val active: Boolean, val onClick: Runnable)
-
-    private enum class CosmeticSection(val label: String, val icon: String, val visible: Boolean) {
+    private enum class CosmeticSection(
+        val label: String,
+        val icon: String,
+        val visible: Boolean,
+    ) {
         CAPES("Capes", LegacyIcon.STAR_FILL, true),
         WINGS("Wings", LegacyIcon.SHIELD, false),
-        BANDANAS("Bandanas", LegacyIcon.USER, false)
+        BANDANAS("Bandanas", LegacyIcon.USER, false),
     }
 
     private companion object {

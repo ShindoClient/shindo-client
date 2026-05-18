@@ -32,7 +32,6 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
     @Property(type = PropertyType.COMBO, translate = TranslateText.MODE)
     private val modeSetting = Mode.RIGHT
 
-
     @EventTarget
     fun onRender2D(event: EventNVG?) {
         val instance = getInstance()
@@ -69,13 +68,17 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
             }
         }
 
-        enabledMods.sortWith(Comparator { m1: Mod?, m2: Mod? ->
-            (getTextWidth(
-                m2!!.getName(),
-                8.5f,
-                getHudFont(1)
-            )!! - getTextWidth(m1!!.getName(), 8.5f, getHudFont(1))!!).toString().toInt()
-        })
+        enabledMods.sortWith(
+            Comparator { m1: Mod?, m2: Mod? ->
+                (
+                    getTextWidth(
+                        m2!!.getName(),
+                        8.5f,
+                        getHudFont(1),
+                    )!! - getTextWidth(m1!!.getName(), 8.5f, getHudFont(1))!!
+                ).toString().toInt()
+            },
+        )
 
         var y = 0
         var colorIndex = 0
@@ -90,13 +93,17 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
                     y.toFloat(),
                     nameWidth + 5,
                     12f,
-                    Color(0, 0, 0, 100)
+                    Color(0, 0, 0, 100),
                 )
             }
 
             this.drawText(
-                m.getName(), 3 + (if (isRight) (maxWidth - nameWidth) else 0f),
-                y + 2.5f, 8.5f, getHudFont(1), currentColor.getInterpolateColor(colorIndex)
+                m.getName(),
+                3 + (if (isRight) (maxWidth - nameWidth) else 0f),
+                y + 2.5f,
+                8.5f,
+                getHudFont(1),
+                currentColor.getInterpolateColor(colorIndex),
             )
 
             y += 12
@@ -107,16 +114,13 @@ class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_D
         this.setHeight(y)
     }
 
-    private enum class Mode(private val translate: TranslateText) : PropertyEnum {
+    private enum class Mode(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         RIGHT(TranslateText.RIGHT),
-        LEFT(TranslateText.LEFT);
+        LEFT(TranslateText.LEFT),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-
-

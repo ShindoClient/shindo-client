@@ -15,21 +15,19 @@ class CustomProxy(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val primaryDNS: String,
-    val secondaryDNS: String? = null
+    val secondaryDNS: String? = null,
 ) : IDNSProxy {
-
     private var active = false
-    private val config = DNSConfig(
-        primaryDNS = primaryDNS,
-        secondaryDNS = secondaryDNS,
-        name = name
-    )
+    private val config =
+        DNSConfig(
+            primaryDNS = primaryDNS,
+            secondaryDNS = secondaryDNS,
+            name = name,
+        )
     private val customResolver = CloudflareDNSResolver(config)
     private val defaultResolver = DNSResolver()
 
-    override fun isActive(): Boolean {
-        return active
-    }
+    override fun isActive(): Boolean = active
 
     override fun enable() {
         if (active) {
@@ -61,29 +59,25 @@ class CustomProxy(
         }
     }
 
-    override fun resolve(hostname: String): InetAddress? {
-        return if (active) {
+    override fun resolve(hostname: String): InetAddress? =
+        if (active) {
             customResolver.resolve(hostname) ?: defaultResolver.resolve(hostname)
         } else {
             defaultResolver.resolve(hostname)
         }
-    }
 
-    override fun getDNSName(): String {
-        return name
-    }
+    override fun getDNSName(): String = name
 
-    override fun getDNSAddress(): String {
-        return primaryDNS
-    }
+    override fun getDNSAddress(): String = primaryDNS
 
     /**
      * Valida se o proxy é válido
      */
-    fun isValid(): Boolean {
-        return name.isNotBlank() && primaryDNS.isNotBlank() && isValidIP(primaryDNS) &&
-                (secondaryDNS == null || secondaryDNS.isBlank() || isValidIP(secondaryDNS))
-    }
+    fun isValid(): Boolean =
+        name.isNotBlank() &&
+            primaryDNS.isNotBlank() &&
+            isValidIP(primaryDNS) &&
+            (secondaryDNS == null || secondaryDNS.isBlank() || isValidIP(secondaryDNS))
 
     /**
      * Verifica se uma string é um IP válido
@@ -108,8 +102,6 @@ class CustomProxy(
         id: String = this.id,
         name: String = this.name,
         primaryDNS: String = this.primaryDNS,
-        secondaryDNS: String? = this.secondaryDNS
-    ): CustomProxy {
-        return CustomProxy(id, name, primaryDNS, secondaryDNS)
-    }
+        secondaryDNS: String? = this.secondaryDNS,
+    ): CustomProxy = CustomProxy(id, name, primaryDNS, secondaryDNS)
 }

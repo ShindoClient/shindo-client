@@ -11,9 +11,8 @@ import kotlin.math.min
 class CompCellGrid(
     width: Float,
     height: Float,
-    private val setting: CellGridSetting
+    private val setting: CellGridSetting,
 ) : Component() {
-
     private var hoverRow = -1
     private var hoverCol = -1
     private val hoverAnimation = SimpleAnimation()
@@ -34,7 +33,11 @@ class CompCellGrid(
         return (gridHeight + padding).coerceIn(minHeight, maxHeight)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
         val cells = setting.getCells() ?: return
         val layout = calculateLayout(cells) ?: return
@@ -63,7 +66,7 @@ class CompCellGrid(
                 layout.boardWidth,
                 layout.boardHeight,
                 6f,
-                boardBackground
+                boardBackground,
             )
             nvgInstance.drawOutlineRoundedRect(
                 layout.boardX,
@@ -72,7 +75,7 @@ class CompCellGrid(
                 layout.boardHeight,
                 6f,
                 1f,
-                boardOutline
+                boardOutline,
             )
 
             nvgInstance.save()
@@ -93,7 +96,7 @@ class CompCellGrid(
                             layout.cellSize,
                             cornerRadius,
                             ColorUtils.applyAlpha(accentColor.getColor1(), 226),
-                            ColorUtils.applyAlpha(accentColor.getColor2(), 214)
+                            ColorUtils.applyAlpha(accentColor.getColor2(), 214),
                         )
                     } else {
                         nvgInstance.drawRoundedRect(
@@ -102,7 +105,7 @@ class CompCellGrid(
                             layout.cellSize,
                             layout.cellSize,
                             cornerRadius,
-                            cellInactive
+                            cellInactive,
                         )
                     }
 
@@ -113,7 +116,7 @@ class CompCellGrid(
                             layout.cellSize,
                             layout.cellSize,
                             cornerRadius,
-                            ColorUtils.applyAlpha(accentColor.getColor2(), hoverOverlay)
+                            ColorUtils.applyAlpha(accentColor.getColor2(), hoverOverlay),
                         )
                         nvgInstance.drawOutlineRoundedRect(
                             cellX,
@@ -122,7 +125,7 @@ class CompCellGrid(
                             layout.cellSize,
                             cornerRadius,
                             1f,
-                            ColorUtils.applyAlpha(accentColor.getColor1(), 172)
+                            ColorUtils.applyAlpha(accentColor.getColor1(), 172),
                         )
                     }
                 }
@@ -133,7 +136,11 @@ class CompCellGrid(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
@@ -179,7 +186,7 @@ class CompCellGrid(
             boardX = gridX - boardPadding,
             boardY = gridY - boardPadding,
             boardWidth = gridWidth + (boardPadding * 2f),
-            boardHeight = gridHeight + (boardPadding * 2f)
+            boardHeight = gridHeight + (boardPadding * 2f),
         )
     }
 
@@ -194,7 +201,12 @@ class CompCellGrid(
         return GridInfo(rows, maxCols)
     }
 
-    private fun updateHover(mouseX: Int, mouseY: Int, layout: GridLayout, cells: Array<BooleanArray>) {
+    private fun updateHover(
+        mouseX: Int,
+        mouseY: Int,
+        layout: GridLayout,
+        cells: Array<BooleanArray>,
+    ) {
         val cell = resolveCell(mouseX, mouseY, layout, cells)
         if (cell != null) {
             hoverRow = cell.first
@@ -209,7 +221,7 @@ class CompCellGrid(
         mouseX: Int,
         mouseY: Int,
         layout: GridLayout,
-        cells: Array<BooleanArray>
+        cells: Array<BooleanArray>,
     ): Pair<Int, Int>? {
         val relativeX = mouseX - layout.gridX
         val relativeY = mouseY - layout.gridY
@@ -231,7 +243,10 @@ class CompCellGrid(
         return Pair(row, col)
     }
 
-    private data class GridInfo(val rows: Int, val cols: Int)
+    private data class GridInfo(
+        val rows: Int,
+        val cols: Int,
+    )
 
     private data class GridLayout(
         val rows: Int,
@@ -243,6 +258,6 @@ class CompCellGrid(
         val boardX: Float,
         val boardY: Float,
         val boardWidth: Float,
-        val boardHeight: Float
+        val boardHeight: Float,
     )
 }

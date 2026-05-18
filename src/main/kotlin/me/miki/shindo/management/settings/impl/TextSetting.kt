@@ -5,7 +5,6 @@ import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.config.ConfigOwner
 
 open class TextSetting : Setting {
-
     private val defaultText: String
     private var text: String
 
@@ -23,15 +22,11 @@ open class TextSetting : Setting {
         text = defaultText
     }
 
-    fun getText(): String {
-        return text
-    }
+    fun getText(): String = text
 
     open fun setText(text: String) {
         this.text = text
     }
 
-    fun getDefaultText(): String {
-        return defaultText
-    }
+    fun getDefaultText(): String = defaultText
 }

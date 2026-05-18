@@ -20,7 +20,6 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class CapeManager {
-
     private val capes = ArrayList<Cape>()
     private var currentCape: Cape? = null
 
@@ -73,7 +72,7 @@ class CapeManager {
             "cartoon/stargazinggirl-sample.png",
             "cartoon/stargazinggirl.png",
             CapeCategory.CARTOON,
-            Role.DIAMOND
+            Role.DIAMOND,
         )
         add("Stellagate", "cartoon/stellagate-sample.png", "cartoon/stellagate.png", CapeCategory.CARTOON, Role.DIAMOND)
 
@@ -88,13 +87,14 @@ class CapeManager {
                     val image = ImageIO.read(f) ?: return@forEach
                     val width = image.width
                     val height = image.height
-                    val outputImage = ImageUtils.scissor(
-                        image,
-                        (width * 0.03125).toInt(),
-                        (height * 0.0625).toInt(),
-                        (width * 0.125).toInt(),
-                        (height * 0.46875).toInt()
-                    )
+                    val outputImage =
+                        ImageUtils.scissor(
+                            image,
+                            (width * 0.03125).toInt(),
+                            (height * 0.0625).toInt(),
+                            (width * 0.125).toInt(),
+                            (height * 0.46875).toInt(),
+                        )
                     ImageIO.write(ImageUtils.resize(outputImage, 1000, 1700), "png", file)
                 } catch (e: Exception) {
                     ShindoLogger.error("Failed to load image", e)
@@ -111,7 +111,7 @@ class CapeManager {
                         file,
                         mc.textureManager.getDynamicTextureLocation(f.name.hashCode().toString(), cape),
                         CapeCategory.CUSTOM,
-                        Role.DIAMOND
+                        Role.DIAMOND,
                     )
                 } catch (e: Exception) {
                     ShindoLogger.error("Failed to load image", e)
@@ -129,13 +129,21 @@ class CapeManager {
     }
 
     fun getCapes(): ArrayList<Cape> = capes
+
     fun getCurrentCape(): Cape? = currentCape
+
     fun setCurrentCape(cape: Cape?) {
         currentCape = cape
         cape?.let { InternalSettingsMod.instance.capeConfigName = (it.getName()) }
     }
 
-    private fun add(name: String, samplePath: String, capePath: String, category: CapeCategory, requiredRole: Role) {
+    private fun add(
+        name: String,
+        samplePath: String,
+        capePath: String,
+        category: CapeCategory,
+        requiredRole: Role,
+    ) {
         val cosmeticPath = "shindo/cosmetics/cape/"
         capes.add(
             NormalCape(
@@ -143,8 +151,8 @@ class CapeManager {
                 ResourceLocation(cosmeticPath + samplePath),
                 ResourceLocation(cosmeticPath + capePath),
                 category,
-                requiredRole
-            )
+                requiredRole,
+            ),
         )
     }
 
@@ -153,16 +161,17 @@ class CapeManager {
         sample: File,
         cape: ResourceLocation,
         category: CapeCategory,
-        requiredRole: Role
+        requiredRole: Role,
     ) {
         capes.add(CustomCape(name, sample, cape, category, requiredRole))
     }
 
-    fun getCapeByName(name: String): Cape =
-        capes.firstOrNull { it.getName() == name } ?: getCapeByName("None")
+    fun getCapeByName(name: String): Cape = capes.firstOrNull { it.getName() == name } ?: getCapeByName("None")
 
-    fun canUseCape(uuid: UUID, cape: Cape): Boolean =
-        RoleManager.hasAtLeast(uuid, cape.getRequiredRole())
+    fun canUseCape(
+        uuid: UUID,
+        cape: Cape,
+    ): Boolean = RoleManager.hasAtLeast(uuid, cape.getRequiredRole())
 
     fun getTranslateError(role: Role): TranslateText = CosmeticRoleTextMapper.getTranslateError(role)
 

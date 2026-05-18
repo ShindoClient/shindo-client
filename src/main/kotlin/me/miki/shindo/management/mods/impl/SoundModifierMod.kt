@@ -9,19 +9,20 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class SoundModifierMod : Mod(
-    TranslateText.SOUND_MODIFIER,
-    TranslateText.SOUND_MODIFIER_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_SOUND_MODIFIER
-) {
+class SoundModifierMod :
+    Mod(
+        TranslateText.SOUND_MODIFIER,
+        TranslateText.SOUND_MODIFIER_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_SOUND_MODIFIER,
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.NOTE,
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val noteSetting = 100
 
@@ -31,7 +32,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val tntSetting = 100
 
@@ -41,7 +42,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val portalSetting = 100
 
@@ -51,7 +52,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val stepSetting = 100
 
@@ -61,7 +62,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val mobsSetting = 100
 
@@ -71,7 +72,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val recordsSetting = 100
 
@@ -81,7 +82,7 @@ class SoundModifierMod : Mod(
         min = 0.0,
         max = 100.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val fireworksSetting = 100
 
@@ -107,7 +108,10 @@ class SoundModifierMod : Mod(
             event.setVolume(noteSetting / 100f)
         }
 
-        if (event.getSoundName() == "game.tnt.primed" || event.getSoundName() == "random.explode" || event.getSoundName() == "creeper.primed") {
+        if (event.getSoundName() == "game.tnt.primed" ||
+            event.getSoundName() == "random.explode" ||
+            event.getSoundName() == "creeper.primed"
+        ) {
             event.setVolume(tntSetting / 100f)
         }
 
@@ -116,7 +120,3 @@ class SoundModifierMod : Mod(
         }
     }
 }
-
-
-
-

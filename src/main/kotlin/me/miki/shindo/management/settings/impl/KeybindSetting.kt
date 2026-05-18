@@ -8,7 +8,6 @@ import net.minecraft.client.gui.Gui
 import org.lwjgl.input.Keyboard
 
 open class KeybindSetting : Setting {
-
     private val defaultKeyCode: Int
     private var keyCode: Int
 
@@ -26,19 +25,13 @@ open class KeybindSetting : Setting {
         keyCode = defaultKeyCode
     }
 
-    fun getKeyCode(): Int {
-        return keyCode
-    }
+    fun getKeyCode(): Int = keyCode
 
     open fun setKeyCode(keyCode: Int) {
         this.keyCode = keyCode
     }
 
-    fun getDefaultKeyCode(): Int {
-        return defaultKeyCode
-    }
+    fun getDefaultKeyCode(): Int = defaultKeyCode
 
-    fun isKeyDown(): Boolean {
-        return Keyboard.isKeyDown(keyCode) && Minecraft.getMinecraft().currentScreen !is Gui
-    }
+    fun isKeyDown(): Boolean = Keyboard.isKeyDown(keyCode) && Minecraft.getMinecraft().currentScreen !is Gui
 }

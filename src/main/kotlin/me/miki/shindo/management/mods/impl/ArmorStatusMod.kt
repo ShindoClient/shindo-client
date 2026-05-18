@@ -13,9 +13,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import kotlin.math.abs
 
-class ArmorStatusMod :
-    SimpleHUDMod(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, LegacyIcon.MOD_ARMOR_STATUS) {
-
+class ArmorStatusMod : SimpleHUDMod(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, LegacyIcon.MOD_ARMOR_STATUS) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         val fakeStack = arrayOfNulls<ItemStack>(4)
@@ -31,7 +29,10 @@ class ArmorStatusMod :
         renderArmorItems(stacks)
     }
 
-    private fun drawNanoVG(nvg: NanoVGManager?, items: Array<ItemStack?>) {
+    private fun drawNanoVG(
+        nvg: NanoVGManager?,
+        items: Array<ItemStack?>,
+    ) {
         this.drawBackground(52f, 64f)
 
         for (i in 0..3) {
@@ -63,6 +64,3 @@ class ArmorStatusMod :
         GlStateManager.popMatrix()
     }
 }
-
-
-

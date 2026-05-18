@@ -23,8 +23,7 @@ import kotlin.Exception
 import kotlin.Int
 import kotlin.String
 
-class MechvibesMod :
-    Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MECHVIBES) {
+class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MECHVIBES) {
     private val mouseLeftSound = Sound()
     private val mouseRightSound = Sound()
 
@@ -42,7 +41,7 @@ class MechvibesMod :
         min = 0.0,
         max = 1.0,
         step = 0.05,
-        current = 0.5
+        current = 0.5,
     )
     private val keyboardVolume = 0.5
 
@@ -55,7 +54,7 @@ class MechvibesMod :
         min = 0.0,
         max = 1.0,
         step = 0.05,
-        current = 0.5
+        current = 0.5,
     )
     private val mouseVolume = 0.5
     private var tempKeyboardVolume = 0f
@@ -203,22 +202,19 @@ class MechvibesMod :
         }
     }
 
-    private enum class KeyType(val resourceFolder: String, private val translate: TranslateText) : PropertyEnum {
+    private enum class KeyType(
+        val resourceFolder: String,
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         NK_CREAM("nk_cream", TranslateText.NK_CREAM),
         MX_BLUE("mx_blue", TranslateText.MX_BLUE),
         MX_SILVER("mx_silver", TranslateText.MX_SILVER),
         RAZER_GREEN("razer_green", TranslateText.RAZER_GREEN),
         HYPERX_AQUA("hyperx_aqua", TranslateText.HYPERX_AQUA),
         MX_BLACK("mx_black", TranslateText.MX_BLACK),
-        TOPRE_PURPLE("topre_purple", TranslateText.TOPRE_PURPLE);
+        TOPRE_PURPLE("topre_purple", TranslateText.TOPRE_PURPLE),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-
-
-

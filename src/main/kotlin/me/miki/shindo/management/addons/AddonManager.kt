@@ -9,7 +9,6 @@ import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
 
 class AddonManager {
-
     val addons = ArrayList<Addon>()
     val failedAddons = ArrayList<FailedAddonEntry>()
     val settings = ArrayList<Setting>()
@@ -57,7 +56,10 @@ class AddonManager {
         SettingRegistry.applyMetadata(addon)
     }
 
-    fun registerFailedAddon(jarFileName: String, errorMessage: String) {
+    fun registerFailedAddon(
+        jarFileName: String,
+        errorMessage: String,
+    ) {
         failedAddons.add(FailedAddonEntry(jarFileName, errorMessage))
     }
 
@@ -69,6 +71,3 @@ class AddonManager {
         }
     }
 }
-
-
-

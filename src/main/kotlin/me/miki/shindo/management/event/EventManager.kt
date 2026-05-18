@@ -3,7 +3,6 @@ package me.miki.shindo.management.event
 import java.lang.reflect.Method
 
 class EventManager {
-
     private val REGISTRY_MAP: MutableMap<Class<*>, ArrayHelper<Data>> = HashMap()
 
     fun register(o: Any) {
@@ -14,7 +13,10 @@ class EventManager {
         }
     }
 
-    fun register(o: Any, clazz: Class<out Event>) {
+    fun register(
+        o: Any,
+        clazz: Class<out Event>,
+    ) {
         for (method in o.javaClass.declaredMethods) {
             if (!isMethodBad(method, clazz)) {
                 register(method, o)
@@ -22,7 +24,10 @@ class EventManager {
         }
     }
 
-    private fun register(method: Method, o: Any) {
+    private fun register(
+        method: Method,
+        o: Any,
+    ) {
         val clazz = method.parameterTypes[0]
         val methodData = Data(o, method, method.getAnnotation(EventTarget::class.java).value)
 
@@ -55,7 +60,10 @@ class EventManager {
         cleanMap(true)
     }
 
-    fun unregister(o: Any, clazz: Class<out Event>) {
+    fun unregister(
+        o: Any,
+        clazz: Class<out Event>,
+    ) {
         if (REGISTRY_MAP.containsKey(clazz)) {
             val helper = REGISTRY_MAP[clazz]
             if (helper != null) {
@@ -108,21 +116,17 @@ class EventManager {
         REGISTRY_MAP[clazz] = flexibleArray
     }
 
-    private fun isMethodBad(method: Method): Boolean {
-        return method.parameterTypes.size != 1 || !method.isAnnotationPresent(EventTarget::class.java)
-    }
+    private fun isMethodBad(method: Method): Boolean =
+        method.parameterTypes.size != 1 || !method.isAnnotationPresent(EventTarget::class.java)
 
-    private fun isMethodBad(method: Method, clazz: Class<out Event>): Boolean {
-        return isMethodBad(method) || method.parameterTypes[0] == clazz
-    }
+    private fun isMethodBad(
+        method: Method,
+        clazz: Class<out Event>,
+    ): Boolean = isMethodBad(method) || method.parameterTypes[0] == clazz
 
-    fun get(clazz: Class<out Event>): ArrayHelper<Data>? {
-        return REGISTRY_MAP[clazz]
-    }
+    fun get(clazz: Class<out Event>): ArrayHelper<Data>? = REGISTRY_MAP[clazz]
 
-    fun getAny(clazz: Class<*>): ArrayHelper<Data>? {
-        return REGISTRY_MAP[clazz]
-    }
+    fun getAny(clazz: Class<*>): ArrayHelper<Data>? = REGISTRY_MAP[clazz]
 
     fun shutdown() {
         REGISTRY_MAP.clear()

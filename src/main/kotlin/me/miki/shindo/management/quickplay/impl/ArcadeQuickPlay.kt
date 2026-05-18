@@ -5,7 +5,6 @@ import me.miki.shindo.management.quickplay.QuickPlayCommand
 import net.minecraft.util.ResourceLocation
 
 class ArcadeQuickPlay : QuickPlay("Arcade", ResourceLocation("shindo/icons/hypixel/Arcade.png")) {
-
     override fun addCommands() {
         setCommands(
             arrayListOf(
@@ -28,8 +27,8 @@ class ArcadeQuickPlay : QuickPlay("Arcade", ResourceLocation("shindo/icons/hypix
                 QuickPlayCommand("Hide & Seek Party Pooper", "/play arcade_hide_and_seek_party_pooper"),
                 QuickPlayCommand("Hypixel Says", "/play arcade_simon_says"),
                 QuickPlayCommand("Mini Walls", "/play arcade_mini_walls"),
-                QuickPlayCommand("Blocking Dead", "/play arcade_day_one")
-            )
+                QuickPlayCommand("Blocking Dead", "/play arcade_day_one"),
+            ),
         )
     }
 }

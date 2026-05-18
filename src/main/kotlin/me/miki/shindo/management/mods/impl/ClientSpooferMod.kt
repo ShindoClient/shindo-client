@@ -8,12 +8,13 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 
-class ClientSpooferMod : Mod(
-    TranslateText.CLIENT_SPOOFER,
-    TranslateText.CLIENT_SPOOFER_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_CLIENT_SPOOFER
-) {
+class ClientSpooferMod :
+    Mod(
+        TranslateText.CLIENT_SPOOFER,
+        TranslateText.CLIENT_SPOOFER_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_CLIENT_SPOOFER,
+    ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     @JvmField
     val spoofType: SpoofType = SpoofType.VANILLA
@@ -22,13 +23,14 @@ class ClientSpooferMod : Mod(
         instance = this
     }
 
-    enum class SpoofType(private val translate: TranslateText) : PropertyEnum {
+    enum class SpoofType(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         VANILLA(TranslateText.VANILLA),
-        FORGE(TranslateText.FORGE);
+        FORGE(TranslateText.FORGE),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -36,7 +38,3 @@ class ClientSpooferMod : Mod(
         var instance: ClientSpooferMod? = null
     }
 }
-
-
-
-

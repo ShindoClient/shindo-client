@@ -18,7 +18,7 @@ import java.awt.Color
 class BroadcastNotification(
     private val title: String,
     private val message: String,
-    private val type: NotificationType
+    private val type: NotificationType,
 ) {
     private val timer = TimerUtils()
     private val screenAlpha = ScreenAlpha()
@@ -59,9 +59,13 @@ class BroadcastNotification(
         nvg.translate(0f, -slideOffset + slide * slideOffset)
         nvg.drawShadow(x, margin, maxWidth, height, 7f)
         nvg.drawGradientRoundedRect(
-            x, margin, maxWidth, height, 7f,
+            x,
+            margin,
+            maxWidth,
+            height,
+            7f,
             ColorUtils.applyAlpha(currentColor.getColor1(), 230),
-            ColorUtils.applyAlpha(currentColor.getColor2(), 230)
+            ColorUtils.applyAlpha(currentColor.getColor2(), 230),
         )
         nvg.drawText(type.icon, x + 7f, margin + 7f, Color.WHITE, 18f, Fonts.LEGACYICON)
         nvg.drawText(title, x + 28f, margin + 7f, Color.WHITE, 10.4f, Fonts.MEDIUM)

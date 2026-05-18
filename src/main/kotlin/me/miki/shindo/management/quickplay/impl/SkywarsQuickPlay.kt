@@ -5,7 +5,6 @@ import me.miki.shindo.management.quickplay.QuickPlayCommand
 import net.minecraft.util.ResourceLocation
 
 class SkywarsQuickPlay : QuickPlay("Skywars", ResourceLocation("shindo/icons/hypixel/Skywars.png")) {
-
     override fun addCommands() {
         setCommands(
             arrayListOf(
@@ -14,8 +13,8 @@ class SkywarsQuickPlay : QuickPlay("Skywars", ResourceLocation("shindo/icons/hyp
                 QuickPlayCommand("Solo Insane", "/play solo_insane"),
                 QuickPlayCommand("Teams Normal", "/play teams_normal"),
                 QuickPlayCommand("Teams Insane", "/play teams_insane"),
-                QuickPlayCommand("Mega", "/play mega_normal")
-            )
+                QuickPlayCommand("Mega", "/play mega_normal"),
+            ),
         )
     }
 }

@@ -16,15 +16,13 @@ class EaseBackIn : Animation {
     constructor(ms: Int, endPoint: Double, easeAmount: Float, direction: Direction?) : super(
         ms,
         endPoint,
-        direction!!
+        direction!!,
     ) {
         this.easeAmount = easeAmount
         this.reset()
     }
 
-    override fun correctOutput(): Boolean {
-        return true
-    }
+    override fun correctOutput(): Boolean = true
 
     protected override fun getEquation(x: Double): Double {
         val x1 = x / getDuration()

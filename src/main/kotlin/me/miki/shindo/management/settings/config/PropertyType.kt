@@ -10,5 +10,5 @@ enum class PropertyType {
     SOUND,
     COMBO,
     CATEGORY,
-    CELL_GRID
+    CELL_GRID,
 }

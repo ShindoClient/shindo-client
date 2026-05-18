@@ -12,7 +12,6 @@ import org.lwjgl3.BufferUtils
 import java.nio.FloatBuffer
 import kotlin.math.min
 
-
 class ScreenAlpha {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
@@ -20,7 +19,10 @@ class ScreenAlpha {
     private var fbHeight = 0
     private var fb: NVGLUFramebuffer? = null
 
-    fun wrap(task: Runnable?, alphaProgress: Float) {
+    fun wrap(
+        task: Runnable?,
+        alphaProgress: Float,
+    ) {
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
@@ -49,30 +51,33 @@ class ScreenAlpha {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw(Runnable {
-            nvg.setAlpha(min(alphaProgress, 1.0f))
-            val paint = NVGPaint.create()
+        nvg.setupAndDraw(
+            Runnable {
+                nvg.setAlpha(min(alphaProgress, 1.0f))
+                val paint = NVGPaint.create()
 
-            NanoVG.nvgBeginPath(nvg.getContext())
+                NanoVG.nvgBeginPath(nvg.getContext())
 
-            NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
+                NanoVG.nvgRect(nvg.getContext(), 0f, 0f, mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
 
-            NanoVG.nvgFillPaint(
-                nvg.getContext(),
-                NanoVG.nvgImagePattern(
+                NanoVG.nvgFillPaint(
                     nvg.getContext(),
-                    0f,
-                    0f,
-                    mc.displayWidth.toFloat(),
-                    mc.displayHeight.toFloat(),
-                    0f,
-                    fb!!.image(),
-                    1f,
-                    paint
+                    NanoVG.nvgImagePattern(
+                        nvg.getContext(),
+                        0f,
+                        0f,
+                        mc.displayWidth.toFloat(),
+                        mc.displayHeight.toFloat(),
+                        0f,
+                        fb!!.image(),
+                        1f,
+                        paint,
+                    ),
                 )
-            )
-            NanoVG.nvgFill(nvg.getContext())
-        }, false)
+                NanoVG.nvgFill(nvg.getContext())
+            },
+            false,
+        )
     }
 
     fun close() {

@@ -34,7 +34,7 @@ class SoundSubtitlesMod :
         min = 1.0,
         max = 10.0,
         current = 3.0,
-        step = 1.0
+        step = 1.0,
     )
     private val maxSetting = 3
 
@@ -46,8 +46,10 @@ class SoundSubtitlesMod :
         val mapped = ResourceLocation("shindo/soundtitles/data.json")
 
         try {
-            val obj = JsonParser.parseString(read(mc.resourceManager.getResource(mapped).inputStream))
-                .asJsonObject
+            val obj =
+                JsonParser
+                    .parseString(read(mc.resourceManager.getResource(mapped).inputStream))
+                    .asJsonObject
             for (entry in obj.entrySet()) {
                 soundMap.put(entry.key, entry.value.asString)
             }
@@ -64,15 +66,20 @@ class SoundSubtitlesMod :
     }
 
     private fun drawNanoVG() {
-        val vec3 = Vec3(
-            mc.thePlayer.posX,
-            mc.thePlayer.posY + mc.thePlayer.eyeHeight.toDouble(),
-            mc.thePlayer.posZ
-        )
-        val vec31 = (Vec3(0.0, 0.0, -1.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
-            .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
-        val vec32 = (Vec3(0.0, 1.0, 0.0)).rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
-            .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
+        val vec3 =
+            Vec3(
+                mc.thePlayer.posX,
+                mc.thePlayer.posY + mc.thePlayer.eyeHeight.toDouble(),
+                mc.thePlayer.posZ,
+            )
+        val vec31 =
+            (Vec3(0.0, 0.0, -1.0))
+                .rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
+                .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
+        val vec32 =
+            (Vec3(0.0, 1.0, 0.0))
+                .rotatePitch(-mc.thePlayer.rotationPitch * 0.017453292f)
+                .rotateYaw(-mc.thePlayer.rotationYaw * 0.017453292f)
         val vec33 = vec31.crossProduct(vec32)
 
         val subtitleWidth = 120
@@ -138,7 +145,7 @@ class SoundSubtitlesMod :
                     animationOffsetY + 4,
                     9f,
                     getHudFont(1),
-                    this.getFontColor(opacity)
+                    this.getFontColor(opacity),
                 )
 
                 if (!flag) {
@@ -149,7 +156,7 @@ class SoundSubtitlesMod :
                             animationOffsetY + 4.5f,
                             9f,
                             getHudFont(1),
-                            this.getFontColor(opacity)
+                            this.getFontColor(opacity),
                         )
                     } else if (d0 < 0.0) {
                         this.drawText("<", 4.5f, animationOffsetY + 4.5f, 9f, getHudFont(1), this.getFontColor(opacity))
@@ -186,8 +193,8 @@ class SoundSubtitlesMod :
                         Vec3(
                             soundIn.xPosF.toDouble(),
                             soundIn.yPosF.toDouble(),
-                            soundIn.zPosF.toDouble()
-                        )
+                            soundIn.zPosF.toDouble(),
+                        ),
                     )
                     return
                 }
@@ -197,14 +204,12 @@ class SoundSubtitlesMod :
         this.subtitles.add(
             Subtitle(
                 s,
-                Vec3(soundIn.xPosF.toDouble(), soundIn.yPosF.toDouble(), soundIn.zPosF.toDouble())
-            )
+                Vec3(soundIn.xPosF.toDouble(), soundIn.yPosF.toDouble(), soundIn.zPosF.toDouble()),
+            ),
         )
     }
 
-    private fun getSoundName(location: ResourceLocation): String? {
-        return soundMap[location.getResourcePath()]
-    }
+    private fun getSoundName(location: ResourceLocation): String? = soundMap[location.getResourcePath()]
 
     @Throws(IOException::class)
     private fun read(stream: InputStream): String {
@@ -225,7 +230,3 @@ class SoundSubtitlesMod :
         var instance: SoundSubtitlesMod? = null
     }
 }
-
-
-
-

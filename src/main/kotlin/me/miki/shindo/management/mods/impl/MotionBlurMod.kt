@@ -22,12 +22,13 @@ import org.lwjgl.opengl.GL11
 import java.util.function.Consumer
 
 @Suppress("unused", "UNUSED_PARAMETER")
-class MotionBlurMod : Mod(
-    TranslateText.MOTION_BLUR,
-    TranslateText.MOTION_BLUR_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_MOTION_BLUR
-) {
+class MotionBlurMod :
+    Mod(
+        TranslateText.MOTION_BLUR,
+        TranslateText.MOTION_BLUR_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_MOTION_BLUR,
+    ) {
     private val motion_blur = ResourceLocation("minecraft:shaders/post/motion_blur.json")
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
@@ -69,9 +70,11 @@ class MotionBlurMod : Mod(
 
             if (groupBlur != amountSetting.toFloat() || !loaded) {
                 loaded = true
-                (group as IMixinShaderGroup).listShaders.forEach(Consumer { shader: Shader? ->
-                    shader!!.shaderManager.getShaderUniform("BlurFactor")?.set(amountSetting.toFloat())
-                })
+                (group as IMixinShaderGroup).listShaders.forEach(
+                    Consumer { shader: Shader? ->
+                        shader!!.shaderManager.getShaderUniform("BlurFactor")?.set(amountSetting.toFloat())
+                    },
+                )
                 groupBlur = amountSetting.toFloat()
             }
 
@@ -114,19 +117,13 @@ class MotionBlurMod : Mod(
         super.onEnable()
     }
 
-    private enum class Mode(private val translate: TranslateText) : PropertyEnum {
+    private enum class Mode(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         ACCUM(TranslateText.ACCUM),
-        SHADER(TranslateText.SHADER);
+        SHADER(TranslateText.SHADER),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-
-
-
-
-

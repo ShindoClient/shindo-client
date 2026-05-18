@@ -32,8 +32,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class InternalSettingsMod :
-    Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, LegacyIcon.MOD_INTERNAL_SETTINGS) {
+class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, LegacyIcon.MOD_INTERNAL_SETTINGS) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
     @JvmField
     val hudTheme: HudTheme = HudTheme.NORMAL
@@ -47,7 +46,7 @@ class InternalSettingsMod :
         translate = TranslateText.BLUR_STRENGTH,
         min = 10.0,
         max = 20.0,
-        current = 1.0
+        current = 1.0,
     )
     @JvmField
     var blurStrengthSetting = 1.0
@@ -91,7 +90,6 @@ class InternalSettingsMod :
     @JvmField
     var textureOptimizationSetting = true
 
-
     @Property(type = PropertyType.COMBO, name = "Settings Layout")
     val settingsLayout: SettingsLayout = SettingsLayout.SINGLE_COLUMN
 
@@ -102,7 +100,6 @@ class InternalSettingsMod :
     @Property(type = PropertyType.COMBO, name = "Module Layout")
     @JvmField
     val moduleLayout = ModuleLayout.SINGLE_COLUMN
-
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
     var notificationCorner: NotificationCorner = NotificationCorner.BOTTOM_RIGHT
@@ -173,9 +170,7 @@ class InternalSettingsMod :
         setBorderlessFullscreen(event.state)
     }
 
-    fun getModuleLayout(): ModuleLayout {
-        return readEnumFromCombo(moduleLayoutSetting, ModuleLayout.values(), moduleLayout)
-    }
+    fun getModuleLayout(): ModuleLayout = readEnumFromCombo(moduleLayoutSetting, ModuleLayout.values(), moduleLayout)
 
     private val settingsLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "settingsLayout")
@@ -190,17 +185,19 @@ class InternalSettingsMod :
         get() = getComboSetting(this, "notificationCorner")
 
     var settingsLayoutMode: LayoutMode?
-        get() = when (readEnumFromCombo(settingsLayoutSetting, SettingsLayout.values(), settingsLayout)) {
-            SettingsLayout.DOUBLE_COLUMN -> LayoutMode.DOUBLE_COLUMN
-            SettingsLayout.ADAPTIVE_GRID -> LayoutMode.STAGGERED_COLUMNS
-            else -> LayoutMode.SINGLE_COLUMN
-        }
-        set(mode) {
-            val target = when (mode) {
-                LayoutMode.DOUBLE_COLUMN -> SettingsLayout.DOUBLE_COLUMN
-                LayoutMode.STAGGERED_COLUMNS -> SettingsLayout.ADAPTIVE_GRID
-                else -> SettingsLayout.SINGLE_COLUMN
+        get() =
+            when (readEnumFromCombo(settingsLayoutSetting, SettingsLayout.values(), settingsLayout)) {
+                SettingsLayout.DOUBLE_COLUMN -> LayoutMode.DOUBLE_COLUMN
+                SettingsLayout.ADAPTIVE_GRID -> LayoutMode.STAGGERED_COLUMNS
+                else -> LayoutMode.SINGLE_COLUMN
             }
+        set(mode) {
+            val target =
+                when (mode) {
+                    LayoutMode.DOUBLE_COLUMN -> SettingsLayout.DOUBLE_COLUMN
+                    LayoutMode.STAGGERED_COLUMNS -> SettingsLayout.ADAPTIVE_GRID
+                    else -> SettingsLayout.SINGLE_COLUMN
+                }
             writeEnumToCombo(this.settingsLayoutSetting, target)
         }
 
@@ -217,9 +214,7 @@ class InternalSettingsMod :
             writeEnumToCombo(this.moduleLayoutSetting, target)
         }
 
-    fun getVisualPreset(): VisualPreset {
-        return readEnumFromCombo(visualPresetSetting, VisualPreset.values(), visualPreset)
-    }
+    fun getVisualPreset(): VisualPreset = readEnumFromCombo(visualPresetSetting, VisualPreset.values(), visualPreset)
 
     fun setVisualPreset(preset: VisualPreset?) {
         val target = preset ?: VisualPreset.MODERN
@@ -234,16 +229,12 @@ class InternalSettingsMod :
     val modThemeSetting: ComboSetting?
         get() = getComboSetting(this, "hudTheme")
 
-    fun getModMenuKeybindSetting(): KeybindSetting? {
-        return getKeybindSetting(this, "modMenuKeybindSetting")
-    }
+    fun getModMenuKeybindSetting(): KeybindSetting? = getKeybindSetting(this, "modMenuKeybindSetting")
 
     val mCHUDFont: BooleanSetting?
         get() = getBooleanSetting(this, "mcFontSetting")
 
-    fun getBorderlessFullscreenSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "borderlessFullscreenSetting")
-    }
+    fun getBorderlessFullscreenSetting(): BooleanSetting? = getBooleanSetting(this, "borderlessFullscreenSetting")
 
     fun getBlurSetting(): BooleanSetting? = getBooleanSetting(this, "blurSetting")
 
@@ -259,7 +250,11 @@ class InternalSettingsMod :
 
     fun getTextureOptimizationSetting(): BooleanSetting? = getBooleanSetting(this, "textureOptimizationSetting")
 
-    private fun <T : Enum<T>> readEnumFromCombo(combo: ComboSetting?, values: Array<T>, fallback: T): T {
+    private fun <T : Enum<T>> readEnumFromCombo(
+        combo: ComboSetting?,
+        values: Array<T>,
+        fallback: T,
+    ): T {
         if (combo == null) {
             return fallback
         }
@@ -268,7 +263,10 @@ class InternalSettingsMod :
         return if (index >= 0 && index < values.size) values[index] else fallback
     }
 
-    private fun <T : Enum<T>> writeEnumToCombo(combo: ComboSetting?, value: T) {
+    private fun <T : Enum<T>> writeEnumToCombo(
+        combo: ComboSetting?,
+        value: T,
+    ) {
         if (combo == null) {
             return
         }
@@ -283,7 +281,10 @@ class InternalSettingsMod :
         applyBorderlessSetting(borderlessFullscreenSetting, true)
     }
 
-    private fun applyBorderlessSetting(state: Boolean, force: Boolean) {
+    private fun applyBorderlessSetting(
+        state: Boolean,
+        force: Boolean,
+    ) {
         if (!force && state == lastBorderlessState) {
             return
         }
@@ -318,13 +319,13 @@ class InternalSettingsMod :
                 Display.setDisplayMode(
                     DisplayMode(
                         Display.getDesktopDisplayMode().width,
-                        Display.getDesktopDisplayMode().height
-                    )
+                        Display.getDesktopDisplayMode().height,
+                    ),
                 )
                 Display.setLocation(0, 0)
                 (mc as IMixinMinecraft).resizeWindow(
                     Display.getDesktopDisplayMode().width,
-                    Display.getDesktopDisplayMode().height
+                    Display.getDesktopDisplayMode().height,
                 )
             } else {
                 Display.setDisplayMode(DisplayMode(prevWidth, prevHeight))
@@ -341,8 +342,9 @@ class InternalSettingsMod :
         }
     }
 
-
-    enum class HudTheme(private val translate: TranslateText) : PropertyEnum {
+    enum class HudTheme(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         NORMAL(TranslateText.NORMAL),
         GLOW(TranslateText.GLOW),
         OUTLINE(TranslateText.OUTLINE),
@@ -355,60 +357,64 @@ class InternalSettingsMod :
         RECT(TranslateText.RECT),
         MODERN(TranslateText.MODERN),
         TEXT(TranslateText.TEXT),
-        GRADIENT_SIMPLE(TranslateText.GRADIENT_SIMPLE);
+        GRADIENT_SIMPLE(TranslateText.GRADIENT_SIMPLE),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
-
+        override fun getTranslate(): TranslateText = translate
     }
 
-    enum class SettingsLayout(displayName: String) : PropertyEnum {
+    enum class SettingsLayout(
+        displayName: String,
+    ) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
         DOUBLE_COLUMN("Double Column"),
-        ADAPTIVE_GRID("Adaptive Grid");
+        ADAPTIVE_GRID("Adaptive Grid"),
+        ;
 
         private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }
 
-    enum class ModuleLayout(displayName: String) : PropertyEnum {
+    enum class ModuleLayout(
+        displayName: String,
+    ) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
-        TWO_COLUMNS("Two Columns");
+        TWO_COLUMNS("Two Columns"),
+        ;
 
         private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }
 
-    enum class VisualPreset(displayName: String) : PropertyEnum {
+    enum class VisualPreset(
+        displayName: String,
+    ) : PropertyEnum {
         CLASSIC("Classic"),
         MODERN("Modern"),
         LIGHT("Light"),
-        DARK("Dark");
+        DARK("Dark"),
+        ;
 
         private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }
 
-    enum class NotificationCorner(private val translate: TranslateText) : PropertyEnum {
+    enum class NotificationCorner(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         TOP_LEFT(TranslateText.NOTIFICATION_POSITION_TOP_LEFT),
         TOP_RIGHT(TranslateText.NOTIFICATION_POSITION_TOP_RIGHT),
         BOTTOM_LEFT(TranslateText.NOTIFICATION_POSITION_BOTTOM_LEFT),
-        BOTTOM_RIGHT(TranslateText.NOTIFICATION_POSITION_BOTTOM_RIGHT);
+        BOTTOM_RIGHT(TranslateText.NOTIFICATION_POSITION_BOTTOM_RIGHT),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
         lateinit var instance: InternalSettingsMod
     }
 }
-
-
-
-

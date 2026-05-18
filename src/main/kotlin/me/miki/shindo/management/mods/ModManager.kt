@@ -7,7 +7,6 @@ import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
 
 class ModManager {
-
     private val mods = ArrayList<Mod>()
     private val settings = ArrayList<Setting>()
 
@@ -210,14 +209,7 @@ class ModManager {
         }
     }
 
-    fun getMods(): ArrayList<Mod> {
-        return mods
-    }
+    fun getMods(): ArrayList<Mod> = mods
 
-    fun getSettings(): ArrayList<Setting> {
-        return settings
-    }
+    fun getSettings(): ArrayList<Setting> = settings
 }
-
-
-

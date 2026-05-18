@@ -12,40 +12,101 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.io.File
 
-fun NanoVGManager.getColor(r: Number, g: Number, b: Number, a: Number) =
-    this.getColor(r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat())
+fun NanoVGManager.getColor(
+    r: Number,
+    g: Number,
+    b: Number,
+    a: Number,
+) = this.getColor(r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat())
 
 fun NanoVGManager.getColor(color: Number) = this.getColor(color.toInt())
-fun NanoVGManager.imageSize(imageId: Number, src: Size) = this.imageSize(imageId.toInt(), src)
-fun NanoVGManager.drawAlphaBar(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Color) =
-    this.drawAlphaBar(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
 
-fun NanoVGManager.drawAlphaBar(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Number) =
-    this.drawAlphaBar(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
+fun NanoVGManager.imageSize(
+    imageId: Number,
+    src: Size,
+) = this.imageSize(imageId.toInt(), src)
 
-fun NanoVGManager.drawHSBBox(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Color) =
-    this.drawHSBBox(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
+fun NanoVGManager.drawAlphaBar(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Color,
+) = this.drawAlphaBar(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
 
-fun NanoVGManager.drawHSBBox(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Number) =
-    this.drawHSBBox(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
+fun NanoVGManager.drawAlphaBar(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Number,
+) = this.drawAlphaBar(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
 
-fun NanoVGManager.drawRect(x: Number, y: Number, width: Number, height: Number, color: Color) =
-    this.drawRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color)
+fun NanoVGManager.drawHSBBox(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Color,
+) = this.drawHSBBox(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
 
-fun NanoVGManager.drawRect(x: Number, y: Number, width: Number, height: Number, color: Number) =
-    this.drawRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color.toInt())
+fun NanoVGManager.drawHSBBox(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Number,
+) = this.drawHSBBox(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
 
-fun NanoVGManager.drawRoundedRect(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Color) =
-    this.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
+fun NanoVGManager.drawRect(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    color: Color,
+) = this.drawRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color)
 
-fun NanoVGManager.drawRoundedRect(x: Number, y: Number, width: Number, height: Number, radius: Number, color: Number) =
-    this.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
+fun NanoVGManager.drawRect(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    color: Number,
+) = this.drawRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color.toInt())
 
-fun NanoVGManager.drawRoundedRect(rect: Rect, radius: Number, color: Number) =
-    this.drawRoundedRect(rect, radius.toFloat(), color.toInt())
+fun NanoVGManager.drawRoundedRect(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Color,
+) = this.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color)
 
-fun NanoVGManager.drawRoundedRect(rect: Rect, radius: Number, color: Color) =
-    this.drawRoundedRect(rect, radius.toFloat(), color)
+fun NanoVGManager.drawRoundedRect(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    color: Number,
+) = this.drawRoundedRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), color.toInt())
+
+fun NanoVGManager.drawRoundedRect(
+    rect: Rect,
+    radius: Number,
+    color: Number,
+) = this.drawRoundedRect(rect, radius.toFloat(), color.toInt())
+
+fun NanoVGManager.drawRoundedRect(
+    rect: Rect,
+    radius: Number,
+    color: Color,
+) = this.drawRoundedRect(rect, radius.toFloat(), color)
 
 fun NanoVGManager.drawRoundedRectVarying(
     x: Number,
@@ -56,7 +117,7 @@ fun NanoVGManager.drawRoundedRectVarying(
     topRightRadius: Number,
     bottomLeftRadius: Number,
     bottomRightRadius: Number,
-    color: Color
+    color: Color,
 ) = this.drawRoundedRectVarying(
     x.toFloat(),
     y.toFloat(),
@@ -66,7 +127,7 @@ fun NanoVGManager.drawRoundedRectVarying(
     topRightRadius.toFloat(),
     bottomLeftRadius.toFloat(),
     bottomRightRadius.toFloat(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawRoundedRectVarying(
@@ -78,7 +139,7 @@ fun NanoVGManager.drawRoundedRectVarying(
     topRightRadius: Number,
     bottomLeftRadius: Number,
     bottomRightRadius: Number,
-    color: Number
+    color: Number,
 ) = this.drawRoundedRectVarying(
     x.toFloat(),
     y.toFloat(),
@@ -88,7 +149,7 @@ fun NanoVGManager.drawRoundedRectVarying(
     topRightRadius.toFloat(),
     bottomLeftRadius.toFloat(),
     bottomRightRadius.toFloat(),
-    color.toInt()
+    color.toInt(),
 )
 
 fun NanoVGManager.drawVerticalGradientRect(
@@ -97,7 +158,7 @@ fun NanoVGManager.drawVerticalGradientRect(
     width: Number,
     height: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawVerticalGradientRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color1, color2)
 
 fun NanoVGManager.drawVerticalGradientRect(
@@ -106,14 +167,14 @@ fun NanoVGManager.drawVerticalGradientRect(
     width: Number,
     height: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawVerticalGradientRect(
     x.toFloat(),
     y.toFloat(),
     width.toFloat(),
     height.toFloat(),
     color1.toInt(),
-    color2.toInt()
+    color2.toInt(),
 )
 
 fun NanoVGManager.drawHorizontalGradientRect(
@@ -122,7 +183,7 @@ fun NanoVGManager.drawHorizontalGradientRect(
     width: Number,
     height: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawHorizontalGradientRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color1, color2)
 
 fun NanoVGManager.drawHorizontalGradientRect(
@@ -131,18 +192,24 @@ fun NanoVGManager.drawHorizontalGradientRect(
     width: Number,
     height: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawHorizontalGradientRect(
     x.toFloat(),
     y.toFloat(),
     width.toFloat(),
     height.toFloat(),
     color1.toInt(),
-    color2.toInt()
+    color2.toInt(),
 )
 
-fun NanoVGManager.drawGradientRect(x: Number, y: Number, width: Number, height: Number, color1: Color, color2: Color) =
-    this.drawGradientRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color1, color2)
+fun NanoVGManager.drawGradientRect(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    color1: Color,
+    color2: Color,
+) = this.drawGradientRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color1, color2)
 
 fun NanoVGManager.drawGradientRect(
     x: Number,
@@ -150,7 +217,7 @@ fun NanoVGManager.drawGradientRect(
     width: Number,
     height: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawGradientRect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color1.toInt(), color2.toInt())
 
 fun NanoVGManager.drawGradientRoundedRect(
@@ -160,7 +227,7 @@ fun NanoVGManager.drawGradientRoundedRect(
     height: Number,
     radius: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawGradientRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -168,7 +235,7 @@ fun NanoVGManager.drawGradientRoundedRect(
     height.toFloat(),
     radius.toFloat(),
     color1,
-    color2
+    color2,
 )
 
 fun NanoVGManager.drawGradientRoundedRect(
@@ -178,7 +245,7 @@ fun NanoVGManager.drawGradientRoundedRect(
     height: Number,
     radius: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawGradientRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -186,7 +253,7 @@ fun NanoVGManager.drawGradientRoundedRect(
     height.toFloat(),
     radius.toFloat(),
     color1.toInt(),
-    color2.toInt()
+    color2.toInt(),
 )
 
 fun NanoVGManager.drawOutlineRoundedRect(
@@ -196,7 +263,7 @@ fun NanoVGManager.drawOutlineRoundedRect(
     height: Number,
     radius: Number,
     strokeWidth: Number,
-    color: Color
+    color: Color,
 ) = this.drawOutlineRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -204,7 +271,7 @@ fun NanoVGManager.drawOutlineRoundedRect(
     height.toFloat(),
     radius.toFloat(),
     strokeWidth.toFloat(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawOutlineRoundedRect(
@@ -214,7 +281,7 @@ fun NanoVGManager.drawOutlineRoundedRect(
     height: Number,
     radius: Number,
     strokeWidth: Number,
-    color: Number
+    color: Number,
 ) = this.drawOutlineRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -222,7 +289,7 @@ fun NanoVGManager.drawOutlineRoundedRect(
     height.toFloat(),
     radius.toFloat(),
     strokeWidth.toFloat(),
-    color.toInt()
+    color.toInt(),
 )
 
 fun NanoVGManager.drawGradientOutlineRoundedRect(
@@ -233,7 +300,7 @@ fun NanoVGManager.drawGradientOutlineRoundedRect(
     radius: Number,
     strokeWidth: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawGradientOutlineRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -242,7 +309,7 @@ fun NanoVGManager.drawGradientOutlineRoundedRect(
     radius.toFloat(),
     strokeWidth.toFloat(),
     color1,
-    color2
+    color2,
 )
 
 fun NanoVGManager.drawGradientOutlineRoundedRect(
@@ -253,7 +320,7 @@ fun NanoVGManager.drawGradientOutlineRoundedRect(
     radius: Number,
     strokeWidth: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawGradientOutlineRoundedRect(
     x.toFloat(),
     y.toFloat(),
@@ -262,20 +329,41 @@ fun NanoVGManager.drawGradientOutlineRoundedRect(
     radius.toFloat(),
     strokeWidth.toFloat(),
     color1.toInt(),
-    color2.toInt()
+    color2.toInt(),
 )
 
-fun NanoVGManager.drawArrow(x: Number, y: Number, size: Number, angle: Number, color: Color) =
-    this.drawArrow(x.toFloat(), y.toFloat(), size.toFloat(), angle.toFloat(), color)
+fun NanoVGManager.drawArrow(
+    x: Number,
+    y: Number,
+    size: Number,
+    angle: Number,
+    color: Color,
+) = this.drawArrow(x.toFloat(), y.toFloat(), size.toFloat(), angle.toFloat(), color)
 
-fun NanoVGManager.drawArrow(x: Number, y: Number, size: Number, angle: Number, color: Number) =
-    this.drawArrow(x.toFloat(), y.toFloat(), size.toFloat(), angle.toFloat(), color.toInt())
+fun NanoVGManager.drawArrow(
+    x: Number,
+    y: Number,
+    size: Number,
+    angle: Number,
+    color: Number,
+) = this.drawArrow(x.toFloat(), y.toFloat(), size.toFloat(), angle.toFloat(), color.toInt())
 
-fun NanoVGManager.drawShadow(x: Number, y: Number, width: Number, height: Number, radius: Number, strength: Number) =
-    this.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), strength.toInt())
+fun NanoVGManager.drawShadow(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    strength: Number,
+) = this.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), strength.toInt())
 
-fun NanoVGManager.drawShadow(x: Number, y: Number, width: Number, height: Number, radius: Number) =
-    this.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
+fun NanoVGManager.drawShadow(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+) = this.drawShadow(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
 
 fun NanoVGManager.drawGradientShadow(
     x: Number,
@@ -284,7 +372,7 @@ fun NanoVGManager.drawGradientShadow(
     height: Number,
     radius: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawGradientShadow(
     x.toFloat(),
     y.toFloat(),
@@ -292,7 +380,7 @@ fun NanoVGManager.drawGradientShadow(
     height.toFloat(),
     radius.toFloat(),
     color1,
-    color2
+    color2,
 )
 
 fun NanoVGManager.drawGradientShadow(
@@ -302,7 +390,7 @@ fun NanoVGManager.drawGradientShadow(
     height: Number,
     radius: Number,
     color1: Number,
-    color2: Number
+    color2: Number,
 ) = this.drawGradientShadow(
     x.toFloat(),
     y.toFloat(),
@@ -310,7 +398,7 @@ fun NanoVGManager.drawGradientShadow(
     height.toFloat(),
     radius.toFloat(),
     color1.toInt(),
-    color2.toInt()
+    color2.toInt(),
 )
 
 fun NanoVGManager.drawRoundedGlow(
@@ -320,7 +408,7 @@ fun NanoVGManager.drawRoundedGlow(
     height: Number,
     radius: Number,
     color1: Color,
-    strength: Number
+    strength: Number,
 ) = this.drawRoundedGlow(
     x.toFloat(),
     y.toFloat(),
@@ -328,7 +416,7 @@ fun NanoVGManager.drawRoundedGlow(
     height.toFloat(),
     radius.toFloat(),
     color1,
-    strength.toInt()
+    strength.toInt(),
 )
 
 fun NanoVGManager.drawRoundedGlow(
@@ -338,7 +426,7 @@ fun NanoVGManager.drawRoundedGlow(
     height: Number,
     radius: Number,
     color1: Number,
-    strength: Number
+    strength: Number,
 ) = this.drawRoundedGlow(
     x.toFloat(),
     y.toFloat(),
@@ -346,14 +434,22 @@ fun NanoVGManager.drawRoundedGlow(
     height.toFloat(),
     radius.toFloat(),
     color1.toInt(),
-    strength.toInt()
+    strength.toInt(),
 )
 
-fun NanoVGManager.drawCircle(x: Number, y: Number, radius: Number, color: Color) =
-    this.drawCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color)
+fun NanoVGManager.drawCircle(
+    x: Number,
+    y: Number,
+    radius: Number,
+    color: Color,
+) = this.drawCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color)
 
-fun NanoVGManager.drawCircle(x: Number, y: Number, radius: Number, color: Number) =
-    this.drawCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color.toInt())
+fun NanoVGManager.drawCircle(
+    x: Number,
+    y: Number,
+    radius: Number,
+    color: Number,
+) = this.drawCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color.toInt())
 
 fun NanoVGManager.drawArc(
     x: Number,
@@ -362,7 +458,7 @@ fun NanoVGManager.drawArc(
     startAngle: Number,
     endAngle: Number,
     strokeWidth: Number,
-    color: Color
+    color: Color,
 ) = this.drawArc(
     x.toFloat(),
     y.toFloat(),
@@ -370,7 +466,7 @@ fun NanoVGManager.drawArc(
     startAngle.toFloat(),
     endAngle.toFloat(),
     strokeWidth.toFloat(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawArc(
@@ -380,7 +476,7 @@ fun NanoVGManager.drawArc(
     startAngle: Number,
     endAngle: Number,
     strokeWidth: Number,
-    color: Number
+    color: Number,
 ) = this.drawArc(
     x.toFloat(),
     y.toFloat(),
@@ -388,21 +484,44 @@ fun NanoVGManager.drawArc(
     startAngle.toFloat(),
     endAngle.toFloat(),
     strokeWidth.toFloat(),
-    color.toInt()
+    color.toInt(),
 )
 
-fun NanoVGManager.drawGradientCircle(x: Number, y: Number, radius: Number, color1: Color, color2: Color) =
-    this.drawGradientCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color1, color2)
+fun NanoVGManager.drawGradientCircle(
+    x: Number,
+    y: Number,
+    radius: Number,
+    color1: Color,
+    color2: Color,
+) = this.drawGradientCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color1, color2)
 
-fun NanoVGManager.drawGradientCircle(x: Number, y: Number, radius: Number, color1: Number, color2: Number) =
-    this.drawGradientCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color1.toInt(), color2.toInt())
+fun NanoVGManager.drawGradientCircle(
+    x: Number,
+    y: Number,
+    radius: Number,
+    color1: Number,
+    color2: Number,
+) = this.drawGradientCircle(x.toFloat(), y.toFloat(), radius.toFloat(), color1.toInt(), color2.toInt())
 
 fun NanoVGManager.fontBlur(blur: Number) = this.fontBlur(blur.toFloat())
-fun NanoVGManager.drawText(text: String, x: Number, y: Number, color: Color, size: Number, font: Font) =
-    this.drawText(text, x.toFloat(), y.toFloat(), color, size.toFloat(), font)
 
-fun NanoVGManager.drawText(text: String, x: Number, y: Number, color: Number, size: Number, font: Font) =
-    this.drawText(text, x.toFloat(), y.toFloat(), color.toInt(), size.toFloat(), font)
+fun NanoVGManager.drawText(
+    text: String,
+    x: Number,
+    y: Number,
+    color: Color,
+    size: Number,
+    font: Font,
+) = this.drawText(text, x.toFloat(), y.toFloat(), color, size.toFloat(), font)
+
+fun NanoVGManager.drawText(
+    text: String,
+    x: Number,
+    y: Number,
+    color: Number,
+    size: Number,
+    font: Font,
+) = this.drawText(text, x.toFloat(), y.toFloat(), color.toInt(), size.toFloat(), font)
 
 fun NanoVGManager.drawBlurredText(
     text: String,
@@ -412,7 +531,7 @@ fun NanoVGManager.drawBlurredText(
     blurRadius: Number,
     size: Number,
     align: Number,
-    font: Font
+    font: Font,
 ) = this.drawBlurredText(
     text,
     x.toFloat(),
@@ -421,7 +540,7 @@ fun NanoVGManager.drawBlurredText(
     blurRadius.toFloat(),
     size.toFloat(),
     align.toInt(),
-    font
+    font,
 )
 
 fun NanoVGManager.drawBlurredText(
@@ -432,7 +551,7 @@ fun NanoVGManager.drawBlurredText(
     blurRadius: Number,
     size: Number,
     align: Number,
-    font: Font
+    font: Font,
 ) = this.drawBlurredText(
     text,
     x.toFloat(),
@@ -441,7 +560,7 @@ fun NanoVGManager.drawBlurredText(
     blurRadius.toFloat(),
     size.toFloat(),
     align.toInt(),
-    font
+    font,
 )
 
 fun NanoVGManager.drawTextGlowing(
@@ -451,7 +570,7 @@ fun NanoVGManager.drawTextGlowing(
     color: Color,
     blurRadius: Number,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawTextGlowing(text, x.toFloat(), y.toFloat(), color, blurRadius.toFloat(), size.toFloat(), font)
 
 fun NanoVGManager.drawTextGlowing(
@@ -461,7 +580,7 @@ fun NanoVGManager.drawTextGlowing(
     color: Number,
     blurRadius: Number,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawTextGlowing(text, x.toFloat(), y.toFloat(), color.toInt(), blurRadius.toFloat(), size.toFloat(), font)
 
 fun NanoVGManager.drawCenteredTextGlowing(
@@ -471,7 +590,7 @@ fun NanoVGManager.drawCenteredTextGlowing(
     color: Color,
     blurRadius: Number,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawCenteredTextGlowing(text, x.toFloat(), y.toFloat(), color, blurRadius.toFloat(), size.toFloat(), font)
 
 fun NanoVGManager.drawCenteredTextGlowing(
@@ -481,7 +600,7 @@ fun NanoVGManager.drawCenteredTextGlowing(
     color: Number,
     blurRadius: Number,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawCenteredTextGlowing(
     text,
     x.toFloat(),
@@ -489,7 +608,7 @@ fun NanoVGManager.drawCenteredTextGlowing(
     color.toInt(),
     blurRadius.toFloat(),
     size.toFloat(),
-    font
+    font,
 )
 
 fun NanoVGManager.drawTextBox(
@@ -499,7 +618,7 @@ fun NanoVGManager.drawTextBox(
     maxWidth: Number,
     color: Color,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawTextBox(text, x.toFloat(), y.toFloat(), maxWidth.toFloat(), color, size.toFloat(), font)
 
 fun NanoVGManager.drawTextBox(
@@ -509,49 +628,122 @@ fun NanoVGManager.drawTextBox(
     maxWidth: Number,
     color: Number,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawTextBox(text, x.toFloat(), y.toFloat(), maxWidth.toFloat(), color.toInt(), size.toFloat(), font)
 
-fun NanoVGManager.drawCenteredText(text: String, x: Number, y: Number, color: Color, size: Number, font: Font) =
-    this.drawCenteredText(text, x.toFloat(), y.toFloat(), color, size.toFloat(), font)
+fun NanoVGManager.drawCenteredText(
+    text: String,
+    x: Number,
+    y: Number,
+    color: Color,
+    size: Number,
+    font: Font,
+) = this.drawCenteredText(text, x.toFloat(), y.toFloat(), color, size.toFloat(), font)
 
-fun NanoVGManager.drawCenteredText(text: String, x: Number, y: Number, color: Number, size: Number, font: Font) =
-    this.drawCenteredText(text, x.toFloat(), y.toFloat(), color.toInt(), size.toFloat(), font)
+fun NanoVGManager.drawCenteredText(
+    text: String,
+    x: Number,
+    y: Number,
+    color: Number,
+    size: Number,
+    font: Font,
+) = this.drawCenteredText(text, x.toFloat(), y.toFloat(), color.toInt(), size.toFloat(), font)
 
-fun NanoVGManager.getTextWidth(text: String, size: Number, font: Font) = this.getTextWidth(text, size.toFloat(), font)
-fun NanoVGManager.getTextHeight(text: String, size: Number, font: Font) = this.getTextHeight(text, size.toFloat(), font)
-fun NanoVGManager.getTextBoxHeight(text: String, size: Number, font: Font, maxWidth: Number) =
-    this.getTextBoxHeight(text, size.toFloat(), font, maxWidth.toFloat())
+fun NanoVGManager.getTextWidth(
+    text: String,
+    size: Number,
+    font: Font,
+) = this.getTextWidth(text, size.toFloat(), font)
 
-fun NanoVGManager.getLimitText(inputText: String, fontSize: Number, font: Font?, width: Number) =
-    this.getLimitText(inputText, fontSize.toFloat(), font, width.toFloat())
+fun NanoVGManager.getTextHeight(
+    text: String,
+    size: Number,
+    font: Font,
+) = this.getTextHeight(text, size.toFloat(), font)
 
-fun NanoVGManager.scale(x: Number, y: Number, scaleX: Number, scaleY: Number) =
-    this.scale(x.toFloat(), y.toFloat(), scaleX.toFloat(), scaleY.toFloat())
+fun NanoVGManager.getTextBoxHeight(
+    text: String,
+    size: Number,
+    font: Font,
+    maxWidth: Number,
+) = this.getTextBoxHeight(text, size.toFloat(), font, maxWidth.toFloat())
 
-fun NanoVGManager.scale(x: Number, y: Number, scale: Number) = this.scale(x.toFloat(), y.toFloat(), scale.toFloat())
-fun NanoVGManager.scale(x: Number, y: Number, width: Number, height: Number, scale: Number) =
-    this.scale(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), scale.toFloat())
+fun NanoVGManager.getLimitText(
+    inputText: String,
+    fontSize: Number,
+    font: Font?,
+    width: Number,
+) = this.getLimitText(inputText, fontSize.toFloat(), font, width.toFloat())
 
-fun NanoVGManager.rotate(x: Number, y: Number, width: Number, height: Number, angle: Number) =
-    this.rotate(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), angle.toFloat())
+fun NanoVGManager.scale(
+    x: Number,
+    y: Number,
+    scaleX: Number,
+    scaleY: Number,
+) = this.scale(x.toFloat(), y.toFloat(), scaleX.toFloat(), scaleY.toFloat())
 
-fun NanoVGManager.translate(x: Number, y: Number) = this.translate(x.toFloat(), y.toFloat())
+fun NanoVGManager.scale(
+    x: Number,
+    y: Number,
+    scale: Number,
+) = this.scale(x.toFloat(), y.toFloat(), scale.toFloat())
+
+fun NanoVGManager.scale(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    scale: Number,
+) = this.scale(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), scale.toFloat())
+
+fun NanoVGManager.rotate(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    angle: Number,
+) = this.rotate(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), angle.toFloat())
+
+fun NanoVGManager.translate(
+    x: Number,
+    y: Number,
+) = this.translate(x.toFloat(), y.toFloat())
+
 fun NanoVGManager.setAlpha(alpha: Number) = this.setAlpha(alpha.toFloat())
-fun NanoVGManager.scissor(x: Number, y: Number, width: Number, height: Number) =
-    this.scissor(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
-fun NanoVGManager.intersectScissor(x: Number, y: Number, width: Number, height: Number) =
-    this.intersectScissor(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+fun NanoVGManager.scissor(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+) = this.scissor(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
-fun NanoVGManager.rotateAt(x: Number, y: Number, angleRadians: Number) =
-    this.rotateAt(x.toFloat(), y.toFloat(), angleRadians.toFloat())
+fun NanoVGManager.intersectScissor(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+) = this.intersectScissor(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
-fun NanoVGManager.rotateDegrees(x: Number, y: Number, width: Number, height: Number, angleDegrees: Number) =
-    this.rotateDegrees(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), angleDegrees.toFloat())
+fun NanoVGManager.rotateAt(
+    x: Number,
+    y: Number,
+    angleRadians: Number,
+) = this.rotateAt(x.toFloat(), y.toFloat(), angleRadians.toFloat())
 
-fun NanoVGManager.rotateDegreesAt(x: Number, y: Number, angleDegrees: Number) =
-    this.rotateDegreesAt(x.toFloat(), y.toFloat(), angleDegrees.toFloat())
+fun NanoVGManager.rotateDegrees(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    angleDegrees: Number,
+) = this.rotateDegrees(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), angleDegrees.toFloat())
+
+fun NanoVGManager.rotateDegreesAt(
+    x: Number,
+    y: Number,
+    angleDegrees: Number,
+) = this.rotateDegreesAt(x.toFloat(), y.toFloat(), angleDegrees.toFloat())
 
 fun NanoVGManager.drawSvg(
     location: ResourceLocation,
@@ -559,7 +751,7 @@ fun NanoVGManager.drawSvg(
     y: Number,
     width: Number,
     height: Number,
-    color: Color
+    color: Color,
 ) = this.drawSvg(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color)
 
 fun NanoVGManager.drawSvg(
@@ -568,11 +760,8 @@ fun NanoVGManager.drawSvg(
     y: Number,
     width: Number,
     height: Number,
-    color: Number
+    color: Number,
 ) = this.drawSvg(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), color.toInt())
-
-fun NanoVGManager.drawImage(location: ResourceLocation, x: Number, y: Number, width: Number, height: Number) =
-    this.drawImage(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
 fun NanoVGManager.drawImage(
     location: ResourceLocation,
@@ -580,11 +769,24 @@ fun NanoVGManager.drawImage(
     y: Number,
     width: Number,
     height: Number,
-    alpha: Number
+) = this.drawImage(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+
+fun NanoVGManager.drawImage(
+    location: ResourceLocation,
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    alpha: Number,
 ) = this.drawImage(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), alpha.toInt())
 
-fun NanoVGManager.drawImage(file: File, x: Number, y: Number, width: Number, height: Number) =
-    this.drawImage(file, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+fun NanoVGManager.drawImage(
+    file: File,
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+) = this.drawImage(file, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
 fun NanoVGManager.drawImage(
     texture: Number,
@@ -593,7 +795,7 @@ fun NanoVGManager.drawImage(
     width: Number,
     height: Number,
     alpha: Number,
-    flags: Number
+    flags: Number,
 ) = this.drawImage(
     texture.toInt(),
     x.toFloat(),
@@ -601,14 +803,25 @@ fun NanoVGManager.drawImage(
     width.toFloat(),
     height.toFloat(),
     alpha.toFloat(),
-    flags.toInt()
+    flags.toInt(),
 )
 
-fun NanoVGManager.drawImage(texture: Number, x: Number, y: Number, width: Number, height: Number, alpha: Number) =
-    this.drawImage(texture.toInt(), x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), alpha.toFloat())
+fun NanoVGManager.drawImage(
+    texture: Number,
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    alpha: Number,
+) = this.drawImage(texture.toInt(), x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), alpha.toFloat())
 
-fun NanoVGManager.drawImage(texture: Number, x: Number, y: Number, width: Number, height: Number) =
-    this.drawImage(texture.toInt(), x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+fun NanoVGManager.drawImage(
+    texture: Number,
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+) = this.drawImage(texture.toInt(), x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 
 fun NanoVGManager.drawRoundedImage(
     texture: Number,
@@ -617,7 +830,7 @@ fun NanoVGManager.drawRoundedImage(
     width: Number,
     height: Number,
     radius: Number,
-    alpha: Number
+    alpha: Number,
 ) = this.drawRoundedImage(
     texture.toInt(),
     x.toFloat(),
@@ -625,7 +838,7 @@ fun NanoVGManager.drawRoundedImage(
     width.toFloat(),
     height.toFloat(),
     radius.toFloat(),
-    alpha.toFloat()
+    alpha.toFloat(),
 )
 
 fun NanoVGManager.drawRoundedImage(
@@ -634,14 +847,14 @@ fun NanoVGManager.drawRoundedImage(
     y: Number,
     width: Number,
     height: Number,
-    radius: Number
+    radius: Number,
 ) = this.drawRoundedImage(
     texture.toInt(),
     x.toFloat(),
     y.toFloat(),
     width.toFloat(),
     height.toFloat(),
-    radius.toFloat()
+    radius.toFloat(),
 )
 
 fun NanoVGManager.drawPlayerHead(
@@ -651,7 +864,7 @@ fun NanoVGManager.drawPlayerHead(
     width: Number,
     height: Number,
     radius: Number,
-    alpha: Number
+    alpha: Number,
 ) = this.drawPlayerHead(
     location,
     x.toFloat(),
@@ -659,7 +872,7 @@ fun NanoVGManager.drawPlayerHead(
     width.toFloat(),
     height.toFloat(),
     radius.toFloat(),
-    alpha.toFloat()
+    alpha.toFloat(),
 )
 
 fun NanoVGManager.drawPlayerHead(
@@ -668,7 +881,7 @@ fun NanoVGManager.drawPlayerHead(
     y: Number,
     width: Number,
     height: Number,
-    radius: Number
+    radius: Number,
 ) = this.drawPlayerHead(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
 
 fun NanoVGManager.drawRoundedImage(
@@ -678,7 +891,7 @@ fun NanoVGManager.drawRoundedImage(
     width: Number,
     height: Number,
     radius: Number,
-    alpha: Number
+    alpha: Number,
 ) = this.drawRoundedImage(
     location,
     x.toFloat(),
@@ -686,7 +899,7 @@ fun NanoVGManager.drawRoundedImage(
     width.toFloat(),
     height.toFloat(),
     radius.toFloat(),
-    alpha.toFloat()
+    alpha.toFloat(),
 )
 
 fun NanoVGManager.drawRoundedImage(
@@ -695,7 +908,7 @@ fun NanoVGManager.drawRoundedImage(
     y: Number,
     width: Number,
     height: Number,
-    radius: Number
+    radius: Number,
 ) = this.drawRoundedImage(location, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
 
 fun NanoVGManager.drawRoundedImage(
@@ -705,7 +918,7 @@ fun NanoVGManager.drawRoundedImage(
     width: Number,
     height: Number,
     radius: Number,
-    alpha: Number
+    alpha: Number,
 ) = this.drawRoundedImage(
     file,
     x.toFloat(),
@@ -713,11 +926,17 @@ fun NanoVGManager.drawRoundedImage(
     width.toFloat(),
     height.toFloat(),
     radius.toFloat(),
-    alpha.toFloat()
+    alpha.toFloat(),
 )
 
-fun NanoVGManager.drawRoundedImage(file: File, x: Number, y: Number, width: Number, height: Number, radius: Number) =
-    this.drawRoundedImage(file, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
+fun NanoVGManager.drawRoundedImage(
+    file: File,
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+) = this.drawRoundedImage(file, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat())
 
 fun NanoVGManager.drawScrollbar(
     baseX: Number,
@@ -728,7 +947,7 @@ fun NanoVGManager.drawScrollbar(
     scrollValue: Number,
     palette: ColorPalette,
     accent: AccentColor,
-    minHandleHeight: Number
+    minHandleHeight: Number,
 ) = this.drawScrollbar(
     baseX.toFloat(),
     baseY.toFloat(),
@@ -738,14 +957,26 @@ fun NanoVGManager.drawScrollbar(
     scrollValue.toFloat(),
     palette,
     accent,
-    minHandleHeight.toFloat()
+    minHandleHeight.toFloat(),
 )
 
-fun NanoVGManager.drawDivider(x: Number, y: Number, width: Number, height: Number, radius: Number, alpha: Number) =
-    this.drawDivider(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), alpha.toFloat())
+fun NanoVGManager.drawDivider(
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    radius: Number,
+    alpha: Number,
+) = this.drawDivider(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), radius.toFloat(), alpha.toFloat())
 
-fun NanoVGManager.drawLine(x1: Number, y1: Number, x2: Number, y2: Number, strokeWidth: Number, color: Color) =
-    this.drawLine(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), strokeWidth.toFloat(), color)
+fun NanoVGManager.drawLine(
+    x1: Number,
+    y1: Number,
+    x2: Number,
+    y2: Number,
+    strokeWidth: Number,
+    color: Color,
+) = this.drawLine(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), strokeWidth.toFloat(), color)
 
 fun NanoVGManager.drawGradientLine(
     x1: Number,
@@ -754,7 +985,7 @@ fun NanoVGManager.drawGradientLine(
     y2: Number,
     strokeWidth: Number,
     color1: Color,
-    color2: Color
+    color2: Color,
 ) = this.drawGradientLine(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), strokeWidth.toFloat(), color1, color2)
 
 fun NanoVGManager.drawPolygon(
@@ -763,7 +994,7 @@ fun NanoVGManager.drawPolygon(
     radius: Number,
     sides: Number,
     rotation: Number,
-    color: Color
+    color: Color,
 ) = this.drawPolygon(centerX.toFloat(), centerY.toFloat(), radius.toFloat(), sides.toInt(), rotation.toFloat(), color)
 
 fun NanoVGManager.drawPolygonOutline(
@@ -773,7 +1004,7 @@ fun NanoVGManager.drawPolygonOutline(
     sides: Number,
     rotation: Number,
     strokeWidth: Number,
-    color: Color
+    color: Color,
 ) = this.drawPolygonOutline(
     centerX.toFloat(),
     centerY.toFloat(),
@@ -781,7 +1012,7 @@ fun NanoVGManager.drawPolygonOutline(
     sides.toInt(),
     rotation.toFloat(),
     strokeWidth.toFloat(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawRoundedRectSelective(
@@ -791,7 +1022,7 @@ fun NanoVGManager.drawRoundedRectSelective(
     height: Number,
     radius: Number,
     corners: Number,
-    color: Color
+    color: Color,
 ) = this.drawRoundedRectSelective(
     x.toFloat(),
     y.toFloat(),
@@ -799,7 +1030,7 @@ fun NanoVGManager.drawRoundedRectSelective(
     height.toFloat(),
     radius.toFloat(),
     corners.toInt(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawInsetBorder(
@@ -809,7 +1040,7 @@ fun NanoVGManager.drawInsetBorder(
     height: Number,
     radius: Number,
     borderWidth: Number,
-    color: Color
+    color: Color,
 ) = this.drawInsetBorder(
     x.toFloat(),
     y.toFloat(),
@@ -817,7 +1048,7 @@ fun NanoVGManager.drawInsetBorder(
     height.toFloat(),
     radius.toFloat(),
     borderWidth.toFloat(),
-    color
+    color,
 )
 
 fun NanoVGManager.drawGlowRect(
@@ -827,7 +1058,7 @@ fun NanoVGManager.drawGlowRect(
     height: Number,
     radius: Number,
     color: Color,
-    strength: Number
+    strength: Number,
 ) = this.drawGlowRect(
     x.toFloat(),
     y.toFloat(),
@@ -835,7 +1066,7 @@ fun NanoVGManager.drawGlowRect(
     height.toFloat(),
     radius.toFloat(),
     color,
-    strength.toInt()
+    strength.toInt(),
 )
 
 fun NanoVGManager.drawMultilineText(
@@ -846,7 +1077,7 @@ fun NanoVGManager.drawMultilineText(
     lineHeight: Number,
     color: Color,
     size: Number,
-    font: Font
+    font: Font,
 ) = this.drawMultilineText(
     text,
     x.toFloat(),
@@ -855,11 +1086,16 @@ fun NanoVGManager.drawMultilineText(
     lineHeight.toFloat(),
     color,
     size.toFloat(),
-    font
+    font,
 )
 
-fun NanoVGManager.drawCenteredIcon(icon: String, x: Number, y: Number, size: Number, color: Color) =
-    this.drawCenteredIcon(icon, x.toFloat(), y.toFloat(), size.toFloat(), color)
+fun NanoVGManager.drawCenteredIcon(
+    icon: String,
+    x: Number,
+    y: Number,
+    size: Number,
+    color: Color,
+) = this.drawCenteredIcon(icon, x.toFloat(), y.toFloat(), size.toFloat(), color)
 
 fun NanoVGManager.drawGlassButton(
     text: String,
@@ -869,5 +1105,5 @@ fun NanoVGManager.drawGlassButton(
     h: Number,
     hover: Float,
     anim: Float,
-    red: Boolean
+    red: Boolean,
 ) = this.drawGlassButton(text, x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), hover, anim, red)

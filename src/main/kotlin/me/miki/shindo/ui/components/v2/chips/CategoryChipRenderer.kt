@@ -14,7 +14,11 @@ object CategoryChipRenderer {
     private const val CHIP_RADIUS = 6f
 
     @JvmStatic
-    fun computeWidth(nvg: NanoVGManager, label: String?, icon: String?): Float {
+    fun computeWidth(
+        nvg: NanoVGManager,
+        label: String?,
+        icon: String?,
+    ): Float {
         var iconWidth = 0f
         if (!icon.isNullOrEmpty()) {
             iconWidth = nvg.getTextWidth(icon, 12f, Fonts.LEGACYICON) + 6f
@@ -34,12 +38,13 @@ object CategoryChipRenderer {
         label: String?,
         icon: String?,
         active: Boolean,
-        hovered: Boolean
+        hovered: Boolean,
     ) {
-        val background = ColorUtils.applyAlpha(
-            palette.getBackgroundColor(ColorType.DARK),
-            if (hovered || active) 235 else 205
-        )
+        val background =
+            ColorUtils.applyAlpha(
+                palette.getBackgroundColor(ColorType.DARK),
+                if (hovered || active) 235 else 205,
+            )
 
         if (active) {
             nvg.drawGradientRoundedRect(
@@ -49,7 +54,7 @@ object CategoryChipRenderer {
                 CHIP_HEIGHT,
                 CHIP_RADIUS,
                 ColorUtils.applyAlpha(accent.getColor1(), 210),
-                ColorUtils.applyAlpha(accent.getColor2(), 210)
+                ColorUtils.applyAlpha(accent.getColor2(), 210),
             )
         } else {
             nvg.drawRoundedRect(x, y, width, CHIP_HEIGHT, CHIP_RADIUS, background)

@@ -19,7 +19,6 @@ import kotlin.math.min
  * Keeps sidebar slot geometry and interaction state out of [me.miki.shindo.gui.modmenu.v2.GuiModMenu].
  */
 class ModMenuSidebarController {
-
     private val slots = ArrayList<ModMenuSidebarSlot>()
     private val activeSlotAnimation = SimpleAnimation()
     private val hoverAnimations = HashMap<Category, SimpleAnimation>()
@@ -32,15 +31,16 @@ class ModMenuSidebarController {
         startY: Float,
         slotSize: Float,
         gap: Float,
-        maxBottomY: Float
+        maxBottomY: Float,
     ) {
-        slotGap = resolveGap(
-            categoryCount = categories.size,
-            startY = startY,
-            slotSize = slotSize,
-            preferredGap = gap,
-            maxBottomY = maxBottomY
-        )
+        slotGap =
+            resolveGap(
+                categoryCount = categories.size,
+                startY = startY,
+                slotSize = slotSize,
+                preferredGap = gap,
+                maxBottomY = maxBottomY,
+            )
         slots.clear()
 
         var y = startY
@@ -60,7 +60,7 @@ class ModMenuSidebarController {
         accent: AccentColor,
         currentCategory: Category,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
         if (slots.isEmpty()) {
             return
@@ -74,7 +74,7 @@ class ModMenuSidebarController {
             first.size,
             5f,
             accent.getColor1(),
-            accent.getColor2()
+            accent.getColor2(),
         )
 
         for (i in slots.indices) {
@@ -85,28 +85,37 @@ class ModMenuSidebarController {
             hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 16.0)
             hoverAnimations[category] = hoverAnimation
 
-            val inActiveRange = MathUtils.isInRange(
-                activeSlotAnimation.getValue(),
-                (i * slotGap) - 8f,
-                (i * slotGap) + 8f
-            )
+            val inActiveRange =
+                MathUtils.isInRange(
+                    activeSlotAnimation.getValue(),
+                    (i * slotGap) - 8f,
+                    (i * slotGap) + 8f,
+                )
             val normalColor = palette.getFontColor(ColorType.NORMAL)
             val hoverColor = ColorUtils.applyAlpha(Color.WHITE, 235)
-            val targetColor = when {
-                inActiveRange -> Color.WHITE
-                hoverAnimation.getValue() > 0.01f -> ColorUtils.interpolateColor(
-                    normalColor,
-                    hoverColor,
-                    hoverAnimation.getValue().toDouble()
-                )
+            val targetColor =
+                when {
+                    inActiveRange -> {
+                        Color.WHITE
+                    }
 
-                else -> normalColor
-            }
+                    hoverAnimation.getValue() > 0.01f -> {
+                        ColorUtils.interpolateColor(
+                            normalColor,
+                            hoverColor,
+                            hoverAnimation.getValue().toDouble(),
+                        )
+                    }
+
+                    else -> {
+                        normalColor
+                    }
+                }
             val iconColor = category.getTextColorAnimation().getColor(targetColor, 18)
 
             category.getTextAnimation().setAnimation(
                 if (category == currentCategory) 1.0f else 0.0f,
-                ModMenuMotion.CATEGORY_ICON_FADE_SPEED
+                ModMenuMotion.CATEGORY_ICON_FADE_SPEED,
             )
 
             nvg.drawText(
@@ -115,12 +124,16 @@ class ModMenuSidebarController {
                 slot.y + 3.5f,
                 iconColor,
                 14f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
     }
 
-    fun resolveClickedCategory(mouseX: Int, mouseY: Int, mouseButton: Int): Category? {
+    fun resolveClickedCategory(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ): Category? {
         if (mouseButton != 0) {
             return null
         }
@@ -137,7 +150,7 @@ class ModMenuSidebarController {
         startY: Float,
         slotSize: Float,
         preferredGap: Float,
-        maxBottomY: Float
+        maxBottomY: Float,
     ): Float {
         if (categoryCount <= 1) {
             return preferredGap

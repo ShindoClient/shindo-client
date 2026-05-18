@@ -23,10 +23,13 @@ import java.util.concurrent.atomic.AtomicReference
 import javax.imageio.ImageIO
 
 class SkinManager {
-
     private val dataFile: File
     private val skinsDir: File
-    private val gson = com.google.gson.GsonBuilder().setPrettyPrinting().create()
+    private val gson =
+        com.google.gson
+            .GsonBuilder()
+            .setPrettyPrinting()
+            .create()
     private val ioLock = Any()
     private val skins = CopyOnWriteArrayList<Skin>()
     private var currentSkin: Skin? = null
@@ -74,7 +77,7 @@ class SkinManager {
         type: SkinType,
         favorite: Boolean,
         sourceImage: BufferedImage,
-        profileUuid: String?
+        profileUuid: String?,
     ): Skin =
         synchronized(ioLock) {
             val sanitizedName = sanitizeName(name)
@@ -97,7 +100,7 @@ class SkinManager {
         newName: String,
         newType: SkinType,
         replacement: BufferedImage?,
-        newProfileUuid: String?
+        newProfileUuid: String?,
     ) {
         if (skin == null) return
         synchronized(ioLock) {
@@ -127,7 +130,10 @@ class SkinManager {
         }
     }
 
-    fun setFavorite(skin: Skin?, favorite: Boolean) {
+    fun setFavorite(
+        skin: Skin?,
+        favorite: Boolean,
+    ) {
         if (skin == null) return
         synchronized(ioLock) {
             skin.favorite = favorite
@@ -140,9 +146,10 @@ class SkinManager {
         if (username.isNullOrBlank()) throw IOException("Nome de usuário inválido")
         val trimmed = username.trim()
         val profileUrl = URL("https://api.mojang.com/users/profiles/minecraft/$trimmed")
-        val profile: JsonObject? = profileUrl.openStream().reader(StandardCharsets.UTF_8).use {
-            gson.fromJson(it, JsonObject::class.java)
-        }
+        val profile: JsonObject? =
+            profileUrl.openStream().reader(StandardCharsets.UTF_8).use {
+                gson.fromJson(it, JsonObject::class.java)
+            }
         if (profile == null || !profile.has("id")) throw IOException("Jogador não encontrado")
         return downloadSkinByProfileId(profile.get("id").asString)
     }
@@ -164,19 +171,30 @@ class SkinManager {
     private fun downloadSkinByProfileId(uuid: String): DownloadedSkin {
         val normalizedUuid = requireValidUuid(uuid)
         val sessionUrl = URL("https://sessionserver.mojang.com/session/minecraft/profile/$normalizedUuid")
-        val sessionProfile: JsonObject? = sessionUrl.openStream().reader(StandardCharsets.UTF_8).use {
-            gson.fromJson(it, JsonObject::class.java)
+        val sessionProfile: JsonObject? =
+            sessionUrl.openStream().reader(StandardCharsets.UTF_8).use {
+                gson.fromJson(it, JsonObject::class.java)
+            }
+        if (sessionProfile == null ||
+            !sessionProfile.has("properties")
+        ) {
+            throw IOException("Não foi possível carregar a skin")
         }
-        if (sessionProfile == null || !sessionProfile.has("properties")) throw IOException("Não foi possível carregar a skin")
         val properties = sessionProfile.getAsJsonArray("properties")
         if (properties.size() == 0) throw IOException("Não foi possível carregar a skin")
-        val encoded = properties.get(0).asJsonObject.get("value").asString
+        val encoded =
+            properties
+                .get(0)
+                .asJsonObject
+                .get("value")
+                .asString
         val payload =
             gson.fromJson(String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8), JsonObject::class.java)
         val textures = payload.getAsJsonObject("textures") ?: throw IOException("Skin não encontrada para este UUID")
         if (!textures.has("SKIN")) throw IOException("Skin não encontrada para este UUID")
         val skinObject = textures.getAsJsonObject("SKIN")
-        val slim = skinObject.has("metadata") &&
+        val slim =
+            skinObject.has("metadata") &&
                 skinObject.getAsJsonObject("metadata").has("model") &&
                 "slim".equals(skinObject.getAsJsonObject("metadata").get("model").asString, ignoreCase = true)
         val skinUrl = skinObject.get("url").asString
@@ -207,15 +225,16 @@ class SkinManager {
                             if (!file.exists()) continue
                             try {
                                 val texture = registerTexture(file, id.toString())
-                                val skin = Skin(
-                                    id.toString(),
-                                    name.toString(),
-                                    fileName.toString(),
-                                    SkinType.getTypeById(typeId),
-                                    favorite,
-                                    texture,
-                                    profileUuid
-                                )
+                                val skin =
+                                    Skin(
+                                        id.toString(),
+                                        name.toString(),
+                                        fileName.toString(),
+                                        SkinType.getTypeById(typeId),
+                                        favorite,
+                                        texture,
+                                        profileUuid,
+                                    )
                                 skins.add(skin)
                             } catch (io: IOException) {
                                 ShindoLogger.error("Falha ao carregar a skin $name", io)
@@ -255,7 +274,10 @@ class SkinManager {
     }
 
     @Throws(IOException::class)
-    private fun registerTexture(file: File, id: String): ResourceLocation {
+    private fun registerTexture(
+        file: File,
+        id: String,
+    ): ResourceLocation {
         val image = ImageIO.read(file) ?: throw IOException("Skin inválida: ${file.name}")
         return runOnRenderThread {
             val texture = DynamicTexture(image)
@@ -280,16 +302,21 @@ class SkinManager {
 
     private fun resolveFile(skin: Skin): File = File(skinsDir, skin.fileName)
 
-    private fun validateName(name: String?, ignore: Skin?) {
+    private fun validateName(
+        name: String?,
+        ignore: Skin?,
+    ) {
         if (name.isNullOrBlank()) throw IllegalArgumentException("O nome da skin não pode estar vazio")
         val trimmed = name!!.trim()
         for (skin in skins) {
             if (skin === ignore) continue
             if (skin.name.equals(
                     trimmed,
-                    ignoreCase = true
+                    ignoreCase = true,
                 )
-            ) throw IllegalArgumentException("Já existe uma skin com esse nome")
+            ) {
+                throw IllegalArgumentException("Já existe uma skin com esse nome")
+            }
         }
     }
 
@@ -361,7 +388,7 @@ class SkinManager {
     class DownloadedSkin(
         val image: BufferedImage,
         val detectedType: SkinType,
-        val uuid: String?
+        val uuid: String?,
     )
 
     companion object {

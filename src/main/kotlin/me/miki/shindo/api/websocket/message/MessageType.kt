@@ -1,7 +1,8 @@
 package me.miki.shindo.api.websocket.message
 
-enum class MessageType(val wireType: String) {
-
+enum class MessageType(
+    val wireType: String,
+) {
     AUTH("auth"),
     AUTH_OK("auth.ok"),
     AUTH_ERROR("auth.error"),
@@ -51,7 +52,8 @@ enum class MessageType(val wireType: String) {
     PROFILE_UNSHARE_OK("profile.unshare.ok"),
     PROFILE_UNSHARE_ERROR("profile.unshare.error"),
 
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    ;
 
     companion object {
         @JvmStatic

@@ -11,8 +11,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.input.Mouse
 
-class CPSDisplayMod :
-    SimpleHUDMod(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_CPS_DISPLAY) {
+class CPSDisplayMod : SimpleHUDMod(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_CPS_DISPLAY) {
     private val leftPresses = ArrayList<Long?>()
     private val rightPresses = ArrayList<Long?>()
 
@@ -46,13 +45,9 @@ class CPSDisplayMod :
         rightPresses.removeIf { t: Long? -> System.currentTimeMillis() - t!! > 1000 }
     }
 
-    override fun getText(): String {
-        return (if (rightClickSetting) leftPresses.size.toString() + " | " + rightPresses.size else leftPresses.size).toString() + " CPS"
-    }
+    override fun getText(): String =
+        (if (rightClickSetting) leftPresses.size.toString() + " | " + rightPresses.size else leftPresses.size).toString() +
+            " CPS"
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.MOUSE_POINTER else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.MOUSE_POINTER else null
 }
-
-

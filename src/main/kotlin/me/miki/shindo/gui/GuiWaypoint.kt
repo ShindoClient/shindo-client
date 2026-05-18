@@ -27,7 +27,6 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 class GuiWaypoint : GuiScreen() {
-
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()
     private val textBox = CompTextBox()
@@ -67,7 +66,11 @@ class GuiWaypoint : GuiScreen() {
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         BlurUtils.drawBlurScreen(20F)
 
         screenAnimation.wrap(
@@ -78,11 +81,15 @@ class GuiWaypoint : GuiScreen() {
             menuHeight,
             2 - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            false
+            false,
         )
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    private fun drawNanoVG(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager!!
         val waypointManager: WaypointManager = instance.getWaypointManager()
@@ -107,7 +114,7 @@ class GuiWaypoint : GuiScreen() {
             menuWidth,
             menuHeight,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210),
         )
         nvg.drawRoundedRect(
             x + 1f,
@@ -115,7 +122,7 @@ class GuiWaypoint : GuiScreen() {
             menuWidth - 2f,
             menuHeight - 2f,
             7f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230),
         )
 
         nvg.drawText("Waypoint", x + 8f, y + 8f, palette.getFontColor(ColorType.DARK), 13f, Fonts.MEDIUM)
@@ -134,10 +141,14 @@ class GuiWaypoint : GuiScreen() {
                             x + 162f,
                             y + 44f + offsetY + scroll.getValue(),
                             11f,
-                            11f
+                            11f,
                         )
-                    ) 1.0f else 0.0f,
-                    16
+                    ) {
+                        1.0f
+                    } else {
+                        0.0f
+                    },
+                    16,
                 )
 
                 nvg.drawShadow(x, y, width, height, 6f, 7)
@@ -147,7 +158,7 @@ class GuiWaypoint : GuiScreen() {
                     170f,
                     28f,
                     6f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
                 )
                 nvg.drawOutlineRoundedRect(
                     x + 10f,
@@ -156,7 +167,7 @@ class GuiWaypoint : GuiScreen() {
                     28f,
                     6f,
                     1f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
                 )
                 nvg.drawRoundedRect(x + 16f, y + 40f + offsetY, 18f, 18f, 4f, waypoint.getColor())
                 nvg.drawText(
@@ -165,7 +176,7 @@ class GuiWaypoint : GuiScreen() {
                     y + 45.5f + offsetY,
                     palette.getFontColor(ColorType.DARK),
                     9.5f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
 
                 nvg.drawText(
@@ -175,10 +186,10 @@ class GuiWaypoint : GuiScreen() {
                     Color(
                         255,
                         255 - (waypoint.getTrashAnimation().getValue() * 255).toInt(),
-                        255 - (waypoint.getTrashAnimation().getValue() * 255).toInt()
+                        255 - (waypoint.getTrashAnimation().getValue() * 255).toInt(),
                     ),
                     11f,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
 
                 offsetY += 38
@@ -190,7 +201,6 @@ class GuiWaypoint : GuiScreen() {
 
         scroll.maxScroll = if (index < 3) 0f else (index - 3) * 66f
 
-
         nvg.drawShadow(x + menuWidth - 130f, y + 35f, 120f, menuHeight - 45f, 6f, 7)
         nvg.drawRoundedRect(
             x + menuWidth - 130f,
@@ -198,7 +208,7 @@ class GuiWaypoint : GuiScreen() {
             120f,
             menuHeight - 45f,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
         )
         nvg.drawOutlineRoundedRect(
             x + menuWidth - 130f,
@@ -207,7 +217,7 @@ class GuiWaypoint : GuiScreen() {
             menuHeight - 45f,
             6f,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
         )
 
         nvg.drawCenteredText(
@@ -216,7 +226,7 @@ class GuiWaypoint : GuiScreen() {
             y + 43f,
             palette.getFontColor(ColorType.DARK),
             10.5f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         textBox.setDefaultText("Name")
@@ -237,7 +247,7 @@ class GuiWaypoint : GuiScreen() {
                     y + 86.5f + offsetY,
                     Color.WHITE,
                     9f,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
             }
 
@@ -256,7 +266,7 @@ class GuiWaypoint : GuiScreen() {
             65f,
             18f,
             6f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            palette.getBackgroundColor(ColorType.NORMAL),
         )
         nvg.drawCenteredText(
             "Save",
@@ -264,7 +274,7 @@ class GuiWaypoint : GuiScreen() {
             y + menuHeight - 29f,
             palette.getFontColor(ColorType.DARK),
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         if (removeWaypoint != null) {
@@ -274,7 +284,11 @@ class GuiWaypoint : GuiScreen() {
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val waypointManager: WaypointManager = instance.getWaypointManager()
 
@@ -290,8 +304,9 @@ class GuiWaypoint : GuiScreen() {
                         x + 160f,
                         y + 41f + offsetY + scroll.getValue().toInt(),
                         16f,
-                        16f
-                    ) && mouseButton == 0
+                        16f,
+                    ) &&
+                    mouseButton == 0
                 ) {
                     removeWaypoint = waypoint
                 }
@@ -312,8 +327,9 @@ class GuiWaypoint : GuiScreen() {
                     x + menuWidth - 120f + offsetX,
                     y + 84f + offsetY,
                     13f,
-                    13f
-                ) && mouseButton == 0
+                    13f,
+                ) &&
+                mouseButton == 0
             ) {
                 currentColor = color
             }
@@ -333,15 +349,17 @@ class GuiWaypoint : GuiScreen() {
                 x + menuWidth - 85f,
                 y + menuHeight - 34f,
                 65f,
-                18f
-            ) && mouseButton == 0 && textBox.getText().isNotEmpty()
+                18f,
+            ) &&
+            mouseButton == 0 &&
+            textBox.getText().isNotEmpty()
         ) {
             waypointManager.addWaypoint(
                 textBox.getText(),
                 mc.thePlayer.posX,
                 mc.thePlayer.posY,
                 mc.thePlayer.posZ,
-                currentColor
+                currentColor,
             )
             textBox.setText("")
             waypointManager.save()
@@ -350,7 +368,10 @@ class GuiWaypoint : GuiScreen() {
         textBox.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
@@ -358,7 +379,5 @@ class GuiWaypoint : GuiScreen() {
         textBox.keyTyped(typedChar, keyCode)
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame(): Boolean = false
 }

@@ -5,10 +5,12 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
 class RoleManager {
-
     private val listeners = mutableListOf<Consumer<UUID>>()
 
-    fun setRoles(uuid: UUID?, newRoles: Set<Role>?) {
+    fun setRoles(
+        uuid: UUID?,
+        newRoles: Set<Role>?,
+    ) {
         if (uuid == null) return
         val copy = EnumSet.noneOf(Role::class.java)
         if (newRoles != null) copy.addAll(newRoles)
@@ -17,7 +19,10 @@ class RoleManager {
         notifyChange(uuid)
     }
 
-    fun addRole(uuid: UUID?, role: Role?) {
+    fun addRole(
+        uuid: UUID?,
+        role: Role?,
+    ) {
         if (uuid == null || role == null) return
         roles.compute(uuid) { _, v ->
             val set = if (v == null || v.isEmpty()) EnumSet.noneOf(Role::class.java) else EnumSet.copyOf(v)
@@ -27,7 +32,10 @@ class RoleManager {
         notifyChange(uuid)
     }
 
-    fun removeRole(uuid: UUID?, role: Role?) {
+    fun removeRole(
+        uuid: UUID?,
+        role: Role?,
+    ) {
         if (uuid == null || role == null) return
         roles.computeIfPresent(uuid) { _, v ->
             val set = if (v.isEmpty()) EnumSet.noneOf(Role::class.java) else EnumSet.copyOf(v)
@@ -63,13 +71,18 @@ class RoleManager {
         }
 
         @JvmStatic
-        fun hasRole(uuid: UUID?, role: Role?): Boolean {
+        fun hasRole(
+            uuid: UUID?,
+            role: Role?,
+        ): Boolean {
             if (role == null) return false
             return getDirectRoles(uuid).contains(role)
         }
 
         @JvmStatic
-        fun hasAtLeast(uuid: UUID?, required: Role?): Boolean =
-            RoleHierarchy.hasAtLeast(getDirectRoles(uuid), required)
+        fun hasAtLeast(
+            uuid: UUID?,
+            required: Role?,
+        ): Boolean = RoleHierarchy.hasAtLeast(getDirectRoles(uuid), required)
     }
 }

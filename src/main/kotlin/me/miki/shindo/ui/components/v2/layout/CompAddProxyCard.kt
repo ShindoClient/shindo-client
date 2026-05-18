@@ -8,28 +8,33 @@ import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.ColorUtils
 
 class CompAddProxyCard : Component() {
-
     var label: String = "Add Proxy"
     var onClick: (() -> Unit)? = null
 
     private val hoverAnimation = SimpleAnimation()
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         val hovered = isHovered(mouseX, mouseY)
         hoverAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 14.0)
         val hoverProgress = hoverAnimation.getValue()
 
-        val base = ColorUtils.applyAlpha(
-            palette.getBackgroundColor(ColorType.DARK),
-            (190f + hoverProgress * 36f).toInt().coerceIn(0, 255)
-        )
-        val borderColor = if (hovered) {
-            ColorUtils.applyAlpha(accent.getInterpolateColor(), 164)
-        } else {
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 106)
-        }
+        val base =
+            ColorUtils.applyAlpha(
+                palette.getBackgroundColor(ColorType.DARK),
+                (190f + hoverProgress * 36f).toInt().coerceIn(0, 255),
+            )
+        val borderColor =
+            if (hovered) {
+                ColorUtils.applyAlpha(accent.getInterpolateColor(), 164)
+            } else {
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 106)
+            }
 
         nvg.drawShadow(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, if (hovered) 8 else 6)
         nvg.drawRoundedRect(getX(), getY(), getWidth(), getHeight(), CARD_RADIUS, base)
@@ -40,7 +45,7 @@ class CompAddProxyCard : Component() {
             getHeight(),
             CARD_RADIUS,
             BORDER_WIDTH,
-            borderColor
+            borderColor,
         )
 
         val iconHeight = nvg.getTextHeight(LegacyIcon.PLUS, ICON_SIZE, Fonts.LEGACYICON)
@@ -56,7 +61,7 @@ class CompAddProxyCard : Component() {
             iconBaselineY,
             palette.getFontColor(ColorType.DARK),
             ICON_SIZE,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
         nvg.drawCenteredText(
             label,
@@ -64,11 +69,15 @@ class CompAddProxyCard : Component() {
             labelBaselineY,
             palette.getFontColor(ColorType.DARK),
             LABEL_SIZE,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0 || !isHovered(mouseX, mouseY)) return
         onClick?.invoke()
     }

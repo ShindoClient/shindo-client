@@ -10,8 +10,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.network.play.server.S02PacketChat
 
-class MinemenMod :
-    Mod(TranslateText.MINEMEN, TranslateText.MINEMEN_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MINEMEN) {
+class MinemenMod : Mod(TranslateText.MINEMEN, TranslateText.MINEMEN_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MINEMEN) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_PLAY)
     private val autoPlaySetting = false
 
@@ -27,7 +26,3 @@ class MinemenMod :
         }
     }
 }
-
-
-
-

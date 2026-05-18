@@ -10,7 +10,7 @@ class ExtensionManager {
     fun register(module: ExtensionModule): ExtensionModule {
         val existing = modules[module.id]
         if (existing != null) {
-            ShindoLogger.warn("[${loggerTag}] Replacing already registered extension ${module.id}")
+            ShindoLogger.warn("[$loggerTag] Replacing already registered extension ${module.id}")
         }
         modules[module.id] = module
         return module
@@ -25,9 +25,10 @@ class ExtensionManager {
 
     fun all(): List<ExtensionModule> = synchronized(modules) { modules.values.toList() }
 
-    fun namespace(namespace: String): List<ExtensionModule> = synchronized(modules) {
-        modules.values.filter { it.namespace == namespace }
-    }
+    fun namespace(namespace: String): List<ExtensionModule> =
+        synchronized(modules) {
+            modules.values.filter { it.namespace == namespace }
+        }
 
     fun isRegistered(id: String): Boolean = synchronized(modules) { modules.containsKey(id) }
 

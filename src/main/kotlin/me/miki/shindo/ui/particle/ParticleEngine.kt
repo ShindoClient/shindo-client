@@ -13,7 +13,10 @@ class ParticleEngine {
     private var prevWidth: Int = 0
     private var prevHeight: Int = 0
 
-    fun draw(mouseX: Int, mouseY: Int) {
+    fun draw(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         if (particles.isEmpty() || prevWidth != mc.displayWidth || prevHeight != mc.displayHeight) {
             particles.clear()
             amount = (mc.displayWidth + mc.displayHeight) / 8
@@ -32,17 +35,21 @@ class ParticleEngine {
 
             val range = 50
             val mouseOver =
-                mouseX >= particle.x - range && mouseY >= particle.y - range &&
-                        mouseX <= particle.x + range && mouseY <= particle.y + range
+                mouseX >= particle.x - range &&
+                    mouseY >= particle.y - range &&
+                    mouseX <= particle.x + range &&
+                    mouseY <= particle.y + range
 
             if (mouseOver) {
-                particles.asSequence()
+                particles
+                    .asSequence()
                     .filter { part ->
                         (part.x > particle.x && part.x - particle.x < range && particle.x - part.x < range) &&
-                                ((part.y > particle.y && part.y - particle.y < range) ||
-                                        (particle.y > part.y && particle.y - part.y < range))
-                    }
-                    .forEach { connectable -> particle.connect(connectable.x, connectable.y) }
+                            (
+                                (part.y > particle.y && part.y - particle.y < range) ||
+                                    (particle.y > part.y && particle.y - part.y < range)
+                            )
+                    }.forEach { connectable -> particle.connect(connectable.x, connectable.y) }
             }
 
             RenderUtils.drawRect(particle.x, particle.y, particle.size, particle.size, Color.WHITE)
@@ -52,7 +59,7 @@ class ParticleEngine {
     private fun create() {
         repeat(amount) {
             particles.add(
-                Particle(Random.nextInt(mc.displayWidth), Random.nextInt(mc.displayHeight))
+                Particle(Random.nextInt(mc.displayWidth), Random.nextInt(mc.displayHeight)),
             )
         }
     }

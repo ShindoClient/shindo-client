@@ -5,9 +5,8 @@ import me.miki.shindo.utils.mouse.MouseUtils
 
 abstract class CompInteractive(
     x: Float = 0f,
-    y: Float = 0f
+    y: Float = 0f,
 ) : Component(x, y) {
-
     private var enabled: Boolean = true
     private var hovered: Boolean = false
     private var lastMouseX: Int = -1
@@ -23,11 +22,16 @@ abstract class CompInteractive(
         this.enabled = enabled
     }
 
-    open fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
-        return enabled && MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
-    }
+    open fun isHoveredInteractive(
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean = enabled && MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         val currentlyHovered = isHoveredInteractive(mouseX, mouseY)
@@ -47,7 +51,11 @@ abstract class CompInteractive(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || !enabled) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
@@ -61,6 +69,16 @@ abstract class CompInteractive(
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    protected abstract fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean)
-    protected open fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {}
+    protected abstract fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    )
+
+    protected open fun onMouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {}
 }

@@ -13,9 +13,8 @@ import java.util.*
 
 abstract class Pipe(
     val ipcClient: IPCClient,
-    private val callbacks: HashMap<String, Callback>
+    private val callbacks: HashMap<String, Callback>,
 ) {
-
     private var statusInternal: PipeStatus = PipeStatus.CONNECTING
     private var listenerInternal: IPCListener? = null
     private var build: DiscordBuild? = null
@@ -29,7 +28,7 @@ abstract class Pipe(
             ipcClient: IPCClient,
             clientId: Long,
             callbacks: HashMap<String, Callback>,
-            vararg preferredOrder: DiscordBuild
+            vararg preferredOrder: DiscordBuild,
         ): Pipe {
             val order = if (preferredOrder.isEmpty()) arrayOf(DiscordBuild.ANY) else preferredOrder
             var pipe: Pipe? = null
@@ -125,7 +124,7 @@ abstract class Pipe(
         private fun createPipe(
             ipcClient: IPCClient,
             callbacks: HashMap<String, Callback>,
-            location: String
+            location: String,
         ): Pipe {
             val osName = System.getProperty("os.name").uppercase(Locale.ROOT)
             return if (osName.contains("win")) {
@@ -152,7 +151,11 @@ abstract class Pipe(
         }
     }
 
-    fun send(op: Packet.OpCode, data: JsonObject, callback: Callback?) {
+    fun send(
+        op: Packet.OpCode,
+        data: JsonObject,
+        callback: Callback?,
+    ) {
         try {
             val nonce = generateNonce()
             data.addProperty("nonce", nonce)
@@ -193,4 +196,3 @@ abstract class Pipe(
     val discordBuild: DiscordBuild?
         get() = build
 }
-

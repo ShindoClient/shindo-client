@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl3.BufferUtils
 import java.nio.FloatBuffer
 
-
 class ScreenStencil {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
@@ -21,7 +20,15 @@ class ScreenStencil {
     private var fb: NVGLUFramebuffer? = null
 
     @JvmOverloads
-    fun wrap(task: Runnable?, x: Float, y: Float, width: Float, height: Float, radius: Float, alpha: Float = 1f) {
+    fun wrap(
+        task: Runnable?,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        radius: Float,
+        alpha: Float = 1f,
+    ) {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         val factor = sr.scaleFactor
@@ -52,34 +59,37 @@ class ScreenStencil {
 
         mc.framebuffer.bindFramebuffer(true)
 
-        nvg.setupAndDraw(Runnable {
-            val paint = NVGPaint.create()
-            NanoVG.nvgGlobalAlpha(nvg.getContext(), alpha)
-            NanoVG.nvgBeginPath(nvg.getContext())
-            NanoVG.nvgRoundedRect(
-                nvg.getContext(),
-                x * factor,
-                y * factor,
-                width * factor,
-                height * factor,
-                radius * factor
-            )
-            NanoVG.nvgFillPaint(
-                nvg.getContext(),
-                NanoVG.nvgImagePattern(
+        nvg.setupAndDraw(
+            Runnable {
+                val paint = NVGPaint.create()
+                NanoVG.nvgGlobalAlpha(nvg.getContext(), alpha)
+                NanoVG.nvgBeginPath(nvg.getContext())
+                NanoVG.nvgRoundedRect(
                     nvg.getContext(),
-                    0f,
-                    0f,
-                    mc.displayWidth.toFloat(),
-                    mc.displayHeight.toFloat(),
-                    0f,
-                    fb!!.image(),
-                    1f,
-                    paint
+                    x * factor,
+                    y * factor,
+                    width * factor,
+                    height * factor,
+                    radius * factor,
                 )
-            )
-            NanoVG.nvgFill(nvg.getContext())
-        }, false)
+                NanoVG.nvgFillPaint(
+                    nvg.getContext(),
+                    NanoVG.nvgImagePattern(
+                        nvg.getContext(),
+                        0f,
+                        0f,
+                        mc.displayWidth.toFloat(),
+                        mc.displayHeight.toFloat(),
+                        0f,
+                        fb!!.image(),
+                        1f,
+                        paint,
+                    ),
+                )
+                NanoVG.nvgFill(nvg.getContext())
+            },
+            false,
+        )
     }
 
     fun close() {

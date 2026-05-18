@@ -8,57 +8,94 @@ import java.util.concurrent.ConcurrentHashMap
  * e serializados pelo ProfileManager no JSON do perfil (seção Addons -> {addonId} -> Config).
  * Ao carregar perfil, só aplicamos config de addons que existem (fallback para addons removidos).
  */
-class AddonConfigStorageImpl(private val addonId: String) {
-
+class AddonConfigStorageImpl(
+    private val addonId: String,
+) {
     private val data = ConcurrentHashMap<String, String>()
 
     fun getAddonId(): String = addonId
 
-    fun getString(key: String, default: String): String = data[key] ?: default
+    fun getString(
+        key: String,
+        default: String,
+    ): String = data[key] ?: default
 
-    fun setString(key: String, value: String) {
+    fun setString(
+        key: String,
+        value: String,
+    ) {
         data[key] = value
     }
 
-    fun getInt(key: String, default: Int): Int =
-        data[key]?.toIntOrNull() ?: default
+    fun getInt(
+        key: String,
+        default: Int,
+    ): Int = data[key]?.toIntOrNull() ?: default
 
-    fun setInt(key: String, value: Int) {
+    fun setInt(
+        key: String,
+        value: Int,
+    ) {
         data[key] = value.toString()
     }
 
-    fun getLong(key: String, default: Long): Long =
-        data[key]?.toLongOrNull() ?: default
+    fun getLong(
+        key: String,
+        default: Long,
+    ): Long = data[key]?.toLongOrNull() ?: default
 
-    fun setLong(key: String, value: Long) {
+    fun setLong(
+        key: String,
+        value: Long,
+    ) {
         data[key] = value.toString()
     }
 
-    fun getFloat(key: String, default: Float): Float =
-        data[key]?.toFloatOrNull() ?: default
+    fun getFloat(
+        key: String,
+        default: Float,
+    ): Float = data[key]?.toFloatOrNull() ?: default
 
-    fun setFloat(key: String, value: Float) {
+    fun setFloat(
+        key: String,
+        value: Float,
+    ) {
         data[key] = value.toString()
     }
 
-    fun getDouble(key: String, default: Double): Double =
-        data[key]?.toDoubleOrNull() ?: default
+    fun getDouble(
+        key: String,
+        default: Double,
+    ): Double = data[key]?.toDoubleOrNull() ?: default
 
-    fun setDouble(key: String, value: Double) {
+    fun setDouble(
+        key: String,
+        value: Double,
+    ) {
         data[key] = value.toString()
     }
 
-    fun getBoolean(key: String, default: Boolean): Boolean =
-        data[key]?.let { it.equals("true", true) } ?: default
+    fun getBoolean(
+        key: String,
+        default: Boolean,
+    ): Boolean = data[key]?.let { it.equals("true", true) } ?: default
 
-    fun setBoolean(key: String, value: Boolean) {
+    fun setBoolean(
+        key: String,
+        value: Boolean,
+    ) {
         data[key] = value.toString()
     }
 
-    fun getColor(key: String, default: Int): Int =
-        data[key]?.toIntOrNull(16) ?: default
+    fun getColor(
+        key: String,
+        default: Int,
+    ): Int = data[key]?.toIntOrNull(16) ?: default
 
-    fun setColor(key: String, value: Int) {
+    fun setColor(
+        key: String,
+        value: Int,
+    ) {
         data[key] = value.toString(16)
     }
 
@@ -76,10 +113,11 @@ class AddonConfigStorageImpl(private val addonId: String) {
     fun fromJson(obj: JsonObject) {
         obj.entrySet().forEach { (k, v) ->
             if (!v.isJsonNull) {
-                data[k] = when {
-                    v.isJsonPrimitive -> v.asJsonPrimitive.asString
-                    else -> v.toString()
-                }
+                data[k] =
+                    when {
+                        v.isJsonPrimitive -> v.asJsonPrimitive.asString
+                        else -> v.toString()
+                    }
             }
         }
     }

@@ -9,5 +9,5 @@ class NormalWing(
     sample: ResourceLocation?,
     texture: ResourceLocation?,
     category: WingCategory,
-    requiredRole: Role
+    requiredRole: Role,
 ) : Wing(name, sample, texture, category, requiredRole)

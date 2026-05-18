@@ -19,7 +19,9 @@ import java.util.function.IntPredicate
 import java.util.stream.IntStream
 import kotlin.math.sqrt
 
-class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
+class ChunkAtlas(
+    maxChunkRadius: Int,
+) : Iterable<ChunkTile> {
     private val chunkCoords: Array<ChunkCoordIntPair?>
     private val reusableChunks: BitSet
     val chunkRadius: Int
@@ -64,29 +66,32 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         GlStateManager.bindTexture(this.textureHandle)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, 0)
         GL11.glTexImage2D(
-            GL11.GL_TEXTURE_2D, 0,
+            GL11.GL_TEXTURE_2D,
+            0,
             GL11.GL_RGBA,
-            texWidth, texHeight, 0,
-            GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
-            null as IntBuffer?
+            texWidth,
+            texHeight,
+            0,
+            GL12.GL_BGRA,
+            GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
+            null as IntBuffer?,
         )
 
         this.pixels = GLAllocation.createDirectIntBuffer(256)
     }
 
-    fun getSpriteX(offset: Int): Double {
-        return (offset and ((1 shl this.chunkSpanL2) - 1)) * this.spriteWidth
-    }
+    fun getSpriteX(offset: Int): Double = (offset and ((1 shl this.chunkSpanL2) - 1)) * this.spriteWidth
 
-    fun getSpriteY(offset: Int): Double {
-        return (offset shr this.chunkSpanL2) * this.spriteHeight
-    }
+    fun getSpriteY(offset: Int): Double = (offset shr this.chunkSpanL2) * this.spriteHeight
 
     fun clear() {
         Arrays.fill(this.chunkCoords, null)
     }
 
-    fun loadChunks(chunkX: Int, chunkZ: Int) {
+    fun loadChunks(
+        chunkX: Int,
+        chunkZ: Int,
+    ) {
         val w: World? = Minecraft.getMinecraft().theWorld
         if (w == null) {
             return
@@ -142,19 +147,24 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         }
     }
 
-    fun refreshChunk(x: Int, z: Int) {
+    fun refreshChunk(
+        x: Int,
+        z: Int,
+    ) {
         this.recolorChunk(x, z)
         this.recolorChunk(x, z + 1)
     }
 
-    override fun iterator(): MutableIterator<ChunkTile> {
-        return IntStream.range(0, this.chunkCoords.size)
+    override fun iterator(): MutableIterator<ChunkTile> =
+        IntStream
+            .range(0, this.chunkCoords.size)
             .filter(IntPredicate { offs: Int -> this.chunkCoords[offs] != null })
-            .mapToObj<ChunkTile>(IntFunction { offs: Int ->
-                val coords = this.chunkCoords[offs]!!
-                ChunkTile(coords.chunkXPos, coords.chunkZPos, offs)
-            }).iterator()
-    }
+            .mapToObj<ChunkTile>(
+                IntFunction { offs: Int ->
+                    val coords = this.chunkCoords[offs]!!
+                    ChunkTile(coords.chunkXPos, coords.chunkZPos, offs)
+                },
+            ).iterator()
 
     private fun reserveOffset(c: Chunk) {
         val offs = this.searchChunkAtlas(null)
@@ -166,7 +176,10 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         this.updateColorData(c, offs)
     }
 
-    private fun recolorChunk(x: Int, z: Int) {
+    private fun recolorChunk(
+        x: Int,
+        z: Int,
+    ) {
         val c = this.getLoadedChunk(x, z)
 
         if (c == null) {
@@ -181,7 +194,10 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         this.updateColorData(c, offs)
     }
 
-    private fun updateColorData(src: Chunk, offs: Int) {
+    private fun updateColorData(
+        src: Chunk,
+        offs: Int,
+    ) {
         this.computeColors(src)
 
         var x = offs and ((1 shl this.chunkSpanL2) - 1)
@@ -192,10 +208,15 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
 
         GlStateManager.bindTexture(this.textureHandle)
         GL11.glTexSubImage2D(
-            GL11.GL_TEXTURE_2D, 0,
-            x, y, 16, 16,
-            GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
-            this.pixels
+            GL11.GL_TEXTURE_2D,
+            0,
+            x,
+            y,
+            16,
+            16,
+            GL12.GL_BGRA,
+            GL12.GL_UNSIGNED_INT_8_8_8_8_REV,
+            this.pixels,
         )
     }
 
@@ -262,7 +283,11 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         }
     }
 
-    private fun getTopColoredBlockState(src: Chunk, x: Int, z: Int): BlockPos {
+    private fun getTopColoredBlockState(
+        src: Chunk,
+        x: Int,
+        z: Int,
+    ): BlockPos {
         val pos = MutableBlockPos()
 
         for (y in src.topFilledSegment + 15 downTo 0) {
@@ -286,7 +311,10 @@ class ChunkAtlas(maxChunkRadius: Int) : Iterable<ChunkTile> {
         return -1
     }
 
-    private fun getLoadedChunk(x: Int, z: Int): Chunk? {
+    private fun getLoadedChunk(
+        x: Int,
+        z: Int,
+    ): Chunk? {
         val world: World? = Minecraft.getMinecraft().theWorld
 
         if (world == null) {

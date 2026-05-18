@@ -23,10 +23,9 @@ class RenderGlobalHelper {
             ambient_occlusion = mc.gameSettings.ambientOcclusion
         }
 
-    fun settingsChanged(): Boolean {
-        return fancy_graphics != mc.gameSettings.fancyGraphics ||
-                ambient_occlusion != mc.gameSettings.ambientOcclusion
-    }
+    fun settingsChanged(): Boolean =
+        fancy_graphics != mc.gameSettings.fancyGraphics ||
+            ambient_occlusion != mc.gameSettings.ambientOcclusion
 
     fun switchTo() {
         if (orig == null) orig = mc.renderGlobal

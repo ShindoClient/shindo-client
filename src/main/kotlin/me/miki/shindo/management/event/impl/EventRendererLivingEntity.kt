@@ -10,12 +10,15 @@ class EventRendererLivingEntity(
     private val _entity: Entity,
     private val _x: Double,
     private val _y: Double,
-    private val _z: Double
+    private val _z: Double,
 ) : Event() {
     fun getRenderer(): RendererLivingEntity<EntityLivingBase> = _renderer
+
     fun getEntity(): Entity = _entity
+
     fun getX(): Double = _x
+
     fun getY(): Double = _y
+
     fun getZ(): Double = _z
 }
-

@@ -23,8 +23,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.sqrt
 
-class WaypointMod :
-    Mod(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD, LegacyIcon.MOD_WAYPOINT) {
+class WaypointMod : Mod(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD, LegacyIcon.MOD_WAYPOINT) {
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_B)
     private val keybindSetting = Keyboard.KEY_B
 
@@ -69,7 +68,7 @@ class WaypointMod :
                     -rectHeight / 2f,
                     rectWidth.toFloat(),
                     rectHeight.toFloat(),
-                    getColorByInt(Int.MIN_VALUE)
+                    getColorByInt(Int.MIN_VALUE),
                 )
                 drawOutline(
                     -rectWidth / 2f,
@@ -77,7 +76,7 @@ class WaypointMod :
                     rectWidth.toFloat(),
                     rectHeight.toFloat(),
                     2.5f,
-                    wy.getColor()
+                    wy.getColor(),
                 )
 
                 fr.drawString(tagName, -width / 2, -height / 2 + 2, Color.WHITE.rgb)
@@ -95,7 +94,10 @@ class WaypointMod :
         }
     }
 
-    private fun getDistance(wy: Waypoint, entity: Entity): Double {
+    private fun getDistance(
+        wy: Waypoint,
+        entity: Entity,
+    ): Double {
         val x = wy.getX() - entity.posX
         val y = wy.getY() - entity.posY
         val z = wy.getZ() - entity.posZ
@@ -103,7 +105,3 @@ class WaypointMod :
         return sqrt(x * x + y * y + z * z)
     }
 }
-
-
-
-

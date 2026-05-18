@@ -16,9 +16,8 @@ class CompThemeSelector(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 122f
+    height: Float = 122f,
 ) : CompPanel(x, y, width, height) {
-
     private val themes: List<Theme> = Theme.values().toList()
     private val scroll = Scroll()
     private var selectedTheme: Theme? = null
@@ -46,8 +45,11 @@ class CompThemeSelector(
         return this
     }
 
-    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-
+    override fun drawPanelContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val innerX = getX() + innerPadding
         val innerY = getY() + innerPadding
         val visibleWidth = getWidth() - innerPadding * 2f
@@ -89,7 +91,7 @@ class CompThemeSelector(
                 itemWidth - 24f,
                 12f,
                 4f,
-                ColorUtils.applyAlpha(theme.getDarkFontColor(), 210)
+                ColorUtils.applyAlpha(theme.getDarkFontColor(), 210),
             )
             nvg.drawRoundedRect(
                 screenX + 12f,
@@ -97,7 +99,7 @@ class CompThemeSelector(
                 itemWidth - 24f,
                 7f,
                 3f,
-                ColorUtils.applyAlpha(theme.getNormalFontColor(), 190)
+                ColorUtils.applyAlpha(theme.getNormalFontColor(), 190),
             )
 
             val label = nvg.getLimitText(theme.name, 9.5f, Fonts.MEDIUM, itemWidth - 24f)
@@ -110,7 +112,7 @@ class CompThemeSelector(
                     innerY + 12f,
                     Color(255, 255, 255, min(255, 180 + (theme.getAnimation().getValue() * 60f).toInt())),
                     12f,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
             } else if (hovered) {
                 nvg.drawOutlineRoundedRect(
@@ -120,7 +122,7 @@ class CompThemeSelector(
                     itemHeight,
                     10f,
                     2f,
-                    ColorUtils.applyAlpha(accent.getColor2(), 160)
+                    ColorUtils.applyAlpha(accent.getColor2(), 160),
                 )
             }
 
@@ -130,7 +132,11 @@ class CompThemeSelector(
         nvg.restore()
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
@@ -155,7 +161,10 @@ class CompThemeSelector(
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         scroll.onKey(keyCode)
         super.keyTyped(typedChar, keyCode)
     }

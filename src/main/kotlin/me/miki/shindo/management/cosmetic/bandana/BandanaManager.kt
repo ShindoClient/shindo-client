@@ -10,7 +10,6 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import java.util.*
 
 class BandanaManager {
-
     private val bandanas = ArrayList<Bandana>()
     private var currentBandana: Bandana? = null
 
@@ -33,13 +32,12 @@ class BandanaManager {
         bandana?.let { InternalSettingsMod.instance.bandanaConfigName = it.getName() }
     }
 
-    fun getBandanaByName(name: String): Bandana {
-        return bandanas.firstOrNull { it.getName() == name } ?: bandanas.first()
-    }
+    fun getBandanaByName(name: String): Bandana = bandanas.firstOrNull { it.getName() == name } ?: bandanas.first()
 
-    fun canUseBandana(uuid: UUID, bandana: Bandana): Boolean {
-        return RoleManager.hasAtLeast(uuid, bandana.getRequiredRole())
-    }
+    fun canUseBandana(
+        uuid: UUID,
+        bandana: Bandana,
+    ): Boolean = RoleManager.hasAtLeast(uuid, bandana.getRequiredRole())
 
     fun getTranslateError(role: Role): TranslateText = CosmeticRoleTextMapper.getTranslateError(role)
 

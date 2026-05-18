@@ -3,7 +3,6 @@ package me.miki.shindo.utils.file
 import java.io.File
 
 object DirectoryUtils {
-
     @JvmStatic
     fun deleteDirectory(directory: File) {
         if (directory.exists()) {
@@ -28,13 +27,14 @@ object DirectoryUtils {
             val files = directory.listFiles()
             if (files != null) {
                 for (file in files) {
-                    size += if (file.isFile) {
-                        file.length()
-                    } else if (file.isDirectory) {
-                        getDirectorySize(file)
-                    } else {
-                        0
-                    }
+                    size +=
+                        if (file.isFile) {
+                            file.length()
+                        } else if (file.isDirectory) {
+                            getDirectorySize(file)
+                        } else {
+                            0
+                        }
                 }
             }
         } else if (directory.isFile) {

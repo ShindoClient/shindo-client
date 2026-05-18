@@ -11,8 +11,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.util.BlockPos
 
-class CoordsMod :
-    SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, LegacyIcon.MOD_COORDS, "coordinates") {
+class CoordsMod : SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, LegacyIcon.MOD_COORDS, "coordinates") {
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private val design = Design.SIMPLE
 
@@ -52,22 +51,19 @@ class CoordsMod :
         this.setHeight(48)
     }
 
-    override fun getText(): String {
-        return "X: " + mc.thePlayer.posX.toInt() + " Y: " + mc.thePlayer.posY.toInt() + " Z: " + mc.thePlayer.posZ.toInt() + " "
-    }
+    override fun getText(): String =
+        "X: " + mc.thePlayer.posX.toInt() + " Y: " + mc.thePlayer.posY.toInt() + " Z: " + mc.thePlayer.posZ.toInt() +
+            " "
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.MAP_PIN else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.MAP_PIN else null
 
-    private enum class Design(private val translate: TranslateText) : PropertyEnum {
+    private enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SIMPLE(TranslateText.SIMPLE),
-        FANCY(TranslateText.FANCY);
+        FANCY(TranslateText.FANCY),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-

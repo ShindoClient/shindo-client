@@ -7,5 +7,5 @@ class DownloadZipFile(
     fileName: String,
     outputDir: File,
     size: Long,
-    val unzippedSize: Long
+    val unzippedSize: Long,
 ) : DownloadFile(url, fileName, outputDir, size)

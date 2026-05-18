@@ -3,7 +3,6 @@ package me.miki.shindo.utils.vector
 import java.nio.FloatBuffer
 
 class Matrix4f {
-
     var m00 = 0f
     var m01 = 0f
     var m02 = 0f
@@ -93,45 +92,61 @@ class Matrix4f {
         this.m33 = 1.0f
     }
 
-    private fun cofac(i: Int, j: Int): Float {
+    private fun cofac(
+        i: Int,
+        j: Int,
+    ): Float {
         var f = (1 + (i + j) % 2 * 2) * get(i + 1, j + 1) * get(i + 2, j + 2)
         f -= (1 + (i + j + 1) % 2 * 2) * get(i + 1, j + 2) * get(i + 2, j + 1)
         return f
     }
 
-    private fun minor(i: Int, j: Int): Float {
-        return get(i + 1, j + 1) * get(i + 2, j + 2) - get(i + 1, j + 2) * get(i + 2, j + 1)
-    }
+    private fun minor(
+        i: Int,
+        j: Int,
+    ): Float = get(i + 1, j + 1) * get(i + 2, j + 2) - get(i + 1, j + 2) * get(i + 2, j + 1)
 
-    private operator fun get(i: Int, j: Int): Float = when (i % 4) {
-        0 -> when (j % 4) {
-            0 -> this.m00
-            1 -> this.m01
-            2 -> this.m02
-            else -> this.m03
-        }
+    private operator fun get(
+        i: Int,
+        j: Int,
+    ): Float =
+        when (i % 4) {
+            0 -> {
+                when (j % 4) {
+                    0 -> this.m00
+                    1 -> this.m01
+                    2 -> this.m02
+                    else -> this.m03
+                }
+            }
 
-        1 -> when (j % 4) {
-            0 -> this.m10
-            1 -> this.m11
-            2 -> this.m12
-            else -> this.m13
-        }
+            1 -> {
+                when (j % 4) {
+                    0 -> this.m10
+                    1 -> this.m11
+                    2 -> this.m12
+                    else -> this.m13
+                }
+            }
 
-        2 -> when (j % 4) {
-            0 -> this.m20
-            1 -> this.m21
-            2 -> this.m22
-            else -> this.m23
-        }
+            2 -> {
+                when (j % 4) {
+                    0 -> this.m20
+                    1 -> this.m21
+                    2 -> this.m22
+                    else -> this.m23
+                }
+            }
 
-        else -> when (j % 4) {
-            0 -> this.m30
-            1 -> this.m31
-            2 -> this.m32
-            else -> this.m33
+            else -> {
+                when (j % 4) {
+                    0 -> this.m30
+                    1 -> this.m31
+                    2 -> this.m32
+                    else -> this.m33
+                }
+            }
         }
-    }
 
     private fun mulComponentWise(matrix4f: Matrix4f) {
         this.m00 *= matrix4f.m00
@@ -152,34 +167,46 @@ class Matrix4f {
         this.m33 *= matrix4f.m33
     }
 
-    private fun setInternal(i: Int, j: Int, f: Float) {
+    private fun setInternal(
+        i: Int,
+        j: Int,
+        f: Float,
+    ) {
         when (i) {
-            0 -> when (j) {
-                0 -> this.m00 = f
-                1 -> this.m01 = f
-                2 -> this.m02 = f
-                else -> this.m03 = f
+            0 -> {
+                when (j) {
+                    0 -> this.m00 = f
+                    1 -> this.m01 = f
+                    2 -> this.m02 = f
+                    else -> this.m03 = f
+                }
             }
 
-            1 -> when (j) {
-                0 -> this.m10 = f
-                1 -> this.m11 = f
-                2 -> this.m12 = f
-                else -> this.m13 = f
+            1 -> {
+                when (j) {
+                    0 -> this.m10 = f
+                    1 -> this.m11 = f
+                    2 -> this.m12 = f
+                    else -> this.m13 = f
+                }
             }
 
-            2 -> when (j) {
-                0 -> this.m20 = f
-                1 -> this.m21 = f
-                2 -> this.m22 = f
-                else -> this.m23 = f
+            2 -> {
+                when (j) {
+                    0 -> this.m20 = f
+                    1 -> this.m21 = f
+                    2 -> this.m22 = f
+                    else -> this.m23 = f
+                }
             }
 
-            else -> when (j) {
-                0 -> this.m30 = f
-                1 -> this.m31 = f
-                2 -> this.m32 = f
-                else -> this.m33 = f
+            else -> {
+                when (j) {
+                    0 -> this.m30 = f
+                    1 -> this.m31 = f
+                    2 -> this.m32 = f
+                    else -> this.m33 = f
+                }
             }
         }
     }
@@ -235,37 +262,117 @@ class Matrix4f {
 
     fun adjugateAndDetWith(matrix4f: Matrix4f): Float {
         this.m00 =
-            matrix4f.m11 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m31 + matrix4f.m13 * matrix4f.m21 * matrix4f.m32 - matrix4f.m11 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m31
+            matrix4f.m11 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m31 +
+            matrix4f.m13 * matrix4f.m21 * matrix4f.m32 -
+            matrix4f.m11 * matrix4f.m23 * matrix4f.m32 -
+            matrix4f.m12 * matrix4f.m21 * matrix4f.m33 -
+            matrix4f.m13 * matrix4f.m22 * matrix4f.m31
         this.m01 =
-            -(matrix4f.m01 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m31 + matrix4f.m03 * matrix4f.m21 * matrix4f.m32 - matrix4f.m01 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m31)
+            -(
+                matrix4f.m01 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m31 +
+                    matrix4f.m03 * matrix4f.m21 * matrix4f.m32 -
+                    matrix4f.m01 * matrix4f.m23 * matrix4f.m32 -
+                    matrix4f.m02 * matrix4f.m21 * matrix4f.m33 -
+                    matrix4f.m03 * matrix4f.m22 * matrix4f.m31
+            )
         this.m02 =
-            matrix4f.m01 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m31 + matrix4f.m03 * matrix4f.m11 * matrix4f.m32 - matrix4f.m01 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m31
+            matrix4f.m01 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m31 +
+            matrix4f.m03 * matrix4f.m11 * matrix4f.m32 -
+            matrix4f.m01 * matrix4f.m13 * matrix4f.m32 -
+            matrix4f.m02 * matrix4f.m11 * matrix4f.m33 -
+            matrix4f.m03 * matrix4f.m12 * matrix4f.m31
         this.m03 =
-            -(matrix4f.m01 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m21 + matrix4f.m03 * matrix4f.m11 * matrix4f.m22 - matrix4f.m01 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m21)
+            -(
+                matrix4f.m01 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m21 +
+                    matrix4f.m03 * matrix4f.m11 * matrix4f.m22 -
+                    matrix4f.m01 * matrix4f.m13 * matrix4f.m22 -
+                    matrix4f.m02 * matrix4f.m11 * matrix4f.m23 -
+                    matrix4f.m03 * matrix4f.m12 * matrix4f.m21
+            )
         this.m10 =
-            -(matrix4f.m10 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m32 - matrix4f.m10 * matrix4f.m23 * matrix4f.m32 - matrix4f.m12 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m22 * matrix4f.m30)
+            -(
+                matrix4f.m10 * matrix4f.m22 * matrix4f.m33 + matrix4f.m12 * matrix4f.m23 * matrix4f.m30 +
+                    matrix4f.m13 * matrix4f.m20 * matrix4f.m32 -
+                    matrix4f.m10 * matrix4f.m23 * matrix4f.m32 -
+                    matrix4f.m12 * matrix4f.m20 * matrix4f.m33 -
+                    matrix4f.m13 * matrix4f.m22 * matrix4f.m30
+            )
         this.m11 =
-            matrix4f.m00 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m32 - matrix4f.m00 * matrix4f.m23 * matrix4f.m32 - matrix4f.m02 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m22 * matrix4f.m30
+            matrix4f.m00 * matrix4f.m22 * matrix4f.m33 + matrix4f.m02 * matrix4f.m23 * matrix4f.m30 +
+            matrix4f.m03 * matrix4f.m20 * matrix4f.m32 -
+            matrix4f.m00 * matrix4f.m23 * matrix4f.m32 -
+            matrix4f.m02 * matrix4f.m20 * matrix4f.m33 -
+            matrix4f.m03 * matrix4f.m22 * matrix4f.m30
         this.m12 =
-            -(matrix4f.m00 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m32 - matrix4f.m00 * matrix4f.m13 * matrix4f.m32 - matrix4f.m02 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m12 * matrix4f.m30)
+            -(
+                matrix4f.m00 * matrix4f.m12 * matrix4f.m33 + matrix4f.m02 * matrix4f.m13 * matrix4f.m30 +
+                    matrix4f.m03 * matrix4f.m10 * matrix4f.m32 -
+                    matrix4f.m00 * matrix4f.m13 * matrix4f.m32 -
+                    matrix4f.m02 * matrix4f.m10 * matrix4f.m33 -
+                    matrix4f.m03 * matrix4f.m12 * matrix4f.m30
+            )
         this.m13 =
-            matrix4f.m00 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m22 - matrix4f.m00 * matrix4f.m13 * matrix4f.m22 - matrix4f.m02 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m12 * matrix4f.m20
+            matrix4f.m00 * matrix4f.m12 * matrix4f.m23 + matrix4f.m02 * matrix4f.m13 * matrix4f.m20 +
+            matrix4f.m03 * matrix4f.m10 * matrix4f.m22 -
+            matrix4f.m00 * matrix4f.m13 * matrix4f.m22 -
+            matrix4f.m02 * matrix4f.m10 * matrix4f.m23 -
+            matrix4f.m03 * matrix4f.m12 * matrix4f.m20
         this.m20 =
-            matrix4f.m10 * matrix4f.m21 * matrix4f.m33 + matrix4f.m11 * matrix4f.m23 * matrix4f.m30 + matrix4f.m13 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m23 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m33 - matrix4f.m13 * matrix4f.m21 * matrix4f.m30
+            matrix4f.m10 * matrix4f.m21 * matrix4f.m33 + matrix4f.m11 * matrix4f.m23 * matrix4f.m30 +
+            matrix4f.m13 * matrix4f.m20 * matrix4f.m31 -
+            matrix4f.m10 * matrix4f.m23 * matrix4f.m31 -
+            matrix4f.m11 * matrix4f.m20 * matrix4f.m33 -
+            matrix4f.m13 * matrix4f.m21 * matrix4f.m30
         this.m21 =
-            -(matrix4f.m00 * matrix4f.m21 * matrix4f.m33 + matrix4f.m01 * matrix4f.m23 * matrix4f.m30 + matrix4f.m03 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m23 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m33 - matrix4f.m03 * matrix4f.m21 * matrix4f.m30)
+            -(
+                matrix4f.m00 * matrix4f.m21 * matrix4f.m33 + matrix4f.m01 * matrix4f.m23 * matrix4f.m30 +
+                    matrix4f.m03 * matrix4f.m20 * matrix4f.m31 -
+                    matrix4f.m00 * matrix4f.m23 * matrix4f.m31 -
+                    matrix4f.m01 * matrix4f.m20 * matrix4f.m33 -
+                    matrix4f.m03 * matrix4f.m21 * matrix4f.m30
+            )
         this.m22 =
-            matrix4f.m00 * matrix4f.m11 * matrix4f.m33 + matrix4f.m01 * matrix4f.m13 * matrix4f.m30 + matrix4f.m03 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m13 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m33 - matrix4f.m03 * matrix4f.m11 * matrix4f.m30
+            matrix4f.m00 * matrix4f.m11 * matrix4f.m33 + matrix4f.m01 * matrix4f.m13 * matrix4f.m30 +
+            matrix4f.m03 * matrix4f.m10 * matrix4f.m31 -
+            matrix4f.m00 * matrix4f.m13 * matrix4f.m31 -
+            matrix4f.m01 * matrix4f.m10 * matrix4f.m33 -
+            matrix4f.m03 * matrix4f.m11 * matrix4f.m30
         this.m23 =
-            -(matrix4f.m00 * matrix4f.m11 * matrix4f.m23 + matrix4f.m01 * matrix4f.m13 * matrix4f.m20 + matrix4f.m03 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m13 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m23 - matrix4f.m03 * matrix4f.m11 * matrix4f.m20)
+            -(
+                matrix4f.m00 * matrix4f.m11 * matrix4f.m23 + matrix4f.m01 * matrix4f.m13 * matrix4f.m20 +
+                    matrix4f.m03 * matrix4f.m10 * matrix4f.m21 -
+                    matrix4f.m00 * matrix4f.m13 * matrix4f.m21 -
+                    matrix4f.m01 * matrix4f.m10 * matrix4f.m23 -
+                    matrix4f.m03 * matrix4f.m11 * matrix4f.m20
+            )
         this.m30 =
-            -(matrix4f.m10 * matrix4f.m21 * matrix4f.m32 + matrix4f.m11 * matrix4f.m22 * matrix4f.m30 + matrix4f.m12 * matrix4f.m20 * matrix4f.m31 - matrix4f.m10 * matrix4f.m22 * matrix4f.m31 - matrix4f.m11 * matrix4f.m20 * matrix4f.m32 - matrix4f.m12 * matrix4f.m21 * matrix4f.m30)
+            -(
+                matrix4f.m10 * matrix4f.m21 * matrix4f.m32 + matrix4f.m11 * matrix4f.m22 * matrix4f.m30 +
+                    matrix4f.m12 * matrix4f.m20 * matrix4f.m31 -
+                    matrix4f.m10 * matrix4f.m22 * matrix4f.m31 -
+                    matrix4f.m11 * matrix4f.m20 * matrix4f.m32 -
+                    matrix4f.m12 * matrix4f.m21 * matrix4f.m30
+            )
         this.m31 =
-            matrix4f.m00 * matrix4f.m21 * matrix4f.m32 + matrix4f.m01 * matrix4f.m22 * matrix4f.m30 + matrix4f.m02 * matrix4f.m20 * matrix4f.m31 - matrix4f.m00 * matrix4f.m22 * matrix4f.m31 - matrix4f.m01 * matrix4f.m20 * matrix4f.m32 - matrix4f.m02 * matrix4f.m21 * matrix4f.m30
+            matrix4f.m00 * matrix4f.m21 * matrix4f.m32 + matrix4f.m01 * matrix4f.m22 * matrix4f.m30 +
+            matrix4f.m02 * matrix4f.m20 * matrix4f.m31 -
+            matrix4f.m00 * matrix4f.m22 * matrix4f.m31 -
+            matrix4f.m01 * matrix4f.m20 * matrix4f.m32 -
+            matrix4f.m02 * matrix4f.m21 * matrix4f.m30
         this.m32 =
-            -(matrix4f.m00 * matrix4f.m11 * matrix4f.m32 + matrix4f.m01 * matrix4f.m12 * matrix4f.m30 + matrix4f.m02 * matrix4f.m10 * matrix4f.m31 - matrix4f.m00 * matrix4f.m12 * matrix4f.m31 - matrix4f.m01 * matrix4f.m10 * matrix4f.m32 - matrix4f.m02 * matrix4f.m11 * matrix4f.m30)
+            -(
+                matrix4f.m00 * matrix4f.m11 * matrix4f.m32 + matrix4f.m01 * matrix4f.m12 * matrix4f.m30 +
+                    matrix4f.m02 * matrix4f.m10 * matrix4f.m31 -
+                    matrix4f.m00 * matrix4f.m12 * matrix4f.m31 -
+                    matrix4f.m01 * matrix4f.m10 * matrix4f.m32 -
+                    matrix4f.m02 * matrix4f.m11 * matrix4f.m30
+            )
         this.m33 =
-            matrix4f.m00 * matrix4f.m11 * matrix4f.m22 + matrix4f.m01 * matrix4f.m12 * matrix4f.m20 + matrix4f.m02 * matrix4f.m10 * matrix4f.m21 - matrix4f.m00 * matrix4f.m12 * matrix4f.m21 - matrix4f.m01 * matrix4f.m10 * matrix4f.m22 - matrix4f.m02 * matrix4f.m11 * matrix4f.m20
+            matrix4f.m00 * matrix4f.m11 * matrix4f.m22 + matrix4f.m01 * matrix4f.m12 * matrix4f.m20 +
+            matrix4f.m02 * matrix4f.m10 * matrix4f.m21 -
+            matrix4f.m00 * matrix4f.m12 * matrix4f.m21 -
+            matrix4f.m01 * matrix4f.m10 * matrix4f.m22 -
+            matrix4f.m02 * matrix4f.m11 * matrix4f.m20
         return matrix4f.m00 * this.m00 + matrix4f.m01 * this.m10 + matrix4f.m02 * this.m20 + matrix4f.m03 * this.m30
     }
 
@@ -308,19 +415,31 @@ class Matrix4f {
         loadIdentity()
     }
 
-    fun setTranslation(f: Float, g: Float, h: Float) {
+    fun setTranslation(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.m03 = f
         this.m13 = g
         this.m23 = h
     }
 
-    fun addTranslation(f: Float, g: Float, h: Float) {
+    fun addTranslation(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.m03 += f
         this.m13 += g
         this.m23 += h
     }
 
-    fun mulTranslation(f: Float, g: Float, h: Float) {
+    fun mulTranslation(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.m03 += this.m00 * f + this.m01 * g + this.m02 * h
         this.m13 += this.m10 * f + this.m11 * g + this.m12 * h
         this.m23 += this.m20 * f + this.m21 * g + this.m22 * h
@@ -372,7 +491,11 @@ class Matrix4f {
         this.m33 *= f
     }
 
-    fun translate(x: Double, y: Double, z: Double) {
+    fun translate(
+        x: Double,
+        y: Double,
+        z: Double,
+    ) {
         mulTranslation(x.toFloat(), y.toFloat(), z.toFloat())
     }
 
@@ -427,7 +550,11 @@ class Matrix4f {
         this.m33 = floatBuffer[15]
     }
 
-    fun set(j: Int, k: Int, f: Float) {
+    fun set(
+        j: Int,
+        k: Int,
+        f: Float,
+    ) {
         setInternal(j % 4, k % 4, f)
     }
 
@@ -443,22 +570,24 @@ class Matrix4f {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val matrix4f = other as Matrix4f
-        return (java.lang.Float.compare(matrix4f.m00, m00) == 0
-                && java.lang.Float.compare(matrix4f.m01, m01) == 0
-                && java.lang.Float.compare(matrix4f.m02, m02) == 0
-                && java.lang.Float.compare(matrix4f.m03, m03) == 0
-                && java.lang.Float.compare(matrix4f.m10, m10) == 0
-                && java.lang.Float.compare(matrix4f.m11, m11) == 0
-                && java.lang.Float.compare(matrix4f.m12, m12) == 0
-                && java.lang.Float.compare(matrix4f.m13, m13) == 0
-                && java.lang.Float.compare(matrix4f.m20, m20) == 0
-                && java.lang.Float.compare(matrix4f.m21, m21) == 0
-                && java.lang.Float.compare(matrix4f.m22, m22) == 0
-                && java.lang.Float.compare(matrix4f.m23, m23) == 0
-                && java.lang.Float.compare(matrix4f.m30, m30) == 0
-                && java.lang.Float.compare(matrix4f.m31, m31) == 0
-                && java.lang.Float.compare(matrix4f.m32, m32) == 0
-                && java.lang.Float.compare(matrix4f.m33, m33) == 0)
+        return (
+            java.lang.Float.compare(matrix4f.m00, m00) == 0 &&
+                java.lang.Float.compare(matrix4f.m01, m01) == 0 &&
+                java.lang.Float.compare(matrix4f.m02, m02) == 0 &&
+                java.lang.Float.compare(matrix4f.m03, m03) == 0 &&
+                java.lang.Float.compare(matrix4f.m10, m10) == 0 &&
+                java.lang.Float.compare(matrix4f.m11, m11) == 0 &&
+                java.lang.Float.compare(matrix4f.m12, m12) == 0 &&
+                java.lang.Float.compare(matrix4f.m13, m13) == 0 &&
+                java.lang.Float.compare(matrix4f.m20, m20) == 0 &&
+                java.lang.Float.compare(matrix4f.m21, m21) == 0 &&
+                java.lang.Float.compare(matrix4f.m22, m22) == 0 &&
+                java.lang.Float.compare(matrix4f.m23, m23) == 0 &&
+                java.lang.Float.compare(matrix4f.m30, m30) == 0 &&
+                java.lang.Float.compare(matrix4f.m31, m31) == 0 &&
+                java.lang.Float.compare(matrix4f.m32, m32) == 0 &&
+                java.lang.Float.compare(matrix4f.m33, m33) == 0
+        )
     }
 
     override fun hashCode(): Int {
@@ -481,13 +610,41 @@ class Matrix4f {
         return i
     }
 
-    override fun toString(): String {
-        return ("Matrix4f:\n" + this.m00 + " " + this.m01 + " " + this.m02 + " " + this.m03 + "\n" + this.m10 + " " + this.m11 + " " + this.m12 + " " + this.m13 + "\n" + this.m20 + " " + this.m21 + " " + this.m22 + " " + this.m23 + "\n" + this.m30 + " " + this.m31 + " " + this.m32 + " " + this.m33 + "\n")
-    }
+    override fun toString(): String =
+        (
+            "Matrix4f:\n" + this.m00 + " " + this.m01 + " " + this.m02 + " " + this.m03 + "\n" + this.m10 + " " +
+                this.m11 +
+                " " +
+                this.m12 +
+                " " +
+                this.m13 +
+                "\n" +
+                this.m20 +
+                " " +
+                this.m21 +
+                " " +
+                this.m22 +
+                " " +
+                this.m23 +
+                "\n" +
+                this.m30 +
+                " " +
+                this.m31 +
+                " " +
+                this.m32 +
+                " " +
+                this.m33 +
+                "\n"
+        )
 
     companion object {
         @JvmStatic
-        fun perspective(f: Float, g: Float, h: Float, i: Float): Matrix4f {
+        fun perspective(
+            f: Float,
+            g: Float,
+            h: Float,
+            i: Float,
+        ): Matrix4f {
             val matrix4f = Matrix4f()
             val j = (1.0 / Math.tan((f * 0.5).toDouble())).toFloat()
             matrix4f.m00 = j / g
@@ -498,7 +655,10 @@ class Matrix4f {
             return matrix4f
         }
 
-        private fun bufferIndex(i: Int, j: Int): Int = j * 4 + i
+        private fun bufferIndex(
+            i: Int,
+            j: Int,
+        ): Int = j * 4 + i
 
         @JvmStatic
         fun orthographic(
@@ -507,7 +667,7 @@ class Matrix4f {
             h: Float,
             i: Float,
             j: Float,
-            k: Float
+            k: Float,
         ): Matrix4f {
             val matrix4f = Matrix4f()
             matrix4f.m00 = 2.0f / (g - f)
@@ -522,7 +682,11 @@ class Matrix4f {
         }
 
         @JvmStatic
-        fun createTranslateMatrix(f: Float, g: Float, h: Float): Matrix4f {
+        fun createTranslateMatrix(
+            f: Float,
+            g: Float,
+            h: Float,
+        ): Matrix4f {
             val matrix4f = Matrix4f()
             matrix4f.m00 = 1.0f
             matrix4f.m11 = 1.0f
@@ -535,7 +699,11 @@ class Matrix4f {
         }
 
         @JvmStatic
-        fun createScaleMatrix(f: Float, g: Float, h: Float): Matrix4f {
+        fun createScaleMatrix(
+            f: Float,
+            g: Float,
+            h: Float,
+        ): Matrix4f {
             val matrix4f = Matrix4f()
             matrix4f.m00 = f
             matrix4f.m11 = g

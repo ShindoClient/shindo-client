@@ -25,7 +25,9 @@ import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
+class MainScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val introAnimation: DecelerateAnimation = DecelerateAnimation(800, 1.0)
 
     private var singleHover = 0f
@@ -46,7 +48,11 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         confirmingExit = false
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance: Shindo = Shindo.getInstance()
 
         if (instance.isUpdateNeeded()) {
@@ -59,14 +65,20 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg!!.setupAndDraw(Runnable { drawNanoVG(instance, nvg, mouseX, mouseY, partialTicks) })
     }
 
-    private fun drawNanoVG(instance: Shindo, nvg: NanoVGManager, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    private fun drawNanoVG(
+        instance: Shindo,
+        nvg: NanoVGManager,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
         val sw = sr.scaledWidth.toFloat()
         val sh = sr.scaledHeight.toFloat()
         val anim = introAnimation.getValueFloat()
 
         // Blur + overlay
-        //Blur.drawBlur(0f, 0f, sw, sh, 0f)
+        // Blur.drawBlur(0f, 0f, sw, sh, 0f)
 
         // Logo
         val centerX = sw / 2f
@@ -78,9 +90,9 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             logoY,
             Color(255, 255, 255, (anim * 255).toInt()),
             logoSize,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
-        //nvg.drawText(LegacyIcon.BOOKMARK, centerX + 35, logoY + 12, Color(255, 255, 255, (anim * 150).toInt()), 18, Fonts.LEGACYICON)
+        // nvg.drawText(LegacyIcon.BOOKMARK, centerX + 35, logoY + 12, Color(255, 255, 255, (anim * 150).toInt()), 18, Fonts.LEGACYICON)
 
         val btnW = 180f
         val btnH = 20f
@@ -103,7 +115,7 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             btnH,
             multiHover,
             anim,
-            false
+            false,
         )
         nvg.drawGlassButton("QUIT GAME", centerX, startY + spacing * 2, btnW, btnH, exitHover, anim, true)
 
@@ -112,18 +124,30 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val bgY = sh - bgSize - 16
         bgHover = lerp(bgHover, if (isInside(mouseX, mouseY, bgX, bgY, bgSize, bgSize)) 1f else 0f, 0.2f)
         nvg.drawRoundedRect(
-            bgX, bgY, bgSize, bgSize, 6,
-            Color(15, 15, 20, (anim * (160 + bgHover * 60)).toInt())
+            bgX,
+            bgY,
+            bgSize,
+            bgSize,
+            6,
+            Color(15, 15, 20, (anim * (160 + bgHover * 60)).toInt()),
         )
         nvg.drawOutlineRoundedRect(
-            bgX, bgY, bgSize, bgSize, 6, 1.2f,
-            Color(255, 255, 255, (anim * (40 + bgHover * 80)).toInt())
+            bgX,
+            bgY,
+            bgSize,
+            bgSize,
+            6,
+            1.2f,
+            Color(255, 255, 255, (anim * (40 + bgHover * 80)).toInt()),
         )
         nvg.drawCenteredText(
-            LegacyIcon.IMAGE, bgX + bgSize / 2f, bgY + bgSize / 2f - 10,
-            Color(255, 255, 255, (anim * (180 + bgHover * 75)).toInt()), 22, Fonts.LEGACYICON
+            LegacyIcon.IMAGE,
+            bgX + bgSize / 2f,
+            bgY + bgSize / 2f - 10,
+            Color(255, 255, 255, (anim * (180 + bgHover * 75)).toInt()),
+            22,
+            Fonts.LEGACYICON,
         )
-
 
         confirmAnim.setAnimation(if (confirmingExit) 1f else 0f, 14)
         if (confirmAnim.getValue() > 0.01f) {
@@ -132,10 +156,16 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
 
         // Top right
         drawTopRight(nvg, mouseX, mouseY, sw, anim)
-
     }
 
-    private fun drawConfirmExit(nvg: NanoVGManager, sw: Float, sh: Float, mouseX: Int, mouseY: Int, alpha: Float) {
+    private fun drawConfirmExit(
+        nvg: NanoVGManager,
+        sw: Float,
+        sh: Float,
+        mouseX: Int,
+        mouseY: Int,
+        alpha: Float,
+    ) {
         val pw = 200f
         val ph = 80f
         val px = sw / 2f - pw / 2f
@@ -150,9 +180,8 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             py + 14,
             Color(255, 255, 255, (alpha * 230).toInt()),
             11,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
-
 
         val btnW = 70f
         val btnH = 22f
@@ -167,9 +196,8 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             btnY + 6,
             Color(255, 220, 220, (alpha * 230).toInt()),
             9.5f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
-
 
         val noX = sw / 2f + 6
         val noHov = isInside(mouseX, mouseY, noX, btnY, btnW, btnH)
@@ -181,22 +209,28 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             btnY + 6,
             Color(200, 200, 200, (alpha * 230).toInt()),
             9.5f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
     }
 
-    private fun drawTopRight(nvg: NanoVGManager, mouseX: Int, mouseY: Int, sw: Float, anim: Float) {
+    private fun drawTopRight(
+        nvg: NanoVGManager,
+        mouseX: Int,
+        mouseY: Int,
+        sw: Float,
+        anim: Float,
+    ) {
         val topY = 10f
         val btnS = 24f
         val btnSp = 6f
         var rightX = sw - 10
 
         // Diamond
-        //diamondHover = lerp(diamondHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        //drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, diamondHover, anim, true)
+        // diamondHover = lerp(diamondHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
+        // drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, diamondHover, anim, true)
 
         // Settings
-        //rightX -= (btnS + btnSp)
+        // rightX -= (btnS + btnSp)
         settingsHover =
             lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
         nvg.drawGlassButtonWithIcon(LegacyIcon.SETTINGS, rightX - btnS, topY, btnS, settingsHover, anim)
@@ -226,16 +260,26 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawPlayerHead(skin, profX + 4, topY + 4, 16f, 16f, 3f, anim)
 
         nvg.drawText(
-            name, profX + 26, topY + btnS / 2f - 5f,
-            Color(255, 255, 255, (anim * 230).toInt()), 10, Fonts.SEMIBOLD
+            name,
+            profX + 26,
+            topY + btnS / 2f - 5f,
+            Color(255, 255, 255, (anim * 230).toInt()),
+            10,
+            Fonts.SEMIBOLD,
         )
     }
 
-    private fun lerp(current: Float, target: Float, factor: Float): Float {
-        return current + (target - current) * factor
-    }
+    private fun lerp(
+        current: Float,
+        target: Float,
+        factor: Float,
+    ): Float = current + (target - current) * factor
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) return
 
         val sr = ScaledResolution(mc)
@@ -290,9 +334,9 @@ class MainScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val btnSp = 6f
         var rightX = sw - 10
 
-        //if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) {
+        // if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) {
         //    mc.displayGuiScreen(GuiModMenu())
-        //}
+        // }
         // rightX -= (btnS + btnSp)
         if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) {
             mc.displayGuiScreen(GuiOptions(this.getParent(), mc.gameSettings))

@@ -36,7 +36,7 @@ class Notification {
     constructor(title: TranslateText, message: TranslateText, type: NotificationType) : this(
         title.getText(),
         message.getText(),
-        type
+        type,
     )
 
     constructor(title: TranslateText, message: String, type: NotificationType) : this(title.getText(), message, type)
@@ -65,21 +65,27 @@ class Notification {
         val height = NOTIFICATION_HEIGHT
 
         val corner = InternalSettingsMod.instance.notificationCorner
-        val x = when (corner) {
-            InternalSettingsMod.NotificationCorner.TOP_LEFT,
-            InternalSettingsMod.NotificationCorner.BOTTOM_LEFT -> margin
+        val x =
+            when (corner) {
+                InternalSettingsMod.NotificationCorner.TOP_LEFT,
+                InternalSettingsMod.NotificationCorner.BOTTOM_LEFT,
+                -> margin
 
-            InternalSettingsMod.NotificationCorner.TOP_RIGHT,
-            InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT -> sr.scaledWidth - maxWidth - margin
-        }
+                InternalSettingsMod.NotificationCorner.TOP_RIGHT,
+                InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT,
+                -> sr.scaledWidth - maxWidth - margin
+            }
 
-        val y = when (corner) {
-            InternalSettingsMod.NotificationCorner.TOP_LEFT,
-            InternalSettingsMod.NotificationCorner.TOP_RIGHT -> margin
+        val y =
+            when (corner) {
+                InternalSettingsMod.NotificationCorner.TOP_LEFT,
+                InternalSettingsMod.NotificationCorner.TOP_RIGHT,
+                -> margin
 
-            InternalSettingsMod.NotificationCorner.BOTTOM_LEFT,
-            InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT -> sr.scaledHeight - height - margin
-        }
+                InternalSettingsMod.NotificationCorner.BOTTOM_LEFT,
+                InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT,
+                -> sr.scaledHeight - height - margin
+            }
 
         if (timer.delay(SHOW_MS)) {
             animation.setDirection(Direction.BACKWARDS)
@@ -88,13 +94,16 @@ class Notification {
         nvg.save()
         val slide = animation.getValueFloat()
         val slideOffset = SLIDE_OFFSET
-        val slideX = when (corner) {
-            InternalSettingsMod.NotificationCorner.TOP_LEFT,
-            InternalSettingsMod.NotificationCorner.BOTTOM_LEFT -> -slideOffset + (slide * slideOffset)
+        val slideX =
+            when (corner) {
+                InternalSettingsMod.NotificationCorner.TOP_LEFT,
+                InternalSettingsMod.NotificationCorner.BOTTOM_LEFT,
+                -> -slideOffset + (slide * slideOffset)
 
-            InternalSettingsMod.NotificationCorner.TOP_RIGHT,
-            InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT -> slideOffset - (slide * slideOffset)
-        }
+                InternalSettingsMod.NotificationCorner.TOP_RIGHT,
+                InternalSettingsMod.NotificationCorner.BOTTOM_RIGHT,
+                -> slideOffset - (slide * slideOffset)
+            }
         nvg.translate(slideX, 0f)
 
         nvg.drawShadow(x, y, maxWidth, height, 8f)
@@ -104,7 +113,7 @@ class Notification {
             maxWidth,
             height,
             CORNER_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 224)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 224),
         )
         nvg.drawGradientRoundedRect(
             x + 1f,
@@ -113,7 +122,7 @@ class Notification {
             height - 2f,
             CORNER_RADIUS - 0.7f,
             ColorUtils.applyAlpha(severity.start, 82),
-            ColorUtils.applyAlpha(severity.end, 40)
+            ColorUtils.applyAlpha(severity.end, 40),
         )
         nvg.drawGradientOutlineRoundedRect(
             x,
@@ -123,7 +132,7 @@ class Notification {
             CORNER_RADIUS,
             1.1f,
             ColorUtils.applyAlpha(severity.start, 205),
-            ColorUtils.applyAlpha(severity.end, 205)
+            ColorUtils.applyAlpha(severity.end, 205),
         )
 
         val iconBoxX = x + ICON_BOX_PADDING_X
@@ -135,7 +144,7 @@ class Notification {
             ICON_BOX_SIZE,
             6f,
             ColorUtils.applyAlpha(severity.start, 220),
-            ColorUtils.applyAlpha(severity.end, 220)
+            ColorUtils.applyAlpha(severity.end, 220),
         )
         nvg.drawCenteredText(
             type.icon,
@@ -143,7 +152,7 @@ class Notification {
             iconBoxY + ICON_BOX_SIZE / 2f - 8f,
             Color.WHITE,
             16f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         val textX = x + CONTENT_PADDING_LEFT
@@ -154,7 +163,7 @@ class Notification {
             y + TITLE_Y,
             Color.WHITE,
             TITLE_SIZE,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         nvg.drawText(
             nvg.getLimitText(message, MESSAGE_SIZE, Fonts.REGULAR, textWidth),
@@ -162,7 +171,7 @@ class Notification {
             y + MESSAGE_Y,
             ColorUtils.applyAlpha(Color.WHITE, 230),
             MESSAGE_SIZE,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         val progressBaseX = x + CONTENT_PADDING_LEFT
@@ -174,7 +183,7 @@ class Notification {
             progressWidth,
             PROGRESS_HEIGHT,
             PROGRESS_HEIGHT / 2f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 170)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 170),
         )
         val remainingProgress = 1f - min(1f, timer.elapsedTime / SHOW_MS.toFloat())
         nvg.drawGradientRoundedRect(
@@ -184,7 +193,7 @@ class Notification {
             PROGRESS_HEIGHT,
             PROGRESS_HEIGHT / 2f,
             ColorUtils.applyAlpha(severity.start, 232),
-            ColorUtils.applyAlpha(severity.end, 232)
+            ColorUtils.applyAlpha(severity.end, 232),
         )
 
         nvg.restore()
@@ -201,17 +210,22 @@ class Notification {
 
     fun getAnimation(): Animation = animation
 
-    private data class SeverityColors(val start: Color, val end: Color)
+    private data class SeverityColors(
+        val start: Color,
+        val end: Color,
+    )
 
-    private fun resolveSeverityColors(type: NotificationType, accent: AccentColor): SeverityColors {
-        return when (type) {
+    private fun resolveSeverityColors(
+        type: NotificationType,
+        accent: AccentColor,
+    ): SeverityColors =
+        when (type) {
             NotificationType.INFO -> SeverityColors(Color(88, 178, 255), Color(74, 125, 255))
             NotificationType.WARNING -> SeverityColors(Color(255, 194, 82), Color(255, 143, 64))
             NotificationType.ERROR -> SeverityColors(Color(255, 115, 123), Color(220, 74, 90))
             NotificationType.SUCCESS -> SeverityColors(Color(104, 222, 132), Color(69, 194, 116))
             NotificationType.MUSIC -> SeverityColors(accent.getColor1(), accent.getColor2())
         }
-    }
 
     private companion object {
         private const val SHOW_MS = 3000L

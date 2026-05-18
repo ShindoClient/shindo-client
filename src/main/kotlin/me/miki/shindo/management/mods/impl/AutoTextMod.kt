@@ -10,13 +10,14 @@ import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 import org.lwjgl.input.Keyboard
 
-class AutoTextMod : Mod(
-    TranslateText.AUTO_TEXT,
-    TranslateText.AUTO_TEXT_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_AUTO_TEXT,
-    "messagetexthotkeymacro"
-) {
+class AutoTextMod :
+    Mod(
+        TranslateText.AUTO_TEXT,
+        TranslateText.AUTO_TEXT_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_AUTO_TEXT,
+        "messagetexthotkeymacro",
+    ) {
     val autoTextManager = AutoTextManager()
 
     init {
@@ -59,4 +60,3 @@ class AutoTextMod : Mod(
             private set
     }
 }
-

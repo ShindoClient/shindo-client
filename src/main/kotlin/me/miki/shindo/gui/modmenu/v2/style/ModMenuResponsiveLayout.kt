@@ -5,12 +5,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 object ModMenuResponsiveLayout {
-
     data class Bounds(
         val x: Int,
         val y: Int,
         val width: Int,
-        val height: Int
+        val height: Int,
     )
 
     fun resolve(sr: ScaledResolution): Bounds {
@@ -30,4 +29,3 @@ object ModMenuResponsiveLayout {
     private const val MIN_WIDTH = 420
     private const val MIN_HEIGHT = 250
 }
-

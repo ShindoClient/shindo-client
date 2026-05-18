@@ -9,29 +9,33 @@ import me.miki.shindo.logger.ShindoLogger
 import java.time.OffsetDateTime
 
 class DiscordRPC {
-
     var client: IPCClient? = null
         private set
 
     fun start() {
-        client = IPCClient(978250675576258610L).apply {
-            setListener(object : IPCListener {
-                override fun onReady(client: IPCClient) {
-                    val builder = RichPresence.Builder()
-                        .setState("Playing Shindo Client v${Shindo.getInstance().getVersion()}")
-                        .setStartTimestamp(OffsetDateTime.now())
-                        .setLargeImage("large")
+        client =
+            IPCClient(978250675576258610L).apply {
+                setListener(
+                    object : IPCListener {
+                        override fun onReady(client: IPCClient) {
+                            val builder =
+                                RichPresence
+                                    .Builder()
+                                    .setState("Playing Shindo Client v${Shindo.getInstance().getVersion()}")
+                                    .setStartTimestamp(OffsetDateTime.now())
+                                    .setLargeImage("large")
 
-                    client.sendRichPresence(builder.build())
+                            client.sendRichPresence(builder.build())
+                        }
+                    },
+                )
+
+                try {
+                    connect()
+                } catch (e: NoDiscordClientException) {
+                    ShindoLogger.error("An error occurred while connecting to the Discord IPC Client", e)
                 }
-            })
-
-            try {
-                connect()
-            } catch (e: NoDiscordClientException) {
-                ShindoLogger.error("An error occurred while connecting to the Discord IPC Client", e)
             }
-        }
     }
 
     fun stop() {

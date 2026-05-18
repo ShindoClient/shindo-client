@@ -15,12 +15,13 @@ import me.miki.shindo.utils.TargetUtils.target
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
-class TargetIndicatorMod : Mod(
-    TranslateText.TARGET_INDICATOR,
-    TranslateText.TARGET_INDICATOR_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_TARGET_INDICATOR
-) {
+class TargetIndicatorMod :
+    Mod(
+        TranslateText.TARGET_INDICATOR,
+        TranslateText.TARGET_INDICATOR_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_TARGET_INDICATOR,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private val customColorSetting = false
 
@@ -35,13 +36,9 @@ class TargetIndicatorMod : Mod(
             Render3DUtils.drawTargetIndicator(
                 target!!,
                 0.67,
-                if (customColorSetting) applyAlpha(colorSetting, 255) else currentColor.getInterpolateColor()
+                if (customColorSetting) applyAlpha(colorSetting, 255) else currentColor.getInterpolateColor(),
             )
             GlStateManager.enableBlend()
         }
     }
 }
-
-
-
-

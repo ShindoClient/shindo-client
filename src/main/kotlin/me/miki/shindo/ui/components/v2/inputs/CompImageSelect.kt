@@ -16,7 +16,6 @@ import java.awt.Color
 import java.io.File
 import java.io.IOException
 
-
 class CompImageSelect : Component {
     private val imageSetting: ImageSetting
 
@@ -32,7 +31,11 @@ class CompImageSelect : Component {
         setHeight(16F)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val accentColor = accent
         val paletteColors = palette
@@ -48,7 +51,7 @@ class CompImageSelect : Component {
             16f,
             4f,
             accentColor.getColor1(),
-            accentColor.getColor2()
+            accentColor.getColor2(),
         )
         nvgInstance.drawText(
             name,
@@ -56,7 +59,7 @@ class CompImageSelect : Component {
             this.getY() + 4,
             paletteColors.getFontColor(ColorType.DARK),
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvgInstance.drawCenteredText(
             LegacyIcon.FOLDER,
@@ -64,13 +67,17 @@ class CompImageSelect : Component {
             this.getY() + 2.5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (MouseUtils.isInside(mouseX, mouseY, this.getX(), this.getY(), 16f, 16f) && mouseButton == 0) {
             TaskExecutor.runAsync(ThreadPoolType.IO) {
                 val image = FileUtils.selectImageFile()

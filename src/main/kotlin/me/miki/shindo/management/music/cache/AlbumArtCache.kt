@@ -12,24 +12,29 @@ import java.util.concurrent.*
 import java.util.function.Supplier
 import javax.imageio.ImageIO
 
-class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
-
+class AlbumArtCache(
+    private val fileManager: FileManager,
+) : AutoCloseable {
     private val cacheDir: File = File(fileManager.musicDir, CACHE_DIR)
     private val inProgressDownloads = ConcurrentHashMap<String, CompletableFuture<String>>()
-    private val downloadExecutor = ThreadPoolExecutor(
-        2, MAX_CONCURRENT_DOWNLOADS,
-        60L, TimeUnit.SECONDS,
-        LinkedBlockingQueue(),
-        object : ThreadFactory {
-            private val defaultFactory = Executors.defaultThreadFactory()
-            override fun newThread(r: Runnable): Thread {
-                val thread = defaultFactory.newThread(r)
-                thread.isDaemon = true
-                thread.name = "AlbumArt-Download-${thread.id}"
-                return thread
-            }
-        }
-    )
+    private val downloadExecutor =
+        ThreadPoolExecutor(
+            2,
+            MAX_CONCURRENT_DOWNLOADS,
+            60L,
+            TimeUnit.SECONDS,
+            LinkedBlockingQueue(),
+            object : ThreadFactory {
+                private val defaultFactory = Executors.defaultThreadFactory()
+
+                override fun newThread(r: Runnable): Thread {
+                    val thread = defaultFactory.newThread(r)
+                    thread.isDaemon = true
+                    thread.name = "AlbumArt-Download-${thread.id}"
+                    return thread
+                }
+            },
+        )
     private val maintenanceExecutor: ScheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor { r ->
             Thread(r).apply {
@@ -80,11 +85,16 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     private fun scheduleMaintenance() {
         maintenanceExecutor.scheduleAtFixedRate(
             this::performMaintenance,
-            1, 24, TimeUnit.HOURS
+            1,
+            24,
+            TimeUnit.HOURS,
         )
     }
 
-    fun getCachedAlbumArtUrlAsync(id: String?, imageUrl: String?): CompletableFuture<String> {
+    fun getCachedAlbumArtUrlAsync(
+        id: String?,
+        imageUrl: String?,
+    ): CompletableFuture<String> {
         if (imageUrl.isNullOrBlank()) {
             return CompletableFuture.completedFuture(PLACEHOLDER_PATH)
         }
@@ -93,12 +103,13 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
             if (cachedFile.exists() && isValidCacheFile(cachedFile)) {
                 return@computeIfAbsent CompletableFuture.completedFuture(cachedFile.absolutePath)
             }
-            CompletableFuture.supplyAsync(
-                Supplier { downloadAndCacheImage(id, imageUrl) },
-                downloadExecutor
-            ).whenComplete { result: String?, ex: Throwable? ->
-                // Keep entry until fully processed
-            }
+            CompletableFuture
+                .supplyAsync(
+                    Supplier { downloadAndCacheImage(id, imageUrl) },
+                    downloadExecutor,
+                ).whenComplete { result: String?, ex: Throwable? ->
+                    // Keep entry until fully processed
+                }
         }
     }
 
@@ -143,7 +154,10 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
         close()
     }
 
-    private fun downloadAndCacheImage(id: String, imageUrl: String): String {
+    private fun downloadAndCacheImage(
+        id: String,
+        imageUrl: String,
+    ): String {
         val cacheFile = getCacheFile(id)
         return try {
             val connection = URL(imageUrl).openConnection() as HttpURLConnection
@@ -157,8 +171,9 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
             }
 
             connection.inputStream.use { inputStream ->
-                val image = ImageIO.read(inputStream)
-                    ?: throw java.io.IOException("Failed to decode image")
+                val image =
+                    ImageIO.read(inputStream)
+                        ?: throw java.io.IOException("Failed to decode image")
 
                 val resizedImage = resizeImage(image)
                 cacheFile.parentFile?.mkdirs()
@@ -174,14 +189,18 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
     }
 
     private fun resizeImage(original: BufferedImage): BufferedImage {
-        val resultingImage = original.getScaledInstance(
-            MAX_IMAGE_SIZE, MAX_IMAGE_SIZE,
-            Image.SCALE_SMOOTH
-        )
-        val outputImage = BufferedImage(
-            MAX_IMAGE_SIZE, MAX_IMAGE_SIZE,
-            BufferedImage.TYPE_INT_ARGB
-        )
+        val resultingImage =
+            original.getScaledInstance(
+                MAX_IMAGE_SIZE,
+                MAX_IMAGE_SIZE,
+                Image.SCALE_SMOOTH,
+            )
+        val outputImage =
+            BufferedImage(
+                MAX_IMAGE_SIZE,
+                MAX_IMAGE_SIZE,
+                BufferedImage.TYPE_INT_ARGB,
+            )
         outputImage.graphics.apply {
             drawImage(resultingImage, 0, 0, null)
             dispose()
@@ -193,7 +212,7 @@ class AlbumArtCache(private val fileManager: FileManager) : AutoCloseable {
 
     private fun isValidCacheFile(file: File): Boolean =
         file.exists() &&
-                System.currentTimeMillis() - file.lastModified() < CACHE_DURATION.toMillis()
+            System.currentTimeMillis() - file.lastModified() < CACHE_DURATION.toMillis()
 
     private fun performMaintenance() {
         try {

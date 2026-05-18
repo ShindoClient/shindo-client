@@ -10,13 +10,11 @@ class Skin(
     var type: SkinType,
     var favorite: Boolean,
     var texture: ResourceLocation?,
-    var profileUuid: String?
+    var profileUuid: String?,
 ) {
-
     val animation: SimpleAnimation = SimpleAnimation()
 
-    override fun equals(other: Any?): Boolean =
-        this === other || (other is Skin && id == other.id)
+    override fun equals(other: Any?): Boolean = this === other || (other is Skin && id == other.id)
 
     override fun hashCode(): Int = id.hashCode()
 }

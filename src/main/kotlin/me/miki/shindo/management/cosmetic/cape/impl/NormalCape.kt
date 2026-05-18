@@ -9,8 +9,7 @@ class NormalCape(
     private val sample: ResourceLocation?,
     cape: ResourceLocation?,
     category: CapeCategory,
-    requiredRole: Role
+    requiredRole: Role,
 ) : Cape(name, cape, category, requiredRole) {
-
     fun getSample(): ResourceLocation? = sample
 }

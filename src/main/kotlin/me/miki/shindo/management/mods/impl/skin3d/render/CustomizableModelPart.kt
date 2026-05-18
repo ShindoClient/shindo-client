@@ -4,7 +4,9 @@ import net.minecraft.client.model.ModelBox
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 
-class CustomizableModelPart(private val cubes: MutableList<CustomizableCube>) {
+class CustomizableModelPart(
+    private val cubes: MutableList<CustomizableCube>,
+) {
     @JvmField
     var x: Float = 0f
     var y: Float = 0f
@@ -17,7 +19,11 @@ class CustomizableModelPart(private val cubes: MutableList<CustomizableCube>) {
         this.z = modelPart.posZ1
     }
 
-    fun setPos(f: Float, g: Float, h: Float) {
+    fun setPos(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.x = f
         this.y = g
         this.z = h

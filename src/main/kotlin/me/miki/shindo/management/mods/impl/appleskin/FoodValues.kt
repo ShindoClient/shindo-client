@@ -1,7 +1,9 @@
 package me.miki.shindo.management.mods.impl.appleskin
 
-class FoodValues(val hunger: Int, val saturationModifier: Float) {
-
+class FoodValues(
+    val hunger: Int,
+    val saturationModifier: Float,
+) {
     val saturationIncrement: Float
         get() = hunger * saturationModifier * 2f
 

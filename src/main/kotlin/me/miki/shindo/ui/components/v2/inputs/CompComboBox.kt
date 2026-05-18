@@ -8,7 +8,6 @@ import me.miki.shindo.utils.MathUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import java.awt.Color
 
-
 class CompComboBox : Component {
     private val changeAnimation = SimpleAnimation()
     private val setting: ComboSetting
@@ -40,7 +39,11 @@ class CompComboBox : Component {
         super.setWidth(width)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val accentColor = accent
 
@@ -53,7 +56,7 @@ class CompComboBox : Component {
             16f,
             4f,
             accentColor.getColor1(),
-            accentColor.getColor2()
+            accentColor.getColor2(),
         )
 
         nvgInstance.drawCenteredText(
@@ -62,14 +65,18 @@ class CompComboBox : Component {
             this.getY() + 5f,
             Color(255, 255, 255, (MathUtils.abs(changeAnimation.getValue() * 255)).toInt()),
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         nvgInstance.drawText("<", this.getX() + 4, this.getY() + 4f, Color.WHITE, 10f, Fonts.REGULAR)
         nvgInstance.drawText(">", this.getX() + width - 10, this.getY() + 4f, Color.WHITE, 10f, Fonts.REGULAR)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val max = setting.getOptions().size
         var modeIndex = setting.getOptions().indexOf(setting.getOption())
 

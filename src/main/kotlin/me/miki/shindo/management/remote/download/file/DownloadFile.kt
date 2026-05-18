@@ -6,5 +6,5 @@ open class DownloadFile(
     val url: String,
     val fileName: String,
     val outputDir: File,
-    val size: Long
+    val size: Long,
 )

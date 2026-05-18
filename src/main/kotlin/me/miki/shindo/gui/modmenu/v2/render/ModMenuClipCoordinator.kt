@@ -10,7 +10,6 @@ import java.awt.Color
  * Keeps clip setup consistent and prevents leaking state across nested renders.
  */
 object ModMenuClipCoordinator {
-
     /**
      * Logical clip layers used to document clip intent and enable debug overlays.
      */
@@ -21,7 +20,7 @@ object ModMenuClipCoordinator {
         SETTINGS_SCENE,
         OVERLAY,
         NESTED,
-        UNKNOWN
+        UNKNOWN,
     }
 
     private data class ClipDebugEntry(
@@ -31,7 +30,7 @@ object ModMenuClipCoordinator {
         val height: Float,
         val intersect: Boolean,
         val layer: ClipLayer,
-        val tag: String?
+        val tag: String?,
     )
 
     private const val MAX_DEBUG_ENTRIES = 96
@@ -65,7 +64,7 @@ object ModMenuClipCoordinator {
         intersect: Boolean = false,
         layer: ClipLayer = ClipLayer.UNKNOWN,
         tag: String? = null,
-        block: () -> Unit
+        block: () -> Unit,
     ) {
         val safeWidth = width.coerceAtLeast(0f)
         val safeHeight = height.coerceAtLeast(0f)
@@ -96,7 +95,7 @@ object ModMenuClipCoordinator {
         intersect: Boolean = false,
         layer: ClipLayer = ClipLayer.UNKNOWN,
         tag: String? = null,
-        block: () -> Unit
+        block: () -> Unit,
     ) {
         withClip(nvg, x, y, width, height, intersect, layer, tag) {
             nvg.translate(translateX, translateY)
@@ -108,7 +107,7 @@ object ModMenuClipCoordinator {
         nvg: NanoVGManager,
         originX: Float,
         originY: Float,
-        panelWidth: Float
+        panelWidth: Float,
     ) {
         if (!debugEnabled || debugEntries.isEmpty()) {
             return
@@ -124,7 +123,7 @@ object ModMenuClipCoordinator {
                 entry.height,
                 3f,
                 1f,
-                Color(color.red, color.green, color.blue, 170)
+                Color(color.red, color.green, color.blue, 170),
             )
         }
 
@@ -140,7 +139,7 @@ object ModMenuClipCoordinator {
             infoY + 23f,
             Color(205, 205, 205, 220),
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         val last = debugEntries[debugEntries.size - 1]
         val lastLabel = if (last.tag.isNullOrEmpty()) last.layer.name else last.tag
@@ -150,7 +149,7 @@ object ModMenuClipCoordinator {
             infoY + 34f,
             Color(185, 185, 185, 210),
             7.8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 
@@ -162,7 +161,7 @@ object ModMenuClipCoordinator {
         height: Float,
         intersect: Boolean,
         layer: ClipLayer,
-        tag: String?
+        tag: String?,
     ) {
         if (!debugEnabled) {
             return
@@ -180,13 +179,13 @@ object ModMenuClipCoordinator {
                 height = height,
                 intersect = intersect,
                 layer = layer,
-                tag = tag
-            )
+                tag = tag,
+            ),
         )
     }
 
-    private fun getLayerColor(layer: ClipLayer): Color {
-        return when (layer) {
+    private fun getLayerColor(layer: ClipLayer): Color =
+        when (layer) {
             ClipLayer.CONTENT_VIEWPORT -> Color(78, 184, 255)
             ClipLayer.CATEGORY_CONTENT -> Color(117, 255, 147)
             ClipLayer.SETTINGS_LIST -> Color(255, 204, 94)
@@ -195,5 +194,4 @@ object ModMenuClipCoordinator {
             ClipLayer.NESTED -> Color(255, 255, 255)
             ClipLayer.UNKNOWN -> Color(194, 194, 194)
         }
-    }
 }

@@ -19,9 +19,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
 
-
-class PotionStatusMod :
-    HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, LegacyIcon.MOD_POTION_STATUS) {
+class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, LegacyIcon.MOD_POTION_STATUS) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private val compact = false
     private var maxString = 0
@@ -63,7 +61,7 @@ class PotionStatusMod :
                         (this.getY() + offsetY) - 11 - offsetY - 2f,
                         18f,
                         18f,
-                        0.72f
+                        0.72f,
                     )
                     drawTexturedModalRect(
                         (this.getX() + 21) - 20,
@@ -71,7 +69,7 @@ class PotionStatusMod :
                         index % 8 * 18,
                         198 + index / 8 * 18,
                         18,
-                        18
+                        18,
                     )
                     stopScale()
                 } else {
@@ -81,7 +79,7 @@ class PotionStatusMod :
                         index % 8 * 18,
                         198 + index / 8 * 18,
                         18,
-                        18
+                        18,
                     )
                 }
 
@@ -154,7 +152,3 @@ class PotionStatusMod :
         this.setHeight((ySize * 2) + 2)
     }
 }
-
-
-
-

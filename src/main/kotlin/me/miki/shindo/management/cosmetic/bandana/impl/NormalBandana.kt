@@ -9,5 +9,5 @@ class NormalBandana(
     sample: ResourceLocation?,
     texture: ResourceLocation?,
     category: BandanaCategory,
-    requiredRole: Role
+    requiredRole: Role,
 ) : Bandana(name, sample, texture, category, requiredRole)

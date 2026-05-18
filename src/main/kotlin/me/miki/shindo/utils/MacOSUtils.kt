@@ -6,7 +6,6 @@ import java.awt.Image
 import javax.imageio.ImageIO
 
 object MacOSUtils {
-
     @JvmStatic
     fun setDockIcon(path: String) {
         if (Util.getOSType() != Util.EnumOS.OSX) return

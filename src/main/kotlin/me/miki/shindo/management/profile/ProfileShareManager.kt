@@ -10,13 +10,15 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class ProfileShareManager {
-
     private val instance = Shindo.getInstance()
     private val pendingShare = ConcurrentHashMap<String, (ShareResult) -> Unit>()
     private val pendingFetch = ConcurrentHashMap<String, (FetchResult) -> Unit>()
     private val pendingUnshare = ConcurrentHashMap<String, (UnshareResult) -> Unit>()
 
-    fun requestShare(profile: Profile, onResult: (ShareResult) -> Unit) {
+    fun requestShare(
+        profile: Profile,
+        onResult: (ShareResult) -> Unit,
+    ) {
         val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult(ShareResult.Error("websocket_unavailable"))
@@ -40,7 +42,10 @@ class ProfileShareManager {
         ws.send(MessageType.PROFILE_SHARE, payload)
     }
 
-    fun requestFetch(code: String, onResult: (FetchResult) -> Unit) {
+    fun requestFetch(
+        code: String,
+        onResult: (FetchResult) -> Unit,
+    ) {
         val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult(FetchResult.Error("websocket_unavailable"))
@@ -56,7 +61,10 @@ class ProfileShareManager {
         ws.send(MessageType.PROFILE_FETCH, payload)
     }
 
-    fun requestUnshare(code: String, onResult: ((UnshareResult) -> Unit)? = null) {
+    fun requestUnshare(
+        code: String,
+        onResult: ((UnshareResult) -> Unit)? = null,
+    ) {
         val ws = instance.getShindoAPI().ws
         if (ws == null || !ws.isOpen()) {
             onResult?.invoke(UnshareResult.Error("websocket_unavailable"))
@@ -78,17 +86,38 @@ class ProfileShareManager {
         ws.send(MessageType.PROFILE_UNSHARE, payload)
     }
 
-    fun handleMessage(type: MessageType, payload: JsonObject?) {
+    fun handleMessage(
+        type: MessageType,
+        payload: JsonObject?,
+    ) {
         if (payload == null) {
             return
         }
         when (type) {
-            MessageType.PROFILE_SHARE_OK -> handleShareOk(payload)
-            MessageType.PROFILE_SHARE_ERROR -> handleShareError(payload)
-            MessageType.PROFILE_FETCH_OK -> handleFetchOk(payload)
-            MessageType.PROFILE_FETCH_ERROR -> handleFetchError(payload)
-            MessageType.PROFILE_UNSHARE_OK -> handleUnshareOk(payload)
-            MessageType.PROFILE_UNSHARE_ERROR -> handleUnshareError(payload)
+            MessageType.PROFILE_SHARE_OK -> {
+                handleShareOk(payload)
+            }
+
+            MessageType.PROFILE_SHARE_ERROR -> {
+                handleShareError(payload)
+            }
+
+            MessageType.PROFILE_FETCH_OK -> {
+                handleFetchOk(payload)
+            }
+
+            MessageType.PROFILE_FETCH_ERROR -> {
+                handleFetchError(payload)
+            }
+
+            MessageType.PROFILE_UNSHARE_OK -> {
+                handleUnshareOk(payload)
+            }
+
+            MessageType.PROFILE_UNSHARE_ERROR -> {
+                handleUnshareError(payload)
+            }
+
             else -> {}
         }
     }
@@ -111,13 +140,14 @@ class ProfileShareManager {
         val name = payload.get("name")?.asString
         val rawProfile = payload.get("profile")?.asString ?: return
 
-        val profileJson = try {
-            JsonParser.parseString(rawProfile).asJsonObject
-        } catch (e: Exception) {
-            ShindoLogger.error("Failed to parse shared profile JSON", e)
-            dispatchFetch(requestId, FetchResult.Error("invalid_profile"))
-            return
-        }
+        val profileJson =
+            try {
+                JsonParser.parseString(rawProfile).asJsonObject
+            } catch (e: Exception) {
+                ShindoLogger.error("Failed to parse shared profile JSON", e)
+                dispatchFetch(requestId, FetchResult.Error("invalid_profile"))
+                return
+            }
         dispatchFetch(requestId, FetchResult.Success(code, name, profileJson))
     }
 
@@ -139,35 +169,59 @@ class ProfileShareManager {
         dispatchUnshare(requestId, UnshareResult.Error(message))
     }
 
-    private fun dispatchShare(requestId: String, result: ShareResult) {
+    private fun dispatchShare(
+        requestId: String,
+        result: ShareResult,
+    ) {
         val cb = pendingShare.remove(requestId) ?: return
         Minecraft.getMinecraft().addScheduledTask { cb(result) }
     }
 
-    private fun dispatchFetch(requestId: String, result: FetchResult) {
+    private fun dispatchFetch(
+        requestId: String,
+        result: FetchResult,
+    ) {
         val cb = pendingFetch.remove(requestId) ?: return
         Minecraft.getMinecraft().addScheduledTask { cb(result) }
     }
 
-    private fun dispatchUnshare(requestId: String, result: UnshareResult) {
+    private fun dispatchUnshare(
+        requestId: String,
+        result: UnshareResult,
+    ) {
         val cb = pendingUnshare.remove(requestId) ?: return
         Minecraft.getMinecraft().addScheduledTask { cb(result) }
     }
 
     sealed class ShareResult {
-        data class Success(val code: String) : ShareResult()
-        data class Error(val message: String?) : ShareResult()
+        data class Success(
+            val code: String,
+        ) : ShareResult()
+
+        data class Error(
+            val message: String?,
+        ) : ShareResult()
     }
 
     sealed class FetchResult {
-        data class Success(val code: String?, val name: String?, val json: JsonObject) : FetchResult()
-        data class Error(val message: String?) : FetchResult()
+        data class Success(
+            val code: String?,
+            val name: String?,
+            val json: JsonObject,
+        ) : FetchResult()
+
+        data class Error(
+            val message: String?,
+        ) : FetchResult()
     }
 
     sealed class UnshareResult {
-        data class Success(val code: String) : UnshareResult()
-        data class Error(val message: String?) : UnshareResult()
+        data class Success(
+            val code: String,
+        ) : UnshareResult()
+
+        data class Error(
+            val message: String?,
+        ) : UnshareResult()
     }
 }
-
-

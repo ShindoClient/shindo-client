@@ -9,7 +9,7 @@ data class ExtensionModule(
     val version: String,
     val description: String,
     val tags: Set<String>,
-    val metadata: Map<String, String>
+    val metadata: Map<String, String>,
 )
 
 class ExtensionModuleBuilder {
@@ -29,7 +29,10 @@ class ExtensionModuleBuilder {
         values.forEach { tag(it) }
     }
 
-    fun metadata(key: String, value: String) {
+    fun metadata(
+        key: String,
+        value: String,
+    ) {
         if (key.isNotBlank()) metadata[key] = value
     }
 
@@ -38,12 +41,15 @@ class ExtensionModuleBuilder {
     }
 
     internal fun build(): ExtensionModule {
-        val resolvedId = id?.trim()?.takeIf(String::isNotEmpty)
-            ?: throw IllegalStateException("ExtensionModule id is required")
-        val resolvedName = name?.trim()?.takeIf(String::isNotEmpty)
-            ?: throw IllegalStateException("ExtensionModule name is required")
-        val resolvedVersion = version?.trim()?.takeIf(String::isNotEmpty)
-            ?: throw IllegalStateException("ExtensionModule version is required")
+        val resolvedId =
+            id?.trim()?.takeIf(String::isNotEmpty)
+                ?: throw IllegalStateException("ExtensionModule id is required")
+        val resolvedName =
+            name?.trim()?.takeIf(String::isNotEmpty)
+                ?: throw IllegalStateException("ExtensionModule name is required")
+        val resolvedVersion =
+            version?.trim()?.takeIf(String::isNotEmpty)
+                ?: throw IllegalStateException("ExtensionModule version is required")
 
         return ExtensionModule(
             id = resolvedId,
@@ -52,7 +58,7 @@ class ExtensionModuleBuilder {
             version = resolvedVersion,
             description = description.trim(),
             tags = tags.toSet(),
-            metadata = metadata.toMap()
+            metadata = metadata.toMap(),
         )
     }
 }

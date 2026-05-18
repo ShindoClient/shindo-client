@@ -4,7 +4,12 @@ import me.miki.shindo.utils.GlUtils.getTexImage
 import me.miki.shindo.utils.GlUtils.pixelStore
 import java.nio.ByteBuffer
 
-class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
+class NativeImage(
+    format: Format,
+    i: Int,
+    j: Int,
+    bl: Boolean,
+) : AutoCloseable {
     private val format: Format
 
     val width: Int
@@ -28,26 +33,37 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
     override fun close() {
     }
 
-    fun format(): Format {
-        return this.format
-    }
+    fun format(): Format = this.format
 
-    fun getPixelRGBA(i: Int, j: Int): Int {
+    fun getPixelRGBA(
+        i: Int,
+        j: Int,
+    ): Int {
         val l = (i + j * this.width) * 4
         return buffer.getInt(l)
     }
 
-    fun setPixelRGBA(i: Int, j: Int, k: Int) {
+    fun setPixelRGBA(
+        i: Int,
+        j: Int,
+        k: Int,
+    ) {
         val l = (i + j * this.width) * 4
         buffer.putInt(l, k)
     }
 
-    fun getLuminanceOrAlpha(i: Int, j: Int): Byte {
+    fun getLuminanceOrAlpha(
+        i: Int,
+        j: Int,
+    ): Byte {
         val k = (i + j * this.width) * this.format.components() + this.format.luminanceOrAlphaOffset() / 8
         return buffer.get(k)
     }
 
-    fun downloadTexture(i: Int, bl: Boolean) {
+    fun downloadTexture(
+        i: Int,
+        bl: Boolean,
+    ) {
         this.format.setPackPixelStoreState()
         getTexImage(3553, i, this.format.glFormat(), 5121, this.buffer)
 
@@ -60,12 +76,16 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
         }
     }
 
-    enum class InternalGlFormat(private val glFormat: Int) {
-        RGBA(6408), RGB(6407), RG(33319), RED(6403);
+    enum class InternalGlFormat(
+        private val glFormat: Int,
+    ) {
+        RGBA(6408),
+        RGB(6407),
+        RG(33319),
+        RED(6403),
+        ;
 
-        fun glFormat(): Int {
-            return this.glFormat
-        }
+        fun glFormat(): Int = this.glFormat
     }
 
     enum class Format(
@@ -81,21 +101,43 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
         private val blueOffset: Int,
         private val luminanceOffset: Int,
         private val alphaOffset: Int,
-        private val supportedByStb: Boolean
+        private val supportedByStb: Boolean,
     ) {
-        RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true), RGB(
-            3, 6407, true, true, true, false,
-            false, 0, 8, 16, 255, 255, true
+        RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
+        RGB(
+            3,
+            6407,
+            true,
+            true,
+            true,
+            false,
+            false,
+            0,
+            8,
+            16,
+            255,
+            255,
+            true,
         ),
         LUMINANCE_ALPHA(
-            2, 33319, false, false, false, true, true, 255, 255,
-            255, 0, 8, true
+            2,
+            33319,
+            false,
+            false,
+            false,
+            true,
+            true,
+            255,
+            255,
+            255,
+            0,
+            8,
+            true,
         ),
-        LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true);
+        LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true),
+        ;
 
-        fun components(): Int {
-            return this.components
-        }
+        fun components(): Int = this.components
 
         fun setPackPixelStoreState() {
             pixelStore(3333, components())
@@ -105,85 +147,45 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
             pixelStore(3317, components())
         }
 
-        fun glFormat(): Int {
-            return this.glFormat
-        }
+        fun glFormat(): Int = this.glFormat
 
-        fun hasRed(): Boolean {
-            return this.hasRed
-        }
+        fun hasRed(): Boolean = this.hasRed
 
-        fun hasGreen(): Boolean {
-            return this.hasGreen
-        }
+        fun hasGreen(): Boolean = this.hasGreen
 
-        fun hasBlue(): Boolean {
-            return this.hasBlue
-        }
+        fun hasBlue(): Boolean = this.hasBlue
 
-        fun hasLuminance(): Boolean {
-            return this.hasLuminance
-        }
+        fun hasLuminance(): Boolean = this.hasLuminance
 
-        fun hasAlpha(): Boolean {
-            return this.hasAlpha
-        }
+        fun hasAlpha(): Boolean = this.hasAlpha
 
-        fun redOffset(): Int {
-            return this.redOffset
-        }
+        fun redOffset(): Int = this.redOffset
 
-        fun greenOffset(): Int {
-            return this.greenOffset
-        }
+        fun greenOffset(): Int = this.greenOffset
 
-        fun blueOffset(): Int {
-            return this.blueOffset
-        }
+        fun blueOffset(): Int = this.blueOffset
 
-        fun luminanceOffset(): Int {
-            return this.luminanceOffset
-        }
+        fun luminanceOffset(): Int = this.luminanceOffset
 
-        fun alphaOffset(): Int {
-            return this.alphaOffset
-        }
+        fun alphaOffset(): Int = this.alphaOffset
 
-        fun hasLuminanceOrRed(): Boolean {
-            return (this.hasLuminance || this.hasRed)
-        }
+        fun hasLuminanceOrRed(): Boolean = (this.hasLuminance || this.hasRed)
 
-        fun hasLuminanceOrGreen(): Boolean {
-            return (this.hasLuminance || this.hasGreen)
-        }
+        fun hasLuminanceOrGreen(): Boolean = (this.hasLuminance || this.hasGreen)
 
-        fun hasLuminanceOrBlue(): Boolean {
-            return (this.hasLuminance || this.hasBlue)
-        }
+        fun hasLuminanceOrBlue(): Boolean = (this.hasLuminance || this.hasBlue)
 
-        fun hasLuminanceOrAlpha(): Boolean {
-            return (this.hasLuminance || this.hasAlpha)
-        }
+        fun hasLuminanceOrAlpha(): Boolean = (this.hasLuminance || this.hasAlpha)
 
-        fun luminanceOrRedOffset(): Int {
-            return if (this.hasLuminance) this.luminanceOffset else this.redOffset
-        }
+        fun luminanceOrRedOffset(): Int = if (this.hasLuminance) this.luminanceOffset else this.redOffset
 
-        fun luminanceOrGreenOffset(): Int {
-            return if (this.hasLuminance) this.luminanceOffset else this.greenOffset
-        }
+        fun luminanceOrGreenOffset(): Int = if (this.hasLuminance) this.luminanceOffset else this.greenOffset
 
-        fun luminanceOrBlueOffset(): Int {
-            return if (this.hasLuminance) this.luminanceOffset else this.blueOffset
-        }
+        fun luminanceOrBlueOffset(): Int = if (this.hasLuminance) this.luminanceOffset else this.blueOffset
 
-        fun luminanceOrAlphaOffset(): Int {
-            return if (this.hasLuminance) this.luminanceOffset else this.alphaOffset
-        }
+        fun luminanceOrAlphaOffset(): Int = if (this.hasLuminance) this.luminanceOffset else this.alphaOffset
 
-        fun supportedByStb(): Boolean {
-            return this.supportedByStb
-        }
+        fun supportedByStb(): Boolean = this.supportedByStb
 
         companion object {
             fun getStbFormat(i: Int): Format {
@@ -198,24 +200,19 @@ class NativeImage(format: Format, i: Int, j: Int, bl: Boolean) : AutoCloseable {
     }
 
     companion object {
-        fun getA(i: Int): Int {
-            return i shr 24 and 0xFF
-        }
+        fun getA(i: Int): Int = i shr 24 and 0xFF
 
-        fun getR(i: Int): Int {
-            return i shr 0 and 0xFF
-        }
+        fun getR(i: Int): Int = i shr 0 and 0xFF
 
-        fun getG(i: Int): Int {
-            return i shr 8 and 0xFF
-        }
+        fun getG(i: Int): Int = i shr 8 and 0xFF
 
-        fun getB(i: Int): Int {
-            return i shr 16 and 0xFF
-        }
+        fun getB(i: Int): Int = i shr 16 and 0xFF
 
-        fun combine(i: Int, j: Int, k: Int, l: Int): Int {
-            return (i and 0xFF) shl 24 or ((j and 0xFF) shl 16) or ((k and 0xFF) shl 8) or ((l and 0xFF) shl 0)
-        }
+        fun combine(
+            i: Int,
+            j: Int,
+            k: Int,
+            l: Int,
+        ): Int = (i and 0xFF) shl 24 or ((j and 0xFF) shl 16) or ((k and 0xFF) shl 8) or ((l and 0xFF) shl 0)
     }
 }

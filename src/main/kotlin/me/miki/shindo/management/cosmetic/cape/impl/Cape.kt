@@ -9,13 +9,17 @@ open class Cape(
     private val name: String,
     private val cape: ResourceLocation?,
     private val category: CapeCategory,
-    private val requiredRole: Role
+    private val requiredRole: Role,
 ) {
     private val animation = SimpleAnimation()
 
     fun getName(): String = name
+
     fun getCape(): ResourceLocation? = cape
+
     fun getCategory(): CapeCategory = category
+
     fun getRequiredRole(): Role = requiredRole
+
     fun getAnimation(): SimpleAnimation = animation
 }

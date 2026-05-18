@@ -6,9 +6,11 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 
 object ImageUtils {
-
     @JvmStatic
-    fun combine(img1: BufferedImage, img2: BufferedImage): BufferedImage {
+    fun combine(
+        img1: BufferedImage,
+        img2: BufferedImage,
+    ): BufferedImage {
         val width = maxOf(img1.width, img2.width)
         val height = maxOf(img1.height, img2.height)
         val combinedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
@@ -22,7 +24,11 @@ object ImageUtils {
     }
 
     @JvmStatic
-    fun resize(img: BufferedImage, newW: Int, newH: Int): BufferedImage {
+    fun resize(
+        img: BufferedImage,
+        newW: Int,
+        newH: Int,
+    ): BufferedImage {
         val tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH)
         val image = BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB)
 
@@ -34,7 +40,13 @@ object ImageUtils {
     }
 
     @JvmStatic
-    fun scissor(img: BufferedImage, x: Int, y: Int, width: Int, height: Int): BufferedImage {
+    fun scissor(
+        img: BufferedImage,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+    ): BufferedImage {
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g2d: Graphics2D = image.createGraphics()
         g2d.drawImage(img, 0, 0, width, height, x, y, x + width, y + height, null)
@@ -77,7 +89,10 @@ object ImageUtils {
     }
 
     @JvmStatic
-    fun cropCenterHorizontal(src: BufferedImage, size: Int): BufferedImage {
+    fun cropCenterHorizontal(
+        src: BufferedImage,
+        size: Int,
+    ): BufferedImage {
         val width = src.width
         val height = src.height
 

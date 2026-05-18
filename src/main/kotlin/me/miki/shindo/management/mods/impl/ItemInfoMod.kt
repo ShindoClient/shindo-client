@@ -19,39 +19,39 @@ import net.minecraft.potion.PotionEffect
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.StatCollector
 
-class ItemInfoMod :
-    Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEM_INFO) {
-    private val ENCHANTMENT_SHORT_NAME: MutableMap<*, *> = object : HashMap<Any?, Any?>() {
-        init {
-            this.put(0, "P")
-            this.put(1, "FP")
-            this.put(2, "FF")
-            this.put(3, "BP")
-            this.put(4, "PP")
-            this.put(5, "R")
-            this.put(6, "AA")
-            this.put(7, "T")
-            this.put(8, "DS")
-            this.put(9, "FW")
-            this.put(16, "SH")
-            this.put(17, "SM")
-            this.put(18, "BoA")
-            this.put(19, "KB")
-            this.put(20, "FA")
-            this.put(21, "L")
-            this.put(32, "EFF")
-            this.put(33, "ST")
-            this.put(34, "UNB")
-            this.put(35, "F")
-            this.put(48, "POW")
-            this.put(49, "PUN")
-            this.put(50, "FLA")
-            this.put(51, "INF")
-            this.put(61, "LoS")
-            this.put(62, "LU")
-            this.put(70, "MEN")
+class ItemInfoMod : Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEM_INFO) {
+    private val ENCHANTMENT_SHORT_NAME: MutableMap<*, *> =
+        object : HashMap<Any?, Any?>() {
+            init {
+                this.put(0, "P")
+                this.put(1, "FP")
+                this.put(2, "FF")
+                this.put(3, "BP")
+                this.put(4, "PP")
+                this.put(5, "R")
+                this.put(6, "AA")
+                this.put(7, "T")
+                this.put(8, "DS")
+                this.put(9, "FW")
+                this.put(16, "SH")
+                this.put(17, "SM")
+                this.put(18, "BoA")
+                this.put(19, "KB")
+                this.put(20, "FA")
+                this.put(21, "L")
+                this.put(32, "EFF")
+                this.put(33, "ST")
+                this.put(34, "UNB")
+                this.put(35, "F")
+                this.put(48, "POW")
+                this.put(49, "PUN")
+                this.put(50, "FLA")
+                this.put(51, "INF")
+                this.put(61, "LoS")
+                this.put(62, "LU")
+                this.put(70, "MEN")
+            }
         }
-    }
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.POTION_COLOR)
     private val potionColorSetting = false
@@ -81,7 +81,7 @@ class ItemInfoMod :
                 s1,
                 (sr.scaledWidth / 2f) - (mc.fontRendererObj.getStringWidth(s1) / 2f),
                 (sr.scaledHeight - addY - 1).toFloat(),
-                event.color
+                event.color,
             )
         }
     }
@@ -159,7 +159,3 @@ class ItemInfoMod :
         return enchantBuilder.toString().trim { it <= ' ' }
     }
 }
-
-
-
-

@@ -17,12 +17,11 @@ import kotlin.math.max
  * State model: IDLE → ENTERING → ACTIVE → LEAVING → IDLE
  */
 class ModMenuSlideTransitionCoordinator {
-
     enum class State {
         IDLE,
         ENTERING,
         ACTIVE,
-        LEAVING
+        LEAVING,
     }
 
     private lateinit var anim: Animation
@@ -48,7 +47,10 @@ class ModMenuSlideTransitionCoordinator {
 
     fun update(onComplete: () -> Unit = {}) {
         when (state) {
-            State.ENTERING -> if (anim.isDone(Direction.BACKWARDS)) state = State.ACTIVE
+            State.ENTERING -> {
+                if (anim.isDone(Direction.BACKWARDS)) state = State.ACTIVE
+            }
+
             State.LEAVING -> {
                 if (anim.isDone(Direction.FORWARDS)) {
                     state = State.IDLE
@@ -76,12 +78,17 @@ class ModMenuSlideTransitionCoordinator {
     fun getState(): State = state
 
     fun isInteractive(): Boolean = state == State.IDLE || state == State.ACTIVE
+
     fun isListInteractive(): Boolean = state == State.IDLE
 
     fun isSceneInteractive(): Boolean = state == State.ACTIVE
+
     fun isActiveSceneOpen(): Boolean = state == State.ACTIVE
+
     fun isActive(): Boolean = state == State.ACTIVE
+
     fun isTransitioning(): Boolean = state == State.ENTERING || state == State.LEAVING
+
     fun isSceneVisible(): Boolean = state != State.IDLE
 
     fun getTag(): Any? = tag
@@ -100,5 +107,6 @@ class ModMenuSlideTransitionCoordinator {
     fun getLeaveTranslateX(slideDistance: Float): Float = getProgress() * slideDistance
 
     fun getListTranslateX(contentWidth: Float): Float = getEnterTranslateX(contentWidth)
+
     fun getSceneTranslateX(contentWidth: Float): Float = getSlideOffset(contentWidth)
 }

@@ -12,13 +12,14 @@ import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.ColorUtils.getRainbow
 import java.awt.Color
 
-class GlintColorMod : Mod(
-    TranslateText.GLINT_COLOR,
-    TranslateText.GLINT_COLOR_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_GLINT_COLOR,
-    "changeru"
-) {
+class GlintColorMod :
+    Mod(
+        TranslateText.GLINT_COLOR,
+        TranslateText.GLINT_COLOR_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_GLINT_COLOR,
+        "changeru",
+    ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private val glintType = GlintType.SYNC
 
@@ -37,19 +38,25 @@ class GlintColorMod : Mod(
                     return currentColor.getInterpolateColor()
                 }
 
-                GlintType.RAINBOW -> return getRainbow(0, 25.0, 255)
-                GlintType.CUSTOM -> return applyAlpha(colorSetting, 255)
+                GlintType.RAINBOW -> {
+                    return getRainbow(0, 25.0, 255)
+                }
+
+                GlintType.CUSTOM -> {
+                    return applyAlpha(colorSetting, 255)
+                }
             }
         }
 
-    private enum class GlintType(private val translate: TranslateText) : PropertyEnum {
+    private enum class GlintType(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SYNC(TranslateText.SYNC),
         RAINBOW(TranslateText.RAINBOW),
-        CUSTOM(TranslateText.CUSTOM);
+        CUSTOM(TranslateText.CUSTOM),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -57,7 +64,3 @@ class GlintColorMod : Mod(
         var instance: GlintColorMod? = null
     }
 }
-
-
-
-

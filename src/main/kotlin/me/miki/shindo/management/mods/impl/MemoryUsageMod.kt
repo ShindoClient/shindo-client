@@ -13,8 +13,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
-class MemoryUsageMod :
-    SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
+class MemoryUsageMod : SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
     private val circleAnimation = SimpleAnimation()
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
@@ -48,13 +47,9 @@ class MemoryUsageMod :
         this.setHeight(60)
     }
 
-    override fun getText(): String {
-        return "Mem: " + this.usingMemory + "%"
-    }
+    override fun getText(): String = "Mem: " + this.usingMemory + "%"
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.SERVER else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.SERVER else null
 
     private val usingMemory: Long
         get() {
@@ -63,14 +58,13 @@ class MemoryUsageMod :
             return (runtime.totalMemory() - runtime.freeMemory()) * 100L / runtime.maxMemory()
         }
 
-    private enum class Design(private val translate: TranslateText) : PropertyEnum {
+    private enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SIMPLE(TranslateText.SIMPLE),
-        FANCY(TranslateText.FANCY);
+        FANCY(TranslateText.FANCY),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-

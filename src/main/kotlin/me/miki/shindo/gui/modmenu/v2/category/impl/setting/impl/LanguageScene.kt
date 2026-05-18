@@ -20,19 +20,24 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class LanguageScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
-
+class LanguageScene(
+    parent: SettingsCategory,
+) : SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
     private lateinit var container: CompScrollableContainer
     private val languages = Language.values()
     private val languageCards = ArrayList<LanguageCard>(languages.size)
 
     override fun initGui() {
-        container = CompScrollableContainer()
-            .setScrollbarGutter(14f)
+        container =
+            CompScrollableContainer()
+                .setScrollbarGutter(14f)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager = instance.getColorManager()
@@ -58,7 +63,7 @@ class LanguageScene(parent: SettingsCategory) :
             mouseX,
             mouseY,
             partialTicks,
-            totalContentHeight
+            totalContentHeight,
         ) { innerMouseX, innerMouseY, _, scrollValue, viewport ->
             val contentX = viewport.x + OUTER_PADDING
             val contentY = viewport.y + OUTER_PADDING
@@ -90,7 +95,7 @@ class LanguageScene(parent: SettingsCategory) :
                     grid.cardWidth,
                     grid.cardHeight,
                     hovered,
-                    selected
+                    selected,
                 )
 
                 languageCards.add(LanguageCard(language, cardX, cardY, grid.cardWidth, grid.cardHeight))
@@ -98,7 +103,11 @@ class LanguageScene(parent: SettingsCategory) :
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) return
 
         val baseX = x.toFloat()
@@ -117,11 +126,17 @@ class LanguageScene(parent: SettingsCategory) :
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         container.keyTyped(typedChar, keyCode)
     }
 
-    private fun resolveGridMetrics(availableWidth: Float, availableHeight: Float): GridMetrics {
+    private fun resolveGridMetrics(
+        availableWidth: Float,
+        availableHeight: Float,
+    ): GridMetrics {
         val columns = if (availableWidth > 420f) 2 else 1
         val cardWidth = max(120f, (availableWidth - ROW_GAP * (columns - 1)) / columns)
         val rows = max(1, ceil(languages.size / columns.toDouble()).toInt())
@@ -145,10 +160,9 @@ class LanguageScene(parent: SettingsCategory) :
         width: Float,
         height: Float,
         hovered: Boolean,
-        selected: Boolean
+        selected: Boolean,
     ) {
         val progress = language.getAnimation().getValue()
-
 
         nvg.drawShadow(x, y, width, height, CARD_RADIUS, 7)
         nvg.drawRoundedRect(
@@ -157,7 +171,7 @@ class LanguageScene(parent: SettingsCategory) :
             width,
             height,
             CARD_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -166,11 +180,10 @@ class LanguageScene(parent: SettingsCategory) :
             height,
             CARD_RADIUS,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
         )
 
         if (selected) {
-
             val badgeX = x + width - 20f - 2
             val badgeY = y + height - 18f - 2
             val badgeSize = 16f
@@ -182,7 +195,7 @@ class LanguageScene(parent: SettingsCategory) :
                 badgeSize,
                 badgeSize,
                 5.5f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
             )
             nvg.drawOutlineRoundedRect(
                 badgeX,
@@ -191,7 +204,7 @@ class LanguageScene(parent: SettingsCategory) :
                 badgeSize,
                 5.5f,
                 1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
             )
 
             nvg.drawText(
@@ -200,11 +213,9 @@ class LanguageScene(parent: SettingsCategory) :
                 y + height - 18f,
                 palette.getFontColor(ColorType.MID),
                 12f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
-
         }
-
 
         val mediaHeight = max(34f, height - 22f)
         val mediaWidth = min(86f, max(56f, width * 0.28f))
@@ -217,7 +228,7 @@ class LanguageScene(parent: SettingsCategory) :
             mediaWidth,
             mediaHeight,
             6.5f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 180)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 180),
         )
         drawFlag(nvg, language.getFlag(), mediaX + 1f, mediaY + 1f, mediaWidth - 2f, mediaHeight - 2f)
 
@@ -239,7 +250,7 @@ class LanguageScene(parent: SettingsCategory) :
             codeWidth,
             13f,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), if (selected) 225 else 198),
         )
         nvg.drawCenteredText(
             localeCode,
@@ -247,10 +258,8 @@ class LanguageScene(parent: SettingsCategory) :
             (codeY + 8f) - codeHeight / 2f,
             palette.getFontColor(ColorType.DARK),
             7.4f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
-
-
     }
 
     private fun drawFlag(
@@ -259,7 +268,7 @@ class LanguageScene(parent: SettingsCategory) :
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         nvg.drawRoundedImage(flag, x, y, width, height, 5f)
     }
@@ -268,7 +277,7 @@ class LanguageScene(parent: SettingsCategory) :
         val columns: Int,
         val cardWidth: Float,
         val cardHeight: Float,
-        val rows: Int
+        val rows: Int,
     )
 
     private data class LanguageCard(
@@ -276,7 +285,7 @@ class LanguageScene(parent: SettingsCategory) :
         val x: Float,
         val y: Float,
         val width: Float,
-        val height: Float
+        val height: Float,
     )
 
     companion object {

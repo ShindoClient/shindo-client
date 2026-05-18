@@ -24,8 +24,7 @@ import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.max
 
-class ModernHotbarMod :
-    HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, LegacyIcon.MOD_MODERN_HOTBAR) {
+class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, LegacyIcon.MOD_MODERN_HOTBAR) {
     private val selectorAnimation = SimpleAnimation(0.0f)
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
@@ -60,7 +59,6 @@ class ModernHotbarMod :
             return
         }
 
-
         if (mc.renderViewEntity is EntityPlayer) {
             val entityplayer = mc.renderViewEntity as EntityPlayer
 
@@ -86,7 +84,13 @@ class ModernHotbarMod :
         }
     }
 
-    private fun renderHotBarItem(index: Int, xPos: Int, yPos: Int, partialTicks: Float, entityPlayer: EntityPlayer) {
+    private fun renderHotBarItem(
+        index: Int,
+        xPos: Int,
+        yPos: Int,
+        partialTicks: Float,
+        entityPlayer: EntityPlayer,
+    ) {
         val animationMode = pickupAnimation
         val itemstack = entityPlayer.inventory.mainInventory[index]
         val animTreatment = animationMode == PickupAnimation.PICKUP_BREAD
@@ -95,7 +99,6 @@ class ModernHotbarMod :
             val take = if (animTreatment) partialTicks / 2 else partialTicks
             val progress = itemstack.animationsToGo.toFloat() - take
             if (progress > 0.0f) {
-
                 GlStateManager.pushMatrix()
                 GlStateManager.translate((xPos + 8).toFloat(), (yPos + 12).toFloat(), 0.0f)
                 if (animationMode == PickupAnimation.PICKUP_BREAD) {
@@ -144,7 +147,7 @@ class ModernHotbarMod :
                         barHeight,
                         6f,
                         applyAlpha(currentColor.getColor1(), 190),
-                        applyAlpha(currentColor.getColor2(), 190)
+                        applyAlpha(currentColor.getColor2(), 190),
                     )
                 } else if (currentDesign == Design.CLIENT) {
                     if (isText) {
@@ -187,7 +190,7 @@ class ModernHotbarMod :
                         22f,
                         22f,
                         6f,
-                        Color(255, 255, 255, 140)
+                        Color(255, 255, 255, 140),
                     )
                 } else {
                     nvg.drawRoundedRect(
@@ -196,7 +199,7 @@ class ModernHotbarMod :
                         22f,
                         22f,
                         6f,
-                        Color(0, 0, 0, 100)
+                        Color(0, 0, 0, 100),
                     )
                 }
             } else {
@@ -215,29 +218,26 @@ class ModernHotbarMod :
         event.setCancelled(design != Design.CHILL)
     }
 
-    private enum class Design(private val translate: TranslateText) : PropertyEnum {
+    private enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         NORMAL(TranslateText.NORMAL),
         SHINDO(TranslateText.SHINDO),
         CHILL(TranslateText.CHILL),
-        CLIENT(TranslateText.CLIENT);
+        CLIENT(TranslateText.CLIENT),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
-
+        override fun getTranslate(): TranslateText = translate
     }
 
-    private enum class PickupAnimation(private val translate: TranslateText) : PropertyEnum {
+    private enum class PickupAnimation(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         PICKUP_POP(TranslateText.PICKUP_POP),
         PICKUP_BREAD(TranslateText.PICKUP_BREAD),
-        PICKUP_VANILLA(TranslateText.PICKUP_VANILLA);
+        PICKUP_VANILLA(TranslateText.PICKUP_VANILLA),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-
-
-

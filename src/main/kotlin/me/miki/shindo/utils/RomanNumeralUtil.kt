@@ -4,7 +4,6 @@ import java.util.*
 import kotlin.math.abs
 
 object RomanNumeralUtil {
-
     private val map: TreeMap<Int, String> = TreeMap()
     private val cache: MutableMap<Int, String> = HashMap()
 
@@ -25,9 +24,7 @@ object RomanNumeralUtil {
     }
 
     @JvmStatic
-    fun toRoman(number: Int): String {
-        return cache.getOrPut(number) { toRomanUncached(number) }
-    }
+    fun toRoman(number: Int): String = cache.getOrPut(number) { toRomanUncached(number) }
 
     private fun toRomanUncached(number: Int): String {
         if (number == 0) return "0"

@@ -16,7 +16,6 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Render3DUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
@@ -149,7 +148,11 @@ object Render3DUtils {
         GL11.glVertex3d(vector3d.xCoord, vector3d.yCoord, vector3d.zCoord)
     }
 
-    private fun getRenderPos(x: Double, y: Double, z: Double): Vec3 {
+    private fun getRenderPos(
+        x: Double,
+        y: Double,
+        z: Double,
+    ): Vec3 {
         var rx = x
         var ry = y
         var rz = z
@@ -161,7 +164,11 @@ object Render3DUtils {
     }
 
     @JvmStatic
-    fun drawTargetIndicator(entity: Entity, rad: Double, color: Color) {
+    fun drawTargetIndicator(
+        entity: Entity,
+        rad: Double,
+        color: Color,
+    ) {
         GL11.glPushMatrix()
         GL11.glDisable(3553)
         GL11.glEnable(2848)
@@ -181,13 +188,17 @@ object Render3DUtils {
         val renderManager = mc.renderManager as IMixinRenderManager
 
         val x =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosX
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (mixinMc.timer as Timer).renderPartialTicks -
+                renderManager.renderPosX
         val y =
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosY + sin(
-                System.currentTimeMillis() / 2e2
-            ) + 1
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (mixinMc.timer as Timer).renderPartialTicks -
+                renderManager.renderPosY +
+                sin(
+                    System.currentTimeMillis() / 2e2,
+                ) + 1
         val z =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (mixinMc.timer as Timer).renderPartialTicks - renderManager.renderPosZ
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (mixinMc.timer as Timer).renderPartialTicks -
+                renderManager.renderPosZ
 
         var angle = 0f
         val increment = (Math.PI * 2 / 64.0).toFloat()
@@ -216,7 +227,13 @@ object Render3DUtils {
         GL11.glColor3f(255f, 255f, 255f)
     }
 
-    private fun drawFilledCircleNoGL(x: Int, y: Int, r: Double, c: Int, quality: Int) {
+    private fun drawFilledCircleNoGL(
+        x: Int,
+        y: Int,
+        r: Double,
+        c: Int,
+        quality: Int,
+    ) {
         val f = (c shr 24 and 0xff) / 255f
         val f1 = (c shr 16 and 0xff) / 255f
         val f2 = (c shr 8 and 0xff) / 255f
@@ -233,7 +250,10 @@ object Render3DUtils {
     }
 
     @JvmStatic
-    fun renderBreadCrumbs(vec3s: List<Vec3>, color: Color) {
+    fun renderBreadCrumbs(
+        vec3s: List<Vec3>,
+        color: Color,
+    ) {
         GlStateManager.disableDepth()
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -282,7 +302,7 @@ object Render3DUtils {
                             0,
                             1.4,
                             Color(color.red, color.green, color.blue, 50).hashCode(),
-                            quality
+                            quality,
                         )
                     }
 
@@ -292,7 +312,7 @@ object Render3DUtils {
                             0,
                             2.3,
                             Color(color.red, color.green, color.blue, 30).hashCode(),
-                            quality
+                            quality,
                         )
                     }
 
@@ -312,4 +332,3 @@ object Render3DUtils {
         GL11.glColor3d(255.0, 255.0, 255.0)
     }
 }
-

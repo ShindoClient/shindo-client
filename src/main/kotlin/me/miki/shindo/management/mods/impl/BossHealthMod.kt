@@ -13,8 +13,7 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.BossStatus
 
-class BossHealthMod :
-    HUDMod(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION, LegacyIcon.MOD_BOSS_HEALTH) {
+class BossHealthMod : HUDMod(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION, LegacyIcon.MOD_BOSS_HEALTH) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         val bossHealthWidth = 182
@@ -40,7 +39,7 @@ class BossHealthMod :
                 title,
                 (((182 / 2) - (fr.getStringWidth(title) / 2)) + this.getX()).toFloat(),
                 ((this.getY() - 10) + 13).toFloat(),
-                16777215
+                16777215,
             )
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
             mc.textureManager.bindTexture(Gui.icons)
@@ -52,7 +51,3 @@ class BossHealthMod :
         this.setHeight(20)
     }
 }
-
-
-
-

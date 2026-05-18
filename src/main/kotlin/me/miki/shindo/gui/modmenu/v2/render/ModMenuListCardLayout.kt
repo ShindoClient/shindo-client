@@ -6,7 +6,6 @@ import me.miki.shindo.utils.mouse.MouseUtils
  * Shared geometry/hitbox model for ModMenu list-card controls.
  */
 object ModMenuListCardLayout {
-
     data class ControlLayout(
         val settingsX: Float,
         val settingsY: Float,
@@ -14,15 +13,17 @@ object ModMenuListCardLayout {
         val toggleX: Float,
         val toggleY: Float,
         val toggleWidth: Float,
-        val toggleHeight: Float
+        val toggleHeight: Float,
     ) {
-        fun isSettingsHit(mouseX: Int, mouseY: Int): Boolean {
-            return MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, settingsSize, settingsSize)
-        }
+        fun isSettingsHit(
+            mouseX: Int,
+            mouseY: Int,
+        ): Boolean = MouseUtils.isInside(mouseX, mouseY, settingsX, settingsY, settingsSize, settingsSize)
 
-        fun isToggleHit(mouseX: Int, mouseY: Int): Boolean {
-            return MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight)
-        }
+        fun isToggleHit(
+            mouseX: Int,
+            mouseY: Int,
+        ): Boolean = MouseUtils.isInside(mouseX, mouseY, toggleX, toggleY, toggleWidth, toggleHeight)
 
         fun isBodyHit(
             mouseX: Int,
@@ -30,12 +31,11 @@ object ModMenuListCardLayout {
             cardX: Float,
             cardY: Float,
             cardWidth: Float,
-            cardHeight: Float
-        ): Boolean {
-            return MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight) &&
-                    !isSettingsHit(mouseX, mouseY) &&
-                    !isToggleHit(mouseX, mouseY)
-        }
+            cardHeight: Float,
+        ): Boolean =
+            MouseUtils.isInside(mouseX, mouseY, cardX, cardY, cardWidth, cardHeight) &&
+                !isSettingsHit(mouseX, mouseY) &&
+                !isToggleHit(mouseX, mouseY)
 
         fun withOffset(yOffset: Float): ControlLayout {
             if (yOffset == 0f) {
@@ -54,7 +54,7 @@ object ModMenuListCardLayout {
         settingsPaddingFromRight: Float,
         toggleWidth: Float,
         toggleHeight: Float,
-        settingsGap: Float
+        settingsGap: Float,
     ): ControlLayout {
         val toggleX = cardX + cardWidth - settingsPaddingFromRight - toggleWidth
         val toggleY = cardY + (cardHeight - toggleHeight) / 2f
@@ -67,7 +67,7 @@ object ModMenuListCardLayout {
             toggleX = toggleX,
             toggleY = toggleY,
             toggleWidth = toggleWidth,
-            toggleHeight = toggleHeight
+            toggleHeight = toggleHeight,
         )
     }
 }

@@ -5,7 +5,6 @@ import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.config.ConfigOwner
 
 open class NumberSetting : Setting {
-
     private val defaultValue: Double
     private val minValue: Double
     private val maxValue: Double
@@ -18,7 +17,7 @@ open class NumberSetting : Setting {
         defaultValue: Double,
         minValue: Double,
         maxValue: Double,
-        integer: Boolean
+        integer: Boolean,
     ) : super(text, parent) {
         this.value = defaultValue
         this.defaultValue = defaultValue
@@ -33,7 +32,7 @@ open class NumberSetting : Setting {
         defaultValue: Double,
         minValue: Double,
         maxValue: Double,
-        integer: Boolean
+        integer: Boolean,
     ) : super(name, parent) {
         this.value = defaultValue
         this.defaultValue = defaultValue
@@ -104,9 +103,7 @@ open class NumberSetting : Setting {
         return maxValue
     }
 
-    fun getDefaultValue(): Double {
-        return defaultValue
-    }
+    fun getDefaultValue(): Double = defaultValue
 
     fun getStep(): Double {
         val meta = getMetadata()
@@ -116,7 +113,5 @@ open class NumberSetting : Setting {
         return if (integer) 1.0 else 0.0
     }
 
-    fun isInteger(): Boolean {
-        return integer
-    }
+    fun isInteger(): Boolean = integer
 }

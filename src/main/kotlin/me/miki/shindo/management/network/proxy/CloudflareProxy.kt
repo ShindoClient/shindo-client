@@ -10,23 +10,20 @@ import java.net.ProxySelector
 
 /**
  * Proxy DNS usando Cloudflare (1.1.1.1)
- * 
+ *
  * Este proxy configura o sistema para usar Cloudflare DNS para resolução de nomes.
  * Nota: Em Java/Minecraft, a configuração de DNS do sistema é limitada.
  * Este proxy funciona principalmente como um wrapper que usa Cloudflare DNS quando possível.
  */
 class CloudflareProxy(
-    private val config: DNSConfig = DNSConfig.CLOUDFLARE
+    private val config: DNSConfig = DNSConfig.CLOUDFLARE,
 ) : IDNSProxy {
-
     private var active = false
     private val cloudflareResolver = CloudflareDNSResolver(config)
     private val defaultResolver = DNSResolver()
     private val originalProxySelector: ProxySelector? = ProxySelector.getDefault()
 
-    override fun isActive(): Boolean {
-        return active
-    }
+    override fun isActive(): Boolean = active
 
     override fun enable() {
         if (active) {
@@ -69,21 +66,16 @@ class CloudflareProxy(
         }
     }
 
-    override fun resolve(hostname: String): InetAddress? {
-        return if (active) {
+    override fun resolve(hostname: String): InetAddress? =
+        if (active) {
             // Usa o resolvedor Cloudflare quando ativo
             cloudflareResolver.resolve(hostname) ?: defaultResolver.resolve(hostname)
         } else {
             // Usa o resolvedor padrão quando inativo
             defaultResolver.resolve(hostname)
         }
-    }
 
-    override fun getDNSName(): String {
-        return config.name
-    }
+    override fun getDNSName(): String = config.name
 
-    override fun getDNSAddress(): String {
-        return config.primaryDNS
-    }
+    override fun getDNSAddress(): String = config.primaryDNS
 }

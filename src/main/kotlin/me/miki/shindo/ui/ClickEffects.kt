@@ -23,13 +23,16 @@ class ClickEffects {
         }
     }
 
-    fun addClickEffect(mouseX: Int, mouseY: Int) {
+    fun addClickEffect(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         effects.add(ClickEffect(mouseX, mouseY))
     }
 
     private class ClickEffect(
         private val x: Int,
-        private val y: Int
+        private val y: Int,
     ) {
         private val animation = EaseBackIn(650, 1.0, 0.0f)
 
@@ -38,18 +41,20 @@ class ClickEffects {
             val nvg = instance.nanoVGManager ?: return
             val currentColor = instance.getColorManager().getCurrentColor()
 
-            nvg.setupAndDraw(Runnable {
-                val progress = animation.getValueFloat()
-                nvg.drawArc(
-                    x.toFloat(),
-                    y.toFloat(),
-                    progress * 8,
-                    0f,
-                    360f,
-                    2f,
-                    ColorUtils.applyAlpha(currentColor.getInterpolateColor(0), (255 - (progress * 255)).toInt())
-                )
-            })
+            nvg.setupAndDraw(
+                Runnable {
+                    val progress = animation.getValueFloat()
+                    nvg.drawArc(
+                        x.toFloat(),
+                        y.toFloat(),
+                        progress * 8,
+                        0f,
+                        360f,
+                        2f,
+                        ColorUtils.applyAlpha(currentColor.getInterpolateColor(0), (255 - (progress * 255)).toInt()),
+                    )
+                },
+            )
         }
 
         fun isDone(): Boolean = animation.isDone(Direction.FORWARDS)

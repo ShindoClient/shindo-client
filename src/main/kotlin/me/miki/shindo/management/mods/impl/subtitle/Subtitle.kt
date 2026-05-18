@@ -4,7 +4,10 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Vec3
 
-class Subtitle(val string: String?, var location: Vec3?) {
+class Subtitle(
+    val string: String?,
+    var location: Vec3?,
+) {
     var animation: SimpleAnimation = SimpleAnimation(0.0f)
     var startTime: Long
         private set

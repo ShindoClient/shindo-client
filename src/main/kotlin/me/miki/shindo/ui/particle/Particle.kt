@@ -6,7 +6,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import kotlin.random.Random
 
-class Particle(x: Int, y: Int) {
+class Particle(
+    x: Int,
+    y: Int,
+) {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     val size: Float = genRandom() + 0.4f
@@ -23,7 +26,10 @@ class Particle(x: Int, y: Int) {
 
     private fun lint2(f: Float): Float = 1.02f + f * (1.0f - 1.02f)
 
-    fun connect(x: Float, y: Float) {
+    fun connect(
+        x: Float,
+        y: Float,
+    ) {
         RenderUtils.connectPoints(this.x, this.y, x, y)
     }
 
@@ -52,6 +58,5 @@ class Particle(x: Int, y: Int) {
         if (y < 1f) y = sr.scaledHeight.toFloat()
     }
 
-    private fun genRandom(): Float =
-        (0.3f + Math.random() * (0.6f - 0.3f + 1.0)).toFloat()
+    private fun genRandom(): Float = (0.3f + Math.random() * (0.6f - 0.3f + 1.0)).toFloat()
 }

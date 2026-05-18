@@ -1,0 +1,28 @@
+[versions]
+ktlint = "14.2.0"
+forge-gradle = "50e3574"
+mixin-gradle = "92e66fe"
+
+kotlin = "2.2.0"
+
+mixin = "0.7.11-SNAPSHOT"
+romaji = "0.0.4"
+spotify = "6.5.4"
+okhttp = "4.12.0"
+gson = "2.13.1"
+lang = "1.29"
+
+[libraries]
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+mixin = { group = "org.spongepowered", name = "mixin", version.ref = "mixin" }
+romaji = { group = "com.github.jikyo", name = "romaji", version.ref = "romaji" }
+spotify = { group = "se.michaelthelin.spotify", name = "spotify-web-api-java", version.ref = "spotify" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+lang = { group = "com.neovisionaries", name = "nv-i18n", version.ref = "lang" }
+
+
+[plugins]
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+forge-gradle = { id = "net.minecraftforge.gradle.tweaker-client"}
+mixin-gradle = { id = "org.spongepowered.mixin"}

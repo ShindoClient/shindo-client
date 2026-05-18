@@ -12,7 +12,6 @@ import java.awt.Color
 import java.io.File
 
 class WaypointManager {
-
     private val mc = Minecraft.getMinecraft()
     private val waypoints = ArrayList<Waypoint>()
 
@@ -39,8 +38,8 @@ class WaypointManager {
                             JsonUtils.getDoubleProperty(wObj, "X", 0.0),
                             JsonUtils.getDoubleProperty(wObj, "Y", 0.0),
                             JsonUtils.getDoubleProperty(wObj, "Z", 0.0),
-                            ColorUtils.getColorByInt(JsonUtils.getIntProperty(wObj, "Color", 0))
-                        )
+                            ColorUtils.getColorByInt(JsonUtils.getIntProperty(wObj, "Color", 0)),
+                        ),
                     )
                 }
             }
@@ -73,17 +72,22 @@ class WaypointManager {
         }
     }
 
-    fun getWorld(): String {
-        return if (ServerUtils.isJoinServer()) {
+    fun getWorld(): String =
+        if (ServerUtils.isJoinServer()) {
             "server-${ServerUtils.getServerIP()}-${mc.theWorld.provider.dimensionId}"
         } else {
             "local-${mc.theWorld.saveHandler.worldDirectoryName}-${mc.theWorld.provider.dimensionId}"
         }
-    }
 
     fun getWaypoints(): ArrayList<Waypoint> = waypoints
 
-    fun addWaypoint(name: String, x: Double, y: Double, z: Double, color: Color) {
+    fun addWaypoint(
+        name: String,
+        x: Double,
+        y: Double,
+        z: Double,
+        color: Color,
+    ) {
         waypoints.add(Waypoint(getWorld(), name, x, y, z, color))
     }
 }

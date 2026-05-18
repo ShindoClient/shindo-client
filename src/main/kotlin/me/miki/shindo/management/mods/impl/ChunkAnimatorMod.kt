@@ -14,12 +14,13 @@ import net.minecraft.client.renderer.chunk.RenderChunk
 import java.util.*
 import kotlin.math.sin
 
-class ChunkAnimatorMod : Mod(
-    TranslateText.CHUNK_ANIMATOR,
-    TranslateText.CHUNK_ANIMATOR_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_CHUNK_ANIMATOR
-) {
+class ChunkAnimatorMod :
+    Mod(
+        TranslateText.CHUNK_ANIMATOR,
+        TranslateText.CHUNK_ANIMATOR_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_CHUNK_ANIMATOR,
+    ) {
     private val chunks: MutableMap<RenderChunk?, Long?> = WeakHashMap<RenderChunk?, Long?>()
 
     @Property(
@@ -28,7 +29,7 @@ class ChunkAnimatorMod : Mod(
         min = 0.0,
         max = 5.0,
         current = 1.0,
-        step = 1.0
+        step = 1.0,
     )
     private val duration = 1
 
@@ -50,7 +51,7 @@ class ChunkAnimatorMod : Mod(
                 GlStateManager.translate(
                     0f,
                     -chunkY + this.easeOut(passedTime.toFloat(), 0f, chunkY.toFloat(), (duration * 1000).toFloat()),
-                    0f
+                    0f,
                 )
             }
         }
@@ -63,7 +64,10 @@ class ChunkAnimatorMod : Mod(
         }
     }
 
-    private fun easeOut(t: Float, b: Float, c: Float, d: Float): Float {
-        return c * sin(t / d * (Math.PI / 2)).toFloat() + b
-    }
+    private fun easeOut(
+        t: Float,
+        b: Float,
+        c: Float,
+        d: Float,
+    ): Float = c * sin(t / d * (Math.PI / 2)).toFloat() + b
 }

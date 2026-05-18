@@ -14,6 +14,5 @@ data class ModMenuListPageRenderContext(
     val mouseX: Int,
     val mouseY: Int,
     val partialTicks: Float,
-    val scrollOffset: Float
+    val scrollOffset: Float,
 )
-

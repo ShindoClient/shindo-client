@@ -8,8 +8,7 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class DayCounterMod :
-    SimpleHUDMod(TranslateText.DAY_COUNTER, TranslateText.DAY_COUNTER_DESCRIPTION, LegacyIcon.MOD_DAY_COUNTER) {
+class DayCounterMod : SimpleHUDMod(TranslateText.DAY_COUNTER, TranslateText.DAY_COUNTER_DESCRIPTION, LegacyIcon.MOD_DAY_COUNTER) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -24,9 +23,5 @@ class DayCounterMod :
         return time.toString() + " Day" + (if (time != 1L) "s" else "")
     }
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.SUNRISE else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.SUNRISE else null
 }
-
-

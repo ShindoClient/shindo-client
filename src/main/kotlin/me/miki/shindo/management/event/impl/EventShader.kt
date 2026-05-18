@@ -6,4 +6,3 @@ import net.minecraft.client.shader.ShaderGroup
 class EventShader : Event() {
     val groups: MutableList<ShaderGroup> = ArrayList()
 }
-

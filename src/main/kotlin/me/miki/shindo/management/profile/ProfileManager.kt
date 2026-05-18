@@ -28,7 +28,6 @@ import java.io.FileWriter
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ProfileManager {
-
     companion object {
         private const val SENTINEL_ID = 999
         private const val DEFAULT_ID = -1
@@ -58,9 +57,10 @@ class ProfileManager {
     fun loadProfiles(loadDefaultProfile: Boolean = true) {
         profiles.clear()
 
-        val profileDir = instance.getFileManager().profileDir.also { dir ->
-            if (!dir.exists()) instance.getFileManager().createDir(dir)
-        }
+        val profileDir =
+            instance.getFileManager().profileDir.also { dir ->
+                if (!dir.exists()) instance.getFileManager().createDir(dir)
+            }
 
         val defaultFile = File(profileDir, "Default.json")
         initDefaultFile(defaultFile, loadDefaultProfile)
@@ -80,7 +80,10 @@ class ProfileManager {
     }
 
     @JvmOverloads
-    fun load(file: File?, disableModsBefore: Boolean = false): Boolean {
+    fun load(
+        file: File?,
+        disableModsBefore: Boolean = false,
+    ): Boolean {
         if (file == null || !file.exists()) {
             ShindoLogger.error("Profile file is null or missing: ${file?.absolutePath}")
             return false
@@ -119,7 +122,7 @@ class ProfileManager {
         type: ProfileType?,
         icon: ProfileIcon?,
         customIcon: File?,
-        shareCode: String? = null
+        shareCode: String? = null,
     ) {
         val resolvedShareCode = shareCode ?: readShareCode(file)
         writeProfile(file, buildProfileSnapshot(serverIp, type, icon, customIcon, resolvedShareCode))
@@ -137,7 +140,7 @@ class ProfileManager {
         val file = target.jsonFile ?: return
         writeProfile(
             file,
-            buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon, target.shareCode)
+            buildProfileSnapshot(target.serverIp, target.type, target.icon, target.customIcon, target.shareCode),
         )
     }
 
@@ -153,7 +156,10 @@ class ProfileManager {
         }
     }
 
-    fun updateShareCode(profile: Profile?, code: String) {
+    fun updateShareCode(
+        profile: Profile?,
+        code: String,
+    ) {
         val file = profile?.jsonFile ?: return
         val root = readProfileJson(file) ?: JsonObject()
         val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
@@ -163,7 +169,11 @@ class ProfileManager {
         profile.shareCode = code
     }
 
-    fun importProfileFromShare(name: String?, code: String?, json: JsonObject): File {
+    fun importProfileFromShare(
+        name: String?,
+        code: String?,
+        json: JsonObject,
+    ): File {
         val target = createUniqueProfileFile(name ?: "Shared Profile")
         if (!code.isNullOrBlank()) {
             val profileData = JsonUtils.getObjectProperty(json, "Profile Data") ?: JsonObject()
@@ -175,7 +185,10 @@ class ProfileManager {
         return target
     }
 
-    private fun initDefaultFile(defaultFile: File, loadDefault: Boolean) {
+    private fun initDefaultFile(
+        defaultFile: File,
+        loadDefault: Boolean,
+    ) {
         if (!defaultFile.exists()) {
             save(defaultFile, "", ProfileType.ALL, ProfileIcon.GRASS, null)
         } else if (loadDefault) {
@@ -183,22 +196,32 @@ class ProfileManager {
         }
     }
 
-    private fun loadNonDefaultProfiles(profileDir: File, defaultFile: File) {
+    private fun loadNonDefaultProfiles(
+        profileDir: File,
+        defaultFile: File,
+    ) {
         val defaultPath = defaultFile.canonicalPath
-        val files = profileDir.listFiles()
-            ?.filter { it.canonicalPath != defaultPath && "json".equals(FileUtils.getExtension(it), ignoreCase = true) }
-            ?: return
-
-        val futures = files.mapIndexed { index, file ->
-            TaskExecutor.runAsync(ThreadPoolType.IO) {
-                try {
-                    FileReader(file).use { gson.fromJson(it, JsonObject::class.java) ?: JsonObject() }
-                } catch (e: Exception) {
-                    ShindoLogger.error("Failed to read profile: ${file.name}", e)
-                    null
+        val files =
+            profileDir
+                .listFiles()
+                ?.filter {
+                    it.canonicalPath != defaultPath &&
+                        "json".equals(FileUtils.getExtension(it), ignoreCase = true)
                 }
-            }.thenApply { json -> json?.let { buildProfileFromJson(it, file, index) } }
-        }
+                ?: return
+
+        val futures =
+            files.mapIndexed { index, file ->
+                TaskExecutor
+                    .runAsync(ThreadPoolType.IO) {
+                        try {
+                            FileReader(file).use { gson.fromJson(it, JsonObject::class.java) ?: JsonObject() }
+                        } catch (e: Exception) {
+                            ShindoLogger.error("Failed to read profile: ${file.name}", e)
+                            null
+                        }
+                    }.thenApply { json -> json?.let { buildProfileFromJson(it, file, index) } }
+            }
 
         futures.forEach { future ->
             try {
@@ -246,7 +269,9 @@ class ProfileManager {
                 mod.setScale(JsonUtils.getFloatProperty(modObject, "Scale", 1f))
             }
 
-            instance.getModManager().getSettingsByMod(mod)
+            instance
+                .getModManager()
+                .getSettingsByMod(mod)
                 ?.let { applySettings(instance.getFileManager(), modObject, it) }
         }
     }
@@ -254,16 +279,20 @@ class ProfileManager {
     private fun applyAddons(addonJson: JsonObject) {
         for (addon in instance.getAddonManager().addons) {
             val addonKey = addon.getConfigId()
-            val addonObject = JsonUtils.getObjectProperty(addonJson, addonKey)
-                ?: JsonUtils.getObjectProperty(addonJson, addon.name)
-                ?: continue
+            val addonObject =
+                JsonUtils.getObjectProperty(addonJson, addonKey)
+                    ?: JsonUtils.getObjectProperty(addonJson, addon.name)
+                    ?: continue
 
             addon.setToggled(JsonUtils.getBooleanProperty(addonObject, "Toggle", addon.isToggled()), false)
 
-            instance.getAddonManager().getSettingByAddon(addon)
+            instance
+                .getAddonManager()
+                .getSettingByAddon(addon)
                 ?.let { applySettings(instance.getFileManager(), addonObject, it) }
 
-            JsonUtils.getObjectProperty(addonObject, "Config")
+            JsonUtils
+                .getObjectProperty(addonObject, "Config")
                 ?.let { AddonConfigRegistry.get(addonKey)?.fromJson(it) }
         }
     }
@@ -273,13 +302,13 @@ class ProfileManager {
         type: ProfileType?,
         icon: ProfileIcon?,
         customIcon: File?,
-        shareCode: String?
+        shareCode: String?,
     ): JsonObject {
         val root = JsonObject()
 
         root.add("Profile Data", buildProfileDataJson(serverIp, type, icon, customIcon, shareCode))
         root.add("Appearance", buildAppearanceJson())
-        //root.add("Network", buildNetworkJson())
+        // root.add("Network", buildNetworkJson())
         root.add("Mods", buildModsJson())
         root.add("Addons", buildAddonsJson())
 
@@ -291,14 +320,15 @@ class ProfileManager {
         type: ProfileType?,
         icon: ProfileIcon?,
         customIcon: File?,
-        shareCode: String?
-    ): JsonObject = JsonObject().apply {
-        addProperty("Icon", (icon ?: ProfileIcon.GRASS).id)
-        addProperty("Type", (type ?: ProfileType.ALL).id)
-        addProperty("Server", serverIp ?: "")
-        addProperty("CustomIcon", customIcon?.name ?: "")
-        if (!shareCode.isNullOrBlank()) addProperty("ShareCode", shareCode)
-    }
+        shareCode: String?,
+    ): JsonObject =
+        JsonObject().apply {
+            addProperty("Icon", (icon ?: ProfileIcon.GRASS).id)
+            addProperty("Type", (type ?: ProfileType.ALL).id)
+            addProperty("Server", serverIp ?: "")
+            addProperty("CustomIcon", customIcon?.name ?: "")
+            if (!shareCode.isNullOrBlank()) addProperty("ShareCode", shareCode)
+        }
 
     private fun buildAppearanceJson(): JsonObject {
         val colorManager = instance.getColorManager()
@@ -313,17 +343,20 @@ class ProfileManager {
     private fun buildModsJson(): JsonObject {
         val modJsonObject = JsonObject()
         for (mod in instance.getModManager().getMods()) {
-            val modObject = JsonObject().apply {
-                addProperty("Toggle", mod.isToggled())
-                if (mod is HUDMod) {
-                    addProperty("X", mod.getX())
-                    addProperty("Y", mod.getY())
-                    addProperty("Width", mod.getWidth())
-                    addProperty("Height", mod.getHeight())
-                    addProperty("Scale", mod.getScale())
+            val modObject =
+                JsonObject().apply {
+                    addProperty("Toggle", mod.isToggled())
+                    if (mod is HUDMod) {
+                        addProperty("X", mod.getX())
+                        addProperty("Y", mod.getY())
+                        addProperty("Width", mod.getWidth())
+                        addProperty("Height", mod.getHeight())
+                        addProperty("Scale", mod.getScale())
+                    }
                 }
-            }
-            instance.getModManager().getSettingsByMod(mod)
+            instance
+                .getModManager()
+                .getSettingsByMod(mod)
                 ?.let { buildSettingsJson(it) }
                 ?.takeIf { it.size() > 0 }
                 ?.let { modObject.add("Settings", it) }
@@ -335,14 +368,18 @@ class ProfileManager {
     private fun buildAddonsJson(): JsonObject {
         val addonJsonObject = JsonObject()
         for (addon in instance.getAddonManager().addons) {
-            val addonObject = JsonObject().apply {
-                addProperty("Toggle", addon.isToggled())
-            }
-            AddonConfigRegistry.get(addon.getConfigId())
+            val addonObject =
+                JsonObject().apply {
+                    addProperty("Toggle", addon.isToggled())
+                }
+            AddonConfigRegistry
+                .get(addon.getConfigId())
                 ?.toJson()
                 ?.takeIf { it.size() > 0 }
                 ?.let { addonObject.add("Config", it) }
-            instance.getAddonManager().getSettingByAddon(addon)
+            instance
+                .getAddonManager()
+                .getSettingByAddon(addon)
                 ?.let { buildSettingsJson(it) }
                 ?.takeIf { it.size() > 0 }
                 ?.let { addonObject.add("Settings", it) }
@@ -370,67 +407,96 @@ class ProfileManager {
         return obj
     }
 
-    private fun applySettings(fileManager: FileManager, modJson: JsonObject, settings: List<Setting>) {
+    private fun applySettings(
+        fileManager: FileManager,
+        modJson: JsonObject,
+        settings: List<Setting>,
+    ) {
         val settingsJson = JsonUtils.getObjectProperty(modJson, "Settings") ?: return
 
         settingsLoop@ for (setting in settings) {
             val key = setting.getNameKey()
             when (setting) {
-                is ColorSetting -> setting.setColor(
-                    ColorUtils.getColorByInt(
-                        JsonUtils.getIntProperty(
-                            settingsJson,
-                            key,
-                            Color.RED.rgb
-                        )
+                is ColorSetting -> {
+                    setting.setColor(
+                        ColorUtils.getColorByInt(
+                            JsonUtils.getIntProperty(
+                                settingsJson,
+                                key,
+                                Color.RED.rgb,
+                            ),
+                        ),
                     )
-                )
+                }
 
                 is BooleanSetting -> {
                     if (key == "borderlessFullscreenSetting" && !allowBorderlessProfileLoad) continue@settingsLoop
                     setting.setToggled(JsonUtils.getBooleanProperty(settingsJson, key, false))
                 }
 
-                is ComboSetting -> setting.setOption(
-                    setting.getOptionByNameKey(
-                        JsonUtils.getStringProperty(settingsJson, key, setting.getDefaultOption()?.nameKey).toString()
+                is ComboSetting -> {
+                    setting.setOption(
+                        setting.getOptionByNameKey(
+                            JsonUtils
+                                .getStringProperty(
+                                    settingsJson,
+                                    key,
+                                    setting.getDefaultOption()?.nameKey,
+                                ).toString(),
+                        ),
                     )
-                )
+                }
 
-                is NumberSetting -> setting.setValue(
-                    JsonUtils.getDoubleProperty(
-                        settingsJson,
-                        key,
-                        setting.getDefaultValue()
+                is NumberSetting -> {
+                    setting.setValue(
+                        JsonUtils.getDoubleProperty(
+                            settingsJson,
+                            key,
+                            setting.getDefaultValue(),
+                        ),
                     )
-                )
+                }
 
-                is TextSetting -> setting.setText(
-                    JsonUtils.getStringProperty(
-                        settingsJson,
-                        key,
-                        setting.getDefaultText()
-                    ) ?: ""
-                )
-
-                is KeybindSetting -> setting.setKeyCode(
-                    JsonUtils.getIntProperty(
-                        settingsJson,
-                        key,
-                        setting.getDefaultKeyCode()
+                is TextSetting -> {
+                    setting.setText(
+                        JsonUtils.getStringProperty(
+                            settingsJson,
+                            key,
+                            setting.getDefaultText(),
+                        ) ?: "",
                     )
-                )
+                }
 
-                is ImageSetting -> resolveFileFromCache(fileManager, "custom-image", settingsJson, key)
-                    ?.let { setting.setImage(it) }
+                is KeybindSetting -> {
+                    setting.setKeyCode(
+                        JsonUtils.getIntProperty(
+                            settingsJson,
+                            key,
+                            setting.getDefaultKeyCode(),
+                        ),
+                    )
+                }
 
-                is SoundSetting -> resolveFileFromCache(fileManager, "custom-sound", settingsJson, key)
-                    ?.let { setting.setSound(it) }
+                is ImageSetting -> {
+                    resolveFileFromCache(fileManager, "custom-image", settingsJson, key)
+                        ?.let { setting.setImage(it) }
+                }
 
-                is CellGridSetting -> settingsJson.getAsJsonArray(key)?.let { outer ->
-                    setting.setCells(Array(outer.size()) { i ->
-                        outer[i].asJsonArray.let { inner -> BooleanArray(inner.size()) { j -> inner[j].asBoolean } }
-                    })
+                is SoundSetting -> {
+                    resolveFileFromCache(fileManager, "custom-sound", settingsJson, key)
+                        ?.let { setting.setSound(it) }
+                }
+
+                is CellGridSetting -> {
+                    settingsJson.getAsJsonArray(key)?.let { outer ->
+                        setting.setCells(
+                            Array(outer.size()) { i ->
+                                outer[i].asJsonArray.let { inner ->
+                                    BooleanArray(inner.size()) { j -> inner[j].asBoolean }
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -441,16 +507,21 @@ class ProfileManager {
         return JsonObject().apply {
             addProperty("ProxyType", networkManager.getActiveProxyType().name)
             networkManager.getActiveCustomProxyId()?.let { addProperty("ActiveCustomProxyId", it) }
-            add("CustomProxies", JsonArray().also { arr ->
-                networkManager.proxyManager.getCustomProxies().forEach { proxy ->
-                    arr.add(JsonObject().apply {
-                        addProperty("Id", proxy.id)
-                        addProperty("Name", proxy.name)
-                        addProperty("PrimaryDNS", proxy.primaryDNS)
-                        proxy.secondaryDNS?.let { addProperty("SecondaryDNS", it) }
-                    })
-                }
-            })
+            add(
+                "CustomProxies",
+                JsonArray().also { arr ->
+                    networkManager.proxyManager.getCustomProxies().forEach { proxy ->
+                        arr.add(
+                            JsonObject().apply {
+                                addProperty("Id", proxy.id)
+                                addProperty("Name", proxy.name)
+                                addProperty("PrimaryDNS", proxy.primaryDNS)
+                                proxy.secondaryDNS?.let { addProperty("SecondaryDNS", it) }
+                            },
+                        )
+                    }
+                },
+            )
         }
     }
 
@@ -460,29 +531,38 @@ class ProfileManager {
             JsonUtils.getArrayProperty(networkJson, "CustomProxies").let { arr ->
                 for (i in 0 until arr.size()) {
                     val obj = arr[i].asJsonObject
-                    val proxy = CustomProxy(
-                        id = JsonUtils.getStringProperty(obj, "Id", null) ?: continue,
-                        name = JsonUtils.getStringProperty(obj, "Name", null) ?: continue,
-                        primaryDNS = JsonUtils.getStringProperty(obj, "PrimaryDNS", null) ?: continue,
-                        secondaryDNS = JsonUtils.getStringProperty(obj, "SecondaryDNS", null)
-                    )
+                    val proxy =
+                        CustomProxy(
+                            id = JsonUtils.getStringProperty(obj, "Id", null) ?: continue,
+                            name = JsonUtils.getStringProperty(obj, "Name", null) ?: continue,
+                            primaryDNS = JsonUtils.getStringProperty(obj, "PrimaryDNS", null) ?: continue,
+                            secondaryDNS = JsonUtils.getStringProperty(obj, "SecondaryDNS", null),
+                        )
                     if (proxy.isValid()) networkManager.proxyManager.addProxy(proxy)
                 }
             }
 
-            val proxyType = try {
-                NetworkManager.ProxyType.valueOf(
-                    JsonUtils.getStringProperty(networkJson, "ProxyType", "SYSTEM_DEFAULT")!!
-                )
-            } catch (e: Exception) {
-                NetworkManager.ProxyType.SYSTEM_DEFAULT
-            }
+            val proxyType =
+                try {
+                    NetworkManager.ProxyType.valueOf(
+                        JsonUtils.getStringProperty(networkJson, "ProxyType", "SYSTEM_DEFAULT")!!,
+                    )
+                } catch (e: Exception) {
+                    NetworkManager.ProxyType.SYSTEM_DEFAULT
+                }
 
             when (proxyType) {
-                NetworkManager.ProxyType.CLOUDFLARE -> networkManager.enableCloudflareProxy()
-                NetworkManager.ProxyType.SYSTEM_DEFAULT -> networkManager.disableAllProxies()
+                NetworkManager.ProxyType.CLOUDFLARE -> {
+                    networkManager.enableCloudflareProxy()
+                }
+
+                NetworkManager.ProxyType.SYSTEM_DEFAULT -> {
+                    networkManager.disableAllProxies()
+                }
+
                 NetworkManager.ProxyType.CUSTOM -> {
-                    JsonUtils.getStringProperty(networkJson, "ActiveCustomProxyId", null)
+                    JsonUtils
+                        .getStringProperty(networkJson, "ActiveCustomProxyId", null)
                         ?.let { networkManager.enableCustomProxy(it) }
                 }
             }
@@ -531,14 +611,17 @@ class ProfileManager {
             ?: defaultProfile?.takeIf { it.jsonFile?.canonicalPath == targetPath }
     }
 
-    private fun buildProfileFromFile(file: File, id: Int): Profile? {
+    private fun buildProfileFromFile(
+        file: File,
+        id: Int,
+    ): Profile? {
         if (!file.exists()) return null
         return try {
             FileReader(file).use {
                 buildProfileFromJson(
                     gson.fromJson(it, JsonObject::class.java) ?: JsonObject(),
                     file,
-                    id
+                    id,
                 )
             }
         } catch (e: Exception) {
@@ -547,26 +630,35 @@ class ProfileManager {
         }
     }
 
-    private fun buildProfileFromJson(root: JsonObject, file: File, id: Int): Profile {
+    private fun buildProfileFromJson(
+        root: JsonObject,
+        file: File,
+        id: Int,
+    ): Profile {
         val profileData = JsonUtils.getObjectProperty(root, "Profile Data") ?: JsonObject()
 
         val serverIp = JsonUtils.getStringProperty(profileData, "Server", "") ?: ""
         val icon = ProfileIcon.getIconById(JsonUtils.getIntProperty(profileData, "Icon", ProfileIcon.GRASS.id))
         val type = ProfileType.getTypeById(JsonUtils.getIntProperty(profileData, "Type", ProfileType.ALL.id))
 
-        val customIcon = (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
-            .trim()
-            .takeIf { it !in INVALID_CUSTOM_ICON_VALUES }
-            ?.let { name -> File(instance.getFileManager().profileIconDir, name).takeIf { it.exists() } }
+        val customIcon =
+            (JsonUtils.getStringProperty(profileData, "CustomIcon", "") ?: "")
+                .trim()
+                .takeIf { it !in INVALID_CUSTOM_ICON_VALUES }
+                ?.let { name -> File(instance.getFileManager().profileIconDir, name).takeIf { it.exists() } }
 
-        val shareCode = (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
-            .trim()
-            .ifEmpty { null }
+        val shareCode =
+            (JsonUtils.getStringProperty(profileData, "ShareCode", "") ?: "")
+                .trim()
+                .ifEmpty { null }
 
         return Profile(id, serverIp, file, icon, customIcon, type, shareCode)
     }
 
-    private fun writeProfile(file: File, jsonObject: JsonObject) {
+    private fun writeProfile(
+        file: File,
+        jsonObject: JsonObject,
+    ) {
         try {
             file.parentFile?.takeIf { !it.exists() }?.let { instance.getFileManager().createDir(it) }
             FileWriter(file).use { prettyGson.toJson(jsonObject, it) }
@@ -585,7 +677,7 @@ class ProfileManager {
         fileManager: FileManager,
         subDir: String,
         settingsJson: JsonObject,
-        key: String
+        key: String,
     ): File? {
         val cacheDir = File(fileManager.cacheDir, subDir).takeIf { it.exists() } ?: return null
         val name = JsonUtils.getStringProperty(settingsJson, key, null) ?: return null
@@ -609,9 +701,10 @@ class ProfileManager {
         return cleaned.take(48).ifEmpty { "Profile" }
     }
 
-    private fun Array<BooleanArray>.toCellGridJson(): JsonArray = JsonArray().also { outer ->
-        forEach { row ->
-            outer.add(JsonArray().also { inner -> row.forEach { inner.add(it) } })
+    private fun Array<BooleanArray>.toCellGridJson(): JsonArray =
+        JsonArray().also { outer ->
+            forEach { row ->
+                outer.add(JsonArray().also { inner -> row.forEach { inner.add(it) } })
+            }
         }
-    }
 }

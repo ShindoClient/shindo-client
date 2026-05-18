@@ -2,7 +2,6 @@ package me.miki.shindo.management.music.model
 
 import com.google.gson.annotations.SerializedName
 
-
 class LyricsLine {
     @SerializedName("startTimeMs")
     private val startTimeMs: String? = null
@@ -10,14 +9,15 @@ class LyricsLine {
 
     @SerializedName("endTimeMs")
     private val endTimeMs: String? = null
-    var romanizedWords
-            : String? = null
+    var romanizedWords: String? =
+        null
     val startTime: Long
-        get() = try {
-            startTimeMs!!.toLong()
-        } catch (e: NumberFormatException) {
-            0
-        }
+        get() =
+            try {
+                startTimeMs!!.toLong()
+            } catch (e: NumberFormatException) {
+                0
+            }
     val endTime: Long
         get() {
             return try {
@@ -27,7 +27,5 @@ class LyricsLine {
             }
         }
 
-    override fun toString(): String {
-        return words!!
-    }
+    override fun toString(): String = words!!
 }

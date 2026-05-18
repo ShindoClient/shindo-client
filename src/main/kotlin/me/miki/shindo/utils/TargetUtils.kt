@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 
 object TargetUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val timer = TimerUtils()
 

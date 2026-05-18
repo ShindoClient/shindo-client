@@ -15,7 +15,6 @@ import java.awt.Color
  * a coherent style language between Settings/Mods/Notifications/Presets scenes.
  */
 object LayoutSceneRenderer {
-
     /**
      * Draws the base panel used by each layout scene.
      */
@@ -25,7 +24,7 @@ object LayoutSceneRenderer {
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         nvg.drawShadow(x, y, width, height, LayoutSceneStyle.PANEL_RADIUS, 7)
         nvg.drawRoundedRect(
@@ -34,7 +33,7 @@ object LayoutSceneRenderer {
             width,
             height,
             LayoutSceneStyle.PANEL_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 214)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 214),
         )
         nvg.drawRoundedRect(
             x + 1f,
@@ -42,7 +41,7 @@ object LayoutSceneRenderer {
             width - 2f,
             height - 2f,
             LayoutSceneStyle.PANEL_RADIUS - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 232)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 232),
         )
         nvg.drawGradientRoundedRect(
             x + 1f,
@@ -51,7 +50,7 @@ object LayoutSceneRenderer {
             height - 2f,
             LayoutSceneStyle.PANEL_RADIUS - 1f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 34),
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 0)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 0),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -60,7 +59,7 @@ object LayoutSceneRenderer {
             height,
             LayoutSceneStyle.PANEL_RADIUS,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 74)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 74),
         )
     }
 
@@ -79,20 +78,34 @@ object LayoutSceneRenderer {
         width: Float,
         height: Float,
         hovered: Boolean,
-        active: Boolean
+        active: Boolean,
     ) {
         val highlight = hovered || active
-        val baseColor = ColorUtils.applyAlpha(
-            palette.getBackgroundColor(ColorType.MID),
-            if (active) 214 else if (highlight) 198 else 182
-        )
+        val baseColor =
+            ColorUtils.applyAlpha(
+                palette.getBackgroundColor(ColorType.MID),
+                if (active) {
+                    214
+                } else if (highlight) {
+                    198
+                } else {
+                    182
+                },
+            )
         nvg.drawShadow(x, y, width, height, 10f, if (highlight) 6 else 4)
         nvg.drawRoundedRect(x, y, width, height, 10f, baseColor)
 
-        val borderColor = ColorUtils.applyAlpha(
-            palette.getFontColor(ColorType.NORMAL),
-            if (active) 146 else if (highlight) 120 else 82
-        )
+        val borderColor =
+            ColorUtils.applyAlpha(
+                palette.getFontColor(ColorType.NORMAL),
+                if (active) {
+                    146
+                } else if (highlight) {
+                    120
+                } else {
+                    82
+                },
+            )
         nvg.drawOutlineRoundedRect(x, y, width, height, 10f, 1f, borderColor)
 
         nvg.drawGradientRoundedRect(
@@ -102,7 +115,7 @@ object LayoutSceneRenderer {
             height,
             10f,
             ColorUtils.applyAlpha(accent.getColor1(), if (highlight) 52 else 32),
-            ColorUtils.applyAlpha(accent.getColor2(), if (highlight) 52 else 32)
+            ColorUtils.applyAlpha(accent.getColor2(), if (highlight) 52 else 32),
         )
 
         val iconSize = 30f
@@ -115,7 +128,7 @@ object LayoutSceneRenderer {
             iconSize,
             9f,
             ColorUtils.applyAlpha(accent.getColor1(), 172),
-            ColorUtils.applyAlpha(accent.getColor2(), 172)
+            ColorUtils.applyAlpha(accent.getColor2(), 172),
         )
         nvg.drawCenteredText(
             icon,
@@ -123,7 +136,7 @@ object LayoutSceneRenderer {
             iconY + iconSize / 2f - 8f,
             Color.WHITE,
             17f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         val textX = iconX + iconSize + 12f
@@ -139,7 +152,7 @@ object LayoutSceneRenderer {
                 y + 33f,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 206),
                 8.4f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
     }
@@ -154,7 +167,7 @@ object LayoutSceneRenderer {
         y: Float,
         width: Float,
         height: Float,
-        radius: Float = LayoutSceneStyle.PREVIEW_RADIUS
+        radius: Float = LayoutSceneStyle.PREVIEW_RADIUS,
     ) {
         nvg.drawRoundedRect(
             x,
@@ -162,7 +175,7 @@ object LayoutSceneRenderer {
             width,
             height,
             radius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 168)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 168),
         )
         nvg.drawRoundedRect(
             x + 1f,
@@ -170,7 +183,7 @@ object LayoutSceneRenderer {
             width - 2f,
             height - 2f,
             radius - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 156)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 156),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -179,7 +192,7 @@ object LayoutSceneRenderer {
             height,
             radius,
             1f,
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 72)
+            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 72),
         )
         nvg.drawGradientRoundedRect(
             x + 1f,
@@ -188,7 +201,7 @@ object LayoutSceneRenderer {
             height * 0.42f,
             radius - 1f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 28),
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 0)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 0),
         )
     }
 }

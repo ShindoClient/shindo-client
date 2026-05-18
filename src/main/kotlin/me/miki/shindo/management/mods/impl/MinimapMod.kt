@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-
 class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTION, LegacyIcon.MOD_MINIMAP) {
     @Property(
         type = PropertyType.NUMBER,
@@ -29,7 +28,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         min = 10.0,
         max = 180.0,
         current = 150.0,
-        step = 1.0
+        step = 1.0,
     )
     private val widthSetting = 150
 
@@ -39,7 +38,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         min = 10.0,
         max = 180.0,
         current = 70.0,
-        step = 1.0
+        step = 1.0,
     )
     private val heightSetting = 70
 
@@ -57,7 +56,8 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
     fun onRenderNVG(event: EventNVG) {
         val width: Int = widthSetting
         val height: Int = heightSetting
-        event.renderer()
+        event
+            .renderer()
             .drawShadow(getX().toFloat(), getY().toFloat(), width * getScale(), height * getScale(), 6 * getScale())
     }
 
@@ -74,7 +74,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
             width * getScale(),
             height * getScale(),
             6 * getScale(),
-            alphaSetting.toFloat()
+            alphaSetting.toFloat(),
         )
         setWidth(width)
         setHeight(height)
@@ -98,7 +98,7 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
             this.getY().toFloat(),
             this.getWidth().toFloat(),
             this.getHeight().toFloat(),
-            Color(138, 176, 254)
+            Color(138, 176, 254),
         )
 
         startTranslate(this.getX() + (width / 2) * this.getScale(), this.getY() + (height / 2) * this.getScale())
@@ -144,16 +144,14 @@ class MinimapMod : HUDMod(TranslateText.MINIMAP, TranslateText.MINIMAP_DESCRIPTI
         chunkAtlas!!.clear()
     }
 
-    private fun lerp(prev: Double, current: Double, partialTicks: Float): Double {
-        return prev + (current - prev) * partialTicks
-    }
+    private fun lerp(
+        prev: Double,
+        current: Double,
+        partialTicks: Float,
+    ): Double = prev + (current - prev) * partialTicks
 
     override fun onEnable() {
         super.onEnable()
         chunkAtlas!!.clear()
     }
 }
-
-
-
-

@@ -10,7 +10,6 @@ import me.miki.shindo.utils.network.HttpUtils
 import java.io.File
 
 class DownloadManager {
-
     private val downloadFiles = ArrayList<DownloadFile>()
     private var downloaded = false
 

@@ -4,7 +4,6 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.Setting
 
 class Option {
-
     private val nameTranslate: TranslateText?
     private val fallbackName: String
     val nameKey: String
@@ -24,11 +23,7 @@ class Option {
     val name: String
         get() = nameTranslate?.getText() ?: fallbackName
 
-    fun getTranslate(): TranslateText? {
-        return nameTranslate
-    }
+    fun getTranslate(): TranslateText? = nameTranslate
 
-    private fun buildKey(raw: String?): String {
-        return if (raw == null) "" else Setting.normalizeKey(raw)
-    }
+    private fun buildKey(raw: String?): String = if (raw == null) "" else Setting.normalizeKey(raw)
 }

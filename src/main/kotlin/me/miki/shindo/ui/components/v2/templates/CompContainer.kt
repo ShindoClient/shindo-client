@@ -6,9 +6,8 @@ open class CompContainer(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : Component(x, y) {
-
     private var padding: Float = 0f
     private var spacing: Float = 0f
     private var layoutDirection: LayoutDirection = LayoutDirection.VERTICAL
@@ -20,7 +19,7 @@ open class CompContainer(
 
     enum class LayoutDirection {
         VERTICAL,
-        HORIZONTAL
+        HORIZONTAL,
     }
 
     fun setPadding(padding: Float): CompContainer {
@@ -38,7 +37,11 @@ open class CompContainer(
         return this
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         updateLayout()

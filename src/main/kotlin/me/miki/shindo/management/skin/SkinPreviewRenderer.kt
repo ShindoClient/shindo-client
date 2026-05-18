@@ -14,7 +14,6 @@ import java.net.URL
 import java.util.*
 
 class SkinPreviewRenderer {
-
     var baseWidth: Float = DEFAULT_BASE_WIDTH
         private set
     var baseHeight: Float = DEFAULT_BASE_HEIGHT
@@ -25,38 +24,43 @@ class SkinPreviewRenderer {
     fun renderRemoteSkinPreview(
         vg: Long,
         uuid: String?,
-        x: Float, y: Float,
+        x: Float,
+        y: Float,
         scale: Float,
         background: Color?,
-        border: Color?
+        border: Color?,
     ) {
         if (vg == 0L || scale <= 0f) return
         val normalizedUuid = normalizeUuid(uuid) ?: return
-        val imageHandle = try {
-            getOrCreatePreviewImage(vg, normalizedUuid)
-        } catch (e: IOException) {
-            ShindoLogger.error("SkinPreviewRenderer: Failed to fetch preview for $normalizedUuid (${e.message})")
-            return
-        }
+        val imageHandle =
+            try {
+                getOrCreatePreviewImage(vg, normalizedUuid)
+            } catch (e: IOException) {
+                ShindoLogger.error("SkinPreviewRenderer: Failed to fetch preview for $normalizedUuid (${e.message})")
+                return
+            }
         if (imageHandle <= 0) return
-        val (imageWidth, imageHeight) = MemoryStack.stackPush().use { stack ->
-            val w = stack.mallocInt(1)
-            val h = stack.mallocInt(1)
-            NanoVG.nvgImageSize(vg, imageHandle, w, h)
-            Pair(w.get(0), h.get(0))
-        }
+        val (imageWidth, imageHeight) =
+            MemoryStack.stackPush().use { stack ->
+                val w = stack.mallocInt(1)
+                val h = stack.mallocInt(1)
+                NanoVG.nvgImageSize(vg, imageHandle, w, h)
+                Pair(w.get(0), h.get(0))
+            }
         if (imageWidth <= 0 || imageHeight <= 0) return
         baseWidth = imageWidth.toFloat()
         baseHeight = imageHeight.toFloat()
         NanoVG.nvgSave(vg)
         NanoVG.nvgTranslate(vg, x, y)
         NanoVG.nvgScale(vg, scale, scale)
-        if (background != null && background.alpha > 0) drawBackground(
-            vg,
-            background,
-            imageWidth.toFloat(),
-            imageHeight.toFloat()
-        )
+        if (background != null && background.alpha > 0) {
+            drawBackground(
+                vg,
+                background,
+                imageWidth.toFloat(),
+                imageHeight.toFloat(),
+            )
+        }
         val paint = NVGPaint.calloc()
         try {
             NanoVG.nvgBeginPath(vg)
@@ -76,7 +80,10 @@ class SkinPreviewRenderer {
         return previewCache.containsKey(normalized)
     }
 
-    fun destroyCachedPreview(vg: Long, uuid: String?) {
+    fun destroyCachedPreview(
+        vg: Long,
+        uuid: String?,
+    ) {
         val normalized = normalizeUuid(uuid) ?: return
         if (vg == 0L) return
         val handle = previewCache.remove(normalized)
@@ -98,7 +105,10 @@ class SkinPreviewRenderer {
         baseHeight = DEFAULT_BASE_HEIGHT
     }
 
-    private fun getOrCreatePreviewImage(vg: Long, normalizedUuid: String): Int {
+    private fun getOrCreatePreviewImage(
+        vg: Long,
+        normalizedUuid: String,
+    ): Int {
         previewCache[normalizedUuid]?.let { if (it > 0) return it }
         val payload = downloadPreviewBytes(normalizedUuid)
         val buffer = MemoryUtil.memAlloc(payload.size)
@@ -124,7 +134,11 @@ class SkinPreviewRenderer {
             connection.readTimeout = READ_TIMEOUT_MS
             connection.setRequestProperty("User-Agent", "ShindoClient/RemoteSkinPreview")
             connection.useCaches = false
-            if (connection.responseCode != HttpURLConnection.HTTP_OK) throw IOException("HTTP ${connection.responseCode} while requesting $url")
+            if (connection.responseCode !=
+                HttpURLConnection.HTTP_OK
+            ) {
+                throw IOException("HTTP ${connection.responseCode} while requesting $url")
+            }
             connection.inputStream.use { inputStream ->
                 ByteArrayOutputStream().use { outputStream ->
                     val buffer = ByteArray(8192)
@@ -138,7 +152,12 @@ class SkinPreviewRenderer {
         }
     }
 
-    private fun drawBackground(vg: Long, color: Color, width: Float, height: Float) {
+    private fun drawBackground(
+        vg: Long,
+        color: Color,
+        width: Float,
+        height: Float,
+    ) {
         val nvgColor = NVGColor.calloc()
         try {
             NanoVG.nvgRGBA(
@@ -146,7 +165,7 @@ class SkinPreviewRenderer {
                 color.green.toByte(),
                 color.blue.toByte(),
                 color.alpha.toByte(),
-                nvgColor
+                nvgColor,
             )
             NanoVG.nvgBeginPath(vg)
             NanoVG.nvgRoundedRect(vg, 0f, 0f, width, height, 6f)
@@ -157,7 +176,12 @@ class SkinPreviewRenderer {
         }
     }
 
-    private fun drawBorder(vg: Long, color: Color, width: Float, height: Float) {
+    private fun drawBorder(
+        vg: Long,
+        color: Color,
+        width: Float,
+        height: Float,
+    ) {
         val nvgColor = NVGColor.calloc()
         try {
             NanoVG.nvgRGBA(
@@ -165,7 +189,7 @@ class SkinPreviewRenderer {
                 color.green.toByte(),
                 color.blue.toByte(),
                 color.alpha.toByte(),
-                nvgColor
+                nvgColor,
             )
             NanoVG.nvgBeginPath(vg)
             NanoVG.nvgRoundedRect(vg, 0f, 0f, width, height, 6f)

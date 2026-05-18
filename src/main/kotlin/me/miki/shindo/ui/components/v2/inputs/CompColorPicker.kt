@@ -38,6 +38,7 @@ class CompColorPicker : Component {
     }
 
     fun isOpen(): Boolean = isOpen
+
     fun getScale(): Float = scale
 
     fun setOpen(isOpen: Boolean) {
@@ -48,7 +49,11 @@ class CompColorPicker : Component {
         this.scale = scale
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
 
         openAnimation.setAnimation(if (isOpen) 1.1f else 0.0f, 16.0)
@@ -73,10 +78,11 @@ class CompColorPicker : Component {
                 colorSetting.setHue(hueMinValue)
             } else {
                 colorSetting.setHue(
-                    MathUtils.roundToPlace(
-                        (hueDiff / size) * (hueMaxValue - hueMinValue) + hueMinValue,
-                        2
-                    ).toFloat()
+                    MathUtils
+                        .roundToPlace(
+                            (hueDiff / size) * (hueMaxValue - hueMinValue) + hueMinValue,
+                            2,
+                        ).toFloat(),
                 )
             }
         }
@@ -97,15 +103,23 @@ class CompColorPicker : Component {
 
         if (sbDragging) {
             colorSetting.setBrightness(
-                if (brightnessDiff == 0.0) sbMinValue
-                else MathUtils.roundToPlace((brightnessDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
-                    .toFloat()
+                if (brightnessDiff == 0.0) {
+                    sbMinValue
+                } else {
+                    MathUtils
+                        .roundToPlace((brightnessDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
+                        .toFloat()
+                },
             )
 
             colorSetting.setSaturation(
-                if (saturationDiff == 0.0) sbMinValue
-                else MathUtils.roundToPlace((saturationDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
-                    .toFloat()
+                if (saturationDiff == 0.0) {
+                    sbMinValue
+                } else {
+                    MathUtils
+                        .roundToPlace((saturationDiff / size) * (sbMaxValue - sbMinValue) + sbMinValue, 2)
+                        .toFloat()
+                },
             )
         }
 
@@ -123,11 +137,15 @@ class CompColorPicker : Component {
         if (alphaDragging) {
             if (colorSetting.isShowAlpha()) {
                 colorSetting.setAlpha(
-                    if (alphaDiff == 0.0) 0
-                    else MathUtils.roundToPlace(
-                        (alphaDiff / alphaWidth) * (alphaMaxValue - alphaMinValue) + alphaMinValue,
-                        2
-                    ).toInt()
+                    if (alphaDiff == 0.0) {
+                        0
+                    } else {
+                        MathUtils
+                            .roundToPlace(
+                                (alphaDiff / alphaWidth) * (alphaMaxValue - alphaMinValue) + alphaMinValue,
+                                2,
+                            ).toInt()
+                    },
                 )
             } else {
                 colorSetting.setAlpha(255)
@@ -141,7 +159,7 @@ class CompColorPicker : Component {
             getY(),
             12 * scale,
             size,
-            3 * scale
+            3 * scale,
         )
         nvgInstance.drawArc(
             getX() + 112 * scale,
@@ -150,7 +168,7 @@ class CompColorPicker : Component {
             0f,
             360f,
             1.2f * scale,
-            Color.WHITE
+            Color.WHITE,
         )
         nvgInstance.drawArc(
             getX() + saturationAnimation.getValue() + 6 * scale,
@@ -159,7 +177,7 @@ class CompColorPicker : Component {
             0f,
             360f,
             1.2f * scale,
-            Color.WHITE
+            Color.WHITE,
         )
 
         if (colorSetting.isShowAlpha()) {
@@ -169,7 +187,7 @@ class CompColorPicker : Component {
                 getY() + 106 * scale,
                 size + 18 * scale,
                 12 * scale,
-                3 * scale
+                3 * scale,
             )
             nvgInstance.drawAlphaBar(
                 getX(),
@@ -177,7 +195,7 @@ class CompColorPicker : Component {
                 alphaWidth,
                 12 * scale,
                 3 * scale,
-                Color.getHSBColor(colorSetting.getHue(), 1f, 1f)
+                Color.getHSBColor(colorSetting.getHue(), 1f, 1f),
             )
             nvgInstance.drawArc(
                 getX() + alphaAnimation.getValue() + 6 * scale,
@@ -186,7 +204,7 @@ class CompColorPicker : Component {
                 0f,
                 360f,
                 1.2f * scale,
-                Color.WHITE
+                Color.WHITE,
             )
         }
 
@@ -197,7 +215,11 @@ class CompColorPicker : Component {
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (isOpen) {
             val size = 100 * scale
             val alphaWidth = size + 18 * scale
@@ -218,8 +240,9 @@ class CompColorPicker : Component {
                         getX(),
                         getY() + 106 * scale + addY,
                         alphaWidth,
-                        12 * scale
-                    ) && colorSetting.isShowAlpha()
+                        12 * scale,
+                    ) &&
+                    colorSetting.isShowAlpha()
                 ) {
                     alphaDragging = true
                 }
@@ -233,7 +256,11 @@ class CompColorPicker : Component {
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         hueDragging = false
         sbDragging = false
         alphaDragging = false
@@ -242,6 +269,8 @@ class CompColorPicker : Component {
 
     fun isShowAlpha(): Boolean = colorSetting.isShowAlpha()
 
-    fun isInsideOpen(mouseX: Int, mouseY: Int): Boolean =
-        MouseUtils.isInside(mouseX, mouseY, getX() + 106 * scale, getY(), 16 * scale, 16 * scale)
+    fun isInsideOpen(
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean = MouseUtils.isInside(mouseX, mouseY, getX() + 106 * scale, getY(), 16 * scale, 16 * scale)
 }

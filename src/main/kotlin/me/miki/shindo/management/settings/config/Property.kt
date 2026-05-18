@@ -22,5 +22,5 @@ annotation class Property(
     val keyCode: Int = Int.MIN_VALUE,
     val text: String = "",
     val enumName: String = "",
-    val key: String = ""
+    val key: String = "",
 )

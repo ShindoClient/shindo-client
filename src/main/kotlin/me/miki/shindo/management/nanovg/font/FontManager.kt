@@ -5,7 +5,6 @@ import me.miki.shindo.utils.IOUtils
 import org.lwjgl.nanovg.NanoVG
 
 class FontManager {
-
     fun init(nvg: Long) {
         loadFont(nvg, Fonts.UNIFONT)
         loadFont(nvg, Fonts.FALLBACK)
@@ -17,7 +16,10 @@ class FontManager {
         loadFont(nvg, Fonts.MOJANGLES)
     }
 
-    private fun loadFont(nvg: Long, font: Font) {
+    private fun loadFont(
+        nvg: Long,
+        font: Font,
+    ) {
         if (font.isLoaded) {
             return
         }

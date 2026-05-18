@@ -4,12 +4,18 @@ import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 object SearchUtils {
+    @JvmStatic
+    fun isSimilar(
+        s1: String,
+        s2: String,
+    ): Boolean = isSimilar(s1, s2, 1)
 
     @JvmStatic
-    fun isSimilar(s1: String, s2: String): Boolean = isSimilar(s1, s2, 1)
-
-    @JvmStatic
-    fun isSimilar(s1: String, s2: String, searchDistance: Int): Boolean {
+    fun isSimilar(
+        s1: String,
+        s2: String,
+        searchDistance: Int,
+    ): Boolean {
         val left = s1.lowercase(Locale.ENGLISH)
         val right = s2.lowercase(Locale.ENGLISH)
 
@@ -26,4 +32,3 @@ object SearchUtils {
         return left.contains(right) || StringUtils.getLevenshteinDistance(left, right) <= searchDistance
     }
 }
-

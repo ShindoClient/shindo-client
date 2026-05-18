@@ -13,33 +13,33 @@ import net.minecraft.util.MathHelper
 import net.minecraft.world.WorldSettings
 
 object PlayerUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmField
-    val MODIFIER_BY_TICK: MutableMap<Int, Float> = mutableMapOf(
-        0 to 0.0f,
-        1 to 0.00037497282f,
-        2 to 0.0015000105f,
-        3 to 0.0033749938f,
-        4 to 0.0059999824f,
-        5 to 0.009374976f,
-        6 to 0.013499975f,
-        7 to 0.01837498f,
-        8 to 0.023999989f,
-        9 to 0.030375004f,
-        10 to 0.037500024f,
-        11 to 0.04537499f,
-        12 to 0.05400002f,
-        13 to 0.063374996f,
-        14 to 0.07349998f,
-        15 to 0.084375024f,
-        16 to 0.096000016f,
-        17 to 0.10837501f,
-        18 to 0.121500015f,
-        19 to 0.13537502f,
-        20 to 0.14999998f
-    )
+    val MODIFIER_BY_TICK: MutableMap<Int, Float> =
+        mutableMapOf(
+            0 to 0.0f,
+            1 to 0.00037497282f,
+            2 to 0.0015000105f,
+            3 to 0.0033749938f,
+            4 to 0.0059999824f,
+            5 to 0.009374976f,
+            6 to 0.013499975f,
+            7 to 0.01837498f,
+            8 to 0.023999989f,
+            9 to 0.030375004f,
+            10 to 0.037500024f,
+            11 to 0.04537499f,
+            12 to 0.05400002f,
+            13 to 0.063374996f,
+            14 to 0.07349998f,
+            15 to 0.084375024f,
+            16 to 0.096000016f,
+            17 to 0.10837501f,
+            18 to 0.121500015f,
+            19 to 0.13537502f,
+            20 to 0.14999998f,
+        )
 
     @JvmStatic
     fun hasItem(item: Item): Boolean {
@@ -57,7 +57,9 @@ object PlayerUtils {
         val distTraveledLastTickX = mc.thePlayer.posX - mc.thePlayer.prevPosX
         val distTraveledLastTickZ = mc.thePlayer.posZ - mc.thePlayer.prevPosZ
         val currentSpeed =
-            MathHelper.sqrt_double(distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ)
+            MathHelper.sqrt_double(
+                distTraveledLastTickX * distTraveledLastTickX + distTraveledLastTickZ * distTraveledLastTickZ,
+            )
         return (currentSpeed / 0.05).toFloat()
     }
 
@@ -251,8 +253,14 @@ object PlayerUtils {
     fun getPotionsFromInventory(inputPotion: Potion): Int {
         var count = 0
         for (i in 1 until 45) {
-            if (mc.thePlayer.inventoryContainer.getSlot(i).hasStack) {
-                val isStack = mc.thePlayer.inventoryContainer.getSlot(i).stack
+            if (mc.thePlayer.inventoryContainer
+                    .getSlot(i)
+                    .hasStack
+            ) {
+                val isStack =
+                    mc.thePlayer.inventoryContainer
+                        .getSlot(i)
+                        .stack
                 val item = isStack.item
                 if (item is ItemPotion) {
                     val potion = item

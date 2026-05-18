@@ -7,7 +7,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 class Scroll {
-
     private val minScroll = 0f
     private val scrollAnimation = SimpleAnimation(0.0f)
     var maxScroll = Float.MAX_VALUE
@@ -29,11 +28,12 @@ class Scroll {
         }
 
         val dWheel = Mouse.getDWheel()
-        rawScroll += if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            dWheel.toFloat() / scrollSpeed
-        } else {
-            dWheel.toFloat() / (scrollSpeed * 2)
-        }
+        rawScroll +=
+            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                dWheel.toFloat() / scrollSpeed
+            } else {
+                dWheel.toFloat() / (scrollSpeed * 2)
+            }
         rawScroll = max(min(minScroll, rawScroll), -maxScroll)
     }
 

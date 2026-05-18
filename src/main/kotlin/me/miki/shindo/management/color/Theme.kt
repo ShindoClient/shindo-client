@@ -10,7 +10,7 @@ enum class Theme(
     private val darkBackgroundColor: Color,
     private val normalBackgroundColor: Color,
     private val darkFontColor: Color,
-    private val normalFontColor: Color
+    private val normalFontColor: Color,
 ) {
     DARK(0, "Dark", Color(19, 19, 20), Color(34, 35, 39), Color(255, 255, 255), Color(235, 235, 235)),
     LIGHT(1, "Light", Color(254, 254, 254), Color(238, 238, 238), Color(54, 54, 54), Color(107, 117, 129)),
@@ -25,7 +25,7 @@ enum class Theme(
         Color(49, 50, 68),
         Color(30, 30, 46),
         Color(205, 214, 244),
-        Color(245, 194, 231)
+        Color(245, 194, 231),
     ),
     CATPPUCCIN_LATTE(
         8,
@@ -33,7 +33,7 @@ enum class Theme(
         Color(230, 233, 239),
         Color(239, 241, 245),
         Color(76, 79, 105),
-        Color(140, 143, 161)
+        Color(140, 143, 161),
     ),
     BIRD(9, "Twoot twoot", Color(25, 40, 52), Color(20, 32, 43), Color(255, 255, 255), Color(136, 153, 171)),
     CALIFORNIA(10, "California", Color(22, 22, 25), Color(0, 0, 0), Color(230, 230, 230), Color(130, 130, 130)),
@@ -41,7 +41,8 @@ enum class Theme(
     CAMELLIA(12, "Camellia", Color(30, 31, 36), Color(23, 24, 28), Color(228, 229, 231), Color(250, 56, 103)),
     TERMINAL(13, "Terminal", Color(7, 7, 7), Color(12, 12, 12), Color(33, 96, 7), Color(54, 73, 0)),
     NORD(14, "Nord", Color(59, 66, 82), Color(46, 52, 64), Color(236, 239, 244), Color(216, 222, 233)),
-    GRUVBOX(15, "Gruvbox Dark Med", Color(0x3C3836), Color(0x282828), Color(0xEBDBB2), Color(0xA89984));
+    GRUVBOX(15, "Gruvbox Dark Med", Color(0x3C3836), Color(0x282828), Color(0xEBDBB2), Color(0xA89984)),
+    ;
 
     private val animation = SimpleAnimation()
 
@@ -51,20 +52,33 @@ enum class Theme(
     private val midFontColor = ColorUtils.interpolateColor(darkFontColor, normalFontColor, 0.5)
 
     fun getName(): String = names
+
     fun getId(): Int = id
+
     fun getDarkBackgroundColor(): Color = adjDark
+
     fun getMidBackgroundColor(): Color = midBackgroundColor
+
     fun getNormalBackgroundColor(): Color = adjNormal
+
     fun getDarkFontColor(): Color = darkFontColor
+
     fun getMidFontColor(): Color = midFontColor
+
     fun getNormalFontColor(): Color = normalFontColor
 
     fun getDarkBackgroundColor(alpha: Int): Color = ColorUtils.applyAlpha(adjDark, alpha)
+
     fun getMidBackgroundColor(alpha: Int): Color = ColorUtils.applyAlpha(midBackgroundColor, alpha)
+
     fun getNormalBackgroundColor(alpha: Int): Color = ColorUtils.applyAlpha(adjNormal, alpha)
+
     fun getDarkFontColor(alpha: Int): Color = ColorUtils.applyAlpha(darkFontColor, alpha)
+
     fun getMidFontColor(alpha: Int): Color = ColorUtils.applyAlpha(midFontColor, alpha)
+
     fun getNormalFontColor(alpha: Int): Color = ColorUtils.applyAlpha(normalFontColor, alpha)
+
     fun getAnimation(): SimpleAnimation = animation
 
     companion object {

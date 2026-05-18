@@ -18,7 +18,6 @@ import me.miki.shindo.utils.mouse.Scroll
  * categories that open a SettingsPanel drawer (Module and Addon).
  */
 object ModMenuSettingsOverlayRenderer {
-
     data class Layout(
         val panelX: Float,
         val panelY: Float,
@@ -35,14 +34,14 @@ object ModMenuSettingsOverlayRenderer {
         val scissorX: Float,
         val scissorY: Float,
         val scissorWidth: Float,
-        val scissorHeight: Float
+        val scissorHeight: Float,
     )
 
     fun computeLayout(
         viewportX: Float,
         viewportY: Float,
         viewportWidth: Float,
-        viewportHeight: Float
+        viewportHeight: Float,
     ): Layout {
         val panelX = viewportX + ModMenuSettingsOverlayStyle.PANEL_MARGIN
         val panelY = viewportY + ModMenuSettingsOverlayStyle.PANEL_MARGIN
@@ -54,7 +53,8 @@ object ModMenuSettingsOverlayRenderer {
         val contentX = panelX + ModMenuSettingsOverlayStyle.CONTENT_INSET_X
         val contentY = panelY + ModMenuSettingsOverlayStyle.HEADER_HEIGHT + ModMenuSettingsOverlayStyle.CONTENT_TOP_GAP
         val contentWidth = panelWidth - (ModMenuSettingsOverlayStyle.CONTENT_INSET_X * 2f)
-        val contentHeight = panelHeight -
+        val contentHeight =
+            panelHeight -
                 ModMenuSettingsOverlayStyle.HEADER_HEIGHT -
                 ModMenuSettingsOverlayStyle.CONTENT_TOP_GAP -
                 ModMenuSettingsOverlayStyle.CONTENT_BOTTOM_GAP
@@ -75,7 +75,7 @@ object ModMenuSettingsOverlayRenderer {
             scissorX = panelX + ModMenuSettingsOverlayStyle.SCISSOR_INSET_X,
             scissorY = contentY,
             scissorWidth = panelWidth - (ModMenuSettingsOverlayStyle.SCISSOR_INSET_X * 2f),
-            scissorHeight = contentHeight
+            scissorHeight = contentHeight,
         )
     }
 
@@ -86,14 +86,15 @@ object ModMenuSettingsOverlayRenderer {
         title: String,
         resetRotation: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
-        val backHovered = isHeaderActionHovered(
-            mouseX,
-            mouseY,
-            layout.panelX + ModMenuSettingsOverlayStyle.HEADER_BACK_X,
-            layout.headerIconY
-        )
+        val backHovered =
+            isHeaderActionHovered(
+                mouseX,
+                mouseY,
+                layout.panelX + ModMenuSettingsOverlayStyle.HEADER_BACK_X,
+                layout.headerIconY,
+            )
         val resetHovered = isHeaderActionHovered(mouseX, mouseY, layout.resetIconX, layout.resetIconY)
 
         nvg.drawShadow(layout.panelX, layout.panelY, layout.panelWidth, layout.panelHeight, 12f, 7)
@@ -103,7 +104,7 @@ object ModMenuSettingsOverlayRenderer {
             layout.panelWidth,
             layout.panelHeight,
             ModMenuSettingsOverlayStyle.PANEL_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210),
         )
         nvg.drawRoundedRect(
             layout.panelX + 1f,
@@ -111,7 +112,7 @@ object ModMenuSettingsOverlayRenderer {
             layout.panelWidth - 2f,
             layout.panelHeight - 2f,
             ModMenuSettingsOverlayStyle.PANEL_INNER_RADIUS,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230),
         )
         nvg.drawDivider(
             layout.panelX + 10f,
@@ -119,7 +120,7 @@ object ModMenuSettingsOverlayRenderer {
             layout.panelWidth - 20f,
             1f,
             1f,
-            48f
+            48f,
         )
 
         nvg.drawText(
@@ -128,7 +129,7 @@ object ModMenuSettingsOverlayRenderer {
             layout.headerIconY,
             if (backHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
             13f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
         nvg.drawText(
             title,
@@ -136,7 +137,7 @@ object ModMenuSettingsOverlayRenderer {
             layout.titleY,
             palette.getFontColor(ColorType.DARK),
             13f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         nvg.withState {
             nvg.rotateDegreesAt(layout.resetIconX + 6.5f, layout.resetIconY + 6.5f, resetRotation % 360f)
@@ -146,7 +147,7 @@ object ModMenuSettingsOverlayRenderer {
                 layout.resetIconY,
                 if (resetHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
                 13f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
     }
@@ -157,7 +158,7 @@ object ModMenuSettingsOverlayRenderer {
         viewportX: Float,
         viewportY: Float,
         viewportWidth: Float,
-        viewportHeight: Float
+        viewportHeight: Float,
     ) {
         nvg.drawRoundedRect(
             viewportX,
@@ -165,7 +166,7 @@ object ModMenuSettingsOverlayRenderer {
             viewportWidth,
             viewportHeight,
             0f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 118)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 118),
         )
         nvg.drawVerticalGradientRect(
             viewportX,
@@ -173,7 +174,7 @@ object ModMenuSettingsOverlayRenderer {
             viewportWidth,
             viewportHeight,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 22),
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 4)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 4),
         )
     }
 
@@ -185,7 +186,7 @@ object ModMenuSettingsOverlayRenderer {
         scroll: Scroll,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         ModMenuClipCoordinator.withClip(
             nvg = nvg,
@@ -194,7 +195,7 @@ object ModMenuSettingsOverlayRenderer {
             width = layout.scissorWidth,
             height = layout.scissorHeight,
             layer = ModMenuClipCoordinator.ClipLayer.OVERLAY,
-            tag = "settings_overlay_panel"
+            tag = "settings_overlay_panel",
         ) {
             panel.draw(
                 mouseX,
@@ -206,22 +207,26 @@ object ModMenuSettingsOverlayRenderer {
                 layout.contentHeight,
                 nvg,
                 palette,
-                scroll
+                scroll,
             )
         }
     }
 
-    private fun isHeaderActionHovered(mouseX: Int, mouseY: Int, actionX: Float, actionY: Float): Boolean {
-        return mouseX >= actionX - 4f &&
-                mouseX <= actionX + ModMenuSettingsOverlayStyle.HEADER_ACTION_HITBOX &&
-                mouseY >= actionY - 3f &&
-                mouseY <= actionY + ModMenuSettingsOverlayStyle.HEADER_ACTION_HITBOX
-    }
+    private fun isHeaderActionHovered(
+        mouseX: Int,
+        mouseY: Int,
+        actionX: Float,
+        actionY: Float,
+    ): Boolean =
+        mouseX >= actionX - 4f &&
+            mouseX <= actionX + ModMenuSettingsOverlayStyle.HEADER_ACTION_HITBOX &&
+            mouseY >= actionY - 3f &&
+            mouseY <= actionY + ModMenuSettingsOverlayStyle.HEADER_ACTION_HITBOX
 
     fun configureSettingsPanel(
         panel: SettingsPanel,
         panelStyle: SettingsPanelStyle,
-        layoutMode: SettingsPanel.LayoutMode?
+        layoutMode: SettingsPanel.LayoutMode?,
     ) {
         panel.setStyle(panelStyle)
         panel.setLayoutMode(layoutMode)

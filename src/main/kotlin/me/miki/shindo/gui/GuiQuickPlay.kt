@@ -20,7 +20,6 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 
 class GuiQuickPlay : GuiScreen() {
-
     private val scroll = Scroll()
     private val screenAnimation = ScreenAnimation()
     private lateinit var introAnimation: Animation
@@ -49,14 +48,22 @@ class GuiQuickPlay : GuiScreen() {
         sceneChangeAnimation.setValue(1.0)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
 
         BlurUtils.drawBlurScreen(20F)
 
-        screenAnimation.wrap(Runnable {
-            nvg!!.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f)
-        }, 2 - introAnimation.getValueFloat(), introAnimation.getValueFloat().coerceAtMost(1f))
+        screenAnimation.wrap(
+            Runnable {
+                nvg!!.drawShadow(x.toFloat(), y.toFloat(), menuWidth.toFloat(), menuHeight.toFloat(), 12f)
+            },
+            2 - introAnimation.getValueFloat(),
+            introAnimation.getValueFloat().coerceAtMost(1f),
+        )
 
         screenAnimation.wrap(
             Runnable { drawNanoVG() },
@@ -66,7 +73,7 @@ class GuiQuickPlay : GuiScreen() {
             menuHeight,
             2 - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            true
+            true,
         )
 
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -96,7 +103,7 @@ class GuiQuickPlay : GuiScreen() {
             menuWidth.toFloat(),
             menuHeight.toFloat(),
             12f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            palette.getBackgroundColor(ColorType.NORMAL),
         )
         nvg.drawCenteredText(
             "Choose a " + if (currentQuickPlay != null) "Mode" else "Game",
@@ -104,7 +111,7 @@ class GuiQuickPlay : GuiScreen() {
             y + 10f,
             palette.getFontColor(ColorType.DARK),
             15f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         nvg.save()
@@ -117,7 +124,7 @@ class GuiQuickPlay : GuiScreen() {
                 110f,
                 42f,
                 6f,
-                palette.getBackgroundColor(ColorType.DARK)
+                palette.getBackgroundColor(ColorType.DARK),
             )
             nvg.drawRoundedImage(q.getIcon(), x + 20f + offsetX, y + 47f + offsetY, 32f, 32f, 6f)
 
@@ -127,7 +134,7 @@ class GuiQuickPlay : GuiScreen() {
                 y + 50f + offsetY,
                 palette.getFontColor(ColorType.DARK),
                 10f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
 
             offsetX += 120
@@ -166,7 +173,7 @@ class GuiQuickPlay : GuiScreen() {
                 y + 94f,
                 palette.getFontColor(ColorType.DARK),
                 12f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
 
             for (c in selected.getCommands()) {
@@ -176,7 +183,7 @@ class GuiQuickPlay : GuiScreen() {
                     110f,
                     20f,
                     6f,
-                    palette.getBackgroundColor(ColorType.DARK)
+                    palette.getBackgroundColor(ColorType.DARK),
                 )
                 nvg.drawCenteredText(
                     c.getName(),
@@ -184,7 +191,7 @@ class GuiQuickPlay : GuiScreen() {
                     y + 118.5f + offsetY,
                     palette.getFontColor(ColorType.NORMAL),
                     9f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
 
                 offsetX += 120
@@ -205,7 +212,11 @@ class GuiQuickPlay : GuiScreen() {
         nvg.restore()
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val quickPlayManager = instance.getQuickPlayManager()
 
@@ -223,8 +234,9 @@ class GuiQuickPlay : GuiScreen() {
                         x + 15f + offsetX,
                         y + 42f + offsetY,
                         110f,
-                        42f
-                    ) && mouseButton == 0
+                        42f,
+                    ) &&
+                    mouseButton == 0
                 ) {
                     scroll.resetAll()
                     currentQuickPlay = q
@@ -255,8 +267,10 @@ class GuiQuickPlay : GuiScreen() {
                             x + 15f + offsetX,
                             y + 112f + offsetY,
                             110f,
-                            20f
-                        ) && mouseButton == 0 && sceneChangeAnimation.isDone(Direction.BACKWARDS)
+                            20f,
+                        ) &&
+                        mouseButton == 0 &&
+                        sceneChangeAnimation.isDone(Direction.BACKWARDS)
                     ) {
                         mc.thePlayer.sendChatMessage(c.getCommand())
                     }
@@ -274,7 +288,10 @@ class GuiQuickPlay : GuiScreen() {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             if (currentQuickPlay != null) {
                 sceneChangeAnimation.setDirection(Direction.FORWARDS)
@@ -284,7 +301,5 @@ class GuiQuickPlay : GuiScreen() {
         }
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame(): Boolean = false
 }

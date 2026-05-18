@@ -7,7 +7,6 @@ import java.text.Normalizer
  * Ex: "Descrição" -> "Descricao", "áéíóú" -> "aeiou"
  */
 object TextUtils {
-
     @JvmStatic
     fun stripUnicodeAccents(text: String): String {
         if (text.isEmpty()) return text

@@ -22,9 +22,9 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
 
-class SettingsCategory(parent: GuiModMenu) :
-    Category(parent, TranslateText.SETTINGS, LegacyIcon.SETTINGS, false, false) {
-
+class SettingsCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.SETTINGS, LegacyIcon.SETTINGS, false, false) {
     private val scenes = arrayListOf<SettingScene>()
     private val sceneButtons = arrayListOf<CompSceneButton>()
     private val transitionCoordinator = ModMenuSlideTransitionCoordinator()
@@ -41,7 +41,7 @@ class SettingsCategory(parent: GuiModMenu) :
     private fun registerScene(scene: SettingScene) {
         scenes.add(scene)
         sceneButtons.add(
-            CompSceneButton({ scene.icon }, { scene.name }, { scene.description })
+            CompSceneButton({ scene.icon }, { scene.name }, { scene.description }),
         )
     }
 
@@ -58,7 +58,11 @@ class SettingsCategory(parent: GuiModMenu) :
         transitionCoordinator.reset()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.getColorManager().getPalette()
@@ -81,13 +85,14 @@ class SettingsCategory(parent: GuiModMenu) :
             setCanClose(true)
         }
 
-        if (transitionCoordinator.isListInteractive() && MouseUtils.isInside(
+        if (transitionCoordinator.isListInteractive() &&
+            MouseUtils.isInside(
                 mouseX,
                 mouseY,
                 baseX,
                 baseY,
                 baseWidth,
-                baseHeight
+                baseHeight,
             )
         ) {
             scroll.onScroll()
@@ -110,10 +115,10 @@ class SettingsCategory(parent: GuiModMenu) :
                 translateX = listTranslateX,
                 translateY = 0f,
                 layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_LIST,
-                tag = "settings_scene_list"
+                tag = "settings_scene_list",
             ) {
-                //nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
-                //nvg.drawRoundedRect( baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176))
+                // nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
+                // nvg.drawRoundedRect( baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176))
                 forEachSceneEntry(scrollValue) { entryScene, button, cardX, cardY, cardW, cardH ->
                     button.setBounds(cardX, cardY, cardW, cardH)
                     button.setActive(scene == entryScene && transitionCoordinator.isSceneVisible())
@@ -133,11 +138,11 @@ class SettingsCategory(parent: GuiModMenu) :
                     translateX = sceneTranslateX,
                     translateY = 0f,
                     layer = ModMenuClipCoordinator.ClipLayer.SETTINGS_SCENE,
-                    tag = "settings_scene_content"
+                    tag = "settings_scene_content",
                 ) {
-                    //nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
-                    //nvg.drawRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190) )
-                    //nvg.drawGradientRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(accent.getColor1(), 24), ColorUtils.applyAlpha(accent.getColor2(), 24))
+                    // nvg.drawShadow(baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, 7)
+                    // nvg.drawRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 190) )
+                    // nvg.drawGradientRoundedRect( baseX + 10f, baseY + 8f, baseWidth - 20f, baseHeight - 16f, 12f, ColorUtils.applyAlpha(accent.getColor1(), 24), ColorUtils.applyAlpha(accent.getColor2(), 24))
                     scene.drawScreen(mouseX, mouseY, partialTicks)
 
                     val headerScene = (scene as? LayoutScene)?.getActiveSubScene() ?: scene
@@ -160,7 +165,7 @@ class SettingsCategory(parent: GuiModMenu) :
                         headerY + (iconSize / 2f) - 10f,
                         Color.WHITE,
                         22f,
-                        Fonts.LEGACYICON
+                        Fonts.LEGACYICON,
                     )
 
                     val title = nvg.getLimitText(headerScene.name, 13.5f, Fonts.MEDIUM, textWidth)
@@ -188,7 +193,11 @@ class SettingsCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (transitionCoordinator.isListInteractive()) {
             forEachSceneEntryUntil(scroll.getValue()) { scene, _, cardX, cardY, cardWidth, cardHeight ->
                 if (MouseUtils.isInside(
@@ -197,8 +206,9 @@ class SettingsCategory(parent: GuiModMenu) :
                         cardX,
                         cardY,
                         cardWidth,
-                        cardHeight
-                    ) && mouseButton == 0
+                        cardHeight,
+                    ) &&
+                    mouseButton == 0
                 ) {
                     transitionCoordinator.open(scene)
                     setCanClose(false)
@@ -219,8 +229,9 @@ class SettingsCategory(parent: GuiModMenu) :
                 getX().toFloat(),
                 getY().toFloat(),
                 getWidth().toFloat(),
-                getHeight().toFloat()
-            ) && mouseButton == 0
+                getHeight().toFloat(),
+            ) &&
+            mouseButton == 0
         ) {
             transitionCoordinator.close()
         }
@@ -230,13 +241,20 @@ class SettingsCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (transitionCoordinator.isSceneInteractive()) {
             (transitionCoordinator.getActiveScene() as? SettingScene?)?.mouseReleased(mouseX, mouseY, mouseButton)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         val activeScene = transitionCoordinator.getActiveScene() as? SettingScene?
         if (activeScene != null && keyCode == Keyboard.KEY_ESCAPE) {
             val layoutScene = activeScene as? LayoutScene
@@ -251,7 +269,14 @@ class SettingsCategory(parent: GuiModMenu) :
 
     private inline fun forEachSceneEntryUntil(
         scrollValue: Float,
-        action: (scene: SettingScene, button: CompSceneButton, cardX: Float, cardY: Float, cardWidth: Float, cardHeight: Float) -> Boolean
+        action: (
+            scene: SettingScene,
+            button: CompSceneButton,
+            cardX: Float,
+            cardY: Float,
+            cardWidth: Float,
+            cardHeight: Float,
+        ) -> Boolean,
     ): Boolean {
         var offsetY = 15f
         val baseX = getX().toFloat()
@@ -273,7 +298,14 @@ class SettingsCategory(parent: GuiModMenu) :
 
     private inline fun forEachSceneEntry(
         scrollValue: Float,
-        action: (scene: SettingScene, button: CompSceneButton, cardX: Float, cardY: Float, cardWidth: Float, cardHeight: Float) -> Unit
+        action: (
+            scene: SettingScene,
+            button: CompSceneButton,
+            cardX: Float,
+            cardY: Float,
+            cardWidth: Float,
+            cardHeight: Float,
+        ) -> Unit,
     ) {
         forEachSceneEntryUntil(scrollValue) { scene, button, cardX, cardY, cardWidth, cardHeight ->
             action(scene, button, cardX, cardY, cardWidth, cardHeight)
@@ -282,7 +314,10 @@ class SettingsCategory(parent: GuiModMenu) :
     }
 
     fun getSceneX(): Int = getX() + 15
+
     fun getSceneY(): Int = getY() + 15
+
     fun getSceneWidth(): Int = getWidth() - 30
+
     fun getSceneHeight(): Int = getHeight() - 30
 }

@@ -10,7 +10,6 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import java.awt.Color
 
 object ModuleCategoryRenderer {
-
     fun drawCard(
         nvg: NanoVGManager,
         palette: ColorPalette,
@@ -40,7 +39,7 @@ object ModuleCategoryRenderer {
         toggleY: Float,
         toggleWidth: Float,
         toggleHeight: Float,
-        toggleProgress: Float
+        toggleProgress: Float,
     ) {
         ModMenuListCardRenderer.drawCardShell(
             nvg = nvg,
@@ -49,7 +48,7 @@ object ModuleCategoryRenderer {
             y = y,
             width = width,
             height = height,
-            hoverProgress = hoverProgress
+            hoverProgress = hoverProgress,
         )
 
         if (!icon.isNullOrEmpty()) {
@@ -59,7 +58,7 @@ object ModuleCategoryRenderer {
                 iconCenterY,
                 palette.getFontColor(ColorType.DARK),
                 iconFontSize,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
 
@@ -79,7 +78,7 @@ object ModuleCategoryRenderer {
                 x = settingsX,
                 y = settingsY,
                 size = settingsSize,
-                hoverProgress = settingsHoverProgress
+                hoverProgress = settingsHoverProgress,
             )
         }
 
@@ -91,7 +90,7 @@ object ModuleCategoryRenderer {
             y = toggleY,
             width = toggleWidth,
             height = toggleHeight,
-            progress = toggleProgress
+            progress = toggleProgress,
         )
     }
 }

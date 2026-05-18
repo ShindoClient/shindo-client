@@ -3,7 +3,6 @@ package me.miki.shindo.utils.render
 import java.awt.Color
 
 object Theme {
-
     @JvmField
     val BG_DARK: Color = Color(0x0F0F10)
 

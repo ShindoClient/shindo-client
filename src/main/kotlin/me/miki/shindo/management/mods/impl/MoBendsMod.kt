@@ -23,8 +23,7 @@ import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 import java.util.*
 
-class MoBendsMod :
-    Mod(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_MO_BENDS) {
+class MoBendsMod : Mod(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_MO_BENDS) {
     private val loaded = false
 
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
@@ -49,7 +48,9 @@ class MoBendsMod :
         }
 
         for (i in Data_Player.dataList.indices) {
-            Data_Player.dataList[i].update(((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks)
+            Data_Player.dataList[i].update(
+                ((mc as IMixinMinecraft).timer as net.minecraft.util.Timer).renderPartialTicks,
+            )
         }
     }
 
@@ -103,8 +104,10 @@ class MoBendsMod :
                 model.bipedHeadwear.isHidden = false
 
                 val entityYaw =
-                    event.getEntity().prevRotationYaw + (event.getEntity().rotationYaw - event.getEntity().prevRotationYaw) * event.getPartialTicks()
-                AnimatedEntity.getPlayerRenderer(player)
+                    event.getEntity().prevRotationYaw +
+                        (event.getEntity().rotationYaw - event.getEntity().prevRotationYaw) * event.getPartialTicks()
+                AnimatedEntity
+                    .getPlayerRenderer(player)
                     .doRender(player, event.getX(), event.getY(), event.getZ(), entityYaw, event.getPartialTicks())
                 currentlyRenderedEntities.remove(event.getEntity().uniqueID)
             }
@@ -119,7 +122,6 @@ class MoBendsMod :
             skin3D.setToggled(false)
         }
 
-
         if (!loaded) {
             AnimatedEntity.register()
         }
@@ -130,12 +132,7 @@ class MoBendsMod :
         var instance: MoBendsMod? = null
     }
 
-    fun getCustomColorSetting(): BooleanSetting? =
-        SettingRegistry.getBooleanSetting(this, "customColorSetting")
+    fun getCustomColorSetting(): BooleanSetting? = SettingRegistry.getBooleanSetting(this, "customColorSetting")
 
     fun getColorSetting(): ColorSetting? = SettingRegistry.getColorSetting(this, "colorSetting")
 }
-
-
-
-

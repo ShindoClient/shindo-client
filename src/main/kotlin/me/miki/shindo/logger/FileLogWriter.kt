@@ -1,7 +1,6 @@
 package me.miki.shindo.logger
 
 object FileLogWriter {
-
     fun chat(message: String) {
         ShindoLogManager.log(LogLevel.INFO, message, LogCategory.CHAT, null)
     }

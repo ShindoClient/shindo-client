@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class GuiSplashScreen {
-
     private val mc = Minecraft.getMinecraft()
     private var framebuffer: Framebuffer? = null
     private var fadeAnimation: Animation? = null
@@ -56,17 +55,19 @@ class GuiSplashScreen {
             GlStateManager.enableAlpha()
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-            nvg.setupAndDraw(Runnable {
-                nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.BLACK)
-                nvg.drawCenteredText(
-                    LegacyIcon.SHINDO,
-                    sr.scaledWidth / 2f,
-                    (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
-                    Color(255, 255, 255, (fadeAnimation!!.getValue() * 255).toInt()),
-                    130f,
-                    Fonts.LEGACYICON
-                )
-            })
+            nvg.setupAndDraw(
+                Runnable {
+                    nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.BLACK)
+                    nvg.drawCenteredText(
+                        LegacyIcon.SHINDO,
+                        sr.scaledWidth / 2f,
+                        (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
+                        Color(255, 255, 255, (fadeAnimation!!.getValue() * 255).toInt()),
+                        130f,
+                        Fonts.LEGACYICON,
+                    )
+                },
+            )
 
             framebuffer!!.unbindFramebuffer()
             framebuffer!!.framebufferRender(sr.scaledWidth * scaleFactor, sr.scaledHeight * scaleFactor)

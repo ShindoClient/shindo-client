@@ -17,9 +17,8 @@ class CompAccentColorSelector(
     y: Float = 0f,
     width: Float = 0f,
     height: Float = 120f,
-    accentColors: List<AccentColor>
+    accentColors: List<AccentColor>,
 ) : CompPanel(x, y, width, height) {
-
     private val accentColorsList: List<AccentColor> = accentColors
     private val scroll = Scroll()
     private var selectedColor: AccentColor? = null
@@ -36,7 +35,6 @@ class CompAccentColorSelector(
         setRadius(10f)
         setShadowStrength(7)
         setStyle(PanelStyle.CARD)
-
     }
 
     fun setSelectedColor(color: AccentColor) {
@@ -48,9 +46,11 @@ class CompAccentColorSelector(
         return this
     }
 
-
-    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
-
+    override fun drawPanelContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val innerX = getX() + innerPadding
         val innerY = getY() + innerPadding
         val visibleWidth = getWidth() - innerPadding * 2f
@@ -83,8 +83,8 @@ class CompAccentColorSelector(
                 10f,
                 ColorUtils.applyAlpha(
                     palette.getBackgroundColor(ColorType.MID),
-                    if (hovered || selected) 220 else 190
-                )
+                    if (hovered || selected) 220 else 190,
+                ),
             )
             nvg.drawGradientRoundedRect(
                 screenX,
@@ -93,7 +93,7 @@ class CompAccentColorSelector(
                 itemHeight,
                 10f,
                 ColorUtils.applyAlpha(accent.getColor1(), if (selected) 220 else 185),
-                ColorUtils.applyAlpha(accent.getColor2(), if (selected) 220 else 185)
+                ColorUtils.applyAlpha(accent.getColor2(), if (selected) 220 else 185),
             )
 
             if (selected) {
@@ -103,7 +103,7 @@ class CompAccentColorSelector(
                     innerY + 10f,
                     Color(255, 255, 255, (accent.getAnimation().getValue() * 255).toInt()),
                     12f,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
             } else if (hovered) {
                 nvg.drawOutlineRoundedRect(
@@ -113,7 +113,7 @@ class CompAccentColorSelector(
                     itemHeight,
                     10f,
                     2f,
-                    ColorUtils.applyAlpha(accent.getColor2(), 160)
+                    ColorUtils.applyAlpha(accent.getColor2(), 160),
                 )
             }
 
@@ -124,7 +124,7 @@ class CompAccentColorSelector(
                 innerY + itemHeight - 18f,
                 Color.WHITE,
                 8.5f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
 
             cardX += itemWidth + itemSpacing
@@ -133,7 +133,11 @@ class CompAccentColorSelector(
         nvg.restore()
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
@@ -157,7 +161,10 @@ class CompAccentColorSelector(
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         scroll.onKey(keyCode)
         super.keyTyped(typedChar, keyCode)
     }

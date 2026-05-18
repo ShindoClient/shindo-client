@@ -8,7 +8,9 @@ import me.miki.shindo.utils.mouse.MouseUtils
  *
  * It keeps card rendering and hit-testing isolated from scene navigation logic.
  */
-class LayoutAreaController(val scene: LayoutAreaScene) {
+class LayoutAreaController(
+    val scene: LayoutAreaScene,
+) {
     private val button = CompSceneButton({ scene.icon }, { scene.name }, { scene.description })
 
     /**
@@ -23,7 +25,7 @@ class LayoutAreaController(val scene: LayoutAreaScene) {
         width: Float,
         height: Float,
         active: Boolean,
-        enabled: Boolean
+        enabled: Boolean,
     ) {
         button.setBounds(x, y, width, height)
         button.setActive(active)
@@ -34,7 +36,12 @@ class LayoutAreaController(val scene: LayoutAreaScene) {
     /**
      * Returns true when the pointer intersects this controller card.
      */
-    fun hit(mouseX: Int, mouseY: Int, x: Float, y: Float, width: Float, height: Float): Boolean {
-        return MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-    }
+    fun hit(
+        mouseX: Int,
+        mouseY: Int,
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ): Boolean = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
 }

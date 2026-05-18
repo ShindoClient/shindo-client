@@ -17,14 +17,15 @@ import kotlin.math.max
  *
  * It previews single and double column list dispositions for module cards.
  */
-class LayoutModulesScene(parent: SettingsCategory) : LayoutCarouselScene(
-    parent,
-    UILayoutArea.MODULES,
-    TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
-    TranslateText.SETTINGS_LAYOUT_MODULE_DESCRIPTION,
-    LegacyIcon.LIST
-) {
-
+class LayoutModulesScene(
+    parent: SettingsCategory,
+) : LayoutCarouselScene(
+        parent,
+        UILayoutArea.MODULES,
+        TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
+        TranslateText.SETTINGS_LAYOUT_MODULE_DESCRIPTION,
+        LegacyIcon.LIST,
+    ) {
     override fun drawCarouselPreset(
         nvg: NanoVGManager,
         palette: ColorPalette,
@@ -33,7 +34,7 @@ class LayoutModulesScene(parent: SettingsCategory) : LayoutCarouselScene(
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         val pad = 10f
         val gap = 8f
@@ -55,7 +56,7 @@ class LayoutModulesScene(parent: SettingsCategory) : LayoutCarouselScene(
             contentWidth,
             contentHeight,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176),
         )
 
         var row = 0
@@ -81,7 +82,7 @@ class LayoutModulesScene(parent: SettingsCategory) : LayoutCarouselScene(
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         val cardColor = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
         val linePrimary = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 220)

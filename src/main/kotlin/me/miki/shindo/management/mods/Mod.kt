@@ -9,140 +9,116 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
-open class Mod @JvmOverloads constructor(
-    private val nameTranslate: TranslateText,
-    private val descriptionTranslate: TranslateText,
-    private var category: ModCategory,
-    private val icon: String? = null,
-    private val alias: String = "\u200B",
-    private val restricted: Boolean = false
-) : ConfigOwner {
+open class Mod
+    @JvmOverloads
+    constructor(
+        private val nameTranslate: TranslateText,
+        private val descriptionTranslate: TranslateText,
+        private var category: ModCategory,
+        private val icon: String? = null,
+        private val alias: String = "\u200B",
+        private val restricted: Boolean = false,
+    ) : ConfigOwner {
+        val animation = SimpleAnimation()
+        val hoverAnimation = SimpleAnimation()
+        val settingsHoverAnimation = SimpleAnimation()
 
-    val animation = SimpleAnimation()
-    val hoverAnimation = SimpleAnimation()
-    val settingsHoverAnimation = SimpleAnimation()
+        @JvmField
+        val mc: Minecraft = Minecraft.getMinecraft()
 
-    @JvmField
-    val mc: Minecraft = Minecraft.getMinecraft()
+        @JvmField
+        val fr: FontRenderer = mc.fontRendererObj
 
-    @JvmField
-    val fr: FontRenderer = mc.fontRendererObj
+        private var toggled = false
+        private var hide = false
+        private var allowed = true
 
-    private var toggled = false
-    private var hide = false
-    private var allowed = true
-
-    init {
-        setup()
-    }
-
-    open fun setup() {
-    }
-
-    open fun onEnable() {
-        if (Shindo.getInstance().getRestrictedMod().checkAllowed(this)) {
-            Shindo.getInstance().getEventManager().register(this)
-            ShindoLogger.info("[MODULE] " + getName() + " was enabled")
-        } else {
-            setToggled(false)
-            Shindo.getInstance().getNotificationManager().post(
-                nameTranslate.getText(),
-                "Disabled due to serverside blacklist",
-                NotificationType.INFO
-            )
+        init {
+            setup()
         }
-    }
 
-    open fun onDisable() {
-        Shindo.getInstance().getEventManager().unregister(this)
-        ShindoLogger.info("[MODULE] " + getName() + " was disabled")
-    }
-
-    fun toggle() {
-        setToggled(!toggled, true)
-    }
-
-    fun setToggled(toggled: Boolean, sound: Boolean) {
-        this.toggled = toggled
-
-        if (toggled) {
-            onEnable()
-            if (sound) Shindo.getInstance().getModManager().playToggleSound(true)
-        } else {
-            onDisable()
-            if (sound) Shindo.getInstance().getModManager().playToggleSound(false)
+        open fun setup() {
         }
-    }
 
-    fun setToggled(toggled: Boolean) {
-        setToggled(toggled, false)
-    }
+        open fun onEnable() {
+            if (Shindo.getInstance().getRestrictedMod().checkAllowed(this)) {
+                Shindo.getInstance().getEventManager().register(this)
+                ShindoLogger.info("[MODULE] " + getName() + " was enabled")
+            } else {
+                setToggled(false)
+                Shindo.getInstance().getNotificationManager().post(
+                    nameTranslate.getText(),
+                    "Disabled due to serverside blacklist",
+                    NotificationType.INFO,
+                )
+            }
+        }
 
-    fun isToggled(): Boolean {
-        return toggled
-    }
+        open fun onDisable() {
+            Shindo.getInstance().getEventManager().unregister(this)
+            ShindoLogger.info("[MODULE] " + getName() + " was disabled")
+        }
 
-    fun isHide(): Boolean {
-        return hide
-    }
+        fun toggle() {
+            setToggled(!toggled, true)
+        }
 
-    fun setHide(hide: Boolean) {
-        this.hide = hide
-    }
+        fun setToggled(
+            toggled: Boolean,
+            sound: Boolean,
+        ) {
+            this.toggled = toggled
 
-    fun getCategory(): ModCategory {
-        return category
-    }
+            if (toggled) {
+                onEnable()
+                if (sound) Shindo.getInstance().getModManager().playToggleSound(true)
+            } else {
+                onDisable()
+                if (sound) Shindo.getInstance().getModManager().playToggleSound(false)
+            }
+        }
 
-    fun setCategory(category: ModCategory) {
-        this.category = category
-    }
+        fun setToggled(toggled: Boolean) {
+            setToggled(toggled, false)
+        }
 
-    fun getAlias(): String {
-        return alias
-    }
+        fun isToggled(): Boolean = toggled
 
-    fun getRestricted(): Boolean {
-        return restricted
-    }
+        fun isHide(): Boolean = hide
 
-    fun isAllowed(): Boolean {
-        return allowed
-    }
+        fun setHide(hide: Boolean) {
+            this.hide = hide
+        }
 
-    fun setAllowed(modAllowed: Boolean) {
-        allowed = modAllowed
-    }
+        fun getCategory(): ModCategory = category
 
-    fun getName(): String {
-        return nameTranslate.getText()
-    }
+        fun setCategory(category: ModCategory) {
+            this.category = category
+        }
 
-    fun getDescription(): String {
-        return descriptionTranslate.getText()
-    }
+        fun getAlias(): String = alias
 
-    open fun getIcon(): String? {
-        return icon
-    }
+        fun getRestricted(): Boolean = restricted
 
-    fun getMenuIcon(): String? {
-        return icon
-    }
+        fun isAllowed(): Boolean = allowed
 
-    fun getNameKey(): String {
-        return nameTranslate.getKey()
-    }
+        fun setAllowed(modAllowed: Boolean) {
+            allowed = modAllowed
+        }
 
-    fun isRestricted(): Boolean {
-        return restricted
-    }
+        fun getName(): String = nameTranslate.getText()
 
-    override fun getConfigId(): String {
-        return getNameKey()
-    }
+        fun getDescription(): String = descriptionTranslate.getText()
 
-    override fun getDisplayName(): String {
-        return getName()
+        open fun getIcon(): String? = icon
+
+        fun getMenuIcon(): String? = icon
+
+        fun getNameKey(): String = nameTranslate.getKey()
+
+        fun isRestricted(): Boolean = restricted
+
+        override fun getConfigId(): String = getNameKey()
+
+        override fun getDisplayName(): String = getName()
     }
-}

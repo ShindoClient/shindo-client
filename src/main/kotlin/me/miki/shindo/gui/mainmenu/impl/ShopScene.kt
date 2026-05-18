@@ -16,8 +16,9 @@ import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class ShopScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val screenAnimation = ScreenAnimation()
     private val goldFeatures: ArrayList<TranslateText> = ArrayList()
     private val info: TranslateText
@@ -35,7 +36,11 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
@@ -48,14 +53,20 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             sr.scaledHeight.toFloat(),
             2 - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            false
+            false,
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
+    private fun drawNanoVG(
+        mouseX: Int,
+        mouseY: Int,
+        sr: ScaledResolution,
+        instance: Shindo,
+        nvg: NanoVGManager?,
+    ) {
         val acWidth = 220
         val acHeight = 190
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
@@ -72,7 +83,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acWidth.toFloat(),
             acHeight.toFloat(),
             8f,
-            getBackgroundColor()
+            getBackgroundColor(),
         )
         nvg.drawCenteredText(
             TranslateText.PRICING_PLANS.getText(),
@@ -80,7 +91,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 12f,
             Color.WHITE,
             14f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         nvg.drawCenteredText(
             TranslateText.PRICING_PLANS_DESCRIPTION.getText(),
@@ -88,7 +99,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 30f,
             Color.WHITE,
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawRoundedRect(acX + 20f, acY + 50f, 82f, 128f, 6f, panelColor)
         nvg.drawRoundedRect(acX + acWidth - 82f - 20f, acY + 50f, 82f, 128f, 6f, panelColor)
@@ -99,7 +110,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 58f,
             Color.WHITE,
             12f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         nvg.drawCenteredText(
@@ -108,7 +119,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 71f,
             Color.WHITE,
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawRect(acX + 20f, acY + 80f, 82f, 1f, Color.WHITE)
 
@@ -128,7 +139,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 58f,
             Color.WHITE,
             12f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         nvg.drawCenteredText(
             "?? / " + TranslateText.MONTH.getText(),
@@ -136,7 +147,7 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 71f,
             Color.WHITE,
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawRect(acX + acWidth - 82f - 20f, acY + 80f, 82f, 1f, Color.WHITE)
 
@@ -147,11 +158,15 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 159f,
             Color.WHITE,
             10f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val sr = ScaledResolution(mc)
 
         val acWidth = 220
@@ -159,14 +174,17 @@ class ShopScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         val acX = sr.scaledWidth / 2 - (acWidth / 2)
         val acY = sr.scaledHeight / 2 - (acHeight / 2)
 
-        if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat())
-            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)
+        if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat()) &&
+            !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)
         ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }

@@ -10,9 +10,8 @@ class CompCard(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 200f,
-    height: Float = 150f
+    height: Float = 150f,
 ) : CompPanel(x, y, width, height) {
-
     private var headerHeight: Float = 30f
     private var headerText: String? = null
     private var headerColor: Color? = null
@@ -20,10 +19,13 @@ class CompCard(
     private var showHeader: Boolean = false
 
     init {
-        //setSurfaceVariant(CompSurfaceVariant.CARD)
+        // setSurfaceVariant(CompSurfaceVariant.CARD)
     }
 
-    fun setHeader(text: String, height: Float = 30f): CompCard {
+    fun setHeader(
+        text: String,
+        height: Float = 30f,
+    ): CompCard {
         this.headerText = text
         this.headerHeight = height
         this.showHeader = true
@@ -45,7 +47,11 @@ class CompCard(
         return this
     }
 
-    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawPanelContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val paletteColors = palette
         val accentColors = accent
@@ -60,7 +66,7 @@ class CompCard(
                 getWidth(),
                 headerHeight,
                 getRadius(),
-                headerBg
+                headerBg,
             )
 
             nvgInstance.drawText(
@@ -69,11 +75,12 @@ class CompCard(
                 getY() + headerHeight / 2f,
                 headerTextColor,
                 10f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
         }
     }
 
     fun getContentY(): Float = if (showHeader) getY() + headerHeight else getY()
+
     fun getContentHeight(): Float = if (showHeader) getHeight() - headerHeight else getHeight()
 }

@@ -9,7 +9,6 @@ import javax.sound.sampled.*
 import kotlin.math.log10
 
 class Sound {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     val clip: Clip?
@@ -17,21 +16,22 @@ class Sound {
 
     private var _clip: Clip? = null
 
-
     fun loadClip(location: ResourceLocation) {
-        _clip = AudioSystem.getClip().apply {
-            open(
-                AudioSystem.getAudioInputStream(
-                    BufferedInputStream(mc.resourceManager.getResource(location).inputStream)
+        _clip =
+            AudioSystem.getClip().apply {
+                open(
+                    AudioSystem.getAudioInputStream(
+                        BufferedInputStream(mc.resourceManager.getResource(location).inputStream),
+                    ),
                 )
-            )
-        }
+            }
     }
 
     fun loadClip(file: File) {
-        _clip = AudioSystem.getClip().apply {
-            open(AudioSystem.getAudioInputStream(file))
-        }
+        _clip =
+            AudioSystem.getClip().apply {
+                open(AudioSystem.getAudioInputStream(file))
+            }
     }
 
     fun play() {
@@ -50,15 +50,20 @@ class Sound {
     }
 
     companion object {
-
         @JvmStatic
         @JvmOverloads
-        fun play(sound: Sounds, uiSound: Boolean = true) {
+        fun play(
+            sound: Sounds,
+            uiSound: Boolean = true,
+        ) {
             play(sound.path, uiSound)
         }
 
         @JvmStatic
-        fun play(location: String, uiSound: Boolean) {
+        fun play(
+            location: String,
+            uiSound: Boolean,
+        ) {
             val settings = InternalSettingsMod.instance
             if (uiSound && !settings.soundsUISetting) return
             val diskPath = Sound::class.java.classLoader.getResource("assets/minecraft/$location") ?: return

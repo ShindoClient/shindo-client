@@ -17,12 +17,13 @@ import net.minecraft.util.ResourceLocation
 import java.io.IOException
 import java.util.function.Consumer
 
-class ColorSaturationMod : Mod(
-    TranslateText.COLOR_SATURATION,
-    TranslateText.COLOR_SATURATION_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_COLOR_SATURATION
-) {
+class ColorSaturationMod :
+    Mod(
+        TranslateText.COLOR_SATURATION,
+        TranslateText.COLOR_SATURATION_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_COLOR_SATURATION,
+    ) {
     private val colorsaturation = ResourceLocation("minecraft:shaders/post/colorsaturation.json")
 
     @Property(type = PropertyType.NUMBER, translate = TranslateText.HUE, min = 0.0, max = 1.0, current = 0.0)
@@ -73,28 +74,34 @@ class ColorSaturationMod : Mod(
             }
         }
 
-        if (prevHue != hue || prevSaturation != saturation || prevBrightness != brightness || prevContrast != contrast) {
-            (group as IMixinShaderGroup).getListShaders().forEach(Consumer { shader: Shader? ->
-                val hueUniform = shader!!.shaderManager.getShaderUniform("hue")
-                val contrastUniform = shader.shaderManager.getShaderUniform("Contrast")
-                val brightnessUniform = shader.shaderManager.getShaderUniform("Brightness")
-                val saturationUniform = shader.shaderManager.getShaderUniform("Saturation")
+        if (prevHue != hue ||
+            prevSaturation != saturation ||
+            prevBrightness != brightness ||
+            prevContrast != contrast
+        ) {
+            (group as IMixinShaderGroup).getListShaders().forEach(
+                Consumer { shader: Shader? ->
+                    val hueUniform = shader!!.shaderManager.getShaderUniform("hue")
+                    val contrastUniform = shader.shaderManager.getShaderUniform("Contrast")
+                    val brightnessUniform = shader.shaderManager.getShaderUniform("Brightness")
+                    val saturationUniform = shader.shaderManager.getShaderUniform("Saturation")
 
-                if (hueUniform != null) {
-                    hueUniform.set(hue)
-                }
+                    if (hueUniform != null) {
+                        hueUniform.set(hue)
+                    }
 
-                if (contrastUniform != null) {
-                    contrastUniform.set(contrast)
-                }
+                    if (contrastUniform != null) {
+                        contrastUniform.set(contrast)
+                    }
 
-                if (brightnessUniform != null) {
-                    brightnessUniform.set(brightness)
-                }
-                if (saturationUniform != null) {
-                    saturationUniform.set(saturation)
-                }
-            })
+                    if (brightnessUniform != null) {
+                        brightnessUniform.set(brightness)
+                    }
+                    if (saturationUniform != null) {
+                        saturationUniform.set(saturation)
+                    }
+                },
+            )
 
             prevHue = hue
             prevSaturation = saturation
@@ -110,7 +117,3 @@ class ColorSaturationMod : Mod(
         group = null
     }
 }
-
-
-
-

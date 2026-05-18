@@ -6,7 +6,6 @@ import me.miki.shindo.management.security.SecurityFeature
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 class TeleportSecurity : SecurityFeature() {
-
     @EventTarget
     fun onReceivePacket(event: EventReceivePacket) {
         val pkt = event.getPacket()

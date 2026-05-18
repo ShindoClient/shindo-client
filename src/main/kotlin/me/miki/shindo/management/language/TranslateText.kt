@@ -1,7 +1,7 @@
 package me.miki.shindo.management.language
 
 enum class TranslateText(
-    private val key: String
+    private val key: String,
 ) {
     ACCELERATION_MULTIPLIER("text.accelerationmultiplier"),
     ACCENT_COLOR("text.accentcolor"),
@@ -865,11 +865,13 @@ enum class TranslateText(
     ZOOM_DESCRIPTION("text.zoom.description"),
     ZOOM_FACTOR("text.zoomfactor"),
     ZOOM_SPEED("text.zoomspeed"),
-    Z_SCALE("text.zscale");
+    Z_SCALE("text.zscale"),
+    ;
 
     private var text: String? = null
 
     fun getText(): String = text ?: "null"
+
     fun setText(value: String?) {
         text = value
     }

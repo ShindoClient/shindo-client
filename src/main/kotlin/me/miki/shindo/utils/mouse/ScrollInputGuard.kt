@@ -6,7 +6,6 @@ package me.miki.shindo.utils.mouse
  * Nested locks are supported so different systems can coordinate safely.
  */
 object ScrollInputGuard {
-
     private var lockDepth = 0
 
     fun lock() {
@@ -19,9 +18,7 @@ object ScrollInputGuard {
         }
     }
 
-    fun isLocked(): Boolean {
-        return lockDepth > 0
-    }
+    fun isLocked(): Boolean = lockDepth > 0
 
     inline fun <T> withLock(block: () -> T): T {
         lock()
@@ -32,4 +29,3 @@ object ScrollInputGuard {
         }
     }
 }
-

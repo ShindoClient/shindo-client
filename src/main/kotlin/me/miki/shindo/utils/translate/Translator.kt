@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 object Translator {
-
     const val AUTO_DETECT = ""
     const val ENGLISH = "en"
     const val JAPANESE = "ja"
@@ -53,9 +52,15 @@ object Translator {
 
     @JvmStatic
     @Throws(Exception::class)
-    fun translate(text: String, from: String, to: String): String {
+    fun translate(
+        text: String,
+        from: String,
+        to: String,
+    ): String {
         val url =
-            URL("https://api.cognitive.microsofttranslator.com/translate?from=$from&to=$to&api-version=3.0&includeSentenceLength=true")
+            URL(
+                "https://api.cognitive.microsofttranslator.com/translate?from=$from&to=$to&api-version=3.0&includeSentenceLength=true",
+            )
         val con = url.openConnection() as HttpURLConnection
         con.requestMethod = "POST"
         con.setRequestProperty("Content-Type", "application/json")

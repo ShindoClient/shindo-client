@@ -5,37 +5,51 @@ import java.math.RoundingMode
 import kotlin.math.min
 
 object MathUtils {
-
     @JvmStatic
     fun isOdd(number: Int): Boolean = number % 2 != 0
 
     @JvmStatic
-    fun clamp(value: Float): Float = when {
-        value < 0.0f -> 0.0f
-        value > 1.0f -> 1.0f
-        else -> value
-    }
+    fun clamp(value: Float): Float =
+        when {
+            value < 0.0f -> 0.0f
+            value > 1.0f -> 1.0f
+            else -> value
+        }
 
     @JvmStatic
-    fun clamp(number: Float, min: Float, max: Float): Float = if (number < min) min else min(number, max)
+    fun clamp(
+        number: Float,
+        min: Float,
+        max: Float,
+    ): Float = if (number < min) min else min(number, max)
 
     @JvmStatic
-    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
-        return oldValue + (newValue - oldValue) * interpolationValue
-    }
+    fun interpolate(
+        oldValue: Double,
+        newValue: Double,
+        interpolationValue: Double,
+    ): Double = oldValue + (newValue - oldValue) * interpolationValue
 
     @JvmStatic
-    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
-        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toFloat()
-    }
+    fun interpolateFloat(
+        oldValue: Float,
+        newValue: Float,
+        interpolationValue: Double,
+    ): Float = interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toFloat()
 
     @JvmStatic
-    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
-        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toInt()
-    }
+    fun interpolateInt(
+        oldValue: Int,
+        newValue: Int,
+        interpolationValue: Double,
+    ): Int = interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue).toInt()
 
     @JvmStatic
-    fun interpolateARGB(start: Int, end: Int, progress: Float): Int {
+    fun interpolateARGB(
+        start: Int,
+        end: Int,
+        progress: Float,
+    ): Int {
         val a = interpolateInt(start shr 24 and 0xFF, end shr 24 and 0xFF, progress.toDouble())
         val r = interpolateInt(start shr 16 and 0xFF, end shr 16 and 0xFF, progress.toDouble())
         val g = interpolateInt(start shr 8 and 0xFF, end shr 8 and 0xFF, progress.toDouble())
@@ -44,7 +58,11 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun isInRange(value: Float, min: Float, max: Float): Boolean = value > min && value < max
+    fun isInRange(
+        value: Float,
+        min: Float,
+        max: Float,
+    ): Boolean = value > min && value < max
 
     @JvmStatic
     fun sin(value: Double): Float = kotlin.math.sin(value).toFloat()
@@ -53,10 +71,18 @@ object MathUtils {
     fun cos(value: Double): Float = kotlin.math.cos(value).toFloat()
 
     @JvmStatic
-    fun lerp(f: Float, g: Float, h: Float): Float = g + f * (h - g)
+    fun lerp(
+        f: Float,
+        g: Float,
+        h: Float,
+    ): Float = g + f * (h - g)
 
     @JvmStatic
-    fun lerp(d: Double, e: Double, f: Double): Double = e + d * (f - e)
+    fun lerp(
+        d: Double,
+        e: Double,
+        f: Double,
+    ): Double = e + d * (f - e)
 
     @JvmStatic
     fun fastInvSqrt(f: Float): Float {
@@ -90,7 +116,10 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun roundToPlace(value: Double, places: Int): Double {
+    fun roundToPlace(
+        value: Double,
+        places: Int,
+    ): Double {
         require(places >= 0) { "places must be non-negative" }
         var bd = BigDecimal(value)
         bd = bd.setScale(places, RoundingMode.HALF_UP)
@@ -98,7 +127,10 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun roundToPlace(value: Float, places: Int): Float {
+    fun roundToPlace(
+        value: Float,
+        places: Int,
+    ): Float {
         require(places >= 0) { "places must be non-negative" }
         var bd = BigDecimal(value.toDouble())
         bd = bd.setScale(places, RoundingMode.HALF_UP)
@@ -110,5 +142,4 @@ object MathUtils {
 
     @JvmStatic
     fun abs(value: Float): Float = if (value >= 0.0f) value else -value
-
 }

@@ -11,9 +11,8 @@ open class CompScrollable(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : Component(x, y) {
-
     private var scrollY: Float = 0f
     private var contentHeight: Float = 0f
     private var scrollbarWidth: Float = 6f
@@ -31,6 +30,7 @@ open class CompScrollable(
     }
 
     fun getScrollY(): Float = scrollY
+
     fun setScrollY(value: Float) {
         scrollY = value.coerceIn(0f, getMaxScroll())
     }
@@ -81,7 +81,11 @@ open class CompScrollable(
 
     private fun getMaxScroll(): Float = (contentHeight - getHeight()).coerceAtLeast(0f)
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!isVisible()) return
 
         val nvgInstance = nvg
@@ -119,7 +123,11 @@ open class CompScrollable(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible()) return
 
         if (scrollbarEnabled && contentHeight > getHeight()) {
@@ -138,7 +146,11 @@ open class CompScrollable(
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         isDraggingScrollbar = false
         super.mouseReleased(mouseX, mouseY, mouseButton)
     }
@@ -151,13 +163,14 @@ open class CompScrollable(
         }
 
         val wheel = Mouse.getDWheel()
-        if (wheel != 0 && MouseUtils.isInside(
+        if (wheel != 0 &&
+            MouseUtils.isInside(
                 Mouse.getX() * 2,
                 Mouse.getY() * 2,
                 getX(),
                 getY(),
                 getWidth(),
-                getHeight()
+                getHeight(),
             )
         ) {
             scrollBy(wheel / 120f * scrollSpeed)
@@ -166,5 +179,9 @@ open class CompScrollable(
         super.update(partialTicks)
     }
 
-    protected open fun drawScrollableContent(mouseX: Int, mouseY: Int, partialTicks: Float) {}
+    protected open fun drawScrollableContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {}
 }

@@ -65,7 +65,12 @@ class CompIconButton : CompControlTemplate {
 
     override fun isEnabled(): Boolean = enabledSupplier?.invoke() ?: true
 
-    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
+    override fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    ) {
         val nvgInstance = nvg
         val paletteColors = palette
         val accentColors = accent
@@ -74,15 +79,14 @@ class CompIconButton : CompControlTemplate {
         hoverAnimation.setAnimation(if (hovered && enabled) 1.0f else 0.0f, 16.0)
         pressAnimation.setAnimation(
             if (pressAnimation.getValue() > 0.08f) pressAnimation.getValue() * 0.82f else 0.0f,
-            16.0
+            16.0,
         )
-
 
         var drawBackground =
             ColorUtils.interpolateColor(
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 108),
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 145),
-                hoverAnimation.getValue().toDouble()
+                hoverAnimation.getValue().toDouble(),
             )
         if (pressAnimation.getValue() > 0.08f) {
             drawBackground = ColorUtils.darken(drawBackground, pressAnimation.getValue() * 0.18f)
@@ -103,17 +107,21 @@ class CompIconButton : CompControlTemplate {
             getX(),
             getY(),
             getWidth(),
-            getHeight(), radius, 1f, outlineColor
+            getHeight(),
+            radius,
+            1f,
+            outlineColor,
         )
 
         val icon = iconSupplier.invoke()
         if (icon != null) {
             val baseIconColor = iconColorSupplier?.invoke() ?: paletteColors.getFontColor(ColorType.DARK)
-            val hoverIconColor = if (iconColorSupplier != null) {
-                ColorUtils.interpolateColor(baseIconColor, Color.WHITE, 0.2)
-            } else {
-                ColorUtils.lighten(baseIconColor, 0.16f)
-            }
+            val hoverIconColor =
+                if (iconColorSupplier != null) {
+                    ColorUtils.interpolateColor(baseIconColor, Color.WHITE, 0.2)
+                } else {
+                    ColorUtils.lighten(baseIconColor, 0.16f)
+                }
             var iconColor =
                 ColorUtils.interpolateColor(baseIconColor, hoverIconColor, hoverAnimation.getValue().toDouble())
             if (!enabled) {
@@ -130,7 +138,11 @@ class CompIconButton : CompControlTemplate {
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0 && isEnabled() && super.isHoveredInteractive(mouseX, mouseY)) {
             pressAnimation.setValue(1.0f)
         }

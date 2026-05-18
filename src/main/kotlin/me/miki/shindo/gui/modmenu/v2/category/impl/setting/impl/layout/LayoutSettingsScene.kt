@@ -21,14 +21,15 @@ import kotlin.math.max
  * - Double column
  * - Adaptive (staggered + full-width heavy component)
  */
-class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
-    parent,
-    UILayoutArea.SETTINGS,
-    TranslateText.SETTINGS,
-    TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-    LegacyIcon.SETTINGS
-) {
-
+class LayoutSettingsScene(
+    parent: SettingsCategory,
+) : LayoutCarouselScene(
+        parent,
+        UILayoutArea.SETTINGS,
+        TranslateText.SETTINGS,
+        TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
+        LegacyIcon.SETTINGS,
+    ) {
     override fun drawCarouselPreset(
         nvg: NanoVGManager,
         palette: ColorPalette,
@@ -37,7 +38,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         val pad = 10f
         val gap = 7f
@@ -74,7 +75,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                         blockInner,
                         accentColor,
                         linePrimary,
-                        lineSecondary
+                        lineSecondary,
                     )
                     row++
                 }
@@ -100,7 +101,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                             blockInner,
                             accentColor,
                             linePrimary,
-                            lineSecondary
+                            lineSecondary,
                         )
                         col++
                     }
@@ -127,7 +128,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                     blockInner,
                     accentColor,
                     linePrimary,
-                    lineSecondary
+                    lineSecondary,
                 )
                 drawSettingBlock(
                     nvg,
@@ -140,7 +141,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                     blockInner,
                     accentColor,
                     linePrimary,
-                    lineSecondary
+                    lineSecondary,
                 )
 
                 drawSettingBlock(
@@ -154,7 +155,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                     blockInner,
                     accentColor,
                     linePrimary,
-                    lineSecondary
+                    lineSecondary,
                 )
                 drawSettingBlock(
                     nvg,
@@ -167,7 +168,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                     blockInner,
                     accentColor,
                     linePrimary,
-                    lineSecondary
+                    lineSecondary,
                 )
 
                 drawSettingBlock(
@@ -181,7 +182,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
                     blockInner,
                     accentColor,
                     linePrimary,
-                    lineSecondary
+                    lineSecondary,
                 )
             }
 
@@ -204,7 +205,7 @@ class LayoutSettingsScene(parent: SettingsCategory) : LayoutCarouselScene(
         inner: Color,
         accentColor: Color,
         primaryLine: Color,
-        secondaryLine: Color
+        secondaryLine: Color,
     ) {
         val cardY = y + headerHeight + 2f
         val cardHeight = max(8f, height - headerHeight - 2f)

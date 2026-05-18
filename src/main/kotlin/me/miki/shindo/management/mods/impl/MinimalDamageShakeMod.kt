@@ -9,20 +9,21 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class MinimalDamageShakeMod : Mod(
-    TranslateText.MINIMAL_DAMAGE_SHAKE,
-    TranslateText.MINIMAL_DAMAGE_SHAKE_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_MINIMAL_DAMAGE_SHAKE,
-    "nohurtcam"
-) {
+class MinimalDamageShakeMod :
+    Mod(
+        TranslateText.MINIMAL_DAMAGE_SHAKE,
+        TranslateText.MINIMAL_DAMAGE_SHAKE_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_MINIMAL_DAMAGE_SHAKE,
+        "nohurtcam",
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.INTENSITY,
         min = 0.0,
         max = 100.0,
         current = 0.0,
-        step = 1.0
+        step = 1.0,
     )
     private val intensitySetting = 0
 
@@ -31,7 +32,3 @@ class MinimalDamageShakeMod : Mod(
         event.intensity = intensitySetting / 100f
     }
 }
-
-
-
-

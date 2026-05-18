@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
 
 object GlUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
@@ -16,17 +15,30 @@ object GlUtils {
     }
 
     @JvmStatic
-    fun getTexImage(i: Int, j: Int, k: Int, l: Int, buffer: ByteBuffer) {
+    fun getTexImage(
+        i: Int,
+        j: Int,
+        k: Int,
+        l: Int,
+        buffer: ByteBuffer,
+    ) {
         GL11.glGetTexImage(i, j, k, l, buffer)
     }
 
     @JvmStatic
-    fun pixelStore(i: Int, j: Int) {
+    fun pixelStore(
+        i: Int,
+        j: Int,
+    ) {
         GL11.glPixelStorei(i, j)
     }
 
     @JvmStatic
-    fun startScale(x: Float, y: Float, scale: Float) {
+    fun startScale(
+        x: Float,
+        y: Float,
+        scale: Float,
+    ) {
         GlStateManager.pushMatrix()
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(scale, scale, 1f)
@@ -34,7 +46,13 @@ object GlUtils {
     }
 
     @JvmStatic
-    fun startScale(x: Float, y: Float, width: Float, height: Float, scale: Float) {
+    fun startScale(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        scale: Float,
+    ) {
         GlStateManager.pushMatrix()
         GlStateManager.translate((x + (x + width)) / 2, (y + (y + height)) / 2, 0f)
         GlStateManager.scale(scale, scale, 1f)
@@ -47,7 +65,10 @@ object GlUtils {
     }
 
     @JvmStatic
-    fun startTranslate(x: Float, y: Float) {
+    fun startTranslate(
+        x: Float,
+        y: Float,
+    ) {
         GlStateManager.pushMatrix()
         GlStateManager.translate(x, y, 0f)
     }
@@ -59,7 +80,10 @@ object GlUtils {
 
     @JvmStatic
     fun createFrameBuffer(framebuffer: Framebuffer?): Framebuffer {
-        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight) {
+        if (framebuffer == null ||
+            framebuffer.framebufferWidth != mc.displayWidth ||
+            framebuffer.framebufferHeight != mc.displayHeight
+        ) {
             framebuffer?.deleteFramebuffer()
             return Framebuffer(mc.displayWidth, mc.displayHeight, true)
         }

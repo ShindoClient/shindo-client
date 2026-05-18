@@ -8,8 +8,7 @@ import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import java.util.*
 
-class NameDisplayMod :
-    SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, LegacyIcon.MOD_NAME_DISPLAY) {
+class NameDisplayMod : SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, LegacyIcon.MOD_NAME_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -28,18 +27,15 @@ class NameDisplayMod :
         return label + ": " + mc.session.username
     }
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.USER else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.USER else null
 
-    private enum class Prefix(private val translate: TranslateText) : PropertyEnum {
+    private enum class Prefix(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         NAME(TranslateText.NAME),
-        IGN(TranslateText.IGN);
+        IGN(TranslateText.IGN),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-

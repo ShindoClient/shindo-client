@@ -18,8 +18,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import java.util.*
 
-class ChatMod :
-    Mod(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_CHAT, "betterchatting") {
+class ChatMod : Mod(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_CHAT, "betterchatting") {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH, category = "Animation")
     @JvmField
     var smoothSetting = false
@@ -31,7 +30,7 @@ class ChatMod :
         min = 1.0,
         max = 10.0,
         step = 1.0,
-        current = 4.0
+        current = 4.0,
     )
     @JvmField
     var smoothSpeedSetting = 4.0
@@ -59,7 +58,6 @@ class ChatMod :
     @Property(type = PropertyType.BOOLEAN, name = "Mention Ping", category = "Alerts")
     @JvmField
     var mentionPingSetting = false
-
 
     init {
         instance = this
@@ -100,16 +98,7 @@ class ChatMod :
 
     fun getCompactSetting(): BooleanSetting? = getBooleanSetting(this, "compactSetting")
 
-    fun getHighlightMentionsSetting(): BooleanSetting? =
-        getBooleanSetting(this, "highlightMentionsSetting")
+    fun getHighlightMentionsSetting(): BooleanSetting? = getBooleanSetting(this, "highlightMentionsSetting")
 
     fun getMentionPingSetting(): BooleanSetting? = getBooleanSetting(this, "mentionPingSetting")
 }
-
-
-
-
-
-
-
-

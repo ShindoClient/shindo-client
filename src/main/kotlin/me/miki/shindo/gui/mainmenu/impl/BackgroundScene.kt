@@ -32,8 +32,9 @@ import java.awt.Color
 import java.io.File
 import java.io.IOException
 
-class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class BackgroundScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val screenAnimation = ScreenAnimation()
     private val scroll = Scroll()
     private lateinit var introAnimation: Animation
@@ -43,7 +44,11 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager
@@ -55,14 +60,20 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             sr.scaledHeight,
             2f - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            false
+            false,
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             setCurrentScene(getSceneByClass(MainScene::class.java))
         }
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager?) {
+    private fun drawNanoVG(
+        mouseX: Int,
+        mouseY: Int,
+        sr: ScaledResolution,
+        instance: Shindo,
+        nvg: NanoVGManager?,
+    ) {
         val backgroundManager: BackgroundManager = instance.getProfileManager().backgroundManager
         val palette: ColorPalette = getMenuPalette()
         val panelColor = getPanelColor()
@@ -88,7 +99,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 8f,
             Color.WHITE,
             14f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
 
         nvg.save()
@@ -110,7 +121,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     itemHeight + 2,
                     7f,
                     Color(255, 255, 255, 180),
-                    Color(255, 255, 255, 180)
+                    Color(255, 255, 255, 180),
                 )
                 nvg.drawRoundedRect(itemX - 1, itemY - 1, itemWidth + 2, itemHeight + 2, 7f, Color(255, 255, 255, 180))
             }
@@ -128,7 +139,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                         acY + 42.5f + offsetY,
                         Color.WHITE,
                         26f,
-                        Fonts.LEGACYICON
+                        Fonts.LEGACYICON,
                     )
                 } else {
                     nvg.drawRoundedImage(bg.getImage()!!, acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
@@ -142,7 +153,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     acX + 11f + offsetX,
                     acY + 35f + offsetY,
                     102.5f,
-                    57.5f
+                    57.5f,
                 )
             }
 
@@ -154,10 +165,14 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                             acX + 11f + offsetX,
                             acY + 35f + offsetY + scroll.getValue(),
                             102.5f,
-                            57.5f
+                            57.5f,
                         )
-                    ) 1.0f else 0.0f,
-                    16.0
+                    ) {
+                        1.0f
+                    } else {
+                        0.0f
+                    },
+                    16.0,
                 )
 
                 nvg.drawRoundedImage(bg.getImage(), acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
@@ -167,7 +182,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     acY + 38f + offsetY,
                     palette.getMaterialRed((bg.getTrashAnimation().getValue() * 255).toInt()),
                     10f,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
             }
 
@@ -180,7 +195,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 0f,
                 6f,
                 6f,
-                controlColor
+                controlColor,
             )
             nvg.drawCenteredText(
                 bg.getName()!!,
@@ -188,7 +203,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 acY + offsetY + 80f,
                 Color.WHITE,
                 10f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
 
             offsetX += 115
@@ -207,7 +222,11 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         scroll.maxScroll = if (prevIndex == 1) 0f else offsetY - (70f / 1.56f) - if (index % 2 == 1) 70f else 0f
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val sr = ScaledResolution(mc)
 
         val instance = Shindo.getInstance()
@@ -222,8 +241,8 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         var offsetY = (0 + scroll.getValue()).toInt()
         var index = 1
 
-        if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat())
-            && !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)
+        if (!MouseUtils.isInside(mouseX, mouseY, acX.toFloat(), acY.toFloat(), acWidth.toFloat(), acHeight.toFloat()) &&
+            !MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)
         ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
@@ -236,7 +255,11 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                             val file = FileUtils.selectImageFile()
                             val bgCacheDir = File(fileManager.cacheDir, "background")
 
-                            if (file != null && bgCacheDir.exists() && file.exists() && FileUtils.getExtension(file) == "png") {
+                            if (file != null &&
+                                bgCacheDir.exists() &&
+                                file.exists() &&
+                                FileUtils.getExtension(file) == "png"
+                            ) {
                                 val destFile = File(bgCacheDir, file.name)
 
                                 try {
@@ -245,7 +268,7 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                                 } catch (e: IOException) {
                                     ShindoLogger.error(
                                         "An error occurred while copying the background file: " + file.name,
-                                        e
+                                        e,
                                     )
                                 }
                             }
@@ -255,13 +278,14 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                     }
                 }
 
-                if (bg is CustomBackground && MouseUtils.isInside(
+                if (bg is CustomBackground &&
+                    MouseUtils.isInside(
                         mouseX,
                         mouseY,
                         acX + offsetX + 98f,
                         acY + 35.5f + offsetY,
                         14f,
-                        14f
+                        14f,
                     )
                 ) {
                     if (backgroundManager.getCurrentBackground() == bg) {
@@ -283,7 +307,10 @@ class BackgroundScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }

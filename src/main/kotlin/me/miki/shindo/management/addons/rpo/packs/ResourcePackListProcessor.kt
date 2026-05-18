@@ -7,9 +7,8 @@ import java.util.regex.Pattern
 
 class ResourcePackListProcessor(
     private val sourceList: List<ResourcePackListEntry>,
-    private val targetList: MutableList<ResourcePackListEntry>
+    private val targetList: MutableList<ResourcePackListEntry>,
 ) {
-
     private var sorter: Comparator<ResourcePackListEntry>? = null
     private var textFilter: Pattern? = null
 
@@ -19,11 +18,12 @@ class ResourcePackListProcessor(
     }
 
     fun setFilter(text: String?) {
-        textFilter = if (text.isNullOrEmpty()) {
-            null
-        } else {
-            Pattern.compile("\\Q" + text.replace("*", "\\E.*\\Q") + "\\E", Pattern.CASE_INSENSITIVE)
-        }
+        textFilter =
+            if (text.isNullOrEmpty()) {
+                null
+            } else {
+                Pattern.compile("\\Q" + text.replace("*", "\\E.*\\Q") + "\\E", Pattern.CASE_INSENSITIVE)
+            }
         refresh()
     }
 
@@ -39,9 +39,8 @@ class ResourcePackListProcessor(
         sorter?.let { Collections.sort(targetList, it) }
     }
 
-    private fun checkFilter(entryText: String): Boolean {
-        return textFilter == null || textFilter!!.matcher(entryText.lowercase(Locale.ENGLISH)).find()
-    }
+    private fun checkFilter(entryText: String): Boolean =
+        textFilter == null || textFilter!!.matcher(entryText.lowercase(Locale.ENGLISH)).find()
 
     companion object {
         @JvmField
@@ -49,7 +48,7 @@ class ResourcePackListProcessor(
             Comparator { entry1, entry2 ->
                 String.CASE_INSENSITIVE_ORDER.compare(
                     nameSort(entry1, reverse = false),
-                    nameSort(entry2, reverse = false)
+                    nameSort(entry2, reverse = false),
                 )
             }
 
@@ -58,19 +57,21 @@ class ResourcePackListProcessor(
             Comparator { entry1, entry2 ->
                 -String.CASE_INSENSITIVE_ORDER.compare(
                     nameSort(entry1, reverse = true),
-                    nameSort(entry2, reverse = true)
+                    nameSort(entry2, reverse = true),
                 )
             }
 
-        private fun name(entry: ResourcePackListEntry): String {
-            return when (entry) {
+        private fun name(entry: ResourcePackListEntry): String =
+            when (entry) {
                 is ResourcePackListEntryCustom -> entry.func_148312_b()
                 is ResourcePackListEntryFound -> entry.func_148318_i().resourcePackName
                 else -> "<INVALID>"
             }
-        }
 
-        private fun nameSort(entry: ResourcePackListEntry, reverse: Boolean): String {
+        private fun nameSort(
+            entry: ResourcePackListEntry,
+            reverse: Boolean,
+        ): String {
             val pfx1 = if (!reverse) "a" else "z"
             val pfx2 = if (!reverse) "b" else "z"
             val pfx3 = if (!reverse) "z" else "a"
@@ -86,14 +87,11 @@ class ResourcePackListProcessor(
             }
         }
 
-        private fun description(entry: ResourcePackListEntry): String {
-            return when (entry) {
+        private fun description(entry: ResourcePackListEntry): String =
+            when (entry) {
                 is ResourcePackListEntryCustom -> entry.func_148311_a()
                 is ResourcePackListEntryFound -> entry.func_148318_i().texturePackDescription
                 else -> "<INVALID>"
             }
-        }
     }
 }
-
-

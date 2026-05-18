@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation
 enum class Language(
     private val id: String,
     private val nameTranslate: String,
-    private val flag: ResourceLocation
+    private val flag: ResourceLocation,
 ) {
     ENGLISH("en-us", "English (United States)", ResourceLocation("shindo/flag/us.png")),
     ITALIAN("it-it", "Italiano", ResourceLocation("shindo/flag/it.png")),
@@ -16,18 +16,22 @@ enum class Language(
     DANISH("da-da", "Dansk", ResourceLocation("shindo/flag/da.png")),
     JAPANESE("ja-jp", "日本語", ResourceLocation("shindo/flag/jp.png")),
     PORTUGUESE("pt-br", "Português (Brasileiro)", ResourceLocation("shindo/flag/br.png")),
-    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", ResourceLocation("shindo/flag/pt.png"));
+    PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", ResourceLocation("shindo/flag/pt.png")),
+    ;
 
     private val animation = SimpleAnimation()
 
     fun getId(): String = id
+
     fun getName(): String = nameTranslate
+
     fun getFlag(): ResourceLocation = flag
+
     fun getAnimation(): SimpleAnimation = animation
+
     fun getNameTranslate(): String = nameTranslate
 
     companion object {
-        fun getLanguageById(id: String): Language =
-            values().find { it.id == id } ?: ENGLISH
+        fun getLanguageById(id: String): Language = values().find { it.id == id } ?: ENGLISH
     }
 }

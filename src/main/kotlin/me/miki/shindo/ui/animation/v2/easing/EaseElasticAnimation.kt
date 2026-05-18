@@ -6,7 +6,6 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-
 class EaseElasticAnimation : Animation {
     var easeAmount: Float
     var smooth: Float
@@ -14,7 +13,7 @@ class EaseElasticAnimation : Animation {
 
     constructor(ms: Int, endPoint: Double, elasticity: Float, smooth: Float, moreElasticity: Boolean) : super(
         ms,
-        endPoint
+        endPoint,
     ) {
         this.easeAmount = elasticity
         this.smooth = smooth
@@ -28,7 +27,7 @@ class EaseElasticAnimation : Animation {
         elasticity: Float,
         smooth: Float,
         moreElasticity: Boolean,
-        direction: Direction?
+        direction: Direction?,
     ) : super(ms, endPoint, direction!!) {
         this.easeAmount = elasticity
         this.smooth = smooth
@@ -40,6 +39,8 @@ class EaseElasticAnimation : Animation {
         val x1 = (x / getDuration()).pow(smooth.toDouble())
         val elasticity = (easeAmount * .1f).toDouble()
 
-        return 2.0.pow(-10 * (if (reallyElastic) sqrt(x1) else x1)) * sin((x1 - (elasticity / 4)) * ((2 * Math.PI) / elasticity)) + 1
+        return 2.0.pow(-10 * (if (reallyElastic) sqrt(x1) else x1)) *
+            sin((x1 - (elasticity / 4)) * ((2 * Math.PI) / elasticity)) +
+            1
     }
 }

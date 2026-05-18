@@ -17,7 +17,10 @@ class SimpleAnimation {
         this.lastMS = System.currentTimeMillis()
     }
 
-    fun setAnimation(value: Float, speed: Double) {
+    fun setAnimation(
+        value: Float,
+        speed: Double,
+    ) {
         var speed = speed
         val currentMS = System.currentTimeMillis()
         val delta = currentMS - this.lastMS
@@ -40,9 +43,7 @@ class SimpleAnimation {
         setAnimation(target, 16.0)
     }
 
-    fun getValue(): Float {
-        return value
-    }
+    fun getValue(): Float = value
 
     fun setValue(value: Float) {
         this.value = value

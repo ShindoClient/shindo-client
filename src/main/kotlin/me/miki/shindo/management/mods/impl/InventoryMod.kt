@@ -10,8 +10,7 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 
-class InventoryMod :
-    Mod(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_INVENTORY) {
+class InventoryMod : Mod(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_INVENTORY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     @JvmField
     var animationSetting = false
@@ -36,13 +35,14 @@ class InventoryMod :
         instance = this
     }
 
-    enum class AnimationType(private val translate: TranslateText) : PropertyEnum {
+    enum class AnimationType(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         NORMAL(TranslateText.NORMAL),
-        BACKIN(TranslateText.BACKIN);
+        BACKIN(TranslateText.BACKIN),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -54,12 +54,7 @@ class InventoryMod :
 
     fun getBackgroundSetting(): BooleanSetting? = getBooleanSetting(this, "backgroundSetting")
 
-    fun getPreventPotionShiftSetting(): BooleanSetting? =
-        getBooleanSetting(this, "preventPotionShiftSetting")
+    fun getPreventPotionShiftSetting(): BooleanSetting? = getBooleanSetting(this, "preventPotionShiftSetting")
 
     fun getParticleSetting(): BooleanSetting? = getBooleanSetting(this, "particleSetting")
 }
-
-
-
-

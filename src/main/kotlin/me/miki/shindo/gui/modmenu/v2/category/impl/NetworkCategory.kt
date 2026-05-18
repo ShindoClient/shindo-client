@@ -28,20 +28,24 @@ import me.miki.shindo.utils.mouse.Scroll
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
-private enum class NetworkPage(val label: String) {
+private enum class NetworkPage(
+    val label: String,
+) {
     GENERAL("General"),
-    PROXY("Proxy")
+    PROXY("Proxy"),
 }
 
-private enum class ProxySectionFilter(val label: String) {
+private enum class ProxySectionFilter(
+    val label: String,
+) {
     ALL("All"),
     PRESET("Preset"),
-    CUSTOM("Custom")
+    CUSTOM("Custom"),
 }
 
-class NetworkCategory(parent: GuiModMenu) :
-    Category(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true) {
-
+class NetworkCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true) {
     private val pageChips = ArrayList<FilterChip>()
     private val sectionChips = ArrayList<FilterChip>()
 
@@ -89,7 +93,11 @@ class NetworkCategory(parent: GuiModMenu) :
         resetState()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.getColorManager().getPalette()
@@ -105,30 +113,34 @@ class NetworkCategory(parent: GuiModMenu) :
             y = getY().toFloat(),
             width = getWidth().toFloat(),
             height = getHeight().toFloat(),
-            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT
+            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT,
         ) {
             nvg.save()
             nvg.translate(contentOffsetX, 0f)
             val pageChipBottom = drawPageChips(nvg, palette, accent, contentMouseX, mouseY)
 
             when (currentPage) {
-                NetworkPage.GENERAL -> drawGeneralPage(
-                    nvg,
-                    palette,
-                    accent,
-                    networkManager,
-                    pageChipBottom + SECTION_SPACING
-                )
+                NetworkPage.GENERAL -> {
+                    drawGeneralPage(
+                        nvg,
+                        palette,
+                        accent,
+                        networkManager,
+                        pageChipBottom + SECTION_SPACING,
+                    )
+                }
 
-                NetworkPage.PROXY -> drawProxyPage(
-                    nvg,
-                    palette,
-                    accent,
-                    networkManager,
-                    contentMouseX,
-                    mouseY,
-                    pageChipBottom + SECTION_SPACING
-                )
+                NetworkPage.PROXY -> {
+                    drawProxyPage(
+                        nvg,
+                        palette,
+                        accent,
+                        networkManager,
+                        contentMouseX,
+                        mouseY,
+                        pageChipBottom + SECTION_SPACING,
+                    )
+                }
             }
             nvg.restore()
         }
@@ -136,7 +148,11 @@ class NetworkCategory(parent: GuiModMenu) :
         drawProxyForm(nvg, palette, accent, mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) return
 
         if (isFormInteractionLocked()) {
@@ -175,7 +191,7 @@ class NetworkCategory(parent: GuiModMenu) :
                     proxyListViewportX,
                     proxyListViewportY,
                     proxyListViewportWidth,
-                    proxyListViewportHeight
+                    proxyListViewportHeight,
                 )
             ) {
                 val listMouseY = (mouseY - proxyScrollY).toInt()
@@ -187,7 +203,10 @@ class NetworkCategory(parent: GuiModMenu) :
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (!showProxyForm) return
 
         nameBox.keyTyped(typedChar, keyCode)
@@ -204,7 +223,7 @@ class NetworkCategory(parent: GuiModMenu) :
         palette: ColorPalette,
         accent: AccentColor,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ): Float {
         pageChips.clear()
         val startX = getX() + CONTENT_PADDING
@@ -214,20 +233,39 @@ class NetworkCategory(parent: GuiModMenu) :
         for (page in NetworkPage.values()) {
             val chipWidth = CategoryChipRenderer.computeWidth(nvg, page.label, null)
             val active = currentPage == page
-            val hovered = !isFormInteractionLocked() && MouseUtils.isInside(
-                mouseX, mouseY, xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered =
+                !isFormInteractionLocked() &&
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        xCursor,
+                        y,
+                        chipWidth,
+                        CategoryChipRenderer.CHIP_HEIGHT,
+                    )
             CategoryChipRenderer.drawChip(
-                nvg, palette, accent, xCursor, y, chipWidth, page.label, null, active, hovered
+                nvg,
+                palette,
+                accent,
+                xCursor,
+                y,
+                chipWidth,
+                page.label,
+                null,
+                active,
+                hovered,
             )
 
-            val chip = FilterChip(Runnable {
-                if (currentPage != page) {
-                    currentPage = page
-                    sectionFilter = ProxySectionFilter.ALL
-                    proxyScroll.resetAll()
-                }
-            })
+            val chip =
+                FilterChip(
+                    Runnable {
+                        if (currentPage != page) {
+                            currentPage = page
+                            sectionFilter = ProxySectionFilter.ALL
+                            proxyScroll.resetAll()
+                        }
+                    },
+                )
             chip.setBounds(xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT)
             pageChips.add(chip)
             xCursor += chipWidth + CHIP_GAP
@@ -242,7 +280,7 @@ class NetworkCategory(parent: GuiModMenu) :
         accent: AccentColor,
         mouseX: Int,
         mouseY: Int,
-        y: Float
+        y: Float,
     ): Float {
         sectionChips.clear()
         val startX = getX() + CONTENT_PADDING
@@ -251,11 +289,27 @@ class NetworkCategory(parent: GuiModMenu) :
         for (section in ProxySectionFilter.values()) {
             val chipWidth = CategoryChipRenderer.computeWidth(nvg, section.label, null)
             val active = sectionFilter == section
-            val hovered = !isFormInteractionLocked() && MouseUtils.isInside(
-                mouseX, mouseY, xCursor, y, chipWidth, CategoryChipRenderer.CHIP_HEIGHT
-            )
+            val hovered =
+                !isFormInteractionLocked() &&
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        xCursor,
+                        y,
+                        chipWidth,
+                        CategoryChipRenderer.CHIP_HEIGHT,
+                    )
             CategoryChipRenderer.drawChip(
-                nvg, palette, accent, xCursor, y, chipWidth, section.label, null, active, hovered
+                nvg,
+                palette,
+                accent,
+                xCursor,
+                y,
+                chipWidth,
+                section.label,
+                null,
+                active,
+                hovered,
             )
 
             val chip = FilterChip(Runnable { sectionFilter = section })
@@ -272,7 +326,7 @@ class NetworkCategory(parent: GuiModMenu) :
         palette: ColorPalette,
         accent: AccentColor,
         networkManager: NetworkManager,
-        startY: Float
+        startY: Float,
     ) {
         val x = getX() + CONTENT_PADDING
         val width = getWidth() - CONTENT_PADDING * 2f
@@ -287,7 +341,7 @@ class NetworkCategory(parent: GuiModMenu) :
             width,
             cardHeight,
             "Current DNS",
-            networkManager.getCurrentDNSInfo()
+            networkManager.getCurrentDNSInfo(),
         )
         drawInfoCard(
             nvg,
@@ -298,7 +352,7 @@ class NetworkCategory(parent: GuiModMenu) :
             width,
             cardHeight,
             "Proxy Mode",
-            networkManager.getActiveProxyType().name
+            networkManager.getActiveProxyType().name,
         )
     }
 
@@ -311,7 +365,7 @@ class NetworkCategory(parent: GuiModMenu) :
         width: Float,
         height: Float,
         title: String,
-        value: String
+        value: String,
     ) {
         nvg.drawShadow(x, y, width, height, 12f, 6)
         nvg.drawRoundedRect(
@@ -320,7 +374,7 @@ class NetworkCategory(parent: GuiModMenu) :
             width,
             height,
             12f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 212)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 212),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -329,7 +383,7 @@ class NetworkCategory(parent: GuiModMenu) :
             height,
             12f,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210),
         )
         nvg.drawRoundedRect(
             x + 10f,
@@ -337,7 +391,7 @@ class NetworkCategory(parent: GuiModMenu) :
             3f,
             height - 26f,
             1.5f,
-            ColorUtils.applyAlpha(accent.getInterpolateColor(), 178)
+            ColorUtils.applyAlpha(accent.getInterpolateColor(), 178),
         )
         nvg.drawText(title, x + 16f, y + 18f, palette.getFontColor(ColorType.NORMAL), 9f, Fonts.MEDIUM)
         nvg.drawText(
@@ -346,7 +400,7 @@ class NetworkCategory(parent: GuiModMenu) :
             y + 38f,
             palette.getFontColor(ColorType.DARK),
             11f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
     }
 
@@ -357,7 +411,7 @@ class NetworkCategory(parent: GuiModMenu) :
         networkManager: NetworkManager,
         mouseX: Int,
         mouseY: Int,
-        startY: Float
+        startY: Float,
     ) {
         var yCursor = drawProxySectionChips(nvg, palette, accent, mouseX, mouseY, startY) + SECTION_SPACING
         val x = getX() + CONTENT_PADDING
@@ -389,7 +443,7 @@ class NetworkCategory(parent: GuiModMenu) :
         mouseY: Int,
         x: Float,
         y: Float,
-        width: Float
+        width: Float,
     ) {
         visibleProxyCards.clear()
 
@@ -418,7 +472,7 @@ class NetworkCategory(parent: GuiModMenu) :
             translateX = 0f,
             translateY = proxyScrollY,
             intersect = true,
-            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT
+            layer = ModMenuClipCoordinator.ClipLayer.CATEGORY_CONTENT,
         ) {
             var cardY = y
             for (proxy in proxies) {
@@ -449,7 +503,7 @@ class NetworkCategory(parent: GuiModMenu) :
         accent: AccentColor,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         if (!showProxyForm && formAnimation.isDone(Direction.FORWARDS)) {
             return
@@ -467,7 +521,7 @@ class NetworkCategory(parent: GuiModMenu) :
             y = getY().toFloat(),
             width = getWidth().toFloat(),
             height = getHeight().toFloat(),
-            layer = ModMenuClipCoordinator.ClipLayer.OVERLAY
+            layer = ModMenuClipCoordinator.ClipLayer.OVERLAY,
         ) {
             nvg.save()
             nvg.translate(panelOffsetX, 0f)
@@ -478,7 +532,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 panelWidth,
                 panelHeight,
                 12f,
-                palette.getBackgroundColor(ColorType.DARK)
+                palette.getBackgroundColor(ColorType.DARK),
             )
             nvg.drawOutlineRoundedRect(
                 panelX,
@@ -487,7 +541,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 panelHeight,
                 12f,
                 1.1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
             )
 
             nvg.drawText(
@@ -496,7 +550,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 panelY + 22f,
                 palette.getFontColor(ColorType.DARK),
                 14f,
-                Fonts.SEMIBOLD
+                Fonts.SEMIBOLD,
             )
 
             val fieldWidth = (panelWidth - 48f) / 2f - 15f
@@ -513,7 +567,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 fieldStartY + 42f,
                 palette.getFontColor(ColorType.DARK),
                 11f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
             primaryDNSBox.setPosition(panelX + 24f, fieldStartY + 62f, fieldWidth, 20f)
             primaryDNSBox.setDefaultText("1.1.1.1")
@@ -526,7 +580,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 fieldStartY + 42f,
                 palette.getFontColor(ColorType.DARK),
                 11f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
             secondaryDNSBox.setPosition(secondColumnX, fieldStartY + 62f, fieldWidth, 20f)
             secondaryDNSBox.setDefaultText("Optional")
@@ -541,8 +595,18 @@ class NetworkCategory(parent: GuiModMenu) :
             val saveHovered =
                 MouseUtils.isInside(panelMouseX, mouseY, saveX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT)
             nvg.drawRoundedRect(
-                cancelX, buttonY, FORM_BUTTON_WIDTH, FORM_BUTTON_HEIGHT, 6f,
-                if (cancelHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
+                cancelX,
+                buttonY,
+                FORM_BUTTON_WIDTH,
+                FORM_BUTTON_HEIGHT,
+                6f,
+                if (cancelHovered) {
+                    palette.getBackgroundColor(
+                        ColorType.MID,
+                    )
+                } else {
+                    palette.getBackgroundColor(ColorType.NORMAL)
+                },
             )
             if (cancelHovered) {
                 nvg.drawOutlineRoundedRect(
@@ -552,7 +616,7 @@ class NetworkCategory(parent: GuiModMenu) :
                     FORM_BUTTON_HEIGHT,
                     6f,
                     1f,
-                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110),
                 )
             }
             nvg.drawCenteredText(
@@ -561,7 +625,7 @@ class NetworkCategory(parent: GuiModMenu) :
                 buttonY + FORM_BUTTON_HEIGHT / 2f,
                 palette.getFontColor(ColorType.NORMAL),
                 10f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
 
             nvg.drawRoundedRect(
@@ -570,7 +634,13 @@ class NetworkCategory(parent: GuiModMenu) :
                 FORM_BUTTON_WIDTH,
                 FORM_BUTTON_HEIGHT,
                 6f,
-                if (saveHovered) palette.getBackgroundColor(ColorType.MID) else palette.getBackgroundColor(ColorType.NORMAL)
+                if (saveHovered) {
+                    palette.getBackgroundColor(
+                        ColorType.MID,
+                    )
+                } else {
+                    palette.getBackgroundColor(ColorType.NORMAL)
+                },
             )
 
             if (saveHovered) {
@@ -581,7 +651,7 @@ class NetworkCategory(parent: GuiModMenu) :
                     FORM_BUTTON_HEIGHT,
                     6f,
                     1f,
-                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110)
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 110),
                 )
             }
             nvg.drawCenteredText(
@@ -590,14 +660,17 @@ class NetworkCategory(parent: GuiModMenu) :
                 buttonY + FORM_BUTTON_HEIGHT / 2f,
                 palette.getFontColor(ColorType.NORMAL),
                 10f,
-                Fonts.MEDIUM
+                Fonts.MEDIUM,
             )
 
             nvg.restore()
         }
     }
 
-    private fun handleFormClick(mouseX: Int, mouseY: Int) {
+    private fun handleFormClick(
+        mouseX: Int,
+        mouseY: Int,
+    ) {
         val panelMouseX = (mouseX - panelOffsetX).toInt()
         val insidePanel = MouseUtils.isInside(panelMouseX, mouseY, panelX, panelY, panelWidth, panelHeight)
         if (!insidePanel) {
@@ -631,11 +704,12 @@ class NetworkCategory(parent: GuiModMenu) :
             return
         }
 
-        val success = editingProxyId?.let { id ->
-            networkManager.proxyManager.updateProxy(id, name, primary, secondary)
-        } ?: networkManager.proxyManager.addProxy(
-            CustomProxy(name = name, primaryDNS = primary, secondaryDNS = secondary)
-        )
+        val success =
+            editingProxyId?.let { id ->
+                networkManager.proxyManager.updateProxy(id, name, primary, secondary)
+            } ?: networkManager.proxyManager.addProxy(
+                CustomProxy(name = name, primaryDNS = primary, secondaryDNS = secondary),
+            )
 
         if (success) {
             closeForm()
@@ -650,7 +724,11 @@ class NetworkCategory(parent: GuiModMenu) :
         cloudflareCard.onCardClick = null
     }
 
-    private fun syncProxyCard(card: CompProxyCard, proxy: CustomProxy, active: Boolean) {
+    private fun syncProxyCard(
+        card: CompProxyCard,
+        proxy: CustomProxy,
+        active: Boolean,
+    ) {
         card.title = proxy.name
         card.subtitle = proxy.primaryDNS + (proxy.secondaryDNS?.let { " / $it" } ?: "")
         card.active = active
@@ -668,7 +746,10 @@ class NetworkCategory(parent: GuiModMenu) :
         saveProfileState()
     }
 
-    private fun toggleCustomProxy(networkManager: NetworkManager, proxyId: String) {
+    private fun toggleCustomProxy(
+        networkManager: NetworkManager,
+        proxyId: String,
+    ) {
         if (networkManager.getActiveCustomProxyId() == proxyId) {
             networkManager.disableAllProxies()
         } else {
@@ -715,9 +796,7 @@ class NetworkCategory(parent: GuiModMenu) :
         }
     }
 
-    private fun isFormInteractionLocked(): Boolean {
-        return showProxyForm || !formAnimation.isDone(Direction.FORWARDS)
-    }
+    private fun isFormInteractionLocked(): Boolean = showProxyForm || !formAnimation.isDone(Direction.FORWARDS)
 
     private fun resetForm() {
         nameBox.setText("")
@@ -764,6 +843,5 @@ class NetworkCategory(parent: GuiModMenu) :
 
         private const val FORM_BUTTON_WIDTH = 84f
         private const val FORM_BUTTON_HEIGHT = 22f
-
     }
 }

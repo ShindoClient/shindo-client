@@ -3,12 +3,17 @@ package me.miki.shindo.utils.vector
 import me.miki.shindo.utils.MathUtils
 import net.minecraft.util.MathHelper
 
-class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @JvmField var z: Float = 0.0f) {
-
+class Vector3f(
+    @JvmField var x: Float = 0.0f,
+    @JvmField var y: Float = 0.0f,
+    @JvmField var z: Float = 0.0f,
+) {
     constructor(vector4f: Vector4f) : this(vector4f.x(), vector4f.y(), vector4f.z())
 
     fun x(): Float = x
+
     fun y(): Float = y
+
     fun z(): Float = z
 
     fun mul(f: Float) {
@@ -17,25 +22,39 @@ class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @Jv
         this.z *= f
     }
 
-    fun mul(f: Float, g: Float, h: Float) {
+    fun mul(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.x *= f
         this.y *= g
         this.z *= h
     }
 
-    fun clamp(min: Vector3f, max: Vector3f) {
+    fun clamp(
+        min: Vector3f,
+        max: Vector3f,
+    ) {
         this.x = MathHelper.clamp_float(this.x, min.x(), max.x())
         this.y = MathHelper.clamp_float(this.y, min.x(), max.y())
         this.z = MathHelper.clamp_float(this.z, min.z(), max.z())
     }
 
-    fun clamp(f: Float, g: Float) {
+    fun clamp(
+        f: Float,
+        g: Float,
+    ) {
         this.x = MathHelper.clamp_float(this.x, f, g)
         this.y = MathHelper.clamp_float(this.y, f, g)
         this.z = MathHelper.clamp_float(this.z, f, g)
     }
 
-    fun set(f: Float, g: Float, h: Float) {
+    fun set(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.x = f
         this.y = g
         this.z = h
@@ -47,7 +66,11 @@ class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @Jv
         this.z = other.z
     }
 
-    fun add(f: Float, g: Float, h: Float) {
+    fun add(
+        f: Float,
+        g: Float,
+        h: Float,
+    ) {
         this.x += f
         this.y += g
         this.z += h
@@ -100,7 +123,10 @@ class Vector3f(@JvmField var x: Float = 0.0f, @JvmField var y: Float = 0.0f, @Jv
         set(q2.i(), q2.j(), q2.k())
     }
 
-    fun lerp(other: Vector3f, f: Float) {
+    fun lerp(
+        other: Vector3f,
+        f: Float,
+    ) {
         val g = 1.0f - f
         this.x = this.x * g + other.x * f
         this.y = this.y * g + other.y * f

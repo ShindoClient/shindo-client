@@ -64,7 +64,7 @@ class AppleSkinMod :
             right,
             top,
             flashAlpha,
-            AppleSkinHelper.isRottenFood(heldItem)
+            AppleSkinHelper.isRottenFood(heldItem),
         )
 
         this.drawSaturationOverlay(
@@ -74,7 +74,7 @@ class AppleSkinMod :
             stats.foodLevel,
             right,
             top,
-            flashAlpha
+            flashAlpha,
         )
     }
 
@@ -91,7 +91,11 @@ class AppleSkinMod :
         flashAlpha = max(0.0f, min(1.0f, unclampedFlashAlpha)) * min(1.0f, 1.0f)
     }
 
-    private fun generateHungerBarOffsets(right: Int, top: Int, ticks: Int) {
+    private fun generateHungerBarOffsets(
+        right: Int,
+        top: Int,
+        ticks: Int,
+    ) {
         random.setSeed(ticks * 312871L)
 
         val preferFoodBars = 10
@@ -135,7 +139,7 @@ class AppleSkinMod :
         foodLevel: Int,
         right: Int,
         top: Int,
-        alpha: Float
+        alpha: Float,
     ) {
         if (saturationLevel + saturationGained < 0) {
             return
@@ -212,7 +216,7 @@ class AppleSkinMod :
         right: Int,
         top: Int,
         alpha: Float,
-        useRottenTextures: Boolean
+        useRottenTextures: Boolean,
     ) {
         if (hungerRestored <= 0) {
             return
@@ -271,8 +275,3 @@ class AppleSkinMod :
         var y: Int = 0
     }
 }
-
-
-
-
-

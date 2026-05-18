@@ -9,7 +9,6 @@ import me.miki.shindo.utils.network.HttpUtils
 import java.util.concurrent.CopyOnWriteArrayList
 
 class NewsManager {
-
     private val news = CopyOnWriteArrayList<News>()
 
     init {
@@ -26,8 +25,8 @@ class NewsManager {
                 News(
                     JsonUtils.getStringProperty(changelogJsonObject, "title", "null").toString(),
                     JsonUtils.getStringProperty(changelogJsonObject, "subtitle", "null").toString(),
-                    JsonUtils.getStringProperty(changelogJsonObject, "body", "null").toString()
-                )
+                    JsonUtils.getStringProperty(changelogJsonObject, "body", "null").toString(),
+                ),
             )
         }
     }

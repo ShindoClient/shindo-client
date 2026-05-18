@@ -1,35 +1,40 @@
 package me.miki.shindo.types
 
-class Size @JvmOverloads constructor(width: Float = 0f, height: Float = 0f) {
-    var width = 0f
-    var height = 0f
-    operator fun set(w: Float, h: Float): Size {
-        width = w
-        height = h
-        return this
-    }
+class Size
+    @JvmOverloads
+    constructor(
+        width: Float = 0f,
+        height: Float = 0f,
+    ) {
+        var width = 0f
+        var height = 0f
 
-    fun set(s: Size): Size {
-        width = s.width
-        height = s.height
-        return this
-    }
+        operator fun set(
+            w: Float,
+            h: Float,
+        ): Size {
+            width = w
+            height = h
+            return this
+        }
 
-    fun aspect(): Float {
-        return if (height == 0f) 0f else width / height
-    }
+        fun set(s: Size): Size {
+            width = s.width
+            height = s.height
+            return this
+        }
 
-    fun scale(factor: Float): Size {
-        width *= factor
-        height *= factor
-        return this
-    }
+        fun aspect(): Float = if (height == 0f) 0f else width / height
 
-    override fun toString(): String {
-        return "Size[w=$width, h=$height]"
-    }
+        fun scale(factor: Float): Size {
+            width *= factor
+            height *= factor
+            return this
+        }
 
-    init {
-        set(width, height)
+        override fun toString(): String = "Size[w=$width, h=$height]"
+
+        init {
+            set(width, height)
+        }
     }
-}

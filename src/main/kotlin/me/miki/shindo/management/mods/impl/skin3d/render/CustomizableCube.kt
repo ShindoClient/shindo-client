@@ -22,7 +22,7 @@ class CustomizableCube(
     mirror: Boolean,
     textureWidth: Float,
     textureHeight: Float,
-    hide: Array<SkinDirection?>?
+    hide: Array<SkinDirection?>?,
 ) {
     val minX: Float
     val minY: Float
@@ -80,87 +80,93 @@ class CustomizableCube(
         val r = v + sizeZ + sizeY
 
         if (visibleFace(SkinDirection.DOWN)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex6, vertex5, vertex, vertex2),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.DOWN
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex6, vertex5, vertex, vertex2),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.DOWN,
+                )
         }
 
         if (visibleFace(SkinDirection.UP)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex3, vertex4, vertex8, vertex7),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.UP
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex3, vertex4, vertex8, vertex7),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.UP,
+                )
         }
 
         if (visibleFace(SkinDirection.WEST)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex, vertex5, vertex8, vertex4),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.WEST
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex, vertex5, vertex8, vertex4),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.WEST,
+                )
         }
 
         if (visibleFace(SkinDirection.NORTH)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex2, vertex, vertex4, vertex3),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.NORTH
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex2, vertex, vertex4, vertex3),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.NORTH,
+                )
         }
 
         if (visibleFace(SkinDirection.EAST)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex6, vertex2, vertex3, vertex7),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.EAST
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex6, vertex2, vertex3, vertex7),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.EAST,
+                )
         }
 
         if (visibleFace(SkinDirection.SOUTH)) {
-            this.polygons[polygonCount++] = Polygon(
-                arrayOf<Vertex>(vertex5, vertex6, vertex7, vertex8),
-                l,
-                q,
-                n,
-                r,
-                textureWidth,
-                textureHeight,
-                mirror,
-                SkinDirection.SOUTH
-            )
+            this.polygons[polygonCount++] =
+                Polygon(
+                    arrayOf<Vertex>(vertex5, vertex6, vertex7, vertex8),
+                    l,
+                    q,
+                    n,
+                    r,
+                    textureWidth,
+                    textureHeight,
+                    mirror,
+                    SkinDirection.SOUTH,
+                )
         }
     }
 
@@ -174,7 +180,10 @@ class CustomizableCube(
         return true
     }
 
-    fun render(worldRenderer: WorldRenderer, redTint: Boolean) {
+    fun render(
+        worldRenderer: WorldRenderer,
+        redTint: Boolean,
+    ) {
         var redTint = redTint
         redTint = false
         worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL)
@@ -185,14 +194,15 @@ class CustomizableCube(
 
             for (i in 0..3) {
                 val vertex = polygon.vertices[i]
-                worldRenderer.pos(vertex.pos.x.toDouble(), vertex.pos.y.toDouble(), vertex.pos.z.toDouble())
+                worldRenderer
+                    .pos(vertex.pos.x.toDouble(), vertex.pos.y.toDouble(), vertex.pos.z.toDouble())
                     .tex(vertex.u.toDouble(), vertex.v.toDouble())
                     .color(255, if (redTint) 127 else 255, if (redTint) 127 else 255, 255)
-                    .normal(polygon.normal.x, polygon.normal.y, polygon.normal.z).endVertex()
+                    .normal(polygon.normal.x, polygon.normal.y, polygon.normal.z)
+                    .endVertex()
             }
         }
 
         Tessellator.getInstance().draw()
     }
 }
-

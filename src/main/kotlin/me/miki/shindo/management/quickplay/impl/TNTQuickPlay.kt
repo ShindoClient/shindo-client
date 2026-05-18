@@ -5,7 +5,6 @@ import me.miki.shindo.management.quickplay.QuickPlayCommand
 import net.minecraft.util.ResourceLocation
 
 class TNTQuickPlay : QuickPlay("TNT", ResourceLocation("shindo/icons/hypixel/TNT.png")) {
-
     override fun addCommands() {
         setCommands(
             arrayListOf(
@@ -14,8 +13,8 @@ class TNTQuickPlay : QuickPlay("TNT", ResourceLocation("shindo/icons/hypixel/TNT
                 QuickPlayCommand("PVP Run", "/play tnt_pvprun"),
                 QuickPlayCommand("Bow Spleef", "/play tnt_bowspleef"),
                 QuickPlayCommand("TNT Tag", "/play tnt_tntag"),
-                QuickPlayCommand("TNT Wizards", "/play tnt_capture")
-            )
+                QuickPlayCommand("TNT Wizards", "/play tnt_capture"),
+            ),
         )
     }
 }

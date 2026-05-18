@@ -17,14 +17,15 @@ import me.miki.shindo.utils.PlayerUtils.getItemSlot
 import net.minecraft.init.Items
 import org.lwjgl.input.Keyboard
 
-class QuickSwitchMod : Mod(
-    TranslateText.QUICK_SWITCH,
-    TranslateText.QUICK_SWITCH_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_QUICK_SWITCH,
-    "itemhotkey",
-    true
-) {
+class QuickSwitchMod :
+    Mod(
+        TranslateText.QUICK_SWITCH,
+        TranslateText.QUICK_SWITCH_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_QUICK_SWITCH,
+        "itemhotkey",
+        true,
+    ) {
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.SWORD)
     private val swordKey = Keyboard.KEY_NONE
 
@@ -74,7 +75,3 @@ class QuickSwitchMod : Mod(
         mc.thePlayer.inventory.currentItem = slot
     }
 }
-
-
-
-

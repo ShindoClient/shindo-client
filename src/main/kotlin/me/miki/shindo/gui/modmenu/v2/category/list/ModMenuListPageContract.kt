@@ -11,14 +11,16 @@ package me.miki.shindo.gui.modmenu.v2.category.list
  * - optional right-side details layer.
  */
 interface ModMenuListPageContract {
-
     fun drawTopFilters(context: ModMenuListPageRenderContext): Float
 
     fun rebuildFilteredEntries(topFiltersBottom: Float)
 
     fun resolveCardLayoutSpec(): ModMenuListCardLayoutSpec
 
-    fun drawEntryCards(context: ModMenuListPageRenderContext, layout: ModMenuListCardLayoutSpec)
+    fun drawEntryCards(
+        context: ModMenuListPageRenderContext,
+        layout: ModMenuListCardLayoutSpec,
+    )
 
     fun isDetailsLayerOpen(): Boolean = false
 
@@ -26,4 +28,3 @@ interface ModMenuListPageContract {
         // Optional layer, default no-op.
     }
 }
-

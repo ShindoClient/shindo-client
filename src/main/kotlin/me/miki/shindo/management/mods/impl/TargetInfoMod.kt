@@ -17,13 +17,14 @@ import me.miki.shindo.utils.TargetUtils.target
 import net.minecraft.util.ResourceLocation
 import kotlin.math.min
 
-class TargetInfoMod : HUDMod(
-    TranslateText.TARGET_INFO,
-    TranslateText.TARGET_INFO_DESCRIPTION,
-    LegacyIcon.MOD_TARGET_INFO,
-    "targethud",
-    true
-) {
+class TargetInfoMod :
+    HUDMod(
+        TranslateText.TARGET_INFO,
+        TranslateText.TARGET_INFO_DESCRIPTION,
+        LegacyIcon.MOD_TARGET_INFO,
+        "targethud",
+        true,
+    ) {
     private val healthAnimation = SimpleAnimation()
     private val armorAnimation = SimpleAnimation()
     private val screenAnimation = ScreenAnimation()
@@ -64,7 +65,7 @@ class TargetInfoMod : HUDMod(
                 this.getWidth(),
                 this.getHeight(),
                 2 - introAnimation!!.getValueFloat(),
-                introAnimation!!.getValueFloat()
+                introAnimation!!.getValueFloat(),
             )
         }
     }
@@ -96,6 +97,3 @@ class TargetInfoMod : HUDMod(
         this.setHeight(46)
     }
 }
-
-
-

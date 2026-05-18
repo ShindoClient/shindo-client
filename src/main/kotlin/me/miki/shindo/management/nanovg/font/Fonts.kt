@@ -3,7 +3,6 @@ package me.miki.shindo.management.nanovg.font
 import net.minecraft.util.ResourceLocation
 
 object Fonts {
-
     private const val PATH = "shindo/fonts/"
 
     @JvmField
@@ -39,9 +38,6 @@ object Fonts {
     @JvmField
     val ICON_FILLED: Font = Font("icon-filled", ResourceLocation(PATH + "icns/FluentSystemIcons-Filled.ttf"))
 
-
     @JvmStatic
-    fun getFonts(): ArrayList<Font> {
-        return ArrayList(listOf(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
-    }
+    fun getFonts(): ArrayList<Font> = ArrayList(listOf(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
 }

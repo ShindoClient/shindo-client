@@ -7,12 +7,10 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.utils.mouse.MouseUtils
 
-
 open class Component(
     private var x: Float = 0f,
-    private var y: Float = 0f
+    private var y: Float = 0f,
 ) {
-
     private var width: Float = 0f
     private var height: Float = 0f
     private var visible: Boolean = true
@@ -31,7 +29,11 @@ open class Component(
     protected val colors: ColorManager
         get() = Shindo.getInstance().getColorManager()
 
-    open fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    open fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (!visible) return
         drawChildren(mouseX, mouseY, partialTicks)
     }
@@ -41,22 +43,37 @@ open class Component(
         updateChildren(partialTicks)
     }
 
-    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    open fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!visible) return
         forEachChild { it.mouseClicked(mouseX, mouseY, mouseButton) }
     }
 
-    open fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    open fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!visible) return
         forEachChild { it.mouseReleased(mouseX, mouseY, mouseButton) }
     }
 
-    open fun keyTyped(typedChar: Char, keyCode: Int) {
+    open fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (!visible) return
         forEachChild { it.keyTyped(typedChar, keyCode) }
     }
 
-    protected open fun drawChildren(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    protected open fun drawChildren(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (children.isEmpty()) return
         forEachChild { it.draw(mouseX, mouseY, partialTicks) }
     }
@@ -67,8 +84,11 @@ open class Component(
     }
 
     open fun getX(): Float = x
+
     open fun getY(): Float = y
+
     open fun getWidth(): Float = width
+
     open fun getHeight(): Float = height
 
     open fun setX(x: Float) {
@@ -87,7 +107,12 @@ open class Component(
         this.height = height
     }
 
-    open fun setBounds(x: Float, y: Float, width: Float, height: Float) {
+    open fun setBounds(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         this.x = x
         this.y = y
         this.width = width
@@ -95,6 +120,7 @@ open class Component(
     }
 
     open fun isVisible(): Boolean = visible
+
     open fun setVisible(visible: Boolean) {
         this.visible = visible
     }
@@ -117,9 +143,10 @@ open class Component(
 
     open fun hasChildren(): Boolean = children.isNotEmpty()
 
-    open fun isHovered(mouseX: Int, mouseY: Int): Boolean {
-        return MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-    }
+    open fun isHovered(
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
 
     private inline fun forEachChild(action: (Component) -> Unit) {
         children.forEach(action)

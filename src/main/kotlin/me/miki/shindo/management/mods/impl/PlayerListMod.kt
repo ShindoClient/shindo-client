@@ -8,15 +8,14 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class PlayerListMod :
-    HUDMod(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST) {
+class PlayerListMod : HUDMod(TranslateText.PLAYER_LIST, TranslateText.PLAYER_LIST_DESCRIPTION, LegacyIcon.MOD_PLAYER_LIST) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.MAX,
         min = 1.0,
         max = 100.0,
         current = 16.0,
-        step = 1.0
+        step = 1.0,
     )
     private val maxSetting = 16
 
@@ -25,7 +24,6 @@ class PlayerListMod :
 
     @EventTarget
     fun onRender2D(event: EventNVG) {
-
         var prevIndex = 0
         var offsetY = 23
 
@@ -61,7 +59,3 @@ class PlayerListMod :
         this.setHeight((index * 15) + 26)
     }
 }
-
-
-
-

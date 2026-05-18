@@ -11,7 +11,10 @@ object MixinTraceUtil {
      * @param stackTrace the crash report's stackTrace.
      */
     @JvmStatic
-    fun addMixinInfoToCrashReport(sb: StringBuilder, stackTrace: Array<StackTraceElement>?) {
+    fun addMixinInfoToCrashReport(
+        sb: StringBuilder,
+        stackTrace: Array<StackTraceElement>?,
+    ) {
         if (stackTrace != null && stackTrace.isNotEmpty()) {
             sb.append("-- Mixins affecting classes in stacktrace --\n")
 
@@ -30,13 +33,15 @@ object MixinTraceUtil {
                 if (infoSet.isEmpty()) continue
                 found = true
                 sb.append(className).append(":")
-                infoSet.forEach(Consumer { info: IMixinInfo ->
-                    sb.append(
-                        stringifyMixinInfo(
-                            info
+                infoSet.forEach(
+                    Consumer { info: IMixinInfo ->
+                        sb.append(
+                            stringifyMixinInfo(
+                                info,
+                            ),
                         )
-                    )
-                })
+                    },
+                )
                 sb.append("\n")
             }
             if (!found) sb.append("None found\n")
@@ -49,10 +54,9 @@ object MixinTraceUtil {
      * @param info The mixin information provided.
      * @return The string containing relevant bits of the mixin information.
      */
-    private fun stringifyMixinInfo(info: IMixinInfo): String {
-        return """
+    private fun stringifyMixinInfo(info: IMixinInfo): String =
+        """
 	${info.className} (${info.config.name})"""
-    }
 
     /**
      * Fetching mixin information for a given class name. Returns null in case the fetching failed, you need to handle that case.

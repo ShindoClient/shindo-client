@@ -2,4 +2,6 @@ package me.miki.shindo.management.event.impl
 
 import me.miki.shindo.management.event.Event
 
-class EventRenderSelectedItem(val color: Int) : Event()
+class EventRenderSelectedItem(
+    val color: Int,
+) : Event()

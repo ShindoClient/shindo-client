@@ -26,8 +26,7 @@ import net.minecraft.network.play.server.S45PacketTitle
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
-class HypixelMod :
-    Mod(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_HYPIXEL, "hytill") {
+class HypixelMod : Mod(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_HYPIXEL, "hytill") {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GG)
     private val autoggSetting = false
 
@@ -37,7 +36,7 @@ class HypixelMod :
         min = 0.0,
         max = 5.0,
         current = 3.0,
-        step = 1.0
+        step = 1.0,
     )
     private val autoggDelaySetting = 3
 
@@ -50,7 +49,7 @@ class HypixelMod :
         min = 0.0,
         max = 5.0,
         current = 1.0,
-        step = 1.0
+        step = 1.0,
     )
     private val autoglDelaySetting = 1
 
@@ -63,7 +62,7 @@ class HypixelMod :
         min = 0.0,
         max = 5.0,
         current = 3.0,
-        step = 1.0
+        step = 1.0,
     )
     private val autoPlayDelaySetting = 3
 
@@ -155,7 +154,8 @@ class HypixelMod :
             val slotPacket = event.getPacket() as S2FPacketSetSlot
             val stack = slotPacket.func_149174_e()
 
-            if (stack != null && stack.item == Items.paper &&
+            if (stack != null &&
+                stack.item == Items.paper &&
                 currentMode != null &&
                 (HypixelGameMode.isBedwars(currentMode!!) || HypixelGameMode.isTntGames(currentMode!!))
             ) {
@@ -182,7 +182,8 @@ class HypixelMod :
                     TimeUnit.SECONDS,
                     Runnable {
                         mc.thePlayer.sendChatMessage("/achat gl")
-                    })
+                    },
+                )
             }
         }
 
@@ -199,11 +200,15 @@ class HypixelMod :
                         TimeUnit.SECONDS,
                         Runnable {
                             mc.thePlayer.sendChatMessage("/achat gg")
-                        })
+                        },
+                    )
                 }
 
-                if (title.startsWith("\u00a76\u00a7l") && title.endsWith("\u00a7r") || title.startsWith("\u00a7c\u00a7lY") && title.endsWith(
-                        "\u00a7r"
+                if (title.startsWith("\u00a76\u00a7l") &&
+                    title.endsWith("\u00a7r") ||
+                    title.startsWith("\u00a7c\u00a7lY") &&
+                    title.endsWith(
+                        "\u00a7r",
                     )
                 ) {
                     sendNextGame()
@@ -278,12 +283,17 @@ class HypixelMod :
 
     private fun sendNextGame() {
         if (autoPlaySetting) {
-            TaskExecutor.schedule(ThreadPoolType.SCHEDULED, autoPlayDelaySetting.toLong(), TimeUnit.SECONDS, Runnable {
-                val command = currentMode?.command
-                if (command != null) {
-                    mc.thePlayer.sendChatMessage(command)
-                }
-            })
+            TaskExecutor.schedule(
+                ThreadPoolType.SCHEDULED,
+                autoPlayDelaySetting.toLong(),
+                TimeUnit.SECONDS,
+                Runnable {
+                    val command = currentMode?.command
+                    if (command != null) {
+                        mc.thePlayer.sendChatMessage(command)
+                    }
+                },
+            )
         }
     }
 
@@ -292,6 +302,3 @@ class HypixelMod :
         var instance: HypixelMod? = null
     }
 }
-
-
-

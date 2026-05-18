@@ -6,7 +6,6 @@ import me.miki.shindo.management.settings.config.ConfigOwner
 import java.io.File
 
 open class ImageSetting : Setting {
-
     private var image: File? = null
 
     constructor(nameTranslate: TranslateText, parent: ConfigOwner) : super(nameTranslate, parent)
@@ -17,9 +16,7 @@ open class ImageSetting : Setting {
         image = null
     }
 
-    fun getImage(): File? {
-        return image
-    }
+    fun getImage(): File? = image
 
     open fun setImage(image: File?) {
         this.image = image

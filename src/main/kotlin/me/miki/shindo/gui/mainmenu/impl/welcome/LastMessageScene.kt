@@ -16,8 +16,9 @@ import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 
-class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class LastMessageScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val blurAnimation: Animation = DecelerateAnimation(800, 13.0)
     private val timer = TimerUtils()
     private var fadeAnimation: Animation? = null
@@ -29,7 +30,11 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         blurAnimation.setValue(13.0)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         val compMessage = "Setup is complete!"
@@ -50,25 +55,28 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         if (fadeAnimation != null) {
-            message = when (step) {
-                0 -> compMessage
-                1 -> welcomeMessage
-                else -> message
-            }
+            message =
+                when (step) {
+                    0 -> compMessage
+                    1 -> welcomeMessage
+                    else -> message
+                }
             if (!soundPlayed) {
                 Sound.play(Sounds.SHINDO_AUDIO_SUCCESS, true)
                 soundPlayed = true
             }
-            nvg.setupAndDraw(Runnable {
-                nvg.drawCenteredText(
-                    message!!,
-                    sr.scaledWidth / 2f,
-                    (sr.scaledHeight / 2f) - (nvg.getTextHeight(message!!, 26f, Fonts.REGULAR) / 2),
-                    Color(255, 255, 255, (fadeAnimation!!.getValueFloat() * 255).toInt()),
-                    26f,
-                    Fonts.REGULAR
-                )
-            })
+            nvg.setupAndDraw(
+                Runnable {
+                    nvg.drawCenteredText(
+                        message!!,
+                        sr.scaledWidth / 2f,
+                        (sr.scaledHeight / 2f) - (nvg.getTextHeight(message!!, 26f, Fonts.REGULAR) / 2),
+                        Color(255, 255, 255, (fadeAnimation!!.getValueFloat() * 255).toInt()),
+                        26f,
+                        Fonts.REGULAR,
+                    )
+                },
+            )
 
             if (timer.delay(3000) && fadeAnimation!!.getDirection() == Direction.FORWARDS) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
@@ -87,6 +95,3 @@ class LastMessageScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 }
-
-
-

@@ -20,7 +20,6 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 class GuiGameMenu : GuiScreen() {
-
     private val screenAnimation = ScreenAnimation()
     private lateinit var introAnimation: Animation
     private var x = 0
@@ -30,7 +29,6 @@ class GuiGameMenu : GuiScreen() {
     private var centre = 0
     private var scaledWidth = 0
     private var scaledHeight = 0
-
 
     override fun initGui() {
         val sr = ScaledResolution(mc)
@@ -46,7 +44,11 @@ class GuiGameMenu : GuiScreen() {
         introAnimation.setDirection(Direction.FORWARDS)
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         BlurUtils.drawBlurScreen(20F)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         drawRect(0, 0, mc.displayWidth, mc.displayHeight, 0x8C000000.toInt())
@@ -59,7 +61,7 @@ class GuiGameMenu : GuiScreen() {
             menuHeight.toFloat(),
             2 - introAnimation.getValueFloat(),
             introAnimation.getValueFloat().coerceAtMost(1f),
-            false
+            false,
         )
         if (introAnimation.isDone(Direction.BACKWARDS)) {
             mc.displayGuiScreen(null)
@@ -69,7 +71,6 @@ class GuiGameMenu : GuiScreen() {
     }
 
     private fun drawNanoVG(nvg: NanoVGManager) {
-
         nvg.drawText(LegacyIcon.ARROW_LEFT, x.toFloat(), y + 5f, Color(255, 255, 255, 140), 11f, Fonts.LEGACYICON)
         nvg.drawCenteredText(
             I18n.format("menu.game"),
@@ -77,7 +78,7 @@ class GuiGameMenu : GuiScreen() {
             y + 5f,
             Color(255, 255, 255, 200),
             13f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
 
         val standardPadding = 29.5f
@@ -98,13 +99,24 @@ class GuiGameMenu : GuiScreen() {
         offset += standardPadding
         drawButton(
             nvg,
-            if (!mc.isIntegratedServerRunning) I18n.format("menu.disconnect") else TranslateText.EXIT_WORLD_SINGLEPLAYER.getText(),
+            if (!mc.isIntegratedServerRunning) {
+                I18n.format(
+                    "menu.disconnect",
+                )
+            } else {
+                TranslateText.EXIT_WORLD_SINGLEPLAYER.getText()
+            },
             LegacyIcon.LOGOUT,
-            offset
+            offset,
         )
     }
 
-    private fun drawButton(nvg: NanoVGManager, text: String, icon: String, offset: Float) {
+    private fun drawButton(
+        nvg: NanoVGManager,
+        text: String,
+        icon: String,
+        offset: Float,
+    ) {
         Blur.drawBlur(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f)
         nvg.drawRoundedRect(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f, Color(230, 230, 230, 80))
         val startX = (nvg.getTextWidth(text, 9.5f, Fonts.MEDIUM) + 14) / 2
@@ -112,7 +124,11 @@ class GuiGameMenu : GuiScreen() {
         nvg.drawText(text, centre - startX + 14, y + offset + 7f, Color.WHITE, 9.5f, Fonts.MEDIUM)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             return
         }
@@ -161,14 +177,17 @@ class GuiGameMenu : GuiScreen() {
                 x.toFloat(),
                 y + standardPadding,
                 menuWidth.toFloat(),
-                offset - standardPadding + 22
+                offset - standardPadding + 22,
             )
         ) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             introAnimation.setDirection(Direction.BACKWARDS)
         }

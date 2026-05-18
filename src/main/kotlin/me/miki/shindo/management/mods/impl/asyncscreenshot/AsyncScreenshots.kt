@@ -13,7 +13,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.imageio.ImageIO
 
-class AsyncScreenshots(private val width: Int, private val height: Int, private val pixelValues: IntArray) : Thread() {
+class AsyncScreenshots(
+    private val width: Int,
+    private val height: Int,
+    private val pixelValues: IntArray,
+) : Thread() {
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     override fun run() {
@@ -28,37 +32,38 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
             val asyncMod = AsyncScreenshotMod.instance
             if (asyncMod != null && asyncMod.isMessageEnabled) {
                 mc.ingameGUI.chatGUI.printChatMessage(
-                    ChatComponentText(EnumChatFormatting.UNDERLINE.toString() + "Saved screenshot" + EnumChatFormatting.RESET + " ")
-                        .appendSibling(
-                            ChatComponentText("[Open] ").setChatStyle(
+                    ChatComponentText(
+                        EnumChatFormatting.UNDERLINE.toString() + "Saved screenshot" + EnumChatFormatting.RESET + " ",
+                    ).appendSibling(
+                        ChatComponentText("[Open] ")
+                            .setChatStyle(
                                 ChatStyle().setColor(EnumChatFormatting.GOLD).setChatClickEvent(
                                     ClickEvent(
                                         ClickEvent.Action.RUN_COMMAND,
-                                        ".scmd screenshot open " + screenshot!!.getName()
-                                    )
-                                )
-                            )
-                                .appendSibling(
-                                    ChatComponentText("[Copy] ").setChatStyle(
+                                        ".scmd screenshot open " + screenshot!!.getName(),
+                                    ),
+                                ),
+                            ).appendSibling(
+                                ChatComponentText("[Copy] ")
+                                    .setChatStyle(
                                         ChatStyle().setColor(EnumChatFormatting.BLUE).setChatClickEvent(
                                             ClickEvent(
                                                 ClickEvent.Action.RUN_COMMAND,
-                                                ".scmd screenshot copy " + screenshot!!.getName()
-                                            )
-                                        )
-                                    )
-                                        .appendSibling(
-                                            ChatComponentText("[Delete]").setChatStyle(
-                                                ChatStyle().setColor(EnumChatFormatting.RED).setChatClickEvent(
-                                                    ClickEvent(
-                                                        ClickEvent.Action.RUN_COMMAND,
-                                                        ".scmd screenshot del " + screenshot!!.getName()
-                                                    )
-                                                )
-                                            )
-                                        )
-                                )
-                        )
+                                                ".scmd screenshot copy " + screenshot!!.getName(),
+                                            ),
+                                        ),
+                                    ).appendSibling(
+                                        ChatComponentText("[Delete]").setChatStyle(
+                                            ChatStyle().setColor(EnumChatFormatting.RED).setChatClickEvent(
+                                                ClickEvent(
+                                                    ClickEvent.Action.RUN_COMMAND,
+                                                    ".scmd screenshot del " + screenshot!!.getName(),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                            ),
+                    ),
                 )
             }
 
@@ -69,7 +74,11 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
         }
     }
 
-    private fun processPixelValues(pixels: IntArray, displayWidth: Int, displayHeight: Int) {
+    private fun processPixelValues(
+        pixels: IntArray,
+        displayWidth: Int,
+        displayHeight: Int,
+    ) {
         val xValues = IntArray(displayWidth)
         val yValues = displayHeight shr 1
         var `val` = 0
@@ -80,7 +89,7 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
                 (displayHeight - 1 - `val`) * displayWidth,
                 pixels,
                 `val` * displayWidth,
-                displayWidth
+                displayWidth,
             )
             System.arraycopy(xValues, 0, pixels, (displayHeight - 1 - `val`) * displayWidth, displayWidth)
             ++`val`
@@ -100,10 +109,11 @@ class AsyncScreenshots(private val width: Int, private val height: Int, private 
                 var screenshot: File
 
                 while (true) {
-                    screenshot = File(
-                        Shindo.getInstance().getFileManager().screenshotDir,
-                        dateFormatting + (if (screenshotCount == 1) "" else ("_$screenshotCount")) + ".png"
-                    )
+                    screenshot =
+                        File(
+                            Shindo.getInstance().getFileManager().screenshotDir,
+                            dateFormatting + (if (screenshotCount == 1) "" else ("_$screenshotCount")) + ".png",
+                        )
                     if (!screenshot.exists()) {
                         break
                     }

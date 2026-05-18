@@ -27,7 +27,7 @@ class CompSettingButton : CompControlTemplate {
         y: Float,
         width: Float,
         titleSupplier: () -> String,
-        descriptionSupplier: () -> String
+        descriptionSupplier: () -> String,
     ) : super(x, y) {
         this.titleSupplier = titleSupplier
         this.descriptionSupplier = descriptionSupplier
@@ -36,7 +36,7 @@ class CompSettingButton : CompControlTemplate {
     }
 
     constructor(width: Float, titleSupplier: () -> String, descriptionSupplier: () -> String) :
-            this(0f, 0f, width, titleSupplier, descriptionSupplier)
+        this(0f, 0f, width, titleSupplier, descriptionSupplier)
 
     fun onClickAction(onClick: () -> Unit): CompSettingButton {
         this.onClick = onClick
@@ -48,7 +48,10 @@ class CompSettingButton : CompControlTemplate {
         return this
     }
 
-    fun status(textSupplier: () -> String, colorSupplier: () -> Color): CompSettingButton {
+    fun status(
+        textSupplier: () -> String,
+        colorSupplier: () -> Color,
+    ): CompSettingButton {
         this.statusSupplier = textSupplier
         this.statusColorSupplier = colorSupplier
         return this
@@ -78,7 +81,12 @@ class CompSettingButton : CompControlTemplate {
         this.shadowRadius = shadowRadius
     }
 
-    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
+    override fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    ) {
         val nvgInstance = nvg
         val paletteColors = palette
         val accentColors = accent
@@ -107,23 +115,25 @@ class CompSettingButton : CompControlTemplate {
         val titleY = y + paddingVertical - 4f
         val descriptionY = titleY + 13f
 
-        val title = nvgInstance.getLimitText(
-            titleSupplier.invoke(),
-            TEXT_TITLE_SIZE,
-            Fonts.MEDIUM,
-            availableTextWidth.coerceAtLeast(48f)
-        )
-        var description = descriptionSupplier.invoke()
-        description = if (!"null".equals(description, ignoreCase = true)) {
+        val title =
             nvgInstance.getLimitText(
-                description,
-                TEXT_DESCRIPTION_SIZE,
-                Fonts.REGULAR,
-                availableTextWidth.coerceAtLeast(48f)
+                titleSupplier.invoke(),
+                TEXT_TITLE_SIZE,
+                Fonts.MEDIUM,
+                availableTextWidth.coerceAtLeast(48f),
             )
-        } else {
-            ""
-        }
+        var description = descriptionSupplier.invoke()
+        description =
+            if (!"null".equals(description, ignoreCase = true)) {
+                nvgInstance.getLimitText(
+                    description,
+                    TEXT_DESCRIPTION_SIZE,
+                    Fonts.REGULAR,
+                    availableTextWidth.coerceAtLeast(48f),
+                )
+            } else {
+                ""
+            }
 
         nvgInstance.drawText(
             title,
@@ -131,7 +141,7 @@ class CompSettingButton : CompControlTemplate {
             titleY,
             paletteColors.getFontColor(ColorType.DARK),
             TEXT_TITLE_SIZE,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         if (description.isNotEmpty()) {
             nvgInstance.drawText(
@@ -140,7 +150,7 @@ class CompSettingButton : CompControlTemplate {
                 descriptionY,
                 paletteColors.getFontColor(ColorType.NORMAL),
                 TEXT_DESCRIPTION_SIZE,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -154,7 +164,7 @@ class CompSettingButton : CompControlTemplate {
                     statusY,
                     statusColorSupplier!!.invoke(),
                     TEXT_STATUS_SIZE,
-                    Fonts.MEDIUM
+                    Fonts.MEDIUM,
                 )
             }
         }
@@ -168,14 +178,20 @@ class CompSettingButton : CompControlTemplate {
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible()) return
 
         var insideTrailing = false
         trailingComp?.let {
             insideTrailing = isHovered(mouseX, mouseY) &&
-                    mouseX >= it.getX() && mouseX <= it.getX() + it.getWidth() &&
-                    mouseY >= it.getY() && mouseY <= it.getY() + it.getHeight()
+                mouseX >= it.getX() &&
+                mouseX <= it.getX() + it.getWidth() &&
+                mouseY >= it.getY() &&
+                mouseY <= it.getY() + it.getHeight()
         }
 
         if (!insideTrailing && mouseButton == 0) {
@@ -185,13 +201,20 @@ class CompSettingButton : CompControlTemplate {
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible()) return
         trailingComp?.mouseReleased(mouseX, mouseY, mouseButton)
         super.mouseReleased(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (!isVisible()) return
         trailingComp?.keyTyped(typedChar, keyCode)
         super.keyTyped(typedChar, keyCode)

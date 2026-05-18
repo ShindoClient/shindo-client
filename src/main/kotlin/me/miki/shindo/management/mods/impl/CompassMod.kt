@@ -15,7 +15,6 @@ import net.minecraft.util.MathHelper
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color
 
-
 class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION, LegacyIcon.MOD_COMPASS) {
     private val stencil = ScreenStencil()
 
@@ -31,10 +30,9 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         min = 50.0,
         max = 450.0,
         step = 1.0,
-        current = 180.0
+        current = 180.0,
     )
     private val widthSetting = 180
-
 
     @EventTarget
     fun onRenderNVG(event: EventNVG?) {
@@ -54,7 +52,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
                 getY().toFloat(),
                 getWidth().toFloat(),
                 getHeight().toFloat(),
-                6 * getScale()
+                6 * getScale(),
             )
         }
     }
@@ -71,7 +69,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         this.renderMarker(
             this.getX() + ((width / 2) * this.getScale()),
             this.getY() + (2.5f * this.getScale()),
-            this.getFontColor()
+            this.getFontColor(),
         )
 
         for (i in 0..2) {
@@ -123,7 +121,6 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
                     if (d == 1.5) {
                         s = "SE"
                     }
-
 
                     this.drawCenteredText(s, (width / 2) + angle2 + 43f, 8.5f, 6.8f, getHudFont(1))
 
@@ -231,7 +228,11 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         this.setHeight(29)
     }
 
-    private fun renderMarker(x: Float, y: Float, color: Color) {
+    private fun renderMarker(
+        x: Float,
+        y: Float,
+        color: Color,
+    ) {
         val nvg = getInstance().nanoVGManager
         val vg = nvg!!.getContext()
         val nvgColor = nvg.getColor(color)
@@ -278,18 +279,15 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         return s + "Error"
     }
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.COMPASS else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.COMPASS else null
 
-    private enum class Design(private val translate: TranslateText) : PropertyEnum {
+    private enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SIMPLE(TranslateText.SIMPLE),
-        FANCY(TranslateText.FANCY);
+        FANCY(TranslateText.FANCY),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 }
-
-

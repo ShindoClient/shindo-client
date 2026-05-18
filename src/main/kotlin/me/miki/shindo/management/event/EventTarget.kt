@@ -5,4 +5,6 @@ package me.miki.shindo.management.event
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class EventTarget(val value: Byte = 2)
+annotation class EventTarget(
+    val value: Byte = 2,
+)

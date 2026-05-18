@@ -3,7 +3,6 @@ package me.miki.shindo.management.security
 import me.miki.shindo.management.security.impl.*
 
 class SecurityFeatureManager {
-
     private val features = ArrayList<SecurityFeature>()
 
     init {

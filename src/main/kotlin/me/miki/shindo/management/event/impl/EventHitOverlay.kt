@@ -6,5 +6,5 @@ class EventHitOverlay(
     var red: Float,
     var green: Float,
     var blue: Float,
-    var alpha: Float
+    var alpha: Float,
 ) : Event()

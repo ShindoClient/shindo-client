@@ -5,5 +5,5 @@ enum class ThreadPoolType {
     CPU,
     NETWORK,
     SCHEDULED,
-    GENERAL
+    GENERAL,
 }

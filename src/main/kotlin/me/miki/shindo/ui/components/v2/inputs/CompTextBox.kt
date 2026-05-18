@@ -10,15 +10,13 @@ open class CompTextBox(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 0f
+    height: Float = 0f,
 ) : CompTextBoxBase(x, y, width, height) {
-
     private val timer = TimerUtils()
     private val hintAnim = SimpleAnimation()
 
     private var defaultText: String? = null
     private var validator: ((String) -> Boolean)? = null
-
 
     fun setDefaultText(defaultText: String) {
         this.defaultText = defaultText
@@ -36,11 +34,23 @@ open class CompTextBox(
 
     fun hasValidationError(): Boolean = validator?.let { !it(getText()) } ?: false
 
-    override fun setPosition(x: Float, y: Float, width: Float, height: Float) {
-        setX(x); setY(y); setWidth(width); setHeight(height)
+    override fun setPosition(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
+        setX(x)
+        setY(y)
+        setWidth(width)
+        setHeight(height)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val text = getText()
         val enabled = isEnabled()
         val focused = isFocused()
@@ -65,7 +75,10 @@ open class CompTextBox(
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    private fun computeScrollOffset(text: String, halfH: Float): Float {
+    private fun computeScrollOffset(
+        text: String,
+        halfH: Float,
+    ): Float {
         val selEnd = getSelectionEnd()
         val inset = 6f
         var addX = 0f
@@ -80,9 +93,12 @@ open class CompTextBox(
 
         val outTextSize = text.length - result.length
         if (selEnd < outTextSize) {
-            addX = getWidth() - nvg.getTextWidth(
-                text.reversed().substring(outTextSize - selEnd), halfH, Fonts.REGULAR
-            ) - inset * 2
+            addX = getWidth() -
+                nvg.getTextWidth(
+                    text.reversed().substring(outTextSize - selEnd),
+                    halfH,
+                    Fonts.REGULAR,
+                ) - inset * 2
         }
 
         return addX
@@ -95,7 +111,7 @@ open class CompTextBox(
         textY: Float,
         inset: Float,
         addX: Float,
-        enabled: Boolean
+        enabled: Boolean,
     ) {
         val cursor = getCursorPosition()
         val selEnd = getSelectionEnd()
@@ -108,14 +124,22 @@ open class CompTextBox(
 
         if (selW != 0f) {
             nvg.drawRect(
-                getX() + inset + offset + addX, textY - 0.5f,
-                selW, textH + 1f,
-                ColorUtils.applyAlpha(accent.getColor1(), if (enabled) 160 else 94)
+                getX() + inset + offset + addX,
+                textY - 0.5f,
+                selW,
+                textH + 1f,
+                ColorUtils.applyAlpha(accent.getColor1(), if (enabled) 160 else 94),
             )
         }
     }
 
-    private fun drawHint(text: String, halfH: Float, textY: Float, enabled: Boolean, focused: Boolean) {
+    private fun drawHint(
+        text: String,
+        halfH: Float,
+        textY: Float,
+        enabled: Boolean,
+        focused: Boolean,
+    ) {
         val hint = defaultText ?: return
         hintAnim.setAnimation(if (!focused && text.isEmpty()) 1f else 0f, 16.0)
         if (text.isNotEmpty()) return
@@ -127,7 +151,13 @@ open class CompTextBox(
         nvg.restore()
     }
 
-    private fun drawText(text: String, halfH: Float, textY: Float, inset: Float, addX: Float) {
+    private fun drawText(
+        text: String,
+        halfH: Float,
+        textY: Float,
+        inset: Float,
+        addX: Float,
+    ) {
         nvg.drawText(text, getX() + inset + addX, textY, palette.getFontColor(ColorType.DARK), halfH, Fonts.REGULAR)
     }
 
@@ -138,12 +168,13 @@ open class CompTextBox(
         textY: Float,
         inset: Float,
         addX: Float,
-        focused: Boolean
+        focused: Boolean,
     ) {
         if (!focused || getCursorPosition() != getSelectionEnd()) return
         if (!timer.delay(600)) return
 
-        val pos = nvg.getTextWidth(text, halfH, Fonts.REGULAR) -
+        val pos =
+            nvg.getTextWidth(text, halfH, Fonts.REGULAR) -
                 nvg.getTextWidth(text.substring(getCursorPosition()), halfH, Fonts.REGULAR)
 
         nvg.drawRect(getX() + inset + addX + pos, textY - 0.5f, 0.7f, 10f, palette.getFontColor(ColorType.DARK))

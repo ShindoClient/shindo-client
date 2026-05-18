@@ -7,11 +7,11 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventSendChat
 
 class CommandManager {
-
-    private val commands = ArrayList<Command>().apply {
-        add(ScreenshotCommand())
-        add(TranslateCommand())
-    }
+    private val commands =
+        ArrayList<Command>().apply {
+            add(ScreenshotCommand())
+            add(TranslateCommand())
+        }
 
     init {
         Shindo.getInstance().getEventManager().register(this)

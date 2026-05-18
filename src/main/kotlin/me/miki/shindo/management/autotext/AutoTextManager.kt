@@ -15,7 +15,6 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class AutoTextManager {
-
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private val entries = CopyOnWriteArrayList<AutoTextEntry>()
     private val file: File
@@ -30,12 +29,13 @@ class AutoTextManager {
     fun getEntries(): MutableList<AutoTextEntry> = entries
 
     fun createEntry(): AutoTextEntry {
-        val entry = AutoTextEntry(
-            UUID.randomUUID().toString().replace("-", ""),
-            "",
-            "",
-            Keyboard.KEY_NONE
-        )
+        val entry =
+            AutoTextEntry(
+                UUID.randomUUID().toString().replace("-", ""),
+                "",
+                "",
+                Keyboard.KEY_NONE,
+            )
         entries.add(entry)
         save()
         return entry
@@ -78,8 +78,9 @@ class AutoTextManager {
                 for (element in array) {
                     if (!element.isJsonObject) continue
                     val obj = element.asJsonObject
-                    val id = JsonUtils.getStringProperty(obj, "id", UUID.randomUUID().toString().replace("-", ""))
-                        ?: continue
+                    val id =
+                        JsonUtils.getStringProperty(obj, "id", UUID.randomUUID().toString().replace("-", ""))
+                            ?: continue
                     val name = JsonUtils.getStringProperty(obj, "name", "") ?: ""
                     val text = JsonUtils.getStringProperty(obj, "textOrCommand", "") ?: ""
                     val keyCode = JsonUtils.getIntProperty(obj, "keyCode", Keyboard.KEY_NONE)

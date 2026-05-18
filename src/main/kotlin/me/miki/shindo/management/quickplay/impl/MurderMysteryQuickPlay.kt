@@ -5,7 +5,6 @@ import me.miki.shindo.management.quickplay.QuickPlayCommand
 import net.minecraft.util.ResourceLocation
 
 class MurderMysteryQuickPlay : QuickPlay("Murder", ResourceLocation("shindo/icons/hypixel/MurderMystery.png")) {
-
     override fun addCommands() {
         setCommands(
             arrayListOf(
@@ -13,8 +12,8 @@ class MurderMysteryQuickPlay : QuickPlay("Murder", ResourceLocation("shindo/icon
                 QuickPlayCommand("Classic", "/play murder_classic"),
                 QuickPlayCommand("Double Up", "/play murder_double_up"),
                 QuickPlayCommand("Assasins", "/play murder_assassins"),
-                QuickPlayCommand("Infection", "/play murder_infection")
-            )
+                QuickPlayCommand("Infection", "/play murder_infection"),
+            ),
         )
     }
 }

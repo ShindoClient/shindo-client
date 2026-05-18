@@ -12,19 +12,20 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 
-class PlayerDisplayMod : HUDMod(
-    TranslateText.PLAYER_DISPLAY,
-    TranslateText.PLAYER_DISPLAY_DESCRIPTION,
-    LegacyIcon.MOD_PLAYER_DISPLAY,
-    "paperdoll"
-) {
+class PlayerDisplayMod :
+    HUDMod(
+        TranslateText.PLAYER_DISPLAY,
+        TranslateText.PLAYER_DISPLAY_DESCRIPTION,
+        LegacyIcon.MOD_PLAYER_DISPLAY,
+        "paperdoll",
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.YAW_OFFSET,
         min = -90.0,
         max = 120.0,
         current = 0.0,
-        step = 1.0
+        step = 1.0,
     )
     private val yawOffsetSetting = 0
 
@@ -60,7 +61,3 @@ class PlayerDisplayMod : HUDMod(
         this.setHeight(60)
     }
 }
-
-
-
-

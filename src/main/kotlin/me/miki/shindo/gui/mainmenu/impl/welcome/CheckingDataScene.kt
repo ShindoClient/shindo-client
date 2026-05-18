@@ -12,11 +12,16 @@ import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 
-class CheckingDataScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class CheckingDataScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private var fadeAnimation: Animation? = null
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
         val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
         val message = "Checking the data..."
@@ -30,19 +35,24 @@ class CheckingDataScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
 
         if (fadeAnimation != null) {
-            nvg.setupAndDraw(Runnable {
-                nvg.drawCenteredText(
-                    message,
-                    sr.scaledWidth / 2f,
-                    (sr.scaledHeight / 2f) - (nvg.getTextHeight(message, 26f, Fonts.REGULAR) / 2),
-                    Color(255, 255, 255, (fadeAnimation!!.getValueFloat() * 255).toInt()),
-                    26f,
-                    Fonts.REGULAR
-                )
-            })
+            nvg.setupAndDraw(
+                Runnable {
+                    nvg.drawCenteredText(
+                        message,
+                        sr.scaledWidth / 2f,
+                        (sr.scaledHeight / 2f) - (nvg.getTextHeight(message, 26f, Fonts.REGULAR) / 2),
+                        Color(255, 255, 255, (fadeAnimation!!.getValueFloat() * 255).toInt()),
+                        26f,
+                        Fonts.REGULAR,
+                    )
+                },
+            )
 
-            if (Shindo.getInstance().getDownloadManager()
-                    .isDownloaded() && fadeAnimation!!.getDirection() == Direction.FORWARDS
+            if (Shindo
+                    .getInstance()
+                    .getDownloadManager()
+                    .isDownloaded() &&
+                fadeAnimation!!.getDirection() == Direction.FORWARDS
             ) {
                 fadeAnimation!!.setDirection(Direction.BACKWARDS)
             }

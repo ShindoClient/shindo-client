@@ -7,14 +7,9 @@ import org.lwjgl.input.Keyboard
  * Input predicates for [LayoutScene].
  */
 class LayoutSceneInputController {
+    fun isPrimaryClick(mouseButton: Int): Boolean = mouseButton == 0
 
-    fun isPrimaryClick(mouseButton: Int): Boolean {
-        return mouseButton == 0
-    }
-
-    fun isBackMouseButton(mouseButton: Int): Boolean {
-        return mouseButton == 3
-    }
+    fun isBackMouseButton(mouseButton: Int): Boolean = mouseButton == 3
 
     fun shouldCloseByOutsideClick(
         mouseX: Int,
@@ -22,12 +17,8 @@ class LayoutSceneInputController {
         baseX: Float,
         baseY: Float,
         baseWidth: Float,
-        baseHeight: Float
-    ): Boolean {
-        return !MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)
-    }
+        baseHeight: Float,
+    ): Boolean = !MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight)
 
-    fun shouldCloseByEscape(keyCode: Int): Boolean {
-        return keyCode == Keyboard.KEY_ESCAPE
-    }
+    fun shouldCloseByEscape(keyCode: Int): Boolean = keyCode == Keyboard.KEY_ESCAPE
 }

@@ -10,8 +10,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.TimerUtils
 
-class RearviewMod :
-    HUDMod(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, LegacyIcon.MOD_REARVIEW, "", true) {
+class RearviewMod : HUDMod(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, LegacyIcon.MOD_REARVIEW, "", true) {
     private val rearviewCamera = RearviewCamera()
     private val timer = TimerUtils()
 
@@ -21,7 +20,7 @@ class RearviewMod :
         min = 10.0,
         max = 500.0,
         current = 190.0,
-        step = 1.0
+        step = 1.0,
     )
     private val rearviewWidthSetting = 190
 
@@ -31,7 +30,7 @@ class RearviewMod :
         min = 10.0,
         max = 500.0,
         current = 100.0,
-        step = 1.0
+        step = 1.0,
     )
     private val rearviewHeightSetting = 100
 
@@ -41,7 +40,7 @@ class RearviewMod :
         min = 1.0,
         max = 120.0,
         current = 60.0,
-        step = 1.0
+        step = 1.0,
     )
     private val fpsSetting = 60
 
@@ -51,7 +50,7 @@ class RearviewMod :
         min = 30.0,
         max = 120.0,
         current = 70.0,
-        step = 1.0
+        step = 1.0,
     )
     private val fovSetting = 70
 
@@ -73,7 +72,6 @@ class RearviewMod :
 
     @EventTarget
     fun onRender2D(event: EventNVG) {
-
         val width = (rearviewWidthSetting * this.getScale()).toInt()
         val height = (rearviewHeightSetting * this.getScale()).toInt()
 
@@ -85,7 +83,7 @@ class RearviewMod :
             this.getY().toFloat(),
             width.toFloat(),
             height.toFloat(),
-            6 * this.getScale()
+            6 * this.getScale(),
         )
         event.renderer().drawRoundedImage(
             rearviewCamera.texture,
@@ -94,7 +92,7 @@ class RearviewMod :
             width.toFloat(),
             -height.toFloat(),
             6 * this.getScale(),
-            alphaSetting.toFloat()
+            alphaSetting.toFloat(),
         )
 
         this.setWidth((width / this.getScale()).toInt())
@@ -129,7 +127,3 @@ class RearviewMod :
         }
     }
 }
-
-
-
-

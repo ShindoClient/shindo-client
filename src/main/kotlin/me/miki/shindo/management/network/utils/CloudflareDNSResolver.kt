@@ -8,9 +8,8 @@ import java.net.InetAddress
  * Resolvedor DNS customizado que usa Cloudflare DNS (1.1.1.1) diretamente
  */
 class CloudflareDNSResolver(
-    private val config: DNSConfig = DNSConfig.CLOUDFLARE
+    private val config: DNSConfig = DNSConfig.CLOUDFLARE,
 ) : IDNSResolver {
-
     companion object {
         private const val DNS_PORT = 53
         private const val DNS_TIMEOUT = 5000 // 5 segundos
@@ -66,7 +65,9 @@ class CloudflareDNSResolver(
         return try {
             // Configura o DNS do sistema temporariamente (isso requer permissões de sistema)
             // Por enquanto, apenas logamos e usamos o resolvedor padrão
-            ShindoLogger.info("[CloudflareDNSResolver] Attempting to resolve $hostname via ${config.name} DNS (${config.primaryDNS})")
+            ShindoLogger.info(
+                "[CloudflareDNSResolver] Attempting to resolve $hostname via ${config.name} DNS (${config.primaryDNS})",
+            )
             InetAddress.getByName(hostname)
         } catch (e: Exception) {
             ShindoLogger.error("[CloudflareDNSResolver] Cloudflare DNS resolution failed for: $hostname", e)

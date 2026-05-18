@@ -9,8 +9,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ServerUtils.getPing
 
-class PingDisplayMod :
-    SimpleHUDMod(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PING_DISPLAY) {
+class PingDisplayMod : SimpleHUDMod(TranslateText.PING_DISPLAY, TranslateText.PING_DISPLAY_DESCRIPTION, LegacyIcon.MOD_PING_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconEnabled = true
 
@@ -19,13 +18,7 @@ class PingDisplayMod :
         this.draw()
     }
 
-    override fun getText(): String {
-        return getPing().toString() + " ms"
-    }
+    override fun getText(): String = getPing().toString() + " ms"
 
-    override fun getIcon(): String? {
-        return if (iconEnabled) LegacyIcon.BAR_CHERT else null
-    }
+    override fun getIcon(): String? = if (iconEnabled) LegacyIcon.BAR_CHERT else null
 }
-
-

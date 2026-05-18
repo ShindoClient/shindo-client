@@ -31,9 +31,8 @@ abstract class LayoutCarouselScene(
     area: UILayoutArea,
     nameTranslate: TranslateText,
     descriptionTranslate: TranslateText,
-    icon: String
+    icon: String,
 ) : LayoutAreaScene(parent, area, nameTranslate, descriptionTranslate, icon) {
-
     private var previousBounds: Rect? = null
     private var nextBounds: Rect? = null
 
@@ -55,9 +54,7 @@ abstract class LayoutCarouselScene(
         }
     }
 
-    override fun showTypeSelector(): Boolean {
-        return false
-    }
+    override fun showTypeSelector(): Boolean = false
 
     override fun drawPreview(
         nvg: NanoVGManager,
@@ -69,7 +66,7 @@ abstract class LayoutCarouselScene(
         height: Float,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         val types = getTypes()
         if (types.isEmpty()) {
@@ -115,7 +112,7 @@ abstract class LayoutCarouselScene(
             previewY,
             previewWidth,
             previewHeight,
-            LayoutSceneStyle.PREVIEW_RADIUS
+            LayoutSceneStyle.PREVIEW_RADIUS,
         )
         nvg.drawRoundedRect(
             previewX + 1f,
@@ -123,7 +120,7 @@ abstract class LayoutCarouselScene(
             previewWidth - 2f,
             previewHeight - 2f,
             LayoutSceneStyle.PREVIEW_RADIUS - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 194)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 194),
         )
 
         val progress = getTransitionProgress()
@@ -136,7 +133,7 @@ abstract class LayoutCarouselScene(
             y = previewY,
             width = previewWidth,
             height = previewContentHeight,
-            intersect = true
+            intersect = true,
         ) {
             if (from != null && progress < 1f) {
                 val eased = easeOutCubic(progress)
@@ -150,7 +147,7 @@ abstract class LayoutCarouselScene(
                     previewX - direction * shift,
                     previewY,
                     previewWidth,
-                    previewContentHeight
+                    previewContentHeight,
                 )
                 drawCarouselPreset(
                     nvg,
@@ -160,7 +157,7 @@ abstract class LayoutCarouselScene(
                     previewX + direction * (previewWidth - shift),
                     previewY,
                     previewWidth,
-                    previewContentHeight
+                    previewContentHeight,
                 )
             } else {
                 drawCarouselPreset(nvg, palette, accent, to, previewX, previewY, previewWidth, previewContentHeight)
@@ -173,7 +170,7 @@ abstract class LayoutCarouselScene(
             previewWidth - previewLabelInset * 2f,
             previewLabelHeight,
             6f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 232)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 232),
         )
         val labelTextWidth = previewWidth - previewLabelPaddingX * 2f - previewLabelInset * 2f
         val labelTitle = nvg.getLimitText(getPreviewTitle(to), 9.4f, Fonts.MEDIUM, labelTextWidth)
@@ -184,7 +181,7 @@ abstract class LayoutCarouselScene(
             previewLabelY + previewLabelPaddingY,
             palette.getFontColor(ColorType.DARK),
             9.4f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
         nvg.drawText(
             labelDescription,
@@ -192,7 +189,7 @@ abstract class LayoutCarouselScene(
             previewLabelY + previewLabelPaddingY + 12f,
             ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 196),
             7.9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
 
         pageIndicator
@@ -203,24 +200,31 @@ abstract class LayoutCarouselScene(
 
         val applied = to == appliedType
         applyButton.setBounds(previewX + previewWidth - 56f, controlsY, 56f, 15f)
-        applyButton.setText(if (applied) TranslateText.LAYOUT_APPLIED.getText() else TranslateText.LAYOUT_APPLY.getText())
-        val themeBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 214)
-        val themeHover = ColorUtils.applyAlpha(
-            ColorUtils.lighten(palette.getBackgroundColor(ColorType.NORMAL), 0.14f),
-            236
+        applyButton.setText(
+            if (applied) TranslateText.LAYOUT_APPLIED.getText() else TranslateText.LAYOUT_APPLY.getText(),
         )
+        val themeBase = ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 214)
+        val themeHover =
+            ColorUtils.applyAlpha(
+                ColorUtils.lighten(palette.getBackgroundColor(ColorType.NORMAL), 0.14f),
+                236,
+            )
         applyButton.setBackgroundColor(
-            if (applied) ColorUtils.applyAlpha(accent.getColor1(), 232) else themeBase
+            if (applied) ColorUtils.applyAlpha(accent.getColor1(), 232) else themeBase,
         )
         applyButton.setHoverColor(
-            if (applied) ColorUtils.applyAlpha(accent.getColor2(), 222) else themeHover
+            if (applied) ColorUtils.applyAlpha(accent.getColor2(), 222) else themeHover,
         )
         applyButton.setTextColor(palette.getFontColor(ColorType.DARK))
         applyButton.setEnabled(true)
         applyButton.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClickedExtra(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClickedExtra(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton != 0) {
             return
         }
@@ -245,7 +249,10 @@ abstract class LayoutCarouselScene(
      * - Left/Right: cycle previews
      * - Enter/Space: apply selected preview
      */
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         when (keyCode) {
             Keyboard.KEY_LEFT -> navigate(-1)
             Keyboard.KEY_RIGHT -> navigate(1)
@@ -300,7 +307,7 @@ abstract class LayoutCarouselScene(
         palette: ColorPalette,
         bounds: Rect?,
         symbol: String,
-        hovered: Boolean
+        hovered: Boolean,
     ) {
         if (bounds == null) {
             return
@@ -312,7 +319,7 @@ abstract class LayoutCarouselScene(
             bounds.width,
             bounds.height,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 206 else 176)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 206 else 176),
         )
         nvg.drawCenteredText(
             symbol,
@@ -320,7 +327,7 @@ abstract class LayoutCarouselScene(
             bounds.y + bounds.height / 2f - 4.5f,
             palette.getFontColor(ColorType.DARK),
             12f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
     }
 
@@ -367,30 +374,32 @@ abstract class LayoutCarouselScene(
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     )
 
     /**
      * Returns title rendered in preview footer for the current type.
      */
-    protected open fun getPreviewTitle(type: UILayoutType): String {
-        return type.getTitle()
-    }
+    protected open fun getPreviewTitle(type: UILayoutType): String = type.getTitle()
 
     /**
      * Returns description rendered in preview footer for the current type.
      */
-    protected open fun getPreviewDescription(type: UILayoutType): String {
-        return type.getDescription()
-    }
+    protected open fun getPreviewDescription(type: UILayoutType): String = type.getDescription()
 
     /**
      * Immutable rectangle for nav hit-testing.
      */
-    protected data class Rect(val x: Float, val y: Float, val width: Float, val height: Float) {
-        fun contains(mouseX: Int, mouseY: Int): Boolean {
-            return MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
-        }
+    protected data class Rect(
+        val x: Float,
+        val y: Float,
+        val width: Float,
+        val height: Float,
+    ) {
+        fun contains(
+            mouseX: Int,
+            mouseY: Int,
+        ): Boolean = MouseUtils.isInside(mouseX, mouseY, x, y, width, height)
     }
 
     companion object {

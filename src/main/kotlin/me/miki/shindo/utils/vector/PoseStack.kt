@@ -8,8 +8,8 @@ class PoseStack {
         poseStack.add(
             Pose(
                 Matrix4f(last.pose().copy()),
-                Matrix3f(last.normal().copy())
-            )
+                Matrix3f(last.normal().copy()),
+            ),
         )
     }
 
@@ -21,7 +21,11 @@ class PoseStack {
 
     fun last(): Pose = poseStack.last()
 
-    fun translate(x: Double, y: Double, z: Double) {
+    fun translate(
+        x: Double,
+        y: Double,
+        z: Double,
+    ) {
         last().pose().translate(x, y, z)
     }
 

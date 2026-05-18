@@ -7,10 +7,9 @@ import java.net.URL
 import java.util.*
 
 object AccountUtil {
-
     data class MojangProfile(
         val name: String,
-        val id: String
+        val id: String,
     )
 
     @JvmStatic
@@ -24,11 +23,14 @@ object AccountUtil {
     }
 
     @JvmStatic
-    fun hasValidAuthToken(token: String?, username: String?): Boolean {
+    fun hasValidAuthToken(
+        token: String?,
+        username: String?,
+    ): Boolean {
         if (token.isNullOrBlank()) return false
         if (token == "0" || token == "-") return false
         if (!username.isNullOrBlank() && token.equals(username, ignoreCase = true)) return false
-        return token.length >= 20   // real tokens are long hex/JWT strings
+        return token.length >= 20 // real tokens are long hex/JWT strings
     }
 
     @JvmStatic
@@ -50,15 +52,20 @@ object AccountUtil {
         }
     }
 
+    @JvmStatic
+    fun detectAccountTypeFromNetwork(username: String): AccountType =
+        if (fetchMojangProfile(username) == null) {
+            AccountType.OFFLINE
+        } else {
+            AccountType.MICROSOFT
+        }
 
     @JvmStatic
-    fun detectAccountTypeFromNetwork(username: String): AccountType {
-        return if (fetchMojangProfile(username) == null) AccountType.OFFLINE
-        else AccountType.MICROSOFT
-    }
-
-    @JvmStatic
-    fun downloadPlayerHeadToCache(id: String, cacheDir: File, size: Int = 64): File? {
+    fun downloadPlayerHeadToCache(
+        id: String,
+        cacheDir: File,
+        size: Int = 64,
+    ): File? {
         return try {
             if (!cacheDir.exists()) cacheDir.mkdirs()
             val file = File(cacheDir, "$id-$size.png")
@@ -85,7 +92,11 @@ object AccountUtil {
     }
 
     @JvmStatic
-    fun getCachedPlayerHead(id: String, cacheDir: File, size: Int = 64): File? {
+    fun getCachedPlayerHead(
+        id: String,
+        cacheDir: File,
+        size: Int = 64,
+    ): File? {
         val file = File(cacheDir, "$id-$size.png")
         return if (file.exists() && file.length() > 0) file else null
     }

@@ -5,7 +5,6 @@ import me.miki.shindo.management.quickplay.QuickPlayCommand
 import net.minecraft.util.ResourceLocation
 
 class DuelsQuickPlay : QuickPlay("Duels", ResourceLocation("shindo/icons/hypixel/Duels.png")) {
-
     override fun addCommands() {
         setCommands(
             arrayListOf(
@@ -32,8 +31,8 @@ class DuelsQuickPlay : QuickPlay("Duels", ResourceLocation("shindo/icons/hypixel
                 QuickPlayCommand("Bridge 2v2", "/play duels_bridge_doubles"),
                 QuickPlayCommand("Bridge 4v4", "/play duels_bridge_four"),
                 QuickPlayCommand("Bridge 2v2v2v2", "/play duels_bridge_2v2v2v2"),
-                QuickPlayCommand("Bridge 3v3v3v3", "/play duels_bridge_3v3v3v3")
-            )
+                QuickPlayCommand("Bridge 3v3v3v3", "/play duels_bridge_3v3v3v3"),
+            ),
         )
     }
 }

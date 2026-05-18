@@ -14,9 +14,8 @@ import java.awt.Color
 
 class CompToggleButtonWithRestart(
     private val setting: BooleanSetting,
-    private val requiresRestart: Boolean = false
+    private val requiresRestart: Boolean = false,
 ) : CompControlTemplate(0f, 0f) {
-
     private val hoverAnim = SimpleAnimation()
     private val pressAnim = SimpleAnimation()
     private val toggleAnim = SimpleAnimation()
@@ -46,10 +45,15 @@ class CompToggleButtonWithRestart(
         warningAnim.setAnimation(if (show) 1f else 0f, 12.0)
     }
 
-    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
-        val x = getX();
+    override fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    ) {
+        val x = getX()
         val y = getY()
-        val w = getWidth();
+        val w = getWidth()
         val h = getHeight()
         val enabled = isEnabled()
         val toggled = setting.isToggled()
@@ -68,16 +72,27 @@ class CompToggleButtonWithRestart(
 
         drawTrack(x, y, w, h, radius, enabled)
         drawKnob(x, y, knobInset, knobSize, knobTravel, enabled)
-        if (warningVisible) drawWarning(mouseX, mouseY, partialTicks, x, y, h)
-        else tooltip.hide()
+        if (warningVisible) {
+            drawWarning(mouseX, mouseY, partialTicks, x, y, h)
+        } else {
+            tooltip.hide()
+        }
     }
 
-    private fun drawTrack(x: Float, y: Float, w: Float, h: Float, radius: Float, enabled: Boolean) {
-        var trackColor = ColorUtils.interpolateColor(
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
-            hoverAnim.getValue().toDouble()
-        )
+    private fun drawTrack(
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        radius: Float,
+        enabled: Boolean,
+    ) {
+        var trackColor =
+            ColorUtils.interpolateColor(
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 165),
+                hoverAnim.getValue().toDouble(),
+            )
         if (pressAnim.getValue() > 0.08f) trackColor = ColorUtils.darken(trackColor, pressAnim.getValue() * 0.16f)
         if (!enabled) trackColor = ColorUtils.applyAlpha(trackColor, 116)
 
@@ -85,11 +100,12 @@ class CompToggleButtonWithRestart(
         val gradStart = ColorUtils.applyAlpha(accent.getColor1(), alphaBase)
         val gradEnd = ColorUtils.applyAlpha(accent.getColor2(), alphaBase)
 
-        var outlineColor = ColorUtils.interpolateColor(
-            ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 34),
-            ColorUtils.applyAlpha(accent.getColor1(), 98),
-            hoverAnim.getValue().toDouble()
-        )
+        var outlineColor =
+            ColorUtils.interpolateColor(
+                ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 34),
+                ColorUtils.applyAlpha(accent.getColor1(), 98),
+                hoverAnim.getValue().toDouble(),
+            )
         if (!enabled) outlineColor = ColorUtils.applyAlpha(outlineColor, 92)
 
         nvg.drawRoundedRect(x, y, w, h, radius, trackColor)
@@ -97,25 +113,46 @@ class CompToggleButtonWithRestart(
         nvg.drawOutlineRoundedRect(x, y, w, h, radius, 1f, outlineColor)
     }
 
-    private fun drawKnob(x: Float, y: Float, inset: Float, size: Float, travel: Float, enabled: Boolean) {
+    private fun drawKnob(
+        x: Float,
+        y: Float,
+        inset: Float,
+        size: Float,
+        travel: Float,
+        enabled: Boolean,
+    ) {
         val knobX = x + inset + travel * toggleAnim.getValue()
-        var color = ColorUtils.interpolateColor(
-            palette.getBackgroundColor(ColorType.DARK),
-            Color.WHITE,
-            toggleAnim.getValue().toDouble()
-        )
-        if (hoverAnim.getValue() > 0f)
+        var color =
+            ColorUtils.interpolateColor(
+                palette.getBackgroundColor(ColorType.DARK),
+                Color.WHITE,
+                toggleAnim.getValue().toDouble(),
+            )
+        if (hoverAnim.getValue() > 0f) {
             color = ColorUtils.interpolateColor(color, Color.WHITE, (hoverAnim.getValue() * 0.2f).toDouble())
+        }
         if (!enabled) color = ColorUtils.applyAlpha(color, 144)
 
         nvg.drawRoundedRect(knobX, y + inset, size, size, size / 2f, color)
         nvg.drawOutlineRoundedRect(
-            knobX, y + inset, size, size, size / 2f, 1f,
-            ColorUtils.applyAlpha(Color.BLACK, if (enabled) 42 else 22)
+            knobX,
+            y + inset,
+            size,
+            size,
+            size / 2f,
+            1f,
+            ColorUtils.applyAlpha(Color.BLACK, if (enabled) 42 else 22),
         )
     }
 
-    private fun drawWarning(mouseX: Int, mouseY: Int, partialTicks: Float, x: Float, y: Float, h: Float) {
+    private fun drawWarning(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        x: Float,
+        y: Float,
+        h: Float,
+    ) {
         val wSize = 11f
         val wX = x - 14f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, wSize, Fonts.LEGACYICON) / 2f
         val wY = y + h / 2f - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, wSize, Fonts.LEGACYICON) / 2f
@@ -133,7 +170,11 @@ class CompToggleButtonWithRestart(
         }
     }
 
-    override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun onMouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0 && isEnabled()) {
             pressAnim.setValue(1f)
             setting.setToggled(!setting.isToggled())
@@ -141,12 +182,15 @@ class CompToggleButtonWithRestart(
         }
     }
 
-    override fun isHoveredInteractive(mouseX: Int, mouseY: Int): Boolean {
+    override fun isHoveredInteractive(
+        mouseX: Int,
+        mouseY: Int,
+    ): Boolean {
         val warningOffset = if (requiresRestart && warningAnim.getValue() > 0.01f) 18f else 0f
         return mouseX >= getX() - warningOffset &&
-                mouseX <= getX() + getWidth() &&
-                mouseY >= getY() &&
-                mouseY <= getY() + getHeight()
+            mouseX <= getX() + getWidth() &&
+            mouseY >= getY() &&
+            mouseY <= getY() + getHeight()
     }
 
     fun getSetting() = setting

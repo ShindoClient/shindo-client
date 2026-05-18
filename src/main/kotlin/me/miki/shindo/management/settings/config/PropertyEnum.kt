@@ -5,10 +5,7 @@ import me.miki.shindo.management.settings.Setting
 import java.util.*
 
 interface PropertyEnum {
-
-    fun getTranslate(): TranslateText {
-        return TranslateText.NONE
-    }
+    fun getTranslate(): TranslateText = TranslateText.NONE
 
     fun getNameKey(): String {
         val translate = getTranslate()
@@ -23,10 +20,11 @@ interface PropertyEnum {
         if (translate != TranslateText.NONE) {
             return translate.getText()
         }
-        val raw = (this as Enum<*>)
-            .name
-            .lowercase(Locale.ROOT)
-            .replace('_', ' ')
+        val raw =
+            (this as Enum<*>)
+                .name
+                .lowercase(Locale.ROOT)
+                .replace('_', ' ')
 
         if (raw.isEmpty()) {
             return ""
@@ -35,4 +33,3 @@ interface PropertyEnum {
         return raw.substring(0, 1).uppercase(Locale.ROOT) + raw.substring(1)
     }
 }
-

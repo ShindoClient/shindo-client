@@ -10,13 +10,13 @@ import me.miki.viashindo.ViaLoadingBase
 import me.miki.viashindo.ViaShindo
 import me.miki.viashindo.protocolinfo.ProtocolInfo
 
-
-class ViaVersionMod : Mod(
-    TranslateText.VIA_VERSION,
-    TranslateText.VIA_VERSION_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_VIA_VERSION
-) {
+class ViaVersionMod :
+    Mod(
+        TranslateText.VIA_VERSION,
+        TranslateText.VIA_VERSION_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_VIA_VERSION,
+    ) {
     private var loaded: Boolean
 
     init {
@@ -32,9 +32,7 @@ class ViaVersionMod : Mod(
             TaskExecutor.runAsync(ThreadPoolType.GENERAL) {
                 ViaShindo.create()
                 ViaShindo.getInstance()!!.initAsyncSlider()
-
             }
-
         }
     }
 
@@ -47,23 +45,12 @@ class ViaVersionMod : Mod(
         }
     }
 
-
-    fun isLoaded(): Boolean {
-        return loaded
-    }
+    fun isLoaded(): Boolean = loaded
 
     companion object {
-
         private lateinit var instance: ViaVersionMod
 
         @JvmStatic
-        fun getInstance(): ViaVersionMod {
-            return instance
-        }
-
+        fun getInstance(): ViaVersionMod = instance
     }
 }
-
-
-
-

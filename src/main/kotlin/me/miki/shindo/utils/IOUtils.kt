@@ -15,7 +15,6 @@ import java.nio.ByteOrder
 import java.nio.file.Files
 
 object IOUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
@@ -25,13 +24,15 @@ object IOUtils {
     }
 
     @JvmStatic
-    fun getStringFromClipboard(): String? {
-        return try {
-            toolkit.systemClipboard.getContents(null).getTransferData(DataFlavor.stringFlavor).toString()
+    fun getStringFromClipboard(): String? =
+        try {
+            toolkit.systemClipboard
+                .getContents(null)
+                .getTransferData(DataFlavor.stringFlavor)
+                .toString()
         } catch (_: Exception) {
             null
         }
-    }
 
     @JvmStatic
     fun copyImageToClipboard(image: Image) {
@@ -40,21 +41,22 @@ object IOUtils {
     }
 
     @JvmStatic
-    fun getImageFromClipboard(): Image? {
-        return try {
+    fun getImageFromClipboard(): Image? =
+        try {
             toolkit.systemClipboard.getContents(null).getTransferData(DataFlavor.imageFlavor) as Image
         } catch (_: Exception) {
             null
         }
-    }
 
     private val toolkit: Toolkit
         get() = Toolkit.getDefaultToolkit()
 
     @JvmStatic
-    fun resourceToByteBuffer(location: ResourceLocation): ByteBuffer? {
-        return try {
-            val bytes = org.apache.commons.io.IOUtils.toByteArray(mc.resourceManager.getResource(location).inputStream)
+    fun resourceToByteBuffer(location: ResourceLocation): ByteBuffer? =
+        try {
+            val bytes =
+                org.apache.commons.io.IOUtils
+                    .toByteArray(mc.resourceManager.getResource(location).inputStream)
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
             data.flip() as Buffer
             data
@@ -62,12 +64,13 @@ object IOUtils {
             ShindoLogger.error("Failed to load resource", e)
             null
         }
-    }
 
     @JvmStatic
-    fun resourceToByteBuffer(file: File): ByteBuffer? {
-        return try {
-            val bytes = org.apache.commons.io.IOUtils.toByteArray(Files.newInputStream(file.toPath()))
+    fun resourceToByteBuffer(file: File): ByteBuffer? =
+        try {
+            val bytes =
+                org.apache.commons.io.IOUtils
+                    .toByteArray(Files.newInputStream(file.toPath()))
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
             data.flip() as Buffer
             data
@@ -75,5 +78,4 @@ object IOUtils {
             ShindoLogger.error("Failed to load resource", e)
             null
         }
-    }
 }

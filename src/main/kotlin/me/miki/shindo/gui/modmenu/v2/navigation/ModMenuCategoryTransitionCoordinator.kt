@@ -14,16 +14,15 @@ import kotlin.math.min
  * - keyboard navigation switching.
  */
 class ModMenuCategoryTransitionCoordinator {
-
     enum class State {
         IDLE,
-        SWITCHING
+        SWITCHING,
     }
 
     data class RenderLayer(
         val category: Category,
         val offsetX: Float,
-        val alpha: Float
+        val alpha: Float,
     )
 
     private val progressAnimation = SimpleAnimation(1f)
@@ -48,7 +47,11 @@ class ModMenuCategoryTransitionCoordinator {
         return active
     }
 
-    fun requestSwitch(currentCategory: Category, targetCategory: Category, directionHint: Int) {
+    fun requestSwitch(
+        currentCategory: Category,
+        targetCategory: Category,
+        directionHint: Int,
+    ) {
         if (currentCategory == targetCategory && !isTransitioning()) {
             toCategory = targetCategory
             fromCategory = null
@@ -80,9 +83,7 @@ class ModMenuCategoryTransitionCoordinator {
         }
     }
 
-    fun isTransitioning(): Boolean {
-        return state == State.SWITCHING && fromCategory != null && progressAnimation.getValue() < 0.999f
-    }
+    fun isTransitioning(): Boolean = state == State.SWITCHING && fromCategory != null && progressAnimation.getValue() < 0.999f
 
     fun getState(): State = state
 
@@ -118,7 +119,7 @@ class ModMenuCategoryTransitionCoordinator {
         val scaled = contentWidth * ModMenuMotion.CATEGORY_CONTENT_SLIDE_FACTOR
         return max(
             ModMenuMotion.CATEGORY_CONTENT_SLIDE_MIN,
-            min(ModMenuMotion.CATEGORY_CONTENT_SLIDE_MAX, scaled)
+            min(ModMenuMotion.CATEGORY_CONTENT_SLIDE_MAX, scaled),
         )
     }
 }

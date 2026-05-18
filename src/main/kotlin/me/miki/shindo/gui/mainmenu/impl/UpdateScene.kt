@@ -12,9 +12,14 @@ import java.awt.Color
 import java.awt.Desktop
 import java.net.URI
 
-class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+class UpdateScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         val instance = Shindo.getInstance()
@@ -23,7 +28,13 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg!!.setupAndDraw(Runnable { drawNanoVG(mouseX, mouseY, sr, instance, nvg) })
     }
 
-    private fun drawNanoVG(mouseX: Int, mouseY: Int, sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
+    private fun drawNanoVG(
+        mouseX: Int,
+        mouseY: Int,
+        sr: ScaledResolution,
+        instance: Shindo,
+        nvg: NanoVGManager,
+    ) {
         nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, 100))
         val acWidth = 220
         val acHeight = 190
@@ -40,7 +51,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 30f,
             Color.WHITE,
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawCenteredText(
             instance.getBuildInfo().semver + " -> " + update.versionString,
@@ -48,15 +59,17 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + 48f,
             Color.WHITE,
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawCenteredText(
-            instance.getBuildInfo().buildId + " (" + instance.getBuildInfo().type + ") -> " + update.buildId + " (" + update.type + ")",
+            instance.getBuildInfo().buildId + " (" + instance.getBuildInfo().type + ") -> " + update.buildId + " (" +
+                update.type +
+                ")",
             acX + (acWidth / 2f),
             acY + 60f,
             Color.WHITE,
             5f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawRoundedRect(acX + acWidth / 2f - 90f, acY + acHeight - 64f, 180f, 20f, 4.5f, controlColor)
         nvg.drawCenteredText(
@@ -65,7 +78,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + acHeight - 54f - (nvg.getTextHeight("Go to update", 9.5f, Fonts.REGULAR) / 2),
             Color.WHITE,
             9.5f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawRoundedRect(acX + acWidth / 2f - 90f, acY + acHeight - 32f, 180f, 20f, 4.5f, controlColor)
         nvg.drawCenteredText(
@@ -74,7 +87,7 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
             acY + acHeight - 22f - (nvg.getTextHeight("Maybe Later", 9.5f, Fonts.REGULAR) / 2),
             Color.WHITE,
             9.5f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 
@@ -84,7 +97,11 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         setCurrentScene(getSceneByClass(MainScene::class.java))
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0) {
             val sr = ScaledResolution(mc)
             val acWidth = 220
@@ -104,7 +121,10 @@ class UpdateScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (keyCode == Keyboard.KEY_ESCAPE) {
             exitGui()
         }

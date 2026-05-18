@@ -23,8 +23,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.max
 
-class ScoreboardMod :
-    HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, LegacyIcon.MOD_SCOREBOARD) {
+class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, LegacyIcon.MOD_SCOREBOARD) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private val showBackground = true
 
@@ -52,17 +51,27 @@ class ScoreboardMod :
         if (objective != null) {
             val scoreboard = objective!!.scoreboard
             var scores = scoreboard.getSortedScores(objective)
-            val filteredScores = scores.filter { score ->
-                val name = score.playerName
-                name != null && !name.startsWith("#")
-            }.toMutableList()
+            val filteredScores =
+                scores
+                    .filter { score ->
+                        val name = score.playerName
+                        name != null && !name.startsWith("#")
+                    }.toMutableList()
             Collections.reverse(filteredScores)
 
-            nvg!!.setupAndDraw(Runnable {
-                if (drawShadow) {
-                    this.drawShadow(0f, 0f, this.getWidth() / this.getScale(), this.getHeight() / this.getScale(), 0f)
-                }
-            })
+            nvg!!.setupAndDraw(
+                Runnable {
+                    if (drawShadow) {
+                        this.drawShadow(
+                            0f,
+                            0f,
+                            this.getWidth() / this.getScale(),
+                            this.getHeight() / this.getScale(),
+                            0f,
+                        )
+                    }
+                },
+            )
 
             if (filteredScores.size > 15) {
                 scores = Lists.newArrayList<Score?>(Iterables.skip<Score?>(filteredScores, scores.size - 15))
@@ -99,7 +108,7 @@ class ScoreboardMod :
                     (this.getY() + (index * fr.FONT_HEIGHT) + 1).toFloat(),
                     (maxWidth + 4).toFloat(),
                     fr.FONT_HEIGHT.toFloat(),
-                    if (showBackground) getColorByInt(1342177280) else Color(0, 0, 0, 0)
+                    if (showBackground) getColorByInt(1342177280) else Color(0, 0, 0, 0),
                 )
 
                 fr.drawString(playerName, this.getX() + 2, this.getY() + (index * fr.FONT_HEIGHT) + 1, 553648127)
@@ -109,7 +118,7 @@ class ScoreboardMod :
                         scorePoints,
                         (this.getX() + 2 + maxWidth + 2) - fr.getStringWidth(scorePoints),
                         this.getY() + (index * fr.FONT_HEIGHT) + 1,
-                        553648127
+                        553648127,
                     )
                 }
 
@@ -121,21 +130,21 @@ class ScoreboardMod :
                         this.getY().toFloat(),
                         (2 + maxWidth + 2).toFloat(),
                         fr.FONT_HEIGHT.toFloat(),
-                        if (showBackground) getColorByInt(1610612736) else Color(0, 0, 0, 0)
+                        if (showBackground) getColorByInt(1610612736) else Color(0, 0, 0, 0),
                     )
                     RenderUtils.drawRect(
                         this.getX().toFloat(),
                         (this.getY() + fr.FONT_HEIGHT).toFloat(),
                         (2 + maxWidth + 2).toFloat(),
                         1f,
-                        if (showBackground) getColorByInt(1610612736) else Color(0, 0, 0, 0)
+                        if (showBackground) getColorByInt(1610612736) else Color(0, 0, 0, 0),
                     )
 
                     fr.drawString(
                         displayName,
                         this.getX() + 2 + maxWidth / 2 - fr.getStringWidth(displayName) / 2,
                         this.getY() + 1,
-                        553648127
+                        553648127,
                     )
                 }
             }
@@ -156,7 +165,3 @@ class ScoreboardMod :
         objective = event.getObjective()
     }
 }
-
-
-
-

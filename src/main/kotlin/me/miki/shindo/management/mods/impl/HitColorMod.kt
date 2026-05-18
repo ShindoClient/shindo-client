@@ -11,8 +11,7 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import java.awt.Color
 
-class HitColorMod :
-    Mod(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_COLOR) {
+class HitColorMod : Mod(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_COLOR) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private val customColorSetting = false
 
@@ -33,7 +32,3 @@ class HitColorMod :
         event.alpha = alphaSetting.toFloat()
     }
 }
-
-
-
-

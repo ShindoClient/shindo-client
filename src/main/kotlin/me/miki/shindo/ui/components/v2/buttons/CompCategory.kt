@@ -10,7 +10,6 @@ import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 
 class CompCategory : CompControlTemplate {
-
     private val setting: CategorySetting
     private val toggleAnimation = SimpleAnimation()
     private val hoverAnimation = SimpleAnimation()
@@ -20,7 +19,12 @@ class CompCategory : CompControlTemplate {
         setHeight(22f)
     }
 
-    override fun drawInteractive(mouseX: Int, mouseY: Int, partialTicks: Float, hovered: Boolean) {
+    override fun drawInteractive(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        hovered: Boolean,
+    ) {
         val paletteColors = palette
         val accentColor = accent
 
@@ -36,7 +40,7 @@ class CompCategory : CompControlTemplate {
         val baseOverlay =
             ColorUtils.applyAlpha(
                 paletteColors.getBackgroundColor(ColorType.MID),
-                (hoverAnimation.getValue() * 40).toInt()
+                (hoverAnimation.getValue() * 40).toInt(),
             )
         nvg.drawRoundedRect(x, y, width, height, CATEGORY_CORNER_RADIUS, baseOverlay)
 
@@ -45,36 +49,41 @@ class CompCategory : CompControlTemplate {
         val iconHeight = nvg.getTextHeight(icon, iconSize, Fonts.LEGACYICON)
         val iconX = x + 4f
         val iconY = y + height / 2f - iconHeight / 2f
-        val iconColor = ColorUtils.interpolateColor(
-            paletteColors.getFontColor(ColorType.NORMAL),
-            ColorUtils.applyAlpha(accentColor.getColor1(), 240),
-            (accentPulse * 0.35f).toDouble()
-        )
+        val iconColor =
+            ColorUtils.interpolateColor(
+                paletteColors.getFontColor(ColorType.NORMAL),
+                ColorUtils.applyAlpha(accentColor.getColor1(), 240),
+                (accentPulse * 0.35f).toDouble(),
+            )
         nvg.drawText(icon, iconX, iconY, iconColor, iconSize, Fonts.LEGACYICON)
 
         val titleSize = 11f
         val titleX = iconX + 14f
         val titleHeight = nvg.getTextHeight(setting.name, titleSize, Fonts.MEDIUM)
         val titleY = y + height / 2f - titleHeight / 2f
-        val titleColor = ColorUtils.interpolateColor(
-            paletteColors.getFontColor(ColorType.DARK),
-            ColorUtils.applyAlpha(accentColor.getColor2(), 230),
-            (accentPulse * 0.25f).toDouble()
-        )
+        val titleColor =
+            ColorUtils.interpolateColor(
+                paletteColors.getFontColor(ColorType.DARK),
+                ColorUtils.applyAlpha(accentColor.getColor2(), 230),
+                (accentPulse * 0.25f).toDouble(),
+            )
         nvg.drawText(setting.name, titleX, titleY, titleColor, titleSize, Fonts.MEDIUM)
 
         val underlineAlpha = 55 + accentPulse * 85f
         nvg.drawDivider(x, y + height - 2f, width, 2f, 1.5F, minOf(underlineAlpha, 140f))
     }
 
-    override fun onMouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun onMouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (mouseButton == 0) {
             setting.toggle()
         }
     }
 
     fun getSetting(): CategorySetting = setting
-
 
     companion object {
         private const val SETTING_TEXT_MARGIN = 12F

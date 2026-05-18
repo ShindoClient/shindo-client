@@ -5,12 +5,13 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 
-class DamageTiltMod : Mod(
-    TranslateText.DAMAGE_TILT,
-    TranslateText.DAMAGE_TILT_DESCRIPTION,
-    ModCategory.PLAYER,
-    LegacyIcon.MOD_DAMAGE_TILT
-) {
+class DamageTiltMod :
+    Mod(
+        TranslateText.DAMAGE_TILT,
+        TranslateText.DAMAGE_TILT_DESCRIPTION,
+        ModCategory.PLAYER,
+        LegacyIcon.MOD_DAMAGE_TILT,
+    ) {
     init {
         instance = this
     }
@@ -20,7 +21,3 @@ class DamageTiltMod : Mod(
         var instance: DamageTiltMod? = null
     }
 }
-
-
-
-

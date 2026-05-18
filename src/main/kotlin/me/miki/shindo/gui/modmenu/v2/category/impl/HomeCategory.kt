@@ -32,8 +32,9 @@ import java.net.URL
 import kotlin.math.max
 import kotlin.math.min
 
-class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, LegacyIcon.HOME, false, false) {
-
+class HomeCategory(
+    parent: GuiModMenu,
+) : Category(parent, TranslateText.HOME, LegacyIcon.HOME, false, false) {
     private val inputController = HomeCategoryInputController()
     private val newsScroll = Scroll()
     private val newsRotationTimer = TimerUtils()
@@ -52,7 +53,11 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         Shindo.getInstance().getDiscordStats().check()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager: ColorManager = instance.getColorManager()
@@ -84,7 +89,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 x = leftX,
                 y = topY,
                 width = columnWidth,
-                height = newsHeight
+                height = newsHeight,
             )
             nvg.drawText(
                 TranslateText.NEWS.getText(),
@@ -92,7 +97,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 topY + 15 + INNER_PADDING,
                 palette.getFontColor(ColorType.DARK),
                 11f,
-                Fonts.SEMIBOLD
+                Fonts.SEMIBOLD,
             )
             if (newsList.size > 1) {
                 val newsPageLabel = (currentNewsIndex + 1).toString() + "/" + newsList.size
@@ -104,7 +109,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     newsPageY,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                     8f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
             }
 
@@ -120,7 +125,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 width = columnWidth,
                 height = newsHeight - 20f,
                 translateX = 0f,
-                translateY = newsScroll.getValue()
+                translateY = newsScroll.getValue(),
             ) {
                 var newsY = topY + 43f
                 titleSize = nvg.getTextBoxHeight(currentNews.title, 10f, Fonts.SEMIBOLD, textWidth)
@@ -131,7 +136,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     textWidth,
                     palette.getFontColor(ColorType.DARK),
                     10f,
-                    Fonts.SEMIBOLD
+                    Fonts.SEMIBOLD,
                 )
                 newsY += titleSize + 2
                 subTitleSize = nvg.getTextBoxHeight(currentNews.subTitle, 8.5f, Fonts.MEDIUM, textWidth)
@@ -142,7 +147,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     textWidth,
                     palette.getFontColor(ColorType.DARK),
                     8.5f,
-                    Fonts.MEDIUM
+                    Fonts.MEDIUM,
                 )
                 newsY += subTitleSize + 3
                 bodySize = nvg.getTextBoxHeight(currentNews.body, 8f, Fonts.REGULAR, textWidth)
@@ -153,7 +158,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     textWidth,
                     palette.getFontColor(ColorType.DARK),
                     8f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
             }
 
@@ -162,8 +167,6 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             }
             newsScroll.onAnimation()
             newsScroll.maxScroll = max((titleSize + subTitleSize + bodySize + 10F) - (newsHeight - 40F), 0F)
-
-
         }
 
         var offsetChangelogY = 0
@@ -175,7 +178,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             x = rightX,
             y = topY,
             width = columnWidth,
-            height = changelogHeight
+            height = changelogHeight,
         )
         nvg.drawText(
             TranslateText.CHANGELOG.getText(),
@@ -183,7 +186,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             topY + 15 + INNER_PADDING,
             palette.getFontColor(ColorType.DARK),
             11f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
 
         val progressBarX = leftX + INNER_PADDING
@@ -199,7 +202,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             progressBarWidth,
             progressBarHeight,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150),
         )
         nvg.drawRoundedRect(
             progressBarX,
@@ -207,7 +210,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             progressBarWidth * progress,
             progressBarHeight,
             1f,
-            currentColor.getColor1()
+            currentColor.getColor1(),
         )
 
         val contentTop = topY + 40f
@@ -261,7 +264,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 changelogProgressWidth,
                 changelogProgressHeight,
                 1f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150),
             )
             nvg.drawRoundedRect(
                 changelogProgressX,
@@ -269,7 +272,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 changelogProgressWidth * changelogProgress,
                 changelogProgressHeight,
                 1f,
-                currentColor.getColor1()
+                currentColor.getColor1(),
             )
 
             val changelogPageLabel = (currentChangelogPage + 1).toString() + "/" + totalPages
@@ -281,7 +284,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 changelogPageY,
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                 8f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -290,7 +293,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             x = rightX,
             y = topY + 20f,
             width = columnWidth,
-            height = changelogHeight - 32f
+            height = changelogHeight - 32f,
         ) {
             if (pages.isNotEmpty()) {
                 val page = pages[min(currentChangelogPage, pages.size - 1)]
@@ -304,7 +307,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                         lineY + ((tbSize / 2f) - 1f),
                         Color.WHITE,
                         7f,
-                        Fonts.LEGACYICON
+                        Fonts.LEGACYICON,
                     )
                     nvg.drawTextBox(
                         c.text,
@@ -313,7 +316,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                         textWidth,
                         palette.getFontColor(ColorType.DARK),
                         8f,
-                        Fonts.MEDIUM
+                        Fonts.MEDIUM,
                     )
                     offsetChangelogY += (tbSize + 9f).toInt()
                 }
@@ -328,7 +331,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             x = leftX,
             y = bottomY,
             width = columnWidth,
-            height = playerCardHeight
+            height = playerCardHeight,
         )
 
         val musicManager: MusicManager = instance.getMusicManager()
@@ -349,7 +352,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             headY + 10,
             palette.getFontColor(ColorType.DARK),
             10f,
-            Fonts.MEDIUM
+            Fonts.MEDIUM,
         )
 
         val spotifyY = headY + headSize + 8
@@ -367,12 +370,18 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     spotifyY,
                     palette.getFontColor(ColorType.NORMAL),
                     iconSize,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
 
                 val trackName = currentTrack.name
                 val artistName =
-                    if (currentTrack.artists != null && currentTrack.artists.isNotEmpty()) currentTrack.artists[0].name else TranslateText.UNKNOWN.getText()
+                    if (currentTrack.artists != null &&
+                        currentTrack.artists.isNotEmpty()
+                    ) {
+                        currentTrack.artists[0].name
+                    } else {
+                        TranslateText.UNKNOWN.getText()
+                    }
                 val trackNameX = headX + iconSize1 + 4
                 val trackNameWidth = columnWidth - (INNER_PADDING * 2f)
                 nvg.drawText(
@@ -381,7 +390,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     spotifyY,
                     palette.getFontColor(ColorType.DARK),
                     9f,
-                    Fonts.MEDIUM
+                    Fonts.MEDIUM,
                 )
                 nvg.drawText(
                     nvg.getLimitText(artistName, 7.5f, Fonts.REGULAR, trackNameWidth),
@@ -389,7 +398,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     spotifyY + 12,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                     7.5f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
 
                 val controlsY = spotifyY + 24
@@ -397,31 +406,33 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 val controlSize = 14f
                 val controlSpacing = 24f
 
-                val prevHovered = MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    controlsCenterX - controlSpacing - controlSize / 2f,
-                    controlsY,
-                    controlSize,
-                    controlSize
-                )
+                val prevHovered =
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        controlsCenterX - controlSpacing - controlSize / 2f,
+                        controlsY,
+                        controlSize,
+                        controlSize,
+                    )
                 nvg.drawCenteredText(
                     LegacyIcon.BACK,
                     controlsCenterX - controlSpacing,
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (prevHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
 
-                val playHovered = MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    controlsCenterX - controlSize / 2f,
-                    controlsY,
-                    controlSize,
-                    controlSize
-                )
+                val playHovered =
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        controlsCenterX - controlSize / 2f,
+                        controlsY,
+                        controlSize,
+                        controlSize,
+                    )
                 val playIcon = if (isPlaying) LegacyIcon.PAUSE else LegacyIcon.PLAY
                 nvg.drawCenteredText(
                     playIcon,
@@ -429,24 +440,25 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (playHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
 
-                val nextHovered = MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    controlsCenterX + controlSpacing - controlSize / 2f,
-                    controlsY,
-                    controlSize,
-                    controlSize
-                )
+                val nextHovered =
+                    MouseUtils.isInside(
+                        mouseX,
+                        mouseY,
+                        controlsCenterX + controlSpacing - controlSize / 2f,
+                        controlsY,
+                        controlSize,
+                        controlSize,
+                    )
                 nvg.drawCenteredText(
                     LegacyIcon.FORWARD,
                     controlsCenterX + controlSpacing,
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (nextHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON
+                    Fonts.LEGACYICON,
                 )
 
                 val progressBarY2 = controlsY + controlSize + 6
@@ -460,7 +472,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     progressBarWidth2,
                     progressBarHeight2,
                     1f,
-                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150)
+                    ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 150),
                 )
                 nvg.drawRoundedRect(
                     headX,
@@ -468,7 +480,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     progressBarWidth2 * progress2,
                     progressBarHeight2,
                     1f,
-                    currentColor.getColor1()
+                    currentColor.getColor1(),
                 )
 
                 val currentTime = formatTime(trackPosition / 1000)
@@ -481,7 +493,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     progressBarY2 - 9,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180),
                     7f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
             } else {
                 nvg.drawText(
@@ -490,7 +502,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                     spotifyY,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 200),
                     8f,
-                    Fonts.REGULAR
+                    Fonts.REGULAR,
                 )
             }
         } else {
@@ -500,7 +512,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 spotifyY,
                 ColorUtils.applyAlpha(Color(255, 180, 90), 220),
                 8f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             nvg.drawTextBox(
                 TranslateText.SPOTIFY_LINK_DESCRIPTION.getText(),
@@ -509,7 +521,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 columnWidth - (INNER_PADDING * 2f),
                 ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 180),
                 7f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 
@@ -523,7 +535,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             x = discordStartX.toFloat(),
             y = discordStartY.toFloat(),
             width = discordWidth.toFloat(),
-            height = BOTTOM_CARD_HEIGHT
+            height = BOTTOM_CARD_HEIGHT,
         )
         nvg.drawRoundedRectVarying(
             discordStartX + discordWidth - 22F,
@@ -534,7 +546,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             8F,
             8F,
             0F,
-            Color(114, 137, 214)
+            Color(114, 137, 214),
         )
         nvg.drawCenteredText(
             LegacyIcon.DISCORD,
@@ -542,7 +554,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             discordStartY + 4f,
             Color.WHITE,
             14f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         nvg.drawText(
@@ -551,7 +563,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             discordStartY + standardPadding.toFloat(),
             palette.getFontColor(ColorType.DARK),
             11f,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
         nvg.drawTextBox(
             TranslateText.DISCORD_DESCRIPTION.getText(),
@@ -560,7 +572,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             discordWidth - 16f,
             palette.getFontColor(ColorType.DARK),
             8f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         if (discStat.membersCount != -1) {
             nvg.drawRoundedRect(discordStartX + 10f, discordStartY + BOTTOM_CARD_HEIGHT - 20, 6f, 6f, 3f, onlineColour)
@@ -571,7 +583,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 6f,
                 3f,
                 onlineColour,
-                7
+                7,
             )
             nvg.drawTextGlowing(
                 discStat.membersCount.toString() + " " + TranslateText.MEMBERS.getText(),
@@ -580,7 +592,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 onlineColour,
                 4F,
                 8F,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
             nvg.drawTextGlowing(
                 discStat.membersOnline.toString() + " " + TranslateText.ONLINE.getText(),
@@ -589,15 +601,16 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
                 onlineColour,
                 4F,
                 8F,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
-        val joinHovered = inputController.isJoinButtonClicked(
-            mouseX = mouseX,
-            mouseY = mouseY,
-            joinButtonX = discordStartX + discordWidth - 60f,
-            joinButtonY = discordStartY + BOTTOM_CARD_HEIGHT - 28f
-        )
+        val joinHovered =
+            inputController.isJoinButtonClicked(
+                mouseX = mouseX,
+                mouseY = mouseY,
+                joinButtonX = discordStartX + discordWidth - 60f,
+                joinButtonY = discordStartY + BOTTOM_CARD_HEIGHT - 28f,
+            )
 
         nvg.drawRoundedRect(
             discordStartX + discordWidth - 60f,
@@ -605,7 +618,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             52f,
             18f,
             9f,
-            if (joinHovered) Color(64, 102, 232) else Color(114, 137, 214)
+            if (joinHovered) Color(64, 102, 232) else Color(114, 137, 214),
         )
         nvg.drawCenteredText(
             TranslateText.JOIN.getText() + " >",
@@ -613,11 +626,15 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             discordStartY + BOTTOM_CARD_HEIGHT - 22,
             Color.WHITE,
             7f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val layout = computeLayout()
         val discordStartX = layout.rightX.toInt()
         val discordStartY = layout.bottomY.toInt()
@@ -651,14 +668,16 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             val controlSpacing = 24f
 
             if (inputController.isPrimaryClick(mouseButton)) {
-                when (inputController.resolveMusicControlAction(
-                    mouseX = mouseX,
-                    mouseY = mouseY,
-                    controlsCenterX = controlsCenterX,
-                    controlsY = controlsY,
-                    controlSize = controlSize,
-                    controlSpacing = controlSpacing
-                )) {
+                when (
+                    inputController.resolveMusicControlAction(
+                        mouseX = mouseX,
+                        mouseY = mouseY,
+                        controlsCenterX = controlsCenterX,
+                        controlsY = controlsY,
+                        controlSize = controlSize,
+                        controlSpacing = controlSpacing,
+                    )
+                ) {
                     HomeCategoryInputController.MusicControlAction.PREVIOUS -> {
                         musicManager.previousTrack()
                         return
@@ -685,14 +704,15 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
 
                 val progressBarY = controlsY + controlSize + 6
                 val progressBarWidth = playerCardWidth - (INNER_PADDING * 2f)
-                val seekProgress = inputController.resolveSeekProgress(
-                    mouseX = mouseX,
-                    mouseY = mouseY,
-                    barX = headX,
-                    barY = progressBarY,
-                    barWidth = progressBarWidth,
-                    barHeight = 2f
-                )
+                val seekProgress =
+                    inputController.resolveSeekProgress(
+                        mouseX = mouseX,
+                        mouseY = mouseY,
+                        barX = headX,
+                        barY = progressBarY,
+                        barWidth = progressBarWidth,
+                        barHeight = 2f,
+                    )
                 if (seekProgress != null) {
                     val currentTrack = musicManager.getCurrentTrack()
                     if (currentTrack != null) {
@@ -713,7 +733,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         x: Float,
         y: Float,
         width: Float,
-        height: Float
+        height: Float,
     ) {
         nvg.drawShadow(x, y, width, height, 8f, 7)
         nvg.drawRoundedRect(
@@ -722,7 +742,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             width,
             height,
             8f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220),
         )
         nvg.drawOutlineRoundedRect(
             x,
@@ -731,7 +751,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
             height,
             8f,
             1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210),
         )
     }
 
@@ -764,7 +784,7 @@ class HomeCategory(parent: GuiModMenu) : Category(parent, TranslateText.HOME, Le
         val rightX: Float,
         val topY: Float,
         val bottomY: Float,
-        val columnWidth: Float
+        val columnWidth: Float,
     )
 
     private companion object {

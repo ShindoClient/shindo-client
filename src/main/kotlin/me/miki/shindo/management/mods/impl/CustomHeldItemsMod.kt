@@ -10,19 +10,20 @@ import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.renderer.GlStateManager
 
-class CustomHeldItemsMod : Mod(
-    TranslateText.CUSTOM_HELD_ITEMS,
-    TranslateText.CUSTOM_HELD_ITEMS_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_CUSTOM_HELD_ITEMS
-) {
+class CustomHeldItemsMod :
+    Mod(
+        TranslateText.CUSTOM_HELD_ITEMS,
+        TranslateText.CUSTOM_HELD_ITEMS_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_CUSTOM_HELD_ITEMS,
+    ) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.X,
         category = "Offset",
         min = -1.0,
         max = 1.0,
-        current = 0.75
+        current = 0.75,
     )
     private val xSetting = 0.75
 
@@ -32,7 +33,7 @@ class CustomHeldItemsMod : Mod(
         category = "Offset",
         min = -1.0,
         max = 1.0,
-        current = -0.15
+        current = -0.15,
     )
     private val ySetting = -0.15
 
@@ -42,7 +43,7 @@ class CustomHeldItemsMod : Mod(
         category = "Offset",
         min = -1.0,
         max = 1.0,
-        current = -1.0
+        current = -1.0,
     )
     private val zSetting = -1.0
 
@@ -52,7 +53,7 @@ class CustomHeldItemsMod : Mod(
         category = "Scale",
         min = 0.0,
         max = 1.0,
-        current = 1.0
+        current = 1.0,
     )
     private val xScaleSetting = 1.0
 
@@ -62,7 +63,7 @@ class CustomHeldItemsMod : Mod(
         category = "Scale",
         min = 0.0,
         max = 1.0,
-        current = 1.0
+        current = 1.0,
     )
     private val yScaleSetting = 1.0
 
@@ -72,7 +73,7 @@ class CustomHeldItemsMod : Mod(
         category = "Scale",
         min = 0.0,
         max = 1.0,
-        current = 1.0
+        current = 1.0,
     )
     private val zScaleSetting = 1.0
 
@@ -82,7 +83,3 @@ class CustomHeldItemsMod : Mod(
         GlStateManager.scale(xScaleSetting.toFloat(), yScaleSetting.toFloat(), zScaleSetting.toFloat())
     }
 }
-
-
-
-

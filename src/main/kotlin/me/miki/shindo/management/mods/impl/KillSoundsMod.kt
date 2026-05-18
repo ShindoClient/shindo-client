@@ -16,12 +16,13 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.ResourceLocation
 import java.io.File
 
-class KillSoundsMod : Mod(
-    TranslateText.KILL_SOUNDS,
-    TranslateText.KILL_SOUNDS_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_KILL_SOUNDS
-) {
+class KillSoundsMod :
+    Mod(
+        TranslateText.KILL_SOUNDS,
+        TranslateText.KILL_SOUNDS_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_KILL_SOUNDS,
+    ) {
     private val oofSound = Sound()
     private val customSound = Sound()
 
@@ -47,7 +48,7 @@ class KillSoundsMod : Mod(
                     } catch (e: Exception) {
                         ShindoLogger.error(
                             "An error occurred while loading the custom sound file: " + soundFile.absolutePath,
-                            e
+                            e,
                         )
                     }
                 }
@@ -69,10 +70,12 @@ class KillSoundsMod : Mod(
 
     @EventTarget
     fun onPreMotionUpdate(event: EventMotionUpdate?) {
-        if (target != null && !mc.theWorld.loadedEntityList.contains(target) && mc.thePlayer.getDistanceSq(
+        if (target != null &&
+            !mc.theWorld.loadedEntityList.contains(target) &&
+            mc.thePlayer.getDistanceSq(
                 target!!.posX,
                 mc.thePlayer.posY,
-                target!!.posZ
+                target!!.posZ,
             ) < 100
         ) {
             if (mc.thePlayer.ticksExisted > 3) {
@@ -94,13 +97,8 @@ class KillSoundsMod : Mod(
         } catch (e: Exception) {
             ShindoLogger.error(
                 "An error occurred while loading the custom sound file: " + soundFile!!.absolutePath,
-                e
+                e,
             )
         }
     }
 }
-
-
-
-
-

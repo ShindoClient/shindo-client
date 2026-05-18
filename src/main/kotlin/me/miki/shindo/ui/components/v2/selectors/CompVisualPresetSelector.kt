@@ -15,15 +15,31 @@ class CompVisualPresetSelector(
     x: Float = 0f,
     y: Float = 0f,
     width: Float = 0f,
-    height: Float = 116f
+    height: Float = 116f,
 ) : CompPanel(x, y, width, height) {
-
-    data class Entry(val title: String, val subtitle: String)
+    data class Entry(
+        val title: String,
+        val subtitle: String,
+    )
 
     private val entries = ArrayList<Entry>()
     private var selectedIndex = 0
     private var onSelect: ((index: Int) -> Unit)? = null
-    private var previewRenderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)? =
+    private var previewRenderer: (
+        (
+            index: Int,
+            entry: Entry,
+            x: Float,
+            y: Float,
+            width: Float,
+            height: Float,
+            selected: Boolean,
+            hovered: Boolean,
+            nvg: NanoVGManager,
+            palette: ColorPalette,
+            accent: AccentColor,
+        ) -> Unit
+    )? =
         null
 
     private val contentPadding = 12f
@@ -31,9 +47,9 @@ class CompVisualPresetSelector(
     private val minCardWidth = 108f
 
     init {
-        //setSurfaceVariant(CompSurfaceVariant.PANEL)
+        // setSurfaceVariant(CompSurfaceVariant.PANEL)
         setRadius(10f)
-        //setBackgroundColor(null)
+        // setBackgroundColor(null)
     }
 
     fun setEntries(entries: List<Entry>): CompVisualPresetSelector {
@@ -56,13 +72,31 @@ class CompVisualPresetSelector(
     }
 
     fun setPreviewRenderer(
-        renderer: ((index: Int, entry: Entry, x: Float, y: Float, width: Float, height: Float, selected: Boolean, hovered: Boolean, nvg: NanoVGManager, palette: ColorPalette, accent: AccentColor) -> Unit)?
+        renderer: (
+            (
+                index: Int,
+                entry: Entry,
+                x: Float,
+                y: Float,
+                width: Float,
+                height: Float,
+                selected: Boolean,
+                hovered: Boolean,
+                nvg: NanoVGManager,
+                palette: ColorPalette,
+                accent: AccentColor,
+            ) -> Unit
+        )?,
     ): CompVisualPresetSelector {
         previewRenderer = renderer
         return this
     }
 
-    override fun drawPanelContent(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawPanelContent(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         if (entries.isEmpty()) return
 
         val slots = computeSlots()
@@ -71,15 +105,29 @@ class CompVisualPresetSelector(
             val selected = slot.index == selectedIndex
             val hovered = MouseUtils.isInside(mouseX, mouseY, slot.x, slot.y, slot.width, slot.height)
 
-            val base = ColorUtils.applyAlpha(
-                palette.getBackgroundColor(ColorType.NORMAL),
-                if (selected) 215 else if (hovered) 200 else 180
-            )
+            val base =
+                ColorUtils.applyAlpha(
+                    palette.getBackgroundColor(ColorType.NORMAL),
+                    if (selected) {
+                        215
+                    } else if (hovered) {
+                        200
+                    } else {
+                        180
+                    },
+                )
             nvg.drawRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, base)
-            val borderColor = ColorUtils.applyAlpha(
-                palette.getFontColor(ColorType.NORMAL),
-                if (selected) 136 else if (hovered) 98 else 70
-            )
+            val borderColor =
+                ColorUtils.applyAlpha(
+                    palette.getFontColor(ColorType.NORMAL),
+                    if (selected) {
+                        136
+                    } else if (hovered) {
+                        98
+                    } else {
+                        70
+                    },
+                )
             nvg.drawOutlineRoundedRect(slot.x, slot.y, slot.width, slot.height, 8f, 1f, borderColor)
 
             nvg.save()
@@ -108,7 +156,7 @@ class CompVisualPresetSelector(
                     hovered,
                     nvg,
                     palette,
-                    accent
+                    accent,
                 )
             } else {
                 drawMiniPreview(previewX, previewY, previewWidth, previewHeight, slot.index, selected)
@@ -118,7 +166,11 @@ class CompVisualPresetSelector(
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (!isVisible() || mouseButton != 0 || entries.isEmpty()) {
             super.mouseClicked(mouseX, mouseY, mouseButton)
             return
@@ -145,11 +197,12 @@ class CompVisualPresetSelector(
         val columns = resolveColumns(availableWidth, entries.size)
         val rows = ((entries.size + columns - 1) / columns).coerceAtLeast(1)
 
-        val cardWidth = if (columns == 1) {
-            availableWidth
-        } else {
-            max(minCardWidth, (availableWidth - gap * (columns - 1)) / columns)
-        }
+        val cardWidth =
+            if (columns == 1) {
+                availableWidth
+            } else {
+                max(minCardWidth, (availableWidth - gap * (columns - 1)) / columns)
+            }
         val availableHeight = max(72f, getHeight() - contentPadding * 2f)
         val cardHeight = max(34f, (availableHeight - gap * (rows - 1)) / rows)
 
@@ -169,7 +222,10 @@ class CompVisualPresetSelector(
         return slots
     }
 
-    private fun resolveColumns(availableWidth: Float, count: Int): Int {
+    private fun resolveColumns(
+        availableWidth: Float,
+        count: Int,
+    ): Int {
         if (count <= 1 || availableWidth <= minCardWidth) return 1
         val twoColumnWidth = minCardWidth * 2f + gap
         return if (availableWidth >= twoColumnWidth) min(2, count) else 1
@@ -181,7 +237,7 @@ class CompVisualPresetSelector(
         width: Float,
         height: Float,
         index: Int,
-        selected: Boolean
+        selected: Boolean,
     ) {
         if (width <= 8f || height <= 8f) return
         nvg.drawRoundedRect(
@@ -190,7 +246,7 @@ class CompVisualPresetSelector(
             width,
             height,
             4f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (selected) 180 else 150),
         )
         val columns = if (index % 2 == 0) 1 else 2
         val rows = if (index % 3 == 0) 3 else 2
@@ -212,8 +268,14 @@ class CompVisualPresetSelector(
                     3f,
                     ColorUtils.applyAlpha(
                         if (activeBlock) accent.getColor1() else palette.getBackgroundColor(ColorType.MID),
-                        if (activeBlock && selected) 190 else if (activeBlock) 150 else 175
-                    )
+                        if (activeBlock && selected) {
+                            190
+                        } else if (activeBlock) {
+                            150
+                        } else {
+                            175
+                        },
+                    ),
                 )
 
                 val lineWidth = max(6f, cardWidth - 8f)
@@ -223,7 +285,7 @@ class CompVisualPresetSelector(
                     lineWidth,
                     3f,
                     1.5f,
-                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175)
+                    ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), if (selected) 205 else 175),
                 )
             }
         }
@@ -234,6 +296,6 @@ class CompVisualPresetSelector(
         val x: Float,
         val y: Float,
         val width: Float,
-        val height: Float
+        val height: Float,
     )
 }

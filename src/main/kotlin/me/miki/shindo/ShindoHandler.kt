@@ -2,7 +2,14 @@ package me.miki.shindo
 
 import me.miki.shindo.gui.modmenu.v2.GuiModMenu
 import me.miki.shindo.management.event.EventTarget
-import me.miki.shindo.management.event.impl.*
+import me.miki.shindo.management.event.impl.EventClickMouse
+import me.miki.shindo.management.event.impl.EventJoinServer
+import me.miki.shindo.management.event.impl.EventLoadWorld
+import me.miki.shindo.management.event.impl.EventLocationCape
+import me.miki.shindo.management.event.impl.EventLocationSkin
+import me.miki.shindo.management.event.impl.EventReceivePacket
+import me.miki.shindo.management.event.impl.EventTick
+import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.profile.Profile
 import me.miki.shindo.management.skin.Skin
 import me.miki.shindo.management.skin.SkinManager
@@ -14,7 +21,6 @@ import org.apache.commons.lang3.StringUtils
 
 @Suppress("unused", "UNUSED_PARAMETER")
 class ShindoHandler {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val instance: Shindo = Shindo.getInstance()
 
@@ -64,7 +70,7 @@ class ShindoHandler {
     @EventTarget
     fun onCape(event: EventLocationCape) {
         val capeManager = instance.getCapeManager()
-        val playerInfo = event.getPlayerInfo() ?: return
+        val playerInfo = event.getPlayerInfo()
         if (playerInfo.gameProfile.id == mc.thePlayer.gameProfile.id) {
             val currentCape = capeManager.getCurrentCape()
             if (currentCape != capeManager.getCapeByName("None")) {
@@ -74,11 +80,10 @@ class ShindoHandler {
         }
     }
 
-
     @EventTarget
     fun onSkin(event: EventLocationSkin) {
         val player = mc.thePlayer ?: return
-        val info = event.getPlayerInfo() ?: return
+        val info = event.getPlayerInfo()
         val profile = info.gameProfile ?: return
         if (profile.id != player.gameProfile.id) return
 

@@ -9,7 +9,6 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 import java.util.regex.Pattern
 
 class Log4jSecurity : SecurityFeature() {
-
     private val pattern = Pattern.compile(".*\\$\\{[^}]*\\}.*")
 
     @EventTarget
@@ -21,7 +20,9 @@ class Log4jSecurity : SecurityFeature() {
 
             is S02PacketChat -> {
                 val component = pkt.chatComponent
-                if (pattern.matcher(component.unformattedText).matches() || pattern.matcher(component.formattedText)
+                if (pattern.matcher(component.unformattedText).matches() ||
+                    pattern
+                        .matcher(component.formattedText)
                         .matches()
                 ) {
                     event.setCancelled(true)

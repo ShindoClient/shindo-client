@@ -14,7 +14,9 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 
-class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : LayerRenderer<AbstractClientPlayer?> {
+class HeadLayerFeatureRenderer(
+    private val playerRenderer: RenderPlayer,
+) : LayerRenderer<AbstractClientPlayer?> {
     private val thinArms: Boolean = (playerRenderer as IMixinRenderPlayer).hasThinArms()
     private val hideHeadLayers: MutableSet<Item?> = Sets.newHashSet<Item?>(Items.skull)
 
@@ -26,7 +28,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         deltaTick: Float,
         paramFloat5: Float,
         paramFloat6: Float,
-        paramFloat7: Float
+        paramFloat7: Float,
     ) {
         if (player == null || !player.hasSkin() || player.isInvisible) {
             return
@@ -55,7 +57,10 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         renderCustomHelmet(settings, player, deltaTick)
     }
 
-    private fun setupModel(abstractClientPlayerEntity: AbstractClientPlayer, settings: IMixinEntityPlayer): Boolean {
+    private fun setupModel(
+        abstractClientPlayerEntity: AbstractClientPlayer,
+        settings: IMixinEntityPlayer,
+    ): Boolean {
         if (!hasCustomSkin(abstractClientPlayerEntity)) {
             return false
         }
@@ -65,7 +70,11 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         return true
     }
 
-    fun renderCustomHelmet(settings: IMixinEntityPlayer, abstractClientPlayer: AbstractClientPlayer, deltaTick: Float) {
+    fun renderCustomHelmet(
+        settings: IMixinEntityPlayer,
+        abstractClientPlayer: AbstractClientPlayer,
+        deltaTick: Float,
+    ) {
         if (settings.headLayers == null) {
             return
         }
@@ -91,9 +100,7 @@ class HeadLayerFeatureRenderer(private val playerRenderer: RenderPlayer) : Layer
         GlStateManager.popMatrix()
     }
 
-    override fun shouldCombineTextures(): Boolean {
-        return false
-    }
+    override fun shouldCombineTextures(): Boolean = false
 
     companion object {
         private val mc: Minecraft = Minecraft.getMinecraft()

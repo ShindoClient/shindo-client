@@ -21,8 +21,9 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class AccentColorSelectScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val screenAlpha = ScreenAlpha()
     private val scroll = Scroll()
     private var x = 0
@@ -36,7 +37,11 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         currentColor = Shindo.getInstance().getColorManager().getColorByName("Default")
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         width = 280
@@ -81,7 +86,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
             y + 40f,
             96f,
             96f,
-            6f
+            6f,
         )
         drawExampleHud(x + width - 96f, y + 70.5f, currentColor)
 
@@ -100,7 +105,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
                 32f,
                 6f,
                 color.getColor1(),
-                color.getColor2()
+                color.getColor2(),
             )
 
             color.getAnimation().setAnimation(if (color == currentColor) 1.0f else 0.0f, 16)
@@ -111,7 +116,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
                 y + offsetY + 48f,
                 Color(255, 255, 255, (color.getAnimation().getValue() * 255).toInt()),
                 16f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
 
             offsetX += 40
@@ -132,7 +137,11 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         nvg.drawCenteredText("Next", x + width - 108f + (96 / 2f), y + height - 20f, Color.WHITE, 10f, Fonts.REGULAR)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val instance = Shindo.getInstance()
         val colorManager: ColorManager = instance.getColorManager()
 
@@ -141,9 +150,9 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         var index = 1
 
         for (color in colorManager.getColors()) {
-            if (MouseUtils.isInside(mouseX, mouseY, x.toFloat(), y + 28f, width.toFloat(), height - 28f)
-                && MouseUtils.isInside(mouseX, mouseY, x + offsetX + 10f, y + offsetY + 40f, 32f, 32f)
-                && mouseButton == 0
+            if (MouseUtils.isInside(mouseX, mouseY, x.toFloat(), y + 28f, width.toFloat(), height - 28f) &&
+                MouseUtils.isInside(mouseX, mouseY, x + offsetX + 10f, y + offsetY + 40f, 32f, 32f) &&
+                mouseButton == 0
             ) {
                 currentColor = color
             }
@@ -164,7 +173,11 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         }
     }
 
-    private fun drawExampleHud(x: Float, y: Float, accentColor: AccentColor) {
+    private fun drawExampleHud(
+        x: Float,
+        y: Float,
+        accentColor: AccentColor,
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
 
         val width = 71f
@@ -177,7 +190,7 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
             height,
             5f,
             ColorUtils.applyAlpha(accentColor.getColor1(), 220),
-            ColorUtils.applyAlpha(accentColor.getColor2(), 220)
+            ColorUtils.applyAlpha(accentColor.getColor2(), 220),
         )
 
         nvg.drawText("X: 190", x + 3.9f, y + 3.9f, Color.WHITE, 6.42f, Fonts.REGULAR)
@@ -186,4 +199,3 @@ class AccentColorSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) 
         nvg.drawText("Biome: Plains", x + 3.9f, y + 24.9f, Color.WHITE, 6.42f, Fonts.REGULAR)
     }
 }
-

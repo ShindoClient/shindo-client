@@ -6,12 +6,13 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.nanovg.font.LegacyIcon
 
-class DiscordRPCMod : Mod(
-    TranslateText.DISCORD_RPC,
-    TranslateText.DISCORD_RPC_DESCRIPTION,
-    ModCategory.OTHER,
-    LegacyIcon.MOD_DISCORD_RPC
-) {
+class DiscordRPCMod :
+    Mod(
+        TranslateText.DISCORD_RPC,
+        TranslateText.DISCORD_RPC_DESCRIPTION,
+        ModCategory.OTHER,
+        LegacyIcon.MOD_DISCORD_RPC,
+    ) {
     private val discord = DiscordRPC()
 
     override fun onEnable() {
@@ -26,7 +27,3 @@ class DiscordRPCMod : Mod(
         }
     }
 }
-
-
-
-

@@ -9,13 +9,11 @@ import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.passive.EntityHorse
 import java.text.DecimalFormat
 
-class HorseStatsMod :
-    HUDMod(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION, LegacyIcon.MOD_HORSE_STATS) {
+class HorseStatsMod : HUDMod(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION, LegacyIcon.MOD_HORSE_STATS) {
     private val df = DecimalFormat("0.0")
 
     @EventTarget
     fun onRender2D(event: EventNVG?) {
-
         var speed = "Speed: 0.0 b/s"
         var jump = "Jump: 0.0 Blocks"
 
@@ -23,9 +21,10 @@ class HorseStatsMod :
             val horse = mc.objectMouseOver.entityHit as EntityHorse
 
             if (!mc.thePlayer.isRidingHorse) {
-                speed = "Speed: " + this.getHorseSpeedRounded(
-                    horse.getEntityAttribute(SharedMonsterAttributes.movementSpeed).attributeValue
-                ) + " b/s"
+                speed = "Speed: " +
+                    this.getHorseSpeedRounded(
+                        horse.getEntityAttribute(SharedMonsterAttributes.movementSpeed).attributeValue,
+                    ) + " b/s"
                 jump = "Jump: " + df.format(horse.horseJumpStrength * 5.5) + " Blocks"
             }
         }
@@ -47,7 +46,3 @@ class HorseStatsMod :
         return df.format(speed.toDouble())
     }
 }
-
-
-
-

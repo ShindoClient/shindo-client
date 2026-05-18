@@ -16,7 +16,3 @@ class ShinyPotsMod :
         var instance: ShinyPotsMod? = null
     }
 }
-
-
-
-

@@ -32,7 +32,6 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 
 class GuiShindoMainMenu : GuiScreen() {
-
     private val scenes: ArrayList<MainMenuScene> = ArrayList()
 
     private val skinFocusAnimation = SimpleAnimation()
@@ -57,7 +56,7 @@ class GuiShindoMainMenu : GuiScreen() {
         scenes.add(MainScene(this))
         scenes.add(BackgroundScene(this))
         scenes.add(ShopScene(this))
-        //scenes.add(SkinScene(this))
+        // scenes.add(SkinScene(this))
         scenes.add(UpdateScene(this))
         scenes.add(WelcomeMessageScene(this))
         scenes.add(LanguageSelectScene(this))
@@ -66,22 +65,27 @@ class GuiShindoMainMenu : GuiScreen() {
         scenes.add(CheckingDataScene(this))
         scenes.add(LastMessageScene(this))
 
-        currentScene = if (firstLogin) {
-            getSceneByClass(WelcomeMessageScene::class.java)
-        } else {
-            if (instance.isUpdateNeeded()) {
-                getSceneByClass(UpdateScene::class.java)
+        currentScene =
+            if (firstLogin) {
+                getSceneByClass(WelcomeMessageScene::class.java)
             } else {
-                getSceneByClass(MainScene::class.java)
+                if (instance.isUpdateNeeded()) {
+                    getSceneByClass(UpdateScene::class.java)
+                } else {
+                    getSceneByClass(MainScene::class.java)
+                }
             }
-        }
     }
 
     override fun initGui() {
         currentScene?.initGui()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         val instance = Shindo.getInstance()
@@ -90,16 +94,21 @@ class GuiShindoMainMenu : GuiScreen() {
         backgroundAnimations[0].setAnimation(Mouse.getX().toFloat(), 16.0)
         backgroundAnimations[1].setAnimation(Mouse.getY().toFloat(), 16.0)
 
-        nvg!!.setupAndDraw(Runnable {
-            drawNanoVG(sr, instance, nvg)
-
-        })
+        nvg!!.setupAndDraw(
+            Runnable {
+                drawNanoVG(sr, instance, nvg)
+            },
+        )
 
         currentScene?.drawScreen(mouseX, mouseY, partialTicks)
 
-        if (fadeBackgroundAnimation == null || (fadeBackgroundAnimation != null && !fadeBackgroundAnimation!!.isDone(
-                Direction.FORWARDS
-            ))
+        if (fadeBackgroundAnimation == null ||
+            (
+                fadeBackgroundAnimation != null &&
+                    !fadeBackgroundAnimation!!.isDone(
+                        Direction.FORWARDS,
+                    )
+            )
         ) {
             nvg.setupAndDraw(Runnable { drawSplashScreen(sr, nvg) })
             if (!soundPlayed) {
@@ -113,7 +122,11 @@ class GuiShindoMainMenu : GuiScreen() {
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun drawNanoVG(sr: ScaledResolution, instance: Shindo, nvg: NanoVGManager) {
+    private fun drawNanoVG(
+        sr: ScaledResolution,
+        instance: Shindo,
+        nvg: NanoVGManager,
+    ) {
         val copyright = "Copyright Mojang AB. Do not distribute!"
         when (val currentBackground = instance.getProfileManager().backgroundManager.getCurrentBackground()) {
             is DefaultBackground -> {
@@ -122,7 +135,7 @@ class GuiShindoMainMenu : GuiScreen() {
                     -21f + backgroundAnimations[0].getValue() / 90,
                     backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
-                    sr.scaledHeight + 20f
+                    sr.scaledHeight + 20f,
                 )
             }
 
@@ -132,7 +145,7 @@ class GuiShindoMainMenu : GuiScreen() {
                     -21f + backgroundAnimations[0].getValue() / 90,
                     backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
-                    sr.scaledHeight + 20f
+                    sr.scaledHeight + 20f,
                 )
             }
 
@@ -143,7 +156,7 @@ class GuiShindoMainMenu : GuiScreen() {
                     -21f + backgroundAnimations[0].getValue() / 90,
                     backgroundAnimations[1].getValue() * -1 / 90,
                     sr.scaledWidth + 21f,
-                    sr.scaledHeight + 20f
+                    sr.scaledHeight + 20f,
                 )
             }
         }
@@ -154,7 +167,7 @@ class GuiShindoMainMenu : GuiScreen() {
             sr.scaledHeight - 12f,
             Color.WHITE,
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
         nvg.drawText(
             instance.getBuildInfo().getDisplayString(),
@@ -162,16 +175,21 @@ class GuiShindoMainMenu : GuiScreen() {
             sr.scaledHeight - 12f,
             Color.WHITE,
             9f,
-            Fonts.REGULAR
+            Fonts.REGULAR,
         )
     }
 
-    private fun drawButtons(mouseX: Int, mouseY: Int, sr: ScaledResolution, nvg: NanoVGManager) {
+    private fun drawButtons(
+        mouseX: Int,
+        mouseY: Int,
+        sr: ScaledResolution,
+        nvg: NanoVGManager,
+    ) {
         val controlColor = getControlFillColor()
 
         closeFocusAnimation.setAnimation(
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16.0
+            16.0,
         )
 
         nvg.drawRoundedRect(sr.scaledWidth - 28f, 6f, 22f, 22f, 4f, controlColor)
@@ -182,15 +200,15 @@ class GuiShindoMainMenu : GuiScreen() {
             Color(
                 255,
                 255 - (closeFocusAnimation.getValue() * 200).toInt(),
-                255 - (closeFocusAnimation.getValue() * 200).toInt()
+                255 - (closeFocusAnimation.getValue() * 200).toInt(),
             ),
             18f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
         backgroundSelectFocusAnimation.setAnimation(
             if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 56f, 6f, 22f, 22f)) 1.0f else 0.0f,
-            16.0
+            16.0,
         )
 
         nvg.drawRoundedRect(sr.scaledWidth - 56f, 6f, 22f, 22f, 4f, controlColor)
@@ -201,19 +219,22 @@ class GuiShindoMainMenu : GuiScreen() {
             Color(
                 255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt(),
                 255,
-                255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt()
+                255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt(),
             ),
             18f,
-            Fonts.LEGACYICON
+            Fonts.LEGACYICON,
         )
 
-        //skinFocusAnimation.setAnimation( if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f, 16 )
+        // skinFocusAnimation.setAnimation( if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f, 16 )
 
-        //nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
-        //nvg.drawCenteredText(LegacyIcon.SKIN, sr.scaledWidth - 78f + 4.5f, 9.5f, Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255), 15f, Fonts.LEGACYICON )
+        // nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
+        // nvg.drawCenteredText(LegacyIcon.SKIN, sr.scaledWidth - 78f + 4.5f, 9.5f, Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255), 15f, Fonts.LEGACYICON )
     }
 
-    private fun drawSplashScreen(sr: ScaledResolution, nvg: NanoVGManager) {
+    private fun drawSplashScreen(
+        sr: ScaledResolution,
+        nvg: NanoVGManager,
+    ) {
         if (fadeIconAnimation == null) {
             fadeIconAnimation = DecelerateAnimation(100, 1.0)
             fadeIconAnimation!!.setDirection(Direction.FORWARDS)
@@ -236,8 +257,14 @@ class GuiShindoMainMenu : GuiScreen() {
                     0,
                     0,
                     0,
-                    if (fadeBackgroundAnimation != null) (255 - (fadeBackgroundAnimation!!.getValue() * 255)).toInt() else 255
-                )
+                    if (fadeBackgroundAnimation !=
+                        null
+                    ) {
+                        (255 - (fadeBackgroundAnimation!!.getValue() * 255)).toInt()
+                    } else {
+                        255
+                    },
+                ),
             )
             nvg.drawCenteredText(
                 LegacyIcon.SHINDO,
@@ -245,22 +272,26 @@ class GuiShindoMainMenu : GuiScreen() {
                 (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
                 Color(255, 255, 255, (255 - (fadeIconAnimation!!.getValue() * 255)).toInt()),
                 130f,
-                Fonts.LEGACYICON
+                Fonts.LEGACYICON,
             )
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val sr = ScaledResolution(mc)
 
         val isFirstLogin = Shindo.getInstance().getShindoAPI().isFirstLogin()
 
         if (mouseButton == 0 && !isFirstLogin) {
-            //if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {
+            // if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 28f, 6f, 22f, 22f)) {
             //    mc.shutdown()
-            //}
+            // }
 
-            //if (MouseUtils.isInside(
+            // if (MouseUtils.isInside(
             //        mouseX,
             //        mouseY,
             //        sr.scaledWidth - 56f,
@@ -268,25 +299,31 @@ class GuiShindoMainMenu : GuiScreen() {
             //        22f,
             //        22f
             //    ) && currentScene != getSceneByClass(BackgroundScene::class.java)
-            //) {
+            // ) {
             //    setCurrentScene(getSceneByClass(BackgroundScene::class.java))
-            //}
+            // }
 
-            //if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) {
+            // if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) {
             //    setCurrentScene(getSceneByClass(SkinScene::class.java))
-            //}
-
+            // }
         }
 
         currentScene?.mouseClicked(mouseX, mouseY, mouseButton)
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         currentScene?.mouseReleased(mouseX, mouseY, mouseButton)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         currentScene?.keyTyped(typedChar, keyCode)
     }
 
@@ -300,9 +337,7 @@ class GuiShindoMainMenu : GuiScreen() {
         this.currentScene?.initScene()
     }
 
-    fun isDoneBackgroundAnimation(): Boolean {
-        return fadeBackgroundAnimation != null && fadeBackgroundAnimation!!.isDone(Direction.FORWARDS)
-    }
+    fun isDoneBackgroundAnimation(): Boolean = fadeBackgroundAnimation != null && fadeBackgroundAnimation!!.isDone(Direction.FORWARDS)
 
     fun getSceneByClass(clazz: Class<out MainMenuScene>): MainMenuScene? {
         for (scene in scenes) {
@@ -313,7 +348,10 @@ class GuiShindoMainMenu : GuiScreen() {
         return null
     }
 
-    private fun ensureDefaultColorScheme(instance: Shindo?, forceDefaults: Boolean) {
+    private fun ensureDefaultColorScheme(
+        instance: Shindo?,
+        forceDefaults: Boolean,
+    ) {
         if (instance == null) return
 
         val colorManager: ColorManager = instance.getColorManager()
@@ -338,4 +376,3 @@ class GuiShindoMainMenu : GuiScreen() {
         return ColorUtils.applyAlpha(base, 235)
     }
 }
-

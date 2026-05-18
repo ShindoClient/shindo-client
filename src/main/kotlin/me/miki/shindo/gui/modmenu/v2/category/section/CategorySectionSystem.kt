@@ -7,7 +7,7 @@ import me.miki.shindo.management.nanovg.font.Fonts
 
 data class CategorySectionSpec(
     val title: String,
-    val subtitle: String? = null
+    val subtitle: String? = null,
 )
 
 data class CategorySectionStyle(
@@ -16,12 +16,12 @@ data class CategorySectionStyle(
     val sectionGap: Float = 18f,
     val titleSize: Float = 11f,
     val subtitleSize: Float = 9f,
-    val subtitleOffsetY: Float = 14f
+    val subtitleOffsetY: Float = 14f,
 )
 
 class CategorySectionCursor(
     startY: Float,
-    val style: CategorySectionStyle = CategorySectionStyle()
+    val style: CategorySectionStyle = CategorySectionStyle(),
 ) {
     var y: Float = startY + style.topMargin
 
@@ -35,7 +35,6 @@ class CategorySectionCursor(
 }
 
 object CategorySectionRenderer {
-
     @JvmStatic
     fun drawHeader(
         nvg: NanoVGManager,
@@ -43,7 +42,7 @@ object CategorySectionRenderer {
         x: Float,
         y: Float,
         section: CategorySectionSpec,
-        style: CategorySectionStyle
+        style: CategorySectionStyle,
     ): Float {
         nvg.drawText(
             section.title,
@@ -51,7 +50,7 @@ object CategorySectionRenderer {
             y,
             palette.getFontColor(ColorType.DARK),
             style.titleSize,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
 
         val subtitle = section.subtitle
@@ -62,7 +61,7 @@ object CategorySectionRenderer {
                 y + style.subtitleOffsetY,
                 palette.getFontColor(ColorType.NORMAL),
                 style.subtitleSize,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
         }
 

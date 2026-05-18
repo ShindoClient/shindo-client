@@ -13,7 +13,6 @@ object ExtensionLibrary {
         registerSerialization(manager)
     }
 
-
     private fun registerUi(manager: ExtensionManager) {
         val base = "$BASE_PACKAGE.ui"
 
@@ -56,7 +55,6 @@ object ExtensionLibrary {
             description = "High-level HTTP helpers."
             tags("http", "network")
         }
-
 
         manager.register {
             id = "me.miki.extensions.network.proxy"

@@ -21,9 +21,9 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import kotlin.math.max
 
-class AppearanceScene(parent: SettingsCategory) :
-    SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
-
+class AppearanceScene(
+    parent: SettingsCategory,
+) : SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
     private val contentScroll = Scroll()
 
     private lateinit var themeSelector: CompThemeSelector
@@ -54,30 +54,34 @@ class AppearanceScene(parent: SettingsCategory) :
         blurStrength = CompSlider(0f, 0f, requireNotNull(InternalSettingsMod.instance.getBlurStrengthSetting()), 75f)
         clientAnimations = CompToggleButton(requireNotNull(InternalSettingsMod.instance.getAnimationsSetting()))
 
-        themeSelector = CompThemeSelector().apply {
-            setSelectedTheme(colorManager.getTheme())
-            setOnThemeSelected { theme ->
-                colorManager.setTheme(theme)
+        themeSelector =
+            CompThemeSelector().apply {
+                setSelectedTheme(colorManager.getTheme())
+                setOnThemeSelected { theme ->
+                    colorManager.setTheme(theme)
+                }
             }
-        }
 
-        accentColorSelector = CompAccentColorSelector(accentColors = colorManager.getColors()).apply {
-            setSelectedColor(colorManager.getCurrentColor())
-            setOnColorSelected { accent ->
-                colorManager.setCurrentColor(accent)
+        accentColorSelector =
+            CompAccentColorSelector(accentColors = colorManager.getColors()).apply {
+                setSelectedColor(colorManager.getCurrentColor())
+                setOnColorSelected { accent ->
+                    colorManager.setCurrentColor(accent)
+                }
             }
-        }
 
-        themeTitle = CompLabel(0f, 0f, TranslateText.THEME.getText())
-            .setFontSize(12.5f)
+        themeTitle =
+            CompLabel(0f, 0f, TranslateText.THEME.getText())
+                .setFontSize(12.5f)
 
-        accentTitle = CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.getText())
-            .setFontSize(12.5f)
+        accentTitle =
+            CompLabel(0f, 0f, TranslateText.ACCENT_COLOR.getText())
+                .setFontSize(12.5f)
 
         settingCards.clear()
         settingCards.add(
             CompSettingButton(0f, { TranslateText.HUD_THEME.getText() }, { TranslateText.STYLE.getText() })
-                .trailing(modTheme)
+                .trailing(modTheme),
         )
 
         settingCards.add(
@@ -86,7 +90,7 @@ class AppearanceScene(parent: SettingsCategory) :
                 .onClickAction {
                     val setting = uiBlur.getSetting()
                     setting.setToggled(!setting.isToggled())
-                }
+                },
         )
 
         settingCards.add(
@@ -97,7 +101,7 @@ class AppearanceScene(parent: SettingsCategory) :
                         val setting = blurStrength.getSetting()
                         setting.setValue(setting.getValue())
                     }
-                }
+                },
         )
 
         settingCards.add(
@@ -107,13 +111,17 @@ class AppearanceScene(parent: SettingsCategory) :
                     val setting = clientAnimations.getSetting()
                     setting.setToggled(!setting.isToggled())
                     GlobalAnimationSettings.enabled = setting.isToggled()
-                }
+                },
         )
 
         contentScroll.resetAll()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val colorManager = instance.getColorManager()
@@ -141,7 +149,7 @@ class AppearanceScene(parent: SettingsCategory) :
             baseWidth,
             baseHeight,
             containerRadius,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 210),
         )
         nvg.drawRoundedRect(
             baseX + 1f,
@@ -149,7 +157,7 @@ class AppearanceScene(parent: SettingsCategory) :
             baseWidth - 2f,
             baseHeight - 2f,
             containerRadius - 1f,
-            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230)
+            ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 230),
         )
 
         val top = baseY + OUTER_PADDING
@@ -163,7 +171,9 @@ class AppearanceScene(parent: SettingsCategory) :
         cardWidth = sectionWidth
 
         val contentHeight =
-            OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f + ((cardHeight * settingCards.size) + 18f) + OUTER_PADDING * 2
+            OUTER_PADDING + themeHeight + SECTION_SPACING + accentHeight + 10f +
+                ((cardHeight * settingCards.size) + 18f) +
+                OUTER_PADDING * 2
         contentScroll.maxScroll = max(0f, contentHeight - baseHeight)
 
         if (MouseUtils.isInside(mouseX, mouseY, baseX, baseY, baseWidth, baseHeight) &&
@@ -173,7 +183,7 @@ class AppearanceScene(parent: SettingsCategory) :
                 baseX + OUTER_PADDING,
                 themeSectionY + contentScroll.getValue(),
                 sectionWidth,
-                themeHeight
+                themeHeight,
             ) &&
             !MouseUtils.isInside(
                 mouseX,
@@ -181,7 +191,7 @@ class AppearanceScene(parent: SettingsCategory) :
                 baseX + OUTER_PADDING,
                 accentSectionY + contentScroll.getValue(),
                 sectionWidth,
-                accentHeight
+                accentHeight,
             )
         ) {
             contentScroll.onScroll()
@@ -199,7 +209,7 @@ class AppearanceScene(parent: SettingsCategory) :
             x = baseX,
             y = baseY,
             width = baseWidth,
-            height = baseHeight
+            height = baseHeight,
         ) {
             themeTitle.setX(baseX + OUTER_PADDING)
             themeTitle.setY(themeScreenY - 26f)
@@ -227,12 +237,16 @@ class AppearanceScene(parent: SettingsCategory) :
             verticalScroll,
             palette,
             currentAccent,
-            30f
+            30f,
         )
     }
 
-
-    private fun drawControlCards(mouseX: Int, mouseY: Int, partialTicks: Float, sectionY: Float) {
+    private fun drawControlCards(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+        sectionY: Float,
+    ) {
         var currentY = sectionY
         val cardW = cardWidth - 28f
         val baseX = x.toFloat()
@@ -244,7 +258,11 @@ class AppearanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
@@ -262,7 +280,11 @@ class AppearanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         themeSelector.mouseReleased(mouseX, mouseY, mouseButton)
         accentColorSelector.mouseReleased(mouseX, mouseY, mouseButton)
         for (card in settingCards) {
@@ -270,7 +292,10 @@ class AppearanceScene(parent: SettingsCategory) :
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         themeSelector.keyTyped(typedChar, keyCode)
         accentColorSelector.keyTyped(typedChar, keyCode)
         for (card in settingCards) {

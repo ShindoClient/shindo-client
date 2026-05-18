@@ -11,12 +11,13 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 
-class ClearGlassMod : Mod(
-    TranslateText.CLEAR_GLASS,
-    TranslateText.CLEAR_GLASS_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_CLEAR_GLASS
-) {
+class ClearGlassMod :
+    Mod(
+        TranslateText.CLEAR_GLASS,
+        TranslateText.CLEAR_GLASS_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_CLEAR_GLASS,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.NORMAL)
     private val normalSetting = true
 
@@ -55,20 +56,12 @@ class ClearGlassMod : Mod(
         mc.renderGlobal.loadRenderers()
     }
 
-    fun getNormalSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "normalSetting")
-    }
+    fun getNormalSetting(): BooleanSetting? = getBooleanSetting(this, "normalSetting")
 
-    fun getStainedSetting(): BooleanSetting? {
-        return getBooleanSetting(this, "stainedSetting")
-    }
+    fun getStainedSetting(): BooleanSetting? = getBooleanSetting(this, "stainedSetting")
 
     companion object {
         @JvmField
         var instance: ClearGlassMod? = null
     }
 }
-
-
-
-

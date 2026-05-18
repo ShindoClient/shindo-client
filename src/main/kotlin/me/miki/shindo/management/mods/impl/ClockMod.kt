@@ -34,22 +34,18 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
         }
     }
 
-    override fun getText(): String? {
-        return df.format(Calendar.getInstance().getTime())
-    }
+    override fun getText(): String? = df.format(Calendar.getInstance().getTime())
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.CLOCK else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.CLOCK else null
 
-    private enum class Design(private val translate: TranslateText) : PropertyEnum {
+    private enum class Design(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         SIMPLE(TranslateText.SIMPLE),
-        FANCY(TranslateText.FANCY);
+        FANCY(TranslateText.FANCY),
+        ;
 
-
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     private fun drawNanoVG() {
@@ -143,7 +139,7 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
             this.getY().toFloat(),
             scaledSize,
             scaledSize,
-            minuteAngle - Math.toRadians(90.0).toFloat()
+            minuteAngle - Math.toRadians(90.0).toFloat(),
         )
         nvg.drawRoundedRect(
             this.getX() + (scaledSize / 2) - (6 * scale),
@@ -151,7 +147,7 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
             48 * scale,
             2 * scale,
             scale,
-            this.getFontColor()
+            this.getFontColor(),
         )
         nvg.restore()
 
@@ -161,7 +157,7 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
             this.getY().toFloat(),
             scaledSize,
             scaledSize,
-            hourAngle - Math.toRadians(90.0).toFloat()
+            hourAngle - Math.toRadians(90.0).toFloat(),
         )
         nvg.drawRoundedRect(
             this.getX() + (scaledSize / 2) - (6 * scale),
@@ -169,7 +165,7 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
             38 * scale,
             2 * scale,
             scale,
-            this.getFontColor()
+            this.getFontColor(),
         )
         nvg.restore()
 
@@ -177,5 +173,3 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
         this.setHeight(size)
     }
 }
-
-

@@ -10,12 +10,13 @@ import me.miki.shindo.management.nanovg.font.LegacyIcon
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class OverlayEditorMod : Mod(
-    TranslateText.OVERLAY_EDITOR,
-    TranslateText.OVERLAY_EDITOR_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_OVERLAY_EDITOR
-) {
+class OverlayEditorMod :
+    Mod(
+        TranslateText.OVERLAY_EDITOR,
+        TranslateText.OVERLAY_EDITOR_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_OVERLAY_EDITOR,
+    ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_PUMPKIN)
     private val hidePumpkinSetting = false
 
@@ -32,7 +33,3 @@ class OverlayEditorMod : Mod(
         event.setCancelled(hideFireSetting)
     }
 }
-
-
-
-

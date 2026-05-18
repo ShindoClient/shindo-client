@@ -32,9 +32,7 @@ class CompSlider : Component {
         setHeight(4F)
     }
 
-    fun getSetting(): NumberSetting {
-        return setting
-    }
+    fun getSetting(): NumberSetting = setting
 
     fun setCircle(circle: Boolean) {
         this.circle = circle
@@ -44,7 +42,11 @@ class CompSlider : Component {
         this.showValue = showValue
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun draw(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val nvgInstance = nvg
         val accentColor = accent
         val palette = palette
@@ -73,14 +75,15 @@ class CompSlider : Component {
         }
 
         animation.setAnimation(valueWidth.toFloat(), 16.0)
-        val hovered = MouseUtils.isInside(
-            mouseX,
-            mouseY,
-            getX() - 6,
-            getY() - 3,
-            trackWidth + 12,
-            trackHeight * trackHeight
-        )
+        val hovered =
+            MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX() - 6,
+                getY() - 3,
+                trackWidth + 12,
+                trackHeight * trackHeight,
+            )
         draggingAnimation.setAnimation(if (hovered) 1.0f else 0.0f, 16.0)
 
         nvgInstance.drawRoundedRect(
@@ -89,7 +92,7 @@ class CompSlider : Component {
             trackWidth,
             trackHeight,
             2f,
-            palette.getBackgroundColor(ColorType.NORMAL)
+            palette.getBackgroundColor(ColorType.NORMAL),
         )
         nvgInstance.drawGradientRoundedRect(
             getX(),
@@ -98,7 +101,7 @@ class CompSlider : Component {
             trackHeight,
             2f,
             accentColor.getColor1(),
-            accentColor.getColor2()
+            accentColor.getColor2(),
         )
 
         if (circle) {
@@ -109,7 +112,7 @@ class CompSlider : Component {
                 8f,
                 4f,
                 accentColor.getColor1(),
-                accentColor.getColor2()
+                accentColor.getColor2(),
             )
         }
 
@@ -117,21 +120,22 @@ class CompSlider : Component {
             nvgInstance.save()
             nvgInstance.translate(0f, 2 - draggingAnimation.getValue() * 2)
 
-            val display = if (setting.isInteger()) {
-                setting.getValue().toInt().toString()
-            } else {
-                String.format("%.2f", setting.getValue())
-            }
+            val display =
+                if (setting.isInteger()) {
+                    setting.getValue().toInt().toString()
+                } else {
+                    String.format("%.2f", setting.getValue())
+                }
             nvgInstance.drawText(
                 display,
                 getX() + animation.getValue() - nvgInstance.getTextWidth(display, 7f, Fonts.REGULAR) / 2,
                 getY() - 10,
                 palette.getFontColor(
                     ColorType.NORMAL,
-                    (draggingAnimation.getValue() * 255).toInt()
+                    (draggingAnimation.getValue() * 255).toInt(),
                 ),
                 7f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
 
             nvgInstance.restore()
@@ -140,7 +144,11 @@ class CompSlider : Component {
         super.draw(mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val trackWidth = getWidth()
         val trackHeight = getHeight()
         if (MouseUtils.isInside(
@@ -149,15 +157,20 @@ class CompSlider : Component {
                 getX() - 6,
                 getY() - 3,
                 trackWidth + 12,
-                trackHeight * trackHeight
-            ) && mouseButton == 0
+                trackHeight * trackHeight,
+            ) &&
+            mouseButton == 0
         ) {
             dragging = true
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         dragging = false
         super.mouseReleased(mouseX, mouseY, mouseButton)
     }

@@ -9,7 +9,7 @@ enum class ProjectileTrailType(
     nameTranslate: TranslateText,
     velocity: Float,
     translate: Float,
-    count: Int
+    count: Int,
 ) : PropertyEnum {
     BLACK_SMOKE(EnumParticleTypes.SMOKE_NORMAL, TranslateText.BLACK_SMOKE, 0.07f, 0.0f, 2),
     FIRE(EnumParticleTypes.FLAME, TranslateText.FIRE, 0.1f, 0.0f, 1),
@@ -20,7 +20,8 @@ enum class ProjectileTrailType(
     SLIME(EnumParticleTypes.SLIME, TranslateText.SLIME, 0.5f, 0.3f, 1),
     SPARK(EnumParticleTypes.FIREWORKS_SPARK, TranslateText.SPARK, 0.05f, 0.0f, 1),
     SWIRL(EnumParticleTypes.SPELL_MOB, TranslateText.SWIRL, 1.0f, 0.0f, 1),
-    WHITE_SMOKE(EnumParticleTypes.SNOW_SHOVEL, TranslateText.WHITE_SMOKE, 0.07f, 0.0f, 2);
+    WHITE_SMOKE(EnumParticleTypes.SNOW_SHOVEL, TranslateText.WHITE_SMOKE, 0.07f, 0.0f, 2),
+    ;
 
     val nameTranslate: TranslateText
     var particle: EnumParticleTypes?
@@ -36,9 +37,7 @@ enum class ProjectileTrailType(
         this.count = count
     }
 
-    override fun getTranslate(): TranslateText {
-        return nameTranslate
-    }
+    override fun getTranslate(): TranslateText = nameTranslate
 
     companion object {
         fun getTypeByKey(key: String?): ProjectileTrailType {
@@ -52,4 +51,3 @@ enum class ProjectileTrailType(
         }
     }
 }
-

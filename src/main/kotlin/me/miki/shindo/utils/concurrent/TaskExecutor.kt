@@ -11,7 +11,7 @@ object TaskExecutor {
     fun <T> runAsync(
         type: ThreadPoolType = ThreadPoolType.GENERAL,
         priority: TaskPriority = TaskPriority.NORMAL,
-        task: () -> T
+        task: () -> T,
     ): CompletableFuture<T> {
         val executor = ThreadPoolManager.getExecutor(type)
         val future = CompletableFuture.supplyAsync(Supplier { task() }, executor)
@@ -22,16 +22,14 @@ object TaskExecutor {
     fun <T> runAsync(
         type: ThreadPoolType,
         priority: TaskPriority,
-        task: Supplier<T>
-    ): CompletableFuture<T> {
-        return runAsync(type, priority) { task.get() }
-    }
+        task: Supplier<T>,
+    ): CompletableFuture<T> = runAsync(type, priority) { task.get() }
 
     @JvmStatic
     fun runAsync(
         type: ThreadPoolType = ThreadPoolType.GENERAL,
         priority: TaskPriority = TaskPriority.NORMAL,
-        task: Runnable
+        task: Runnable,
     ): CompletableFuture<Void> {
         val executor = ThreadPoolManager.getExecutor(type)
         return CompletableFuture.runAsync(task, executor)
@@ -43,7 +41,6 @@ object TaskExecutor {
         val mc = Minecraft.getMinecraft()
 
         if (mc.isCallingFromMinecraftThread) {
-
             try {
                 task.run()
                 future.complete(null)
@@ -51,7 +48,6 @@ object TaskExecutor {
                 future.completeExceptionally(e)
             }
         } else {
-
             mc.addScheduledTask {
                 try {
                     task.run()
@@ -71,14 +67,12 @@ object TaskExecutor {
         val mc = Minecraft.getMinecraft()
 
         if (mc.isCallingFromMinecraftThread) {
-
             try {
                 future.complete(task())
             } catch (e: Exception) {
                 future.completeExceptionally(e)
             }
         } else {
-
             mc.addScheduledTask {
                 try {
                     future.complete(task())
@@ -96,7 +90,7 @@ object TaskExecutor {
         type: ThreadPoolType = ThreadPoolType.SCHEDULED,
         delay: Long,
         unit: TimeUnit,
-        task: Runnable
+        task: Runnable,
     ): ScheduledFuture<*> {
         val executor = ThreadPoolManager.getScheduledExecutor()
         return executor.schedule(task, delay, unit)
@@ -108,28 +102,25 @@ object TaskExecutor {
         initialDelay: Long,
         period: Long,
         unit: TimeUnit,
-        task: Runnable
+        task: Runnable,
     ): ScheduledFuture<*> {
         val executor = ThreadPoolManager.getScheduledExecutor()
         return executor.scheduleAtFixedRate(task, initialDelay, period, unit)
     }
 }
 
-fun <T> CompletableFuture<T>.thenOnMainThread(action: (T) -> Unit): CompletableFuture<T> {
-    return this.thenCompose { result ->
+fun <T> CompletableFuture<T>.thenOnMainThread(action: (T) -> Unit): CompletableFuture<T> =
+    this.thenCompose { result ->
         TaskExecutor.runOnMainThread { action(result) }.thenApply { result }
     }
-}
 
-fun <T> CompletableFuture<T>.whenCompleteOnMainThread(action: (T?, Throwable?) -> Unit): CompletableFuture<T> {
-    return this.whenComplete { result, exception ->
+fun <T> CompletableFuture<T>.whenCompleteOnMainThread(action: (T?, Throwable?) -> Unit): CompletableFuture<T> =
+    this.whenComplete { result, exception ->
         TaskExecutor.runOnMainThread { action(result, exception) }
     }
-}
 
-fun <T> CompletableFuture<T>.onErrorOnMainThread(action: (Throwable) -> Unit): CompletableFuture<T> {
-    return this.exceptionally { exception ->
+fun <T> CompletableFuture<T>.onErrorOnMainThread(action: (Throwable) -> Unit): CompletableFuture<T> =
+    this.exceptionally { exception ->
         TaskExecutor.runOnMainThread { action(exception) }
         throw exception
     }
-}

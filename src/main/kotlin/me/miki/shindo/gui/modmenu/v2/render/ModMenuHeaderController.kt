@@ -13,8 +13,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 class ModMenuHeaderController {
-
-    data class HeaderRenderResult(val contentOffsetY: Int)
+    data class HeaderRenderResult(
+        val contentOffsetY: Int,
+    )
 
     fun draw(
         nvg: NanoVGManager,
@@ -27,7 +28,7 @@ class ModMenuHeaderController {
         mouseY: Int,
         partialTicks: Float,
         searchBox: CompSearchBox,
-        folderButton: CompIconButton
+        folderButton: CompIconButton,
     ): HeaderRenderResult {
         val compact = menuWidth <= 448
 
@@ -51,7 +52,7 @@ class ModMenuHeaderController {
         category: Category,
         menuX: Int,
         menuY: Int,
-        compact: Boolean
+        compact: Boolean,
     ) {
         val progress = category.getTextAnimation().getValue()
         val titleSize = if (compact) ModMenuStyle.CATEGORY_TITLE_SIZE_COMPACT else ModMenuStyle.CATEGORY_TITLE_SIZE
@@ -64,7 +65,7 @@ class ModMenuHeaderController {
             menuY + ModMenuStyle.CATEGORY_TITLE_Y,
             palette.getFontColor(ColorType.DARK, (progress * 255f).toInt().coerceIn(0, 255)),
             titleSize,
-            Fonts.SEMIBOLD
+            Fonts.SEMIBOLD,
         )
         nvg.restore()
     }
@@ -76,7 +77,7 @@ class ModMenuHeaderController {
         menuWidth: Int,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         val searchWidth = resolveSearchWidth(menuWidth.toFloat())
         searchBox.setPosition(menuX + menuWidth - searchWidth - 14f, menuY + 6.5f, searchWidth, 18f)
@@ -91,21 +92,24 @@ class ModMenuHeaderController {
         menuY: Int,
         mouseX: Int,
         mouseY: Int,
-        partialTicks: Float
+        partialTicks: Float,
     ) {
         if (category !is CosmeticsCategory || !category.shouldShowCustomCapeFolder()) {
             folderButton.setVisible(false)
             return
         }
 
-        val buttonX = if (category.isShowSearchBox()) searchBox.getX() - 22f
-        else menuX + category.getWidth() - 36f
+        val buttonX =
+            if (category.isShowSearchBox()) {
+                searchBox.getX() - 22f
+            } else {
+                menuX + category.getWidth() - 36f
+            }
 
         folderButton.setVisible(true)
         folderButton.setBounds(buttonX, menuY + 6.5f, 18f, 18f)
         folderButton.draw(mouseX, mouseY, partialTicks)
     }
 
-    private fun resolveSearchWidth(menuWidth: Float): Float =
-        max(108f, min(168f, menuWidth * 0.33f))
+    private fun resolveSearchWidth(menuWidth: Float): Float = max(108f, min(168f, menuWidth * 0.33f))
 }

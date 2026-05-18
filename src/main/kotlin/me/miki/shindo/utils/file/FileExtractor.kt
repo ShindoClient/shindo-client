@@ -9,8 +9,10 @@ import java.util.*
 import java.util.zip.ZipInputStream
 
 object FileExtractor {
-
-    private fun un7zip(sevenZFile: File, destDir: File) {
+    private fun un7zip(
+        sevenZFile: File,
+        destDir: File,
+    ) {
         if (!destDir.exists()) destDir.mkdirs()
 
         try {
@@ -39,7 +41,10 @@ object FileExtractor {
     }
 
     @JvmStatic
-    fun unzip(file: File, dest: File) {
+    fun unzip(
+        file: File,
+        dest: File,
+    ) {
         try {
             ZipInputStream(Files.newInputStream(file.toPath())).use { zis ->
                 var ze = zis.nextEntry
@@ -65,7 +70,10 @@ object FileExtractor {
     }
 
     @JvmStatic
-    fun extract(file: File, dest: File) {
+    fun extract(
+        file: File,
+        dest: File,
+    ) {
         val name = file.name.lowercase(Locale.ROOT)
         try {
             when {
@@ -78,5 +86,3 @@ object FileExtractor {
         }
     }
 }
-
-

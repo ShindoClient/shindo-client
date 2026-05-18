@@ -9,12 +9,13 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class ItemPhysicsMod : Mod(
-    TranslateText.ITEM_PHYSICS,
-    TranslateText.ITEM_PHYSICS_DESCRIPTION,
-    ModCategory.RENDER,
-    LegacyIcon.MOD_ITEM_PHYSICS
-) {
+class ItemPhysicsMod :
+    Mod(
+        TranslateText.ITEM_PHYSICS,
+        TranslateText.ITEM_PHYSICS_DESCRIPTION,
+        ModCategory.RENDER,
+        LegacyIcon.MOD_ITEM_PHYSICS,
+    ) {
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SPEED, min = 0.5, max = 4.0, current = 1.0)
     @JvmField
     var speedSetting = 1.0
@@ -39,7 +40,3 @@ class ItemPhysicsMod : Mod(
         var instance: ItemPhysicsMod? = null
     }
 }
-
-
-
-

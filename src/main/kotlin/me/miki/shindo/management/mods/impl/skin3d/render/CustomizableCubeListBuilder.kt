@@ -9,7 +9,10 @@ class CustomizableCubeListBuilder {
     private var yTexOffs = 0
     private var mirror = false
 
-    fun texOffs(i: Int, j: Int): CustomizableCubeListBuilder {
+    fun texOffs(
+        i: Int,
+        j: Int,
+    ): CustomizableCubeListBuilder {
         this.xTexOffs = i
         this.yTexOffs = j
         return this
@@ -25,7 +28,7 @@ class CustomizableCubeListBuilder {
         y: Float,
         z: Float,
         pixelSize: Float,
-        hide: Array<SkinDirection?>?
+        hide: Array<SkinDirection?>?,
     ): CustomizableCubeListBuilder {
         val textureSize = 64
         this.cubes.add(
@@ -44,16 +47,14 @@ class CustomizableCubeListBuilder {
                 this.mirror,
                 textureSize.toFloat(),
                 textureSize.toFloat(),
-                hide
-            )
+                hide,
+            ),
         )
 
         return this
     }
 
     companion object {
-        fun create(): CustomizableCubeListBuilder {
-            return CustomizableCubeListBuilder()
-        }
+        fun create(): CustomizableCubeListBuilder = CustomizableCubeListBuilder()
     }
 }

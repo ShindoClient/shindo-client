@@ -1,7 +1,6 @@
 package me.miki.shindo.utils.helper
 
 object ResolutionHelper {
-
     @JvmStatic
     var currentScaleOverride: Int = -1
 

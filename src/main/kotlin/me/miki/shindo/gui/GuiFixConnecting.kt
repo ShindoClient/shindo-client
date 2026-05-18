@@ -21,7 +21,6 @@ import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicInteger
 
 class GuiFixConnecting : GuiScreen {
-
     private val previousGuiScreen: GuiScreen
     private var networkManager: NetworkManager? = null
     private var cancel = false
@@ -57,11 +56,12 @@ class GuiFixConnecting : GuiScreen {
                     }
 
                     inetAddress = resolveAddress(ip, port)
-                    networkManager = NetworkManager.createNetworkManagerAndConnect(
-                        inetAddress,
-                        port,
-                        mc.gameSettings.isUsingNativeTransport
-                    )
+                    networkManager =
+                        NetworkManager.createNetworkManagerAndConnect(
+                            inetAddress,
+                            port,
+                            mc.gameSettings.isUsingNativeTransport,
+                        )
                     networkManager?.netHandler = NetHandlerLoginClient(networkManager, mc, previousGuiScreen)
                     networkManager?.sendPacket(C00Handshake(47, ip, port, EnumConnectionState.LOGIN))
                     networkManager?.sendPacket(C00PacketLoginStart(mc.session.profile))
@@ -75,8 +75,8 @@ class GuiFixConnecting : GuiScreen {
                         GuiDisconnected(
                             previousGuiScreen,
                             "connect.failed",
-                            ChatComponentTranslation("disconnect.genericReason", "Unknown host")
-                        )
+                            ChatComponentTranslation("disconnect.genericReason", "Unknown host"),
+                        ),
                     )
                 } catch (exception: Exception) {
                     if (cancel) {
@@ -95,15 +95,18 @@ class GuiFixConnecting : GuiScreen {
                         GuiDisconnected(
                             previousGuiScreen,
                             "connect.failed",
-                            ChatComponentTranslation("disconnect.genericReason", reason)
-                        )
+                            ChatComponentTranslation("disconnect.genericReason", reason),
+                        ),
                     )
                 }
             }
         }.start()
     }
 
-    private fun connect(ip: String, port: Int) {
+    private fun connect(
+        ip: String,
+        port: Int,
+    ) {
         EventJoinServer(ip).call()
 
         logger.info("Connecting to $ip, $port")
@@ -117,11 +120,12 @@ class GuiFixConnecting : GuiScreen {
                     }
 
                     inetAddress = resolveAddress(ip, port)
-                    networkManager = NetworkManager.createNetworkManagerAndConnect(
-                        inetAddress,
-                        port,
-                        mc.gameSettings.isUsingNativeTransport
-                    )
+                    networkManager =
+                        NetworkManager.createNetworkManagerAndConnect(
+                            inetAddress,
+                            port,
+                            mc.gameSettings.isUsingNativeTransport,
+                        )
                     networkManager?.netHandler = NetHandlerLoginClient(networkManager, mc, previousGuiScreen)
                     networkManager?.sendPacket(C00Handshake(47, ip, port, EnumConnectionState.LOGIN))
                     networkManager?.sendPacket(C00PacketLoginStart(mc.session.profile))
@@ -135,8 +139,8 @@ class GuiFixConnecting : GuiScreen {
                         GuiDisconnected(
                             previousGuiScreen,
                             "connect.failed",
-                            ChatComponentTranslation("disconnect.genericReason", "Unknown host")
-                        )
+                            ChatComponentTranslation("disconnect.genericReason", "Unknown host"),
+                        ),
                     )
                 } catch (exception: Exception) {
                     if (cancel) {
@@ -155,8 +159,8 @@ class GuiFixConnecting : GuiScreen {
                         GuiDisconnected(
                             previousGuiScreen,
                             "connect.failed",
-                            ChatComponentTranslation("disconnect.genericReason", reason)
-                        )
+                            ChatComponentTranslation("disconnect.genericReason", reason),
+                        ),
                     )
                 }
             }
@@ -173,7 +177,10 @@ class GuiFixConnecting : GuiScreen {
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
     }
 
     override fun initGui() {
@@ -193,7 +200,11 @@ class GuiFixConnecting : GuiScreen {
         }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         drawDefaultBackground()
 
         if (networkManager == null) {
@@ -204,7 +215,7 @@ class GuiFixConnecting : GuiScreen {
                 I18n.format("connect.authorizing"),
                 width / 2,
                 height / 2 - 50,
-                16777215
+                16777215,
             )
         }
 
@@ -212,9 +223,10 @@ class GuiFixConnecting : GuiScreen {
     }
 
     @Throws(UnknownHostException::class)
-    private fun resolveAddress(host: String, port: Int): InetAddress {
-        return InetAddress.getByName(host)
-    }
+    private fun resolveAddress(
+        host: String,
+        port: Int,
+    ): InetAddress = InetAddress.getByName(host)
 
     companion object {
         private val CONNECTION_ID = AtomicInteger(0)

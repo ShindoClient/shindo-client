@@ -4,9 +4,7 @@ import me.miki.extensions.ui.animation.getValueI
 import me.miki.extensions.ui.animation.setValue
 import java.awt.Color
 
-
 class ColorAnimation {
-
     private val animation = arrayOfNulls<SimpleAnimation>(3)
 
     init {
@@ -15,7 +13,10 @@ class ColorAnimation {
         }
     }
 
-    fun getColor(color: Color, speed: Int): Color {
+    fun getColor(
+        color: Color,
+        speed: Int,
+    ): Color {
         animation[0]!!.setAnimation(color.red.toFloat(), speed.toDouble())
         animation[1]!!.setAnimation(color.green.toFloat(), speed.toDouble())
         animation[2]!!.setAnimation(color.blue.toFloat(), speed.toDouble())
@@ -24,13 +25,11 @@ class ColorAnimation {
             animation[0]!!.getValueI(),
             animation[1]!!.getValueI(),
             animation[2]!!.getValueI(),
-            color.alpha
+            color.alpha,
         )
     }
 
-    fun getColor(color: Color): Color {
-        return getColor(color, 12)
-    }
+    fun getColor(color: Color): Color = getColor(color, 12)
 
     fun setColor(color: Color) {
         animation[0]!!.setValue(color.red)

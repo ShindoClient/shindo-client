@@ -11,8 +11,9 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.util.*
 
-class ConfigHandler(private val configFile: File) {
-
+class ConfigHandler(
+    private val configFile: File,
+) {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     private val optionsInternal = Options()
 
@@ -91,15 +92,16 @@ class ConfigHandler(private val configFile: File) {
                 val json = JsonObject()
                 json.add(ENABLED_PACKS_KEY, array)
 
-                Files.newBufferedWriter(
-                    path,
-                    StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE
-                ).use { writer ->
-                    gson.toJson(json, writer)
-                }
+                Files
+                    .newBufferedWriter(
+                        path,
+                        StandardCharsets.UTF_8,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.WRITE,
+                    ).use { writer ->
+                        gson.toJson(json, writer)
+                    }
             } catch (exception: IOException) {
                 ShindoLogger.error("Failed to save RPO configuration", exception)
             }
@@ -110,4 +112,3 @@ class ConfigHandler(private val configFile: File) {
         private const val ENABLED_PACKS_KEY = "enabledPacks"
     }
 }
-

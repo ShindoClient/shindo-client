@@ -13,8 +13,7 @@ import me.miki.shindo.utils.TimerUtils
 import org.lwjgl.input.Keyboard
 import java.text.DecimalFormat
 
-class StopwatchMod :
-    SimpleHUDMod(TranslateText.STOPWATCH, TranslateText.STOPWATCH_DESCRIPTION, LegacyIcon.MOD_STOPWATCH) {
+class StopwatchMod : SimpleHUDMod(TranslateText.STOPWATCH, TranslateText.STOPWATCH_DESCRIPTION, LegacyIcon.MOD_STOPWATCH) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -34,8 +33,14 @@ class StopwatchMod :
     @EventTarget
     fun onTick(event: EventTick?) {
         when (pressCount) {
-            0 -> timer!!.reset()
-            1 -> currentTime = (timer!!.elapsedTime / 1000f)
+            0 -> {
+                timer!!.reset()
+            }
+
+            1 -> {
+                currentTime = (timer!!.elapsedTime / 1000f)
+            }
+
             3 -> {
                 timer!!.reset()
                 currentTime = 0f
@@ -51,13 +56,9 @@ class StopwatchMod :
         }
     }
 
-    override fun getText(): String {
-        return timeFormat.format(currentTime.toDouble()) + " s"
-    }
+    override fun getText(): String = timeFormat.format(currentTime.toDouble()) + " s"
 
-    override fun getIcon(): String? {
-        return if (iconSetting) LegacyIcon.WATCH else null
-    }
+    override fun getIcon(): String? = if (iconSetting) LegacyIcon.WATCH else null
 
     override fun onEnable() {
         super.onEnable()
@@ -70,5 +71,3 @@ class StopwatchMod :
         currentTime = 0f
     }
 }
-
-

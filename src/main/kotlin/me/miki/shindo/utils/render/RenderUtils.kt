@@ -14,11 +14,15 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object RenderUtils {
-
     private val mc: Minecraft = Minecraft.getMinecraft()
 
     @JvmStatic
-    fun connectPoints(xOne: Float, yOne: Float, xTwo: Float, yTwo: Float) {
+    fun connectPoints(
+        xOne: Float,
+        yOne: Float,
+        xTwo: Float,
+        yTwo: Float,
+    ) {
         GL11.glPushMatrix()
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.8f)
@@ -37,7 +41,12 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun drawCircle(x: Float, y: Float, radius: Float, color: Int) {
+    fun drawCircle(
+        x: Float,
+        y: Float,
+        radius: Float,
+        color: Int,
+    ) {
         val alpha = (color shr 24 and 0xFF) / 255.0f
         val red = (color shr 16 and 0xFF) / 255.0f
         val green = (color shr 8 and 0xFF) / 255.0f
@@ -55,7 +64,7 @@ object RenderUtils {
         for (i in 0..360) {
             GL11.glVertex2d(
                 x + sin(i * Math.PI / 180.0) * radius,
-                y + cos(i * Math.PI / 180.0) * radius
+                y + cos(i * Math.PI / 180.0) * radius,
             )
         }
 
@@ -67,7 +76,11 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun drawItemStack(stack: ItemStack, x: Int, y: Int) {
+    fun drawItemStack(
+        stack: ItemStack,
+        x: Int,
+        y: Int,
+    ) {
         GlStateManager.pushMatrix()
         RenderHelper.enableGUIStandardItemLighting()
         GlStateManager.disableAlpha()
@@ -107,26 +120,37 @@ object RenderUtils {
         width: Double,
         height: Double,
         tileWidth: Float,
-        tileHeight: Float
+        tileHeight: Float,
     ) {
         val f = 1.0f / tileWidth
         val f1 = 1.0f / tileHeight
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x, y + height, 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
+        worldrenderer
+            .pos(x, y + height, 0.0)
+            .tex((u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
             .endVertex()
-        worldrenderer.pos(x + width, y + height, 0.0)
+        worldrenderer
+            .pos(x + width, y + height, 0.0)
             .tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble())
             .endVertex()
-        worldrenderer.pos(x + width, y, 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble())
+        worldrenderer
+            .pos(x + width, y, 0.0)
+            .tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble())
             .endVertex()
         worldrenderer.pos(x, y, 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
 
     @JvmStatic
-    fun drawRect(x: Float, y: Float, width: Float, height: Float, color: Color) {
+    fun drawRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        color: Color,
+    ) {
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glBlendFunc(770, 771)
@@ -151,7 +175,14 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun drawOutline(x: Float, y: Float, width: Float, height: Float, lineWidth: Float, color: Color) {
+    fun drawOutline(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        lineWidth: Float,
+        color: Color,
+    ) {
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glBlendFunc(770, 771)
@@ -181,27 +212,45 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun drawTexturedModalRect(x: Int, y: Int, textureX: Int, textureY: Int, width: Int, height: Int) {
+    fun drawTexturedModalRect(
+        x: Int,
+        y: Int,
+        textureX: Int,
+        textureY: Int,
+        width: Int,
+        height: Int,
+    ) {
         val f = 0.00390625f
         val f1 = 0.00390625f
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0)
-            .tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
+        worldrenderer
+            .pos(x.toDouble(), (y + height).toDouble(), 0.0)
+            .tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble())
+            .endVertex()
+        worldrenderer
+            .pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
             .tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble())
             .endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0)
-            .tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0)
+        worldrenderer
+            .pos((x + width).toDouble(), y.toDouble(), 0.0)
+            .tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble())
+            .endVertex()
+        worldrenderer
+            .pos(x.toDouble(), y.toDouble(), 0.0)
             .tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble())
             .endVertex()
         tessellator.draw()
     }
 
     @JvmStatic
-    fun drawQuads(x: Float, y: Float, width: Float, height: Float) {
+    fun drawQuads(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+    ) {
         GL11.glBegin(GL11.GL_QUADS)
         GL11.glTexCoord2f(0f, 0f)
         GL11.glVertex2f(x, y)
@@ -223,18 +272,23 @@ object RenderUtils {
         width: Int,
         height: Int,
         textureWidth: Float,
-        textureHeight: Float
+        textureHeight: Float,
     ) {
         val f = 1.0f / textureWidth
         val f1 = 1.0f / textureHeight
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0)
-            .tex((u * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
-            .tex(((u + width.toFloat()) * f).toDouble(), ((v + height.toFloat()) * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), 0.0)
+        worldrenderer
+            .pos(x.toDouble(), (y + height).toDouble(), 0.0)
+            .tex((u * f).toDouble(), ((v + height.toFloat()) * f1).toDouble())
+            .endVertex()
+        worldrenderer
+            .pos((x + width).toDouble(), (y + height).toDouble(), 0.0)
+            .tex(((u + width.toFloat()) * f).toDouble(), ((v + height.toFloat()) * f1).toDouble())
+            .endVertex()
+        worldrenderer
+            .pos((x + width).toDouble(), y.toDouble(), 0.0)
             .tex(((u + width.toFloat()) * f).toDouble(), (v * f1).toDouble())
             .endVertex()
         worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
@@ -242,12 +296,23 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun fill(x1: Int, y1: Int, x2: Int, y2: Int, c: Color) {
+    fun fill(
+        x1: Int,
+        y1: Int,
+        x2: Int,
+        y2: Int,
+        c: Color,
+    ) {
         drawRect(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), c)
     }
 
     @JvmStatic
-    fun hLine(startX: Int, endX: Int, y: Int, c: Color) {
+    fun hLine(
+        startX: Int,
+        endX: Int,
+        y: Int,
+        c: Color,
+    ) {
         var sX = startX
         var eX = endX
         if (eX < sX) {
@@ -259,7 +324,12 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun vLine(x: Int, startY: Int, endY: Int, c: Color) {
+    fun vLine(
+        x: Int,
+        startY: Int,
+        endY: Int,
+        c: Color,
+    ) {
         var sY = startY
         var eY = endY
         if (eY < sY) {
@@ -271,7 +341,14 @@ object RenderUtils {
     }
 
     @JvmStatic
-    fun gradientBar(x1: Int, y1: Int, x2: Int, y2: Int, a: Color, b: Color) {
+    fun gradientBar(
+        x1: Int,
+        y1: Int,
+        x2: Int,
+        y2: Int,
+        a: Color,
+        b: Color,
+    ) {
         val t = Tessellator.getInstance()
         val wr: WorldRenderer = t.worldRenderer
         GL11.glDisable(GL11.GL_TEXTURE_2D)

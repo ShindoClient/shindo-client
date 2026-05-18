@@ -9,7 +9,10 @@ import me.miki.shindo.management.file.FileManager
  * External JAR addons via client-api are disabled.
  */
 object AddonLoader {
-    fun loadExternalAddons(fileManager: FileManager, addonManager: AddonManager) {
+    fun loadExternalAddons(
+        fileManager: FileManager,
+        addonManager: AddonManager,
+    ) {
         ShindoLogger.info("[ADDON] External addon loading disabled (client-api reverted).")
     }
 }

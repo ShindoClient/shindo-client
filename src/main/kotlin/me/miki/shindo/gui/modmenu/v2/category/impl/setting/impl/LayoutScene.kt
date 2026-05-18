@@ -18,13 +18,14 @@ import me.miki.shindo.utils.ColorUtils
  * - an index list with the 4 area scenes;
  * - a focused area scene rendered in the same viewport with animated transition.
  */
-class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
-    parentCategory,
-    TranslateText.SETTINGS_LAYOUT_TITLE,
-    TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-    LegacyIcon.GRID
-) {
-
+class LayoutScene(
+    parentCategory: SettingsCategory,
+) : SettingScene(
+        parentCategory,
+        TranslateText.SETTINGS_LAYOUT_TITLE,
+        TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
+        LegacyIcon.GRID,
+    ) {
     private val controllers = ArrayList<LayoutAreaController>()
     private val stateCoordinator = ModMenuSlideTransitionCoordinator()
     private val listController = LayoutSceneListController()
@@ -55,7 +56,11 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
         }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val instance = Shindo.getInstance()
         val nvg = instance.nanoVGManager ?: return
         val palette = instance.getColorManager().getPalette()
@@ -80,7 +85,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             width = baseWidth,
             height = baseHeight,
             translateX = -(baseWidth - slide),
-            translateY = 0f
+            translateY = 0f,
         ) {
             nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
             nvg.drawRoundedRect(
@@ -89,7 +94,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
                 baseWidth - 28f,
                 baseHeight - 20f,
                 12f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176)
+                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176),
             )
             listController.drawList(
                 controllers = controllers,
@@ -100,7 +105,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
                 baseX = baseX,
                 baseY = baseY,
                 baseWidth = baseWidth,
-                baseHeight = baseHeight
+                baseHeight = baseHeight,
             )
         }
 
@@ -111,17 +116,21 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             width = baseWidth,
             height = baseHeight,
             translateX = slide,
-            translateY = 0f
+            translateY = 0f,
         ) {
             (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.drawScreen(
                 mouseX,
                 mouseY,
-                partialTicks
+                partialTicks,
             )
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         val baseX = x.toFloat()
         val baseY = contentY.toFloat()
         val baseWidth = width.toFloat()
@@ -139,7 +148,7 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
             (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseClicked(
                 mouseX,
                 mouseY,
-                mouseButton
+                mouseButton,
             )
         }
 
@@ -155,17 +164,24 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         if (stateCoordinator.isSceneInteractive()) {
             (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene?.mouseReleased(
                 mouseX,
                 mouseY,
-                mouseButton
+                mouseButton,
             )
         }
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun keyTyped(
+        typedChar: Char,
+        keyCode: Int,
+    ) {
         if (stateCoordinator.isSceneVisible() && inputController.shouldCloseByEscape(keyCode)) {
             stateCoordinator.close()
             return
@@ -178,14 +194,10 @@ class LayoutScene(parentCategory: SettingsCategory) : SettingScene(
     /**
      * Compatibility helper used by [SettingsCategory] to control Escape behavior.
      */
-    fun isSubSceneOpen(): Boolean {
-        return stateCoordinator.isSceneVisible()
-    }
+    fun isSubSceneOpen(): Boolean = stateCoordinator.isSceneVisible()
 
     /**
      * Compatibility helper used by [SettingsCategory] to show active sub-scene metadata.
      */
-    fun getActiveSubScene(): LayoutAreaScene? {
-        return (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene
-    }
+    fun getActiveSubScene(): LayoutAreaScene? = (stateCoordinator.getActiveScene() as? LayoutAreaController)?.scene
 }

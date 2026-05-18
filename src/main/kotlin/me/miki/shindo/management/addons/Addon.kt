@@ -12,9 +12,8 @@ open class Addon(
     private val descriptionText: String,
     private val descriptionTranslate: TranslateText? = null,
     val icon: String,
-    val type: AddonType
+    val type: AddonType,
 ) : ConfigOwner {
-
     /** true para addons built-in (ex: RPO), false para addons externos (JAR). */
     open val isBuiltIn: Boolean = true
 
@@ -32,9 +31,7 @@ open class Addon(
         setup()
     }
 
-    fun getDescription(): String {
-        return descriptionTranslate?.getText() ?: descriptionText
-    }
+    fun getDescription(): String = descriptionTranslate?.getText() ?: descriptionText
 
     open fun setup() {
     }
@@ -53,7 +50,10 @@ open class Addon(
         setToggled(!toggled, true)
     }
 
-    fun setToggled(toggled: Boolean, sound: Boolean) {
+    fun setToggled(
+        toggled: Boolean,
+        sound: Boolean,
+    ) {
         // Não permite habilitar addons hidden
         if (toggled && hide) {
             this.toggled = false
@@ -70,13 +70,9 @@ open class Addon(
         }
     }
 
-    fun isToggled(): Boolean {
-        return toggled
-    }
+    fun isToggled(): Boolean = toggled
 
-    fun isHide(): Boolean {
-        return hide
-    }
+    fun isHide(): Boolean = hide
 
     fun setHide(hide: Boolean) {
         this.hide = hide
@@ -86,13 +82,7 @@ open class Addon(
         }
     }
 
-    override fun getConfigId(): String {
-        return name.lowercase(Locale.ROOT).replace(' ', '_')
-    }
+    override fun getConfigId(): String = name.lowercase(Locale.ROOT).replace(' ', '_')
 
-    override fun getDisplayName(): String {
-        return name
-    }
+    override fun getDisplayName(): String = name
 }
-
-

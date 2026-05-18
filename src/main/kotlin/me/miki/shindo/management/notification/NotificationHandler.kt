@@ -4,8 +4,9 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRenderNotification
 import java.util.concurrent.LinkedBlockingQueue
 
-class NotificationHandler(private val notifications: LinkedBlockingQueue<Notification>) {
-
+class NotificationHandler(
+    private val notifications: LinkedBlockingQueue<Notification>,
+) {
     private var currentNotification: Notification? = null
 
     @EventTarget

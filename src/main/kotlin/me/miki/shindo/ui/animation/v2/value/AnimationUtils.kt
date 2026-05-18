@@ -3,8 +3,12 @@ package me.miki.shindo.ui.animation.v2.value
 import kotlin.math.abs
 
 object AnimationUtils {
-
-    fun calculateCompensation(target: Float, current: Float, speed: Double, delta: Long): Float {
+    fun calculateCompensation(
+        target: Float,
+        current: Float,
+        speed: Double,
+        delta: Long,
+    ): Float {
         var currentVar = current
         val diff = currentVar - target
         val add = delta * (speed / 50)

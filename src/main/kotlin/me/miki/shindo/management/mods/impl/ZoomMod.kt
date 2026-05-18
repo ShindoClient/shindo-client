@@ -28,7 +28,7 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
         min = 5.0,
         max = 20.0,
         step = 1.0,
-        current = 14.0
+        current = 14.0,
     )
     private val zoomSpeedSetting = 14.0
 
@@ -38,7 +38,7 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
         min = 2.0,
         max = 15.0,
         step = 1.0,
-        current = 4.0
+        current = 4.0,
     )
     private val factorSetting = 4.0
 
@@ -106,7 +106,3 @@ class ZoomMod : Mod(TranslateText.ZOOM, TranslateText.ZOOM_DESCRIPTION, ModCateg
         currentFactor = factor
     }
 }
-
-
-
-

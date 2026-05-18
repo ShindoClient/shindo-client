@@ -10,14 +10,14 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 open class RomanizationManager {
-
     private val cache = ConcurrentHashMap<String, CachedRomanization>()
-    private val executorService = Executors.newSingleThreadExecutor { r ->
-        Thread(r).apply {
-            name = "Romanization-Service"
-            isDaemon = true
+    private val executorService =
+        Executors.newSingleThreadExecutor { r ->
+            Thread(r).apply {
+                name = "Romanization-Service"
+                isDaemon = true
+            }
         }
-    }
 
     fun containsJapaneseCharacters(text: String?): Boolean {
         if (text.isNullOrEmpty()) return false
@@ -32,7 +32,6 @@ open class RomanizationManager {
         return false
     }
 
-
     open fun romanizeText(text: String?): CompletableFuture<String?>? {
         if (text == null || text.isEmpty() || !containsJapaneseCharacters(text)) {
             return CompletableFuture.completedFuture(text)
@@ -41,19 +40,24 @@ open class RomanizationManager {
         val cached = cache[text]
         return if (cached != null && !cached.isExpired()) {
             CompletableFuture.completedFuture<String>(cached.romanized)
-        } else CompletableFuture.supplyAsync(Supplier<String> supplyAsync@{
-            try {
-                val results = Transliterator.transliterate(text)
-                if (results != null && results.isNotEmpty()) {
-                    val romanized = results[0]
-                    cache[text] = CachedRomanization(romanized)
-                    return@supplyAsync romanized
-                }
-            } catch (e: Exception) {
-                error("Error romanizing text: " + e.message)
-            }
-            text
-        }, executorService)
+        } else {
+            CompletableFuture.supplyAsync(
+                Supplier<String> supplyAsync@{
+                    try {
+                        val results = Transliterator.transliterate(text)
+                        if (results != null && results.isNotEmpty()) {
+                            val romanized = results[0]
+                            cache[text] = CachedRomanization(romanized)
+                            return@supplyAsync romanized
+                        }
+                    } catch (e: Exception) {
+                        error("Error romanizing text: " + e.message)
+                    }
+                    text
+                },
+                executorService,
+            )
+        }
     }
 
     fun shutdown() {

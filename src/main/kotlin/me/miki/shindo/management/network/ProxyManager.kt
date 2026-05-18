@@ -8,16 +8,13 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Gerenciador de proxies DNS customizados
  */
 class ProxyManager {
-
     private val customProxies = CopyOnWriteArrayList<CustomProxy>()
     private var activeProxyId: String? = null
 
     /**
      * Obtém todos os proxies customizados
      */
-    fun getCustomProxies(): List<CustomProxy> {
-        return customProxies.toList()
-    }
+    fun getCustomProxies(): List<CustomProxy> = customProxies.toList()
 
     /**
      * Adiciona um novo proxy customizado
@@ -63,7 +60,12 @@ class ProxyManager {
     /**
      * Atualiza um proxy existente
      */
-    fun updateProxy(proxyId: String, name: String, primaryDNS: String, secondaryDNS: String?): Boolean {
+    fun updateProxy(
+        proxyId: String,
+        name: String,
+        primaryDNS: String,
+        secondaryDNS: String?,
+    ): Boolean {
         val proxy = customProxies.find { it.id == proxyId }
         if (proxy == null) {
             ShindoLogger.warn("[ProxyManager] Proxy with ID '$proxyId' not found")
@@ -107,16 +109,12 @@ class ProxyManager {
     /**
      * Obtém um proxy por ID
      */
-    fun getProxyById(proxyId: String): CustomProxy? {
-        return customProxies.find { it.id == proxyId }
-    }
+    fun getProxyById(proxyId: String): CustomProxy? = customProxies.find { it.id == proxyId }
 
     /**
      * Obtém o proxy ativo
      */
-    fun getActiveProxy(): CustomProxy? {
-        return activeProxyId?.let { id -> customProxies.find { it.id == id } }
-    }
+    fun getActiveProxy(): CustomProxy? = activeProxyId?.let { id -> customProxies.find { it.id == id } }
 
     /**
      * Define o proxy ativo
@@ -128,16 +126,17 @@ class ProxyManager {
         }
 
         // Ativa o novo proxy se fornecido
-        activeProxyId = proxyId?.let { newId ->
-            val proxy = customProxies.find { it.id == newId }
-            if (proxy != null) {
-                proxy.enable()
-                newId
-            } else {
-                ShindoLogger.warn("[ProxyManager] Proxy with ID '$newId' not found")
-                null
+        activeProxyId =
+            proxyId?.let { newId ->
+                val proxy = customProxies.find { it.id == newId }
+                if (proxy != null) {
+                    proxy.enable()
+                    newId
+                } else {
+                    ShindoLogger.warn("[ProxyManager] Proxy with ID '$newId' not found")
+                    null
+                }
             }
-        }
 
         return true
     }
@@ -145,9 +144,7 @@ class ProxyManager {
     /**
      * Verifica se há um proxy ativo
      */
-    fun hasActiveProxy(): Boolean {
-        return activeProxyId != null && getActiveProxy()?.isActive() == true
-    }
+    fun hasActiveProxy(): Boolean = activeProxyId != null && getActiveProxy()?.isActive() == true
 
     /**
      * Limpa todos os proxies customizados

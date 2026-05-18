@@ -19,8 +19,9 @@ import me.miki.shindo.utils.render.BlurUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 
-class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
-
+class ThemeSelectScene(
+    parent: GuiShindoMainMenu,
+) : MainMenuScene(parent) {
     private val screenAlpha = ScreenAlpha()
     private val scroll = Scroll()
     private var x = 0
@@ -30,7 +31,11 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
     private var fadeAnimation: Animation? = null
     private var currentTheme: Theme = Theme.DARK
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
         val sr = ScaledResolution(mc)
 
         width = 280
@@ -89,7 +94,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 6f,
                 1f,
                 currentColor.getColor1(),
-                currentColor.getColor2()
+                currentColor.getColor2(),
             )
             nvg.restore()
             nvg.drawCenteredText(
@@ -98,7 +103,7 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
                 y + 104f,
                 Color.WHITE,
                 9.5f,
-                Fonts.REGULAR
+                Fonts.REGULAR,
             )
 
             offsetX += 102
@@ -113,7 +118,11 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         nvg.drawCenteredText("Next", x + width - 86f + (80 / 2f), y + height - 20f, Color.WHITE, 10f, Fonts.REGULAR)
     }
 
-    private fun drawModMenuExample(x: Float, y: Float, theme: Theme) {
+    private fun drawModMenuExample(
+        x: Float,
+        y: Float,
+        theme: Theme,
+    ) {
         val nvg = Shindo.getInstance().nanoVGManager
 
         val width = 90f
@@ -131,7 +140,11 @@ class ThemeSelectScene(parent: GuiShindoMainMenu) : MainMenuScene(parent) {
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseClicked(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
         var offsetX = scroll.getValue()
 
         for (theme in Theme.values()) {

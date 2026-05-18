@@ -10,12 +10,13 @@ import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 
-class WeatherChangerMod : Mod(
-    TranslateText.WEATHER_CHANGER,
-    TranslateText.WEATHER_CHANGER_DESCRIPTION,
-    ModCategory.WORLD,
-    LegacyIcon.MOD_WEATHER_CHANGER
-) {
+class WeatherChangerMod :
+    Mod(
+        TranslateText.WEATHER_CHANGER,
+        TranslateText.WEATHER_CHANGER_DESCRIPTION,
+        ModCategory.WORLD,
+        LegacyIcon.MOD_WEATHER_CHANGER,
+    ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.WEATHER)
     @JvmField
     val weather: Weather = Weather.CLEAR
@@ -29,7 +30,7 @@ class WeatherChangerMod : Mod(
         translate = TranslateText.THUNDER_STRENGTH,
         min = 0.0,
         max = 1.0,
-        current = 1.0
+        current = 1.0,
     )
     @JvmField
     var thunderStrength = 1.0
@@ -38,15 +39,16 @@ class WeatherChangerMod : Mod(
         instance = this
     }
 
-    enum class Weather(private val translate: TranslateText) : PropertyEnum {
+    enum class Weather(
+        private val translate: TranslateText,
+    ) : PropertyEnum {
         CLEAR(TranslateText.CLEAR),
         RAIN(TranslateText.RAIN),
         STORM(TranslateText.STORM),
-        SNOW(TranslateText.SNOW);
+        SNOW(TranslateText.SNOW),
+        ;
 
-        override fun getTranslate(): TranslateText {
-            return translate
-        }
+        override fun getTranslate(): TranslateText = translate
     }
 
     companion object {
@@ -58,7 +60,3 @@ class WeatherChangerMod : Mod(
 
     fun getThunderStrength(): NumberSetting? = getNumberSetting(this, "thunderStrength")
 }
-
-
-
-

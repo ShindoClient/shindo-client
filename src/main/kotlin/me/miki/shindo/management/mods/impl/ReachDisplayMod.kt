@@ -28,7 +28,10 @@ class ReachDisplayMod :
 
     @EventTarget
     fun onDamageEntity(event: EventDamageEntity?) {
-        if (mc.objectMouseOver != null && mc.objectMouseOver.hitVec != null && mc.objectMouseOver.typeOfHit == MovingObjectType.ENTITY) {
+        if (mc.objectMouseOver != null &&
+            mc.objectMouseOver.hitVec != null &&
+            mc.objectMouseOver.typeOfHit == MovingObjectType.ENTITY
+        ) {
             distance = mc.objectMouseOver.hitVec.distanceTo(mc.thePlayer.getPositionEyes(1.0f))
             hitTime = System.currentTimeMillis()
         }
@@ -46,9 +49,5 @@ class ReachDisplayMod :
         }
     }
 
-    override fun getIcon(): String? {
-        return if (iconEnabled) LegacyIcon.ACTIVITY else null
-    }
+    override fun getIcon(): String? = if (iconEnabled) LegacyIcon.ACTIVITY else null
 }
-
-

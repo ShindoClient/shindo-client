@@ -6,7 +6,6 @@ import java.net.URI
 object BrowserUtils {
     @JvmStatic
     fun tryOpenBrowser(uri: String): Boolean {
-
         val target = URI(uri)
 
         if (Desktop.isDesktopSupported()) {

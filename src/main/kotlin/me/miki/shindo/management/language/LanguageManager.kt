@@ -6,7 +6,6 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 class LanguageManager {
-
     private val translateMap = HashMap<String, String>()
     private var currentLanguage: Language = Language.ENGLISH
 
@@ -14,10 +13,14 @@ class LanguageManager {
         setCurrentLanguage(Language.ENGLISH)
     }
 
-    private fun loadMap(map: HashMap<String, String>, language: String) {
+    private fun loadMap(
+        map: HashMap<String, String>,
+        language: String,
+    ) {
         val path = "assets/minecraft/shindo/language/$language.properties"
-        val stream = LanguageManager::class.java.classLoader.getResourceAsStream(path)
-            ?: return
+        val stream =
+            LanguageManager::class.java.classLoader.getResourceAsStream(path)
+                ?: return
         try {
             BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8)).use { reader ->
                 var line: String?
@@ -46,7 +49,10 @@ class LanguageManager {
     /**
      * Traduz com parâmetros (substitui {0}, {1}, etc).
      */
-    fun getText(key: String, vararg args: Any): String {
+    fun getText(
+        key: String,
+        vararg args: Any,
+    ): String {
         var template = getText(key)
         args.forEachIndexed { i, arg -> template = template.replace("{$i}", arg.toString()) }
         return template

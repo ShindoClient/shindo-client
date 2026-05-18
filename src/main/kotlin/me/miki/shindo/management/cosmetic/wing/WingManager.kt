@@ -10,7 +10,6 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import java.util.*
 
 class WingManager {
-
     private val wings = ArrayList<Wing>()
     private var currentWing: Wing? = null
 
@@ -33,13 +32,12 @@ class WingManager {
         wing?.let { InternalSettingsMod.instance.wingConfigName = it.getName() }
     }
 
-    fun getWingByName(name: String): Wing {
-        return wings.firstOrNull { it.getName() == name } ?: wings.first()
-    }
+    fun getWingByName(name: String): Wing = wings.firstOrNull { it.getName() == name } ?: wings.first()
 
-    fun canUseWing(uuid: UUID, wing: Wing): Boolean {
-        return RoleManager.hasAtLeast(uuid, wing.getRequiredRole())
-    }
+    fun canUseWing(
+        uuid: UUID,
+        wing: Wing,
+    ): Boolean = RoleManager.hasAtLeast(uuid, wing.getRequiredRole())
 
     fun getTranslateError(role: Role): TranslateText = CosmeticRoleTextMapper.getTranslateError(role)
 
