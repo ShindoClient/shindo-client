@@ -17,7 +17,7 @@ class NewsManager {
 
     private fun loadNews() {
         val jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/news/news.json", null) ?: return
-        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "news") ?: return
+        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "news")
         val gson = Gson()
         for (jsonElement in jsonArray) {
             val changelogJsonObject = gson.fromJson(jsonElement, JsonObject::class.java)

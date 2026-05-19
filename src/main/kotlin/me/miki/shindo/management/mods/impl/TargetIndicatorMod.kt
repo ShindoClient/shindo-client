@@ -6,7 +6,8 @@ import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.applyAlpha
@@ -20,7 +21,7 @@ class TargetIndicatorMod :
         TranslateText.TARGET_INDICATOR,
         TranslateText.TARGET_INDICATOR_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_TARGET_INDICATOR,
+        Shinconic.MOD_TARGET_INDICATOR,
     ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private val customColorSetting = false

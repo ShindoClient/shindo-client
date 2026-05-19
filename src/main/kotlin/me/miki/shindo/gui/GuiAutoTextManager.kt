@@ -10,7 +10,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.AutoTextMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
@@ -111,7 +111,7 @@ class GuiAutoTextManager(
 
         val addX = x + menuWidth - 30f
         val addY = y
-        nvg.drawCenteredText(LegacyIcon.PLUS, addX + 10f, addY + 10f, Color.WHITE, 12f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(Lucide.PLUS, addX + 10f, addY + 10f, Color.WHITE, 12f, Fonts.LUCIDE)
 
         val listX = x + 8f
         val listY = y + 34f
@@ -255,20 +255,20 @@ class GuiAutoTextManager(
             if (deleteHovered) Color(255, 70, 70, 95) else Color(255, 70, 70, 70),
         )
         nvg.drawCenteredText(
-            if (card.editing) LegacyIcon.CHECK else LegacyIcon.PENCIL,
+            if (card.editing) Lucide.CHECK else Lucide.PENCIL,
             actionX + actionSize / 2f,
             deleteY + 5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawCenteredText(
-            LegacyIcon.TRASH,
+            Lucide.TRASH,
             deleteX + deleteSize / 2f,
             deleteY + 5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 

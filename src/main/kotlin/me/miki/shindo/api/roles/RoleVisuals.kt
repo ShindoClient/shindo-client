@@ -1,7 +1,8 @@
 package me.miki.shindo.api.roles
 
 import me.miki.shindo.api.websocket.presence.PresenceTracker
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -64,7 +65,7 @@ object RoleVisuals {
         }
 
     @JvmStatic
-    fun getTabIcon(role: Role?): String = LegacyIcon.SHINDO
+    fun getTabIcon(role: Role?): String = Shinconic.SHINDO
 
     @JvmStatic
     fun getTabFallbackText(role: Role?): String = "★"

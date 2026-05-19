@@ -13,7 +13,8 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.event.impl.EventRenderNotification
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
 import me.miki.shindo.management.profile.mainmenu.impl.ShaderBackground
@@ -194,7 +195,7 @@ class GuiShindoMainMenu : GuiScreen() {
 
         nvg.drawRoundedRect(sr.scaledWidth - 28f, 6f, 22f, 22f, 4f, controlColor)
         nvg.drawCenteredText(
-            LegacyIcon.X,
+            Lucide.X,
             sr.scaledWidth - 19f,
             8f,
             Color(
@@ -203,7 +204,7 @@ class GuiShindoMainMenu : GuiScreen() {
                 255 - (closeFocusAnimation.getValue() * 200).toInt(),
             ),
             18f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         backgroundSelectFocusAnimation.setAnimation(
@@ -213,7 +214,7 @@ class GuiShindoMainMenu : GuiScreen() {
 
         nvg.drawRoundedRect(sr.scaledWidth - 56f, 6f, 22f, 22f, 4f, controlColor)
         nvg.drawCenteredText(
-            LegacyIcon.IMAGE,
+            Lucide.IMAGE,
             sr.scaledWidth - 52f + 6.5f - 1.5f,
             9.5f - 1.5f,
             Color(
@@ -222,13 +223,13 @@ class GuiShindoMainMenu : GuiScreen() {
                 255 - (backgroundSelectFocusAnimation.getValue() * 200).toInt(),
             ),
             18f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         // skinFocusAnimation.setAnimation( if (MouseUtils.isInside(mouseX, mouseY, sr.scaledWidth - 84f, 6f, 22f, 22f)) 1.0f else 0.0f, 16 )
 
         // nvg.drawRoundedRect(sr.scaledWidth - 84f, 6f, 22f, 22f, 4f, controlColor)
-        // nvg.drawCenteredText(LegacyIcon.SKIN, sr.scaledWidth - 78f + 4.5f, 9.5f, Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255), 15f, Fonts.LEGACYICON )
+        // nvg.drawCenteredText(Lucide.SKIN, sr.scaledWidth - 78f + 4.5f, 9.5f, Color(255 - (skinFocusAnimation.value * 200).toInt(), 255, 255), 15f, Fonts.LUCIDE )
     }
 
     private fun drawSplashScreen(
@@ -267,12 +268,12 @@ class GuiShindoMainMenu : GuiScreen() {
                 ),
             )
             nvg.drawCenteredText(
-                LegacyIcon.SHINDO,
+                Shinconic.SHINDO,
                 sr.scaledWidth / 2f,
-                (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
+                (sr.scaledHeight / 2f) - (nvg.getTextHeight(Shinconic.SHINDO, 130f, Fonts.SHINCONIC) / 2) - 1,
                 Color(255, 255, 255, (255 - (fadeIconAnimation!!.getValue() * 255)).toInt()),
                 130f,
-                Fonts.LEGACYICON,
+                Fonts.SHINCONIC,
             )
         }
     }

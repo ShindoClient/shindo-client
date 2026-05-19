@@ -2,7 +2,7 @@ package me.miki.shindo.ui.components.v2.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
 import me.miki.shindo.utils.ColorUtils
@@ -64,7 +64,7 @@ class CompSceneButton(
             iconY + ICON_SIZE / 2f - 8f,
             palette.getFontColor(ColorType.DARK),
             ICON_FONT_SIZE,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         val textStartX = iconX + ICON_SIZE + TEXT_MARGIN_START
@@ -99,14 +99,14 @@ class CompSceneButton(
 
         val arrowX = x + width - ARROW_MARGIN
         val arrowY =
-            y + (height / 2f) - (nvg.getTextHeight(LegacyIcon.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LEGACYICON) / 2f)
+            y + (height / 2f) - (nvg.getTextHeight(Lucide.CHEVRON_RIGHT, ARROW_FONT_SIZE, Fonts.LUCIDE) / 2f)
         nvg.drawCenteredText(
-            LegacyIcon.CHEVRON_RIGHT,
+            Lucide.CHEVRON_RIGHT,
             arrowX,
             arrowY,
             palette.getFontColor(ColorType.NORMAL),
             ARROW_FONT_SIZE,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 

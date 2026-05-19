@@ -7,7 +7,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.crosshair.LayoutManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.CellGridSetting
@@ -19,13 +20,13 @@ import java.awt.Color
 import kotlin.math.min
 
 class CrosshairMod :
-    Mod(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_CROSSHAIR),
+    Mod(TranslateText.CROSSHAIR, TranslateText.CROSSHAIR_DESCRIPTION, ModCategory.RENDER, Shinconic.MOD_CROSSHAIR),
     CellGridSettingConsumer {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HIDE_THIRD_PERSON_VIEW)
     private val hideInThirdPerson = false
 
     @Property(type = PropertyType.CELL_GRID, translate = TranslateText.DESIGN)
-    private val crosshairLayout: Array<BooleanArray?>? = layoutManager.defaultLayout
+    private val crosshairLayout: Array<BooleanArray?> = layoutManager.defaultLayout
 
     @Property(type = PropertyType.COLOR, translate = TranslateText.COLOR)
     private val crosshairColor: Color = Color.WHITE

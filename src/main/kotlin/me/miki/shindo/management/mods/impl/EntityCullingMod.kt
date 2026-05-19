@@ -8,7 +8,7 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.Minecraft
@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL33
 import org.lwjgl.opengl.GLContext
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -35,10 +35,12 @@ class EntityCullingMod :
         TranslateText.ENTITY_CULLING,
         TranslateText.ENTITY_CULLING_DESCRIPTIONN,
         ModCategory.OTHER,
-        LegacyIcon.MOD_ENTITY_CULLING,
+        Shinconic.MOD_ENTITY_CULLING,
     ) {
     private val renderManager: RenderManager = mc.renderManager
-    private val queries: ConcurrentHashMap<UUID?, OcclusionQuery> = ConcurrentHashMap<UUID?, OcclusionQuery>()
+    private val queries: ConcurrentHashMap<UUID, OcclusionQuery> = ConcurrentHashMap<UUID, OcclusionQuery>()
+
+    @Suppress("ktlint:standard:property-naming")
     private val SUPPORT_NEW_GL = GLContext.getCapabilities().OpenGL33
 
     @Property(
@@ -303,10 +305,10 @@ class EntityCullingMod :
 
         private val query: Int
             get() {
-                try {
-                    return GL15.glGenQueries()
+                return try {
+                    GL15.glGenQueries()
                 } catch (throwable: Throwable) {
-                    return 0
+                    0
                 }
             }
     }

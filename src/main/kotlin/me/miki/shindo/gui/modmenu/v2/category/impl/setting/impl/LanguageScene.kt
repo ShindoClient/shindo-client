@@ -10,7 +10,7 @@ import me.miki.shindo.management.language.Language
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -22,7 +22,7 @@ import kotlin.math.min
 
 class LanguageScene(
     parent: SettingsCategory,
-) : SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, LegacyIcon.GLOBE) {
+) : SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, Lucide.GLOBE) {
     private lateinit var container: CompScrollableContainer
     private val languages = Language.values()
     private val languageCards = ArrayList<LanguageCard>(languages.size)
@@ -208,12 +208,12 @@ class LanguageScene(
             )
 
             nvg.drawText(
-                LegacyIcon.CHECK,
+                Lucide.CHECK,
                 x + width - 20f,
                 y + height - 18f,
                 palette.getFontColor(ColorType.MID),
                 12f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
 

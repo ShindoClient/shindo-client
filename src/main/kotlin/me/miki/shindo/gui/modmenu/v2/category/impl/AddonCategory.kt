@@ -23,7 +23,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.chips.CategoryChipRenderer
@@ -40,7 +40,7 @@ import kotlin.math.max
 
 class AddonCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.ADDONS, LegacyIcon.LAYOUT_2, true, true),
+) : Category(parent, TranslateText.ADDONS, Lucide.LAYOUT_GRID, true, true),
     ModMenuListPageContract {
     private val settingScroll = Scroll()
     private val settingsPanel = SettingsPanel()

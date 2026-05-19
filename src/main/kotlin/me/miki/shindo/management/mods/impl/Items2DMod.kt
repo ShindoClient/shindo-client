@@ -4,10 +4,11 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.notification.NotificationType
 
-class Items2DMod : Mod(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEMS2_D) {
+class Items2DMod : Mod(TranslateText.ITEMS_2D, TranslateText.ITEMS_2D_DESCRIPTION, ModCategory.RENDER, Shinconic.MOD_ITEMS2_D) {
     init {
         instance = this
     }

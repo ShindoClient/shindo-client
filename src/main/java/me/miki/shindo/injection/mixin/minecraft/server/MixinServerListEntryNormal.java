@@ -6,7 +6,7 @@ import me.miki.shindo.hooks.ServerDataHook;
 import me.miki.shindo.logger.ShindoLogger;
 import me.miki.shindo.management.nanovg.NanoVGManager;
 import me.miki.shindo.management.nanovg.font.Fonts;
-import me.miki.shindo.management.nanovg.font.LegacyIcon;
+import me.miki.shindo.management.nanovg.font.Lucide;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.multiplayer.ServerData;
@@ -108,7 +108,7 @@ public abstract class MixinServerListEntryNormal implements GuiListExtended.IGui
             Shindo instance = Shindo.getInstance();
             NanoVGManager nvg = instance.getNanoVGManager();
 
-            nvg.setupAndDraw(() -> nvg.drawText(LegacyIcon.STAR_FILL, x - 20, y + 10, Color.YELLOW, 14F, Fonts.LEGACYICON));
+            nvg.setupAndDraw(() -> nvg.drawText(Lucide.STAR, x - 20, y + 10, Color.YELLOW, 14F, Fonts.LUCIDE));
         }
 
         boolean flag = this.server.version > 47;

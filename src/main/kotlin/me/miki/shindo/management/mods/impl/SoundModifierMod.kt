@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventPlaySound
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
@@ -14,7 +15,7 @@ class SoundModifierMod :
         TranslateText.SOUND_MODIFIER,
         TranslateText.SOUND_MODIFIER_DESCRIPTION,
         ModCategory.OTHER,
-        LegacyIcon.MOD_SOUND_MODIFIER,
+        Shinconic.MOD_SOUND_MODIFIER,
     ) {
     @Property(
         type = PropertyType.NUMBER,

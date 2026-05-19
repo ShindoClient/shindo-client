@@ -4,7 +4,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
@@ -12,7 +13,7 @@ class HealthDisplayMod :
     SimpleHUDMod(
         TranslateText.HEALTH_DISPLAY,
         TranslateText.HEALTH_DISPLAY_DESCRIPTION,
-        LegacyIcon.MOD_HEALTH_DISPLAY,
+        Shinconic.MOD_HEALTH_DISPLAY,
     ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconEnabled = true
@@ -27,5 +28,5 @@ class HealthDisplayMod :
             .toInt()
             .toString() + " Health"
 
-    override fun getIcon(): String? = if (iconEnabled) LegacyIcon.HEART else null
+    override fun getIcon(): String? = if (iconEnabled) Lucide.HEART else null
 }

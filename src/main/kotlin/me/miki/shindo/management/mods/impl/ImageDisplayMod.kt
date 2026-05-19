@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import java.awt.image.BufferedImage
@@ -13,7 +14,7 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class ImageDisplayMod : HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, LegacyIcon.MOD_IMAGE_DISPLAY) {
+class ImageDisplayMod : HUDMod(TranslateText.IMAGE_DISPLAY, TranslateText.IMAGE_DISPLAY_DESCRIPTION, Shinconic.MOD_IMAGE_DISPLAY) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.RADIUS,

@@ -7,7 +7,8 @@ import me.miki.shindo.management.event.impl.EventKey
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import org.lwjgl.input.Keyboard
 
 class AutoTextMod :
@@ -15,7 +16,7 @@ class AutoTextMod :
         TranslateText.AUTO_TEXT,
         TranslateText.AUTO_TEXT_DESCRIPTION,
         ModCategory.PLAYER,
-        LegacyIcon.MOD_AUTO_TEXT,
+        Shinconic.MOD_AUTO_TEXT,
         "messagetexthotkeymacro",
     ) {
     val autoTextManager = AutoTextManager()

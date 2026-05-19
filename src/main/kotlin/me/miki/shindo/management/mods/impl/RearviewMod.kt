@@ -5,12 +5,13 @@ import me.miki.shindo.management.event.impl.*
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.rearview.RearviewCamera
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.TimerUtils
 
-class RearviewMod : HUDMod(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, LegacyIcon.MOD_REARVIEW, "", true) {
+class RearviewMod : HUDMod(TranslateText.REARVIEW, TranslateText.REARVIEW_DESCRIPTION, Shinconic.MOD_REARVIEW, "", true) {
     private val rearviewCamera = RearviewCamera()
     private val timer = TimerUtils()
 

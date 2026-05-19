@@ -11,7 +11,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod.HudTheme
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -24,7 +25,7 @@ import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.max
 
-class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, LegacyIcon.MOD_MODERN_HOTBAR) {
+class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN_HOTBAR_DESCRIPTION, Shinconic.MOD_MODERN_HOTBAR) {
     private val selectorAnimation = SimpleAnimation(0.0f)
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
@@ -72,7 +73,7 @@ class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN
                 var l = sr.scaledHeight - 16 - 3
 
                 if (currentDesign == Design.CHILL) {
-                    l = l + 4
+                    l += 4
                 }
 
                 renderHotBarItem(j, k, l - 4, event.getPartialTicks(), entityplayer)
@@ -101,15 +102,21 @@ class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN
             if (progress > 0.0f) {
                 GlStateManager.pushMatrix()
                 GlStateManager.translate((xPos + 8).toFloat(), (yPos + 12).toFloat(), 0.0f)
-                if (animationMode == PickupAnimation.PICKUP_BREAD) {
-                    val scaleAmount = 1.0f + progress / 2.5f
-                    GlStateManager.scale(max(1.0f, scaleAmount / (1.0f / (scaleAmount / 2))), scaleAmount, 1.0f)
-                } else if (animationMode == PickupAnimation.PICKUP_POP) {
-                    val scaleAmount = 1.0f + progress / 5.0f
-                    GlStateManager.scale(scaleAmount, scaleAmount, 1.0f)
-                } else {
-                    val scaleAmount = 1.0f + progress / 5.0f
-                    GlStateManager.scale(1.0f / scaleAmount, (scaleAmount + 1.0f) / 2.0f, 1.0f)
+                when (animationMode) {
+                    PickupAnimation.PICKUP_BREAD -> {
+                        val scaleAmount = 1.0f + progress / 2.5f
+                        GlStateManager.scale(max(1.0f, scaleAmount / (1.0f / (scaleAmount / 2))), scaleAmount, 1.0f)
+                    }
+
+                    PickupAnimation.PICKUP_POP -> {
+                        val scaleAmount = 1.0f + progress / 5.0f
+                        GlStateManager.scale(scaleAmount, scaleAmount, 1.0f)
+                    }
+
+                    else -> {
+                        val scaleAmount = 1.0f + progress / 5.0f
+                        GlStateManager.scale(1.0f / scaleAmount, (scaleAmount + 1.0f) / 2.0f, 1.0f)
+                    }
                 }
 
                 GlStateManager.translate(-(xPos + 8).toFloat(), -(yPos + 12).toFloat(), 0.0f)
@@ -138,28 +145,34 @@ class ModernHotbarMod : HUDMod(TranslateText.MODERN_HOTBAR, TranslateText.MODERN
                 barWidth = (91 * 2).toFloat()
                 barHeight = 22f
 
-                if (currentDesign == Design.SHINDO) {
-                    nvg.drawShadow(barX, barY, barWidth, barHeight, 6f)
-                    nvg.drawGradientRoundedRect(
-                        barX,
-                        barY,
-                        barWidth,
-                        barHeight,
-                        6f,
-                        applyAlpha(currentColor.getColor1(), 190),
-                        applyAlpha(currentColor.getColor2(), 190),
-                    )
-                } else if (currentDesign == Design.CLIENT) {
-                    if (isText) {
+                when (currentDesign) {
+                    Design.SHINDO -> {
                         nvg.drawShadow(barX, barY, barWidth, barHeight, 6f)
+                        nvg.drawGradientRoundedRect(
+                            barX,
+                            barY,
+                            barWidth,
+                            barHeight,
+                            6f,
+                            applyAlpha(currentColor.getColor1(), 190),
+                            applyAlpha(currentColor.getColor2(), 190),
+                        )
                     }
-                    this.setScale(1f)
-                    this.setX(barX.toInt())
-                    this.setY(barY.toInt())
-                    drawBackground(barWidth, barHeight, 6f)
-                } else {
-                    nvg.drawShadow(barX, barY, barWidth, barHeight, 6f)
-                    nvg.drawRoundedRect(barX, barY, barWidth, barHeight, 6f, Color(0, 0, 0, 100))
+
+                    Design.CLIENT -> {
+                        if (isText) {
+                            nvg.drawShadow(barX, barY, barWidth, barHeight, 6f)
+                        }
+                        this.setScale(1f)
+                        this.setX(barX.toInt())
+                        this.setY(barY.toInt())
+                        drawBackground(barWidth, barHeight, 6f)
+                    }
+
+                    else -> {
+                        nvg.drawShadow(barX, barY, barWidth, barHeight, 6f)
+                        nvg.drawRoundedRect(barX, barY, barWidth, barHeight, 6f, Color(0, 0, 0, 100))
+                    }
                 }
             } else {
                 barX = 0f

@@ -6,7 +6,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.impl.CategorySetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
@@ -544,7 +544,7 @@ class SettingsPanel {
         val iconSize = 9f * PANEL_SCALE
         val textColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), 232)
         val helperColor = ColorUtils.applyAlpha(palette.getFontColor(ColorType.NORMAL), 138)
-        val icon = LegacyIcon.CHEVRON_RIGHT
+        val icon = Lucide.CHEVRON_RIGHT
 
         val iconX = section.headerX + 1f
         val iconY = section.headerY + (section.headerHeight - iconSize) / 2f
@@ -555,7 +555,7 @@ class SettingsPanel {
         val iconCenterY = iconY + iconSize * 0.5f
         nvg.withState {
             nvg.rotateDegreesAt(iconCenterX, iconCenterY, 90f * section.contentProgress)
-            nvg.drawText(icon, iconX, iconY, helperColor, iconSize, Fonts.LEGACYICON)
+            nvg.drawText(icon, iconX, iconY, helperColor, iconSize, Fonts.LUCIDE)
         }
         nvg.drawText(category.name, titleX, titleY, textColor, titleSize, Fonts.MEDIUM)
 

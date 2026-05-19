@@ -11,7 +11,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.network.NetworkManager
 import me.miki.shindo.management.network.proxy.CustomProxy
 import me.miki.shindo.ui.animation.v2.Animation
@@ -45,7 +45,7 @@ private enum class ProxySectionFilter(
 
 class NetworkCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.NETWORK, LegacyIcon.GLOBE, false, true) {
+) : Category(parent, TranslateText.NETWORK, Lucide.WIFI_COG, false, true) {
     private val pageChips = ArrayList<FilterChip>()
     private val sectionChips = ArrayList<FilterChip>()
 

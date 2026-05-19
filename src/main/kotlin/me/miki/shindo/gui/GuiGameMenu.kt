@@ -5,7 +5,8 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseLiner
@@ -71,7 +72,7 @@ class GuiGameMenu : GuiScreen() {
     }
 
     private fun drawNanoVG(nvg: NanoVGManager) {
-        nvg.drawText(LegacyIcon.ARROW_LEFT, x.toFloat(), y + 5f, Color(255, 255, 255, 140), 11f, Fonts.LEGACYICON)
+        nvg.drawText(Lucide.ARROW_LEFT, x.toFloat(), y + 5f, Color(255, 255, 255, 140), 11f, Fonts.LUCIDE)
         nvg.drawCenteredText(
             I18n.format("menu.game"),
             centre.toFloat(),
@@ -83,19 +84,19 @@ class GuiGameMenu : GuiScreen() {
 
         val standardPadding = 29.5f
         var offset = 29.5f
-        drawButton(nvg, TranslateText.MENU_GAME_OPTIONS.getText(), LegacyIcon.SLIDERS, offset)
+        drawButton(nvg, TranslateText.MENU_GAME_OPTIONS.getText(), Lucide.SLIDERS, offset)
         offset += standardPadding
         if (mc.isSingleplayer && !mc.integratedServer.`public`) {
-            drawButton(nvg, I18n.format("menu.shareToLan"), LegacyIcon.USERS, offset)
+            drawButton(nvg, I18n.format("menu.shareToLan"), Lucide.USERS, offset)
         } else {
-            drawButton(nvg, TranslateText.EDIT_HUD.getText(), LegacyIcon.LAYOUT, offset)
+            drawButton(nvg, TranslateText.EDIT_HUD.getText(), Lucide.LAYOUT, offset)
         }
         offset += standardPadding
-        drawButton(nvg, I18n.format("gui.stats"), LegacyIcon.ARCHIVE, offset)
+        drawButton(nvg, I18n.format("gui.stats"), Lucide.ARCHIVE, offset)
         offset += standardPadding
-        drawButton(nvg, I18n.format("gui.achievements"), LegacyIcon.MAP, offset)
+        drawButton(nvg, I18n.format("gui.achievements"), Lucide.MAP, offset)
         offset += standardPadding
-        drawButton(nvg, TranslateText.OPEN_MOD_MENU.getText(), LegacyIcon.SHINDO, offset)
+        drawButton2(nvg, TranslateText.OPEN_MOD_MENU.getText(), Shinconic.SHINDO, offset)
         offset += standardPadding
         drawButton(
             nvg,
@@ -106,7 +107,7 @@ class GuiGameMenu : GuiScreen() {
             } else {
                 TranslateText.EXIT_WORLD_SINGLEPLAYER.getText()
             },
-            LegacyIcon.LOGOUT,
+            Lucide.LOG_OUT,
             offset,
         )
     }
@@ -120,7 +121,20 @@ class GuiGameMenu : GuiScreen() {
         Blur.drawBlur(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f)
         nvg.drawRoundedRect(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f, Color(230, 230, 230, 80))
         val startX = (nvg.getTextWidth(text, 9.5f, Fonts.MEDIUM) + 14) / 2
-        nvg.drawText(icon, centre - startX, y + offset + 6.5f, Color.WHITE, 9.5f, Fonts.LEGACYICON)
+        nvg.drawText(icon, centre - startX, y + offset + 6.5f, Color.WHITE, 9.5f, Fonts.LUCIDE)
+        nvg.drawText(text, centre - startX + 14, y + offset + 7f, Color.WHITE, 9.5f, Fonts.MEDIUM)
+    }
+
+    private fun drawButton2(
+        nvg: NanoVGManager,
+        text: String,
+        icon: String,
+        offset: Float,
+    ) {
+        Blur.drawBlur(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f)
+        nvg.drawRoundedRect(x.toFloat(), y + offset, menuWidth.toFloat(), 22f, 6f, Color(230, 230, 230, 80))
+        val startX = (nvg.getTextWidth(text, 9.5f, Fonts.MEDIUM) + 14) / 2
+        nvg.drawText(icon, centre - startX, y + offset + 6.5f, Color.WHITE, 9.5f, Fonts.SHINCONIC)
         nvg.drawText(text, centre - startX + 14, y + offset + 7f, Color.WHITE, 9.5f, Fonts.MEDIUM)
     }
 

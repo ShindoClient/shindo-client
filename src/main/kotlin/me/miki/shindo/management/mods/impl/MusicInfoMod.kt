@@ -11,7 +11,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.music.TrackInfoCallback
 import me.miki.shindo.management.music.model.LyricsResponse
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -30,7 +31,7 @@ import kotlin.math.pow
 
 @Suppress("UNUSED")
 class MusicInfoMod :
-    SimpleHUDMod(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION, LegacyIcon.MOD_MUSIC_INFO),
+    SimpleHUDMod(TranslateText.MUSIC_INFO, TranslateText.MUSIC_INFO_DESCRIPTION, Shinconic.MOD_MUSIC_INFO),
     TrackInfoCallback {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
@@ -269,7 +270,7 @@ class MusicInfoMod :
 
                         if (!text.isNullOrEmpty()) {
                             val limitedText =
-                                Shindo.getInstance().nanoVGManager!!.getLimitText(
+                                Shindo.getInstance().nanoVGManager.getLimitText(
                                     text,
                                     9.0f,
                                     this.getHudFont(1),

@@ -5,13 +5,14 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.input.Keyboard
 
-class TaplookMod : Mod(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_TAPLOOK) {
+class TaplookMod : Mod(TranslateText.TAPLOOK, TranslateText.TAPLOOK_DESCRIPTION, ModCategory.PLAYER, Shinconic.MOD_TAPLOOK) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.PERSPECTIVE)
     private val perspective = Perspective.FRONT
 

@@ -3,7 +3,8 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
@@ -14,7 +15,7 @@ class TimeChangerMod :
         TranslateText.TIME_CHANGER,
         TranslateText.TIME_CHANGER_DESCRIPTION,
         ModCategory.WORLD,
-        LegacyIcon.MOD_TIME_CHANGER,
+        Shinconic.MOD_TIME_CHANGER,
     ) {
     @Property(type = PropertyType.NUMBER, translate = TranslateText.TIME, min = 0.0, max = 24.0, current = 12.0)
     @JvmField

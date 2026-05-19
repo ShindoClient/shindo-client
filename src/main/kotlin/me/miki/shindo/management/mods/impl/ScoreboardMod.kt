@@ -8,7 +8,8 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderScoreboard
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.getColorByInt
@@ -23,7 +24,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.max
 
-class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, LegacyIcon.MOD_SCOREBOARD) {
+class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, Shinconic.MOD_SCOREBOARD) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private val showBackground = true
 
@@ -57,9 +58,9 @@ class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_
                         val name = score.playerName
                         name != null && !name.startsWith("#")
                     }.toMutableList()
-            Collections.reverse(filteredScores)
+            filteredScores.reverse()
 
-            nvg!!.setupAndDraw(
+            nvg.setupAndDraw(
                 Runnable {
                     if (drawShadow) {
                         this.drawShadow(
@@ -73,11 +74,12 @@ class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_
                 },
             )
 
-            if (filteredScores.size > 15) {
-                scores = Lists.newArrayList<Score?>(Iterables.skip<Score?>(filteredScores, scores.size - 15))
-            } else {
-                scores = filteredScores
-            }
+            scores =
+                if (filteredScores.size > 15) {
+                    Lists.newArrayList<Score?>(Iterables.skip<Score?>(filteredScores, scores.size - 15))
+                } else {
+                    filteredScores
+                }
 
             var maxWidth = fr.getStringWidth(objective!!.displayName)
 

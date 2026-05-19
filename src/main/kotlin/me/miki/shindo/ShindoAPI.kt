@@ -15,7 +15,7 @@ import me.miki.shindo.utils.AccountUtil
 import net.minecraft.client.Minecraft
 import java.io.File
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.UUID
 import java.util.function.BiConsumer
 
 @Suppress("unused", "RedundantSamConstructor")

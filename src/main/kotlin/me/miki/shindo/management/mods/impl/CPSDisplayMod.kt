@@ -6,12 +6,13 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.input.Mouse
 
-class CPSDisplayMod : SimpleHUDMod(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION, LegacyIcon.MOD_CPS_DISPLAY) {
+class CPSDisplayMod : SimpleHUDMod(TranslateText.CPS_DISPLAY, TranslateText.CPS_DISPLAY_DESCRIPTION, Shinconic.MOD_CPS_DISPLAY) {
     private val leftPresses = ArrayList<Long?>()
     private val rightPresses = ArrayList<Long?>()
 
@@ -49,5 +50,5 @@ class CPSDisplayMod : SimpleHUDMod(TranslateText.CPS_DISPLAY, TranslateText.CPS_
         (if (rightClickSetting) leftPresses.size.toString() + " | " + rightPresses.size else leftPresses.size).toString() +
             " CPS"
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.MOUSE_POINTER else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.MOUSE_POINTER else null
 }

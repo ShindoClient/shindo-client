@@ -4,7 +4,7 @@ import me.miki.extensions.ui.animation.setAnimation
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.utils.TimerUtils
 
@@ -112,12 +112,12 @@ class CompSearchBox(
         focused: Boolean,
     ) {
         nvg.drawText(
-            LegacyIcon.SEARCH,
+            Lucide.SEARCH,
             getX() + 5,
             textY,
             palette.getFontColor(ColorType.NORMAL),
             halfH,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         searchAnim.setAnimation(if (!focused && text.isEmpty()) 1f else 0f, 16)

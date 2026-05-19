@@ -7,7 +7,7 @@ import me.miki.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.GlobalAnimationSettings
 import me.miki.shindo.ui.components.v2.buttons.CompSettingButton
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
@@ -23,7 +23,7 @@ import kotlin.math.max
 
 class AppearanceScene(
     parent: SettingsCategory,
-) : SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, LegacyIcon.MONITOR) {
+) : SettingScene(parent, TranslateText.APPEARANCE, TranslateText.APPEARANCE_DESCRIPTION, Lucide.MONITOR) {
     private val contentScroll = Scroll()
 
     private lateinit var themeSelector: CompThemeSelector

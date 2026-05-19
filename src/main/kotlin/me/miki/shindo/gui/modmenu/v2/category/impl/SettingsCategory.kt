@@ -13,7 +13,7 @@ import me.miki.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.buttons.CompSceneButton
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -24,7 +24,7 @@ import kotlin.math.max
 
 class SettingsCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.SETTINGS, LegacyIcon.SETTINGS, false, false) {
+) : Category(parent, TranslateText.SETTINGS, Lucide.SETTINGS, false, false) {
     private val scenes = arrayListOf<SettingScene>()
     private val sceneButtons = arrayListOf<CompSceneButton>()
     private val transitionCoordinator = ModMenuSlideTransitionCoordinator()
@@ -165,7 +165,7 @@ class SettingsCategory(
                         headerY + (iconSize / 2f) - 10f,
                         Color.WHITE,
                         22f,
-                        Fonts.LEGACYICON,
+                        Fonts.LUCIDE,
                     )
 
                     val title = nvg.getLimitText(headerScene.name, 13.5f, Fonts.MEDIUM, textWidth)

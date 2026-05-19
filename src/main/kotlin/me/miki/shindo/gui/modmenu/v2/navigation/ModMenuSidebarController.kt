@@ -124,7 +124,7 @@ class ModMenuSidebarController {
                 slot.y + 3.5f,
                 iconColor,
                 14f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
     }

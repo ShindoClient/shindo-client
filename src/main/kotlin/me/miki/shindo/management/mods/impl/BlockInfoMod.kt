@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
@@ -21,7 +22,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 
-class BlockInfoMod : HUDMod(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, LegacyIcon.MOD_BLOCK_INFO, "waila") {
+class BlockInfoMod : HUDMod(TranslateText.BLOCK_INFO, TranslateText.BLOCK_INFO_DESCRIPTION, Shinconic.MOD_BLOCK_INFO, "waila") {
     private val screenAnimation = ScreenAnimation()
     private var lastSelection: Long = 0
     private var introAnimation: Animation? = null

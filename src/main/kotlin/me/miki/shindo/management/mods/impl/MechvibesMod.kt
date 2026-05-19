@@ -7,7 +7,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.mechibes.SoundKey
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -23,7 +24,8 @@ import kotlin.Exception
 import kotlin.Int
 import kotlin.String
 
-class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_MECHVIBES) {
+@Suppress("UNUSED")
+class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_MECHVIBES) {
     private val mouseLeftSound = Sound()
     private val mouseRightSound = Sound()
 
@@ -86,7 +88,7 @@ class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRI
             }
 
             val currentKeyboardVolume = keyboardVolume.toFloat()
-            if (Float.compare(tempKeyboardVolume, currentKeyboardVolume) != 0) {
+            if (tempKeyboardVolume.compareTo(currentKeyboardVolume) != 0) {
                 tempKeyboardVolume = currentKeyboardVolume
                 for (key in keyMap.values) {
                     key.setVolume(tempKeyboardVolume)
@@ -94,7 +96,7 @@ class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRI
             }
 
             val currentMouseVolume = mouseVolume.toFloat()
-            if (Float.compare(tempMouseVolume, currentMouseVolume) != 0) {
+            if (tempMouseVolume.compareTo(currentMouseVolume) != 0) {
                 tempMouseVolume = currentMouseVolume
                 mouseLeftSound.setVolume(tempMouseVolume)
                 mouseRightSound.setVolume(tempMouseVolume)
@@ -112,10 +114,7 @@ class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRI
                     if (!Keyboard.isKeyDown(keyCode)) {
                         continue
                     }
-                    val key = keyMap.get(keyCode)
-                    if (key == null) {
-                        continue
-                    }
+                    val key = keyMap[keyCode] ?: continue
                     if (!key.isPressed) {
                         key.play()
                         key.isPressed = true
@@ -149,41 +148,41 @@ class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRI
         TaskExecutor.runAsync(ThreadPoolType.IO) {
             for (keyCode in 0..255) {
                 if (keyCode == Keyboard.KEY_TAB) {
-                    keyMap.put(Keyboard.KEY_TAB, SoundKey(type, "tab"))
+                    keyMap[Keyboard.KEY_TAB] = SoundKey(type, "tab")
                     continue
                 }
 
                 if (keyCode == 14) {
-                    keyMap.put(14, SoundKey(type, "backspace"))
+                    keyMap[14] = SoundKey(type, "backspace")
                     continue
                 }
 
                 if (keyCode == 58) {
-                    keyMap.put(58, SoundKey(type, "capslock"))
+                    keyMap[58] = SoundKey(type, "capslock")
                     continue
                 }
 
                 if (keyCode == 28) {
-                    keyMap.put(28, SoundKey(type, "enter"))
+                    keyMap[28] = SoundKey(type, "enter")
                     continue
                 }
 
                 if (keyCode == Keyboard.KEY_SPACE) {
-                    keyMap.put(Keyboard.KEY_SPACE, SoundKey(type, "space"))
+                    keyMap[Keyboard.KEY_SPACE] = SoundKey(type, "space")
                     continue
                 }
 
                 if (keyCode == Keyboard.KEY_LSHIFT) {
-                    keyMap.put(Keyboard.KEY_LSHIFT, SoundKey(type, "shift"))
+                    keyMap[Keyboard.KEY_LSHIFT] = SoundKey(type, "shift")
                     continue
                 }
 
                 if (keyCode == Keyboard.KEY_RSHIFT) {
-                    keyMap.put(Keyboard.KEY_RSHIFT, SoundKey(type, "shift"))
+                    keyMap[Keyboard.KEY_RSHIFT] = SoundKey(type, "shift")
                     continue
                 }
 
-                keyMap.put(keyCode, SoundKey(type, getRandomInt(1, 5).toString()))
+                keyMap[keyCode] = SoundKey(type, getRandomInt(1, 5).toString())
             }
         }
     }

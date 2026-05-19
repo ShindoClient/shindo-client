@@ -8,7 +8,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.appleskin.AppleSkinHelper
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.item.ItemFood
@@ -19,8 +20,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class AppleSkinMod :
-    Mod(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_APPLE_SKIN) {
+class AppleSkinMod : Mod(TranslateText.APPLE_SKIN, TranslateText.APPLE_SKIN_DESCRIPTION, ModCategory.PLAYER, Shinconic.MOD_APPLE_SKIN) {
     private val random = Random()
     var foodBarOffsets: Vector<IntPoint?> = Vector<IntPoint?>()
     private var unclampedFlashAlpha = 0f

@@ -115,15 +115,6 @@ class Notification {
             CORNER_RADIUS,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 224),
         )
-        nvg.drawGradientRoundedRect(
-            x + 1f,
-            y + 1f,
-            maxWidth - 2f,
-            height - 2f,
-            CORNER_RADIUS - 0.7f,
-            ColorUtils.applyAlpha(severity.start, 82),
-            ColorUtils.applyAlpha(severity.end, 40),
-        )
         nvg.drawGradientOutlineRoundedRect(
             x,
             y,
@@ -131,20 +122,19 @@ class Notification {
             height,
             CORNER_RADIUS,
             1.1f,
-            ColorUtils.applyAlpha(severity.start, 205),
-            ColorUtils.applyAlpha(severity.end, 205),
+            ColorUtils.applyAlpha(severity.start, 140),
+            ColorUtils.applyAlpha(severity.end, 120),
         )
 
         val iconBoxX = x + ICON_BOX_PADDING_X
         val iconBoxY = y + ICON_BOX_PADDING_Y
-        nvg.drawGradientRoundedRect(
+        nvg.drawRoundedRect(
             iconBoxX,
             iconBoxY,
             ICON_BOX_SIZE,
             ICON_BOX_SIZE,
             6f,
-            ColorUtils.applyAlpha(severity.start, 220),
-            ColorUtils.applyAlpha(severity.end, 220),
+            ColorUtils.applyAlpha(severity.start, 180),
         )
         nvg.drawCenteredText(
             type.icon,
@@ -152,7 +142,7 @@ class Notification {
             iconBoxY + ICON_BOX_SIZE / 2f - 8f,
             Color.WHITE,
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         val textX = x + CONTENT_PADDING_LEFT
@@ -186,14 +176,13 @@ class Notification {
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 170),
         )
         val remainingProgress = 1f - min(1f, timer.elapsedTime / SHOW_MS.toFloat())
-        nvg.drawGradientRoundedRect(
+        nvg.drawRoundedRect(
             progressBaseX,
             progressBaseY,
             progressWidth * max(0f, remainingProgress),
             PROGRESS_HEIGHT,
             PROGRESS_HEIGHT / 2f,
-            ColorUtils.applyAlpha(severity.start, 232),
-            ColorUtils.applyAlpha(severity.end, 232),
+            ColorUtils.applyAlpha(severity.start, 220),
         )
 
         nvg.restore()
@@ -225,6 +214,7 @@ class Notification {
             NotificationType.ERROR -> SeverityColors(Color(255, 115, 123), Color(220, 74, 90))
             NotificationType.SUCCESS -> SeverityColors(Color(104, 222, 132), Color(69, 194, 116))
             NotificationType.MUSIC -> SeverityColors(accent.getColor1(), accent.getColor2())
+            NotificationType.WEBSOCKET -> SeverityColors(Color(88, 178, 255), Color(74, 125, 255))
         }
 
     private companion object {

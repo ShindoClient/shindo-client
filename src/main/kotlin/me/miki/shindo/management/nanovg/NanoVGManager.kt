@@ -490,7 +490,7 @@ class NanoVGManager {
         drawRoundedRect(x, y, size, size, 5, Color(20, 20, 25, (anim * (180 + hover * 75)).toInt()))
         drawOutlineRoundedRect(x, y, size, size, 5, 1f, Color(255, 255, 255, (anim * (30 + hover * 50)).toInt()))
         val iconColor: Color = Color(255, 255, 255, (anim * (180 + hover * 75)).toInt())
-        drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LEGACYICON)
+        drawCenteredText(icon, x + size / 2f, y + size / 2f - 6, iconColor, 14, Fonts.LUCIDE)
     }
 
     fun drawGradientRoundedRect(
@@ -1852,7 +1852,7 @@ class NanoVGManager {
         size: Float,
         color: Color,
     ) {
-        val iconFont = Fonts.LEGACYICON
+        val iconFont = Fonts.LUCIDE
         val iconWidth = getTextWidth(icon, size, iconFont)
         val iconHeight = getTextHeight(icon, size, iconFont)
         drawText(icon, x - iconWidth / 2, y - iconHeight / 2, color, size, iconFont)

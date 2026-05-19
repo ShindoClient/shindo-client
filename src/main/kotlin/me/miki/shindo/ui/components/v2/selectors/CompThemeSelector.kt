@@ -2,7 +2,7 @@ package me.miki.shindo.ui.components.v2.selectors
 
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.templates.CompPanel
 import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
@@ -107,12 +107,12 @@ class CompThemeSelector(
 
             if (selected) {
                 nvg.drawText(
-                    LegacyIcon.CHECK,
+                    Lucide.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 12f,
                     Color(255, 255, 255, min(255, 180 + (theme.getAnimation().getValue() * 60f).toInt())),
                     12f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
             } else if (hovered) {
                 nvg.drawOutlineRoundedRect(

@@ -19,8 +19,7 @@ class DiscordStats {
 
     fun checkDiscordValues() {
         val discordStats = Shindo.getInstance().getDiscordStats()
-        val jsonObject: JsonObject? =
-            HttpUtils.readJson("https://discord.com/api/v9/invites/uU56tvtXMU?with_counts=true", null)
+        val jsonObject: JsonObject? = HttpUtils.readJson("https://discord.com/api/v9/invites/uU56tvtXMU?with_counts=true", null)
 
         if (jsonObject != null) {
             discordStats.membersCount = JsonUtils.getIntProperty(jsonObject, "approximate_member_count", -1)

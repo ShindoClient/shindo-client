@@ -8,7 +8,8 @@ import me.miki.shindo.management.event.impl.EventUpdateDisplay
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -27,7 +28,7 @@ class MotionBlurMod :
         TranslateText.MOTION_BLUR,
         TranslateText.MOTION_BLUR_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_MOTION_BLUR,
+        Shinconic.MOD_MOTION_BLUR,
     ) {
     private val motion_blur = ResourceLocation("minecraft:shaders/post/motion_blur.json")
 

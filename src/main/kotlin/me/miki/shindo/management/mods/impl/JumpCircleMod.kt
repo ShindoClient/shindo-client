@@ -10,7 +10,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.Vec3
@@ -25,7 +26,7 @@ class JumpCircleMod :
         TranslateText.JUMP_CIRCLE,
         TranslateText.JUMP_CIRCLE_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_JUMP_CIRCLE,
+        Shinconic.MOD_JUMP_CIRCLE,
     ) {
     private val circles: MutableList<JumpCircle> = ArrayList<JumpCircle>()
     private var jumping = false

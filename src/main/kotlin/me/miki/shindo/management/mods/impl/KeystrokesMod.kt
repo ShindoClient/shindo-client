@@ -6,14 +6,15 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod.HudTheme
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class KeystrokesMod : HUDMod(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION, LegacyIcon.MOD_KEYSTROKES) {
+class KeystrokesMod : HUDMod(TranslateText.KEYSTROKES, TranslateText.KEYSTROKES_DESCRIPTION, Shinconic.MOD_KEYSTROKES) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SPACE)
     private val spaceSetting = true
 

@@ -10,7 +10,8 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.subtitle.Subtitle
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
@@ -23,8 +24,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-class SoundSubtitlesMod :
-    HUDMod(TranslateText.SOUND_SUBTITLES, TranslateText.SOUND_SUBTITLES_DESCRIPTION, LegacyIcon.MOD_SOUND_SUBTITLES) {
+class SoundSubtitlesMod : HUDMod(TranslateText.SOUND_SUBTITLES, TranslateText.SOUND_SUBTITLES_DESCRIPTION, Shinconic.MOD_SOUND_SUBTITLES) {
     private val subtitles: MutableList<Subtitle> = Lists.newArrayList()
     private val soundMap = HashMap<String, String>()
 
@@ -51,7 +51,7 @@ class SoundSubtitlesMod :
                     .parseString(read(mc.resourceManager.getResource(mapped).inputStream))
                     .asJsonObject
             for (entry in obj.entrySet()) {
-                soundMap.put(entry.key, entry.value.asString)
+                soundMap[entry.key] = entry.value.asString
             }
         } catch (e: Exception) {
             ShindoLogger.error("Failed to load sound subtitles", e)
@@ -62,7 +62,7 @@ class SoundSubtitlesMod :
     fun onRender2D(event: EventRender2D?) {
         val nvg = getInstance().nanoVGManager
 
-        nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
+        nvg.setupAndDraw(Runnable { this.drawNanoVG() })
     }
 
     private fun drawNanoVG() {

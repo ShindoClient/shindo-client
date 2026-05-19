@@ -10,7 +10,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -37,7 +38,7 @@ class KillEffectsMod :
         TranslateText.KILL_EFFECTS,
         TranslateText.KILL_EFFECTS_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_KILL_EFFECTS,
+        Shinconic.MOD_KILL_EFFECTS,
     ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SOUND)
     private val soundSetting = true

@@ -12,7 +12,8 @@ import me.miki.shindo.gui.modmenu.v2.GuiModMenu
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
@@ -83,16 +84,16 @@ class MainScene(
         // Logo
         val centerX = sw / 2f
         val logoSize = 54f
-        val logoY = sh / 2f - (nvg.getTextHeight(LegacyIcon.SHINDO, logoSize, Fonts.LEGACYICON) / 2f) - 55
+        val logoY = sh / 2f - (nvg.getTextHeight(Shinconic.SHINDO, logoSize, Fonts.SHINCONIC) / 2f) - 55
         nvg.drawCenteredText(
-            LegacyIcon.SHINDO,
+            Shinconic.SHINDO,
             centerX,
             logoY,
             Color(255, 255, 255, (anim * 255).toInt()),
             logoSize,
-            Fonts.LEGACYICON,
+            Fonts.SHINCONIC,
         )
-        // nvg.drawText(LegacyIcon.BOOKMARK, centerX + 35, logoY + 12, Color(255, 255, 255, (anim * 150).toInt()), 18, Fonts.LEGACYICON)
+        // nvg.drawText(Lucide.BOOKMARK, centerX + 35, logoY + 12, Color(255, 255, 255, (anim * 150).toInt()), 18, Fonts.LUCIDE)
 
         val btnW = 180f
         val btnH = 20f
@@ -141,12 +142,12 @@ class MainScene(
             Color(255, 255, 255, (anim * (40 + bgHover * 80)).toInt()),
         )
         nvg.drawCenteredText(
-            LegacyIcon.IMAGE,
+            Lucide.IMAGE,
             bgX + bgSize / 2f,
             bgY + bgSize / 2f - 10,
             Color(255, 255, 255, (anim * (180 + bgHover * 75)).toInt()),
             22,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         confirmAnim.setAnimation(if (confirmingExit) 1f else 0f, 14)
@@ -227,19 +228,19 @@ class MainScene(
 
         // Diamond
         // diamondHover = lerp(diamondHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        // drawCornerIcon(nvg, rightX - btnS, topY, btnS, LegacyIcon.SHINDO, diamondHover, anim, true)
+        // drawCornerIcon(nvg, rightX - btnS, topY, btnS, Shinconic.SHINDO, diamondHover, anim, true)
 
         // Settings
         // rightX -= (btnS + btnSp)
         settingsHover =
             lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.SETTINGS, rightX - btnS, topY, btnS, settingsHover, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.SETTINGS, rightX - btnS, topY, btnS, settingsHover, anim)
 
         // Logo
         rightX -= (btnS + btnSp)
         featherHover =
             lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(LegacyIcon.SHINDO, rightX - btnS, topY, btnS, featherHover, anim)
+        nvg.drawGlassButtonWithIcon(Shinconic.SHINDO, rightX - btnS, topY, btnS, featherHover, anim)
 
         // Profile box
         rightX -= (btnS + btnSp)

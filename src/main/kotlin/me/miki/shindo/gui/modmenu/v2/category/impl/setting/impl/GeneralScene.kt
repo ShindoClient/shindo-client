@@ -4,7 +4,7 @@ import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.v2.category.impl.setting.SettingScene
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.buttons.CompSettingButton
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
 import me.miki.shindo.ui.components.v2.inputs.CompKeybind
@@ -17,7 +17,7 @@ class GeneralScene(
         parent,
         TranslateText.GENERAL,
         TranslateText.GENERAL_DESCRIPTION,
-        LegacyIcon.LIST,
+        Lucide.LIST,
     ) {
     private lateinit var container: CompScrollableContainer
     private lateinit var modMenuKeybind: CompKeybind

@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
@@ -14,7 +15,7 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSet
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getNumberSetting
 import me.miki.shindo.utils.ServerUtils.isInTabList
 
-class FPSBoostMod : Mod(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_FPS_BOOST) {
+class FPSBoostMod : Mod(TranslateText.FPS_BOOST, TranslateText.FPS_BOOST_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_FPS_BOOST) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CHUNK_DELAY)
     @JvmField
     var chunkDelaySetting = false

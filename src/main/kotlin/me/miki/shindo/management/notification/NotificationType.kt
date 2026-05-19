@@ -1,13 +1,14 @@
 package me.miki.shindo.management.notification
 
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 
 enum class NotificationType(
     val icon: String,
 ) {
-    INFO(LegacyIcon.INFO),
-    WARNING(LegacyIcon.ALERT_TRIANGLE),
-    ERROR(LegacyIcon.X_CIRCLE),
-    SUCCESS(LegacyIcon.CHECK),
-    MUSIC(LegacyIcon.MUSIC),
+    INFO(Lucide.INFO),
+    WARNING(Lucide.ALERT_TRIANGLE),
+    ERROR(Lucide.X_CIRCLE),
+    SUCCESS(Lucide.CHECK),
+    MUSIC(Lucide.MUSIC),
+    WEBSOCKET(Lucide.CHEVRONS_LEFT_RIGHT_ELLIPSIS),
 }

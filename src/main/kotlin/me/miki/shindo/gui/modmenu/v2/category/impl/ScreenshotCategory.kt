@@ -12,7 +12,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.screenshot.Screenshot
 import me.miki.shindo.management.screenshot.ScreenshotManager
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
@@ -24,7 +24,7 @@ import java.io.IOException
 
 class ScreenshotCategory(
     parent: GuiModMenu?,
-) : Category(parent!!, TranslateText.SCREENSHOT, LegacyIcon.CAMERA, false, true) {
+) : Category(parent!!, TranslateText.SCREENSHOT, Lucide.CAMERA, false, true) {
     // todo: add delete confirm dialog
     private var currentScreenshot: Screenshot? = null
 
@@ -127,12 +127,12 @@ class ScreenshotCategory(
                 6f,
             )
             nvg.drawText(
-                LegacyIcon.TRASH,
+                Lucide.TRASH,
                 this.getX() + this.getWidth() - 59f,
                 this.getY() + addY + 6f,
                 palette.getMaterialRed((trashAnimation.getValue() * 255).toInt()),
                 12f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
 
             addX = 58
@@ -282,12 +282,12 @@ class ScreenshotCategory(
                 palette.getBackgroundColor(ColorType.DARK),
             )
             nvg.drawCenteredText(
-                LegacyIcon.CAMERA,
+                Lucide.CAMERA,
                 this.getX() + addX + ((this.getWidth() - (addX * 2f)) / 2f),
                 this.getY() + 68f,
                 palette.getFontColor(ColorType.NORMAL),
                 64f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
 
             addX = 58

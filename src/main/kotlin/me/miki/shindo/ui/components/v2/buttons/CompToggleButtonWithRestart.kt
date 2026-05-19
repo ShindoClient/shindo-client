@@ -3,7 +3,7 @@ package me.miki.shindo.ui.components.v2.buttons
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.display.CompTooltip
@@ -154,11 +154,11 @@ class CompToggleButtonWithRestart(
         h: Float,
     ) {
         val wSize = 11f
-        val wX = x - 14f - nvg.getTextWidth(LegacyIcon.ALERT_TRIANGLE, wSize, Fonts.LEGACYICON) / 2f
-        val wY = y + h / 2f - nvg.getTextHeight(LegacyIcon.ALERT_TRIANGLE, wSize, Fonts.LEGACYICON) / 2f
+        val wX = x - 14f - nvg.getTextWidth(Lucide.ALERT_TRIANGLE, wSize, Fonts.LUCIDE) / 2f
+        val wY = y + h / 2f - nvg.getTextHeight(Lucide.ALERT_TRIANGLE, wSize, Fonts.LUCIDE) / 2f
         val wColor = ColorUtils.applyAlpha(Color(255, 189, 64), (warningAnim.getValue() * 255).toInt().coerceIn(0, 255))
 
-        nvg.drawText(LegacyIcon.ALERT_TRIANGLE, wX, wY, wColor, wSize, Fonts.LEGACYICON)
+        nvg.drawText(Lucide.ALERT_TRIANGLE, wX, wY, wColor, wSize, Fonts.LUCIDE)
 
         if (MouseUtils.isInside(mouseX, mouseY, wX - 3f, wY - 3f, 16f, 16f)) {
             tooltip.setX(wX - 6f - tooltip.getWidth())

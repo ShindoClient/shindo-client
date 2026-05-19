@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventReceivePacket
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -21,7 +22,7 @@ class ChatTranslateMod :
         TranslateText.CHAT_TRANSLATE,
         TranslateText.CHAT_TRANSLATE_DESCRIPTION,
         ModCategory.OTHER,
-        LegacyIcon.MOD_CHAT_TRANSLATE,
+        Shinconic.MOD_CHAT_TRANSLATE,
     ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.LANGUAGE)
     val language: Language = Language.JAPANESE

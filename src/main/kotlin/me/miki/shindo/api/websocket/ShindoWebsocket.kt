@@ -2,14 +2,22 @@ package me.miki.shindo.api.websocket
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.miki.shindo.Shindo
 import me.miki.shindo.api.roles.RoleManager
 import me.miki.shindo.api.websocket.message.MessageHandler
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
 import me.miki.shindo.logger.FileLogWriter
+import me.miki.shindo.management.notification.NotificationHandler
+import me.miki.shindo.management.notification.NotificationType
 import okhttp3.Handshake
-import java.util.*
-import java.util.concurrent.*
+import java.util.Collections
+import java.util.Locale
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
@@ -124,7 +132,11 @@ class ShindoWebsocket(
                     cancelReconnect()
                     authenticate()
                     startHeartbeat()
-                    // FileLogWriter.websocket("open url=$url")
+                    Shindo.getInstance().getNotificationManager().post(
+                        "WEBSOCKET",
+                        "Connection Opened.",
+                        NotificationType.WEBSOCKET,
+                    )
                     notifyListeners(Consumer { l -> l.onOpen(null) })
                 }
 
@@ -146,11 +158,20 @@ class ShindoWebsocket(
                     clientRef.compareAndSet(c, null)
                     if (!stopRequested.get()) scheduleReconnect("close:$code")
                     // FileLogWriter.websocket("close code=$code reason=$reason remote=$remote")
+                    Shindo.getInstance().getNotificationManager().post(
+                        "WEBSOCKET",
+                        "Connection Closed.",
+                        NotificationType.WEBSOCKET,
+                    )
                     notifyListeners(Consumer { l -> l.onClose(code, reason, remote) })
                 }
 
                 override fun onError(ex: Exception) {
-                    FileLogWriter.websocket("error ${ex.javaClass.simpleName} ${ex.message}")
+                    Shindo.getInstance().getNotificationManager().post(
+                        "WEBSOCKET",
+                        "Connection Error.",
+                        NotificationType.WEBSOCKET,
+                    )
                     notifyListeners(Consumer { l -> l.onError(ex) })
                 }
             },
@@ -260,6 +281,11 @@ class ShindoWebsocket(
                 (RECONNECT_BASE_MS * 2.0.pow((attempt - 1).toDouble())).toLong(),
             )
         // FileLogWriter.websocket("reconnect scheduled reason=$reason attempt=$attempt delay=${delay}ms")
+        Shindo.getInstance().getNotificationManager().post(
+            "WEBSOCKET",
+            "Reconnecting  in ${delay}ms.",
+            NotificationType.WEBSOCKET,
+        )
         reconnectFuture.set(
             scheduler.schedule({ establishClient() }, delay, TimeUnit.MILLISECONDS),
         )

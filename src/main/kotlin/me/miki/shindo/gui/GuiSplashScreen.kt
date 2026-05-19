@@ -3,7 +3,8 @@ package me.miki.shindo.gui
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
@@ -59,12 +60,12 @@ class GuiSplashScreen {
                 Runnable {
                     nvg.drawRect(0f, 0f, sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color.BLACK)
                     nvg.drawCenteredText(
-                        LegacyIcon.SHINDO,
+                        Shinconic.SHINDO,
                         sr.scaledWidth / 2f,
-                        (sr.scaledHeight / 2f) - (nvg.getTextHeight(LegacyIcon.SHINDO, 130f, Fonts.LEGACYICON) / 2) - 1,
+                        (sr.scaledHeight / 2f) - (nvg.getTextHeight(Shinconic.SHINDO, 130f, Fonts.SHINCONIC) / 2) - 1,
                         Color(255, 255, 255, (fadeAnimation!!.getValue() * 255).toInt()),
                         130f,
-                        Fonts.LEGACYICON,
+                        Fonts.SHINCONIC,
                     )
                 },
             )

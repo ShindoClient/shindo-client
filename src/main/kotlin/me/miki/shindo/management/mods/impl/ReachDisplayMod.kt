@@ -5,14 +5,14 @@ import me.miki.shindo.management.event.impl.EventDamageEntity
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import java.text.DecimalFormat
 
-class ReachDisplayMod :
-    SimpleHUDMod(TranslateText.REACH_DISPLAY, TranslateText.REACH_DISPLAY_DESCRIPTION, LegacyIcon.MOD_REACH_DISPLAY) {
+class ReachDisplayMod : SimpleHUDMod(TranslateText.REACH_DISPLAY, TranslateText.REACH_DISPLAY_DESCRIPTION, Shinconic.MOD_REACH_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconEnabled = true
 
@@ -42,12 +42,12 @@ class ReachDisplayMod :
             distance = 0.0
         }
 
-        if (distance == 0.0) {
-            return "Hasn't attacked"
+        return if (distance == 0.0) {
+            "Hasn't attacked"
         } else {
-            return df.format(distance) + " blocks"
+            df.format(distance) + " blocks"
         }
     }
 
-    override fun getIcon(): String? = if (iconEnabled) LegacyIcon.ACTIVITY else null
+    override fun getIcon(): String? = if (iconEnabled) Lucide.ACTIVITY else null
 }

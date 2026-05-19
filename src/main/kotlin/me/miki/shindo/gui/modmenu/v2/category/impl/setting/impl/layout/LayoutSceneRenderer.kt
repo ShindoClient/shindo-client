@@ -136,7 +136,7 @@ object LayoutSceneRenderer {
             iconY + iconSize / 2f - 8f,
             Color.WHITE,
             17f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         val textX = iconX + iconSize + 12f

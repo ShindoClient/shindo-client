@@ -6,7 +6,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.settings.KeyBinding
 
@@ -15,7 +16,7 @@ class ToggleSneakMod :
         TranslateText.TOGGLE_SNEAK,
         TranslateText.TOGGLE_SNEAK_DESCRIPTION,
         ModCategory.PLAYER,
-        LegacyIcon.MOD_TOGGLE_SNEAK,
+        Shinconic.MOD_TOGGLE_SNEAK,
     ) {
     private var toggle = false
 

@@ -7,7 +7,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.utils.ColorUtils
@@ -31,7 +31,7 @@ class LayoutNotificationsScene(
         UILayoutArea.NOTIFICATIONS,
         TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION,
         TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION,
-        LegacyIcon.BELL,
+        Lucide.BELL,
     ) {
     private var dragActive = false
     private var dragOffsetX = 0f
@@ -268,12 +268,12 @@ class LayoutNotificationsScene(
         )
 
         nvg.drawCenteredText(
-            LegacyIcon.BELL,
+            Lucide.BELL,
             x + 10.5f,
             y + height / 2f - 5.5f,
             palette.getFontColor(ColorType.DARK),
             10.6f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         val textStartX = x + 21f
         val titleY = y + max(5.5f, height * 0.26f)

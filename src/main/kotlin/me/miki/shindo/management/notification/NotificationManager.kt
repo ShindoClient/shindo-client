@@ -18,7 +18,6 @@ class NotificationManager {
         type: NotificationType,
     ) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title.getText() + " | " + message.getText() + " | " + type.name)
     }
 
     fun post(
@@ -27,7 +26,6 @@ class NotificationManager {
         type: NotificationType,
     ) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title + " | " + message + " | " + type.name)
     }
 
     fun post(
@@ -36,7 +34,6 @@ class NotificationManager {
         type: NotificationType,
     ) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title.getText() + " | " + message + " | " + type.name)
     }
 
     fun post(
@@ -45,6 +42,5 @@ class NotificationManager {
         type: NotificationType,
     ) {
         notifications.add(Notification(title, message, type))
-        FileLogWriter.notification(title + " | " + message.getText() + " | " + type.name)
     }
 }

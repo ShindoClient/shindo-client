@@ -9,7 +9,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.ui.components.v2.inputs.CompTextBox
 import me.miki.shindo.utils.ColorUtils
@@ -166,7 +166,7 @@ class GuiFriendsChat(
             addButtonY,
             addButtonW,
             addButtonH,
-            LegacyIcon.PLUS,
+            Lucide.PLUS,
             mouseX,
             mouseY,
         )
@@ -431,7 +431,7 @@ class GuiFriendsChat(
             y + height / 2f - 4f,
             palette.getFontColor(ColorType.DARK),
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -519,12 +519,12 @@ class GuiFriendsChat(
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200),
             )
             nvg.drawCenteredText(
-                LegacyIcon.USER,
+                Lucide.USER,
                 x + 20f,
                 y + 12f,
                 palette.getFontColor(ColorType.DARK),
                 10f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
 
@@ -540,7 +540,7 @@ class GuiFriendsChat(
             6f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 200),
         )
-        nvg.drawCenteredText(LegacyIcon.TRASH, x + width - 19f, y + 13f, palette.getMaterialRed(), 9f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(Lucide.TRASH, x + width - 19f, y + 13f, palette.getMaterialRed(), 9f, Fonts.LUCIDE)
     }
 
     private fun drawChatPanel(

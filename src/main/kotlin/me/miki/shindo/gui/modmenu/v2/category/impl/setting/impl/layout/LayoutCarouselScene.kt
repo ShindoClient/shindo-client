@@ -8,7 +8,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.feedback.CompCarouselPageIndicator
 import me.miki.shindo.ui.components.v2.templates.CompButton
 import me.miki.shindo.ui.layout.enums.UILayoutArea
@@ -102,8 +102,8 @@ abstract class LayoutCarouselScene(
         nextBounds =
             Rect(x + width - sidePadding - navSize, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
 
-        drawNavButton(nvg, palette, previousBounds, LegacyIcon.CHEVRON_LEFT, previousBounds!!.contains(mouseX, mouseY))
-        drawNavButton(nvg, palette, nextBounds, LegacyIcon.CHEVRON_RIGHT, nextBounds!!.contains(mouseX, mouseY))
+        drawNavButton(nvg, palette, previousBounds, Lucide.CHEVRON_LEFT, previousBounds!!.contains(mouseX, mouseY))
+        drawNavButton(nvg, palette, nextBounds, Lucide.CHEVRON_RIGHT, nextBounds!!.contains(mouseX, mouseY))
 
         LayoutSceneRenderer.drawPreviewSurface(
             nvg,
@@ -327,7 +327,7 @@ abstract class LayoutCarouselScene(
             bounds.y + bounds.height / 2f - 4.5f,
             palette.getFontColor(ColorType.DARK),
             12f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 

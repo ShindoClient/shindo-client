@@ -9,7 +9,8 @@ import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.waypoint.Waypoint
@@ -23,7 +24,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.sqrt
 
-class WaypointMod : Mod(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD, LegacyIcon.MOD_WAYPOINT) {
+class WaypointMod : Mod(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTION, ModCategory.WORLD, Shinconic.MOD_WAYPOINT) {
     @Property(type = PropertyType.KEYBIND, translate = TranslateText.KEYBIND, keyCode = Keyboard.KEY_B)
     private val keybindSetting = Keyboard.KEY_B
 

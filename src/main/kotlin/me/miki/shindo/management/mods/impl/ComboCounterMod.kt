@@ -7,12 +7,12 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
-class ComboCounterMod :
-    SimpleHUDMod(TranslateText.COMBO_COUNTER, TranslateText.COMBO_COUNTER_DESCRIPTION, LegacyIcon.MOD_COMBO_COUNTER) {
+class ComboCounterMod : SimpleHUDMod(TranslateText.COMBO_COUNTER, TranslateText.COMBO_COUNTER_DESCRIPTION, Shinconic.MOD_COMBO_COUNTER) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -48,13 +48,12 @@ class ComboCounterMod :
         }
     }
 
-    override fun getText(): String {
+    override fun getText(): String =
         if (combo == 0) {
-            return "No Combo"
+            "No Combo"
         } else {
-            return combo.toString() + " Combo"
+            "$combo Combo"
         }
-    }
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.BAR_CHERT else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.BAR_CHART else null
 }

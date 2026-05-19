@@ -34,7 +34,7 @@ class ScreenAnimation {
         stencil: Boolean = false,
     ) {
         val sr = ScaledResolution(mc)
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
         val factor = sr.scaleFactor
 
         if (fbWidth != mc.displayWidth || fbHeight != mc.displayHeight) {
@@ -179,7 +179,7 @@ class ScreenAnimation {
     }
 
     fun close() {
-        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager!!
+        val nvg: NanoVGManager = Shindo.getInstance().nanoVGManager
 
         if (fb != null) {
             NanoVGGL2.nvgluDeleteFramebuffer(nvg.getContext(), fb!!)

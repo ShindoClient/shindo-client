@@ -8,7 +8,8 @@ import me.miki.shindo.management.event.impl.EventToggleFullscreen
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import org.lwjgl.LWJGLException
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.DisplayMode
@@ -18,7 +19,7 @@ class BorderlessFullscreenMod :
         TranslateText.BORDERLESS_FULSCREEN,
         TranslateText.BORDERLESS_FULLSCREEN_DESCRIPTION,
         ModCategory.OTHER,
-        LegacyIcon.MOD_BORDERLESS_FULLSCREEN,
+        Shinconic.MOD_BORDERLESS_FULLSCREEN,
     ) {
     private var prevX = 0
     private var prevY = 0

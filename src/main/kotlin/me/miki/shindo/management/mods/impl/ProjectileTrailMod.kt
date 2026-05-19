@@ -6,7 +6,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.projectiletrail.ProjectileTrailType
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.entity.Entity
@@ -21,7 +22,7 @@ class ProjectileTrailMod :
         TranslateText.PROJECTILE_TRAIL,
         TranslateText.PROJECTILE_TRAIL_DESCRIPTION,
         ModCategory.PLAYER,
-        LegacyIcon.MOD_PROJECTILE_TRAIL,
+        Shinconic.MOD_PROJECTILE_TRAIL,
     ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private val type = ProjectileTrailType.HEARTS
@@ -52,6 +53,7 @@ class ProjectileTrailMod :
         trail: ProjectileTrailType,
         vector: Vec3,
     ) {
+        @Suppress("ktlint:standard:mixed-condition-operators")
         if (trail != ProjectileTrailType.GREEN_STAR && trail != ProjectileTrailType.HEARTS || ticks % 4 == 0) {
             if (trail != ProjectileTrailType.MUSIC_NOTES || ticks % 2 == 0) {
                 val translate = trail.translate
@@ -88,22 +90,29 @@ class ProjectileTrailMod :
         if (entity.posX == entity.prevPosX && entity.posY == entity.prevPosY && entity.posZ == entity.prevPosZ) {
             return false
         } else {
-            if (entity is EntityArrow) {
-                return entity.shootingEntity != null && entity.shootingEntity == mc.thePlayer
-            } else if (entity is EntityFishHook) {
-                return entity.angler != null && entity.angler == mc.thePlayer
-            } else if (entity is EntityThrowable &&
-                entity.ticksExisted == 1 &&
-                entity.getDistanceSqToEntity(mc.thePlayer) <= 11.0 &&
-                !throwables.contains(
-                    entity,
-                )
-            ) {
-                throwables.add(entity)
-                return true
-            }
+            when (entity) {
+                is EntityArrow -> {
+                    return entity.shootingEntity != null && entity.shootingEntity == mc.thePlayer
+                }
 
-            return false
+                is EntityFishHook -> {
+                    return entity.angler != null && entity.angler == mc.thePlayer
+                }
+
+                is EntityThrowable if entity.ticksExisted == 1 &&
+                    entity.getDistanceSqToEntity(mc.thePlayer) <= 11.0 &&
+                    !throwables.contains(
+                        entity,
+                    )
+                -> {
+                    throwables.add(entity)
+                    return true
+                }
+
+                else -> {
+                    return false
+                }
+            }
         }
     }
 

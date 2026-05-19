@@ -22,7 +22,7 @@ class ChangelogManager {
                 "https://cdn.shindoclient.com/data/changelogs/versions/${Shindo.getInstance().getVerIdentifier()}.json",
                 null,
             ) ?: return
-        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs") ?: return
+        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "changelogs")
         val gson = Gson()
         for (jsonElement in jsonArray) {
             val changelogJsonObject = gson.fromJson(jsonElement, JsonObject::class.java)

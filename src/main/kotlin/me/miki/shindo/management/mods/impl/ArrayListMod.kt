@@ -7,13 +7,13 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import java.awt.Color
 
-class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_DESCRIPTION, LegacyIcon.MOD_ARRAY_LIST) {
+class ArrayListMod : HUDMod(TranslateText.ARRAY_LIST, TranslateText.ARRAY_LIST_DESCRIPTION, Shinconic.MOD_ARRAY_LIST) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.BACKGROUND)
     private val backgroundEnabled = true
 

@@ -1,4 +1,5 @@
 @file:JvmName("NanoVGExtensions")
+@file:Suppress("UNUSED")
 
 package me.miki.extensions.ui.nanovg
 

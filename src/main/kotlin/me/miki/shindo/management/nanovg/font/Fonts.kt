@@ -18,9 +18,6 @@ object Fonts {
     val SEMIBOLD = Font("semi-bold", ResourceLocation(PATH + "inter/Inter-SemiBold.ttf"))
 
     @JvmField
-    val LEGACYICON = Font("icon", ResourceLocation(PATH + "Icon.ttf"))
-
-    @JvmField
     val SHINCONIC = Font("shinconic", ResourceLocation(PATH + "Shinconic.ttf"))
 
     @JvmField
@@ -33,11 +30,8 @@ object Fonts {
     val BANGERS = Font("bangers", ResourceLocation(PATH + "Bangers.ttf"))
 
     @JvmField
-    val ICON_OUTLINE: Font = Font("icon-outline", ResourceLocation(PATH + "icns/FluentSystemIcons-Regular.ttf"))
-
-    @JvmField
-    val ICON_FILLED: Font = Font("icon-filled", ResourceLocation(PATH + "icns/FluentSystemIcons-Filled.ttf"))
+    val LUCIDE = Font("bangers", ResourceLocation(PATH + "Lucide.ttf"))
 
     @JvmStatic
-    fun getFonts(): ArrayList<Font> = ArrayList(listOf(MEDIUM, SEMIBOLD, REGULAR, LEGACYICON, SHINCONIC, MOJANGLES))
+    fun getFonts(): ArrayList<Font> = ArrayList(listOf(MEDIUM, SEMIBOLD, REGULAR, LUCIDE, SHINCONIC, MOJANGLES))
 }

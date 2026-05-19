@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventText
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 
@@ -14,7 +15,7 @@ class NameProtectMod :
         TranslateText.NAME_PROTECT,
         TranslateText.NAME_PROTECT_DESCRIPTION,
         ModCategory.PLAYER,
-        LegacyIcon.MOD_NAME_PROTECT,
+        Shinconic.MOD_NAME_PROTECT,
         "nickhider",
     ) {
     @Property(type = PropertyType.TEXT, translate = TranslateText.NAME, text = "You")

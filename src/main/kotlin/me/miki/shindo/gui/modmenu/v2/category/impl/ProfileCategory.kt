@@ -13,9 +13,13 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.notification.NotificationType
-import me.miki.shindo.management.profile.*
+import me.miki.shindo.management.profile.Profile
+import me.miki.shindo.management.profile.ProfileIcon
+import me.miki.shindo.management.profile.ProfileManager
+import me.miki.shindo.management.profile.ProfileShareManager
+import me.miki.shindo.management.profile.ProfileType
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.chips.CategoryChipRenderer
 import me.miki.shindo.ui.components.v2.chips.FilterChip
@@ -31,13 +35,13 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.max
 
 class ProfileCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.PROFILE, LegacyIcon.EDIT, true, true) {
+) : Category(parent, TranslateText.PROFILE, Lucide.USER_ROUND_PEN, true, true) {
     private val nameBox = CompTextBox()
     private val serverIpBox = CompTextBox()
     private val typeChips = ArrayList<FilterChip>()
@@ -219,12 +223,12 @@ class ProfileCategory(
         cardWidth: Float,
     ) {
         nvg.drawCenteredText(
-            LegacyIcon.PLUS,
+            Lucide.PLUS,
             cardX + cardWidth / 2f,
             cardY + CARD_HEIGHT / 2f - 16f,
             palette.getFontColor(ColorType.DARK),
             24f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawCenteredText(
             TranslateText.ADD_PROFILE.getText(),
@@ -271,12 +275,12 @@ class ProfileCategory(
                     applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 200),
                 )
                 nvg.drawCenteredText(
-                    LegacyIcon.PLUS,
+                    Lucide.PLUS,
                     iconX + ICON_SIZE / 2f,
                     iconY + ICON_SIZE / 2f,
                     palette.getFontColor(ColorType.DARK),
                     14f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
             }
         }
@@ -348,12 +352,12 @@ class ProfileCategory(
         )
         if (isActive) {
             nvg.drawCenteredText(
-                LegacyIcon.CHECK,
+                Lucide.CHECK,
                 btnX + btnSize / 2f - 0.5f,
                 checkY + 3f,
                 palette.getFontColor(ColorType.DARK),
                 10f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
 
@@ -370,20 +374,20 @@ class ProfileCategory(
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
-            LegacyIcon.STAR,
+            Lucide.STAR,
             btnX + btnSize / 2f - 0.5f,
             starY + 3f,
             palette.getFontColor(ColorType.NORMAL),
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawCenteredText(
-            LegacyIcon.STAR_FILL,
+            Lucide.STAR,
             btnX + btnSize / 2f,
             starY + 3f,
             applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.getValue() * 255).toInt()),
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         // Delete
@@ -396,12 +400,12 @@ class ProfileCategory(
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
-            LegacyIcon.TRASH,
+            Lucide.TRASH_2,
             btnX + btnSize / 2f - 0.5f,
             deleteY + 3f,
             palette.getMaterialRed(),
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         // Share — filled icon if already shared (code exists), outline if not
@@ -415,7 +419,7 @@ class ProfileCategory(
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
-            if (alreadyShared) LegacyIcon.CHECK else LegacyIcon.CONTENT_COPY,
+            if (alreadyShared) Lucide.CHECK else Lucide.COPY,
             btnX + btnSize / 2f - 0.5f,
             shareY + 3f,
             if (alreadyShared) {
@@ -424,7 +428,7 @@ class ProfileCategory(
                 applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
             },
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -473,7 +477,7 @@ class ProfileCategory(
             applyAlpha(palette.getBackgroundColor(ColorType.MID), (160 + t * 60).toInt()),
         )
         nvg.drawCenteredText(
-            LegacyIcon.CONTENT_PASTE,
+            Lucide.CLIPBOARD_PASTE,
             btnX + 8.5f,
             btnY + btnH / 2f - 4f,
             applyAlpha(
@@ -481,7 +485,7 @@ class ProfileCategory(
                 if (showImportOverlay) 80 else 220,
             ),
             8.5f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawCenteredText(
             TranslateText.PROFILE_IMPORT.getText(),
@@ -598,12 +602,12 @@ class ProfileCategory(
             nvg.drawRoundedImage(selectedCustomIcon!!, customX + 1f, iconY + 1f, tileSize - 2f, tileSize - 2f, 7f)
         } else {
             nvg.drawCenteredText(
-                LegacyIcon.PLUS,
+                Lucide.PLUS,
                 customX + tileSize / 2f,
                 iconY + tileSize / 2f - 6f + hoverT * 0.25f,
                 palette.getFontColor(ColorType.DARK),
                 12f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
         if (customHovered) {
@@ -723,8 +727,16 @@ class ProfileCategory(
 
         // Title
         nvg.drawText(
-            "${LegacyIcon.DOWNLOAD}  ${TranslateText.PROFILE_IMPORT.getText()}",
+            Lucide.DOWNLOAD,
             overlayX + margin,
+            overlayY + 14f,
+            palette.getFontColor(ColorType.DARK),
+            10f,
+            Fonts.LUCIDE,
+        )
+        nvg.drawText(
+            TranslateText.PROFILE_IMPORT.getText(),
+            overlayX + margin + nvg.getTextWidth(Lucide.DOWNLOAD, 10f, Fonts.LUCIDE) * 2,
             overlayY + 14f,
             palette.getFontColor(ColorType.DARK),
             10f,
@@ -735,12 +747,12 @@ class ProfileCategory(
         val closeX = overlayX + overlayW - margin - 8f
         val closeHovered = MouseUtils.isInside(mouseX, mouseY, closeX - 5f, overlayY + 7f, 16f, 16f)
         nvg.drawCenteredText(
-            LegacyIcon.X,
+            Lucide.X,
             closeX,
             overlayY + 13f,
             applyAlpha(palette.getFontColor(ColorType.NORMAL), if (closeHovered) 230 else 130),
             9f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         // Code input + confirm button on the same row
@@ -772,12 +784,12 @@ class ProfileCategory(
             ),
         )
         nvg.drawCenteredText(
-            LegacyIcon.CHECK,
+            Lucide.CHECK,
             confirmX + confirmW / 2f,
             confirmY + 5f,
             applyAlpha(palette.getFontColor(ColorType.DARK), if (canConfirm) 220 else 90),
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         nvg.restore()
@@ -1120,7 +1132,7 @@ class ProfileCategory(
         var curY = getY() + 16f
         var blockBottom = curY + CategoryChipRenderer.CHIP_HEIGHT
 
-        for (type in ProfileType.values()) {
+        for (type in ProfileType.entries) {
             val label = type.name
             val chipW = CategoryChipRenderer.computeWidth(nvg, label, null)
             if (curX + chipW > maxX) {

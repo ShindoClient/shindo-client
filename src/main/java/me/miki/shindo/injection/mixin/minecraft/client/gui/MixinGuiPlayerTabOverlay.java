@@ -59,20 +59,13 @@ public abstract class MixinGuiPlayerTabOverlay extends Gui {
                 Color iconColor = RoleVisuals.getRoleColor(role);
 
                 float iconX = x;
-                float iconY = y;
                 float iconSize = 8F;
 
-                if (nvg != null) {
-                    nvg.setupAndDraw(() -> {
-                        nvg.drawText(RoleVisuals.getTabIcon(role), iconX, iconY, iconColor, iconSize, Fonts.LEGACYICON);
-                    });
-                    float iconWidth = nvg.getTextWidth(RoleVisuals.getTabIcon(role), iconSize, Fonts.LEGACYICON);
-                    x += iconWidth + 2f;
-                } else {
-                    String fallback = RoleVisuals.getTabFallbackText(role);
-                    fontRenderer.drawStringWithShadow(fallback, iconX, iconY, iconColor.getRGB());
-                    x += fontRenderer.getStringWidth(fallback) + 2;
-                }
+                nvg.setupAndDraw(() -> {
+                    nvg.drawText(RoleVisuals.getTabIcon(role), iconX, y, iconColor, iconSize, Fonts.SHINCONIC);
+                });
+                float iconWidth = nvg.getTextWidth(RoleVisuals.getTabIcon(role), iconSize, Fonts.SHINCONIC);
+                x += iconWidth + 2f;
             }
         }
 

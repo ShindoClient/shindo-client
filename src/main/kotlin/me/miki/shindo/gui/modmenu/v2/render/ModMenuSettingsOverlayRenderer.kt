@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.layout.SettingsPanel
 import me.miki.shindo.ui.components.v2.layout.settingspanel.SettingsPanelStyle
 import me.miki.shindo.utils.ColorUtils
@@ -124,12 +124,12 @@ object ModMenuSettingsOverlayRenderer {
         )
 
         nvg.drawText(
-            LegacyIcon.CHEVRON_LEFT,
+            Lucide.CHEVRON_LEFT,
             layout.panelX + ModMenuSettingsOverlayStyle.HEADER_BACK_X,
             layout.headerIconY,
             if (backHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
             13f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawText(
             title,
@@ -142,12 +142,12 @@ object ModMenuSettingsOverlayRenderer {
         nvg.withState {
             nvg.rotateDegreesAt(layout.resetIconX + 6.5f, layout.resetIconY + 6.5f, resetRotation % 360f)
             nvg.drawText(
-                LegacyIcon.REFRESH,
+                Lucide.REFRESH_CW,
                 layout.resetIconX,
                 layout.resetIconY,
                 if (resetHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
                 13f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
     }

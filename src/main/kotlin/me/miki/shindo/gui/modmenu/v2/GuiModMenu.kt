@@ -18,7 +18,8 @@ import me.miki.shindo.management.event.impl.EventRenderNotification
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
@@ -45,8 +46,8 @@ class GuiModMenu(
     private val screenAnimation = ScreenAnimation()
     private val scroll = Scroll()
     private val searchBox = CompSearchBox()
-    private val layoutButton = CompIconButton(21f) { LegacyIcon.LAYOUT }
-    private val folderButton = CompIconButton(18f) { LegacyIcon.FOLDER }
+    private val layoutButton = CompIconButton(21f) { Lucide.LAYOUT }
+    private val folderButton = CompIconButton(18f) { Lucide.FOLDER }
     private val sidebarController = ModMenuSidebarController()
     private val categoryTransition = ModMenuCategoryTransitionCoordinator()
     private val headerController = ModMenuHeaderController()
@@ -341,7 +342,7 @@ class GuiModMenu(
         }
 
         nvg.drawGradientRoundedRect(x + 5f, y + 7f, 22f, 22f, 11f, accent.getColor1(), accent.getColor2())
-        nvg.drawText(LegacyIcon.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.LEGACYICON)
+        nvg.drawText(Shinconic.SHINDO, x + 8f, y + 10f, Color.WHITE, 16f, Fonts.SHINCONIC)
     }
 
     override fun mouseClicked(

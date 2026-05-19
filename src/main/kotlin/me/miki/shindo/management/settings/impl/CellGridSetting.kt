@@ -43,16 +43,6 @@ open class CellGridSetting : Setting {
         setCells(copy)
     }
 
-    @Deprecated("Cell color is no longer stored in CellGridSetting. Use a separate ColorSetting.")
-    fun setCell(
-        row: Int,
-        col: Int,
-        enabled: Boolean,
-        color: java.awt.Color?,
-    ) {
-        setCell(row, col, enabled)
-    }
-
     companion object {
         private fun copyGrid(source: Array<BooleanArray>?): Array<BooleanArray>? {
             if (source == null) {

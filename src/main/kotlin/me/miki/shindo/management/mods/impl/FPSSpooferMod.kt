@@ -3,7 +3,8 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.NumberSetting
@@ -14,7 +15,7 @@ class FPSSpooferMod :
         TranslateText.FPS_SPOOFER,
         TranslateText.FPS_SPOOFER_DESCRIPTION,
         ModCategory.OTHER,
-        LegacyIcon.MOD_FPS_SPOOFER,
+        Shinconic.MOD_FPS_SPOOFER,
         "fake",
     ) {
     @Property(

@@ -4,7 +4,8 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
@@ -62,7 +63,7 @@ class GuiNavigationHub : GuiScreen() {
 
         val anim = introAnimation.getValueFloat()
 
-        nvg.drawCenteredText(LegacyIcon.SHINDO, centerX, logoY, Color.WHITE, 34f, Fonts.LEGACYICON)
+        nvg.drawCenteredText(Shinconic.SHINDO, centerX, logoY, Color.WHITE, 34f, Fonts.SHINCONIC)
         nvg.drawCenteredText("Shindo", centerX, nameY, Color.WHITE, 16f, Fonts.SEMIBOLD)
 
         mainHovered =
@@ -106,7 +107,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(LegacyIcon.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, anim)
 
         icon2Hovered =
             lerp(
@@ -114,7 +115,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(LegacyIcon.CODE, button2X, buttonY, iconSize, icon2Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.CODE, button2X, buttonY, iconSize, icon2Hovered, anim)
 
         icon3Hovered =
             lerp(
@@ -122,7 +123,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(LegacyIcon.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, anim)
     }
 
     override fun mouseClicked(

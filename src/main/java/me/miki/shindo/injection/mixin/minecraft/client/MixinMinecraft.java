@@ -15,7 +15,7 @@ import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
 import me.miki.shindo.management.settings.impl.NumberSetting;
-import me.miki.shindo.utils.IconUtil;
+import me.miki.shindo.utils.IconUtils;
 import me.miki.shindo.utils.MacOSUtils;
 import me.miki.viashindo.fixes.AttackOrder;
 import net.minecraft.client.Minecraft;
@@ -417,7 +417,7 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         }
 
         if (Util.getOSType() == Util.EnumOS.LINUX || Util.getOSType() == Util.EnumOS.WINDOWS) {
-            IconUtil.setDisplayIcon("/assets/minecraft/shindo/icon.png");
+            IconUtils.setDisplayIcon("/assets/minecraft/shindo/icon.png");
             c.cancel();
         }
     }

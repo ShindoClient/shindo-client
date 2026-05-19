@@ -9,7 +9,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.ColorUtils.setColor
 import me.miki.shindo.utils.Render3DUtils.drawBoundingBox
@@ -26,7 +27,7 @@ class PlayerPredicatorMod :
         TranslateText.PLAYER_PREDICATOR,
         TranslateText.PLAYER_PREDICATOR_DESCRIPTION,
         ModCategory.WORLD,
-        LegacyIcon.MOD_PLAYER_PREDICATOR,
+        Shinconic.MOD_PLAYER_PREDICATOR,
         "",
         true,
     ) {

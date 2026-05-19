@@ -6,7 +6,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
@@ -90,19 +90,19 @@ object AddonCategoryRenderer {
                 iconCenterY,
                 palette.getFontColor(ColorType.DARK),
                 24f,
-                Fonts.LEGACYICON,
+                Fonts.SHINCONIC,
             )
         }
 
         nvg.drawText(name, textX, cardY + 14f, palette.getFontColor(ColorType.DARK), 11.5f, Fonts.MEDIUM)
         if (!builtIn) {
             nvg.drawCenteredText(
-                LegacyIcon.EXTERNAL_LINK,
+                Lucide.EXTERNAL_LINK,
                 textX + nvg.getTextWidth(name, 11.5f, Fonts.MEDIUM) + 14f,
                 cardY + 15f,
                 palette.getFontColor(ColorType.NORMAL),
                 9f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
 

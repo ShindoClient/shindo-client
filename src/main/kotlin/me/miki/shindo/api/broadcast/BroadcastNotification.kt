@@ -67,7 +67,7 @@ class BroadcastNotification(
             ColorUtils.applyAlpha(currentColor.getColor1(), 230),
             ColorUtils.applyAlpha(currentColor.getColor2(), 230),
         )
-        nvg.drawText(type.icon, x + 7f, margin + 7f, Color.WHITE, 18f, Fonts.LEGACYICON)
+        nvg.drawText(type.icon, x + 7f, margin + 7f, Color.WHITE, 18f, Fonts.LUCIDE)
         nvg.drawText(title, x + 28f, margin + 7f, Color.WHITE, 10.4f, Fonts.MEDIUM)
         nvg.drawText(message, x + 28f, margin + 19.5f, Color.WHITE, 8.2f, Fonts.REGULAR)
         nvg.restore()

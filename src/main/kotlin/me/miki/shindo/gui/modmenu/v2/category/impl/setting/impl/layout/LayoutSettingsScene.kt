@@ -6,7 +6,7 @@ import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.layout.enums.UILayoutArea
 import me.miki.shindo.ui.layout.enums.UILayoutType
 import me.miki.shindo.utils.ColorUtils
@@ -28,7 +28,7 @@ class LayoutSettingsScene(
         UILayoutArea.SETTINGS,
         TranslateText.SETTINGS,
         TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-        LegacyIcon.SETTINGS,
+        Lucide.SETTINGS,
     ) {
     override fun drawCarouselPreset(
         nvg: NanoVGManager,

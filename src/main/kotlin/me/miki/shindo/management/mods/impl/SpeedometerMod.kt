@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.resetColor
@@ -17,7 +18,7 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.text.DecimalFormat
 
-class SpeedometerMod : SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION, LegacyIcon.MOD_SPEEDOMETER) {
+class SpeedometerMod : SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPEEDOMETER_DESCRIPTION, Shinconic.MOD_SPEEDOMETER) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val showIcon = true
 
@@ -34,7 +35,7 @@ class SpeedometerMod : SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPE
         val nvg = getInstance().nanoVGManager
 
         if (showGraph) {
-            nvg!!.setupAndDraw(Runnable { this.drawNanoVG() })
+            nvg.setupAndDraw(Runnable { this.drawNanoVG() })
 
             startTranslate((this.getX() - 3).toFloat(), this.getY().toFloat())
 
@@ -83,7 +84,7 @@ class SpeedometerMod : SimpleHUDMod(TranslateText.SPEEDOMETER, TranslateText.SPE
 
     override fun getText(): String = "Speed: " + speedFormat.format(getSpeed().toDouble()) + " m/s"
 
-    override fun getIcon(): String? = if (showIcon) LegacyIcon.ACTIVITY else null
+    override fun getIcon(): String? = if (showIcon) Lucide.ACTIVITY else null
 
     private fun addSpeed(speed: Double) {
         var speed = speed

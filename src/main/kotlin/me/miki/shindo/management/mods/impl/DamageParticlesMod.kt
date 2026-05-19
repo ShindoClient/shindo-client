@@ -9,7 +9,8 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.utils.LocationUtils
 import me.miki.shindo.utils.MathUtils.roundToPlace
 import net.minecraft.client.renderer.GlStateManager
@@ -24,7 +25,7 @@ class DamageParticlesMod :
         TranslateText.DAMAGE_PARTICLES,
         TranslateText.DAMAGE_PARTICLES_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_DAMAGE_PARTICLES,
+        Shinconic.MOD_DAMAGE_PARTICLES,
     ) {
     private val healthMap = HashMap<EntityLivingBase?, Float?>()
     private val particles = ArrayList<Particle>()

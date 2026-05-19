@@ -6,14 +6,15 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import kotlin.math.abs
 
-class ArmorStatusMod : SimpleHUDMod(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, LegacyIcon.MOD_ARMOR_STATUS) {
+class ArmorStatusMod : SimpleHUDMod(TranslateText.ARMOR_STATUS, TranslateText.ARMOR_STATUS_DESCRIPTION, Shinconic.MOD_ARMOR_STATUS) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         val fakeStack = arrayOfNulls<ItemStack>(4)

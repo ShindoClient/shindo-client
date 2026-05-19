@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventRenderHitbox
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.renderer.GlStateManager
@@ -18,7 +19,7 @@ import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class HitBoxMod : Mod(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_BOX) {
+class HitBoxMod : Mod(TranslateText.HITBOX, TranslateText.HITBOX_DESCRIPTION, ModCategory.RENDER, Shinconic.MOD_HIT_BOX) {
     private val eyeHeightColor: Color = Color.RED
     private val lookVectorColor: Color = Color.BLUE
 

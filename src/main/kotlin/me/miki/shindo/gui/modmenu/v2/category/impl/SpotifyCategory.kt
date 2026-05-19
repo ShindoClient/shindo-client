@@ -19,7 +19,7 @@ import me.miki.shindo.management.music.model.LyricsLine
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.ui.components.v2.inputs.CompSlider
 import me.miki.shindo.ui.components.v2.inputs.CompTextBox
@@ -42,7 +42,7 @@ import kotlin.math.min
 
 class SpotifyCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.SPOTIFY, LegacyIcon.SPOTIFY, true, true),
+) : Category(parent, TranslateText.SPOTIFY, Lucide.MUSIC, true, true),
     TrackInfoCallback {
     private val volumeSlider =
         CompSlider(
@@ -240,7 +240,7 @@ class SpotifyCategory(
         val startX = centerX - ((iconWidth + spacing + textWidth) / 2f)
         val color = if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK)
 
-        nvg.drawText(LegacyIcon.MUSIC, startX, buttonY + (buttonHeight / 2f) - 8f, color, 16f, Fonts.LEGACYICON)
+        nvg.drawText(Lucide.MUSIC, startX, buttonY + (buttonHeight / 2f) - 8f, color, 16f, Fonts.LUCIDE)
         nvg.drawText(text, startX + iconWidth + spacing, buttonY + (buttonHeight / 2f) - 3f, color, 11f, Fonts.MEDIUM)
     }
 
@@ -319,12 +319,12 @@ class SpotifyCategory(
             Fonts.MEDIUM,
         )
         nvg.drawText(
-            LegacyIcon.PLUS_SQUARE,
+            Lucide.PLUS_SQUARE,
             getX() + getWidth() - 60f,
             getY() + offsetY + 15f,
             actionColor,
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -378,12 +378,12 @@ class SpotifyCategory(
             Fonts.MEDIUM,
         )
         nvg.drawText(
-            LegacyIcon.PLAY,
+            Lucide.PLAY,
             getX() + getWidth() - 60f,
             getY() + offsetY + 15f,
             if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -436,12 +436,12 @@ class SpotifyCategory(
                 Fonts.MEDIUM,
             )
             nvg.drawText(
-                LegacyIcon.PLAY,
+                Lucide.PLAY,
                 getX() + getWidth() - 60f,
                 getY() + offsetY + 15f,
                 if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
                 16f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
             offsetY += 56f
         }
@@ -587,16 +587,16 @@ class SpotifyCategory(
         val centerX = getX() + (getWidth() / 2f)
         val centerY = getY() + getHeight() - 32f
         val color = palette.getFontColor(ColorType.NORMAL)
-        nvg.drawText(LegacyIcon.BACK, centerX - 32f, centerY, color, 16f, Fonts.LEGACYICON)
+        nvg.drawText(Lucide.REWIND, centerX - 32f, centerY, color, 16f, Fonts.LUCIDE)
         nvg.drawText(
-            if (musicManager.isPlaying()) LegacyIcon.PAUSE else LegacyIcon.PLAY,
+            if (musicManager.isPlaying()) Lucide.PAUSE else Lucide.PLAY,
             centerX - 8f,
             centerY,
             color,
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
-        nvg.drawText(LegacyIcon.FORWARD, centerX + 16f, centerY, color, 16f, Fonts.LEGACYICON)
+        nvg.drawText(Lucide.FAST_FORWARD, centerX + 16f, centerY, color, 16f, Fonts.LUCIDE)
     }
 
     private fun drawVolumeSlider(
@@ -614,10 +614,10 @@ class SpotifyCategory(
         val volume = (volumeSlider.getSetting().getValueFloat() * 100).toInt()
         val icon =
             when {
-                volume == 0 -> LegacyIcon.VOLUME_X
-                volume > 80 -> LegacyIcon.VOLUME_2
-                volume > 40 -> LegacyIcon.VOLUME_1
-                else -> LegacyIcon.VOLUME
+                volume == 0 -> Lucide.VOLUME_X
+                volume > 80 -> Lucide.VOLUME_2
+                volume > 40 -> Lucide.VOLUME_1
+                else -> Lucide.VOLUME
             }
         nvg.drawText(
             icon,
@@ -625,7 +625,7 @@ class SpotifyCategory(
             getY() + getHeight() - 26f,
             palette.getFontColor(ColorType.NORMAL),
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -657,7 +657,7 @@ class SpotifyCategory(
         val bx = getX() + getWidth() - 116f
         val by = getY() + getHeight() - 26f
         nvg.drawText(
-            LegacyIcon.LIST,
+            Lucide.LIST,
             bx,
             by,
             if (MouseUtils.isInside(
@@ -674,7 +674,7 @@ class SpotifyCategory(
                 palette.getFontColor(ColorType.NORMAL)
             },
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
     }
 
@@ -696,12 +696,12 @@ class SpotifyCategory(
         )
         val isBackHovered = MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + 15f, 16f, 16f)
         nvg.drawText(
-            LegacyIcon.ARROW_LEFT,
+            Lucide.ARROW_LEFT,
             getX() + 15f,
             getY() + 15f,
             if (isBackHovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
             16f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         if (musicManager.getCurrentTrack() != null) {
             if (MouseUtils.isInside(

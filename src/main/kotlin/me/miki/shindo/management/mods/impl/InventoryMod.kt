@@ -3,14 +3,15 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.management.settings.impl.BooleanSetting
 import me.miki.shindo.management.settings.metadata.SettingRegistry.getBooleanSetting
 
-class InventoryMod : Mod(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_INVENTORY) {
+class InventoryMod : Mod(TranslateText.INVENTORY, TranslateText.INVENTORY_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_INVENTORY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ANIMATION)
     @JvmField
     var animationSetting = false

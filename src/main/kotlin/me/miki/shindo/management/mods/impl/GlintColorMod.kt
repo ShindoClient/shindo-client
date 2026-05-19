@@ -4,7 +4,8 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -17,7 +18,7 @@ class GlintColorMod :
         TranslateText.GLINT_COLOR,
         TranslateText.GLINT_COLOR_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_GLINT_COLOR,
+        Shinconic.MOD_GLINT_COLOR,
         "changeru",
     ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)

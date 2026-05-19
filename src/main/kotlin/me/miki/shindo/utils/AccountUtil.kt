@@ -4,7 +4,7 @@ import me.miki.shindo.api.websocket.AccountType
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
+import java.util.UUID
 
 object AccountUtil {
     data class MojangProfile(

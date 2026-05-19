@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -16,7 +17,7 @@ import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTION, LegacyIcon.MOD_CLOCK) {
+class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTION, Shinconic.MOD_CLOCK) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -36,7 +37,7 @@ class ClockMod : SimpleHUDMod(TranslateText.CLOCK, TranslateText.CLOCK_DESCRIPTI
 
     override fun getText(): String? = df.format(Calendar.getInstance().getTime())
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.CLOCK else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.CLOCK else null
 
     private enum class Design(
         private val translate: TranslateText,

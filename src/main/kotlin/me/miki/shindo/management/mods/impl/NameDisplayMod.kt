@@ -2,13 +2,14 @@ package me.miki.shindo.management.mods.impl
 
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import java.util.*
 
-class NameDisplayMod : SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, LegacyIcon.MOD_NAME_DISPLAY) {
+class NameDisplayMod : SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, Shinconic.MOD_NAME_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val iconSetting = true
 
@@ -16,18 +17,17 @@ class NameDisplayMod : SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NA
     private val prefix = Prefix.NAME
 
     override fun getText(): String {
-        val label: String?
-
-        if (Objects.requireNonNull<Prefix?>(prefix) == Prefix.IGN) {
-            label = "Ign"
-        } else {
-            label = "Name"
-        }
+        val label =
+            if ((prefix) == Prefix.IGN) {
+                "Ign"
+            } else {
+                "Name"
+            }
 
         return label + ": " + mc.session.username
     }
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.USER else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.USER else null
 
     private enum class Prefix(
         private val translate: TranslateText,

@@ -6,7 +6,8 @@ import me.miki.shindo.management.event.impl.EventRenderTNT
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -22,7 +23,7 @@ import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.min
 
-class TNTTimerMod : SimpleHUDMod(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION, LegacyIcon.MOD_TNT_TIMER) {
+class TNTTimerMod : SimpleHUDMod(TranslateText.TNT_TIMER, TranslateText.TNT_TIMER_DESCRIPTION, Shinconic.MOD_TNT_TIMER) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.TYPE)
     private val displayMode = DisplayMode.TAG
 

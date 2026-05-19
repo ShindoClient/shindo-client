@@ -5,13 +5,14 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.util.BlockPos
 
-class CoordsMod : SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, LegacyIcon.MOD_COORDS, "coordinates") {
+class CoordsMod : SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCRIPTION, Shinconic.MOD_COORDS, "coordinates") {
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
     private val design = Design.SIMPLE
 
@@ -35,17 +36,18 @@ class CoordsMod : SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCR
         var maxWidth = 100
         biome = chunk.getBiome(BlockPos(mc.thePlayer), this.mc.theWorld.worldChunkManager).biomeName
 
-        if (maxWidth < (this.getTextWidth("Biome: " + biome, 9f, getHudFont(1))!!)) {
-            maxWidth = (this.getTextWidth("Biome: " + biome, 9f, getHudFont(1))!! + 12).toInt()
-        } else {
-            maxWidth = 107
-        }
+        maxWidth =
+            if (maxWidth < (this.getTextWidth("Biome: $biome", 9f, getHudFont(1))!!)) {
+                (this.getTextWidth("Biome: $biome", 9f, getHudFont(1))!! + 12).toInt()
+            } else {
+                107
+            }
 
         this.drawBackground(maxWidth.toFloat(), 48f)
         this.drawText("X: " + mc.thePlayer.posX.toInt(), 5.5f, 5.5f, 9f, getHudFont(1))
         this.drawText("Y: " + mc.thePlayer.posY.toInt(), 5.5f, 15.5f, 9f, getHudFont(1))
         this.drawText("Z: " + mc.thePlayer.posZ.toInt(), 5.5f, 25.5f, 9f, getHudFont(1))
-        this.drawText("Biome: " + biome, 5.5f, 35.5f, 9f, getHudFont(1))
+        this.drawText("Biome: $biome", 5.5f, 35.5f, 9f, getHudFont(1))
 
         this.setWidth(maxWidth)
         this.setHeight(48)
@@ -55,7 +57,7 @@ class CoordsMod : SimpleHUDMod(TranslateText.COORDS, TranslateText.COORDS_DEDSCR
         "X: " + mc.thePlayer.posX.toInt() + " Y: " + mc.thePlayer.posY.toInt() + " Z: " + mc.thePlayer.posZ.toInt() +
             " "
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.MAP_PIN else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.MAP_PIN else null
 
     private enum class Design(
         private val translate: TranslateText,

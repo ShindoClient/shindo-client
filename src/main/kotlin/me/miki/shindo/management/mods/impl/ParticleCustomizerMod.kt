@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventAttackEntity
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.enchantment.EnchantmentHelper
@@ -19,7 +20,7 @@ class ParticleCustomizerMod :
         TranslateText.PARTICLE_CUSTOMIZER,
         TranslateText.PARTICLE_CUSTOMIZER_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_PARTICLE_CUSTOMIZER,
+        Shinconic.MOD_PARTICLE_CUSTOMIZER,
     ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ALWAYS_SHARPNESS)
     private val alwaysSharpnessSetting = false
@@ -37,7 +38,7 @@ class ParticleCustomizerMod :
         type = PropertyType.NUMBER,
         translate = TranslateText.SHARPNESS_AMOUNT,
         min = 1.0,
-        max = 1.00,
+        max = 1.0,
         current = 2.0,
         step = 1.0,
     )

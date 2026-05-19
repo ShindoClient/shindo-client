@@ -5,7 +5,7 @@ import me.miki.shindo.management.event.impl.EventRenderSelectedItem
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils.isCreative
@@ -19,7 +19,8 @@ import net.minecraft.potion.PotionEffect
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.StatCollector
 
-class ItemInfoMod : Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_ITEM_INFO) {
+class ItemInfoMod : Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIPTION, ModCategory.RENDER, Shinconic.MOD_ITEM_INFO) {
+    @Suppress("ktlint:standard:property-naming")
     private val ENCHANTMENT_SHORT_NAME: MutableMap<*, *> =
         object : HashMap<Any?, Any?>() {
             init {
@@ -67,11 +68,12 @@ class ItemInfoMod : Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIP
         if (heldItemStack != null) {
             var s1 = ""
 
-            if (heldItemStack.item is ItemPotion) {
-                s1 = this.getPotionEffectString(heldItemStack)
-            } else {
-                s1 = this.getEnchantmentString(heldItemStack)
-            }
+            s1 =
+                if (heldItemStack.item is ItemPotion) {
+                    this.getPotionEffectString(heldItemStack)
+                } else {
+                    this.getEnchantmentString(heldItemStack)
+                }
 
             if (isCreative()) {
                 addY = 55
@@ -148,11 +150,9 @@ class ItemInfoMod : Mod(TranslateText.ITEM_INFO, TranslateText.ITEM_INFO_DESCRIP
         val en: MutableMap<*, *> = EnchantmentHelper.getEnchantments(heldItemStack)
 
         for (o in en.entries) {
-            val entry = o
-
-            enchantBuilder.append(this.ENCHANTMENT_SHORT_NAME.get(entry.key) as String?)
+            enchantBuilder.append(this.ENCHANTMENT_SHORT_NAME[o.key] as String?)
             enchantBuilder.append(" ")
-            enchantBuilder.append(entry.value)
+            enchantBuilder.append(o.value)
             enchantBuilder.append(" ")
         }
 

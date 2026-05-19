@@ -21,8 +21,13 @@ import java.io.File
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.URL
-import java.util.*
-import java.util.concurrent.*
+import java.util.Properties
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.function.Supplier
 
@@ -530,9 +535,9 @@ class MusicManager(
                 }
             }
 
-            if (devices.size > 0) {
-                ShindoLogger.info("No active device found, using first available: " + devices[0].name)
-                return devices[0].id
+            devices.firstOrNull()?.let {
+                ShindoLogger.info("No active device found, using first available: ${it.name}")
+                return it.id
             }
 
             ShindoLogger.warn("No active device found")
@@ -570,10 +575,9 @@ class MusicManager(
             playbackState.device?.let { currentVolume = it.volume_percent }
             val item = playbackState.item
             if (item != null && item is Track) {
-                val newTrack = item
-                if (currentTrack == null || currentTrack!!.id != newTrack.id) {
-                    currentTrack = newTrack
-                    trackDuration = newTrack.durationMs.toLong()
+                if (currentTrack == null || currentTrack!!.id != item.id) {
+                    currentTrack = item
+                    trackDuration = item.durationMs.toLong()
                 }
             }
             notifyTrackInfoUpdated()

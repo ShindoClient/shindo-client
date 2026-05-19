@@ -3,11 +3,12 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.java.games.input.ControllerEnvironment
 import net.java.games.input.Mouse
 
-class RawInputMod : Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_RAW_INPUT) {
+class RawInputMod : Mod(TranslateText.RAW_INPUT, TranslateText.RAW_INPUT_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_RAW_INPUT) {
     private val mouseList = ArrayList<Mouse>()
     private var thread: MouseThread? = null
 

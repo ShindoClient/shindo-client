@@ -14,7 +14,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.music.MusicManager
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.remote.changelog.Changelog
 import me.miki.shindo.management.remote.changelog.ChangelogManager
 import me.miki.shindo.management.remote.discord.DiscordStats
@@ -34,7 +34,7 @@ import kotlin.math.min
 
 class HomeCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.HOME, LegacyIcon.HOME, false, false) {
+) : Category(parent, TranslateText.HOME, Lucide.HOME, false, false) {
     private val inputController = HomeCategoryInputController()
     private val newsScroll = Scroll()
     private val newsRotationTimer = TimerUtils()
@@ -307,7 +307,7 @@ class HomeCategory(
                         lineY + ((tbSize / 2f) - 1f),
                         Color.WHITE,
                         7f,
-                        Fonts.LEGACYICON,
+                        Fonts.LUCIDE,
                     )
                     nvg.drawTextBox(
                         c.text,
@@ -365,12 +365,12 @@ class HomeCategory(
             if (currentTrack != null) {
                 val iconSize1 = 16f
                 nvg.drawText(
-                    LegacyIcon.MUSIC,
+                    Lucide.MUSIC,
                     headX,
                     spotifyY,
                     palette.getFontColor(ColorType.NORMAL),
                     iconSize,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
 
                 val trackName = currentTrack.name
@@ -416,12 +416,12 @@ class HomeCategory(
                         controlSize,
                     )
                 nvg.drawCenteredText(
-                    LegacyIcon.BACK,
+                    Lucide.REWIND,
                     controlsCenterX - controlSpacing,
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (prevHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
 
                 val playHovered =
@@ -433,14 +433,14 @@ class HomeCategory(
                         controlSize,
                         controlSize,
                     )
-                val playIcon = if (isPlaying) LegacyIcon.PAUSE else LegacyIcon.PLAY
+                val playIcon = if (isPlaying) Lucide.PAUSE else Lucide.PLAY
                 nvg.drawCenteredText(
                     playIcon,
                     controlsCenterX,
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (playHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
 
                 val nextHovered =
@@ -453,12 +453,12 @@ class HomeCategory(
                         controlSize,
                     )
                 nvg.drawCenteredText(
-                    LegacyIcon.FORWARD,
+                    Lucide.FAST_FORWARD,
                     controlsCenterX + controlSpacing,
                     controlsY + 2,
                     ColorUtils.applyAlpha(palette.getFontColor(ColorType.DARK), if (nextHovered) 255 else 200),
                     controlSize,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
 
                 val progressBarY2 = controlsY + controlSize + 6
@@ -549,12 +549,12 @@ class HomeCategory(
             Color(114, 137, 214),
         )
         nvg.drawCenteredText(
-            LegacyIcon.DISCORD,
+            Lucide.DISC,
             discordStartX + discordWidth - 11f,
             discordStartY + 4f,
             Color.WHITE,
             14f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         nvg.drawText(

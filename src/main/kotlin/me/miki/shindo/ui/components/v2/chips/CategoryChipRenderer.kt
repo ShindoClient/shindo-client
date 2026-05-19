@@ -21,7 +21,7 @@ object CategoryChipRenderer {
     ): Float {
         var iconWidth = 0f
         if (!icon.isNullOrEmpty()) {
-            iconWidth = nvg.getTextWidth(icon, 12f, Fonts.LEGACYICON) + 6f
+            iconWidth = nvg.getTextWidth(icon, 12f, Fonts.LUCIDE) + 6f
         }
         val textWidth = if (label == null) 0f else nvg.getTextWidth(label, 9.5f, Fonts.MEDIUM)
         return CHIP_HORIZONTAL_PADDING * 2f + iconWidth + textWidth
@@ -65,8 +65,8 @@ object CategoryChipRenderer {
         val textColor: Color = if (active) Color.WHITE else palette.getFontColor(ColorType.NORMAL)
 
         if (!icon.isNullOrEmpty()) {
-            nvg.drawText(icon, textX, textY - 4f, textColor, 12f, Fonts.LEGACYICON)
-            textX += nvg.getTextWidth(icon, 12f, Fonts.LEGACYICON) + 4f
+            nvg.drawText(icon, textX, textY - 4f, textColor, 12f, Fonts.LUCIDE)
+            textX += nvg.getTextWidth(icon, 12f, Fonts.LUCIDE) + 4f
         }
 
         if (!label.isNullOrEmpty()) {

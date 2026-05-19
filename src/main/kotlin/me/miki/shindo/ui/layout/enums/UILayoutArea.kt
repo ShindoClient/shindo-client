@@ -1,7 +1,7 @@
 package me.miki.shindo.ui.layout.enums
 
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 
 enum class UILayoutArea(
     val title: TranslateText,
@@ -11,22 +11,22 @@ enum class UILayoutArea(
     SETTINGS(
         TranslateText.SETTINGS,
         TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-        LegacyIcon.SETTINGS,
+        Lucide.SETTINGS,
     ),
     MODULES(
         TranslateText.SETTINGS_LAYOUT_SECTION_MODULE,
         TranslateText.SETTINGS_LAYOUT_MODULE_SINGLE_DESCRIPTION,
-        LegacyIcon.LIST,
+        Lucide.LIST,
     ),
     NOTIFICATIONS(
         TranslateText.SETTINGS_LAYOUT_SECTION_NOTIFICATION,
         TranslateText.SETTINGS_LAYOUT_NOTIFICATION_DESCRIPTION,
-        LegacyIcon.BELL,
+        Lucide.BELL,
     ),
     VISUAL(
         TranslateText.PRESETS,
         TranslateText.APPEARANCE_DESCRIPTION,
-        LegacyIcon.COLOUR,
+        Lucide.PALETTE,
     ),
     ;
 

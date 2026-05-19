@@ -2,7 +2,7 @@ package me.miki.shindo.ui.components.v2.buttons
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.impl.CategorySetting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.templates.CompControlTemplate
@@ -45,8 +45,8 @@ class CompCategory : CompControlTemplate {
         nvg.drawRoundedRect(x, y, width, height, CATEGORY_CORNER_RADIUS, baseOverlay)
 
         val iconSize = 11f
-        val icon = if (setting.isCollapsed()) LegacyIcon.CHEVRON_RIGHT else LegacyIcon.CHEVRON_DOWN
-        val iconHeight = nvg.getTextHeight(icon, iconSize, Fonts.LEGACYICON)
+        val icon = if (setting.isCollapsed()) Lucide.CHEVRON_RIGHT else Lucide.CHEVRON_DOWN
+        val iconHeight = nvg.getTextHeight(icon, iconSize, Fonts.LUCIDE)
         val iconX = x + 4f
         val iconY = y + height / 2f - iconHeight / 2f
         val iconColor =
@@ -55,7 +55,7 @@ class CompCategory : CompControlTemplate {
                 ColorUtils.applyAlpha(accentColor.getColor1(), 240),
                 (accentPulse * 0.35f).toDouble(),
             )
-        nvg.drawText(icon, iconX, iconY, iconColor, iconSize, Fonts.LEGACYICON)
+        nvg.drawText(icon, iconX, iconY, iconColor, iconSize, Fonts.LUCIDE)
 
         val titleSize = 11f
         val titleX = iconX + 14f

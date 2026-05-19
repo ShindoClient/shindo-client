@@ -10,7 +10,8 @@ import me.miki.shindo.management.event.impl.EventToggleFullscreen
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -28,11 +29,11 @@ import org.lwjgl.LWJGLException
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.DisplayMode
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, LegacyIcon.MOD_INTERNAL_SETTINGS) {
+@Suppress("UNUSED")
+class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCategory.OTHER, Shinconic.MOD_INTERNAL_SETTINGS) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.HUD_THEME)
     @JvmField
     val hudTheme: HudTheme = HudTheme.NORMAL
@@ -103,7 +104,7 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.NOTIFICATION_POSITION)
     var notificationCorner: NotificationCorner = NotificationCorner.BOTTOM_RIGHT
-        get() = readEnumFromCombo(notificationCornerSetting, NotificationCorner.values(), field)
+        get() = readEnumFromCombo(notificationCornerSetting, NotificationCorner.entries.toTypedArray(), field)
         set(corner) {
             writeEnumToCombo(this.notificationCornerSetting, corner)
             field = corner
@@ -170,7 +171,12 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
         setBorderlessFullscreen(event.state)
     }
 
-    fun getModuleLayout(): ModuleLayout = readEnumFromCombo(moduleLayoutSetting, ModuleLayout.values(), moduleLayout)
+    fun getModuleLayout(): ModuleLayout =
+        readEnumFromCombo(
+            moduleLayoutSetting,
+            ModuleLayout.entries.toTypedArray(),
+            moduleLayout,
+        )
 
     private val settingsLayoutSetting: ComboSetting?
         get() = getComboSetting(this, "settingsLayout")
@@ -186,7 +192,7 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
 
     var settingsLayoutMode: LayoutMode?
         get() =
-            when (readEnumFromCombo(settingsLayoutSetting, SettingsLayout.values(), settingsLayout)) {
+            when (readEnumFromCombo(settingsLayoutSetting, SettingsLayout.entries.toTypedArray(), settingsLayout)) {
                 SettingsLayout.DOUBLE_COLUMN -> LayoutMode.DOUBLE_COLUMN
                 SettingsLayout.ADAPTIVE_GRID -> LayoutMode.STAGGERED_COLUMNS
                 else -> LayoutMode.SINGLE_COLUMN
@@ -203,7 +209,7 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
 
     var moduleGridColumns: Int
         get() {
-            if (Objects.requireNonNull<ModuleLayout?>(getModuleLayout()) == ModuleLayout.TWO_COLUMNS) {
+            if (getModuleLayout() == ModuleLayout.TWO_COLUMNS) {
                 return 2
             }
             return 1
@@ -214,7 +220,12 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
             writeEnumToCombo(this.moduleLayoutSetting, target)
         }
 
-    fun getVisualPreset(): VisualPreset = readEnumFromCombo(visualPresetSetting, VisualPreset.values(), visualPreset)
+    fun getVisualPreset(): VisualPreset =
+        readEnumFromCombo(
+            visualPresetSetting,
+            VisualPreset.entries.toTypedArray(),
+            visualPreset,
+        )
 
     fun setVisualPreset(preset: VisualPreset?) {
         val target = preset ?: VisualPreset.MODERN
@@ -270,7 +281,7 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
         if (combo == null) {
             return
         }
-        if (value.ordinal >= 0 && value.ordinal < combo.getOptions().size) {
+        if (value.ordinal < combo.getOptions().size) {
             combo.setOption(combo.getOptions()[value.ordinal])
         }
     }
@@ -364,40 +375,34 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
     }
 
     enum class SettingsLayout(
-        displayName: String,
+        private val displayName: String,
     ) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
         DOUBLE_COLUMN("Double Column"),
         ADAPTIVE_GRID("Adaptive Grid"),
         ;
 
-        private val displayName: String = displayName
-
         override fun getDisplayName(): String = displayName
     }
 
     enum class ModuleLayout(
-        displayName: String,
+        private val displayName: String,
     ) : PropertyEnum {
         SINGLE_COLUMN("Single Column"),
         TWO_COLUMNS("Two Columns"),
         ;
 
-        private val displayName: String = displayName
-
         override fun getDisplayName(): String = displayName
     }
 
     enum class VisualPreset(
-        displayName: String,
+        private val displayName: String,
     ) : PropertyEnum {
         CLASSIC("Classic"),
         MODERN("Modern"),
         LIGHT("Light"),
         DARK("Dark"),
         ;
-
-        private val displayName: String = displayName
 
         override fun getDisplayName(): String = displayName
     }

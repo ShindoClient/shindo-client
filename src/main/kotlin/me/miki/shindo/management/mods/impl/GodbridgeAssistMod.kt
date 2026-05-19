@@ -6,17 +6,19 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.item.ItemBlock
 import kotlin.math.abs
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 class GodbridgeAssistMod :
     HUDMod(
         TranslateText.GODBRIDGE_ASSIST,
         TranslateText.GODBRIDGE_ASSIST_DESCRIPTION,
-        LegacyIcon.MOD_GODBRIDGE_ASSIST,
+        Shinconic.MOD_GODBRIDGE_ASSIST,
     ) {
     private var shiftedTicks = 0
 
@@ -69,19 +71,17 @@ class GodbridgeAssistMod :
                 return
             }
 
-            if (Math.round(abs(mc.thePlayer.posX - floor(mc.thePlayer.posX)) * 10.0) != 3L &&
-                Math.round(
+            if ((abs(mc.thePlayer.posX - floor(mc.thePlayer.posX)) * 10.0).roundToInt().toLong() != 3L &&
+                (
                     abs(
                         mc.thePlayer.posX -
                             floor(
                                 mc.thePlayer.posX,
                             ),
-                    ) * 10.0,
-                ) != 7L &&
-                Math.round(
-                    abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0,
-                ) != 3L &&
-                Math.round(abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0) != 7L
+                    ) * 10.0
+                ).roundToInt().toLong() != 7L &&
+                (abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0).roundToInt().toLong() != 3L &&
+                (abs(mc.thePlayer.posZ - floor(mc.thePlayer.posZ)) * 10.0).roundToInt().toLong() != 7L
             ) {
                 return
             }

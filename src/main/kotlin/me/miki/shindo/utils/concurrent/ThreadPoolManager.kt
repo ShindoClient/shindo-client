@@ -1,6 +1,12 @@
 package me.miki.shindo.utils.concurrent
 
-import java.util.concurrent.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 object ThreadPoolManager {
@@ -114,7 +120,7 @@ object ThreadPoolManager {
     @JvmStatic
     fun getAllStats(): Map<ThreadPoolType, PoolStats> {
         val stats = LinkedHashMap<ThreadPoolType, PoolStats>()
-        for (type in ThreadPoolType.values()) {
+        for (type in ThreadPoolType.entries) {
             stats[type] = getPoolStats(type)
         }
         return stats

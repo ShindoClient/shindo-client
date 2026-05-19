@@ -7,7 +7,8 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseBackIn
@@ -21,7 +22,7 @@ class TargetInfoMod :
     HUDMod(
         TranslateText.TARGET_INFO,
         TranslateText.TARGET_INFO_DESCRIPTION,
-        LegacyIcon.MOD_TARGET_INFO,
+        Shinconic.MOD_TARGET_INFO,
         "targethud",
         true,
     ) {
@@ -85,11 +86,11 @@ class TargetInfoMod :
         this.drawPlayerHead(head!!, 5f, 5f, 36f, 36f, 6f)
         this.drawText(targetName!!, 45.5f, 8f, 10.2f, getHudFont(2))
 
-        this.drawText(LegacyIcon.HEART_FILL, 52f, 26.5f, 9f, Fonts.LEGACYICON)
+        this.drawText(Lucide.HEART, 52f, 26.5f, 9f, Fonts.LUCIDE)
         this.drawArc(56.5f, 30.5f, 9f, -90f, -90f + 360, 1.6f, this.getFontColor(120))
         this.drawArc(56.5f, 30.5f, 9f, -90f, -90f + (18 * healthAnimation.getValue()), 1.6f)
 
-        this.drawText(LegacyIcon.SHIELD_FILL, 76f, 26.5f, 9f, Fonts.LEGACYICON)
+        this.drawText(Lucide.SHIELD, 76f, 26.5f, 9f, Fonts.LUCIDE)
         this.drawArc(80.5f, 30.5f, 9f, -90f, -90f + 360, 1.6f, this.getFontColor(120))
         this.drawArc(80.5f, 30.5f, 9f, -90f, -90f + (18 * armorAnimation.getValue()), 1.6f)
 

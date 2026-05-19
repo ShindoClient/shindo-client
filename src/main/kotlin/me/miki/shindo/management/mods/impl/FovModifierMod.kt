@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventFovUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils
@@ -18,7 +19,7 @@ class FovModifierMod :
         TranslateText.FOV_MODIFIER,
         TranslateText.FOV_MODIFIER_DESCRIPTION,
         ModCategory.PLAYER,
-        LegacyIcon.MOD_FOV_MODIFIER,
+        Shinconic.MOD_FOV_MODIFIER,
     ) {
     @Property(type = PropertyType.NUMBER, translate = TranslateText.SPRINTING, min = -5.0, max = 5.0, current = 1.0)
     private val sprintingSetting = 1.0
@@ -50,7 +51,7 @@ class FovModifierMod :
 
         if (item != null && item.item === Items.bow) {
             val duration = min(useDuration.toFloat(), 20.0f).toInt()
-            val modifier: Float = PlayerUtils.MODIFIER_BY_TICK.get(duration)!!
+            val modifier: Float = PlayerUtils.MODIFIER_BY_TICK[duration]!!
             base -= modifier * bowFov
         }
 

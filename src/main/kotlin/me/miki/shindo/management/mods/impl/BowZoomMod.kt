@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventFovUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils
@@ -13,7 +14,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import kotlin.math.min
 
-class BowZoomMod : Mod(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER, LegacyIcon.MOD_BOW_ZOOM) {
+class BowZoomMod : Mod(TranslateText.BOW_ZOOM, TranslateText.BOW_ZOOM_DESCRIPTION, ModCategory.PLAYER, Shinconic.MOD_BOW_ZOOM) {
     @Property(
         type = PropertyType.NUMBER,
         translate = TranslateText.FACTOR,

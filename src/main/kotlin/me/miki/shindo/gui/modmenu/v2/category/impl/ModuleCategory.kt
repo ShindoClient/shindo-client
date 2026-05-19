@@ -22,7 +22,7 @@ import me.miki.shindo.management.mods.ModManager
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.chips.CategoryChipRenderer
@@ -39,7 +39,7 @@ import kotlin.math.min
 
 class ModuleCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.MODULE, LegacyIcon.ARCHIVE, true, true),
+) : Category(parent, TranslateText.MODULE, Lucide.ARCHIVE, true, true),
     ModMenuListPageContract {
     private val settingScroll = Scroll()
     private val settingsPanel = SettingsPanel()

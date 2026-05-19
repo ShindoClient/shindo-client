@@ -8,7 +8,7 @@ import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.utils.network.HttpUtils
 import net.minecraft.client.Minecraft
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.LinkedBlockingQueue
 

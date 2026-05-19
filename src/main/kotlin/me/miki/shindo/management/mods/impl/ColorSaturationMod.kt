@@ -7,7 +7,8 @@ import me.miki.shindo.management.event.impl.EventShader
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.gui.ScaledResolution
@@ -22,7 +23,7 @@ class ColorSaturationMod :
         TranslateText.COLOR_SATURATION,
         TranslateText.COLOR_SATURATION_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_COLOR_SATURATION,
+        Shinconic.MOD_COLOR_SATURATION,
     ) {
     private val colorsaturation = ResourceLocation("minecraft:shaders/post/colorsaturation.json")
 

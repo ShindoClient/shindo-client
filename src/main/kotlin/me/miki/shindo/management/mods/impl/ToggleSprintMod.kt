@@ -6,14 +6,14 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 
-class ToggleSprintMod :
-    SimpleHUDMod(TranslateText.TOGGLE_SPRINT, TranslateText.TOGGLE_SPRINT_DESCRIPTION, LegacyIcon.MOD_TOGGLE_SPRINT) {
+class ToggleSprintMod : SimpleHUDMod(TranslateText.TOGGLE_SPRINT, TranslateText.TOGGLE_SPRINT_DESCRIPTION, Shinconic.MOD_TOGGLE_SPRINT) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.HUD)
     private val hudEnabled = true
 
@@ -58,11 +58,12 @@ class ToggleSprintMod :
             if (!wasDown) {
                 startTime = System.currentTimeMillis()
 
-                if (state == State.TOGGLED) {
-                    state = State.HELD
-                } else {
-                    state = State.TOGGLED
-                }
+                state =
+                    if (state == State.TOGGLED) {
+                        State.HELD
+                    } else {
+                        State.TOGGLED
+                    }
             } else if ((System.currentTimeMillis() - startTime) > 250) {
                 state = State.HELD
             }
@@ -79,7 +80,7 @@ class ToggleSprintMod :
         val prefix = "Sprinting"
 
         if (alwaysSprint) {
-            return prefix + " (Always)"
+            return "$prefix (Always)"
         }
 
         if (state == State.WALK) {

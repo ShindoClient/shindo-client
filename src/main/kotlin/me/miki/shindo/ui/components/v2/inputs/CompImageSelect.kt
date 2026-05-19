@@ -5,7 +5,7 @@ import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.settings.impl.ImageSetting
 import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.concurrent.TaskExecutor
@@ -62,12 +62,12 @@ class CompImageSelect : Component {
             Fonts.REGULAR,
         )
         nvgInstance.drawCenteredText(
-            LegacyIcon.FOLDER,
+            Lucide.FOLDER,
             this.getX() + 8,
             this.getY() + 2.5f,
             Color.WHITE,
             10f,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
 
         super.draw(mouseX, mouseY, partialTicks)

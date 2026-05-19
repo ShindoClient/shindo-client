@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventRender3D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -19,7 +20,7 @@ class ChunkBordersMod :
         TranslateText.CHUNK_BORDERS,
         TranslateText.CHUNK_BORDERS_DESCRIPTION,
         ModCategory.RENDER,
-        LegacyIcon.MOD_CHUNK_BORDERS,
+        Shinconic.MOD_CHUNK_BORDERS,
     ) {
     @EventTarget
     fun onRender3D(event: EventRender3D) {

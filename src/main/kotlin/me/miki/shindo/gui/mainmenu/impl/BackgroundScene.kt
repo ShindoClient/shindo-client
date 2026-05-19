@@ -11,7 +11,7 @@ import me.miki.shindo.management.file.FileManager
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.profile.mainmenu.BackgroundManager
 import me.miki.shindo.management.profile.mainmenu.impl.CustomBackground
 import me.miki.shindo.management.profile.mainmenu.impl.DefaultBackground
@@ -134,12 +134,12 @@ class BackgroundScene(
                 if (bg.getId() == 999) {
                     nvg.drawRoundedRect(acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f, Color.BLACK)
                     nvg.drawCenteredText(
-                        LegacyIcon.PLUS,
+                        Lucide.PLUS,
                         acX + 10f + offsetX + (102.5f / 2),
                         acY + 42.5f + offsetY,
                         Color.WHITE,
                         26f,
-                        Fonts.LEGACYICON,
+                        Fonts.LUCIDE,
                     )
                 } else {
                     nvg.drawRoundedImage(bg.getImage()!!, acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
@@ -177,12 +177,12 @@ class BackgroundScene(
 
                 nvg.drawRoundedImage(bg.getImage(), acX + 11f + offsetX, acY + 35f + offsetY, 102.5f, 57.5f, 6f)
                 nvg.drawText(
-                    LegacyIcon.TRASH,
+                    Lucide.TRASH,
                     acX + offsetX + 100f,
                     acY + 38f + offsetY,
                     palette.getMaterialRed((bg.getTrashAnimation().getValue() * 255).toInt()),
                     10f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
             }
 

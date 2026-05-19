@@ -21,14 +21,14 @@ class BlacklistManager {
 
     private fun loadBlacklists() {
         val jsonObject = HttpUtils.readJson("https://cdn.shindoclient.com/data/servers/blacklist.json", null) ?: return
-        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "blacklist") ?: return
+        val jsonArray = JsonUtils.getArrayProperty(jsonObject, "blacklist")
         val gson = Gson()
         for (jsonElement in jsonArray) {
             val serverJsonObject = gson.fromJson(jsonElement, JsonObject::class.java)
             val serverIp = JsonUtils.getStringProperty(serverJsonObject, "serverip", "null")
             val modsArray = JsonUtils.getArrayProperty(serverJsonObject, "mods")
             val modsList = CopyOnWriteArrayList<String>()
-            modsArray?.forEach { modElement -> modsList.add(modElement.asString) }
+            modsArray.forEach { modElement -> modsList.add(modElement.asString) }
             blacklist.add(Server(serverIp!!, modsList))
         }
     }

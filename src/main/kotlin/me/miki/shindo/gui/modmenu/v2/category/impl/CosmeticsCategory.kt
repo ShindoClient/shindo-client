@@ -19,7 +19,7 @@ import me.miki.shindo.management.cosmetic.wing.impl.Wing
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.ui.components.v2.chips.CategoryChipRenderer
 import me.miki.shindo.ui.components.v2.chips.FilterChip
@@ -37,7 +37,7 @@ private typealias PreviewRenderer = (NanoVGManager, Float, Float, Float, Float) 
 
 class CosmeticsCategory(
     parent: GuiModMenu,
-) : Category(parent, TranslateText.COSMETICS, LegacyIcon.SHOPPING, true, true) {
+) : Category(parent, TranslateText.COSMETICS, Lucide.SHIRT, true, true) {
     private val sectionChips = ArrayList<FilterChip>()
     private val categoryChips = ArrayList<FilterChip>()
     private val capeCardBounds = LinkedHashMap<Cape, CardBounds>()
@@ -589,12 +589,12 @@ class CosmeticsCategory(
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
             )
             nvg.drawCenteredText(
-                LegacyIcon.CHECK,
+                Lucide.CHECK,
                 badgeX + badgeSize / 2f,
                 badgeY + badgeSize / 2f - 4f,
                 Color.WHITE,
                 10.5f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
 
@@ -608,12 +608,12 @@ class CosmeticsCategory(
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 205),
             )
             nvg.drawCenteredText(
-                LegacyIcon.LOCK,
+                Lucide.LOCK,
                 x + width / 2f,
                 y + height / 2f - 8f,
                 Color(227, 116, 116),
                 16f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
         }
     }
@@ -1035,9 +1035,9 @@ class CosmeticsCategory(
         val icon: String,
         val visible: Boolean,
     ) {
-        CAPES("Capes", LegacyIcon.STAR_FILL, true),
-        WINGS("Wings", LegacyIcon.SHIELD, false),
-        BANDANAS("Bandanas", LegacyIcon.USER, false),
+        CAPES("Capes", Lucide.STAR, true),
+        WINGS("Wings", Lucide.SHIELD, false),
+        BANDANAS("Bandanas", Lucide.USER, false),
     }
 
     private companion object {

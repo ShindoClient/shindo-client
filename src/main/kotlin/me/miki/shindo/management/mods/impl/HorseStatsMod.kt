@@ -4,12 +4,13 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.passive.EntityHorse
 import java.text.DecimalFormat
 
-class HorseStatsMod : HUDMod(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION, LegacyIcon.MOD_HORSE_STATS) {
+class HorseStatsMod : HUDMod(TranslateText.HORSE_STATS, TranslateText.HORSE_STATS_DESCRIPTION, Shinconic.MOD_HORSE_STATS) {
     private val df = DecimalFormat("0.0")
 
     @EventTarget
@@ -39,7 +40,7 @@ class HorseStatsMod : HUDMod(TranslateText.HORSE_STATS, TranslateText.HORSE_STAT
     }
 
     private fun getHorseSpeedRounded(baseSpeed: Double): String {
-        val factor = 43.1703703704f
+        val factor = 43.170372f
 
         val speed = (baseSpeed * factor).toFloat()
 

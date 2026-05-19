@@ -7,7 +7,8 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.GlUtils.startScale
@@ -19,7 +20,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
 
-class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, LegacyIcon.MOD_POTION_STATUS) {
+class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION_STATUS_DESCRIPTION, Shinconic.MOD_POTION_STATUS) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private val compact = false
     private var maxString = 0
@@ -28,11 +29,12 @@ class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION
 
     @EventTarget
     fun onUpdate(event: EventUpdate?) {
-        if (this.isEditing() || mc.thePlayer == null) {
-            potions = arrayListOf(PotionEffect(1, 0), PotionEffect(10, 0))
-        } else {
-            potions = mc.thePlayer.activePotionEffects
-        }
+        potions =
+            if (this.isEditing() || mc.thePlayer == null) {
+                arrayListOf(PotionEffect(1, 0), PotionEffect(10, 0))
+            } else {
+                mc.thePlayer.activePotionEffects
+            }
     }
 
     @EventTarget
@@ -106,18 +108,24 @@ class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION
 
                 var name = I18n.format(potion.name)
 
-                if (potioneffect.amplifier == 1) {
-                    name = name + " " + I18n.format("enchantment.level.2")
-                } else if (potioneffect.amplifier == 2) {
-                    name = name + " " + I18n.format("enchantment.level.3")
-                } else if (potioneffect.amplifier == 3) {
-                    name = name + " " + I18n.format("enchantment.level.4")
+                when (potioneffect.amplifier) {
+                    1 -> {
+                        name = name + " " + I18n.format("enchantment.level.2")
+                    }
+
+                    2 -> {
+                        name = name + " " + I18n.format("enchantment.level.3")
+                    }
+
+                    3 -> {
+                        name = name + " " + I18n.format("enchantment.level.4")
+                    }
                 }
 
                 val time = Potion.getDurationString(potioneffect)
 
                 if (compact) {
-                    this.drawText(name + " | " + time, 20f, offsetY - 10.5f, 9f, getHudFont(1))
+                    this.drawText("$name | $time", 20f, offsetY - 10.5f, 9f, getHudFont(1))
                 } else {
                     this.drawText(name, 25f, (offsetY - 12).toFloat(), 9f, getHudFont(1))
                     this.drawText(time, 25f, (offsetY - 1).toFloat(), 8f, getHudFont(1))
@@ -126,7 +134,7 @@ class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION
                 offsetY += ySize
 
                 if (compact) {
-                    val totalWidth = nvg.getTextWidth(name + " | " + time, 9f, getHudFont(1))
+                    val totalWidth = nvg.getTextWidth("$name | $time", 9f, getHudFont(1))
 
                     if (maxString < totalWidth || prevPotionCount != potions!!.size) {
                         maxString = totalWidth.toInt() - 4
@@ -136,11 +144,12 @@ class PotionStatusMod : HUDMod(TranslateText.POTION_STATUS, TranslateText.POTION
                     val timeWidth = nvg.getTextWidth(time, 9f, getHudFont(1))
 
                     if (maxString < levelWidth || maxString < timeWidth || prevPotionCount != potions!!.size) {
-                        if (levelWidth > timeWidth) {
-                            maxString = (levelWidth).toInt()
-                        } else {
-                            maxString = (timeWidth).toInt()
-                        }
+                        maxString =
+                            if (levelWidth > timeWidth) {
+                                (levelWidth).toInt()
+                            } else {
+                                (timeWidth).toInt()
+                            }
 
                         prevPotionCount = potions!!.size
                     }

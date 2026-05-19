@@ -129,12 +129,12 @@ class CompIconButton : CompControlTemplate {
             }
 
             val drawSize = iconSize.coerceAtLeast(fontSize)
-            val textHeight = nvgInstance.getTextHeight(icon, drawSize, Fonts.LEGACYICON)
-            val textWidth = nvgInstance.getTextWidth(icon, drawSize, Fonts.LEGACYICON)
+            val textHeight = nvgInstance.getTextHeight(icon, drawSize, Fonts.LUCIDE)
+            val textWidth = nvgInstance.getTextWidth(icon, drawSize, Fonts.LUCIDE)
             val iconX = getX() + getWidth() / 2f - textWidth / 2f
             val iconY = getY() + getHeight() / 2f - textHeight / 2f
 
-            nvgInstance.drawText(icon, iconX, iconY, iconColor, drawSize, Fonts.LEGACYICON)
+            nvgInstance.drawText(icon, iconX, iconY, iconColor, drawSize, Fonts.LUCIDE)
         }
     }
 

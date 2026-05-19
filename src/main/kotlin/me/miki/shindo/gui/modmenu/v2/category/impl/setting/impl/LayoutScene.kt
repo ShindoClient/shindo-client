@@ -8,7 +8,7 @@ import me.miki.shindo.gui.modmenu.v2.navigation.ModMenuSlideTransitionCoordinato
 import me.miki.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.utils.ColorUtils
 
 /**
@@ -24,7 +24,7 @@ class LayoutScene(
         parentCategory,
         TranslateText.SETTINGS_LAYOUT_TITLE,
         TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
-        LegacyIcon.GRID,
+        Lucide.GRID,
     ) {
     private val controllers = ArrayList<LayoutAreaController>()
     private val stateCoordinator = ModMenuSlideTransitionCoordinator()

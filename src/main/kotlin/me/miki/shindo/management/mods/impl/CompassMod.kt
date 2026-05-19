@@ -6,7 +6,8 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -15,7 +16,7 @@ import net.minecraft.util.MathHelper
 import org.lwjgl.nanovg.NanoVG
 import java.awt.Color
 
-class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION, LegacyIcon.MOD_COMPASS) {
+class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DESCRIPTION, Shinconic.MOD_COMPASS) {
     private val stencil = ScreenStencil()
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
@@ -234,7 +235,7 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
         color: Color,
     ) {
         val nvg = getInstance().nanoVGManager
-        val vg = nvg!!.getContext()
+        val vg = nvg.getContext()
         val nvgColor = nvg.getColor(color)
         val scale = this.getScale()
 
@@ -256,30 +257,50 @@ class CompassMod : SimpleHUDMod(TranslateText.COMPASS, TranslateText.COMPASS_DES
             rotation += 360.0
         }
 
-        if (0 <= rotation && rotation < 22.5) {
-            return s + "W"
-        } else if (22.5 <= rotation && rotation < 67.5) {
-            return s + "NW"
-        } else if (67.5 <= rotation && rotation < 112.5) {
-            return s + "N"
-        } else if (112.5 <= rotation && rotation < 157.5) {
-            return s + "NE"
-        } else if (157.5 <= rotation && rotation < 202.5) {
-            return s + "E"
-        } else if (202.5 <= rotation && rotation < 247.5) {
-            return s + "SE"
-        } else if (247.5 <= rotation && rotation < 292.5) {
-            return s + "S"
-        } else if (292.5 <= rotation && rotation < 337.5) {
-            return s + "SW"
-        } else if (337.5 <= rotation && rotation < 360.0) {
-            return s + "W"
-        }
+        when (rotation) {
+            in 0.0..<22.5 -> {
+                return s + "W"
+            }
 
-        return s + "Error"
+            in 22.5..<67.5 -> {
+                return s + "NW"
+            }
+
+            in 67.5..<112.5 -> {
+                return s + "N"
+            }
+
+            in 112.5..<157.5 -> {
+                return s + "NE"
+            }
+
+            in 157.5..<202.5 -> {
+                return s + "E"
+            }
+
+            in 202.5..<247.5 -> {
+                return s + "SE"
+            }
+
+            in 247.5..<292.5 -> {
+                return s + "S"
+            }
+
+            in 292.5..<337.5 -> {
+                return s + "SW"
+            }
+
+            in 337.5..<360.0 -> {
+                return s + "W"
+            }
+
+            else -> {
+                return s + "Error"
+            }
+        }
     }
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.COMPASS else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.COMPASS else null
 
     private enum class Design(
         private val translate: TranslateText,

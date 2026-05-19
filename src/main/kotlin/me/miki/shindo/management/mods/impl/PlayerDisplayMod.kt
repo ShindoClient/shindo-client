@@ -4,7 +4,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.Minecraft
@@ -16,7 +17,7 @@ class PlayerDisplayMod :
     HUDMod(
         TranslateText.PLAYER_DISPLAY,
         TranslateText.PLAYER_DISPLAY_DESCRIPTION,
-        LegacyIcon.MOD_PLAYER_DISPLAY,
+        Shinconic.MOD_PLAYER_DISPLAY,
         "paperdoll",
     ) {
     @Property(

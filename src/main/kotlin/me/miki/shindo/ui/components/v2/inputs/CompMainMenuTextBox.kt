@@ -133,7 +133,7 @@ class CompMainMenuTextBox(
 
         val textY = getY() + getHeight() / 2 - nvg.getTextHeight(drawText, halfH, Fonts.REGULAR) / 2
 
-        nvg.drawText(icon, getX() + 5, textY, fontColor, halfH, Fonts.LEGACYICON)
+        nvg.drawText(icon, getX() + 5, textY, fontColor, halfH, Fonts.LUCIDE)
 
         animation.setAnimation(if (!focused && rawText.isEmpty()) 1f else 0f, 16.0)
 

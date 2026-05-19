@@ -7,13 +7,14 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
-class MemoryUsageMod : SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, LegacyIcon.MOD_MEMORY_USAGE) {
+class MemoryUsageMod : SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.MEMORY_USAGE_DESCRIPTION, Shinconic.MOD_MEMORY_USAGE) {
     private val circleAnimation = SimpleAnimation()
 
     @Property(type = PropertyType.COMBO, translate = TranslateText.DESIGN)
@@ -49,7 +50,7 @@ class MemoryUsageMod : SimpleHUDMod(TranslateText.MEMORY_USAGE, TranslateText.ME
 
     override fun getText(): String = "Mem: " + this.usingMemory + "%"
 
-    override fun getIcon(): String? = if (iconSetting) LegacyIcon.SERVER else null
+    override fun getIcon(): String? = if (iconSetting) Lucide.SERVER else null
 
     private val usingMemory: Long
         get() {

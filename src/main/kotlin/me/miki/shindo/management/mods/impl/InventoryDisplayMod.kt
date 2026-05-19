@@ -5,7 +5,8 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.utils.GlUtils.startScale
 import me.miki.shindo.utils.GlUtils.stopScale
 import me.miki.shindo.utils.render.RenderUtils.drawItemStack
@@ -14,7 +15,7 @@ class InventoryDisplayMod :
     HUDMod(
         TranslateText.INVENTORY_DISPLAY,
         TranslateText.INVENTORY_DISPLAY_DESCRIPTION,
-        LegacyIcon.MOD_INVENTORY_DISPLAY,
+        Shinconic.MOD_INVENTORY_DISPLAY,
     ) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {

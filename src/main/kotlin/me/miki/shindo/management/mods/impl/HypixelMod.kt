@@ -9,7 +9,8 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.hypixel.HypixelGameMode
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.ColorUtils.removeColorCode
@@ -26,7 +27,7 @@ import net.minecraft.network.play.server.S45PacketTitle
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
-class HypixelMod : Mod(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, LegacyIcon.MOD_HYPIXEL, "hytill") {
+class HypixelMod : Mod(TranslateText.HYPIXEL, TranslateText.HYPIXEL_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_HYPIXEL, "hytill") {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.AUTO_GG)
     private val autoggSetting = false
 

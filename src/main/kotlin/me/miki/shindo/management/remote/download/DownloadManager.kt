@@ -22,11 +22,10 @@ class DownloadManager {
             if (!df.outputDir.exists()) df.outputDir.mkdirs()
             when (df) {
                 is DownloadZipFile -> {
-                    val dzf = df
-                    if (DirectoryUtils.getDirectorySize(dzf.outputDir) != dzf.unzippedSize) {
-                        val outputFile = File(dzf.outputDir, dzf.fileName)
-                        HttpUtils.downloadFile(dzf.url, outputFile)
-                        FileExtractor.unzip(outputFile, dzf.outputDir)
+                    if (DirectoryUtils.getDirectorySize(df.outputDir) != df.unzippedSize) {
+                        val outputFile = File(df.outputDir, df.fileName)
+                        HttpUtils.downloadFile(df.url, outputFile)
+                        FileExtractor.unzip(outputFile, df.outputDir)
                         outputFile.delete()
                     }
                 }
@@ -44,8 +43,7 @@ class DownloadManager {
         for (df in downloadFiles) {
             when (df) {
                 is DownloadZipFile -> {
-                    val dzf = df
-                    if (DirectoryUtils.getDirectorySize(dzf.outputDir) != dzf.unzippedSize) {
+                    if (DirectoryUtils.getDirectorySize(df.outputDir) != df.unzippedSize) {
                         startDownloads()
                         return
                     }

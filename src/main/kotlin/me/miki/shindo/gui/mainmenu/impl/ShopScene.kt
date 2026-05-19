@@ -6,7 +6,7 @@ import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.easing.EaseInOutCirc
@@ -127,7 +127,7 @@ class ShopScene(
         nvg.drawCenteredText(info.getText(), acX + 25f + (72 / 2f), acY + 159f, Color.WHITE, 10f, Fonts.MEDIUM)
 
         for (t in goldFeatures) {
-            nvg.drawText(LegacyIcon.CHECK_CIRCLE, acX + 25f, acY + 87f + offsetY, Color.WHITE, 9f, Fonts.LEGACYICON)
+            nvg.drawText(Lucide.CHECK_CIRCLE, acX + 25f, acY + 87f + offsetY, Color.WHITE, 9f, Fonts.LUCIDE)
             nvg.drawText(t.getText(), acX + 36f, acY + 88f + offsetY, Color.WHITE, 8f, Fonts.REGULAR)
 
             offsetY += 12

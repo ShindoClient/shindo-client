@@ -3,7 +3,7 @@ package me.miki.shindo.ui.components.v2.selectors
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.templates.CompPanel
 import me.miki.shindo.ui.components.v2.templates.PanelStyle
 import me.miki.shindo.utils.ColorUtils
@@ -98,12 +98,12 @@ class CompAccentColorSelector(
 
             if (selected) {
                 nvg.drawText(
-                    LegacyIcon.CHECK,
+                    Lucide.CHECK,
                     screenX + itemWidth - 18f,
                     innerY + 10f,
                     Color(255, 255, 255, (accent.getAnimation().getValue() * 255).toInt()),
                     12f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
             } else if (hovered) {
                 nvg.drawOutlineRoundedRect(

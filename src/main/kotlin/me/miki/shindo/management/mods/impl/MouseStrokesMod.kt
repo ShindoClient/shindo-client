@@ -6,10 +6,11 @@ import me.miki.shindo.management.event.impl.EventPlayerHeadRotation
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.util.MathHelper
 
-class MouseStrokesMod : HUDMod(TranslateText.MOUSE_STROKES, TranslateText.MOUSE_STROKES_DESCRIPTION, LegacyIcon.MOD_MOUSE_STROKES) {
+class MouseStrokesMod : HUDMod(TranslateText.MOUSE_STROKES, TranslateText.MOUSE_STROKES_DESCRIPTION, Shinconic.MOD_MOUSE_STROKES) {
     private var mouseX = 0f
     private var mouseY = 0f
     private var lastMouseX = 0f

@@ -4,7 +4,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.utils.GlUtils.startScale
 import me.miki.shindo.utils.GlUtils.stopScale
 import me.miki.shindo.utils.ServerUtils.isJoinServer
@@ -13,7 +14,7 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.BossStatus
 
-class BossHealthMod : HUDMod(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION, LegacyIcon.MOD_BOSS_HEALTH) {
+class BossHealthMod : HUDMod(TranslateText.BOSS_HEALTH, TranslateText.BOSS_HEALTH_DESCRIPTION, Shinconic.MOD_BOSS_HEALTH) {
     @EventTarget
     fun onRender2D(event: EventRender2D?) {
         val bossHealthWidth = 182

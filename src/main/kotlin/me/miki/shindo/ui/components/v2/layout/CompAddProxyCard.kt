@@ -2,7 +2,7 @@ package me.miki.shindo.ui.components.v2.layout
 
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.utils.ColorUtils
@@ -48,7 +48,7 @@ class CompAddProxyCard : Component() {
             borderColor,
         )
 
-        val iconHeight = nvg.getTextHeight(LegacyIcon.PLUS, ICON_SIZE, Fonts.LEGACYICON)
+        val iconHeight = nvg.getTextHeight(Lucide.PLUS, ICON_SIZE, Fonts.LUCIDE)
         val labelHeight = nvg.getTextHeight(label, LABEL_SIZE, Fonts.MEDIUM)
         val spacing = 6f
         val contentCenterY = getY() + getHeight() / 2f
@@ -56,12 +56,12 @@ class CompAddProxyCard : Component() {
         val labelBaselineY = contentCenterY + spacing * 0.5f
 
         nvg.drawCenteredText(
-            LegacyIcon.PLUS,
+            Lucide.PLUS,
             getX() + getWidth() / 2f,
             iconBaselineY,
             palette.getFontColor(ColorType.DARK),
             ICON_SIZE,
-            Fonts.LEGACYICON,
+            Fonts.LUCIDE,
         )
         nvg.drawCenteredText(
             label,

@@ -2,6 +2,7 @@ package me.miki.extensions.core
 
 import me.miki.shindo.logger.ShindoLogger
 
+@Suppress("UNUSED")
 class ExtensionManager {
     private val modules: MutableMap<String, ExtensionModule> = linkedMapOf()
     private val loggerTag = "ExtensionManager"

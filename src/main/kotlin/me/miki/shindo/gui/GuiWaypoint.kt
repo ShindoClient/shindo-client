@@ -9,7 +9,7 @@ import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.waypoint.Waypoint
 import me.miki.shindo.management.waypoint.WaypointManager
 import me.miki.shindo.ui.animation.v2.Animation
@@ -180,7 +180,7 @@ class GuiWaypoint : GuiScreen() {
                 )
 
                 nvg.drawText(
-                    LegacyIcon.TRASH,
+                    Lucide.TRASH,
                     x + 162f,
                     y + 44f + offsetY,
                     Color(
@@ -189,7 +189,7 @@ class GuiWaypoint : GuiScreen() {
                         255 - (waypoint.getTrashAnimation().getValue() * 255).toInt(),
                     ),
                     11f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
 
                 offsetY += 38
@@ -242,12 +242,12 @@ class GuiWaypoint : GuiScreen() {
 
             if (currentColor == color) {
                 nvg.drawText(
-                    LegacyIcon.CHECK,
+                    Lucide.CHECK,
                     x + menuWidth - 118f + offsetX,
                     y + 86.5f + offsetY,
                     Color.WHITE,
                     9f,
-                    Fonts.LEGACYICON,
+                    Fonts.LUCIDE,
                 )
             }
 

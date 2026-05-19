@@ -8,7 +8,7 @@ import me.miki.shindo.gui.mainmenu.MainMenuScene
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction
 import me.miki.shindo.ui.animation.v2.curve.DecelerateAnimation
@@ -111,12 +111,12 @@ class AccentColorSelectScene(
             color.getAnimation().setAnimation(if (color == currentColor) 1.0f else 0.0f, 16)
 
             nvg.drawCenteredText(
-                LegacyIcon.CHECK,
+                Lucide.CHECK,
                 x + offsetX + 10f + (32 / 2f),
                 y + offsetY + 48f,
                 Color(255, 255, 255, (color.getAnimation().getValue() * 255).toInt()),
                 16f,
-                Fonts.LEGACYICON,
+                Fonts.LUCIDE,
             )
 
             offsetX += 40

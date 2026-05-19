@@ -4,7 +4,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import me.miki.shindo.utils.PlayerUtils.getPotionsFromInventory
@@ -14,7 +15,7 @@ class PotionCounterMod :
     SimpleHUDMod(
         TranslateText.POTION_COUNTER,
         TranslateText.POTION_COUNTER_DESCRIPTION,
-        LegacyIcon.MOD_POTION_COUNTER,
+        Shinconic.MOD_POTION_COUNTER,
     ) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)
     private val showIcon = true
@@ -30,5 +31,5 @@ class PotionCounterMod :
         return amount.toString() + " " + (if (amount <= 1) "pot" else "pots")
     }
 
-    override fun getIcon(): String? = if (showIcon) LegacyIcon.ARCHIVE else null
+    override fun getIcon(): String? = if (showIcon) Lucide.ARCHIVE else null
 }

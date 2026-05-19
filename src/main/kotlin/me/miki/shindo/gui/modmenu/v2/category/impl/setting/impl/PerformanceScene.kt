@@ -5,7 +5,7 @@ import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.v2.category.impl.setting.SettingScene
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.ui.components.v2.buttons.CompSettingButton
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButtonWithRestart
 import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
@@ -13,7 +13,7 @@ import kotlin.math.max
 
 class PerformanceScene(
     parent: SettingsCategory,
-) : SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, LegacyIcon.PERFORMANCE) {
+) : SettingScene(parent, TranslateText.PERFORMANCE, TranslateText.PERFORMANCE_DESCRIPTION, Lucide.CIRCLE_GAUGE) {
     private lateinit var container: CompScrollableContainer
     private lateinit var textureOptimizationToggle: CompToggleButtonWithRestart
     private val settingCards = ArrayList<CompSettingButton>()

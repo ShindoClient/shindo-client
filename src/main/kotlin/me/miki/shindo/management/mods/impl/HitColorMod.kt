@@ -6,12 +6,13 @@ import me.miki.shindo.management.event.impl.EventHitOverlay
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import java.awt.Color
 
-class HitColorMod : Mod(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER, LegacyIcon.MOD_HIT_COLOR) {
+class HitColorMod : Mod(TranslateText.HIT_COLOR, TranslateText.HIT_COLOR_DESCRIPTION, ModCategory.RENDER, Shinconic.MOD_HIT_COLOR) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.CUSTOM_COLOR)
     private val customColorSetting = false
 

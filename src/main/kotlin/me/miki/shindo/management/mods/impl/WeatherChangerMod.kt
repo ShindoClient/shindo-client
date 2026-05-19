@@ -3,7 +3,8 @@ package me.miki.shindo.management.mods.impl
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.LegacyIcon
+import me.miki.shindo.management.nanovg.font.Lucide
+import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
@@ -15,7 +16,7 @@ class WeatherChangerMod :
         TranslateText.WEATHER_CHANGER,
         TranslateText.WEATHER_CHANGER_DESCRIPTION,
         ModCategory.WORLD,
-        LegacyIcon.MOD_WEATHER_CHANGER,
+        Shinconic.MOD_WEATHER_CHANGER,
     ) {
     @Property(type = PropertyType.COMBO, translate = TranslateText.WEATHER)
     @JvmField
