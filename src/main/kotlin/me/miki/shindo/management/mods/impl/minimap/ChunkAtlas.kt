@@ -13,7 +13,8 @@ import net.minecraft.world.chunk.Chunk
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12
 import java.nio.IntBuffer
-import java.util.*
+import java.util.Arrays
+import java.util.BitSet
 import java.util.function.IntFunction
 import java.util.function.IntPredicate
 import java.util.stream.IntStream

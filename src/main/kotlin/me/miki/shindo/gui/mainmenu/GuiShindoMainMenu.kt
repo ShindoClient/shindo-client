@@ -5,7 +5,12 @@ import me.miki.shindo.gui.mainmenu.impl.BackgroundScene
 import me.miki.shindo.gui.mainmenu.impl.MainScene
 import me.miki.shindo.gui.mainmenu.impl.ShopScene
 import me.miki.shindo.gui.mainmenu.impl.UpdateScene
-import me.miki.shindo.gui.mainmenu.impl.welcome.*
+import me.miki.shindo.gui.mainmenu.impl.welcome.AccentColorSelectScene
+import me.miki.shindo.gui.mainmenu.impl.welcome.CheckingDataScene
+import me.miki.shindo.gui.mainmenu.impl.welcome.LanguageSelectScene
+import me.miki.shindo.gui.mainmenu.impl.welcome.LastMessageScene
+import me.miki.shindo.gui.mainmenu.impl.welcome.ThemeSelectScene
+import me.miki.shindo.gui.mainmenu.impl.welcome.WelcomeMessageScene
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.Theme
 import me.miki.shindo.management.color.palette.ColorPalette

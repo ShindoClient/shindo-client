@@ -8,14 +8,14 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.appleskin.AppleSkinHelper
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.item.ItemFood
 import net.minecraft.potion.Potion
 import org.lwjgl.opengl.GL11
-import java.util.*
+import java.util.Random
+import java.util.Vector
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min

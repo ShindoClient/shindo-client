@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 
 class AutoTextManager {

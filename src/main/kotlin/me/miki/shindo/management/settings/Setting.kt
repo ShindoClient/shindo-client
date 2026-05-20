@@ -7,7 +7,7 @@ import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.management.settings.metadata.SettingMetadata
 import java.text.Normalizer
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.abs
 

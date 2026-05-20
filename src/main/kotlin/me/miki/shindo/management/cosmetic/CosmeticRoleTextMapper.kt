@@ -13,7 +13,6 @@ object CosmeticRoleTextMapper {
             Role.DIAMOND -> TranslateText.DIAMOND_ONLY
             Role.GOLD -> TranslateText.GOLD_ONLY
             Role.MEMBER -> TranslateText.MEMBER
-            else -> TranslateText.NONE
         }
 
     @JvmStatic
@@ -25,6 +24,5 @@ object CosmeticRoleTextMapper {
             Role.DIAMOND -> TranslateText.DIAMOND
             Role.GOLD -> TranslateText.GOLD
             Role.MEMBER -> TranslateText.MEMBER
-            else -> TranslateText.NONE
         }
 }

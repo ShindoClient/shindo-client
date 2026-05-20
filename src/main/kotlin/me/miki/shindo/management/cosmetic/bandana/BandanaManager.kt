@@ -7,7 +7,7 @@ import me.miki.shindo.management.cosmetic.bandana.impl.Bandana
 import me.miki.shindo.management.cosmetic.bandana.impl.NormalBandana
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import java.util.*
+import java.util.UUID
 
 class BandanaManager {
     private val bandanas = ArrayList<Bandana>()

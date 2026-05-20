@@ -18,14 +18,6 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 import kotlin.math.max
 
-/**
- * Shared carousel behavior for Settings/Mods/Presets scenes.
- *
- * It encapsulates:
- * - next/previous navigation controls;
- * - animated preview transitions;
- * - explicit apply button to commit the selected type.
- */
 abstract class LayoutCarouselScene(
     parent: SettingsCategory,
     area: UILayoutArea,
@@ -83,12 +75,13 @@ abstract class LayoutCarouselScene(
         val topPadding = 6f
         val controlsHeight = 15f
         val controlsGap = 7f
-        val navSize = 23f
+        val navWidth = 14f
+        val navHeight = 18f
         val navGap = 8f
 
-        val previewX = x + sidePadding + navSize + navGap
+        val previewX = x + sidePadding + navWidth + navGap
         val previewY = y + topPadding
-        val previewWidth = max(60f, width - sidePadding * 2f - (navSize + navGap) * 2f)
+        val previewWidth = max(60f, width - sidePadding * 2f - (navWidth + navGap) * 2f)
         val previewHeight = max(40f, height - topPadding - controlsGap - controlsHeight)
         val controlsY = previewY + previewHeight + controlsGap
         val previewLabelHeight = 34f
@@ -98,9 +91,8 @@ abstract class LayoutCarouselScene(
         val previewContentHeight = max(28f, previewHeight - previewLabelHeight - previewLabelInset * 2f - 2f)
         val previewLabelY = previewY + previewHeight - previewLabelHeight - previewLabelInset
 
-        previousBounds = Rect(x + sidePadding, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
-        nextBounds =
-            Rect(x + width - sidePadding - navSize, previewY + (previewHeight - navSize) / 2f, navSize, navSize)
+        previousBounds = Rect(x + sidePadding, previewY + (previewHeight - navHeight) / 2f, navWidth, navHeight)
+        nextBounds = Rect(x + width - sidePadding - navWidth, previewY + (previewHeight - navHeight) / 2f, navWidth, navHeight)
 
         drawNavButton(nvg, palette, previousBounds, Lucide.CHEVRON_LEFT, previousBounds!!.contains(mouseX, mouseY))
         drawNavButton(nvg, palette, nextBounds, Lucide.CHEVRON_RIGHT, nextBounds!!.contains(mouseX, mouseY))
@@ -318,30 +310,21 @@ abstract class LayoutCarouselScene(
             bounds.y,
             bounds.width,
             bounds.height,
-            8f,
+            3.5f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), if (hovered) 206 else 176),
         )
         nvg.drawCenteredText(
             symbol,
-            bounds.x + bounds.width / 2f,
-            bounds.y + bounds.height / 2f - 4.5f,
+            bounds.x + (bounds.width / 2f) - 1f,
+            bounds.y + (bounds.height / 2f) - 4.5f,
             palette.getFontColor(ColorType.DARK),
-            12f,
+            10f,
             Fonts.LUCIDE,
         )
     }
 
-    /**
-     * Returns transition progress in [0..1].
-     */
     private fun getTransitionProgress(): Float {
         val target = transitionTo ?: return 1f
-        if (TRANSITION_DURATION_NS <= 0L) {
-            transitionFrom = null
-            transitionTo = null
-            previewType = target
-            return 1f
-        }
         if (transitionStartNs == 0L) {
             transitionStartNs = System.nanoTime()
             return 0f

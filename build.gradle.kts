@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.forge.gradle)
     alias(libs.plugins.mixin.gradle)
 }
@@ -29,7 +30,6 @@ kotlin {
     compilerOptions {
         jvmToolchain(8)
         freeCompilerArgs.add("-Xallow-no-source-files")
-        freeCompilerArgs.add("-Xexplicit-backing-fields")
         freeCompilerArgs.add("-Xcontext-parameters")
     }
 }
@@ -72,9 +72,10 @@ dependencies {
         exclude(group = "com.google.code.gson", module = "gson")
     }
 
-    shade(libs.lang)
-    shade(libs.okhttp)
+    shade(libs.i18n)
     shade(libs.gson)
+    shade(libs.yaml)
+    shade(libs.bundles.okhttp)
 
     shade(files("libs/lwjgl-shindo.jar"))
     shade(files("libs/lwjgl-shindo-natives.jar"))
@@ -85,7 +86,6 @@ dependencies {
                 "ViaVersion*.jar",
                 "ViaBackwards*.jar",
                 "ViaRewind*.jar",
-                "snakeyaml*.jar",
             )
         },
     )

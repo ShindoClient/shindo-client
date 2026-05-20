@@ -6,7 +6,8 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.logger.ShindoLogger
 import net.minecraft.client.Minecraft
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class ProfileShareManager {

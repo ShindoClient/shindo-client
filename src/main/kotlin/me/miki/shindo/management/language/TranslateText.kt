@@ -628,6 +628,8 @@ enum class TranslateText(
     SETTINGS_LAYOUT_ADDON_STANDARD_DESCRIPTION("text.settings.layout.addon.standard.description"),
     SETTINGS_LAYOUT_ADDON_STANDARD_TITLE("text.settings.layout.addon.standard.title"),
     SETTINGS_LAYOUT_DESCRIPTION("text.settings.layout.description"),
+    SETTINGS_LAYOUT_ADAPTIVE_DESCRIPTION("text.settings.layout.adaptive.description"),
+    SETTINGS_LAYOUT_ADAPTIVE_TITLE("text.settings.layout.adaptive.title"),
     SETTINGS_LAYOUT_DOUBLE_DESCRIPTION("text.settings.layout.double.description"),
     SETTINGS_LAYOUT_DOUBLE_TITLE("text.settings.layout.double.title"),
     SETTINGS_LAYOUT_MODULE_DESCRIPTION("text.settings.layout.module.description"),

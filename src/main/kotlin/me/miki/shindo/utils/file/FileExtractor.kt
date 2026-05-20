@@ -5,7 +5,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
-import java.util.*
+import java.util.Locale
 import java.util.zip.ZipInputStream
 
 object FileExtractor {

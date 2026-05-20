@@ -15,7 +15,15 @@ import me.miki.shindo.management.network.NetworkManager
 import me.miki.shindo.management.network.proxy.CustomProxy
 import me.miki.shindo.management.profile.mainmenu.BackgroundManager
 import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.management.settings.impl.*
+import me.miki.shindo.management.settings.impl.BooleanSetting
+import me.miki.shindo.management.settings.impl.CellGridSetting
+import me.miki.shindo.management.settings.impl.ColorSetting
+import me.miki.shindo.management.settings.impl.ComboSetting
+import me.miki.shindo.management.settings.impl.ImageSetting
+import me.miki.shindo.management.settings.impl.KeybindSetting
+import me.miki.shindo.management.settings.impl.NumberSetting
+import me.miki.shindo.management.settings.impl.SoundSetting
+import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.JsonUtils
 import me.miki.shindo.utils.concurrent.TaskExecutor

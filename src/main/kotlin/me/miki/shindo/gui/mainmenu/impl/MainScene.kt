@@ -234,13 +234,13 @@ class MainScene(
         // rightX -= (btnS + btnSp)
         settingsHover =
             lerp(settingsHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(Lucide.SETTINGS, rightX - btnS, topY, btnS, settingsHover, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.SETTINGS, rightX - btnS, topY, btnS, settingsHover, true, anim)
 
         // Logo
         rightX -= (btnS + btnSp)
         featherHover =
             lerp(featherHover, if (isInside(mouseX, mouseY, rightX - btnS, topY, btnS, btnS)) 1f else 0f, 0.2f)
-        nvg.drawGlassButtonWithIcon(Shinconic.SHINDO, rightX - btnS, topY, btnS, featherHover, anim)
+        nvg.drawGlassButtonWithIcon(Shinconic.SHINDO, rightX - btnS, topY, btnS, featherHover, false, anim)
 
         // Profile box
         rightX -= (btnS + btnSp)

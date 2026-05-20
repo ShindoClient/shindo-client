@@ -4,7 +4,14 @@ import eu.shoroa.contrib.render.Blur
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.GuiEditHUD
 import me.miki.shindo.gui.modmenu.v2.category.Category
-import me.miki.shindo.gui.modmenu.v2.category.impl.*
+import me.miki.shindo.gui.modmenu.v2.category.impl.AddonCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.CosmeticsCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.HomeCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.ModuleCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.ProfileCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.ScreenshotCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.SpotifyCategory
 import me.miki.shindo.gui.modmenu.v2.category.list.ModMenuListPageContract
 import me.miki.shindo.gui.modmenu.v2.navigation.ModMenuCategoryTransitionCoordinator
 import me.miki.shindo.gui.modmenu.v2.navigation.ModMenuSidebarController

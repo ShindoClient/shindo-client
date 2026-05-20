@@ -1,10 +1,25 @@
 package me.miki.shindo.ui.components.v2.factory
 
 import me.miki.shindo.management.settings.Setting
-import me.miki.shindo.management.settings.impl.*
+import me.miki.shindo.management.settings.impl.BooleanSetting
+import me.miki.shindo.management.settings.impl.CellGridSetting
+import me.miki.shindo.management.settings.impl.ColorSetting
+import me.miki.shindo.management.settings.impl.ComboSetting
+import me.miki.shindo.management.settings.impl.ImageSetting
+import me.miki.shindo.management.settings.impl.KeybindSetting
+import me.miki.shindo.management.settings.impl.NumberSetting
+import me.miki.shindo.management.settings.impl.SoundSetting
+import me.miki.shindo.management.settings.impl.TextSetting
 import me.miki.shindo.ui.components.v2.Component
 import me.miki.shindo.ui.components.v2.buttons.CompToggleButton
-import me.miki.shindo.ui.components.v2.inputs.*
+import me.miki.shindo.ui.components.v2.inputs.CompCellGrid
+import me.miki.shindo.ui.components.v2.inputs.CompColorPicker
+import me.miki.shindo.ui.components.v2.inputs.CompComboBox
+import me.miki.shindo.ui.components.v2.inputs.CompImageSelect
+import me.miki.shindo.ui.components.v2.inputs.CompKeybind
+import me.miki.shindo.ui.components.v2.inputs.CompModTextBox
+import me.miki.shindo.ui.components.v2.inputs.CompSlider
+import me.miki.shindo.ui.components.v2.inputs.CompSoundSelect
 import java.util.concurrent.ConcurrentHashMap
 
 object SettingComponentFactory {

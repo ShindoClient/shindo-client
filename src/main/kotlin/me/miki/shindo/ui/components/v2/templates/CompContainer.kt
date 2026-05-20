@@ -56,8 +56,6 @@ open class CompContainer(
         var currentY = getY() + padding
 
         for (child in children) {
-            if (child !is Component) continue
-
             child.setX(currentX)
             child.setY(currentY)
 

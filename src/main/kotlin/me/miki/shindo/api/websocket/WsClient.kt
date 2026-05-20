@@ -3,7 +3,11 @@ package me.miki.shindo.api.websocket
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.miki.shindo.logger.ShindoLogger
-import okhttp3.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import okio.ByteString
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArrayList

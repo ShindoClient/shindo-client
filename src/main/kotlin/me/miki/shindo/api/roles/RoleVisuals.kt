@@ -1,10 +1,9 @@
 package me.miki.shindo.api.roles
 
 import me.miki.shindo.api.websocket.presence.PresenceTracker
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import java.awt.Color
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 object RoleVisuals {

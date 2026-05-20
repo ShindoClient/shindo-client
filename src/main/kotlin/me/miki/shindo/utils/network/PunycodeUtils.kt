@@ -20,7 +20,7 @@ object PunycodeUtils {
 
         val hostname = url.substring(protoEnd, hostEnd)
 
-        if (hostname.none { it.toInt() >= 128 }) {
+        if (hostname.none { it.code >= 128 }) {
             return url
         }
 
@@ -31,7 +31,7 @@ object PunycodeUtils {
         sb.append(url, 0, protoEnd)
 
         for (p in parts) {
-            val transform = p.any { it.toInt() >= 128 }
+            val transform = p.any { it.code >= 128 }
 
             if (first) {
                 first = false
@@ -94,9 +94,9 @@ object PunycodeUtils {
             }
 
             if (digit < 26) {
-                dst.append(('a'.toInt() + digit).toChar())
+                dst.append(('a'.code + digit).toChar())
             } else {
-                dst.append(('0'.toInt() + digit - 26).toChar())
+                dst.append(('0'.code + digit - 26).toChar())
             }
 
             k += 36

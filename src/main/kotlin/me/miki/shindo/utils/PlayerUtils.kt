@@ -7,7 +7,14 @@ import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
-import net.minecraft.item.*
+import net.minecraft.item.Item
+import net.minecraft.item.ItemAxe
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemBow
+import net.minecraft.item.ItemPickaxe
+import net.minecraft.item.ItemPotion
+import net.minecraft.item.ItemStack
+import net.minecraft.item.ItemSword
 import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
 import net.minecraft.world.WorldSettings
@@ -183,27 +190,24 @@ object PlayerUtils {
                     slot = i
                 }
 
-                if (bestBlock != null) {
-                    if (!wool && block == Blocks.wool) {
-                        wool = true
-                        bestBlock = itemBlock
-                        slot = i
-                        continue
-                    }
+                if (!wool && block == Blocks.wool) {
+                    wool = true
+                    bestBlock = itemBlock
+                    slot = i
+                    continue
+                }
 
-                    if (!wool && !planks && block == Blocks.planks) {
-                        planks = true
-                        bestBlock = itemBlock
-                        slot = i
-                        continue
-                    }
+                if (!wool && !planks && block == Blocks.planks) {
+                    planks = true
+                    bestBlock = itemBlock
+                    slot = i
+                    continue
+                }
 
-                    if (!wool && !planks && !cobblestone && block == Blocks.cobblestone) {
-                        cobblestone = false
-                        bestBlock = itemBlock
-                        slot = i
-                        continue
-                    }
+                if (!wool && !planks && block == Blocks.cobblestone) {
+                    bestBlock = itemBlock
+                    slot = i
+                    continue
                 }
             }
         }

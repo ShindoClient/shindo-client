@@ -6,13 +6,12 @@ import me.miki.shindo.management.event.impl.EventRenderChunkPosition
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.chunk.RenderChunk
-import java.util.*
+import java.util.WeakHashMap
 import kotlin.math.sin
 
 class ChunkAnimatorMod :

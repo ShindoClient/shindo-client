@@ -8,12 +8,6 @@ import me.miki.shindo.management.nanovg.font.Fonts
 import me.miki.shindo.utils.ColorUtils
 import java.awt.Color
 
-/**
- * Shared painter methods used by all layout scenes.
- *
- * The goal is to avoid duplicated ad-hoc rendering code and keep
- * a coherent style language between Settings/Mods/Notifications/Presets scenes.
- */
 object LayoutSceneRenderer {
     /**
      * Draws the base panel used by each layout scene.

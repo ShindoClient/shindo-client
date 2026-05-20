@@ -7,8 +7,6 @@ import me.miki.shindo.api.roles.RoleManager
 import me.miki.shindo.api.websocket.message.MessageHandler
 import me.miki.shindo.api.websocket.message.MessageType
 import me.miki.shindo.api.websocket.presence.PresenceTracker
-import me.miki.shindo.logger.FileLogWriter
-import me.miki.shindo.management.notification.NotificationHandler
 import me.miki.shindo.management.notification.NotificationType
 import okhttp3.Handshake
 import java.util.Collections

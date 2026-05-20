@@ -2,7 +2,7 @@ package me.miki.shindo.management.settings.config
 
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.Setting
-import java.util.*
+import java.util.Locale
 
 interface PropertyEnum {
     fun getTranslate(): TranslateText = TranslateText.NONE

@@ -1,6 +1,9 @@
-package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout
+package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.impl
 
 import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutAreaScene
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutSceneRenderer
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutSceneStyle
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.palette.ColorPalette
 import me.miki.shindo.management.color.palette.ColorType

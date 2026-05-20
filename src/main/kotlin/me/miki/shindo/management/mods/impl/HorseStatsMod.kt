@@ -4,7 +4,6 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.passive.EntityHorse

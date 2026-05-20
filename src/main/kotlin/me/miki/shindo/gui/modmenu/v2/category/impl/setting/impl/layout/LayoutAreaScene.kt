@@ -17,15 +17,6 @@ import me.miki.shindo.utils.ColorUtils
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Base class for layout area scenes.
- *
- * Responsibilities:
- * - synchronize selected [UILayoutType] with [UILayoutManager];
- * - provide a consistent panel and preview canvas;
- * - optionally render a type selector grid;
- * - expose hooks for area-specific controls and previews.
- */
 abstract class LayoutAreaScene(
     parent: SettingsCategory,
     val area: UILayoutArea,

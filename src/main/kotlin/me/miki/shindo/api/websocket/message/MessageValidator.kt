@@ -2,7 +2,7 @@ package me.miki.shindo.api.websocket.message
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import java.util.*
+import java.util.UUID
 
 object MessageValidator {
     @JvmStatic

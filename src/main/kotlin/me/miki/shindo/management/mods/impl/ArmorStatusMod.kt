@@ -6,7 +6,6 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.nanovg.NanoVGManager
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper

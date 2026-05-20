@@ -3,7 +3,8 @@ package me.miki.shindo.api.chat
 import com.google.gson.JsonObject
 import me.miki.shindo.Shindo
 import me.miki.shindo.api.websocket.message.MessageType
-import java.util.*
+import java.util.Collections
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 

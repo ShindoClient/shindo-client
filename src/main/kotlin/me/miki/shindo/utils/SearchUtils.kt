@@ -1,7 +1,7 @@
 package me.miki.shindo.utils
 
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.Locale
 
 object SearchUtils {
     @JvmStatic

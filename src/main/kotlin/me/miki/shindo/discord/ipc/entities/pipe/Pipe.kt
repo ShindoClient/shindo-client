@@ -9,7 +9,8 @@ import me.miki.shindo.discord.ipc.entities.Packet
 import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException
 import org.apache.logging.log4j.LogManager
 import java.io.IOException
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 
 abstract class Pipe(
     val ipcClient: IPCClient,

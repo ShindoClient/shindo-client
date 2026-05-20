@@ -34,7 +34,6 @@ class UILayoutManager {
                 when (InternalSettingsMod.instance.getModuleLayout()) {
                     InternalSettingsMod.ModuleLayout.SINGLE_COLUMN -> UILayoutType.MODULES_SINGLE
                     InternalSettingsMod.ModuleLayout.TWO_COLUMNS -> UILayoutType.MODULES_DOUBLE
-                    else -> UILayoutType.MODULES_SINGLE
                 }
             }
 

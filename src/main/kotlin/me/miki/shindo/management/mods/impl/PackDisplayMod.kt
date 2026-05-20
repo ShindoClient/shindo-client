@@ -6,7 +6,6 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.event.impl.EventSwitchTexture
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
@@ -19,7 +18,6 @@ import net.minecraft.util.ResourceLocation
 import java.io.IOException
 
 class PackDisplayMod : HUDMod(TranslateText.PACK_DISPLAY, TranslateText.PACK_DISPLAY_DESCRIPTION, Shinconic.MOD_PACK_DISPLAY) {
-
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.COMPACT)
     private val compactSetting = false
 

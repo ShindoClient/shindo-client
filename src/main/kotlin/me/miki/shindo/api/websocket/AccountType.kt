@@ -1,6 +1,6 @@
 package me.miki.shindo.api.websocket
 
-import java.util.*
+import java.util.Locale
 
 enum class AccountType {
     LOCAL,

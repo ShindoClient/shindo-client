@@ -5,7 +5,7 @@ import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.settings.config.ConfigOwner
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
-import java.util.*
+import java.util.Locale
 
 open class Addon(
     val name: String,

@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import java.awt.Color
-import java.util.*
+import java.util.Random
 
 class SuperHeroFxMod : Mod(TranslateText.SUPERHEROFX_NAME, TranslateText.SUPERHEROFX_DESCRIPTION, ModCategory.RENDER) {
     private val particles: MutableList<HeroTextParticle> = ArrayList()

@@ -3,7 +3,6 @@ package me.miki.shindo.gui
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Fonts
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction

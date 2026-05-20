@@ -12,6 +12,5 @@ data class Profile(
     var type: ProfileType = ProfileType.ALL,
     var shareCode: String? = null,
 ) {
-    val starAnimation: SimpleAnimation = SimpleAnimation()
     val name: String = jsonFile?.nameWithoutExtension ?: ""
 }

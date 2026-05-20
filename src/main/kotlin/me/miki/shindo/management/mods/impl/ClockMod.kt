@@ -13,7 +13,8 @@ import me.miki.shindo.management.settings.config.PropertyType
 import org.lwjgl.nanovg.NanoVG
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 

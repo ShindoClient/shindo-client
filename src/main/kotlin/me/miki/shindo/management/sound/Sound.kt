@@ -5,7 +5,11 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import java.io.BufferedInputStream
 import java.io.File
-import javax.sound.sampled.*
+import javax.sound.sampled.AudioInputStream
+import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
+import javax.sound.sampled.FloatControl
+import javax.sound.sampled.LineEvent
 import kotlin.math.log10
 
 class Sound {

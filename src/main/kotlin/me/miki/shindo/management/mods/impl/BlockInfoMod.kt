@@ -5,7 +5,6 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.ui.animation.v2.Animation
 import me.miki.shindo.ui.animation.v2.Direction

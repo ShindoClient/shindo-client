@@ -165,7 +165,7 @@ class ModuleCategory(
         val instance = Shindo.getInstance()
         val modManager = instance.getModManager()
 
-        if (detailTransition.isInteractive() && mouseButton == 0) {
+        if (detailTransition.isInteractive() && !detailTransition.isActive() && mouseButton == 0) {
             for (chip in categoryChips) {
                 if (chip.contains(mouseX, mouseY)) {
                     chip.click()
@@ -174,7 +174,7 @@ class ModuleCategory(
             }
         }
 
-        if (detailTransition.isInteractive()) {
+        if (detailTransition.isInteractive() && !detailTransition.isActive()) {
             val iconLayout = false
             val cardStyle = getCardStyle(resolveModuleColumns())
 
@@ -645,7 +645,7 @@ class ModuleCategory(
         var currentY = getY() + 16f
         var blockBottom = currentY + CategoryChipRenderer.CHIP_HEIGHT
 
-        for (category in ModCategory.values()) {
+        for (category in ModCategory.entries) {
             val label = category.getName()
             val chipWidth = CategoryChipRenderer.computeWidth(nvg, label, null)
 

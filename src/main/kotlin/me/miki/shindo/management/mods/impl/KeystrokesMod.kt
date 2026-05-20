@@ -6,7 +6,6 @@ import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
 import me.miki.shindo.management.mods.impl.InternalSettingsMod.HudTheme
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType

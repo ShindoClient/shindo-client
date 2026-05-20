@@ -19,8 +19,8 @@ enum class UILayoutType(
     ),
     SETTINGS_ADAPTIVE(
         UILayoutArea.SETTINGS,
-        TranslateText.SETTINGS_LAYOUT_SECTION_LAYOUT,
-        TranslateText.SETTINGS_LAYOUT_DESCRIPTION,
+        TranslateText.SETTINGS_LAYOUT_ADAPTIVE_TITLE,
+        TranslateText.SETTINGS_LAYOUT_ADAPTIVE_DESCRIPTION,
     ),
     MODULES_SINGLE(
         UILayoutArea.MODULES,

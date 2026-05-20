@@ -13,7 +13,7 @@ import me.miki.shindo.utils.ServerUtils.getServerIP
 import me.miki.shindo.utils.ServerUtils.isHypixel
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.StringUtils
-import java.util.*
+import java.util.Arrays
 
 class SessionInfoMod : HUDMod(TranslateText.SESSION_INFO, TranslateText.SESSION_INFO_DESCRIPTION, Shinconic.MOD_SESSION_INFO, "stats") {
     private val killTrigger = arrayOf<String?>("by *", "para *", "fue destrozado a manos de *")

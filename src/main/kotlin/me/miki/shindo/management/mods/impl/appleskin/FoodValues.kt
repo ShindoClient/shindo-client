@@ -7,16 +7,16 @@ class FoodValues(
     val saturationIncrement: Float
         get() = hunger * saturationModifier * 2f
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
 
-        if (o !is FoodValues) {
+        if (other !is FoodValues) {
             return false
         }
 
-        return hunger == o.hunger && o.saturationModifier.compareTo(saturationModifier) == 0
+        return hunger == other.hunger && other.saturationModifier.compareTo(saturationModifier) == 0
     }
 
     override fun hashCode(): Int {

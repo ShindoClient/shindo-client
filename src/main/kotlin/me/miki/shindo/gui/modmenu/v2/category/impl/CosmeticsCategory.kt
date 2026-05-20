@@ -29,7 +29,7 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.io.File
-import java.util.*
+import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
 

@@ -107,7 +107,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button1X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(Lucide.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.MAP_PIN, button1X, buttonY, iconSize, icon1Hovered, true, anim)
 
         icon2Hovered =
             lerp(
@@ -115,7 +115,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button2X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(Lucide.CODE, button2X, buttonY, iconSize, icon2Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.CODE, button2X, buttonY, iconSize, icon2Hovered, true, anim)
 
         icon3Hovered =
             lerp(
@@ -123,7 +123,7 @@ class GuiNavigationHub : GuiScreen() {
                 if (MouseUtils.isInside(mouseX, mouseY, button3X, buttonY, iconSize, iconSize)) 1f else 0f,
                 0.2f,
             )
-        nvg.drawGlassButtonWithIcon(Lucide.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, anim)
+        nvg.drawGlassButtonWithIcon(Lucide.LAYOUT, button3X, buttonY, iconSize, icon3Hovered, true, anim)
     }
 
     override fun mouseClicked(

@@ -13,7 +13,12 @@ import me.miki.shindo.ui.animation.v2.easing.EaseLiner
 import me.miki.shindo.ui.animation.v2.screen.ScreenAnimation
 import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.render.BlurUtils
-import net.minecraft.client.gui.*
+import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiMultiplayer
+import net.minecraft.client.gui.GuiOptions
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.GuiShareToLan
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.achievement.GuiAchievements
 import net.minecraft.client.gui.achievement.GuiStats
 import net.minecraft.client.resources.I18n

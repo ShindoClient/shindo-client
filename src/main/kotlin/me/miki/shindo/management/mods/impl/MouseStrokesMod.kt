@@ -6,7 +6,6 @@ import me.miki.shindo.management.event.impl.EventPlayerHeadRotation
 import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.util.MathHelper
 

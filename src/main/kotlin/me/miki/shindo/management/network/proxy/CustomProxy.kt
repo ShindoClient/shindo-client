@@ -6,7 +6,7 @@ import me.miki.shindo.management.network.utils.CloudflareDNSResolver
 import me.miki.shindo.management.network.utils.DNSConfig
 import me.miki.shindo.management.network.utils.DNSResolver
 import java.net.InetAddress
-import java.util.*
+import java.util.UUID
 
 /**
  * Proxy DNS customizado criado pelo usuário

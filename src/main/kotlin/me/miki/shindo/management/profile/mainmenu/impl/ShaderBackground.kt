@@ -42,7 +42,5 @@ class ShaderBackground(
 
     fun isShaderLoaded(): Boolean = shaderId != -1
 
-    fun hasResourceShader(): Boolean = shaderResource != null
-
     fun hasFileShader(): Boolean = shaderFile != null && shaderFile.exists()
 }

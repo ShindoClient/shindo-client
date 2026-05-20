@@ -7,7 +7,7 @@ import me.miki.shindo.management.cosmetic.wing.impl.NormalWing
 import me.miki.shindo.management.cosmetic.wing.impl.Wing
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.impl.InternalSettingsMod
-import java.util.*
+import java.util.UUID
 
 class WingManager {
     private val wings = ArrayList<Wing>()

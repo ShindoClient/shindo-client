@@ -34,50 +34,95 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.File
 import java.lang.ref.WeakReference
-import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.max
 import kotlin.math.min
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data holders
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Immutable snapshot of current search results, swapped atomically. */
+private data class SearchSnapshot(
+    val tracks: List<Track> = emptyList(),
+    val playlists: List<PlaylistSimplified> = emptyList(),
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SpotifyCategory
+// ─────────────────────────────────────────────────────────────────────────────
 
 class SpotifyCategory(
     parent: GuiModMenu,
 ) : Category(parent, TranslateText.SPOTIFY, Lucide.MUSIC, true, true),
     TrackInfoCallback {
+    // ── Components ────────────────────────────────────────────────────────────
+
     private val volumeSlider =
         CompSlider(
             InternalSettingsMod.instance.getVolumeSetting()
-                ?: throw IllegalStateException("Internal volume setting is not registered"),
+                ?: error("Internal volume setting is not registered"),
         )
     private val textBox = CompTextBox()
+
+    // ── References ────────────────────────────────────────────────────────────
+
     private val parentRef = WeakReference(parent)
+
+    // ── Search state ──────────────────────────────────────────────────────────
+
     private val searchDebouncer: ScheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor { r ->
             Thread(r, "Search-Debouncer").apply { isDaemon = true }
         }
+
+    /**
+     * Atomic reference ensures the render thread always reads a fully-formed,
+     * non-null snapshot. Background threads publish a new snapshot in a single
+     * CAS, eliminating the NPE window that occurred when @Volatile vars were
+     * nulled and re-assigned in separate writes.
+     *
+     * null  → no active search (show user playlists only)
+     * non-null → display these results
+     */
+    private val searchSnapshot = AtomicReference<SearchSnapshot?>(null)
+
     private val isSearching = AtomicBoolean(false)
-    private val noColour = Color(0, 0, 0, 0)
-    private val lyricsScroll = Scroll()
     private var pendingSearch: ScheduledFuture<*>? = null
+    private var lastSearchQuery = ""
 
-    @Volatile
-    private var searchResults: List<Track>? = null
+    // ── Playlist state ────────────────────────────────────────────────────────
 
-    @Volatile
-    private var searchPlaylistResults: List<PlaylistSimplified>? = null
-
+    /**
+     * User playlists are only written once (background fetch) and after that
+     * only read from the render thread, so @Volatile is sufficient here.
+     */
     @Volatile
     private var userPlaylists: List<PlaylistSimplified>? = null
+
+    // ── Playback / UI state ───────────────────────────────────────────────────
+
+    private val lyricsScroll = Scroll()
+    private val noColor = Color(0, 0, 0, 0)
 
     private var openDownloader = false
     private var trackPosition = 0L
     private var trackDuration = 0L
     private var lastVolumeChangeTime = 0L
-    private var lastSearchQuery = ""
     private var currentTrackId: String? = null
     private var showConnectButton = true
     private var showingLyrics = false
     private var currentHighlightedLyricIndex = -1
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Init
+    // ─────────────────────────────────────────────────────────────────────────
 
     init {
         volumeSlider.setCircle(false)
@@ -98,16 +143,24 @@ class SpotifyCategory(
 
         if (!showConnectButton) {
             fetchUserPlaylists()
-            CompletableFuture.runAsync {
-                try {
-                    musicManager.fetchAndUpdateVolume()
-                    volumeSlider.getSetting().setValue(musicManager.getVolume() / 100.0)
-                } catch (e: Exception) {
-                    ShindoLogger.warn("Failed to sync volume slider: ${e.message}")
-                }
+            syncVolumeSlider(musicManager)
+        }
+    }
+
+    private fun syncVolumeSlider(musicManager: MusicManager) {
+        CompletableFuture.runAsync {
+            try {
+                musicManager.fetchAndUpdateVolume()
+                volumeSlider.getSetting().setValue(musicManager.getVolume() / 100.0)
+            } catch (e: Exception) {
+                ShindoLogger.warn("Failed to sync volume slider: ${e.message}")
             }
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Playlist fetching
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun fetchUserPlaylists() {
         Shindo
@@ -115,13 +168,16 @@ class SpotifyCategory(
             .getMusicManager()
             .getUserPlaylists()
             .thenAccept { playlists ->
-                if (playlists != null) Collections.reverse(playlists)
-                userPlaylists = playlists
+                userPlaylists = playlists.reversed()
             }.exceptionally { ex ->
                 ShindoLogger.error("Failed to fetch user playlists: ${ex.message}")
                 null
             }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Browser / auth helpers
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun openConfirmDialog(uri: String) {
         val mc = Minecraft.getMinecraft()
@@ -138,13 +194,18 @@ class SpotifyCategory(
         try {
             BrowserUtils.tryOpenBrowser(uri)
         } catch (e: Exception) {
-            Shindo
-                .getInstance()
-                .getNotificationManager()
-                .post(TranslateText.SPOTIFY_AUTH, TranslateText.SPOTIFY_FAIL_BROWSER, NotificationType.ERROR)
+            Shindo.getInstance().getNotificationManager().post(
+                TranslateText.SPOTIFY_AUTH,
+                TranslateText.SPOTIFY_FAIL_BROWSER,
+                NotificationType.ERROR,
+            )
             ShindoLogger.error(e.message!!)
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // drawScreen – main entry point
+    // ─────────────────────────────────────────────────────────────────────────
 
     override fun drawScreen(
         mouseX: Int,
@@ -152,62 +213,37 @@ class SpotifyCategory(
         partialTicks: Float,
     ) {
         val instance = Shindo.getInstance()
-        val nvg = instance.nanoVGManager!!
+        val nvg = instance.nanoVGManager
         val palette = instance.getColorManager().getPalette()
         val accentColor = instance.getColorManager().getCurrentColor()
         val musicManager = instance.getMusicManager()
 
         if (!isSearching.get()) checkAndUpdateSearch()
-        if (showingLyrics) {
-            lyricsScroll.onScroll()
-            lyricsScroll.onAnimation()
-        }
 
         if (showConnectButton) {
             drawConnectButton(nvg, mouseX, mouseY)
-        } else {
-            nvg.save()
-            try {
-                if (showingLyrics) {
-                    drawLyricsView(nvg, palette, accentColor, musicManager, mouseX, mouseY)
-                } else {
-                    nvg.save()
-                    nvg.translate(0f, scroll.getValue())
-                    drawSearchResults(nvg, palette, accentColor, mouseX, mouseY)
-                    drawUserPlaylists(nvg, palette, accentColor, mouseX, mouseY)
-                    nvg.restore()
-                    drawControlBar(nvg, palette, musicManager)
-                    drawPlaybackControls(nvg, palette, musicManager)
-                    drawVolumeSlider(nvg, palette, mouseX, mouseY, partialTicks)
-                    drawLyricsButton(nvg, palette, mouseX, mouseY)
-                    drawProgressBar(nvg, accentColor, palette)
-                }
-            } finally {
-                nvg.restore()
-            }
+            return
+        }
 
-            if (!showingLyrics) {
-                nvg.drawVerticalGradientRect(
-                    getX() + 15f,
-                    getY().toFloat(),
-                    getWidth() - 30f,
-                    12f,
-                    palette.getBackgroundColor(ColorType.NORMAL),
-                    noColour,
-                )
-                nvg.drawVerticalGradientRect(
-                    getX() + 15f,
-                    getY() + getHeight() - 58f,
-                    getWidth() - 30f,
-                    12f,
-                    noColour,
-                    palette.getBackgroundColor(ColorType.NORMAL),
-                )
+        nvg.save()
+        try {
+            if (showingLyrics) {
+                lyricsScroll.onScroll()
+                lyricsScroll.onAnimation()
+                drawLyricsView(nvg, palette, accentColor, musicManager, mouseX, mouseY)
+            } else {
+                drawScrollableContent(nvg, palette, accentColor, musicManager, mouseX, mouseY, partialTicks)
             }
+        } finally {
+            nvg.restore()
         }
 
         updateScroll()
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Connect button
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun drawConnectButton(
         nvg: NanoVGManager,
@@ -216,55 +252,121 @@ class SpotifyCategory(
     ) {
         val palette = Shindo.getInstance().getColorManager().getPalette()
         val accentColor = Shindo.getInstance().getColorManager().getCurrentColor()
-        val centerX = getX() + (getWidth() / 2f)
-        val centerY = getY() + (getHeight() / 2f)
-        val buttonWidth = 150f
-        val buttonHeight = 40f
-        val buttonX = centerX - (buttonWidth / 2f)
-        val buttonY = centerY - (buttonHeight / 2f)
-        val isHovered = MouseUtils.isInside(mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight)
+
+        val centerX = getX() + getWidth() / 2f
+        val centerY = getY() + getHeight() / 2f
+        val bw = 150f
+        val bh = 40f
+        val bx = centerX - bw / 2f
+        val by = centerY - bh / 2f
+        val hovered = MouseUtils.isInside(mouseX, mouseY, bx, by, bw, bh)
 
         nvg.drawRoundedRect(
-            buttonX,
-            buttonY,
-            buttonWidth,
-            buttonHeight,
+            bx,
+            by,
+            bw,
+            bh,
             8f,
-            if (isHovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.DARK),
+            if (hovered) accentColor.getInterpolateColor() else palette.getBackgroundColor(ColorType.DARK),
         )
 
         val text = TranslateText.SPOTIFY_CONNECT.getText()
         val textWidth = nvg.getTextWidth(text, 11f, Fonts.MEDIUM)
         val iconWidth = 16f
         val spacing = 8f
-        val startX = centerX - ((iconWidth + spacing + textWidth) / 2f)
-        val color = if (isHovered) Color.WHITE else palette.getFontColor(ColorType.DARK)
+        val startX = centerX - (iconWidth + spacing + textWidth) / 2f
+        val color = if (hovered) Color.WHITE else palette.getFontColor(ColorType.DARK)
 
-        nvg.drawText(Lucide.MUSIC, startX, buttonY + (buttonHeight / 2f) - 8f, color, 16f, Fonts.LUCIDE)
-        nvg.drawText(text, startX + iconWidth + spacing, buttonY + (buttonHeight / 2f) - 3f, color, 11f, Fonts.MEDIUM)
+        nvg.drawText(Lucide.MUSIC, startX, by + bh / 2f - 8f, color, 16f, Fonts.LUCIDE)
+        nvg.drawText(text, startX + iconWidth + spacing, by + bh / 2f - 3f, color, 11f, Fonts.MEDIUM)
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Normal (non-lyrics) view
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private fun drawScrollableContent(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        accentColor: AccentColor,
+        musicManager: MusicManager,
+        mouseX: Int,
+        mouseY: Int,
+        partialTicks: Float,
+    ) {
+        // Scrollable area
+        nvg.save()
+        nvg.translate(0f, scroll.getValue())
+
+        // Take a single stable snapshot for the entire frame — prevents NPE
+        // that occurred when background threads replaced @Volatile vars between
+        // the null-check and the forEach call during fast scrolling.
+        val snapshot = searchSnapshot.get()
+        drawSearchResults(nvg, palette, accentColor, snapshot, mouseX, mouseY)
+        drawUserPlaylists(nvg, palette, accentColor, snapshot, mouseX, mouseY)
+
+        nvg.restore()
+
+        // Fixed-position controls (not scrolled)
+        drawControlBar(nvg, palette, musicManager)
+        drawPlaybackControls(nvg, palette, musicManager)
+        drawVolumeSlider(nvg, palette, mouseX, mouseY, partialTicks)
+        drawLyricsButton(nvg, palette, mouseX, mouseY)
+        drawProgressBar(nvg, accentColor, palette)
+
+        // Fade edges
+        nvg.drawVerticalGradientRect(
+            getX() + 15f,
+            getY().toFloat(),
+            getWidth() - 30f,
+            12f,
+            palette.getBackgroundColor(ColorType.NORMAL),
+            noColor,
+        )
+        nvg.drawVerticalGradientRect(
+            getX() + 15f,
+            getY() + getHeight() - 58f,
+            getWidth() - 30f,
+            12f,
+            noColor,
+            palette.getBackgroundColor(ColorType.NORMAL),
+        )
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Search results
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun drawSearchResults(
         nvg: NanoVGManager,
         palette: ColorPalette,
         accentColor: AccentColor,
+        snapshot: SearchSnapshot?,
         mouseX: Int,
         mouseY: Int,
     ) {
-        if (searchResults == null && searchPlaylistResults == null) return
+        snapshot ?: return
+
         var offsetY = 13f
-        searchResults?.forEach { track ->
-            if (offsetY + 46f >= -scroll.getValue() && offsetY <= -scroll.getValue() + getHeight()) {
+
+        snapshot.tracks.forEach { track ->
+            if (isEntryVisible(offsetY)) {
                 drawTrackEntry(nvg, palette, accentColor, track, offsetY, mouseX, mouseY)
             }
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
         }
-        searchPlaylistResults?.forEach { playlist ->
-            if (offsetY + 46f >= -scroll.getValue() && offsetY <= -scroll.getValue() + getHeight()) {
+
+        snapshot.playlists.forEach { playlist ->
+            if (isEntryVisible(offsetY)) {
                 drawPlaylistEntry(nvg, palette, accentColor, playlist, offsetY, mouseX, mouseY)
             }
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
         }
+    }
+
+    private fun isEntryVisible(offsetY: Float): Boolean {
+        val scrolled = -scroll.getValue()
+        return offsetY + ENTRY_ITEM_HEIGHT >= scrolled && offsetY <= scrolled + getHeight()
     }
 
     private fun drawTrackEntry(
@@ -278,54 +380,14 @@ class SpotifyCategory(
     ) {
         val hovered = isEntryHovered(mouseX, mouseY, offsetY)
         drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
+        drawEntryArt(nvg, Shindo.getInstance().getMusicManager().getAlbumArtUrl(track), offsetY)
 
-        // Get album art with proper null/placeholder checks
-        val albumArtUrl = Shindo.getInstance().getMusicManager().getAlbumArtUrl(track)
-        val isValidImage =
-            !albumArtUrl.isNullOrBlank() &&
-                albumArtUrl != AlbumArtCache.PLACEHOLDER_PATH &&
-                File(albumArtUrl).exists()
-
-        if (isValidImage) {
-            try {
-                nvg.drawRoundedImage(File(albumArtUrl!!), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-            } catch (e: Exception) {
-                drawPlaceholderImage(nvg, offsetY)
-            }
-        } else {
-            drawPlaceholderImage(nvg, offsetY)
-        }
-
-        val actionColor = if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL)
-
-        // Safe null checks for track data
         val safeName = track.name ?: "Unknown Track"
         val safeArtist = track.artists?.getOrNull(0)?.name ?: "Unknown Artist"
+        val actionColor = if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL)
 
-        nvg.drawText(
-            nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f),
-            getX() + 63f,
-            getY() + offsetY + 9f,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM,
-        )
-        nvg.drawText(
-            safeArtist,
-            getX() + 63f,
-            getY() + offsetY + 25f,
-            palette.getFontColor(ColorType.NORMAL),
-            9f,
-            Fonts.MEDIUM,
-        )
-        nvg.drawText(
-            Lucide.PLUS_SQUARE,
-            getX() + getWidth() - 60f,
-            getY() + offsetY + 15f,
-            actionColor,
-            16f,
-            Fonts.LUCIDE,
-        )
+        drawEntryText(nvg, palette, safeName, safeArtist, offsetY)
+        nvg.drawText(Lucide.PLUS_SQUARE, getX() + getWidth() - 60f, getY() + offsetY + 15f, actionColor, 16f, Fonts.LUCIDE)
     }
 
     private fun drawPlaylistEntry(
@@ -339,44 +401,12 @@ class SpotifyCategory(
     ) {
         val hovered = isEntryHovered(mouseX, mouseY, offsetY)
         drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
+        drawEntryArt(nvg, Shindo.getInstance().getMusicManager().getPlaylistImageUrl(playlist), offsetY)
 
-        // Get image URL - returns cached path, placeholder marker, or null
-        val imageUrl = Shindo.getInstance().getMusicManager().getPlaylistImageUrl(playlist)
-        val isValidImage =
-            !imageUrl.isNullOrBlank() &&
-                imageUrl != AlbumArtCache.PLACEHOLDER_PATH &&
-                File(imageUrl).exists()
-
-        if (isValidImage) {
-            try {
-                nvg.drawRoundedImage(File(imageUrl!!), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-            } catch (e: Exception) {
-                drawPlaceholderImage(nvg, offsetY)
-            }
-        } else {
-            drawPlaceholderImage(nvg, offsetY)
-        }
-
-        // Safe null checks for playlist name and owner
         val safeName = playlist.name ?: "Untitled Playlist"
         val safeOwner = playlist.owner?.displayName ?: "Unknown Artist"
 
-        nvg.drawText(
-            nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f),
-            getX() + 63f,
-            getY() + offsetY + 9f,
-            palette.getFontColor(ColorType.DARK),
-            11f,
-            Fonts.MEDIUM,
-        )
-        nvg.drawText(
-            safeOwner,
-            getX() + 63f,
-            getY() + offsetY + 25f,
-            palette.getFontColor(ColorType.NORMAL),
-            9f,
-            Fonts.MEDIUM,
-        )
+        drawEntryText(nvg, palette, safeName, safeOwner, offsetY)
         nvg.drawText(
             Lucide.PLAY,
             getX() + getWidth() - 60f,
@@ -387,54 +417,33 @@ class SpotifyCategory(
         )
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // User playlists
+    // ─────────────────────────────────────────────────────────────────────────
+
     private fun drawUserPlaylists(
         nvg: NanoVGManager,
         palette: ColorPalette,
         accentColor: AccentColor,
+        snapshot: SearchSnapshot?,
         mouseX: Int,
         mouseY: Int,
     ) {
-        val playlists = userPlaylists?.filterNotNull() ?: return
-        var offsetY = 13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f
+        val playlists = userPlaylists ?: return
+        val searchTrackCount = snapshot?.tracks?.size ?: 0
+        val searchPlaylistCount = snapshot?.playlists?.size ?: 0
+
+        var offsetY = 13f + (searchTrackCount + searchPlaylistCount) * ENTRY_HEIGHT
+
         for (playlist in playlists) {
-            if (playlist == null) continue
             val hovered = isEntryHovered(mouseX, mouseY, offsetY)
             drawEntryShell(nvg, palette, accentColor, offsetY, hovered)
-            val imageUrl = Shindo.getInstance().getMusicManager().getPlaylistImageUrl(playlist)
-            val isValidImage =
-                !imageUrl.isNullOrBlank() &&
-                    imageUrl != AlbumArtCache.PLACEHOLDER_PATH &&
-                    File(imageUrl).exists()
-            if (isValidImage) {
-                try {
-                    nvg.drawRoundedImage(File(imageUrl), getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-                } catch (e: Exception) {
-                    drawPlaceholderImage(nvg, offsetY)
-                }
-            } else {
-                drawPlaceholderImage(nvg, offsetY)
-            }
+            drawEntryArt(nvg, Shindo.getInstance().getMusicManager().getPlaylistImageUrl(playlist), offsetY)
 
-            // Safe null checks
             val safeName = playlist.name ?: "Untitled Playlist"
             val safeOwner = playlist.owner?.displayName ?: "Unknown Owner"
 
-            nvg.drawText(
-                nvg.getLimitText(safeName, 11f, Fonts.MEDIUM, 280f),
-                getX() + 63f,
-                getY() + offsetY + 9f,
-                palette.getFontColor(ColorType.DARK),
-                11f,
-                Fonts.MEDIUM,
-            )
-            nvg.drawText(
-                safeOwner,
-                getX() + 63f,
-                getY() + offsetY + 25f,
-                palette.getFontColor(ColorType.NORMAL),
-                9f,
-                Fonts.MEDIUM,
-            )
+            drawEntryText(nvg, palette, safeName, safeOwner, offsetY)
             nvg.drawText(
                 Lucide.PLAY,
                 getX() + getWidth() - 60f,
@@ -443,20 +452,13 @@ class SpotifyCategory(
                 16f,
                 Fonts.LUCIDE,
             )
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
         }
     }
 
-    private fun drawPlaceholderImage(
-        nvg: NanoVGManager,
-        offsetY: Float,
-    ) {
-        try {
-            nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f)
-        } catch (e: Exception) {
-            nvg.drawRoundedRect(getX() + 20f, getY() + offsetY + 5f, 36f, 36f, 6f, Color(50, 50, 50))
-        }
-    }
+    // ─────────────────────────────────────────────────────────────────────────
+    // Shared entry drawing primitives
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun drawEntryShell(
         nvg: NanoVGManager,
@@ -468,19 +470,79 @@ class SpotifyCategory(
         val x = getX() + 15f
         val y = getY() + offsetY
         val w = getWidth() - 30f
-        val h = 46f
 
-        nvg.drawShadow(x, y, w, h, 8f, 7)
-        nvg.drawRoundedRect(x, y, w, h, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220))
+        nvg.drawShadow(x, y, w, ENTRY_ITEM_HEIGHT, 8f, 7)
+        nvg.drawRoundedRect(x, y, w, ENTRY_ITEM_HEIGHT, 8f, ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 220))
         nvg.drawOutlineRoundedRect(
             x,
             y,
             w,
-            h,
+            ENTRY_ITEM_HEIGHT,
             8f,
             1f,
             ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 210),
         )
+    }
+
+    private fun drawEntryArt(
+        nvg: NanoVGManager,
+        imageUrl: String?,
+        offsetY: Float,
+    ) {
+        val artX = getX() + 20f
+        val artY = getY() + offsetY + 5f
+        val isValid =
+            !imageUrl.isNullOrBlank() &&
+                imageUrl != AlbumArtCache.PLACEHOLDER_PATH &&
+                File(imageUrl).exists()
+
+        if (isValid) {
+            try {
+                nvg.drawRoundedImage(File(imageUrl!!), artX, artY, 36f, 36f, 6f)
+                return
+            } catch (_: Exception) {
+                // fall through to placeholder
+            }
+        }
+        drawPlaceholderImage(nvg, offsetY)
+    }
+
+    private fun drawEntryText(
+        nvg: NanoVGManager,
+        palette: ColorPalette,
+        name: String,
+        subtitle: String,
+        offsetY: Float,
+    ) {
+        nvg.drawText(
+            nvg.getLimitText(name, 11f, Fonts.MEDIUM, 280f),
+            getX() + 63f,
+            getY() + offsetY + 9f,
+            palette.getFontColor(ColorType.DARK),
+            11f,
+            Fonts.MEDIUM,
+        )
+        nvg.drawText(
+            subtitle,
+            getX() + 63f,
+            getY() + offsetY + 25f,
+            palette.getFontColor(ColorType.NORMAL),
+            9f,
+            Fonts.MEDIUM,
+        )
+    }
+
+    private fun drawPlaceholderImage(
+        nvg: NanoVGManager,
+        offsetY: Float,
+    ) {
+        val artX = getX() + 20f
+        val artY = getY() + offsetY + 5f
+        try {
+            nvg.drawRoundedImage(PLACEHOLDER_IMAGE, artX, artY, 36f, 36f, 6f)
+        } catch (_: Exception) {
+            nvg.drawRoundedRect(artX, artY, 36f, 36f, 6f, Color(50, 50, 50))
+        }
     }
 
     private fun isEntryHovered(
@@ -488,14 +550,11 @@ class SpotifyCategory(
         mouseY: Int,
         offsetY: Float,
     ): Boolean =
-        MouseUtils.isInside(
-            mouseX,
-            mouseY,
-            getX() + 15f,
-            getY() + offsetY + scroll.getValue(),
-            getWidth() - 30f,
-            46f,
-        )
+        MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY + scroll.getValue(), getWidth() - 30f, ENTRY_ITEM_HEIGHT)
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Control bar
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun drawControlBar(
         nvg: NanoVGManager,
@@ -513,28 +572,12 @@ class SpotifyCategory(
             12f,
             palette.getBackgroundColor(ColorType.DARK),
         )
+
         val currentTrack = musicManager.getCurrentTrack()
         val artY = getY() + getHeight() - 43f
 
         if (currentTrack != null) {
-            // Get album art with proper checks
-            val albumArtUrl = musicManager.getAlbumArtUrl(currentTrack)
-            val isValidImage =
-                !albumArtUrl.isNullOrBlank() &&
-                    albumArtUrl != AlbumArtCache.PLACEHOLDER_PATH &&
-                    File(albumArtUrl).exists()
-
-            if (isValidImage) {
-                try {
-                    nvg.drawRoundedImage(File(albumArtUrl), getX() + 4f, artY, 36f, 36f, 6f)
-                } catch (e: Exception) {
-                    drawControlBarPlaceholder(nvg, artY)
-                }
-            } else {
-                drawControlBarPlaceholder(nvg, artY)
-            }
-
-            // Safe null checks
+            drawEntryArt(nvg, musicManager.getAlbumArtUrl(currentTrack), artY - (getY() + 5f))
             val safeName = currentTrack.name ?: "Unknown"
             val safeArtist = currentTrack.artists?.getOrNull(0)?.name ?: "Unknown"
 
@@ -555,7 +598,11 @@ class SpotifyCategory(
                 Fonts.MEDIUM,
             )
         } else {
-            drawControlBarPlaceholder(nvg, artY)
+            nvg.drawRoundedRect(getX() + 4f, artY, 36f, 36f, 6f, Color(50, 50, 50))
+            try {
+                nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, artY, 36f, 36f, 6f)
+            } catch (_: Exception) {
+            }
             nvg.drawText(
                 TranslateText.NOTHING_IS_PLAYING.getText(),
                 getX() + 45f,
@@ -567,36 +614,17 @@ class SpotifyCategory(
         }
     }
 
-    private fun drawControlBarPlaceholder(
-        nvg: NanoVGManager,
-        artY: Float,
-    ) {
-        nvg.drawRoundedRect(getX() + 4f, artY, 36f, 36f, 6f, Color(50, 50, 50))
-        try {
-            nvg.drawRoundedImage(PLACEHOLDER_IMAGE, getX() + 4f, artY, 36f, 36f, 6f)
-        } catch (ignored: Exception) {
-            // ignore
-        }
-    }
-
     private fun drawPlaybackControls(
         nvg: NanoVGManager,
         palette: ColorPalette,
         musicManager: MusicManager,
     ) {
-        val centerX = getX() + (getWidth() / 2f)
-        val centerY = getY() + getHeight() - 32f
+        val cx = getX() + getWidth() / 2f
+        val cy = getY() + getHeight() - 32f
         val color = palette.getFontColor(ColorType.NORMAL)
-        nvg.drawText(Lucide.REWIND, centerX - 32f, centerY, color, 16f, Fonts.LUCIDE)
-        nvg.drawText(
-            if (musicManager.isPlaying()) Lucide.PAUSE else Lucide.PLAY,
-            centerX - 8f,
-            centerY,
-            color,
-            16f,
-            Fonts.LUCIDE,
-        )
-        nvg.drawText(Lucide.FAST_FORWARD, centerX + 16f, centerY, color, 16f, Fonts.LUCIDE)
+        nvg.drawText(Lucide.REWIND, cx - 32f, cy, color, 16f, Fonts.LUCIDE)
+        nvg.drawText(if (musicManager.isPlaying()) Lucide.PAUSE else Lucide.PLAY, cx - 8f, cy, color, 16f, Fonts.LUCIDE)
+        nvg.drawText(Lucide.FAST_FORWARD, cx + 16f, cy, color, 16f, Fonts.LUCIDE)
     }
 
     private fun drawVolumeSlider(
@@ -611,6 +639,7 @@ class SpotifyCategory(
         volumeSlider.setWidth(62f)
         volumeSlider.setHeight(4.5f)
         volumeSlider.draw(mouseX, mouseY, partialTicks)
+
         val volume = (volumeSlider.getSetting().getValueFloat() * 100).toInt()
         val icon =
             when {
@@ -619,14 +648,7 @@ class SpotifyCategory(
                 volume > 40 -> Lucide.VOLUME_1
                 else -> Lucide.VOLUME
             }
-        nvg.drawText(
-            icon,
-            getX() + getWidth() - 94f,
-            getY() + getHeight() - 26f,
-            palette.getFontColor(ColorType.NORMAL),
-            16f,
-            Fonts.LUCIDE,
-        )
+        nvg.drawText(icon, getX() + getWidth() - 94f, getY() + getHeight() - 26f, palette.getFontColor(ColorType.NORMAL), 16f, Fonts.LUCIDE)
     }
 
     private fun drawProgressBar(
@@ -638,14 +660,7 @@ class SpotifyCategory(
         val y = (getY() + getHeight() - 5).toFloat()
         val w = (getWidth() - 40).toFloat()
         nvg.drawRoundedRect(getX() + 20f, y, w, 2f, 1f, palette.getBackgroundColor(ColorType.NORMAL))
-        nvg.drawRoundedRect(
-            getX() + 20f,
-            y,
-            w * (trackPosition.toFloat() / trackDuration.toFloat()),
-            2f,
-            1f,
-            accentColor.getInterpolateColor(),
-        )
+        nvg.drawRoundedRect(getX() + 20f, y, w * (trackPosition.toFloat() / trackDuration), 2f, 1f, accentColor.getInterpolateColor())
     }
 
     private fun drawLyricsButton(
@@ -656,27 +671,20 @@ class SpotifyCategory(
     ) {
         val bx = getX() + getWidth() - 116f
         val by = getY() + getHeight() - 26f
+        val hovered = MouseUtils.isInside(mouseX, mouseY, bx, by, 16f, 16f)
         nvg.drawText(
             Lucide.LIST,
             bx,
             by,
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    bx,
-                    by,
-                    16f,
-                    16f,
-                )
-            ) {
-                palette.getFontColor(ColorType.DARK)
-            } else {
-                palette.getFontColor(ColorType.NORMAL)
-            },
+            if (hovered) palette.getFontColor(ColorType.DARK) else palette.getFontColor(ColorType.NORMAL),
             16f,
             Fonts.LUCIDE,
         )
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Lyrics view
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun drawLyricsView(
         nvg: NanoVGManager,
@@ -694,6 +702,7 @@ class SpotifyCategory(
             0f,
             palette.getBackgroundColor(ColorType.NORMAL),
         )
+
         val isBackHovered = MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + 15f, 16f, 16f)
         nvg.drawText(
             Lucide.ARROW_LEFT,
@@ -703,16 +712,9 @@ class SpotifyCategory(
             16f,
             Fonts.LUCIDE,
         )
+
         if (musicManager.getCurrentTrack() != null) {
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    getX().toFloat(),
-                    getY().toFloat(),
-                    getWidth().toFloat(),
-                    getHeight() - 46f,
-                )
-            ) {
+            if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight() - 46f)) {
                 lyricsScroll.onScroll()
             }
             lyricsScroll.onAnimation()
@@ -720,13 +722,14 @@ class SpotifyCategory(
         } else {
             nvg.drawCenteredText(
                 "No track is currently playing",
-                getX() + (getWidth() / 2f),
+                getX() + getWidth() / 2f,
                 getY() + getHeight() / 2.7f,
                 palette.getFontColor(ColorType.NORMAL),
                 14f,
                 Fonts.MEDIUM,
             )
         }
+
         drawControlBar(nvg, palette, musicManager)
         drawPlaybackControls(nvg, palette, musicManager)
         drawVolumeSlider(nvg, palette, mouseX, mouseY, 0f)
@@ -745,10 +748,11 @@ class SpotifyCategory(
     ) {
         val lyricsManager = musicManager.getLyricsManager()
         val lyrics = lyricsManager.getCurrentLyrics()
+
         if (lyrics == null || lyrics.isError() || lyrics.lines.isEmpty()) {
             nvg.drawCenteredText(
                 "No lyrics available for this track",
-                getX() + (getWidth() / 2f),
+                getX() + getWidth() / 2f,
                 getY() + getHeight() / 2.7f,
                 palette.getFontColor(ColorType.NORMAL),
                 14f,
@@ -756,29 +760,35 @@ class SpotifyCategory(
             )
             return
         }
+
         val allLines = lyrics.lines
         lyricsManager.updateCurrentLineIndex(currentPosition)
         val currentLineIndex = lyricsManager.getCurrentLineIndex()
         val lyricsAreaHeight = getHeight() - startY - 46f
-        var totalContentHeight = 0f
         val yOffset = lyricsScroll.getValue()
+        val maxTextWidth = getWidth() - 60f
+
         currentHighlightedLyricIndex = -1
+
+        // Pre-compute wrapping for all lines to avoid per-frame recalculation
         val lineHeights = IntArray(allLines.size)
         val wrappedLines = arrayOfNulls<Array<String>>(allLines.size)
-        val maxTextWidth = getWidth() - 60f
+        var totalContentHeight = 0f
+
         for (i in allLines.indices) {
             val text = extractLyricsText(allLines[i])
             if (text.isEmpty()) {
                 lineHeights[i] = 30
                 wrappedLines[i] = emptyArray()
-                continue
+            } else {
+                val fontSize = if (i == currentLineIndex) 14f else 12f
+                val wrapped = wrapText(nvg, text, fontSize, Fonts.MEDIUM, maxTextWidth)
+                wrappedLines[i] = wrapped
+                lineHeights[i] = if (wrapped.size <= 1) 30 else (fontSize * wrapped.size * 1.0f + 10).toInt()
             }
-            val fontSize = if (i == currentLineIndex) 14f else 12f
-            val wrapped = wrapText(nvg, text, fontSize, Fonts.MEDIUM, maxTextWidth)
-            wrappedLines[i] = wrapped
-            lineHeights[i] = if (wrapped.size <= 1) 30 else (fontSize * wrapped.size * 1.0f + 10).toInt()
-            totalContentHeight += lineHeights[i].toFloat()
+            totalContentHeight += lineHeights[i]
         }
+
         ModMenuClipCoordinator.withClip(
             nvg = nvg,
             x = getX() + 15f,
@@ -786,69 +796,60 @@ class SpotifyCategory(
             width = getWidth() - 30f,
             height = lyricsAreaHeight,
         ) {
-            var currentY = getY() + startY + yOffset
             val visibleTop = getY() + startY
             val visibleBottom = visibleTop + lyricsAreaHeight
+            var currentY = visibleTop + yOffset
+
             for (i in allLines.indices) {
-                if (currentY + lineHeights[i] < visibleTop || currentY > visibleBottom) {
-                    currentY += lineHeights[i]
+                val lineH = lineHeights[i].toFloat()
+
+                if (currentY + lineH < visibleTop || currentY > visibleBottom) {
+                    currentY += lineH
                     continue
                 }
+
                 val isCurrentLine = i == currentLineIndex
-                val isHovered =
-                    MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        getX() + 20f,
-                        currentY,
-                        getWidth() - 40f,
-                        lineHeights[i].toFloat(),
-                    )
+                val isHovered = MouseUtils.isInside(mouseX, mouseY, getX() + 20f, currentY, getWidth() - 40f, lineH)
                 if (isHovered) currentHighlightedLyricIndex = i
-                val lineColor: Color
-                val fontSize: Float
+
+                val (lineColor, fontSize) =
+                    when {
+                        isCurrentLine -> accentColor.getInterpolateColor() to 14f
+                        isHovered -> palette.getFontColor(ColorType.DARK) to 12f
+                        else -> palette.getFontColor(ColorType.NORMAL) to 12f
+                    }
+
                 if (isCurrentLine) {
-                    lineColor = accentColor.getInterpolateColor()
-                    fontSize = 14f
                     nvg.drawRoundedRect(
                         getX() + 20f,
                         currentY,
                         getWidth() - 40f,
-                        lineHeights[i].toFloat(),
+                        lineH,
                         4f,
-                        Color(
-                            accentColor.getColor1().red,
-                            accentColor.getColor1().green,
-                            accentColor.getColor1().blue,
-                            30,
-                        ),
+                        Color(accentColor.getColor1().red, accentColor.getColor1().green, accentColor.getColor1().blue, 30),
                     )
-                } else if (isHovered) {
-                    lineColor = palette.getFontColor(ColorType.DARK)
-                    fontSize = 12f
-                } else {
-                    lineColor = palette.getFontColor(ColorType.NORMAL)
-                    fontSize = 12f
                 }
+
                 val wrapped = wrappedLines[i] ?: emptyArray()
-                if (wrapped.isNotEmpty()) {
-                    var wrapOffset = 0f
-                    for (line in wrapped) {
-                        val tx = getX() + (getWidth() / 2f) - (nvg.getTextWidth(line, fontSize, Fonts.MEDIUM) / 2f)
-                        val ty = currentY + wrapOffset + (fontSize / 2f)
-                        if (isCurrentLine) {
-                            nvg.drawTextGlowing(line, tx, ty, lineColor, 8f, fontSize, Fonts.MEDIUM)
-                        } else {
-                            nvg.drawText(line, tx, ty, lineColor, fontSize, Fonts.MEDIUM)
-                        }
-                        wrapOffset += fontSize
+                var wrapOffset = 0f
+                for (line in wrapped) {
+                    val tx = getX() + getWidth() / 2f - nvg.getTextWidth(line, fontSize, Fonts.MEDIUM) / 2f
+                    val ty = currentY + wrapOffset + fontSize / 2f
+                    if (isCurrentLine) {
+                        nvg.drawTextGlowing(line, tx, ty, lineColor, 8f, fontSize, Fonts.MEDIUM)
+                    } else {
+                        nvg.drawText(line, tx, ty, lineColor, fontSize, Fonts.MEDIUM)
                     }
+                    wrapOffset += fontSize
                 }
-                currentY += lineHeights[i]
+
+                currentY += lineH
             }
         }
+
         val maxScroll = max(0f, totalContentHeight - lyricsAreaHeight + 20f)
         lyricsScroll.maxScroll = maxScroll
+
         if (lyricsScroll.getValue() < 0) {
             nvg.drawVerticalGradientRect(
                 getX() + 15f,
@@ -856,7 +857,7 @@ class SpotifyCategory(
                 getWidth() - 30f,
                 12f,
                 palette.getBackgroundColor(ColorType.NORMAL),
-                noColour,
+                noColor,
             )
         }
         if (-lyricsScroll.getValue() < maxScroll) {
@@ -865,11 +866,15 @@ class SpotifyCategory(
                 getY() + startY + lyricsAreaHeight - 12f,
                 getWidth() - 30f,
                 12f,
-                noColour,
+                noColor,
                 palette.getBackgroundColor(ColorType.NORMAL),
             )
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Text utilities
+    // ─────────────────────────────────────────────────────────────────────────
 
     private fun wrapText(
         nvg: NanoVGManager,
@@ -878,10 +883,12 @@ class SpotifyCategory(
         font: Font,
         maxWidth: Float,
     ): Array<String> {
-        if (text == null || text.isEmpty()) return emptyArray()
+        if (text.isNullOrEmpty()) return emptyArray()
         if (nvg.getTextWidth(text, fontSize, font) <= maxWidth) return arrayOf(text)
+
         val lines = ArrayList<String>()
         var currentLine = StringBuilder()
+
         for (word in text.split(" ")) {
             val testLine = if (currentLine.isNotEmpty()) "$currentLine $word" else word
             if (nvg.getTextWidth(testLine, fontSize, font) <= maxWidth) {
@@ -912,28 +919,23 @@ class SpotifyCategory(
         return lines.toTypedArray()
     }
 
-    private fun extractLyricsText(line: LyricsLine): String {
-        if (!line.words.isNullOrEmpty()) return line.words
-        if (!line.romanizedWords.isNullOrEmpty()) return line.romanizedWords!!
-        return ""
-    }
+    private fun extractLyricsText(line: LyricsLine): String =
+        when {
+            !line.words.isNullOrEmpty() -> line.words
+            !line.romanizedWords.isNullOrEmpty() -> line.romanizedWords!!
+            else -> ""
+        }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Mouse / keyboard input
+    // ─────────────────────────────────────────────────────────────────────────
 
     override fun mouseClicked(
         mouseX: Int,
         mouseY: Int,
         mouseButton: Int,
     ) {
-        if (!MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX().toFloat(),
-                getY().toFloat(),
-                getWidth().toFloat(),
-                getHeight().toFloat(),
-            )
-        ) {
-            return
-        }
+        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) return
 
         if (openDownloader) {
             handleDownloaderClick(mouseX, mouseY, mouseButton)
@@ -941,19 +943,7 @@ class SpotifyCategory(
         }
 
         if (showConnectButton) {
-            if (MouseUtils.isInside(
-                    mouseX,
-                    mouseY,
-                    getX() + (getWidth() / 2f) - 75f,
-                    getY() + (getHeight() / 2f) - 20f,
-                    150f,
-                    40f,
-                ) &&
-                mouseButton == 0
-            ) {
-                openConfirmDialog(Shindo.getInstance().getMusicManager().getAuthorizationCodeUri())
-                showConnectButton = false
-            }
+            handleConnectClick(mouseX, mouseY, mouseButton)
             return
         }
 
@@ -964,7 +954,7 @@ class SpotifyCategory(
                 showingLyrics = true
                 lyricsScroll.resetAll()
                 val mm = Shindo.getInstance().getMusicManager()
-                if (mm.getCurrentTrack() != null) mm.getLyricsManager().fetchLyrics(mm.getCurrentTrack())
+                mm.getCurrentTrack()?.let { mm.getLyricsManager().fetchLyrics(it) }
                 return
             }
         }
@@ -975,24 +965,56 @@ class SpotifyCategory(
         }
 
         if (showingLyrics) {
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + 15f, 16f, 16f) && mouseButton == 0) {
-                showingLyrics = false
-                return
-            }
-            if (currentHighlightedLyricIndex >= 0 && mouseButton == 0) {
-                val mm = Shindo.getInstance().getMusicManager()
-                val lyrics = mm.getLyricsManager().getCurrentLyrics()
-                if (lyrics != null && !lyrics.isError() && currentHighlightedLyricIndex < lyrics.lines.size) {
-                    mm.seekToPosition(lyrics.lines[currentHighlightedLyricIndex].startTime)
-                }
-            }
+            handleLyricsClick(mouseX, mouseY, mouseButton)
             return
         }
 
-        if (mouseButton == 0 && searchResults != null) {
-            handleTrackClick(mouseX, mouseY)
-        } else if (mouseButton == 0 && userPlaylists != null) {
-            handlePlaylistClick(mouseX, mouseY)
+        if (mouseButton == 0) {
+            // Take snapshot once so both handlers see the same data
+            val snapshot = searchSnapshot.get()
+            if (snapshot != null) {
+                handleTrackClick(mouseX, mouseY, snapshot)
+            } else {
+                handlePlaylistClick(mouseX, mouseY)
+            }
+        }
+    }
+
+    private fun handleConnectClick(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
+        if (mouseButton == 0 &&
+            MouseUtils.isInside(
+                mouseX,
+                mouseY,
+                getX() + getWidth() / 2f - 75f,
+                getY() + getHeight() / 2f - 20f,
+                150f,
+                40f,
+            )
+        ) {
+            openConfirmDialog(Shindo.getInstance().getMusicManager().getAuthorizationCodeUri())
+            showConnectButton = false
+        }
+    }
+
+    private fun handleLyricsClick(
+        mouseX: Int,
+        mouseY: Int,
+        mouseButton: Int,
+    ) {
+        if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + 15f, 16f, 16f) && mouseButton == 0) {
+            showingLyrics = false
+            return
+        }
+        if (currentHighlightedLyricIndex >= 0 && mouseButton == 0) {
+            val mm = Shindo.getInstance().getMusicManager()
+            val lyrics = mm.getLyricsManager().getCurrentLyrics()
+            if (lyrics != null && !lyrics.isError() && currentHighlightedLyricIndex < lyrics.lines.size) {
+                mm.seekToPosition(lyrics.lines[currentHighlightedLyricIndex].startTime)
+            }
         }
     }
 
@@ -1002,29 +1024,12 @@ class SpotifyCategory(
         mouseButton: Int,
     ) {
         textBox.mouseClicked(mouseX, mouseY, mouseButton)
-        if (MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX() + getWidth() - 34f,
-                getY() + getHeight() - 80f,
-                18f,
-                18f,
-            ) &&
-            mouseButton == 0
-        ) {
+        if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 34f, getY() + getHeight() - 80f, 18f, 18f) && mouseButton == 0) {
             openDownloader = false
             Shindo.getInstance().getMusicManager().play(textBox.getText())
             return
         }
-        if (!MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX() + getWidth() - 175f,
-                getY() + getHeight() - 86f,
-                165f,
-                30f,
-            )
-        ) {
+        if (!MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 175f, getY() + getHeight() - 86f, 165f, 30f)) {
             openDownloader = false
         }
     }
@@ -1034,69 +1039,65 @@ class SpotifyCategory(
         mouseY: Int,
     ) {
         val mm = Shindo.getInstance().getMusicManager()
-        val cx = getX() + (getWidth() / 2f)
+        val cx = getX() + getWidth() / 2f
         val cy = getY() + getHeight() - 32f
-        if (MouseUtils.isInside(mouseX, mouseY, cx - 32f, cy, 16f, 16f)) {
-            mm.previousTrack()
-            return
-        }
-        if (MouseUtils.isInside(mouseX, mouseY, cx - 8f, cy, 16f, 16f)) {
-            if (mm.isPlaying()) mm.pause() else mm.resume()
-            return
-        }
-        if (MouseUtils.isInside(mouseX, mouseY, cx + 16f, cy, 16f, 16f)) {
-            mm.nextTrack()
-            return
-        }
-        if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 72f, getY() + getHeight() - 22f, 62f, 8f)) {
-            volumeSlider.mouseClicked(mouseX, mouseY, 0)
-            return
-        }
-        val py = getY() + getHeight() - 5
-        if (MouseUtils.isInside(mouseX, mouseY, getX() + 20f, py - 5f, getWidth() - 40f, 10f)) {
-            mm.seekToPosition(((mouseX - (getX() + 20f)) / (getWidth() - 40f) * trackDuration).toLong())
+
+        when {
+            MouseUtils.isInside(mouseX, mouseY, cx - 32f, cy, 16f, 16f) -> {
+                mm.previousTrack()
+            }
+
+            MouseUtils.isInside(mouseX, mouseY, cx - 8f, cy, 16f, 16f) -> {
+                if (mm.isPlaying()) mm.pause() else mm.resume()
+            }
+
+            MouseUtils.isInside(mouseX, mouseY, cx + 16f, cy, 16f, 16f) -> {
+                mm.nextTrack()
+            }
+
+            MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 72f, getY() + getHeight() - 22f, 62f, 8f) -> {
+                volumeSlider.mouseClicked(mouseX, mouseY, 0)
+            }
+
+            else -> {
+                val py = getY() + getHeight() - 5
+                if (MouseUtils.isInside(mouseX, mouseY, getX() + 20f, py - 5f, getWidth() - 40f, 10f)) {
+                    mm.seekToPosition(((mouseX - (getX() + 20f)) / (getWidth() - 40f) * trackDuration).toLong())
+                }
+            }
         }
     }
 
     private fun handleTrackClick(
         mouseX: Int,
         mouseY: Int,
+        snapshot: SearchSnapshot,
     ) {
         var offsetY = 13f + scroll.getValue()
-        searchResults?.forEach { track ->
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f)) {
-                if (MouseUtils.isInside(
-                        mouseX,
-                        mouseY,
-                        getX() + getWidth() - 60f,
-                        getY() + offsetY + 15f,
-                        16f,
-                        16f,
-                    )
-                ) {
+
+        snapshot.tracks.forEach { track ->
+            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, ENTRY_ITEM_HEIGHT)) {
+                if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 60f, getY() + offsetY + 15f, 16f, 16f)) {
                     addToQueue(track)
                 } else {
                     Shindo.getInstance().getMusicManager().play(track.uri)
                 }
                 return
             }
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
         }
-        searchPlaylistResults?.forEach { playlist ->
-            if (playlist.uri == null) return@forEach
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f)) {
-                try {
-                    Shindo.getInstance().getMusicManager().playPlaylist(playlist.uri)
-                } catch (e: Exception) {
-                    Shindo.getInstance().getNotificationManager().post(
-                        TranslateText.MUSIC,
-                        TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST,
-                        NotificationType.ERROR,
-                    )
+
+        snapshot.playlists.forEach { playlist ->
+            val uri =
+                playlist.uri ?: run {
+                    offsetY += ENTRY_HEIGHT
+                    return@forEach
                 }
+            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, ENTRY_ITEM_HEIGHT)) {
+                playPlaylistSafely(uri)
                 return
             }
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
         }
     }
 
@@ -1105,26 +1106,33 @@ class SpotifyCategory(
         mouseY: Int,
     ) {
         val playlists = userPlaylists ?: return
-        var offsetY =
-            13f + (searchResults?.size ?: 0) * 56f + (searchPlaylistResults?.size ?: 0) * 56f + scroll.getValue()
+        val snapshot = searchSnapshot.get()
+        val searchCount = (snapshot?.tracks?.size ?: 0) + (snapshot?.playlists?.size ?: 0)
+        var offsetY = 13f + searchCount * ENTRY_HEIGHT + scroll.getValue()
+
         for (playlist in playlists) {
-            if (playlist.uri == null) {
-                offsetY += 56f
-                continue
-            }
-            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, 46f)) {
-                try {
-                    Shindo.getInstance().getMusicManager().playPlaylist(playlist.uri)
-                } catch (e: Exception) {
-                    Shindo.getInstance().getNotificationManager().post(
-                        TranslateText.MUSIC,
-                        TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST,
-                        NotificationType.ERROR,
-                    )
+            val uri =
+                playlist.uri ?: run {
+                    offsetY += ENTRY_HEIGHT
+                    continue
                 }
+            if (MouseUtils.isInside(mouseX, mouseY, getX() + 15f, getY() + offsetY, getWidth() - 30f, ENTRY_ITEM_HEIGHT)) {
+                playPlaylistSafely(uri)
                 break
             }
-            offsetY += 56f
+            offsetY += ENTRY_HEIGHT
+        }
+    }
+
+    private fun playPlaylistSafely(uri: String) {
+        try {
+            Shindo.getInstance().getMusicManager().playPlaylist(uri)
+        } catch (_: Exception) {
+            Shindo.getInstance().getNotificationManager().post(
+                TranslateText.MUSIC,
+                TranslateText.SPOTIFY_FAILED_TO_PLAY_PLAYLIST,
+                NotificationType.ERROR,
+            )
         }
     }
 
@@ -1134,10 +1142,11 @@ class SpotifyCategory(
             .getMusicManager()
             .addToQueue(track.uri)
             .thenRun {
-                Shindo
-                    .getInstance()
-                    .getNotificationManager()
-                    .post(TranslateText.MUSIC, TranslateText.SPOTIFY_ADDED_TO_QUEUE, NotificationType.SUCCESS)
+                Shindo.getInstance().getNotificationManager().post(
+                    TranslateText.MUSIC,
+                    TranslateText.SPOTIFY_ADDED_TO_QUEUE,
+                    NotificationType.SUCCESS,
+                )
             }.exceptionally {
                 Shindo.getInstance().getNotificationManager().post(
                     TranslateText.MUSIC,
@@ -1153,28 +1162,10 @@ class SpotifyCategory(
         mouseY: Int,
         mouseButton: Int,
     ) {
-        if (!MouseUtils.isInside(
-                mouseX,
-                mouseY,
-                getX().toFloat(),
-                getY().toFloat(),
-                getWidth().toFloat(),
-                getHeight().toFloat(),
-            )
-        ) {
-            return
-        }
+        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) return
         if (!showConnectButton) {
             volumeSlider.mouseReleased(mouseX, mouseY, mouseButton)
             updateVolume()
-        }
-    }
-
-    private fun updateVolume() {
-        val now = System.currentTimeMillis()
-        if (now - lastVolumeChangeTime > VOLUME_CHANGE_DELAY) {
-            lastVolumeChangeTime = now
-            Shindo.getInstance().getMusicManager().setVolume((volumeSlider.getSetting().getValueFloat() * 100).toInt())
         }
     }
 
@@ -1184,35 +1175,37 @@ class SpotifyCategory(
     ) {
         if (openDownloader) textBox.keyTyped(typedChar, keyCode)
         if (showConnectButton) return
+
         val mm = Shindo.getInstance().getMusicManager()
         val searchFocused = parentRef.get()?.getSearchBox()?.isFocused() == true
+
         if (keyCode == Keyboard.KEY_SPACE && !searchFocused) {
             if (mm.isPlaying()) mm.pause() else mm.resume()
         }
-        if (keyCode == Keyboard.KEY_UP) {
-            val v =
-                min(100, (volumeSlider.getSetting().getValueFloat() * 100).toInt() + 5)
-            volumeSlider
-                .getSetting()
-                .setValue(v / 100.0)
-            mm.setVolume(v)
-            lastVolumeChangeTime = System.currentTimeMillis()
-        } else if (keyCode == Keyboard.KEY_DOWN) {
-            val v =
-                max(0, (volumeSlider.getSetting().getValueFloat() * 100).toInt() - 5)
-            volumeSlider
-                .getSetting()
-                .setValue(v / 100.0)
-            mm.setVolume(v)
-            lastVolumeChangeTime = System.currentTimeMillis()
+
+        when (keyCode) {
+            Keyboard.KEY_UP -> adjustVolume(mm, +5)
+            Keyboard.KEY_DOWN -> adjustVolume(mm, -5)
+            Keyboard.KEY_RIGHT -> mm.seekToPosition(min(trackPosition + 10_000, trackDuration))
+            Keyboard.KEY_LEFT -> mm.seekToPosition(max(trackPosition - 10_000, 0))
         }
-        if (keyCode == Keyboard.KEY_RIGHT) {
-            mm.seekToPosition(min(trackPosition + 10000, trackDuration))
-        } else if (keyCode == Keyboard.KEY_LEFT) {
-            mm.seekToPosition(max(trackPosition - 10000, 0))
-        }
+
         if (showingLyrics) lyricsScroll.onKey(keyCode) else scroll.onKey(keyCode)
     }
+
+    private fun adjustVolume(
+        mm: MusicManager,
+        delta: Int,
+    ) {
+        val v = (volumeSlider.getSetting().getValueFloat() * 100).toInt().plus(delta).coerceIn(0, 100)
+        volumeSlider.getSetting().setValue(v / 100.0)
+        mm.setVolume(v)
+        lastVolumeChangeTime = System.currentTimeMillis()
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // TrackInfoCallback
+    // ─────────────────────────────────────────────────────────────────────────
 
     override fun onTrackInfoUpdated(
         position: Long,
@@ -1222,6 +1215,7 @@ class SpotifyCategory(
         trackDuration = duration
         val mm = Shindo.getInstance().getMusicManager()
         val currentTrack = mm.getCurrentTrack()
+
         if (currentTrack != null) {
             if (currentTrack.id != currentTrackId) {
                 currentTrackId = currentTrack.id
@@ -1236,17 +1230,25 @@ class SpotifyCategory(
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Scroll management
+    // ─────────────────────────────────────────────────────────────────────────
+
     private fun updateScroll() {
-        val totalItems = (searchResults?.size ?: 0) + (searchPlaylistResults?.size ?: 0) + (userPlaylists?.size ?: 0)
-        val totalHeight = totalItems * 56f
-        val visibleHeight = getHeight() - 100f // Reserve space for controls
-        // maxScroll = total content - visible area (minimum 0)
+        val snapshot = searchSnapshot.get()
+        val searchCount = (snapshot?.tracks?.size ?: 0) + (snapshot?.playlists?.size ?: 0)
+        val totalItems = searchCount + (userPlaylists?.size ?: 0)
+        val totalHeight = totalItems * ENTRY_HEIGHT
+        val visibleHeight = getHeight() - 100f
         scroll.maxScroll = maxOf(0f, totalHeight - visibleHeight)
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Search / debounce
+    // ─────────────────────────────────────────────────────────────────────────
+
     private fun checkAndUpdateSearch() {
-        val parent = parentRef.get() ?: return
-        val query = parent.getSearchBox().getText()
+        val query = parentRef.get()?.getSearchBox()?.getText() ?: return
         if (query != lastSearchQuery) {
             scheduleSearch(query)
             lastSearchQuery = query
@@ -1255,38 +1257,57 @@ class SpotifyCategory(
 
     private fun scheduleSearch(query: String) {
         if (query.isEmpty()) {
-            searchResults = null
-            searchPlaylistResults = null
+            // Atomically clear — render thread will see null immediately
+            searchSnapshot.set(null)
             return
         }
+
         pendingSearch?.takeIf { !it.isDone }?.cancel(false)
+
         pendingSearch =
             searchDebouncer.schedule({
-                if (isSearching.compareAndSet(false, true)) {
-                    try {
-                        val mm = Shindo.getInstance().getMusicManager()
-                        searchResults = mm.searchTracks(query).join()
-                        searchPlaylistResults = mm.searchPlaylists(query).join()
-                        searchResults?.take(5)?.forEach { mm.getAlbumArtUrl(it) }
-                        searchPlaylistResults?.take(5)?.forEach { mm.getPlaylistImageUrl(it) }
-                    } catch (ex: Exception) {
-                        ShindoLogger.error("Search failed", ex)
-                        Shindo
-                            .getInstance()
-                            .getNotificationManager()
-                            .post(TranslateText.MUSIC, TranslateText.SPOTIFY_SEARCH_FAILED, NotificationType.ERROR)
-                    } finally {
-                        isSearching.set(false)
-                    }
+                if (!isSearching.compareAndSet(false, true)) return@schedule
+                try {
+                    val mm = Shindo.getInstance().getMusicManager()
+                    val tracks = mm.searchTracks(query).join() ?: emptyList()
+                    val playlists = mm.searchPlaylists(query).join() ?: emptyList()
+
+                    // Pre-fetch art while still on background thread
+                    tracks.take(5).forEach { mm.getAlbumArtUrl(it) }
+                    playlists.take(5).forEach { mm.getPlaylistImageUrl(it) }
+
+                    // Single atomic publish — render thread sees complete snapshot or nothing
+                    searchSnapshot.set(SearchSnapshot(tracks, playlists))
+                } catch (ex: Exception) {
+                    ShindoLogger.error("Search failed", ex)
+                    Shindo.getInstance().getNotificationManager().post(
+                        TranslateText.MUSIC,
+                        TranslateText.SPOTIFY_SEARCH_FAILED,
+                        NotificationType.ERROR,
+                    )
+                } finally {
+                    isSearching.set(false)
                 }
-            }, SEARCH_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
+            }, SEARCH_DEBOUNCE_DELAY_MS, TimeUnit.MILLISECONDS)
     }
 
+    private fun updateVolume() {
+        val now = System.currentTimeMillis()
+        if (now - lastVolumeChangeTime > VOLUME_CHANGE_DELAY_MS) {
+            lastVolumeChangeTime = now
+            Shindo.getInstance().getMusicManager().setVolume((volumeSlider.getSetting().getValueFloat() * 100).toInt())
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Constants
+    // ─────────────────────────────────────────────────────────────────────────
+
     private companion object {
-        private const val VOLUME_CHANGE_DELAY = 500L
-        private const val SEARCH_DEBOUNCE_DELAY = 800L
+        private const val VOLUME_CHANGE_DELAY_MS = 500L
+        private const val SEARCH_DEBOUNCE_DELAY_MS = 800L
+        private const val ENTRY_HEIGHT = 56f // total row spacing
+        private const val ENTRY_ITEM_HEIGHT = 46f // visual card height
         private val PLACEHOLDER_IMAGE = ResourceLocation("shindo/music.png")
-        private const val DEBUG_HITBOXES = false
-        private val DEBUG_COLOR = Color(255, 0, 0, 100)
     }
 }

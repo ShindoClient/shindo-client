@@ -1,8 +1,12 @@
 package me.miki.shindo.discord.ipc
 
 import com.google.gson.JsonObject
-import me.miki.shindo.discord.ipc.entities.*
+import me.miki.shindo.discord.ipc.entities.Callback
+import me.miki.shindo.discord.ipc.entities.DiscordBuild
+import me.miki.shindo.discord.ipc.entities.Packet
 import me.miki.shindo.discord.ipc.entities.Packet.OpCode
+import me.miki.shindo.discord.ipc.entities.RichPresence
+import me.miki.shindo.discord.ipc.entities.User
 import me.miki.shindo.discord.ipc.entities.pipe.Pipe
 import me.miki.shindo.discord.ipc.entities.pipe.PipeStatus
 import me.miki.shindo.discord.ipc.exceptions.NoDiscordClientException

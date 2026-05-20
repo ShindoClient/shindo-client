@@ -10,7 +10,6 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
@@ -29,7 +28,7 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.*
+import java.util.Random
 import kotlin.math.abs
 
 @Suppress("unused", "UNUSED_PARAMETER")

@@ -4,9 +4,6 @@ import me.miki.shindo.utils.mouse.MouseUtils
 import me.miki.shindo.utils.mouse.Scroll
 import kotlin.math.max
 
-/**
- * Handles index-list drawing, scrolling and hit testing for [LayoutScene].
- */
 class LayoutSceneListController {
     private val scroll = Scroll()
     private val cardSlots = ArrayList<CardSlot>()

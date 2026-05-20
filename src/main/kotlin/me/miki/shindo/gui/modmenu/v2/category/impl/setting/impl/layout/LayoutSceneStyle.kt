@@ -1,11 +1,5 @@
 package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout
 
-/**
- * Centralized spacing/radius values for all layout configuration scenes.
- *
- * Keeping tokens in one place guarantees visual consistency and
- * makes it easier to evolve spacing without touching rendering logic.
- */
 object LayoutSceneStyle {
     const val LIST_ENTRY_HEIGHT = 60f
     const val LIST_ENTRY_SPACING = 10f

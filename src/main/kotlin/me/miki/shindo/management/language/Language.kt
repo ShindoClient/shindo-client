@@ -14,7 +14,7 @@ enum class Language(
     GERMAN("de-de", "Deutsch", ResourceLocation("shindo/flag/de.png")),
     FRENCH("fr-fr", "Français", ResourceLocation("shindo/flag/fr.png")),
     DANISH("da-da", "Dansk", ResourceLocation("shindo/flag/da.png")),
-    JAPANESE("ja-jp", "日本語", ResourceLocation("shindo/flag/jp.png")),
+    JAPANESE("jp-jp", "日本語", ResourceLocation("shindo/flag/jp.png")),
     PORTUGUESE("pt-br", "Português (Brasileiro)", ResourceLocation("shindo/flag/br.png")),
     PORTUGUESE_PORTUGAL("pt-pt", "Português (Portugal)", ResourceLocation("shindo/flag/pt.png")),
     ;
@@ -32,6 +32,6 @@ enum class Language(
     fun getNameTranslate(): String = nameTranslate
 
     companion object {
-        fun getLanguageById(id: String): Language = values().find { it.id == id } ?: ENGLISH
+        fun getLanguageById(id: String): Language = entries.find { it.id == id } ?: ENGLISH
     }
 }

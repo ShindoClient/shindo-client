@@ -1,7 +1,7 @@
 package me.miki.shindo.utils
 
 import me.miki.shindo.logger.ShindoLogger
-import java.util.*
+import java.util.Locale
 
 object OSUtils {
     private val osName = System.getProperty("os.name").lowercase(Locale.ROOT)

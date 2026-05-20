@@ -3,21 +3,18 @@ package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl
 import me.miki.shindo.Shindo
 import me.miki.shindo.gui.modmenu.v2.category.impl.SettingsCategory
 import me.miki.shindo.gui.modmenu.v2.category.impl.setting.SettingScene
-import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.*
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutAreaController
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutAreaScene
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutSceneInputController
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.LayoutSceneListController
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.impl.LayoutModulesScene
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.impl.LayoutNotificationsScene
+import me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout.impl.LayoutSettingsScene
 import me.miki.shindo.gui.modmenu.v2.navigation.ModMenuSlideTransitionCoordinator
 import me.miki.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
-import me.miki.shindo.management.color.palette.ColorType
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Lucide
-import me.miki.shindo.utils.ColorUtils
 
-/**
- * Root scene for layout configuration.
- *
- * The scene has two layers:
- * - an index list with the 4 area scenes;
- * - a focused area scene rendered in the same viewport with animated transition.
- */
 class LayoutScene(
     parentCategory: SettingsCategory,
 ) : SettingScene(
@@ -35,7 +32,6 @@ class LayoutScene(
         addScene(LayoutSettingsScene(parentCategory))
         addScene(LayoutModulesScene(parentCategory))
         addScene(LayoutNotificationsScene(parentCategory))
-        addScene(LayoutVisualScene(parentCategory))
     }
 
     /**
@@ -87,15 +83,6 @@ class LayoutScene(
             translateX = -(baseWidth - slide),
             translateY = 0f,
         ) {
-            nvg.drawShadow(baseX + 14f, baseY + 10f, baseWidth - 28f, baseHeight - 20f, 12f, 6)
-            nvg.drawRoundedRect(
-                baseX + 14f,
-                baseY + 10f,
-                baseWidth - 28f,
-                baseHeight - 20f,
-                12f,
-                ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.DARK), 176),
-            )
             listController.drawList(
                 controllers = controllers,
                 activeController = stateCoordinator.getActiveScene() as? LayoutAreaController?,

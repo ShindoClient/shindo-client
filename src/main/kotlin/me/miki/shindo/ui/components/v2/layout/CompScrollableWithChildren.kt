@@ -17,9 +17,7 @@ open class CompScrollableWithChildren(
         partialTicks: Float,
     ) {
         for (child in getChildren()) {
-            if (child is Component) {
-                child.draw(mouseX, mouseY, partialTicks)
-            }
+            child.draw(mouseX, mouseY, partialTicks)
         }
     }
 

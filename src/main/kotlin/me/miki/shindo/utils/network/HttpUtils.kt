@@ -7,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.sink
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -47,7 +48,7 @@ object HttpUtils {
         request: Any,
         headers: Map<String, String>?,
     ): JsonObject? {
-        val body = RequestBody.create(JSON_TYPE, gson.toJson(request))
+        val body = gson.toJson(request).toRequestBody(JSON_TYPE)
 
         val req =
             Request

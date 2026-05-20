@@ -11,7 +11,7 @@ import me.miki.shindo.utils.JsonUtils.parseIntGrid
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import java.util.*
+import java.util.UUID
 import kotlin.math.min
 
 @Suppress("UNUSED")

@@ -24,6 +24,7 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import me.miki.shindo.ui.components.v2.chips.CategoryChipRenderer
 import me.miki.shindo.ui.components.v2.chips.FilterChip
 import me.miki.shindo.ui.components.v2.inputs.CompTextBox
+import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.ColorUtils.applyAlpha
 import me.miki.shindo.utils.IOUtils
 import me.miki.shindo.utils.SearchUtils
@@ -91,7 +92,7 @@ class ProfileCategory(
         partialTicks: Float,
     ) {
         val instance = Shindo.getInstance()
-        val nvg = instance.nanoVGManager!!
+        val nvg = instance.nanoVGManager
         val profileManager = instance.getProfileManager()
         val colorManager = instance.getColorManager()
         val accentColor = colorManager.getCurrentColor()
@@ -353,10 +354,10 @@ class ProfileCategory(
         if (isActive) {
             nvg.drawCenteredText(
                 Lucide.CHECK,
-                btnX + btnSize / 2f - 0.5f,
+                btnX + (btnSize / 2f) + 0.5f,
                 checkY + 3f,
                 palette.getFontColor(ColorType.DARK),
-                10f,
+                10.5f,
                 Fonts.LUCIDE,
             )
         }
@@ -364,29 +365,21 @@ class ProfileCategory(
         if (isDefault) return
 
         // Star
-        profile.starAnimation.setAnimation(if (profile.type == ProfileType.FAVORITE) 1f else 0f, 16.0)
+        val starAnimation: Boolean = (profile.type == ProfileType.FAVORITE)
         nvg.drawRoundedRect(
             btnX,
             starY - 1f,
             btnSize,
             btnSize,
-            5f,
+            3f,
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
             Lucide.STAR,
-            btnX + btnSize / 2f - 0.5f,
+            btnX + (btnSize / 2f) + 0.5f,
             starY + 3f,
-            palette.getFontColor(ColorType.NORMAL),
-            10f,
-            Fonts.LUCIDE,
-        )
-        nvg.drawCenteredText(
-            Lucide.STAR,
-            btnX + btnSize / 2f,
-            starY + 3f,
-            applyAlpha(palette.getMaterialYellow(), (profile.starAnimation.getValue() * 255).toInt()),
-            10f,
+            ColorUtils.transitionColor(palette.getFontColor(ColorType.NORMAL), palette.getMaterialYellow(), starAnimation),
+            10.5f,
             Fonts.LUCIDE,
         )
 
@@ -396,15 +389,15 @@ class ProfileCategory(
             deleteY - 1f,
             btnSize,
             btnSize,
-            5f,
+            3f,
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
             Lucide.TRASH_2,
-            btnX + btnSize / 2f - 0.5f,
+            btnX + (btnSize / 2f) + 0.5f,
             deleteY + 3f,
             palette.getMaterialRed(),
-            10f,
+            10.5f,
             Fonts.LUCIDE,
         )
 
@@ -415,19 +408,19 @@ class ProfileCategory(
             shareY - 1f,
             btnSize,
             btnSize,
-            5f,
+            3f,
             applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 190),
         )
         nvg.drawCenteredText(
             if (alreadyShared) Lucide.CHECK else Lucide.COPY,
-            btnX + btnSize / 2f - 0.5f,
+            btnX + (btnSize / 2f) + 0.5f,
             shareY + 3f,
             if (alreadyShared) {
                 applyAlpha(palette.getFontColor(ColorType.DARK), 200)
             } else {
                 applyAlpha(palette.getFontColor(ColorType.NORMAL), 170)
             },
-            10f,
+            10.5f,
             Fonts.LUCIDE,
         )
     }
@@ -511,10 +504,10 @@ class ProfileCategory(
         nvg.save()
         nvg.translate(detailTransition.getSlideOffset(ModMenuMotion.DETAILS_PANEL_SLIDE_DISTANCE), 0f)
 
-        val panelX = getX() + 18f
-        val panelY = getY() + 15f
-        val panelW = getWidth() - 36f
-        val panelH = getHeight() - 30f
+        val panelX = getX() + 14f
+        val panelY = getY() + 10f
+        val panelW = getWidth() - 32f
+        val panelH = getHeight() - 25f
 
         nvg.drawShadow(panelX, panelY, panelW, panelH, 12f, 7)
         nvg.drawRoundedRect(panelX, panelY, panelW, panelH, 12f, palette.getBackgroundColor(ColorType.DARK))
@@ -566,7 +559,7 @@ class ProfileCategory(
         val gap = 12f
         var iconX = panelX + 24f
 
-        for (icon in ProfileIcon.values()) {
+        for (icon in ProfileIcon.entries) {
             val selected = !useCustomIcon && currentIcon == icon
             val hovered = MouseUtils.isInside(mouseX, mouseY, iconX, iconY, tileSize, tileSize)
             icon.animation.setAnimation(if (selected) 1f else 0f, 12.0)
@@ -918,7 +911,7 @@ class ProfileCategory(
         val iconY = panelY + 66f
 
         var iconX = panelX + 24f
-        for (icon in ProfileIcon.values()) {
+        for (icon in ProfileIcon.entries) {
             if (MouseUtils.isInside(mouseX, mouseY, iconX, iconY, tileSize, tileSize)) {
                 currentIcon = icon
                 useCustomIcon = false

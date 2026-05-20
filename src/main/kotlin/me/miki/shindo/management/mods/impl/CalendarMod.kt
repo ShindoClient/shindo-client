@@ -5,9 +5,8 @@ import me.miki.shindo.management.event.EventTarget
 import me.miki.shindo.management.event.impl.EventNVG
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
-import java.util.*
+import java.util.Calendar
 
 class CalendarMod : HUDMod(TranslateText.CALENDAR, TranslateText.CALENDAR_DESCRIPTION, Shinconic.MOD_CALENDAR) {
     private var calendarHeight = 0

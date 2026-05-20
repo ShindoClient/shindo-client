@@ -8,7 +8,6 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
@@ -22,7 +21,7 @@ import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
-import java.util.*
+import java.util.UUID
 
 class MoBendsMod : Mod(TranslateText.MO_BENDS, TranslateText.MO_BENDS_DESCRIPTION, ModCategory.PLAYER, Shinconic.MOD_MO_BENDS) {
     private val loaded = false

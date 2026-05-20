@@ -16,7 +16,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.io.File
-import java.util.*
+import java.util.UUID
 import javax.imageio.ImageIO
 
 class CapeManager {

@@ -9,7 +9,6 @@ import me.miki.shindo.management.event.impl.EventTick
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.utils.LocationUtils
 import me.miki.shindo.utils.MathUtils.roundToPlace
@@ -17,7 +16,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.opengl.GL11
-import java.util.*
+import java.util.Random
 import java.util.function.Consumer
 
 class DamageParticlesMod :

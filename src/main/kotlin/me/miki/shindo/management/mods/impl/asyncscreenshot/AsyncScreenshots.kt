@@ -10,7 +10,7 @@ import net.minecraft.util.EnumChatFormatting
 import java.awt.image.BufferedImage
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import javax.imageio.ImageIO
 
 class AsyncScreenshots(

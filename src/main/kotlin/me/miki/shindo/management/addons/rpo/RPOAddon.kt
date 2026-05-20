@@ -5,7 +5,6 @@ import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonType
 import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom
 import me.miki.shindo.management.language.TranslateText
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.Minecraft
 import java.io.File

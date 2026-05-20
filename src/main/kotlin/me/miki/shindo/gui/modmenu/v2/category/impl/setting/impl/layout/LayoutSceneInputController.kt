@@ -3,9 +3,6 @@ package me.miki.shindo.gui.modmenu.v2.category.impl.setting.impl.layout
 import me.miki.shindo.utils.mouse.MouseUtils
 import org.lwjgl.input.Keyboard
 
-/**
- * Input predicates for [LayoutScene].
- */
 class LayoutSceneInputController {
     fun isPrimaryClick(mouseButton: Int): Boolean = mouseButton == 0
 

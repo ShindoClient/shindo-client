@@ -11,7 +11,6 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.SimpleHUDMod
 import me.miki.shindo.management.music.TrackInfoCallback
 import me.miki.shindo.management.music.model.LyricsResponse
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum

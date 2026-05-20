@@ -7,7 +7,6 @@ import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
-import java.awt.image.BufferedImage
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap

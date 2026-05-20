@@ -10,7 +10,6 @@ import me.miki.shindo.management.event.impl.EventUpdate
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager

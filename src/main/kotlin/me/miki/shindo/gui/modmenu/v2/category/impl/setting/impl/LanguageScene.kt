@@ -15,7 +15,7 @@ import me.miki.shindo.ui.components.v2.layout.CompScrollableContainer
 import me.miki.shindo.utils.ColorUtils
 import me.miki.shindo.utils.mouse.MouseUtils
 import net.minecraft.util.ResourceLocation
-import java.util.*
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -24,7 +24,7 @@ class LanguageScene(
     parent: SettingsCategory,
 ) : SettingScene(parent, TranslateText.LANGUAGE, TranslateText.LANGUAGE_DESCRIPTION, Lucide.GLOBE) {
     private lateinit var container: CompScrollableContainer
-    private val languages = Language.values()
+    private val languages = Language.entries.toTypedArray()
     private val languageCards = ArrayList<LanguageCard>(languages.size)
 
     override fun initGui() {
@@ -188,13 +188,13 @@ class LanguageScene(
             val badgeY = y + height - 18f - 2
             val badgeSize = 16f
 
-            nvg.drawShadow(badgeX, badgeY, badgeSize, badgeSize, 5.5f, 7)
+            nvg.drawShadow(badgeX, badgeY, badgeSize, badgeSize, 3.5f, 7)
             nvg.drawRoundedRect(
                 badgeX,
                 badgeY,
                 badgeSize,
                 badgeSize,
-                5.5f,
+                3.5f,
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.MID), 220),
             )
             nvg.drawOutlineRoundedRect(
@@ -202,7 +202,7 @@ class LanguageScene(
                 badgeY,
                 badgeSize,
                 badgeSize,
-                5.5f,
+                3.5f,
                 1f,
                 ColorUtils.applyAlpha(palette.getBackgroundColor(ColorType.NORMAL), 210),
             )
@@ -236,7 +236,7 @@ class LanguageScene(
         val rightPadding = 14f
         val availableTextWidth = max(90f, width - (textX - x) - rightPadding)
         val languageName = nvg.getLimitText(language.getName(), 11.8f, Fonts.MEDIUM, availableTextWidth)
-        nvg.drawText(languageName, textX, y + 18f, palette.getFontColor(ColorType.DARK), 11.8f, Fonts.MEDIUM)
+        nvg.drawText(languageName, textX, y + 22f, palette.getFontColor(ColorType.DARK), 11.8f, Fonts.MEDIUM)
 
         val localeCode = language.getId().uppercase(Locale.ROOT)
         val codeWidth = nvg.getTextWidth(localeCode, 7.4f, Fonts.MEDIUM) + 12f

@@ -105,11 +105,12 @@ class MusicManager(
     }
 
     private fun saveTokens() {
+        if (spotifyApi.accessToken.isNullOrEmpty() || spotifyApi.refreshToken.isNullOrEmpty()) return
         val tokenFile = File(fileManager.musicDir, TOKEN_FILE_NAME)
         val props =
             Properties().apply {
-                setProperty("accessToken", spotifyApi.accessToken ?: "")
-                setProperty("refreshToken", spotifyApi.refreshToken ?: "")
+                setProperty("accessToken", spotifyApi.accessToken)
+                setProperty("refreshToken", spotifyApi.refreshToken)
             }
         try {
             tokenFile.outputStream().use { props.store(it, "Spotify Tokens") }

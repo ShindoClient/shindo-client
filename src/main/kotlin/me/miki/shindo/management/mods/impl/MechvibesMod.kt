@@ -7,7 +7,6 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
 import me.miki.shindo.management.mods.impl.mechibes.SoundKey
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
@@ -19,10 +18,6 @@ import me.miki.shindo.utils.concurrent.ThreadPoolType
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import java.lang.Float
-import kotlin.Exception
-import kotlin.Int
-import kotlin.String
 
 @Suppress("UNUSED")
 class MechvibesMod : Mod(TranslateText.MECHVIBES, TranslateText.MECHVIBES_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_MECHVIBES) {

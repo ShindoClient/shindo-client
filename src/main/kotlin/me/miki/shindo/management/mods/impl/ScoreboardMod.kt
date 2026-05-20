@@ -8,7 +8,6 @@ import me.miki.shindo.management.event.impl.EventRender2D
 import me.miki.shindo.management.event.impl.EventRenderScoreboard
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.HUDMod
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
@@ -21,7 +20,6 @@ import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.EnumChatFormatting
 import java.awt.Color
-import java.util.*
 import kotlin.math.max
 
 class ScoreboardMod : HUDMod(TranslateText.SCOREBOARD, TranslateText.SCOREBOARD_DESCRIPTION, Shinconic.MOD_SCOREBOARD) {

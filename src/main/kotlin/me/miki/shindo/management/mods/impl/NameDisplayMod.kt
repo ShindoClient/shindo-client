@@ -7,7 +7,6 @@ import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyEnum
 import me.miki.shindo.management.settings.config.PropertyType
-import java.util.*
 
 class NameDisplayMod : SimpleHUDMod(TranslateText.NAME_DISPLAY, TranslateText.NAME_DISPLAY_DESCRIPTION, Shinconic.MOD_NAME_DISPLAY) {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.ICON)

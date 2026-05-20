@@ -64,7 +64,7 @@ class SettingsCategory(
         partialTicks: Float,
     ) {
         val instance = Shindo.getInstance()
-        val nvg = instance.nanoVGManager ?: return
+        val nvg = instance.nanoVGManager
         val palette = instance.getColorManager().getPalette()
         val accent = instance.getColorManager().getCurrentColor()
         val baseX = getX().toFloat()
@@ -161,7 +161,7 @@ class SettingsCategory(
                     nvg.drawGradientRoundedRect(headerX, headerY, iconSize, iconSize, iconRadius, iconStart, iconEnd)
                     nvg.drawCenteredText(
                         headerScene.icon,
-                        headerX + (iconSize / 2f) - 1f,
+                        headerX + (iconSize / 2f),
                         headerY + (iconSize / 2f) - 10f,
                         Color.WHITE,
                         22f,

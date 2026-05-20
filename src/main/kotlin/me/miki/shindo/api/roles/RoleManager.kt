@@ -1,6 +1,7 @@
 package me.miki.shindo.api.roles
 
-import java.util.*
+import java.util.EnumSet
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 

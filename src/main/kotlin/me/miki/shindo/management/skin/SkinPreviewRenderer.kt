@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
+import java.util.Locale
 
 class SkinPreviewRenderer {
     var baseWidth: Float = DEFAULT_BASE_WIDTH

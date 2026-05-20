@@ -1,7 +1,6 @@
 package me.miki.shindo.management.notification
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.logger.FileLogWriter
 import me.miki.shindo.management.language.TranslateText
 import java.util.concurrent.LinkedBlockingQueue
 

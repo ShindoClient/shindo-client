@@ -2,7 +2,8 @@ package me.miki.shindo.management.addons.rpo.packs
 
 import net.minecraft.client.resources.ResourcePackListEntry
 import net.minecraft.client.resources.ResourcePackListEntryFound
-import java.util.*
+import java.util.Collections
+import java.util.Locale
 import java.util.regex.Pattern
 
 class ResourcePackListProcessor(

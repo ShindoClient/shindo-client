@@ -5,7 +5,6 @@ import me.miki.shindo.management.event.impl.EventReceiveChat
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.mods.Mod
 import me.miki.shindo.management.mods.ModCategory
-import me.miki.shindo.management.nanovg.font.Lucide
 import me.miki.shindo.management.nanovg.font.Shinconic
 import me.miki.shindo.management.settings.config.Property
 import me.miki.shindo.management.settings.config.PropertyType
@@ -17,7 +16,7 @@ import me.miki.shindo.management.sound.Sound.Companion.play
 import me.miki.shindo.management.sound.Sounds
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
-import java.util.*
+import java.util.Locale
 
 class ChatMod : Mod(TranslateText.CHAT, TranslateText.CHAT_DESCRIPTION, ModCategory.OTHER, Shinconic.MOD_CHAT, "betterchatting") {
     @Property(type = PropertyType.BOOLEAN, translate = TranslateText.SMOOTH, category = "Animation")
