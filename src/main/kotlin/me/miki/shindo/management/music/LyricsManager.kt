@@ -18,6 +18,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
+@Suppress("UNUSED")
 class LyricsManager {
     private val gson = Gson()
     private val executorService =
@@ -223,6 +224,6 @@ class LyricsManager {
     companion object {
         private const val DEFAULT_LYRICS_API_URL = "https://spotify.mopigames.gay/"
         private const val TIMEOUT_SECONDS = 10
-        private val TIMEOUT_MS = TIMEOUT_SECONDS * 1000
+        private const val TIMEOUT_MS = TIMEOUT_SECONDS * 1000
     }
 }

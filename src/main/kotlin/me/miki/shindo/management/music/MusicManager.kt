@@ -270,7 +270,7 @@ class MusicManager(
 
     private fun prefetchAlbumArt(track: Track?) {
         val images = track?.album?.images
-        if (images == null || images.isEmpty()) return
+        if (images.isNullOrEmpty()) return
         val imageUrl = images[0].url ?: return
         try {
             albumArtCache
@@ -565,6 +565,8 @@ class MusicManager(
         }
     }
 
+    fun getAlbumArt(url: String): String = albumArtCache.getAlbumArt(url)
+
     private fun fetchCurrentPlaybackState() {
         try {
             val playbackState =
@@ -632,10 +634,9 @@ class MusicManager(
                             lastPositionUpdateTime = System.currentTimeMillis()
                             val item = playbackState.item
                             if (item != null && item is Track) {
-                                val newTrack = item
-                                if (currentTrack == null || currentTrack!!.id != newTrack.id) {
-                                    currentTrack = newTrack
-                                    trackDuration = newTrack.durationMs.toLong()
+                                if (currentTrack == null || currentTrack!!.id != item.id) {
+                                    currentTrack = item
+                                    trackDuration = item.durationMs.toLong()
                                 }
                             }
                             notifyTrackInfoUpdated()
@@ -823,6 +824,8 @@ class MusicManager(
             AlbumArtCache.PLACEHOLDER_PATH
         }
     }
+
+    fun getSpotifyApi(): SpotifyApi = spotifyApi
 
     fun getLyricsManager(): LyricsManager = lyricsManager
 
