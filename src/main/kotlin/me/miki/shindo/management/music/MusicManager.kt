@@ -141,7 +141,6 @@ class MusicManager(
 
     private fun requestAccessToken(code: String) {
         try {
-            // Chama o CDN que tem o secret e faz a troca
             val url = URL("$CDN_BASE_URL/spotify/token?code=$code")
             val connection = url.openConnection() as java.net.HttpURLConnection
             connection.requestMethod = "GET"
@@ -557,7 +556,6 @@ class MusicManager(
         if (images.isEmpty()) return null
         val imageUrl = images.getOrNull(0)?.url ?: return null
 
-        // Non-blocking - uses cache if available, starts download otherwise
         return try {
             albumArtCache.getAlbumArt(imageUrl)
         } catch (e: Exception) {
@@ -816,7 +814,6 @@ class MusicManager(
         if (images.isEmpty()) return null
         val imageUrl = images.getOrNull(0)?.url ?: return null
 
-        // Safe call - getAlbumArt is now non-blocking
         return try {
             albumArtCache.getAlbumArt(imageUrl)
         } catch (e: Exception) {

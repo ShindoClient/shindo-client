@@ -5,15 +5,15 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.util.ResourceLocation
 
 class EventLocationSkin(
-    private val _playerInfo: NetworkPlayerInfo,
+    private val playerInfo: NetworkPlayerInfo,
 ) : Event() {
-    private var _skin: ResourceLocation? = null
+    private var skin: ResourceLocation? = null
 
-    fun getPlayerInfo(): NetworkPlayerInfo = _playerInfo
+    fun getPlayerInfo(): NetworkPlayerInfo = playerInfo
 
-    fun getSkin(): ResourceLocation? = _skin
+    fun getSkin(): ResourceLocation? = skin
 
-    fun setSkin(skin: Any?) {
-        _skin = skin as? ResourceLocation
+    fun setSkin(skin: ResourceLocation) {
+        this.skin = skin
     }
 }

@@ -4,22 +4,22 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.entity.Entity
 
 class EventRenderHitbox(
-    private val _entity: Entity,
-    private val _x: Double,
-    private val _y: Double,
-    private val _z: Double,
-    private val _entityYaw: Float,
-    private val _partialTicks: Float,
+    private val entity: Entity,
+    private val x: Double,
+    private val y: Double,
+    private val z: Double,
+    private val entityYaw: Float,
+    private val partialTicks: Float,
 ) : Event() {
-    fun getEntity(): Entity = _entity
+    fun getEntity(): Entity = entity
 
-    fun getX(): Double = _x
+    fun getX(): Double = x
 
-    fun getY(): Double = _y
+    fun getY(): Double = y
 
-    fun getZ(): Double = _z
+    fun getZ(): Double = z
 
-    fun getEntityYaw(): Float = _entityYaw
+    fun getEntityYaw(): Float = entityYaw
 
-    fun getPartialTicks(): Float = _partialTicks
+    fun getPartialTicks(): Float = partialTicks
 }

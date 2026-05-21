@@ -7,5 +7,5 @@ import me.miki.shindo.management.nanovg.NanoVGManager
 class EventNVG(
     val partialTicks: Float,
 ) : Event() {
-    fun renderer(): NanoVGManager = Shindo.getInstance().nanoVGManager!!
+    fun renderer(): NanoVGManager = Shindo.getInstance().nanoVGManager
 }

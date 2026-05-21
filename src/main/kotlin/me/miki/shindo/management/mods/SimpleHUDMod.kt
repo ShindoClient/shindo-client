@@ -23,11 +23,11 @@ open class SimpleHUDMod : HUDMod {
         instance.nanoVGManager
         val icon = getIcon()
         val hasIcon = icon != null
-        val addX = if (hasIcon) (getTextWidth(icon ?: "", 9.5f, Fonts.LUCIDE)!! + 4) else 0f
+        val addX = if (hasIcon) (getTextWidth(icon, 9.5f, Fonts.LUCIDE) + 4) else 0f
 
         val text = getText()
         if (text != null) {
-            val bgWidth = getTextWidth(getText()!!, 9f, getHudFont(1))!! + 10 + addX
+            val bgWidth = getTextWidth(getText()!!, 9f, getHudFont(1)) + 10 + addX
 
             this.drawBackground(bgWidth, 18f)
             this.drawText(getText()!!, 5.5f + addX, 5.5f, 9f, getHudFont(1))

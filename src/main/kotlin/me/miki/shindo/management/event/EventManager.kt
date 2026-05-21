@@ -2,7 +2,9 @@ package me.miki.shindo.management.event
 
 import java.lang.reflect.Method
 
+@Suppress("UNUSED")
 class EventManager {
+    @Suppress("ktlint:standard:property-naming")
     private val REGISTRY_MAP: MutableMap<Class<*>, ArrayHelper<Data>> = HashMap()
 
     fun register(o: Any) {

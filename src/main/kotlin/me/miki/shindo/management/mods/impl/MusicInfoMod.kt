@@ -72,7 +72,7 @@ class MusicInfoMod :
         if (design == Design.SIMPLE) {
             this.draw()
         } else if (design == Design.ADVANCED) {
-            nvg!!.setupAndDraw(Runnable { this.drawAdvancedNanoVG() })
+            nvg.setupAndDraw(Runnable { this.drawAdvancedNanoVG() })
         }
     }
 
@@ -91,7 +91,7 @@ class MusicInfoMod :
             return
         }
 
-        val keyCode = event.keyCode
+        val keyCode = event.getKeyCode()
         val musicManager = Shindo.getInstance().getMusicManager()
 
         if (!musicManager.isPlaying()) {
@@ -238,7 +238,7 @@ class MusicInfoMod :
 
             val timeY = progressBarY + 6.0f
             this.drawText(currentTime, 6.0f, timeY, 6.0f, this.getHudFont(1))
-            val totalTimeWidth: Float = this.getTextWidth(totalTime, 9.0f, this.getHudFont(1))!!
+            val totalTimeWidth: Float = this.getTextWidth(totalTime, 9.0f, this.getHudFont(1))
             this.drawText(totalTime, 163.0f - totalTimeWidth - 5.5f, timeY, 6.0f, this.getHudFont(1))
 
             if (hasLyrics && this.showLyricsSetting) {
@@ -302,7 +302,7 @@ class MusicInfoMod :
                     this.restore()
                 } else {
                     val noLyricsText = "No lyrics available"
-                    val textWidth: Float = this.getTextWidth(noLyricsText, 10.0f, this.getHudFont(1))!!
+                    val textWidth: Float = this.getTextWidth(noLyricsText, 10.0f, this.getHudFont(1))
                     val centerX = 77.5f
                     this.drawText(
                         noLyricsText,
@@ -371,7 +371,7 @@ class MusicInfoMod :
         maxWidth: Float,
     ): MutableList<String> {
         val lines = ArrayList<String>()
-        if (this.getTextWidth(text, 10.5f, this.getHudFont(1))!! <= maxWidth) {
+        if (this.getTextWidth(text, 10.5f, this.getHudFont(1)) <= maxWidth) {
             lines.add(text)
             return lines
         }
@@ -379,7 +379,7 @@ class MusicInfoMod :
         var currentLine = StringBuilder()
         for (word in words) {
             val testLine: String = if (currentLine.isNotEmpty()) "$currentLine $word" else word
-            if (this.getTextWidth(testLine, 10.5f, this.getHudFont(1))!! <= maxWidth) {
+            if (this.getTextWidth(testLine, 10.5f, this.getHudFont(1)) <= maxWidth) {
                 currentLine = StringBuilder(testLine)
                 continue
             }

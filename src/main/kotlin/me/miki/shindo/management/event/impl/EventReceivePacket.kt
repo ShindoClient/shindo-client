@@ -4,11 +4,11 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.network.Packet
 
 class EventReceivePacket(
-    private var _packet: Packet<*>,
+    private var packet: Packet<*>,
 ) : Event() {
-    fun getPacket(): Packet<*> = _packet
+    fun getPacket(): Packet<*> = packet
 
-    fun setPacket(packet: Any) {
-        _packet = packet as Packet<*>
+    fun setPacket(packet: Packet<*>) {
+        this.packet = packet
     }
 }

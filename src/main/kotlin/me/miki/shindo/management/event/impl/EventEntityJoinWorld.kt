@@ -4,7 +4,7 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.entity.Entity
 
 class EventEntityJoinWorld(
-    private val _entity: Entity,
+    private val entity: Entity,
 ) : Event() {
-    fun getEntity(): Entity = _entity
+    fun getEntity(): Entity = entity
 }

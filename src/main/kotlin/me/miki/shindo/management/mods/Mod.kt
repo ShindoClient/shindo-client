@@ -9,6 +9,7 @@ import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 
+@Suppress("UNUSED")
 open class Mod
     @JvmOverloads
     constructor(

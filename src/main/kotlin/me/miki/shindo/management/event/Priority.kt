@@ -1,5 +1,6 @@
 package me.miki.shindo.management.event
 
+@Suppress("UNUSED")
 class Priority {
     companion object {
         const val FIRST: Byte = 0

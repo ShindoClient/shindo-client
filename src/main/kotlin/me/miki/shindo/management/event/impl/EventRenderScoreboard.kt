@@ -4,7 +4,7 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.scoreboard.ScoreObjective
 
 class EventRenderScoreboard(
-    private val _objective: ScoreObjective,
+    private val objective: ScoreObjective,
 ) : Event() {
-    fun getObjective(): ScoreObjective = _objective
+    fun getObjective(): ScoreObjective = objective
 }

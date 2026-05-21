@@ -681,11 +681,9 @@ class CosmeticsCategory(
     private fun createCapePreview(cape: Cape): PreviewRenderer {
         if (cape is NormalCape) {
             val sample = cape.getSample()
-            if (sample != null) {
-                return { nvg, px, py, width, height ->
-                    if (!drawImagePreview(nvg, sample, null, px, py, width, height, 6f)) {
-                        defaultPreview()(nvg, px, py, width, height)
-                    }
+            return { nvg, px, py, width, height ->
+                if (!drawImagePreview(nvg, sample, null, px, py, width, height, 6f)) {
+                    defaultPreview()(nvg, px, py, width, height)
                 }
             }
         } else if (cape is CustomCape) {

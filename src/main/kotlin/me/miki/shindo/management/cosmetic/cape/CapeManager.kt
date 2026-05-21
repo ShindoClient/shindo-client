@@ -121,8 +121,8 @@ class CapeManager {
 
         for (c in capes) {
             when (c) {
-                is NormalCape -> c.getSample()?.let { instance.nanoVGManager?.loadImage(it) }
-                is CustomCape -> c.getSample().let { instance.nanoVGManager?.loadImage(it) }
+                is NormalCape -> c.getSample()?.let { instance.nanoVGManager.loadImage(it) }
+                is CustomCape -> c.getSample().let { instance.nanoVGManager.loadImage(it) }
             }
             c.getCape()?.let { mc.textureManager.bindTexture(it) }
         }

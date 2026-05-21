@@ -19,7 +19,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.apache.commons.lang3.StringUtils
 
-@Suppress("unused", "UNUSED_PARAMETER")
+@Suppress("UNUSED")
 class ShindoHandler {
     private val mc: Minecraft = Minecraft.getMinecraft()
     private val instance: Shindo = Shindo.getInstance()

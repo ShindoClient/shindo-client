@@ -6,19 +6,19 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 
 class EventRendererLivingEntity(
-    private val _renderer: RendererLivingEntity<EntityLivingBase>,
-    private val _entity: Entity,
-    private val _x: Double,
-    private val _y: Double,
-    private val _z: Double,
+    private val renderer: RendererLivingEntity<EntityLivingBase>,
+    private val entity: Entity,
+    private val x: Double,
+    private val y: Double,
+    private val z: Double,
 ) : Event() {
-    fun getRenderer(): RendererLivingEntity<EntityLivingBase> = _renderer
+    fun getRenderer(): RendererLivingEntity<EntityLivingBase> = renderer
 
-    fun getEntity(): Entity = _entity
+    fun getEntity(): Entity = entity
 
-    fun getX(): Double = _x
+    fun getX(): Double = x
 
-    fun getY(): Double = _y
+    fun getY(): Double = y
 
-    fun getZ(): Double = _z
+    fun getZ(): Double = z
 }

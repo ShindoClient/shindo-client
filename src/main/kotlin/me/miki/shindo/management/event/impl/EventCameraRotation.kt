@@ -2,6 +2,7 @@ package me.miki.shindo.management.event.impl
 
 import me.miki.shindo.management.event.Event
 
+@Suppress("UNUSED")
 class EventCameraRotation(
     @JvmField var yaw: Float,
     @JvmField var pitch: Float,

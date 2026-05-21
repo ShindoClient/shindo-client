@@ -76,12 +76,12 @@ class FreelookMod :
         val mode = modeSetting
 
         if (mode == Mode.TOGGLE) {
-            if (event.keyCode == keybindSetting && mc.currentScreen == null) {
+            if (event.getKeyCode() == keybindSetting && mc.currentScreen == null) {
                 toggleActive = !toggleActive
             }
         }
 
-        if (event.keyCode == mc.gameSettings.keyBindTogglePerspective.keyCode) {
+        if (event.getKeyCode() == mc.gameSettings.keyBindTogglePerspective.keyCode) {
             toggleActive = false
         }
     }

@@ -5,25 +5,25 @@ import net.minecraft.client.renderer.entity.RenderTNTPrimed
 import net.minecraft.entity.item.EntityTNTPrimed
 
 class EventRenderTNT(
-    private val _tntRenderer: RenderTNTPrimed,
-    private val _entity: EntityTNTPrimed,
-    private val _x: Double,
-    private val _y: Double,
-    private val _z: Double,
-    private val _entityYaw: Float,
-    private val _partialTicks: Float,
+    private val tntRenderer: RenderTNTPrimed,
+    private val entity: EntityTNTPrimed,
+    private val x: Double,
+    private val y: Double,
+    private val z: Double,
+    private val entityYaw: Float,
+    private val partialTicks: Float,
 ) : Event() {
-    fun getTntRenderer(): RenderTNTPrimed = _tntRenderer
+    fun getTntRenderer(): RenderTNTPrimed = tntRenderer
 
-    fun getEntity(): EntityTNTPrimed = _entity
+    fun getEntity(): EntityTNTPrimed = entity
 
-    fun getX(): Double = _x
+    fun getX(): Double = x
 
-    fun getY(): Double = _y
+    fun getY(): Double = y
 
-    fun getZ(): Double = _z
+    fun getZ(): Double = z
 
-    fun getEntityYaw(): Float = _entityYaw
+    fun getEntityYaw(): Float = entityYaw
 
-    fun getPartialTicks(): Float = _partialTicks
+    fun getPartialTicks(): Float = partialTicks
 }

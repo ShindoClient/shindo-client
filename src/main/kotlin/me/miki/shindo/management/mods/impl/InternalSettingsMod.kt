@@ -130,11 +130,11 @@ class InternalSettingsMod : Mod(TranslateText.NONE, TranslateText.NONE, ModCateg
     @EventTarget
     fun onKey(event: EventKey) {
         val keybind = getModMenuKeybindSetting()?.getKeyCode() ?: modMenuKeybindSetting
-        if (event.keyCode == keybind) {
+        if (event.getKeyCode() == keybind) {
             mc.displayGuiScreen(Shindo.getInstance().getShindoAPI().navigationHub)
         }
 
-        if (event.keyCode == Keyboard.KEY_DOWN) {
+        if (event.getKeyCode() == Keyboard.KEY_DOWN) {
             val combo = this.modThemeSetting
             if (combo != null) {
                 val max = combo.getOptions().size

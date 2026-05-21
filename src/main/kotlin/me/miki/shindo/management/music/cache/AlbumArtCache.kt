@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import javax.imageio.ImageIO
 
+@Suppress("UNUSED")
 class AlbumArtCache(
     private val fileManager: FileManager,
 ) : AutoCloseable {
@@ -50,7 +51,6 @@ class AlbumArtCache(
             }
         }
 
-    // Placeholder image cached in memory to avoid loading from disk repeatedly
     private var cachedPlaceholder: BufferedImage? = null
 
     init {
@@ -61,7 +61,6 @@ class AlbumArtCache(
 
     private fun preloadPlaceholder() {
         try {
-            // Try to load placeholder from resources, or create a simple gray one
             cachedPlaceholder = createDefaultPlaceholder()
         } catch (e: Exception) {
             ShindoLogger.warn("Could not preload placeholder: ${e.message}")
@@ -115,41 +114,27 @@ class AlbumArtCache(
                     Supplier { downloadAndCacheImage(id, imageUrl) },
                     downloadExecutor,
                 ).whenComplete { result: String?, ex: Throwable? ->
-                    // Keep entry until fully processed
                 }
         }
     }
 
-    /**
-     * Get cached album art path - returns placeholder path if not yet loaded or on failure.
-     * This method is NON-BLOCKING and returns immediately.
-     */
     fun getAlbumArt(imageUrl: String): String {
         val id = imageUrl.hashCode().toString()
         val cachedFile = getCacheFile(id)
 
-        // Return cached file immediately if exists and valid
         if (cachedFile.exists() && isValidCacheFile(cachedFile)) {
             return cachedFile.absolutePath
         }
 
-        // Start async download, return placeholder for now
         getCachedAlbumArtUrlAsync(id, imageUrl)
         return PLACEHOLDER_PATH
     }
 
-    /**
-     * Get album art asynchronously - use this for non-blocking UI updates.
-     * Returns a CompletableFuture that completes with the cached path or placeholder.
-     */
     fun getAlbumArtAsync(imageUrl: String): CompletableFuture<String> {
         val id = imageUrl.hashCode().toString()
         return getCachedAlbumArtUrlAsync(id, imageUrl)
     }
 
-    /**
-     * Check if image is ready (cached) - useful for UI to decide showing placeholder or cached image
-     */
     fun isImageReady(imageUrl: String): Boolean {
         val id = imageUrl.hashCode().toString()
         val cachedFile = getCacheFile(id)
@@ -243,7 +228,6 @@ class AlbumArtCache(
                 }
             }
 
-            // If over memory limit, remove oldest files
             val maxBytes = MAX_CACHE_SIZE_MB * 1024L * 1024L
             if (totalSize > maxBytes) {
                 validFiles.sortBy { it.lastModified() }
@@ -281,7 +265,6 @@ class AlbumArtCache(
         private const val READ_TIMEOUT_MS = 15000
         private const val USER_AGENT = "Shindo/1.0"
 
-        // Placeholder path - use special marker that UI recognizes
         const val PLACEHOLDER_PATH = "__PLACEHOLDER__"
     }
 }

@@ -4,14 +4,14 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.client.entity.AbstractClientPlayer
 
 class EventFovUpdate(
-    private val _entity: AbstractClientPlayer,
-    private var _fov: Float,
+    private val entity: AbstractClientPlayer,
+    private var fov: Float,
 ) : Event() {
-    fun getFov(): Float = _fov
+    fun getFov(): Float = fov
 
     fun setFov(fov: Float) {
-        _fov = fov
+        this.fov = fov
     }
 
-    fun getEntity(): AbstractClientPlayer = _entity
+    fun getEntity(): AbstractClientPlayer = entity
 }

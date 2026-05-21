@@ -123,6 +123,7 @@ import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.management.sound.Sound
 import me.miki.shindo.management.sound.Sounds
 
+@Suppress("UNUSED")
 class ModManager {
     private val mods = ArrayList<Mod>()
     private val settings = ArrayList<Setting>()

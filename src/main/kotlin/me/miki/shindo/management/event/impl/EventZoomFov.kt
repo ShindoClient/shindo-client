@@ -3,11 +3,11 @@ package me.miki.shindo.management.event.impl
 import me.miki.shindo.management.event.Event
 
 class EventZoomFov(
-    private var _fov: Float,
+    private var fov: Float,
 ) : Event() {
-    fun getFov(): Float = _fov
+    fun getFov(): Float = fov
 
     fun setFov(fov: Float) {
-        _fov = fov
+        this.fov = fov
     }
 }

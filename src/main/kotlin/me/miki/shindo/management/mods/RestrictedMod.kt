@@ -4,6 +4,7 @@ import me.miki.shindo.Shindo
 import me.miki.shindo.management.notification.NotificationType
 import me.miki.shindo.utils.ServerUtils
 
+@Suppress("UNUSED")
 class RestrictedMod {
     var shouldCheck: Boolean = true
     private var currentServerIP = ""

@@ -33,7 +33,7 @@ open class RomanizationManager {
     }
 
     open fun romanizeText(text: String?): CompletableFuture<String?>? {
-        if (text == null || text.isEmpty() || !containsJapaneseCharacters(text)) {
+        if (text.isNullOrEmpty() || !containsJapaneseCharacters(text)) {
             return CompletableFuture.completedFuture(text)
         }
 

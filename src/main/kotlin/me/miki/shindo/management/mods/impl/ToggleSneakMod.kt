@@ -25,7 +25,7 @@ class ToggleSneakMod :
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.keyCode == mc.gameSettings.keyBindSneak.keyCode) {
+        if (event.getKeyCode() == mc.gameSettings.keyBindSneak.keyCode) {
             toggle = !toggle
         }
     }

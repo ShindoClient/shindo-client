@@ -9,6 +9,7 @@ import me.miki.shindo.utils.ColorUtils;
 import me.miki.viashindo.ViaLoadingBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 
 import java.util.Collections;
@@ -48,18 +49,11 @@ public class AsyncVersionSlider extends GuiButton {
                 this.displayString = values.get((int) (this.sliderValue * (values.size() - 1))).getName();
                 ViaLoadingBase.getInstance().reload(values.get((int) (this.sliderValue * (values.size() - 1))));
             }
-
-            Shindo instance = Shindo.getInstance();
-            NanoVGManager nvg = instance.getNanoVGManager();
-            ColorPalette palette = instance.getColorManager().getPalette();
-            nvg.setupAndDraw(() -> drawNanoVG(nvg, palette, mouseX, mouseY));
         }
-    }
-
-    private void drawNanoVG(NanoVGManager nvg, ColorPalette palette, int mouseX, int mouseY) {
-
-        nvg.drawRoundedRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 6f, 20f, 2f, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.MID), 0.04f), 245));
-        nvg.drawOutlineRoundedRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 6f, 20f, 2f, 1, ColorUtils.applyAlpha(ColorUtils.lighten(palette.getBackgroundColor(ColorType.NORMAL), 0.14f), 230));
+        mc.getTextureManager().bindTexture(buttonTextures);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
+        this.drawTexturedModalRect(this.xPosition + (int)(this.sliderValue * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
     }
 
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {

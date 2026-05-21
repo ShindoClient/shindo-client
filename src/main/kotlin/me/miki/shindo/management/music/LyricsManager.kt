@@ -193,7 +193,7 @@ class LyricsManager {
     fun processLyricsRomanization(lyrics: LyricsResponse?) {
         if (lyrics == null || lyrics.isError() || lyrics.lines.isEmpty()) return
 
-        val romanizer = Shindo.getInstance().getRomanizationManager() ?: return
+        val romanizer = Shindo.getInstance().getRomanizationManager()
 
         val linesToProcess =
             lyrics.lines.filter { line ->

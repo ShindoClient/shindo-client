@@ -38,7 +38,7 @@ public abstract class MixinGuiScreen {
         }
     }
 
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "mouseClicked", at = @At("HEAD"))
     public void preMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 
         if (Objects.requireNonNull(InternalSettingsMod.instance.getClickEffectsSetting()).isToggled()) {

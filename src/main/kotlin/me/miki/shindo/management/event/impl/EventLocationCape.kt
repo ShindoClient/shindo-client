@@ -5,15 +5,15 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.util.ResourceLocation
 
 class EventLocationCape(
-    private val _playerInfo: NetworkPlayerInfo,
+    private val playerInfo: NetworkPlayerInfo,
 ) : Event() {
-    private var _cape: ResourceLocation? = null
+    private var cape: ResourceLocation? = null
 
-    fun getPlayerInfo(): NetworkPlayerInfo = _playerInfo
+    fun getPlayerInfo(): NetworkPlayerInfo = playerInfo
 
-    fun getCape(): ResourceLocation? = _cape
+    fun getCape(): ResourceLocation? = cape
 
-    fun setCape(cape: Any?) {
-        _cape = cape as? ResourceLocation
+    fun setCape(cape: ResourceLocation?) {
+        this.cape = cape
     }
 }

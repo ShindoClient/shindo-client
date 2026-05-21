@@ -3,6 +3,7 @@ package me.miki.shindo.management.language
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 import net.minecraft.util.ResourceLocation
 
+@Suppress("UNUSED")
 enum class Language(
     private val id: String,
     private val nameTranslate: String,

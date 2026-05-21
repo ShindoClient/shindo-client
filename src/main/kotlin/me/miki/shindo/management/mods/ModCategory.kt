@@ -4,6 +4,7 @@ import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.ui.animation.v2.value.ColorAnimation
 import me.miki.shindo.ui.animation.v2.value.SimpleAnimation
 
+@Suppress("UNUSED")
 enum class ModCategory(
     private val nameTranslate: TranslateText,
 ) {

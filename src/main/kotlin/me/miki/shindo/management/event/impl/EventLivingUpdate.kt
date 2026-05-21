@@ -4,7 +4,7 @@ import me.miki.shindo.management.event.Event
 import net.minecraft.entity.EntityLivingBase
 
 class EventLivingUpdate(
-    private val _entity: EntityLivingBase,
+    private val entity: EntityLivingBase,
 ) : Event() {
-    fun getEntity(): EntityLivingBase = _entity
+    fun getEntity(): EntityLivingBase = entity
 }

@@ -52,7 +52,7 @@ class StopwatchMod : SimpleHUDMod(TranslateText.STOPWATCH, TranslateText.STOPWAT
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.keyCode == keybind) {
+        if (event.getKeyCode() == keybind) {
             pressCount++
         }
     }

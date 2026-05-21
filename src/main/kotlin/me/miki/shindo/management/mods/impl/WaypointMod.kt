@@ -89,7 +89,7 @@ class WaypointMod : Mod(TranslateText.WAYPOINT, TranslateText.WAYPOINT_DESCRIPTI
 
     @EventTarget
     fun onKey(event: EventKey) {
-        if (event.keyCode == keybindSetting) {
+        if (event.getKeyCode() == keybindSetting) {
             mc.displayGuiScreen(GuiWaypoint())
         }
     }

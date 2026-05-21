@@ -61,7 +61,7 @@ class LanguageManager {
     fun setCurrentLanguage(lang: Language) {
         currentLanguage = lang
         loadMap(translateMap, lang.getId())
-        for (text in TranslateText.values()) {
+        for (text in TranslateText.entries) {
             translateMap[text.getKey()]?.let { text.setText(it) }
         }
     }
