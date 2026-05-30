@@ -2,11 +2,12 @@
 
 package me.miki.extensions.music
 
+import com.neovisionaries.i18n.CountryCode
 import com.wrapper.spotify.model_objects.specification.Track
-import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data.ArtistContent
-import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data.TrackListContent
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.music.MusicManager
+import me.miki.shindo.management.music.data.ArtistContent
+import me.miki.shindo.management.music.data.TrackListContent
 import java.util.concurrent.CompletableFuture
 
 fun MusicManager.getPlaylistTracks(playlistId: String): CompletableFuture<TrackListContent> =
@@ -59,7 +60,7 @@ fun MusicManager.getArtistContent(artistId: String): CompletableFuture<ArtistCon
 
             val topTracks =
                 spotifyApi
-                    .getArtistsTopTracks(artistId, com.neovisionaries.i18n.CountryCode.US)
+                    .getArtistsTopTracks(artistId, CountryCode.US)
                     .build()
                     .execute()
                     .toList()

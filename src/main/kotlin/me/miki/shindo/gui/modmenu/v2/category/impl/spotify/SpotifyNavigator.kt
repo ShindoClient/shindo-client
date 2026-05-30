@@ -7,7 +7,6 @@ class SpotifyNavigator {
     val canGoBack: Boolean get() = stack.size > 1
 
     fun push(screen: SpotifyScreen) {
-        // Avoid duplicate pushes of the same screen
         if (stack.last() != screen) stack.addLast(screen)
     }
 

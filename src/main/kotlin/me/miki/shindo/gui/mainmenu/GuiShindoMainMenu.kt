@@ -1,6 +1,7 @@
 package me.miki.shindo.gui.mainmenu
 
 import me.miki.shindo.Shindo
+import me.miki.shindo.gui.mainmenu.impl.AccountScene
 import me.miki.shindo.gui.mainmenu.impl.BackgroundScene
 import me.miki.shindo.gui.mainmenu.impl.MainScene
 import me.miki.shindo.gui.mainmenu.impl.ShopScene
@@ -62,6 +63,7 @@ class GuiShindoMainMenu : GuiScreen() {
         scenes.add(MainScene(this))
         scenes.add(BackgroundScene(this))
         scenes.add(ShopScene(this))
+        scenes.add(AccountScene(this))
         // scenes.add(SkinScene(this))
         scenes.add(UpdateScene(this))
         scenes.add(WelcomeMessageScene(this))

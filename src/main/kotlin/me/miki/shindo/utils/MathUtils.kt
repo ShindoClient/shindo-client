@@ -75,7 +75,7 @@ object MathUtils {
         f: Float,
         g: Float,
         h: Float,
-    ): Float = g + f * (h - g)
+    ): Float = g + (h - g) * f
 
     @JvmStatic
     fun lerp(

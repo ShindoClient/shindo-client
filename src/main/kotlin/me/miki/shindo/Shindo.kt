@@ -6,6 +6,7 @@ import me.miki.shindo.api.broadcast.BroadcastManager
 import me.miki.shindo.api.chat.ChatManager
 import me.miki.shindo.injection.mixin.ShindoTweaker
 import me.miki.shindo.logger.ShindoLogger
+import me.miki.shindo.management.account.AccountManager
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.command.CommandManager
@@ -68,6 +69,7 @@ class Shindo private constructor() {
     private lateinit var networkManager: NetworkManager
     private lateinit var downloadManager: DownloadManager
     private lateinit var extensionManager: ExtensionManager
+    private lateinit var accountManager: AccountManager
 
     private lateinit var shindoAPI: ShindoAPI
     private lateinit var discordStats: DiscordStats
@@ -125,6 +127,10 @@ class Shindo private constructor() {
         }
 
         fileManager = FileManager()
+        accountManager =
+            AccountManager(fileManager).also { mgr ->
+                mgr.getActiveAccount()?.let { mgr.injectSession(it) }
+            }
         languageManager = LanguageManager()
         eventManager = EventManager()
         extensionManager =
@@ -222,6 +228,8 @@ class Shindo private constructor() {
         @JvmStatic
         fun getInstance(): Shindo = instance
     }
+
+    fun getAccountManager(): AccountManager = accountManager
 
     fun getFileManager(): FileManager = fileManager
 

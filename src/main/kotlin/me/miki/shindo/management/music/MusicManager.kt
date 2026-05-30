@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpServer
 import com.wrapper.spotify.SpotifyApi
 import com.wrapper.spotify.SpotifyHttpManager
 import com.wrapper.spotify.exceptions.SpotifyWebApiException
+import com.wrapper.spotify.model_objects.specification.Paging
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified
 import com.wrapper.spotify.model_objects.specification.Track
 import me.miki.shindo.Shindo
@@ -721,39 +722,32 @@ class MusicManager(
         ) { k: String? ->
             throttleRequest(
                 "playlists",
-                Supplier<CompletableFuture<List<PlaylistSimplified>>> {
-                    CompletableFuture.supplyAsync {
-                        try {
-                            val allPlaylists: MutableList<PlaylistSimplified> =
-                                ArrayList()
-                            var offset = 0
-                            var hasMore = true
-                            while (hasMore && offset < 200) {
-                                val request =
-                                    spotifyApi.listOfCurrentUsersPlaylists
-                                        .limit(PLAYLIST_LIMIT)
-                                        .offset(offset)
-                                        .build()
-                                val batch = request.execute().items
-                                if (batch.isEmpty()) {
-                                    hasMore = false
-                                } else {
-                                    allPlaylists.addAll(listOf(*batch))
-                                    offset += batch.size
-                                    Thread.sleep(THROTTLE_DELAY)
-                                }
-                            }
-                            CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
-                            return@supplyAsync allPlaylists
-                        } catch (e: Exception) {
-                            error("Failed to fetch playlists", e)
-                            return@supplyAsync emptyList<PlaylistSimplified>()
-                        } finally {
-                            playlistCache.remove(cacheKey)
-                        }
+            ) {
+                CompletableFuture.supplyAsync {
+                    try {
+                        val allPlaylists: MutableList<PlaylistSimplified> =
+                            ArrayList()
+                        val playlists =
+                            spotifyApi.listOfCurrentUsersPlaylists
+                                .limit(PLAYLIST_LIMIT)
+                                .offset(0)
+                                .build()
+                        val batch: Paging<PlaylistSimplified> = playlists.execute()
+                        allPlaylists.addAll(listOf(*batch.items))
+                        Thread.sleep(THROTTLE_DELAY)
+                        CompletableFuture.runAsync { prefetchPlaylistImages(allPlaylists) }
+                        return@supplyAsync allPlaylists
+                    } catch (e: Exception) {
+                        error("Failed to fetch playlists", e)
+                        return@supplyAsync emptyList()
+                    } catch (e: SpotifyWebApiException) {
+                        error("Failed to fetch playlists", e)
+                        return@supplyAsync emptyList()
+                    } finally {
+                        playlistCache.remove(cacheKey)
                     }
-                },
-            )
+                }
+            }
         }
     }
 
@@ -770,6 +764,7 @@ class MusicManager(
                 i = end
             }
         } catch (e: InterruptedException) {
+            error("[MUSIC} Failed to prefetch Playlist Images.", e)
             Thread.currentThread().interrupt()
         }
     }

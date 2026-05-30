@@ -1,4 +1,4 @@
-package me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data
+package me.miki.shindo.management.music.data
 
 import com.wrapper.spotify.model_objects.specification.PlaylistSimplified
 import com.wrapper.spotify.model_objects.specification.Track

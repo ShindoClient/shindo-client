@@ -12,9 +12,6 @@ import me.miki.shindo.gui.modmenu.v2.category.Category
 import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.ContentState
 import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.SpotifyNavigator
 import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.SpotifyScreen
-import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data.ArtistContent
-import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data.SearchSnapshot
-import me.miki.shindo.gui.modmenu.v2.category.impl.spotify.data.TrackListContent
 import me.miki.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
 import me.miki.shindo.logger.ShindoLogger
 import me.miki.shindo.management.color.AccentColor
@@ -25,6 +22,9 @@ import me.miki.shindo.management.mods.impl.InternalSettingsMod
 import me.miki.shindo.management.music.MusicManager
 import me.miki.shindo.management.music.TrackInfoCallback
 import me.miki.shindo.management.music.cache.AlbumArtCache
+import me.miki.shindo.management.music.data.ArtistContent
+import me.miki.shindo.management.music.data.SearchSnapshot
+import me.miki.shindo.management.music.data.TrackListContent
 import me.miki.shindo.management.music.model.LyricsLine
 import me.miki.shindo.management.nanovg.NanoVGManager
 import me.miki.shindo.management.nanovg.font.Font
@@ -50,6 +50,7 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.firstOrNull
 import kotlin.math.max
 import kotlin.math.min
 
@@ -379,15 +380,11 @@ class SpotifyCategory(
             if (snapshot != null) {
                 var offsetY = 13f
                 snapshot.tracks.forEach { track ->
-                    if (isEntryVisible(offsetY, clipTop, clipH)) {
-                        drawTrackEntry(nvg, palette, accentColor, track, mainX + 8f, mainW - 16f, offsetY, mouseX, mouseY)
-                    }
+                    drawTrackEntry(nvg, palette, accentColor, track, mainX + 8f, mainW - 16f, offsetY, mouseX, mouseY)
                     offsetY += ENTRY_HEIGHT
                 }
                 snapshot.playlists.forEach { playlist ->
-                    if (isEntryVisible(offsetY, clipTop, clipH)) {
-                        drawPlaylistEntry(nvg, palette, accentColor, playlist, mainX + 8f, mainW - 16f, offsetY, mouseX, mouseY)
-                    }
+                    drawPlaylistEntry(nvg, palette, accentColor, playlist, mainX + 8f, mainW - 16f, offsetY, mouseX, mouseY)
                     offsetY += ENTRY_HEIGHT
                 }
             } else {
@@ -870,10 +867,17 @@ class SpotifyCategory(
     ) {
         val absY = getY() + offsetY
         val hovered = MouseUtils.isInside(mouseX, mouseY, x, absY + libraryScroll.getValue(), w, ENTRY_ITEM_H)
+
+        val text: String = if (playlist.name.isNullOrEmpty()) "Untitled" else playlist.name
         drawEntryShell(nvg, palette, x, absY, w)
         drawSmallArt(nvg, Shindo.getInstance().getMusicManager().getPlaylistImageUrl(playlist), x + 5f, absY + 5f, 36f, 6f)
         nvg.drawText(
-            nvg.getLimitText(playlist.name ?: "Untitled", 10f, Fonts.MEDIUM, w - 60f),
+            nvg.getLimitText(
+                text,
+                10f,
+                Fonts.MEDIUM,
+                w - 60f,
+            ),
             x + 48f,
             absY + 9f,
             palette.getFontColor(ColorType.DARK),
@@ -1279,18 +1283,20 @@ class SpotifyCategory(
         size: Float,
         radius: Float,
     ) {
-        val isValid = !imageUrl.isNullOrBlank() && imageUrl != AlbumArtCache.PLACEHOLDER_PATH && File(imageUrl!!).exists()
+        val isValid = !imageUrl.isNullOrBlank() && imageUrl != AlbumArtCache.PLACEHOLDER_PATH && File(imageUrl).exists()
         if (isValid) {
             try {
-                nvg.drawRoundedImage(File(imageUrl!!), x, y, size, size, radius)
+                nvg.drawRoundedImage(File(imageUrl), x, y, size, size, radius)
                 return
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                ShindoLogger.error("[MUSIC] Failed to draw small art: $imageUrl", e)
             }
         }
         nvg.drawRoundedRect(x, y, size, size, radius, Color(50, 50, 50))
         try {
             nvg.drawRoundedImage(PLACEHOLDER_IMAGE, x, y, size, size, radius)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            ShindoLogger.error("[MUSIC] Failed to draw small art.", e)
         }
     }
 

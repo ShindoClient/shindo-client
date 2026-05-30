@@ -1,6 +1,8 @@
 package me.miki.shindo.utils
 
 import java.awt.Desktop
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.net.URI
 
 object BrowserUtils {

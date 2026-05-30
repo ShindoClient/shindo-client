@@ -75,6 +75,7 @@ dependencies {
     shade(libs.i18n)
     shade(libs.gson)
     shade(libs.yaml)
+    shade(libs.mc.auth)
     shade(libs.bundles.okhttp)
 
     shade(files("libs/lwjgl-shindo.jar"))
