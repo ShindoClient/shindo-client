@@ -91,9 +91,6 @@ dependencies {
         },
     )
 }
-dependencyLocking {
-    lockAllConfigurations()
-}
 
 mixin {
     defaultObfuscationEnv = "notch"
@@ -110,7 +107,6 @@ tasks.processResources {
 }
 
 tasks.jar {
-
     dependsOn(shade)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {

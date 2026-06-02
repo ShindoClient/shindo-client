@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.github.MikiDevAHM:ForgeGradle:f01a6ff")
+        classpath("com.github.MikiDevAHM:ForgeGradle:e27692f861")
         classpath("com.github.thefightagainstmalware:MixinGradle:92e66fe")
     }
 }

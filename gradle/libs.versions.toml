@@ -1,10 +1,6 @@
 [versions]
 kotlin = "2.3.10"
 
-ktlint = "14.2.0"
-forge-gradle = "50e3574"
-mixin-gradle = "92e66fe"
-
 mixin = "0.7.11-SNAPSHOT"
 romaji = "0.0.4"
 spotify = "6.5.4"
@@ -13,8 +9,6 @@ gson = "2.13.1"
 i18n = "1.29"
 yaml = "2.0"
 mc-auth = "5.0.0"
-
-# kotlinx = "1.11.0"
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -26,10 +20,6 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 i18n = { group = "com.neovisionaries", name = "nv-i18n", version.ref = "i18n" }
 yaml = { group = "org.yaml", name = "snakeyaml", version.ref = "yaml"}
 mc-auth = { group = "net.raphimc", name = "MinecraftAuth", version.ref = "mc-auth"}
-
-# kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx"}
-# kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json-jvm", version.ref = "kotlinx"}
-
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
