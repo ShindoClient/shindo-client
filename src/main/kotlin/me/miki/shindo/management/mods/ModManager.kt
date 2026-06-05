@@ -319,6 +319,24 @@ class ModManager {
         InternalSettingsMod.instance.setToggled(true)
     }
 
+    /**
+     * Register an externally-created HUDMod (e.g. an [AddonHUDMod])
+     * so it appears in the HUD editor.
+     *
+     * Unlike [registerMod], this does NOT process SettingRegistry metadata
+     * because addon HUDs have no settings to register.
+     */
+    fun registerHudMod(hudMod: HUDMod) {
+        mods.add(hudMod)
+    }
+
+    /**
+     * Remove a previously-registered external HUDMod.
+     */
+    fun unregisterHudMod(hudMod: HUDMod) {
+        mods.remove(hudMod)
+    }
+
     fun playToggleSound(toggled: Boolean) {
         if (toggled) {
             Sound.play(Sounds.SHINDO_AUDIO_POSITIVE, true)

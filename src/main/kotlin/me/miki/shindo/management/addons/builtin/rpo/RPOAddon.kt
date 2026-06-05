@@ -1,9 +1,9 @@
-package me.miki.shindo.management.addons.rpo
+package me.miki.shindo.management.addons.builtin.rpo
 
 import me.miki.shindo.Shindo
 import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonType
-import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom
+import me.miki.shindo.management.addons.builtin.rpo.repository.ResourcePackRepositoryCustom
 import me.miki.shindo.management.language.TranslateText
 import me.miki.shindo.management.nanovg.font.Shinconic
 import net.minecraft.client.Minecraft

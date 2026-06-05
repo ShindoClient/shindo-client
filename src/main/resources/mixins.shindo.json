@@ -24,6 +24,7 @@
     "minecraft.client.entity.MixinEntityPlayerSP",
     "minecraft.client.gui.MixinChatLine",
     "minecraft.client.gui.MixinFontRenderer",
+    "minecraft.client.gui.MixinGuiChat",
     "minecraft.client.gui.MixinGuiDownloadTerrain",
     "minecraft.client.gui.MixinGuiGameOver",
     "minecraft.client.gui.MixinGuiIngame",

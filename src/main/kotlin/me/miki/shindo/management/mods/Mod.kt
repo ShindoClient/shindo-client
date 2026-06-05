@@ -107,9 +107,9 @@ open class Mod
             allowed = modAllowed
         }
 
-        fun getName(): String = nameTranslate.getText()
+        open fun getName(): String = nameTranslate.getText()
 
-        fun getDescription(): String = descriptionTranslate.getText()
+        open fun getDescription(): String = descriptionTranslate.getText()
 
         open fun getIcon(): String? = icon
 

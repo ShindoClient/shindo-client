@@ -57,13 +57,13 @@ open class HUDMod : Mod {
 
     fun getX(): Int = x
 
-    fun setX(x: Int) {
+    open fun setX(x: Int) {
         this.x = x
     }
 
     fun getY(): Int = y
 
-    fun setY(y: Int) {
+    open fun setY(y: Int) {
         this.y = y
     }
 
@@ -79,11 +79,11 @@ open class HUDMod : Mod {
         this.draggingY = draggingY
     }
 
-    fun setWidth(width: Int) {
+    open fun setWidth(width: Int) {
         this.width = width
     }
 
-    fun setHeight(height: Int) {
+    open fun setHeight(height: Int) {
         this.height = height
     }
 

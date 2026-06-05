@@ -1,10 +1,10 @@
 package me.miki.shindo.gui
 
 import com.google.common.collect.Lists
-import me.miki.shindo.management.addons.rpo.RPOAddon
-import me.miki.shindo.management.addons.rpo.packs.ResourcePackListEntryFolder
-import me.miki.shindo.management.addons.rpo.packs.ResourcePackListProcessor
-import me.miki.shindo.management.addons.rpo.repository.ResourcePackRepositoryCustom
+import me.miki.shindo.management.addons.builtin.rpo.RPOAddon
+import me.miki.shindo.management.addons.builtin.rpo.packs.ResourcePackListEntryFolder
+import me.miki.shindo.management.addons.builtin.rpo.packs.ResourcePackListProcessor
+import me.miki.shindo.management.addons.builtin.rpo.repository.ResourcePackRepositoryCustom
 import me.miki.shindo.utils.file.FileUtils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiOptionButton

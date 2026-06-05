@@ -1,4 +1,4 @@
-package me.miki.shindo.management.addons.rpo
+package me.miki.shindo.management.addons.builtin.rpo
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

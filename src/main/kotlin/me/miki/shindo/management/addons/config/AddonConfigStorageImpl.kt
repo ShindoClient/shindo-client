@@ -3,11 +3,6 @@ package me.miki.shindo.management.addons.config
 import com.google.gson.JsonObject
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Implementação de IAddonConfigStorage. Os valores são guardados em memória
- * e serializados pelo ProfileManager no JSON do perfil (seção Addons -> {addonId} -> Config).
- * Ao carregar perfil, só aplicamos config de addons que existem (fallback para addons removidos).
- */
 class AddonConfigStorageImpl(
     private val addonId: String,
 ) {

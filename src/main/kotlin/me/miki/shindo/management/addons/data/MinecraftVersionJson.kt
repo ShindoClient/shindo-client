@@ -1,0 +1,7 @@
+package me.miki.shindo.management.addons.data
+
+data class MinecraftVersionJson(
+    val version: String = "",
+    val minVersion: String = "",
+    val maxVersion: String = "",
+)

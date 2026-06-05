@@ -2,11 +2,6 @@ package me.miki.shindo.management.addons.config
 
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Registro de IAddonConfigStorage por addon. Usado pelo ProfileManager
- * para salvar/carregar configs no perfil. Só processa addons que existem no AddonManager
- * (fallback: addons removidos não causam erro ao carregar).
- */
 object AddonConfigRegistry {
     private val storages = ConcurrentHashMap<String, AddonConfigStorageImpl>()
 

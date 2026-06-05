@@ -10,7 +10,7 @@ import me.miki.shindo.gui.GuiSplashScreen;
 import me.miki.shindo.injection.interfaces.IMixinEntityLivingBase;
 import me.miki.shindo.injection.interfaces.IMixinMinecraft;
 import me.miki.shindo.logger.ShindoLogger;
-import me.miki.shindo.management.addons.rpo.RPOAddon;
+import me.miki.shindo.management.addons.builtin.rpo.RPOAddon;
 import me.miki.shindo.management.event.impl.*;
 import me.miki.shindo.management.mods.impl.*;
 import me.miki.shindo.management.settings.impl.BooleanSetting;
@@ -663,5 +663,3 @@ public abstract class MixinMinecraft implements IMixinMinecraft {
         this.mcResourcePackRepository = repo;
     }
 }
-
-

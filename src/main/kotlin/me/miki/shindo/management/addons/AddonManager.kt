@@ -1,8 +1,8 @@
 package me.miki.shindo.management.addons
 
 import me.miki.shindo.Shindo
-import me.miki.shindo.management.addons.loader.AddonLoader
-import me.miki.shindo.management.addons.rpo.RPOAddon
+import me.miki.shindo.management.addons.builtin.rpo.RPOAddon
+import me.miki.shindo.management.addons.data.FailedAddonEntry
 import me.miki.shindo.management.settings.Setting
 import me.miki.shindo.management.settings.metadata.SettingRegistry
 import me.miki.shindo.management.sound.Sound

@@ -78,6 +78,9 @@ dependencies {
     shade(libs.mc.auth)
     shade(libs.bundles.okhttp)
 
+    shade(libs.addon.api)
+    // shade(files("../AddonAPI/build/libs/AddonAPI-1.0.3.jar"))
+
     shade(files("libs/lwjgl-shindo.jar"))
     shade(files("libs/lwjgl-shindo-natives.jar"))
 

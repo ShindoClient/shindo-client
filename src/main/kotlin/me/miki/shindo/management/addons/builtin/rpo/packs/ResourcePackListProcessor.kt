@@ -1,4 +1,4 @@
-package me.miki.shindo.management.addons.rpo.packs
+package me.miki.shindo.management.addons.builtin.rpo.packs
 
 import net.minecraft.client.resources.ResourcePackListEntry
 import net.minecraft.client.resources.ResourcePackListEntryFound

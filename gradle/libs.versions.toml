@@ -9,6 +9,7 @@ gson = "2.13.1"
 i18n = "1.29"
 yaml = "2.0"
 mc-auth = "5.0.0"
+addon-api = "1.0.4"
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -20,6 +21,7 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 i18n = { group = "com.neovisionaries", name = "nv-i18n", version.ref = "i18n" }
 yaml = { group = "org.yaml", name = "snakeyaml", version.ref = "yaml"}
 mc-auth = { group = "net.raphimc", name = "MinecraftAuth", version.ref = "mc-auth"}
+addon-api = { group = "com.ShindoClient", name = "AddonAPI", version.ref = "addon-api"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -14,7 +14,7 @@ import me.miki.shindo.gui.modmenu.v2.style.ModMenuMotion
 import me.miki.shindo.management.addons.Addon
 import me.miki.shindo.management.addons.AddonManager
 import me.miki.shindo.management.addons.AddonType
-import me.miki.shindo.management.addons.FailedAddonEntry
+import me.miki.shindo.management.addons.data.FailedAddonEntry
 import me.miki.shindo.management.color.AccentColor
 import me.miki.shindo.management.color.ColorManager
 import me.miki.shindo.management.color.palette.ColorPalette
