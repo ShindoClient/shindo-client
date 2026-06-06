@@ -6,7 +6,7 @@
 package eu.shoroa.contrib.shader;
 
 import eu.shoroa.contrib.shader.uniform.*;
-import me.miki.shindo.logger.ShindoLogger;
+import com.shindoclient.shindo.logger.ShindoLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;

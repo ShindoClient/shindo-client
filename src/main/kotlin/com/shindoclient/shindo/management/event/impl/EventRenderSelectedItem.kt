@@ -1,0 +1,7 @@
+package com.shindoclient.shindo.management.event.impl
+
+import com.shindoclient.shindo.management.event.Event
+
+class EventRenderSelectedItem(
+    val color: Int,
+) : Event()

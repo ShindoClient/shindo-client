@@ -1,0 +1,73 @@
+package com.shindoclient.shindo.management.mods.impl
+
+import com.shindoclient.shindo.management.event.EventTarget
+import com.shindoclient.shindo.management.event.impl.EventPreRenderChunk
+import com.shindoclient.shindo.management.event.impl.EventRenderChunkPosition
+import com.shindoclient.shindo.management.language.TranslateText
+import com.shindoclient.shindo.management.mods.Mod
+import com.shindoclient.shindo.management.mods.ModCategory
+import com.shindoclient.shindo.management.nanovg.font.Shinconic
+import com.shindoclient.shindo.management.settings.config.Property
+import com.shindoclient.shindo.management.settings.config.PropertyType
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.chunk.RenderChunk
+import java.util.WeakHashMap
+import kotlin.math.sin
+
+class ChunkAnimatorMod :
+    Mod(
+        TranslateText.CHUNK_ANIMATOR,
+        TranslateText.CHUNK_ANIMATOR_DESCRIPTION,
+        ModCategory.RENDER,
+        Shinconic.MOD_CHUNK_ANIMATOR,
+    ) {
+    private val chunks: MutableMap<RenderChunk?, Long?> = WeakHashMap<RenderChunk?, Long?>()
+
+    @Property(
+        type = PropertyType.NUMBER,
+        translate = TranslateText.DURATION,
+        min = 0.0,
+        max = 5.0,
+        current = 1.0,
+        step = 1.0,
+    )
+    private val duration = 1
+
+    @EventTarget
+    fun preRenderChunk(event: EventPreRenderChunk) {
+        if (chunks.containsKey(event.getRenderChunk())) {
+            var time: Long = chunks.get(event.getRenderChunk())!!
+            val now = System.currentTimeMillis()
+
+            if (time == -1L) {
+                chunks.put(event.getRenderChunk(), now)
+                time = now
+            }
+
+            val passedTime = now - time
+
+            if (passedTime < (duration * 1000)) {
+                val chunkY = event.getRenderChunk().position.y
+                GlStateManager.translate(
+                    0f,
+                    -chunkY + this.easeOut(passedTime.toFloat(), 0f, chunkY.toFloat(), (duration * 1000).toFloat()),
+                    0f,
+                )
+            }
+        }
+    }
+
+    @EventTarget
+    fun setPosition(event: EventRenderChunkPosition) {
+        if (mc.thePlayer != null) {
+            chunks.put(event.getRenderChunk(), -1L)
+        }
+    }
+
+    private fun easeOut(
+        t: Float,
+        b: Float,
+        c: Float,
+        d: Float,
+    ): Float = c * sin(t / d * (Math.PI / 2)).toFloat() + b
+}

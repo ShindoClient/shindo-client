@@ -1,0 +1,21 @@
+package com.shindoclient.shindo.mobends.pack;
+
+import com.shindoclient.shindo.mobends.data.MoBends_EntityData;
+
+public enum BendsVar {
+    ;
+    public static MoBends_EntityData tempData;
+
+    public static float getGlobalVar(String name) {
+        if (name.equalsIgnoreCase("ticks")) {
+            if (tempData == null)
+                return 0;
+            return tempData.ticks;
+        } else if (name.equalsIgnoreCase("ticksAfterPunch")) {
+            if (tempData == null)
+                return 0;
+            return tempData.ticksAfterPunch;
+        }
+        return Float.POSITIVE_INFINITY;
+    }
+}

@@ -7,12 +7,12 @@ package eu.shoroa.contrib.render;
 
 import eu.shoroa.contrib.shader.UIShader;
 import eu.shoroa.contrib.shader.uniform.Uniform;
-import me.miki.shindo.Shindo;
-import me.miki.shindo.management.language.TranslateText;
-import me.miki.shindo.management.mods.impl.InternalSettingsMod;
-import me.miki.shindo.management.settings.impl.ComboSetting;
-import me.miki.shindo.management.settings.impl.combo.Option;
-import me.miki.shindo.types.Rect;
+import com.shindoclient.shindo.Shindo;
+import com.shindoclient.shindo.management.language.TranslateText;
+import com.shindoclient.shindo.management.mods.impl.InternalSettingsMod;
+import com.shindoclient.shindo.management.settings.impl.ComboSetting;
+import com.shindoclient.shindo.management.settings.impl.combo.Option;
+import com.shindoclient.shindo.types.Rect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.shader.Framebuffer;

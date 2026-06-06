@@ -1,0 +1,47 @@
+package com.shindoclient.viashindo;
+
+import com.shindoclient.shindo.Shindo;
+import com.shindoclient.shindo.management.file.FileManager;
+import com.shindoclient.viashindo.gui.AsyncVersionSlider;
+
+import java.io.File;
+
+
+public class ViaShindo {
+
+    public final static int NATIVE_VERSION = 47;
+    private static ViaShindo instance;
+
+    public static void create() {
+        instance = new ViaShindo();
+    }
+
+    private AsyncVersionSlider asyncVersionSlider;
+
+    public ViaShindo() {
+
+        FileManager fileManager = Shindo.getInstance().getFileManager();
+
+        ViaLoadingBase.ViaLoadingBaseBuilder.create().runDirectory(new File(fileManager.getShindoDir(), "ViaVersion")).nativeVersion(NATIVE_VERSION).onProtocolReload(comparableProtocolVersion -> {
+            if (getAsyncVersionSlider() != null) {
+                getAsyncVersionSlider().setVersion(comparableProtocolVersion.getVersion());
+            }
+        }).build();
+    }
+
+    public static ViaShindo getInstance() {
+        return instance;
+    }
+
+    public void initAsyncSlider() {
+        this.initAsyncSlider(5, 5, 110, 20);
+    }
+
+    public void initAsyncSlider(int x, int y, int width, int height) {
+        asyncVersionSlider = new AsyncVersionSlider(-1, x, y, Math.max(width, 110), height);
+    }
+
+    public AsyncVersionSlider getAsyncVersionSlider() {
+        return asyncVersionSlider;
+    }
+}

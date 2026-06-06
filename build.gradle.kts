@@ -8,7 +8,7 @@ plugins {
 base {
     archivesName = "ShindoClient"
     version = "5111"
-    group = "me.miki"
+    group = "com.shindoclient"
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -39,7 +39,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    setTweakClass("me.miki.shindo.injection.mixin.ShindoTweaker")
+    setTweakClass("com.shindoclient.shindo.injection.mixin.ShindoTweaker")
     setMainClass("net.minecraft.launchwrapper.Launch")
 }
 
@@ -78,8 +78,8 @@ dependencies {
     shade(libs.mc.auth)
     shade(libs.bundles.okhttp)
 
-    shade(libs.addon.api)
-    // shade(files("../AddonAPI/build/libs/AddonAPI-1.0.3.jar"))
+    shade(files("libs/AddonAPI-1.0.4.jar"))
+    shade(files("libs/ShindoSpotify-1.0.0.jar"))
 
     shade(files("libs/lwjgl-shindo.jar"))
     shade(files("libs/lwjgl-shindo-natives.jar"))
@@ -115,7 +115,7 @@ tasks.jar {
     manifest {
         attributes(
             "MixinConfigs" to "mixins.shindo.json",
-            "TweakClass" to "me.miki.shindo.injection.mixin.ShindoTweaker",
+            "TweakClass" to "com.shindoclient.shindo.injection.mixin.ShindoTweaker",
             "TweakOrder" to 0,
             "Manifest-Version" to "1.0",
             "FMLAT" to "shindo_at.cfg",

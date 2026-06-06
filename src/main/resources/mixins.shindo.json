@@ -1,5 +1,5 @@
 {
-  "package": "me.miki.shindo.injection.mixin",
+  "package": "com.shindoclient.shindo.injection.mixin",
   "refmap": "mixins.shindo.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [

@@ -1,0 +1,60 @@
+package com.shindoclient.shindo.injection.mixin.minecraft.client.entity;
+
+import com.shindoclient.shindo.management.event.impl.EventFovUpdate;
+import com.shindoclient.shindo.management.event.impl.EventLocationCape;
+import com.shindoclient.shindo.management.event.impl.EventLocationSkin;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(AbstractClientPlayer.class)
+public class MixinAbstractClientPlayer {
+
+    @Shadow
+    private NetworkPlayerInfo playerInfo;
+
+    @Inject(method = "getFovModifier", at = @At("RETURN"), cancellable = true)
+    public void getFovModifier(CallbackInfoReturnable<Float> cir) {
+
+        EventFovUpdate event = new EventFovUpdate((AbstractClientPlayer) (Object) this, cir.getReturnValue());
+        event.call();
+
+        cir.setReturnValue(event.getFov());
+    }
+
+    @Inject(method = "getLocationSkin*", at = @At("HEAD"), cancellable = true)
+    public void onGetLocationSkin(CallbackInfoReturnable<ResourceLocation> cir) {
+        if (playerInfo == null) {
+            return;
+        }
+
+        EventLocationSkin event = new EventLocationSkin(playerInfo);
+        event.call();
+
+        if (event.isCancelled()) {
+            cir.cancel();
+            cir.setReturnValue(event.getSkin());
+        }
+    }
+
+    @Inject(method = "getLocationCape", cancellable = true, at = @At("HEAD"))
+    public void onGetLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
+        if (playerInfo == null) {
+            return;
+        }
+
+        EventLocationCape event = new EventLocationCape(playerInfo);
+        event.call();
+
+        if (event.isCancelled()) {
+            cir.cancel();
+            cir.setReturnValue(event.getCape());
+        }
+    }
+}
+
