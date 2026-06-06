@@ -26,8 +26,10 @@ import com.shindoclient.shindo.utils.mouse.MouseUtils
 import com.shindoclient.shindo.utils.mouse.Scroll
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import com.shindoclient.shindo.management.music.cache.AlbumArtCache
 import java.awt.Color
 import java.awt.Desktop
+import java.io.File
 import java.net.URL
 import kotlin.math.max
 import kotlin.math.min
@@ -364,14 +366,20 @@ class HomeCategory(
 
             if (currentTrack != null) {
                 val iconSize1 = 16f
-                nvg.drawText(
-                    Lucide.MUSIC,
-                    headX,
-                    spotifyY,
-                    palette.getFontColor(ColorType.NORMAL),
-                    iconSize,
-                    Fonts.LUCIDE,
-                )
+                val albumArtPath = musicManager.getAlbumArtUrl(currentTrack)
+                if (albumArtPath != null && albumArtPath != AlbumArtCache.PLACEHOLDER_PATH) {
+                    nvg.drawRoundedImage(File(albumArtPath), headX, spotifyY, iconSize1, iconSize1, 3f)
+                } else {
+                    nvg.drawRoundedRect(headX, spotifyY, iconSize1, iconSize1, 3f, Color(40, 40, 40))
+                    nvg.drawText(
+                        Lucide.MUSIC,
+                        headX,
+                        spotifyY,
+                        palette.getFontColor(ColorType.NORMAL),
+                        iconSize1,
+                        Fonts.LUCIDE,
+                    )
+                }
 
                 val trackName = currentTrack.name
                 val artistName =
@@ -383,7 +391,7 @@ class HomeCategory(
                         TranslateText.UNKNOWN.getText()
                     }
                 val trackNameX = headX + iconSize1 + 4
-                val trackNameWidth = columnWidth - (INNER_PADDING * 2f)
+                val trackNameWidth = columnWidth - (INNER_PADDING * 2f) - (iconSize1 + 4)
                 nvg.drawText(
                     nvg.getLimitText(trackName, 9f, Fonts.MEDIUM, trackNameWidth),
                     trackNameX,

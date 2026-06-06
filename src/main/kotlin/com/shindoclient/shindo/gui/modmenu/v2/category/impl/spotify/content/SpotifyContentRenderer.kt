@@ -1,18 +1,14 @@
 package com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.content
+import com.shindoclient.shindo.Shindo
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyNavigator
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyScreen
-import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.state.ContentState
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.player.SpotifyPlayerBar
-
-import com.shindoclient.spotify.data.AlbumSimplified
-import com.shindoclient.spotify.data.ArtistSimplified
-import com.shindoclient.spotify.data.PlaylistSimplified
-import com.shindoclient.spotify.data.Track
-import com.shindoclient.shindo.Shindo
+import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.state.ContentState
 import com.shindoclient.shindo.gui.modmenu.v2.category.section.CategorySectionCursor
 import com.shindoclient.shindo.gui.modmenu.v2.category.section.CategorySectionRenderer
 import com.shindoclient.shindo.gui.modmenu.v2.category.section.CategorySectionSpec
 import com.shindoclient.shindo.gui.modmenu.v2.render.ModMenuClipCoordinator
+import com.shindoclient.shindo.logger.ShindoLogger
 import com.shindoclient.shindo.management.color.AccentColor
 import com.shindoclient.shindo.management.color.palette.ColorPalette
 import com.shindoclient.shindo.management.color.palette.ColorType
@@ -26,17 +22,19 @@ import com.shindoclient.shindo.management.nanovg.NanoVGManager
 import com.shindoclient.shindo.management.nanovg.font.Font
 import com.shindoclient.shindo.management.nanovg.font.Fonts
 import com.shindoclient.shindo.management.nanovg.font.Lucide
-import com.shindoclient.shindo.logger.ShindoLogger
 import com.shindoclient.shindo.utils.ColorUtils
 import com.shindoclient.shindo.utils.mouse.MouseUtils
 import com.shindoclient.shindo.utils.mouse.Scroll
+import com.shindoclient.spotify.data.AlbumSimplified
+import com.shindoclient.spotify.data.ArtistSimplified
+import com.shindoclient.spotify.data.PlaylistSimplified
+import com.shindoclient.spotify.data.Track
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.max
 
-private const val SIDEBAR_WIDTH = 140f
 private const val ENTRY_HEIGHT = 56f
 private const val ENTRY_ITEM_H = 46f
 private const val CONTROL_BAR_H = 46f
@@ -73,12 +71,9 @@ class SpotifyContentRenderer(
         mouseX: Int,
         mouseY: Int,
         partialTicks: Float,
-        drawSidebar: () -> Unit,
     ) {
-        val mainX = getX() + SIDEBAR_WIDTH
-        val mainW = getWidth() - SIDEBAR_WIDTH
-
-        drawSidebar()
+        val mainX = getX()
+        val mainW = getWidth()
 
         libraryScroll.onScroll()
         libraryScroll.onAnimation()
@@ -90,7 +85,7 @@ class SpotifyContentRenderer(
 
         nvg.drawVerticalGradientRect(
             mainX,
-            getY().toFloat(),
+            getY(),
             mainW,
             12f,
             palette.getBackgroundColor(ColorType.NORMAL),
@@ -119,7 +114,7 @@ class SpotifyContentRenderer(
         mouseX: Int,
         mouseY: Int,
     ) {
-        val clipTop = getY().toFloat()
+        val clipTop = getY()
         val clipH = getHeight() - CONTROL_BAR_H
 
         ModMenuClipCoordinator.withClip(nvg = nvg, x = mainX, y = clipTop, width = mainW, height = clipH) {
@@ -130,11 +125,15 @@ class SpotifyContentRenderer(
                 val sectionX = mainX + 8f
 
                 if (snapshot.tracks.isNotEmpty()) {
-                    val headerEnd = CategorySectionRenderer.drawHeader(
-                        nvg, palette, sectionX, cursor.y,
-                        CategorySectionSpec("Tracks", "${snapshot.tracks.size} results"),
-                        cursor.style,
-                    )
+                    val headerEnd =
+                        CategorySectionRenderer.drawHeader(
+                            nvg,
+                            palette,
+                            sectionX,
+                            cursor.y,
+                            CategorySectionSpec("Tracks", "${snapshot.tracks.size} results"),
+                            cursor.style,
+                        )
                     cursor.y = headerEnd
                     snapshot.tracks.forEach { track ->
                         drawTrackEntry(nvg, palette, accentColor, track, sectionX, mainW - 16f, cursor.y, mouseX, mouseY)
@@ -144,11 +143,15 @@ class SpotifyContentRenderer(
 
                 if (snapshot.playlists.isNotEmpty()) {
                     cursor.nextSection()
-                    val headerEnd = CategorySectionRenderer.drawHeader(
-                        nvg, palette, sectionX, cursor.y,
-                        CategorySectionSpec("Playlists", "${snapshot.playlists.size} results"),
-                        cursor.style,
-                    )
+                    val headerEnd =
+                        CategorySectionRenderer.drawHeader(
+                            nvg,
+                            palette,
+                            sectionX,
+                            cursor.y,
+                            CategorySectionSpec("Playlists", "${snapshot.playlists.size} results"),
+                            cursor.style,
+                        )
                     cursor.y = headerEnd
                     snapshot.playlists.forEach { playlist ->
                         drawPlaylistEntry(nvg, palette, accentColor, playlist, sectionX, mainW - 16f, cursor.y, mouseX, mouseY)
@@ -173,14 +176,6 @@ class SpotifyContentRenderer(
         val cy = getY() + clipH / 2.5f
         nvg.drawText(Lucide.SEARCH, cx - 8f, cy - 28f, palette.getFontColor(ColorType.NORMAL), 20f, Fonts.LUCIDE)
         nvg.drawCenteredText("Search for music above", cx, cy, palette.getFontColor(ColorType.NORMAL), 10f, Fonts.MEDIUM)
-        nvg.drawCenteredText(
-            "or select a playlist from the sidebar",
-            cx,
-            cy + 14f,
-            palette.getFontColor(ColorType.NORMAL),
-            9f,
-            Fonts.REGULAR,
-        )
     }
 
     fun drawPlaylistDetailScreen(

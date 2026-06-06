@@ -9,7 +9,6 @@ import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyN
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyScreen
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.player.SpotifyPlayerBar
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.search.SpotifySearchManager
-import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.sidebar.SpotifySidebarRenderer
 import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.state.ContentState
 import com.shindoclient.shindo.management.color.AccentColor
 import com.shindoclient.shindo.management.color.palette.ColorPalette
@@ -66,14 +65,6 @@ class SpotifyCategory(
         getScrollAreaH = { getHeight() - CONTROL_BAR_H },
     )
 
-    private val sidebarRenderer = SpotifySidebarRenderer(
-        getX = { getX().toFloat() },
-        getY = { getY().toFloat() },
-        getWidth = { getWidth().toFloat() },
-        getHeight = { getHeight().toFloat() },
-        navigator = navigator,
-    )
-
     private val playerBar = SpotifyPlayerBar(
         getX = { getX().toFloat() },
         getY = { getY().toFloat() },
@@ -108,11 +99,9 @@ class SpotifyCategory(
         getHeight = { getHeight().toFloat() },
         navigator = navigator,
         searchSnapshot = searchSnapshot,
-        getUserPlaylists = { sidebarRenderer.userPlaylists },
         trackListState = trackListState,
         artistState = artistState,
         libraryScroll = libraryScroll,
-        sidebarScroll = sidebarRenderer.sidebarScroll,
         detailScroll = detailScroll,
         lyricsScroll = lyricsScroll,
         volumeSlider = volumeSlider,
@@ -132,7 +121,7 @@ class SpotifyCategory(
 
     override fun initCategory() {
         navigator.reset()
-        listOf(libraryScroll, sidebarRenderer.sidebarScroll, detailScroll, lyricsScroll).forEach { it.resetAll() }
+        listOf(libraryScroll, detailScroll, lyricsScroll).forEach { it.resetAll() }
         trackListState.set(ContentState.Idle)
         artistState.set(ContentState.Idle)
 
@@ -141,7 +130,6 @@ class SpotifyCategory(
         mm.setTrackInfoCallback(this)
 
         if (!showConnectButton) {
-            sidebarRenderer.fetchUserPlaylists(mm)
             inputHandler.syncVolumeAsync(mm)
         }
     }
@@ -170,7 +158,6 @@ class SpotifyCategory(
                 is SpotifyScreen.Library -> {
                     contentRenderer.drawLibraryLayout(
                         nvg, palette, accentColor, mm, mouseX, mouseY, partialTicks,
-                        drawSidebar = { sidebarRenderer.drawSidebar(nvg, palette, accentColor, mouseX, mouseY) },
                     )
                 }
 

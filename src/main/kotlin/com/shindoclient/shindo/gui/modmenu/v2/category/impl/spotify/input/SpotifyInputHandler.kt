@@ -1,27 +1,26 @@
 package com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.input
-import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyNavigator
-import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyScreen
-import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.state.ContentState
-
-import com.shindoclient.spotify.data.AlbumSimplified
-import com.shindoclient.spotify.data.ArtistSimplified
-import com.shindoclient.spotify.data.PlaylistSimplified
-import com.shindoclient.spotify.data.Track
 import com.shindoclient.extensions.music.getAlbumTracks
 import com.shindoclient.extensions.music.getArtistContent
 import com.shindoclient.extensions.music.getPlaylistTracks
 import com.shindoclient.shindo.Shindo
 import com.shindoclient.shindo.gui.modmenu.v2.GuiModMenu
+import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyNavigator
+import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.nav.SpotifyScreen
+import com.shindoclient.shindo.gui.modmenu.v2.category.impl.spotify.state.ContentState
+import com.shindoclient.shindo.management.language.TranslateText
 import com.shindoclient.shindo.management.music.MusicManager
 import com.shindoclient.shindo.management.music.data.ArtistContent
 import com.shindoclient.shindo.management.music.data.SearchSnapshot
 import com.shindoclient.shindo.management.music.data.TrackListContent
-import com.shindoclient.shindo.management.language.TranslateText
 import com.shindoclient.shindo.management.notification.NotificationType
 import com.shindoclient.shindo.ui.components.v2.inputs.CompSlider
 import com.shindoclient.shindo.utils.BrowserUtils
 import com.shindoclient.shindo.utils.mouse.MouseUtils
 import com.shindoclient.shindo.utils.mouse.Scroll
+import com.shindoclient.spotify.data.AlbumSimplified
+import com.shindoclient.spotify.data.ArtistSimplified
+import com.shindoclient.spotify.data.PlaylistSimplified
+import com.shindoclient.spotify.data.Track
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiConfirmOpenLink
 import org.lwjgl.input.Keyboard
@@ -31,15 +30,12 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.max
 import kotlin.math.min
 
-private const val SIDEBAR_WIDTH = 140f
 private const val ENTRY_HEIGHT = 56f
 private const val ENTRY_ITEM_H = 46f
 private const val CONTROL_BAR_H = 46f
 private const val TRACK_ROW_H = 38f
 private const val TRACK_ROW_SPACING = 42f
 private const val HEADER_H = 110f
-private const val SIDEBAR_ROW_H = 34f
-private const val SIDEBAR_ROW_SPACING = 38f
 private const val VOLUME_CHANGE_DELAY_MS = 500L
 
 class SpotifyInputHandler(
@@ -49,11 +45,9 @@ class SpotifyInputHandler(
     private val getHeight: () -> Float,
     private val navigator: SpotifyNavigator,
     private val searchSnapshot: AtomicReference<SearchSnapshot?>,
-    private val getUserPlaylists: () -> List<PlaylistSimplified>?,
     private val trackListState: AtomicReference<ContentState<TrackListContent>>,
     private val artistState: AtomicReference<ContentState<ArtistContent>>,
     private val libraryScroll: Scroll,
-    private val sidebarScroll: Scroll,
     private val detailScroll: Scroll,
     private val lyricsScroll: Scroll,
     private val volumeSlider: CompSlider,
@@ -70,7 +64,7 @@ class SpotifyInputHandler(
         mouseY: Int,
         mouseButton: Int,
     ) {
-        if (!MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), getWidth().toFloat(), getHeight().toFloat())) return
+        if (!MouseUtils.isInside(mouseX, mouseY, getX(), getY(), getWidth(), getHeight())) return
         if (isShowConnectButton()) {
             if (mouseButton == 0 &&
                 MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() / 2f - 75f, getY() + getHeight() / 2f - 20f, 150f, 40f)
@@ -161,42 +155,26 @@ class SpotifyInputHandler(
             return
         }
 
-        // Sidebar playlist click
-        if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), getY().toFloat(), SIDEBAR_WIDTH, getHeight() - CONTROL_BAR_H)) {
-            val playlists = getUserPlaylists() ?: return
-            val sx = getX() + 10f
-            val sw = SIDEBAR_WIDTH - 20f
-            var rowY = getY() + 38f + sidebarScroll.getValue() + 4f
-            for (playlist in playlists) {
-                if (MouseUtils.isInside(mouseX, mouseY, sx, rowY, sw, SIDEBAR_ROW_H)) {
-                    navigateToPlaylist(playlist)
-                    return
-                }
-                rowY += SIDEBAR_ROW_SPACING
-            }
-            return
-        }
-
         // Search results area
         val snapshot = searchSnapshot.get() ?: return
-        val mainX = getX() + SIDEBAR_WIDTH
-        val mainW = getWidth() - SIDEBAR_WIDTH
-        if (!MouseUtils.isInside(mouseX, mouseY, mainX, getY().toFloat(), mainW, getHeight() - CONTROL_BAR_H)) return
+        val mainX = getX()
+        val mainW = getWidth()
+        if (!MouseUtils.isInside(mouseX, mouseY, mainX, getY(), mainW, getHeight() - CONTROL_BAR_H)) return
 
-        var offsetY = 13f + libraryScroll.getValue()
+        var offsetY = 39 + libraryScroll.getValue()
         snapshot.tracks.forEach { track ->
-            val entryY = getY() + offsetY - libraryScroll.getValue()
+            val entryY = getY() + offsetY
             if (MouseUtils.isInside(mouseX, mouseY, mainX + 8f, getY() + offsetY, mainW - 16f, ENTRY_ITEM_H)) {
                 if (MouseUtils.isInside(mouseX, mouseY, mainX + mainW - 32f, getY() + offsetY + 15f, 16f, 16f)) {
                     addToQueue(track)
                     return
                 }
                 if (MouseUtils.isInside(mouseX, mouseY, mainX + 48f, entryY + 21f, 120f, 12f)) {
-                    track.artists?.firstOrNull()?.let { navigateToArtist(it) }
+                    track.artists.firstOrNull()?.let { navigateToArtist(it) }
                     return
                 }
                 if (MouseUtils.isInside(mouseX, mouseY, mainX + 48f, entryY + 31f, 120f, 12f)) {
-                    track.album?.let { album -> album.id?.let { navigateToAlbum(album, it) } }
+                    track.album?.let { album -> navigateToAlbum(album, album.id) }
                     return
                 }
                 mm.play(track.uri)
@@ -206,7 +184,7 @@ class SpotifyInputHandler(
         }
         snapshot.playlists.forEach { playlist ->
             if (MouseUtils.isInside(mouseX, mouseY, mainX + 8f, getY() + offsetY, mainW - 16f, ENTRY_ITEM_H)) {
-                playlist.uri?.let { uri ->
+                playlist.uri.let { uri ->
                     if (MouseUtils.isInside(
                             mouseX,
                             mouseY,
@@ -305,18 +283,18 @@ class SpotifyInputHandler(
         val listTop = getY() + HEADER_H + 4f
         state.data.tracks.forEachIndexed { idx, track ->
             val rowY = listTop + idx * TRACK_ROW_SPACING + detailScroll.getValue()
-            if (MouseUtils.isInside(mouseX, mouseY, getX().toFloat(), rowY, getWidth().toFloat(), TRACK_ROW_H)) {
+            if (MouseUtils.isInside(mouseX, mouseY, getX(), rowY, getWidth(), TRACK_ROW_H)) {
                 if (MouseUtils.isInside(mouseX, mouseY, getX() + getWidth() - 22f, rowY + 11f, 16f, 16f)) {
                     addToQueue(track)
                     return
                 }
                 if (MouseUtils.isInside(mouseX, mouseY, getX() + 68f, rowY + 21f, getWidth() * 0.38f, 12f)) {
-                    track.artists?.firstOrNull()?.let { navigateToArtist(it) }
+                    track.artists.firstOrNull()?.let { navigateToArtist(it) }
                     return
                 }
                 val albumX = getX() + getWidth() * 0.52f
                 if (MouseUtils.isInside(mouseX, mouseY, albumX, rowY + 5f, getWidth() * 0.28f, TRACK_ROW_H)) {
-                    track.album?.let { album -> album.id?.let { navigateToAlbum(album, it) } }
+                    track.album?.let { album -> navigateToAlbum(album, album.id) }
                     return
                 }
                 mm.play(track.uri)

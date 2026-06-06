@@ -90,7 +90,7 @@ class SpotifySearchManager(
     }
 
     companion object {
-        private const val ENTRY_HEIGHT = 53f
+        private const val ENTRY_HEIGHT = 56f
         private const val ENTRY_ITEM_H = 46f
     }
 }

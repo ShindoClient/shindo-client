@@ -23,7 +23,7 @@ class CategorySectionCursor(
     startY: Float,
     val style: CategorySectionStyle = CategorySectionStyle(),
 ) {
-    var y: Float = startY + style.topMargin
+    var y: Float = startY
 
     fun moveBy(offset: Float) {
         y += offset
