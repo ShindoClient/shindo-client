@@ -9,8 +9,8 @@ gson = "2.13.1"
 i18n = "1.29"
 yaml = "2.0"
 mc-auth = "5.0.0"
-addon-api = "1.0.4"
-shindo-spotify = "1.0.0"
+addon-api = "1.0.5"
+shindo-spotify = "1.0.1"
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }

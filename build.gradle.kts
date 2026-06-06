@@ -78,8 +78,9 @@ dependencies {
     shade(libs.mc.auth)
     shade(libs.bundles.okhttp)
 
-    shade(files("libs/AddonAPI-1.0.4.jar"))
-    shade(files("libs/ShindoSpotify-1.0.0.jar"))
+    shade(libs.bundles.shindo)
+    // shade(files("libs/AddonAPI-1.0.4.jar"))
+    // shade(files("libs/ShindoSpotify-1.0.0.jar"))
 
     shade(files("libs/lwjgl-shindo.jar"))
     shade(files("libs/lwjgl-shindo-natives.jar"))
